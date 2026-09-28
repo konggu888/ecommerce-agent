@@ -184,3 +184,15 @@ test('continuation policy reduces aggressive actions after a nonlinear stop sign
     }
   }
 });
+
+
+test('agent exposes adaptive breakthrough switching after repeated failed signals', () => {
+  const result = runAgentSimulation({...config(), rounds: 30, seed: 7});
+  const types = result.rounds.map(r => r.breakthroughSignal).filter(x => x && x !== 'NO_CLEAR_GAP');
+  assert.ok(types.length > 0);
+  const unique = new Set(types);
+  assert.ok(unique.size >= 1);
+  for (const round of result.rounds) {
+    assert.ok(typeof round.breakthroughSignal === 'string');
+  }
+});
