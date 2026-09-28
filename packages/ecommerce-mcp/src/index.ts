@@ -27,3 +27,5 @@ export * from './opponent-behavior-tree';
 export * from './integrated-game-planner';
 
 export * from './breakthrough-engine';
+
+export * from './url-data-intake';
