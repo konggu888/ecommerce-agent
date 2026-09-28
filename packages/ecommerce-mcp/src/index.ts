@@ -17,3 +17,5 @@ export * from './opponent-model';
 export * from './closed-loop-agent';
 
 export * from './multi-round-game';
+
+export * from './human-strategy-library';
