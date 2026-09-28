@@ -78,8 +78,8 @@ function gameAgentBenchmark(shop: SimShop, scenario: Scenario, rounds: number): 
   });
   return {
     strategy:'GAME_AGENT', scenario, totalSpend:sim.summary.totalSpend, totalRevenue:sim.summary.totalRevenue,
-    totalConversions:sim.summary.totalConversions, finalStock:sim.finalState.conversions ? Math.max(0, p.stock-sim.summary.totalConversions) : p.stock,
-    finalCash:Math.max(0, shop.cash-sim.summary.totalSpend+sim.summary.totalConversions*p.marginPerOrder),
+    totalConversions:sim.summary.totalConversions, finalStock:sim.summary.finalStock,
+    finalCash:sim.summary.finalCash,
     avgRoi:sim.summary.finalRoi, actionCount:sim.summary.approvedActions,
     blockedActions:sim.summary.blockedActions, learningSignals:sim.summary.learningSignals,
     averageCalibrationError:sim.summary.averageCalibrationError,
