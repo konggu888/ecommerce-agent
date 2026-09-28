@@ -172,3 +172,15 @@ test('agent rounds expose nonlinear stop signals and marginal ROI', () => {
   assert.ok(result.rounds.every(r => Number.isFinite(r.nonlinear.marginalRoi)));
   assert.ok(result.rounds.some(r => r.nonlinear.crowding >= 0));
 });
+
+
+test('continuation policy reduces aggressive actions after a nonlinear stop signal', () => {
+  const result = runAgentSimulation({...config(), rounds: 20});
+  const rounds = result.rounds;
+  for (let i = 0; i < rounds.length - 1; i++) {
+    if (rounds[i].nonlinear.stopSignal) {
+      assert.notEqual(rounds[i + 1].action, 'INCREASE_BUDGET');
+      assert.notEqual(rounds[i + 1].action, 'INCREASE_BID');
+    }
+  }
+});
