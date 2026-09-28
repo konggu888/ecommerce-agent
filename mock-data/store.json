@@ -1,0 +1,10 @@
+{
+  "shops": [
+    { "id": "demo-taobao", "platform": "taobao", "name": "Demo Taobao Shop" },
+    { "id": "demo-pdd", "platform": "pinduoduo", "name": "Demo Pinduoduo Shop" }
+  ],
+  "campaigns": [
+    { "id": "demo-campaign-1", "platform": "taobao", "budget": 300, "spend": 180, "revenue": 720, "roi": 4.0 },
+    { "id": "demo-campaign-2", "platform": "pinduoduo", "budget": 300, "spend": 150, "revenue": 660, "roi": 4.4 }
+  ]
+}
