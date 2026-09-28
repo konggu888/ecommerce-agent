@@ -1,0 +1,20 @@
+name: ecommerce-agent-benchmark
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'packages/ecommerce-mcp/src/**'
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install
+        run: npm install
+      - name: Typecheck/build if configured
+        run: npm run build --if-present
+      - name: Test if configured
+        run: npm test --if-present
