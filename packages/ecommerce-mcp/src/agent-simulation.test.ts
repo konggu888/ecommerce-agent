@@ -79,6 +79,17 @@ test('action effects are reflected in observable market metrics', async () => {
   assert.ok(round.state.observedAt);
 });
 
+test('position sizing uses staged spend and stops on weak economics or high response risk', async () => {
+  const { buildPositionPlan } = await import('./position-sizing.ts');
+  const plan = buildPositionPlan('INCREASE_BUDGET', 800, 3, 0.8, 0.2);
+  assert.ok(plan.steps.length >= 2);
+  assert.ok(plan.recommendedAmount > 0);
+  assert.ok(plan.steps.every(s => s.amount <= 800));
+  const risky = buildPositionPlan('INCREASE_BUDGET', 800, 3, 0.4, 0.9);
+  assert.ok(risky.recommendedAmount <= plan.recommendedAmount);
+  assert.match(risky.stopReason, /风险|置信度|投入/);
+});
+
 test('breakthrough output includes a bounded path, signal and stop condition', async () => {
   const { findBreakthroughs } = await import('./breakthrough-engine.ts');
   const cfg = config();
