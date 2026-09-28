@@ -1,7 +1,7 @@
 export interface SimProduct { id: string; price: number; marginPerOrder: number; stock: number; replenishmentDays: number; safetyStockDays: number; }
 export interface SimCampaign { id: string; productId: string; budget: number; bid: number; }
 export interface SimShop { id: string; products: SimProduct[]; campaigns: SimCampaign[]; cash: number; }
-export interface BacktestRound { round: number; shopId: string; spend: number; revenue: number; conversions: number; roi: number; stock: number; cash: number; action?: string; cash: number; }
+export interface BacktestRound { round: number; shopId: string; spend: number; revenue: number; conversions: number; roi: number; stock: number; cash: number; action?: string; }
 
 export function runBacktest(shop: SimShop, rounds: number, seed = 1): BacktestRound[] {
   let state = JSON.parse(JSON.stringify(shop)) as SimShop;
