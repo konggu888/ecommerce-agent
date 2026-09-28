@@ -15,3 +15,5 @@ export const READ_ONLY_TOOLS = [
 export * from './game-state';
 export * from './opponent-model';
 export * from './closed-loop-agent';
+
+export * from './multi-round-game';
