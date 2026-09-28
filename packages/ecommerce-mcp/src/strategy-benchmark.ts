@@ -94,7 +94,14 @@ export function benchmark(shop: SimShop, rounds = 30, scenarios: Scenario[] = ['
   for (const scenario of scenarios) for (const strategy of ['NO_CHANGE','FIXED_RULE','GAME_AGENT'] as Strategy[]) {
     if (strategy === 'GAME_AGENT') { results.push(gameAgentBenchmark(shop, scenario, rounds)); continue; }
     const base = applyStrategy(shop, strategy, scenario);
-    const roundsOut: BacktestRound[] = runBacktest(base, rounds, 42);
+    const f = factors(scenario);
+    const roundsOut: BacktestRound[] = runBacktest(base, rounds, 42, {
+      trafficMultiplier: f.traffic,
+      cvrMultiplier: f.cvr,
+      priceMultiplier: f.price,
+      demandMultiplier: scenario === 'DEMAND_SURGE' ? 1.25 : 1,
+      trafficCostMultiplier: scenario === 'TRAFFIC_COST' ? 1.45 : scenario === 'COMPETITION' ? 1.15 : 1
+    });
     const totalSpend=roundsOut.reduce((x,r)=>x+r.spend,0), totalRevenue=roundsOut.reduce((x,r)=>x+r.revenue,0), totalConversions=roundsOut.reduce((x,r)=>x+r.conversions,0);
     const final=roundsOut[roundsOut.length-1];
     results.push({strategy,scenario,totalSpend,totalRevenue,totalConversions,finalStock:final?.stock??0,finalCash:final?.cash??0,avgRoi:totalSpend?totalRevenue/totalSpend:0,actionCount:roundsOut.filter(r=>r.action&&r.action!=='HOLD').length});
