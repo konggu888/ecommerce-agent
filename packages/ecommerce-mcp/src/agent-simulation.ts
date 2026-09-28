@@ -109,10 +109,15 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
     if (riskApproved && action === 'CHANGE_PRICE') state.price *= 0.98;
 
     const pressure = market.trafficCost * (1 + Math.max(0, opponents[0]?.trafficShare ?? 0) * 0.3);
+    const actionEffects = {
+      traffic: action === 'INCREASE_BID' ? 1.08 : action === 'DECREASE_BID' ? 0.92 : action === 'CHANGE_TARGETING' ? 0.98 : 1,
+      ctr: action === 'CHANGE_KEYWORD' ? 1.10 : action === 'CHANGE_TARGETING' ? 1.06 : 1,
+      cvr: action === 'CHANGE_PRICE' ? 1.02 : action === 'CHANGE_TARGETING' ? 1.01 : 1
+    };
     const spend = Math.min(state.budget, Math.max(0, 100 / Math.max(0.5, pressure) + rnd() * 20));
-    const ctr = Math.max(0.005, Math.min(0.12, (state.ctr ?? 0.03) * (action === 'CHANGE_KEYWORD' || action === 'CHANGE_TARGETING' ? 1.06 : 1)));
-    const clicks = Math.floor(spend / Math.max(0.5, pressure));
-    const cvr = Math.max(0.005, Math.min(0.2, market.categoryCvr * (action === 'CHANGE_PRICE' ? 1.02 : 1)));
+    const ctr = Math.max(0.005, Math.min(0.12, (state.ctr ?? 0.03) * actionEffects.ctr));
+    const clicks = Math.floor(spend * actionEffects.traffic / Math.max(0.5, pressure));
+    const cvr = Math.max(0.005, Math.min(0.2, market.categoryCvr * actionEffects.cvr));
     const conversions = Math.min(inventory.stockOnHand, Math.floor(clicks * cvr * market.demand));
     const revenue = conversions * state.price;
 
