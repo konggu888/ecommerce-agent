@@ -1,7 +1,7 @@
 import { GameState, evaluateActions } from './game-state';
 import { calculateAdConstraints, UnitEconomics } from './unit-economics';
 import { calculateScaleConstraints, InventoryState, CashflowState } from './inventory-cashflow';
-import { evaluateRisk, RiskPolicy, ProposedAction, RiskDecision } from './risk-controller';
+import { evaluateBusinessRisk, RiskPolicy, ProposedAction, RiskDecision } from './risk-controller';
 import { modelOpponentResponses, detectBreakthrough, Breakthrough } from './opponent-model';
 import { planMultiRoundGame, MultiRoundPlan } from './multi-round-game';
 import { buildPositionPlan, PositionPlan } from './position-sizing';
@@ -30,7 +30,14 @@ export function runClosedLoop(input: ClosedLoopInput): ClosedLoopOutput {
     const breakthrough = detectBreakthrough({ state: input.state, action: a.action, opponent });
     score += breakthrough.score * 0.25;
     reasons.push(`突破口: ${breakthrough.type} — ${breakthrough.reason}`);
-    const risk = evaluateRisk(proposed, input.riskPolicy, input.recentActionCount);
+    const risk = evaluateBusinessRisk(proposed, input.riskPolicy, input.recentActionCount, {
+      cashAvailable: input.cashflow.availableCash,
+      inventory: input.inventory.stockOnHand,
+      contributionAfterAds,
+      currentRoi: input.state.roi ?? 0,
+      marginalRoi: input.state.roi ?? 0,
+      opponentRisk: breakthrough.opponentResponseRisk
+    });
     const positionPlan = (a.action === 'INCREASE_BUDGET' || a.action === 'DECREASE_BUDGET' || a.action === 'INCREASE_BID' || a.action === 'DECREASE_BID')
       ? buildPositionPlan(a.action, input.state.budget, input.state.roi ?? 0, Math.max(0, Math.min(1, score)), breakthrough.opponentResponseRisk)
       : undefined;
