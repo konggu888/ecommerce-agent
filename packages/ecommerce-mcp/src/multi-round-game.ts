@@ -56,7 +56,7 @@ function opponentPenalty(action: Action, opponent: OpponentModel[]): number {
   }, 0) / opponent.length;
 }
 
-function projectState(state: GameState, action: Action): GameState {
+function projectState(state: GameState, action: Action, response?: OpponentModel): GameState {
   const next = { ...state };
   if (action === 'INCREASE_BUDGET') next.budget *= 1.1;
   if (action === 'DECREASE_BUDGET') next.budget *= 0.9;
@@ -65,6 +65,13 @@ function projectState(state: GameState, action: Action): GameState {
   if (action === 'DECREASE_BID') next.cpc = (next.cpc ?? 1) * 0.95;
   if (action === 'CHANGE_TARGETING') next.cvr = (next.cvr ?? 0) * 1.05 + 0.002;
   if (action === 'CHANGE_KEYWORD') next.ctr = (next.ctr ?? 0) * 1.06 + 0.001;
+
+  // Project the likely next-round state after the opponent observes our move.
+  // This keeps the plan sequential instead of scoring every action independently.
+  if (response?.response === 'MATCH_PRICE' && action === 'CHANGE_PRICE') next.price *= 1.01;
+  if (response?.response === 'RAISE_BID' && (action === 'INCREASE_BID' || action === 'INCREASE_BUDGET')) next.cpc = (next.cpc ?? 1) * 1.04;
+  if (response?.response === 'DEFEND_TRAFFIC' && (action === 'CHANGE_TARGETING' || action === 'CHANGE_KEYWORD')) next.ctr = (next.ctr ?? 0) * 0.985;
+  if (response?.response === 'SHIFT_TO_CONTENT' && (action === 'CHANGE_KEYWORD' || action === 'CHANGE_TARGETING')) next.cvr = (next.cvr ?? 0) * 0.99;
   next.observedAt = new Date(Date.now() + 60000).toISOString();
   return next;
 }
@@ -98,7 +105,8 @@ export function planMultiRoundGame(state: GameState, horizon = 3): MultiRoundPla
         opponentRisk: risk,
         path: [...path, action].map(String)
       });
-      search(projectState(current, action), round + 1, nodeScore, [...path, action]);
+      const primaryResponse = [...opponent].sort((a, b) => b.probability - a.probability)[0];
+      search(projectState(current, action, primaryResponse), round + 1, nodeScore, [...path, action]);
     }
   }
 
