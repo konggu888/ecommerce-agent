@@ -21,3 +21,5 @@ export * from './multi-round-game';
 export * from './human-strategy-library';
 
 export * from './adversarial-game';
+
+export * from './opponent-behavior-tree';
