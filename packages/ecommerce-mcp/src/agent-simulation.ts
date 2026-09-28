@@ -5,6 +5,7 @@ import { RiskPolicy } from './risk-controller';
 import { SimMarketRound } from './simulated-market';
 import { createSimulatedOpponents, simulateOpponentTurn, snapshotsFromOpponents, SimulatedOpponent } from './opponent-simulator';
 import { DecisionRecord, OutcomeRecord, LearningSignal, evaluateLearning } from './learning-memory';
+import { simulateNonlinearMarket } from './nonlinear-market';
 
 export interface AgentSimulationConfig {
   rounds?: number;
@@ -24,6 +25,7 @@ export interface AgentSimulationRound extends SimMarketRound {
   opponentModel: string[];
   opponentTurns: ReturnType<typeof simulateOpponentTurn>;
   learning: LearningSignal;
+  nonlinear: { marginalRoi: number; crowding: number; bidEscalation: number; priceWar: number; stockConstraint: number; cashConstraint: number; stopSignal: boolean; stopReason: string };
 }
 
 export interface AgentSimulationResult {
@@ -108,20 +110,36 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
     if (riskApproved && action === 'DECREASE_BID') state.cpc = Math.max(0.5, (state.cpc ?? 2) * 0.95);
     if (riskApproved && action === 'CHANGE_PRICE') state.price *= 0.98;
 
-    const pressure = market.trafficCost * (1 + Math.max(0, opponents[0]?.trafficShare ?? 0) * 0.3);
-    const actionEffects = {
-      traffic: action === 'INCREASE_BID' ? 1.08 : action === 'DECREASE_BID' ? 0.92 : action === 'CHANGE_TARGETING' ? 0.98 : 1,
-      ctr: action === 'CHANGE_KEYWORD' ? 1.10 : action === 'CHANGE_TARGETING' ? 1.06 : 1,
-      cvr: action === 'CHANGE_PRICE' ? 1.02 : action === 'CHANGE_TARGETING' ? 1.01 : 1
-    };
-    const spend = Math.min(state.budget, Math.max(0, 100 / Math.max(0.5, pressure) + rnd() * 20));
-    const ctr = Math.max(0.005, Math.min(0.12, (state.ctr ?? 0.03) * actionEffects.ctr));
-    const clicks = Math.floor(spend * actionEffects.traffic / Math.max(0.5, pressure));
-    const cvr = Math.max(0.005, Math.min(0.2, market.categoryCvr * actionEffects.cvr));
-    const conversions = Math.min(inventory.stockOnHand, Math.floor(clicks * cvr * market.demand));
-    const revenue = conversions * state.price;
+    const competitorShare = Math.max(0, Math.min(0.95, opponents.reduce((sum, o) => sum + o.trafficShare, 0)));
+    const competitorPrice = opponents[0]?.price;
+    const stagedPlan = decision.recommended?.positionPlan;
+    const requestedSpend = action === 'HOLD'
+      ? Math.min(state.budget, 100 / Math.max(0.5, market.trafficCost) + rnd() * 20)
+      : riskApproved && stagedPlan
+        ? Math.min(state.budget, stagedPlan.recommendedAmount)
+        : 0;
+    const nonlinear = simulateNonlinearMarket({
+      action: action as any,
+      budget: state.budget,
+      spend: requestedSpend,
+      cpc: state.cpc ?? 2,
+      trafficCost: market.trafficCost,
+      demand: market.demand,
+      categoryCvr: market.categoryCvr,
+      ctr: state.ctr ?? 0.03,
+      price: state.price,
+      competitorTrafficShare: competitorShare,
+      competitorPrice,
+      inventory: inventory.stockOnHand
+    });
+    const spend = nonlinear.spend;
+    const ctr = nonlinear.ctr;
+    const clicks = nonlinear.clicks;
+    const cvr = nonlinear.cvr;
+    const conversions = nonlinear.conversions;
+    const revenue = nonlinear.revenue;
 
-    state = { ...state, spend, impressions: Math.floor(clicks / ctr), clicks, conversions, revenue, ctr, cvr, cpc: clicks ? spend / clicks : 0, roi: spend ? revenue / spend : 0, observedAt };
+    state = { ...state, spend, impressions: Math.floor(clicks / ctr), clicks, conversions, revenue, ctr, cvr, cpc: nonlinear.effectiveCpc, roi: spend ? revenue / spend : 0, observedAt };
     inventory.stockOnHand = Math.max(0, inventory.stockOnHand - conversions);
     cashflow.availableCash = Math.max(0, cashflow.availableCash - spend + conversions * (state.marginPerOrder ?? state.price * 0.3));
     totalSpend += spend; totalRevenue += revenue; totalConversions += conversions;
@@ -150,7 +168,8 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
       decisionScore: decision.recommended?.score ?? 0,
       opponentModel: decision.multiRound.bestPath,
       opponentTurns: clone(turns),
-      learning
+      learning,
+      nonlinear: { marginalRoi: nonlinear.marginalRoi, crowding: nonlinear.crowding, bidEscalation: nonlinear.bidEscalation, priceWar: nonlinear.priceWar, stockConstraint: nonlinear.stockConstraint, cashConstraint: nonlinear.cashConstraint, stopSignal: nonlinear.stopSignal, stopReason: nonlinear.stopReason }
     });
 
     state.competitors = snapshotsFromOpponents(opponents, observedAt);
