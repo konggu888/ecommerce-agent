@@ -48,6 +48,24 @@ test('risk controller blocks are recorded and do not count as approved actions',
   assert.ok(result.rounds.some(r => r.learning !== undefined));
 });
 
+test('closed-loop candidate set includes all executable game levers', async () => {
+  const { runClosedLoop } = await import('./closed-loop-agent.ts');
+  const cfg = config();
+  const p = cfg.initial;
+  const economics = {
+    sellingPrice: p.price, productCost: p.price - p.marginPerOrder,
+    fulfillmentCost: 0, platformFee: 0, paymentFee: 0, otherVariableCost: 0
+  };
+  const result = runClosedLoop({
+    state: p, economics, inventory: cfg.inventory, cashflow: cfg.cashflow,
+    riskPolicy, recentActionCount: 0
+  });
+  const actions = new Set(result.candidates.map(x => x.action));
+  for (const action of ['HOLD','INCREASE_BUDGET','DECREASE_BUDGET','INCREASE_BID','DECREASE_BID','CHANGE_KEYWORD','CHANGE_TARGETING','CHANGE_PRICE']) {
+    assert.ok(actions.has(action), action + ' missing from candidate set');
+  }
+});
+
 test('benchmark covers all eight sandbox scenarios and game-agent diagnostics', () => {
   const rows = benchmark(createDefaultSandboxShop(), 5);
   const scenarios = new Set(rows.map(r => r.scenario));
