@@ -1,7 +1,7 @@
 import { runClosedLoop } from './closed-loop-agent';
 import { GameState } from './game-state';
 import { InventoryState, CashflowState } from './inventory-cashflow';
-import { RiskPolicy } from './risk-controller';
+import { RiskPolicy, reconcileMarketRisk } from './risk-controller';
 import { SimMarketRound } from './simulated-market';
 import { createSimulatedOpponents, simulateOpponentTurn, snapshotsFromOpponents, SimulatedOpponent } from './opponent-simulator';
 import { DecisionRecord, OutcomeRecord, LearningSignal, evaluateLearning } from './learning-memory';
@@ -28,6 +28,7 @@ export interface AgentSimulationRound extends SimMarketRound {
   nonlinear: { marginalRoi: number; crowding: number; bidEscalation: number; priceWar: number; stockConstraint: number; cashConstraint: number; stopSignal: boolean; stopReason: string };
   riskDimensions?: { capital: number; unitEconomics: number; market: number; operations: number; opponent: number; overall: number; };
   riskStopConditions?: string[];
+  postMarketRisk?: { level: string; mode: string; approved: boolean; reasons: string[]; dimensions?: { capital: number; unitEconomics: number; market: number; operations: number; opponent: number; overall: number }; recommendedChangePct?: number; stopConditions?: string[] };
 }
 
 export interface AgentSimulationResult {
@@ -165,6 +166,31 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
     cashflow.availableCash = Math.max(0, cashflow.availableCash - spend + conversions * (state.marginPerOrder ?? state.price * 0.3));
     totalSpend += spend; totalRevenue += revenue; totalConversions += conversions;
 
+    const postMarketRisk = reconcileMarketRisk(
+      {
+        action: action as any,
+        changePct: action === 'INCREASE_BUDGET' || action === 'DECREASE_BUDGET' ? 10 : 5,
+        estimatedDailySpend: spend,
+        confidence: selected?.score ?? 0
+      },
+      config.riskPolicy,
+      recentActions,
+      {
+        marginalRoi: nonlinear.marginalRoi,
+        totalRoi: nonlinear.totalRoi,
+        crowding: nonlinear.crowding,
+        bidEscalation: nonlinear.bidEscalation,
+        priceWar: nonlinear.priceWar,
+        stockConstraint: nonlinear.stockConstraint,
+        cashConstraint: nonlinear.cashConstraint,
+        stopSignal: nonlinear.stopSignal,
+        stopReason: nonlinear.stopReason,
+        inventory: inventory.stockOnHand,
+        cashAvailable: cashflow.availableCash,
+        opponentRisk: selected?.breakthrough?.opponentResponseRisk
+      }
+    );
+
     const turns = simulateOpponentTurn(opponents, state);
     const evaluation: OutcomeRecord['evaluation'] = spend <= 0 || conversions < 1 ? 'INCONCLUSIVE' : state.roi >= expectedRoi ? 'POSITIVE' : 'NEGATIVE';
     const currentBreakthrough = selected?.breakthrough?.type ?? 'NO_CLEAR_GAP';
@@ -178,7 +204,7 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
     totalCalibrationError += learning.calibrationError;
     learningSignals += learning.useful ? 1 : 0;
     strategyConfidence[action] = Math.max(0, Math.min(1, (strategyConfidence[action] ?? decisionRecord.confidence) + (learning.useful ? (learning.calibrationError < 0.2 ? 0.02 : -0.04) : 0)));
-    previousStopSignal = nonlinear.stopSignal;
+    previousStopSignal = !postMarketRisk.approved || nonlinear.stopSignal;
     if (nonlinear.stopSignal) continuationCooldown = 1;
     const opponentActions = turns.map(t => t.opponentId + ':' + t.action);
 
@@ -200,7 +226,8 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
       learning,
       nonlinear: { marginalRoi: nonlinear.marginalRoi, crowding: nonlinear.crowding, bidEscalation: nonlinear.bidEscalation, priceWar: nonlinear.priceWar, stockConstraint: nonlinear.stockConstraint, cashConstraint: nonlinear.cashConstraint, stopSignal: nonlinear.stopSignal, stopReason: nonlinear.stopReason },
       riskDimensions: selected?.risk.dimensions,
-      riskStopConditions: selected?.risk.stopConditions
+      riskStopConditions: selected?.risk.stopConditions,
+      postMarketRisk
     });
 
     state.competitors = snapshotsFromOpponents(opponents, observedAt);
