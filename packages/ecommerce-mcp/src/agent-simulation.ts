@@ -140,6 +140,7 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
       action: action as any,
       budget: state.budget,
       spend: requestedSpend,
+      cashAvailable: cashflow.availableCash,
       cpc: state.cpc ?? 2,
       trafficCost: market.trafficCost,
       demand: market.demand,
