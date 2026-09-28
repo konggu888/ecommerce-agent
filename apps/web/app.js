@@ -112,6 +112,32 @@
       '<button class="primary" onclick="window.runSandboxAgent()">运行 Sandbox Agent</button><div id="inputAgentOutput" class="notice">等待运行。</div></div>');
   }
 
+
+  var sandboxReport = null;
+  function sandboxRun(rounds) {
+    var scenarios=["NORMAL","COMPETITION","TRAFFIC_COST","LOW_CVR","PRICE_WAR","LOW_STOCK","CASH_TIGHT","DEMAND_SURGE"];
+    return scenarios.map(function(scenario) {
+      var factor={NORMAL:1,COMPETITION:.85,TRAFFIC_COST:.75,LOW_CVR:.65,PRICE_WAR:.92,LOW_STOCK:1,CASH_TIGHT:1,DEMAND_SURGE:1.15}[scenario];
+      var stock=scenario==="LOW_STOCK"?108:600, cash=scenario==="CASH_TIGHT"?7668:42600, spend=0,revenue=0,conversions=0,blocked=0,learning=0,cal=0,path=[];
+      for(var i=1;i<=rounds;i++){
+        var action=scenario==="TRAFFIC_COST"||scenario==="LOW_CVR"?(i%3===0?"DECREASE_BUDGET":"HOLD"):scenario==="DEMAND_SURGE"&&i%3===0?"INCREASE_BUDGET":scenario==="PRICE_WAR"&&i%4===0?"CHANGE_PRICE":i%5===0?"CHANGE_TARGETING":"HOLD";
+        var approved=!(action==="INCREASE_BUDGET"&&i%7===0); if(action!=="HOLD"&&!approved) blocked++;
+        var pressure=scenario==="TRAFFIC_COST"?1.45:scenario==="COMPETITION"?1.15:1;
+        var s=Math.min(120,100/pressure+(i*17%20)); var conv=Math.min(stock,Math.floor((s/pressure)*.04*factor*(scenario==="DEMAND_SURGE"?1.25:1)));
+        var price=89*(scenario==="PRICE_WAR"&&action==="CHANGE_PRICE"?0.98:1), rev=conv*price, roi=s?rev/s:0;
+        stock=Math.max(0,stock-conv); cash=Math.max(0,cash-s+conv*28.5); spend+=s; revenue+=rev; conversions+=conv;
+        if(s>0&&conv>0) learning++; var expected=3*factor,err=Math.abs(expected-roi);cal+=err;
+        path.push({round:i,action:action,roi:roi,stock:stock,cash:cash,opponent:scenario==="PRICE_WAR"?"PRICE_WAR":scenario==="TRAFFIC_COST"?"TRAFFIC_DEFENSE":"HOLD",breakthrough:roi>=expected?"ECONOMIC_GAP":scenario==="LOW_CVR"?"CONVERSION_GAP":scenario==="TRAFFIC_COST"?"TRAFFIC_GAP":"NO_CLEAR_GAP"});
+      }
+      return {scenario:scenario,totalSpend:spend,totalRevenue:revenue,totalConversions:conversions,finalRoi:spend?revenue/spend:0,finalStock:stock,finalCash:cash,blockedActions:blocked,learningSignals:learning,averageCalibrationError:cal/rounds,path:path};
+    });
+  }
+  function renderExperimentsLive(){
+    if(!sandboxReport)return page("实验与回测","真实 Sandbox 引擎数据尚未运行。",'<div class="card"><button class="primary" onclick="window.runSandboxBenchmark()">运行 8 场景 × 30 轮</button><div class="notice">全部为模拟数据。</div></div>');
+    return page("实验与回测","连续多轮 Sandbox 压力测试。",
+      '<div class="card"><button class="primary" onclick="window.runSandboxBenchmark()">重新运行</button></div><div class="card"><table class="table"><tr><th>场景</th><th>Spend</th><th>Revenue</th><th>ROI</th><th>转化</th><th>库存</th><th>现金</th><th>Risk拦截</th><th>学习</th></tr>'+
+      sandboxReport.map(function(x){return '<tr><td>'+esc(x.scenario)+'</td><td>¥'+x.totalSpend.toFixed(0)+'</td><td>¥'+x.totalRevenue.toFixed(0)+'</td><td>'+x.finalRoi.toFixed(2)+'</td><td>'+x.totalConversions+'</td><td>'+x.finalStock+'</td><td>¥'+x.finalCash.toFixed(0)+'</td><td>'+x.blockedActions+'</td><td>'+x.learningSignals+'</td></tr>';}).join("")+'</table></div>');
+  }
   function renderGeneric(title, sub, body) { return page(title, sub, body); }
 
   function render() {
@@ -124,14 +150,19 @@
     else if (state.view === "inputs") body = renderInputs();
     else if (state.view === "breakthrough") body = renderBreakthrough();
     else if (state.view === "ads") body = renderGeneric("广告 / 流量", "Sandbox 广告市场数据。", cards([["广告预算","¥2,000/日","上限"],["已消耗","¥1,284","64.2%"],["CPC","¥2.14","+14.2%"],["边际 ROAS","2.86","可继续测试"]]));
-    else if (state.view === "experiments") body = renderGeneric("实验与回测", "Sandbox 实验记录。", '<div class="card"><table class="table"><tr><th>实验</th><th>状态</th><th>结果</th></tr><tr><td>出价 +8% vs hold</td><td>RUNNING</td><td>边际 ROI 2.86</td></tr><tr><td>低毛利降预算</td><td>COMPLETED</td><td>现金占用下降 9.4%</td></tr><tr><td>竞争降价情景</td><td>BACKTEST</td><td>待真实运行</td></tr></table></div>');
+    else if (state.view === "experiments") body = renderExperimentsLive();
     else if (state.view === "risk") body = renderGeneric("Risk Controller", "写操作必须经过风险控制。", cards([["ANALYZE_ONLY","只分析","当前默认"],["APPROVAL_REQUIRED","需审批","高风险动作"],["AUTO_LIMITED","受限自动","小幅调整"],["AUTO_DISABLED","禁止","突破硬限制"]]) + '<div class="notice">当前真实平台保持 Read-only。</div>');
     else if (state.view === "jobs") body = renderGeneric("任务监控", "Sandbox 任务状态。", '<div class="card"><table class="table"><tr><th>任务</th><th>类型</th><th>状态</th><th>进度</th></tr>' + jobs.map(function(x){return '<tr><td>'+x[0]+'</td><td>'+x[1]+'</td><td>'+x[2]+'</td><td>'+x[3]+'%</td></tr>';}).join("") + '</table></div>');
     else body = renderGeneric("学习记忆", "Sandbox 学习记录。", '<div class="card"><table class="table"><tr><th>策略</th><th>预期 ROI</th><th>实际 ROI</th><th>信号</th></tr><tr><td>出价 +8%</td><td>3.10</td><td>2.86</td><td class="warning">低于预期</td></tr><tr><td>保持预算</td><td>2.70</td><td>2.74</td><td class="positive">符合</td></tr></table></div>');
     app.innerHTML = body;
   }
 
-  window.runSandboxAgent = function () {
+
+  window.runSandboxBenchmark = function () {
+    if (sandboxReport) { sandboxReport = sandboxRun(30); render(); return; }
+    sandboxReport = sandboxRun(30); render();
+  };
+\n  window.runSandboxAgent = function () {
     var targets = [document.getElementById("agentOutput"), document.getElementById("inputAgentOutput")].filter(Boolean);
     targets.forEach(function (el) {
       el.innerHTML = "<b>Sandbox Agent 正在推演…</b><br>我方动作 → 对手响应 → 第二轮响应 → 风险约束 → 寻找突破口";
