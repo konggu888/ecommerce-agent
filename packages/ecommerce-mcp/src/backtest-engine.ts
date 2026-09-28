@@ -1,7 +1,7 @@
 export interface SimProduct { id: string; price: number; marginPerOrder: number; stock: number; replenishmentDays: number; safetyStockDays: number; }
 export interface SimCampaign { id: string; productId: string; budget: number; bid: number; }
 export interface SimShop { id: string; products: SimProduct[]; campaigns: SimCampaign[]; cash: number; }
-export interface BacktestRound { round: number; shopId: string; spend: number; revenue: number; conversions: number; roi: number; stock: number; cash: number; action?: string; }
+export interface BacktestRound { round: number; shopId: string; spend: number; revenue: number; conversions: number; roi: number; stock: number; cash: number; action?: string; cash: number; }
 
 export function runBacktest(shop: SimShop, rounds: number, seed = 1): BacktestRound[] {
   let state = JSON.parse(JSON.stringify(shop)) as SimShop;
@@ -23,7 +23,7 @@ export function runBacktest(shop: SimShop, rounds: number, seed = 1): BacktestRo
       state.cash = Math.max(0, state.cash - actualSpend + orders * p.marginPerOrder);
     }
     const roi = spend > 0 ? revenue / spend : 0;
-    out.push({ round, shopId: state.id, spend, revenue, conversions, roi, stock: state.products.reduce((n,p) => n+p.stock,0) });
+    out.push({ round, shopId: state.id, spend, revenue, conversions, roi, stock: state.products.reduce((n,p) => n+p.stock,0), cash: state.cash });
   }
   return out;
 }
