@@ -79,6 +79,19 @@ test('action effects are reflected in observable market metrics', async () => {
   assert.ok(round.state.observedAt);
 });
 
+test('breakthrough output includes a bounded path, signal and stop condition', async () => {
+  const { findBreakthroughs } = await import('./breakthrough-engine.ts');
+  const cfg = config();
+  const breakthroughs = findBreakthroughs(cfg.initial);
+  assert.ok(breakthroughs.length > 0);
+  for (const b of breakthroughs) {
+    assert.ok(Array.isArray(b.path));
+    assert.ok(b.path.length > 0);
+    assert.ok(b.stopCondition.length > 0);
+    assert.ok(b.expectedSignal.length > 0);
+  }
+});
+
 test('multi-round planner carries likely opponent response into continuation state', async () => {
   const { planMultiRoundGame } = await import('./multi-round-game.ts');
   const cfg = config();
