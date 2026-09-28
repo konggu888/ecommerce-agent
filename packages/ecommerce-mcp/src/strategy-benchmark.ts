@@ -4,6 +4,7 @@ import { UnitEconomics } from './unit-economics';
 import { InventoryState, CashflowState } from './inventory-cashflow';
 import { RiskPolicy } from './risk-controller';
 import { runAgentSimulation } from './agent-simulation';
+import { runClosedLoop } from './closed-loop-agent';
 
 export type Strategy = 'NO_CHANGE' | 'FIXED_RULE' | 'GAME_AGENT';
 export type Scenario = 'NORMAL' | 'COMPETITION' | 'TRAFFIC_COST' | 'LOW_CVR' | 'PRICE_WAR' | 'LOW_STOCK' | 'CASH_TIGHT' | 'DEMAND_SURGE';
