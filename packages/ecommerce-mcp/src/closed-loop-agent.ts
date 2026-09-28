@@ -3,10 +3,11 @@ import { calculateAdConstraints, UnitEconomics } from './unit-economics';
 import { calculateScaleConstraints, InventoryState, CashflowState } from './inventory-cashflow';
 import { evaluateRisk, RiskPolicy, ProposedAction, RiskDecision } from './risk-controller';
 import { modelOpponentResponses, detectBreakthrough, Breakthrough } from './opponent-model';
+import { planMultiRoundGame, MultiRoundPlan } from './multi-round-game';
 
 export interface ClosedLoopInput { state: GameState; economics: UnitEconomics; inventory: InventoryState; cashflow: CashflowState; riskPolicy: RiskPolicy; recentActionCount: number; }
 export interface ClosedLoopCandidate { action: string; score: number; risk: RiskDecision; reasons: string[]; breakthrough?: Breakthrough; }
-export interface ClosedLoopOutput { candidates: ClosedLoopCandidate[]; blocked: ClosedLoopCandidate[]; recommended: ClosedLoopCandidate | null; }
+export interface ClosedLoopOutput { candidates: ClosedLoopCandidate[]; blocked: ClosedLoopCandidate[]; recommended: ClosedLoopCandidate | null; multiRound: MultiRoundPlan; }
 
 export function runClosedLoop(input: ClosedLoopInput): ClosedLoopOutput {
   const economics = calculateAdConstraints(input.economics, input.state.cvr ?? 0);
@@ -14,6 +15,7 @@ export function runClosedLoop(input: ClosedLoopInput): ClosedLoopOutput {
   const scale = calculateScaleConstraints(input.inventory, input.cashflow, contributionAfterAds);
   const actions = evaluateActions(input.state);
   const opponent = modelOpponentResponses(input.state);
+  const multiRound = planMultiRoundGame(input.state, 3);
   const candidates: ClosedLoopCandidate[] = [];
   for (const a of actions) {
     let score = a.confidence;
@@ -31,5 +33,5 @@ export function runClosedLoop(input: ClosedLoopInput): ClosedLoopOutput {
   candidates.sort((x,y)=>y.score-x.score);
   const blocked = candidates.filter(x => !x.risk.approved);
   const allowed = candidates.filter(x => x.risk.approved);
-  return { candidates, blocked, recommended: allowed[0] ?? null };
+  return { candidates, blocked, recommended: allowed[0] ?? null, multiRound };
 }
