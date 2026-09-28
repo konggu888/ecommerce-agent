@@ -4,6 +4,7 @@ export interface NonlinearMarketInput {
   action: Action;
   budget: number;
   spend: number;
+  cashAvailable?: number;
   cpc: number;
   trafficCost: number;
   demand: number;
@@ -46,7 +47,9 @@ export interface NonlinearMarketResult {
  */
 export function simulateNonlinearMarket(input: NonlinearMarketInput): NonlinearMarketResult {
   const safeBudget = Math.max(0, input.budget);
-  const safeSpend = Math.max(0, Math.min(safeBudget, input.spend));
+  const cashAvailable = input.cashAvailable === undefined ? safeBudget : Math.max(0, input.cashAvailable);
+  const spendCap = Math.min(safeBudget, cashAvailable);
+  const safeSpend = Math.max(0, Math.min(spendCap, input.spend));
   const baseCpc = Math.max(0.5, input.trafficCost);
   const competitorShare = Math.max(0, Math.min(0.95, input.competitorTrafficShare));
   const bidEscalation = input.action === 'INCREASE_BID'
@@ -91,7 +94,7 @@ export function simulateNonlinearMarket(input: NonlinearMarketInput): NonlinearM
   const incrementalRevenue = Math.max(0, revenue - previousConversions * input.price);
   const marginalRoi = incrementalRevenue / incrementalSpend;
 
-  const cashConstraint = safeBudget <= 0 ? 1 : Math.max(0, Math.min(1, safeSpend / safeBudget));
+  const cashConstraint = spendCap <= 0 ? 1 : Math.max(0, Math.min(1, safeSpend / spendCap));
   const stopSignal = marginalRoi < Math.max(0.8, totalRoi * 0.72)
     || stockConstraint < 0.25
     || crowding > 0.48
