@@ -138,3 +138,37 @@ test('benchmark covers all eight sandbox scenarios and game-agent diagnostics', 
     assert.ok(Object.values(row.opponentActions ?? {}).reduce((a,b) => a + b, 0) > 0);
   }
 });
+
+test('nonlinear market shows diminishing marginal return under heavier spend', async () => {
+  const { simulateNonlinearMarket } = await import('./nonlinear-market.ts');
+  const base = {
+    action: 'INCREASE_BUDGET' as const, budget: 800, spend: 160, cpc: 2,
+    trafficCost: 1, demand: 1, categoryCvr: 0.04, ctr: 0.03, price: 100,
+    competitorTrafficShare: 0.2, competitorPrice: 98, inventory: 100
+  };
+  const low = simulateNonlinearMarket(base);
+  const high = simulateNonlinearMarket({...base, spend: 640});
+  assert.ok(high.crowding > low.crowding);
+  assert.ok(high.effectiveCpc >= low.effectiveCpc);
+  assert.ok(high.marginalRoi <= low.marginalRoi);
+});
+
+test('nonlinear market exposes bid escalation and price-war pressure', async () => {
+  const { simulateNonlinearMarket } = await import('./nonlinear-market.ts');
+  const bid = simulateNonlinearMarket({
+    action: 'INCREASE_BID', budget: 800, spend: 400, cpc: 2,
+    trafficCost: 1, demand: 1, categoryCvr: 0.04, ctr: 0.03, price: 100,
+    competitorTrafficShare: 0.55, competitorPrice: 99, inventory: 100
+  });
+  assert.ok(bid.bidEscalation > 1);
+  assert.ok(bid.crowding > 0);
+  assert.ok(Number.isFinite(bid.marginalRoi));
+  assert.ok(typeof bid.stopSignal === 'boolean');
+});
+
+test('agent rounds expose nonlinear stop signals and marginal ROI', () => {
+  const result = runAgentSimulation({...config(), rounds: 5});
+  assert.equal(result.rounds.length, 5);
+  assert.ok(result.rounds.every(r => Number.isFinite(r.nonlinear.marginalRoi)));
+  assert.ok(result.rounds.some(r => r.nonlinear.crowding >= 0));
+});
