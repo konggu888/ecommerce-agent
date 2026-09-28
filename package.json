@@ -1,0 +1,11 @@
+{
+  "name": "ecommerce-agent",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Unified Taobao/Tmall + Pinduoduo ecommerce game-theory agent",
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check packages/ecommerce-mcp/src/index.js"
+  },
+  "workspaces": ["apps/*", "packages/*"]
+}
