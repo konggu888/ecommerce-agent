@@ -70,6 +70,8 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
   const strategyConfidence: Record<string, number> = {};
   let continuationCooldown = 0;
   let previousStopSignal = false;
+  let activeBreakthrough: string | null = null;
+  let breakthroughFailures = 0;
 
   for (let round = 1; round <= rounds; round++) {
     const observedAt = new Date().toISOString();
@@ -94,6 +96,14 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
     });
 
     let selected = decision.recommended;
+    // Adaptive breakthrough switching: after a failed/blocked route, prefer a candidate
+    // attacking a different bottleneck instead of repeating the same game lever.
+    if (activeBreakthrough && breakthroughFailures >= 1) {
+      const alternative = decision.candidates.find(c =>
+        c.risk.approved && c.breakthrough?.type && c.breakthrough.type !== activeBreakthrough
+      );
+      if (alternative && (!selected || alternative.score >= selected.score * 0.9)) selected = alternative;
+    }
     if (previousStopSignal || continuationCooldown > 0) {
       const safer = decision.candidates.find(c => c.risk.approved && !['INCREASE_BUDGET', 'INCREASE_BID'].includes(c.action));
       if (safer) selected = safer;
@@ -154,6 +164,12 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
 
     const turns = simulateOpponentTurn(opponents, state);
     const evaluation: OutcomeRecord['evaluation'] = spend <= 0 || conversions < 1 ? 'INCONCLUSIVE' : state.roi >= expectedRoi ? 'POSITIVE' : 'NEGATIVE';
+    const currentBreakthrough = selected?.breakthrough?.type ?? 'NO_CLEAR_GAP';
+    if (activeBreakthrough === null) activeBreakthrough = currentBreakthrough;
+    if (currentBreakthrough !== activeBreakthrough) breakthroughFailures = 0;
+    else if (evaluation === 'NEGATIVE' || nonlinear.stopSignal) breakthroughFailures += 1;
+    else if (evaluation === 'POSITIVE') breakthroughFailures = 0;
+    if (breakthroughFailures >= 2) activeBreakthrough = currentBreakthrough;
     const outcome: OutcomeRecord = { decisionId, observed: { roi: state.roi ?? 0, revenue, conversions, spend }, evaluation, errorMetrics: { roi: Math.abs(expectedRoi - (state.roi ?? 0)) }, observedAt };
     const learning = evaluateLearning(decisionRecord, outcome);
     totalCalibrationError += learning.calibrationError;
