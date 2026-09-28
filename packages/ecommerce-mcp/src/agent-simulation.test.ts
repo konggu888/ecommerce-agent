@@ -52,6 +52,12 @@ test('benchmark covers all eight sandbox scenarios and game-agent diagnostics', 
   const rows = benchmark(createDefaultSandboxShop(), 5);
   const scenarios = new Set(rows.map(r => r.scenario));
   assert.equal(scenarios.size, 8);
+  const normalNoChange = rows.find(r => r.scenario === 'NORMAL' && r.strategy === 'NO_CHANGE');
+  const trafficNoChange = rows.find(r => r.scenario === 'TRAFFIC_COST' && r.strategy === 'NO_CHANGE');
+  const demandNoChange = rows.find(r => r.scenario === 'DEMAND_SURGE' && r.strategy === 'NO_CHANGE');
+  assert.ok(normalNoChange && trafficNoChange && demandNoChange);
+  assert.notEqual(normalNoChange.totalRevenue, trafficNoChange.totalRevenue);
+  assert.notEqual(normalNoChange.totalRevenue, demandNoChange.totalRevenue);
   assert.equal(rows.filter(r => r.strategy === 'GAME_AGENT').length, 8);
   for (const row of rows.filter(r => r.strategy === 'GAME_AGENT')) {
     assert.ok(row.opponentActions);
