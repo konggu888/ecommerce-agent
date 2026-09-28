@@ -26,6 +26,8 @@ export interface AgentSimulationRound extends SimMarketRound {
   opponentTurns: ReturnType<typeof simulateOpponentTurn>;
   learning: LearningSignal;
   nonlinear: { marginalRoi: number; crowding: number; bidEscalation: number; priceWar: number; stockConstraint: number; cashConstraint: number; stopSignal: boolean; stopReason: string };
+  riskDimensions?: { capital: number; unitEconomics: number; market: number; operations: number; opponent: number; overall: number; };
+  riskStopConditions?: string[];
 }
 
 export interface AgentSimulationResult {
@@ -196,7 +198,9 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
       opponentModel: decision.multiRound.bestPath,
       opponentTurns: clone(turns),
       learning,
-      nonlinear: { marginalRoi: nonlinear.marginalRoi, crowding: nonlinear.crowding, bidEscalation: nonlinear.bidEscalation, priceWar: nonlinear.priceWar, stockConstraint: nonlinear.stockConstraint, cashConstraint: nonlinear.cashConstraint, stopSignal: nonlinear.stopSignal, stopReason: nonlinear.stopReason }
+      nonlinear: { marginalRoi: nonlinear.marginalRoi, crowding: nonlinear.crowding, bidEscalation: nonlinear.bidEscalation, priceWar: nonlinear.priceWar, stockConstraint: nonlinear.stockConstraint, cashConstraint: nonlinear.cashConstraint, stopSignal: nonlinear.stopSignal, stopReason: nonlinear.stopReason },
+      riskDimensions: selected?.risk.dimensions,
+      riskStopConditions: selected?.risk.stopConditions
     });
 
     state.competitors = snapshotsFromOpponents(opponents, observedAt);
