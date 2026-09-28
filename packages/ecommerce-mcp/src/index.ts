@@ -29,3 +29,5 @@ export * from './integrated-game-planner';
 export * from './breakthrough-engine';
 
 export * from './url-data-intake';
+
+export * from './buyer-view-collector';
