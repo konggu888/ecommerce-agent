@@ -6,8 +6,13 @@
     "strict": true,
     "noEmit": true,
     "skipLibCheck": true,
-    "allowJs": true
+    "allowJs": true,
+    "allowImportingTsExtensions": true
   },
-  "include": ["packages/ecommerce-mcp/src/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "packages/ecommerce-mcp/src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
