@@ -37,12 +37,15 @@ test('agent simulation preserves non-negative stock and cash', () => {
   assert.ok(result.summary.finalStock >= 0);
   assert.ok(result.summary.finalCash >= 0);
   assert.ok(Number.isFinite(result.summary.finalRoi));
+  assert.ok(Number.isFinite(result.summary.averageCalibrationError));
+  assert.ok(Object.values(result.summary.opponentActions).reduce((a,b) => a + b, 0) > 0);
 });
 
 test('risk controller blocks are recorded and do not count as approved actions', () => {
   const result = runAgentSimulation({...config(), riskPolicy:{...riskPolicy,maxDailySpend:10}});
   assert.ok(result.summary.blockedActions >= 0);
   assert.ok(result.summary.approvedActions >= 0);
+  assert.ok(result.rounds.some(r => r.learning !== undefined));
 });
 
 test('benchmark covers all eight sandbox scenarios and game-agent diagnostics', () => {
@@ -54,5 +57,8 @@ test('benchmark covers all eight sandbox scenarios and game-agent diagnostics', 
     assert.ok(row.opponentActions);
     assert.ok(row.learningSignals !== undefined);
     assert.ok(row.averageCalibrationError !== undefined);
+    assert.ok(row.finalStock >= 0);
+    assert.ok(row.finalCash >= 0);
+    assert.ok(Object.values(row.opponentActions ?? {}).reduce((a,b) => a + b, 0) > 0);
   }
 });
