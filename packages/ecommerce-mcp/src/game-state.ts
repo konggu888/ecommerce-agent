@@ -48,6 +48,9 @@ export function evaluateActions(state: GameState): ActionEvaluation[] {
     { action: 'DECREASE_BUDGET', expectedImpact: { spend: -1 }, risks: ['may lose learning/traffic'], evidence: roi > 0 && roi < 1 ? ['weak ROI signal'] : [], confidence: roi > 0 && roi < 1 ? 0.65 : 0.35 },
     { action: 'INCREASE_BID', expectedImpact: { traffic: 1 }, risks: ['higher CPC'], evidence: competitorPressure ? ['high observed competitor pressure'] : [], confidence: competitorPressure ? 0.55 : 0.35 },
     { action: 'DECREASE_BID', expectedImpact: { traffic: -1, cpc: -1 }, risks: ['traffic loss'], evidence: competitorPressure ? [] : ['no strong competitive pressure observed'], confidence: competitorPressure ? 0.35 : 0.55 },
+    { action: 'CHANGE_KEYWORD', expectedImpact: { ctr: 1 }, risks: ['may change traffic mix'], evidence: ['can test intent quality without direct price change'], confidence: 0.5 },
+    { action: 'CHANGE_TARGETING', expectedImpact: { ctr: 1, traffic: 1 }, risks: ['audience volume may shrink'], evidence: ['can redirect traffic away from weak segments'], confidence: competitorPressure ? 0.58 : 0.48 },
+    { action: 'CHANGE_PRICE', expectedImpact: { cvr: 1 }, risks: ['margin and price perception may change'], evidence: ['direct conversion lever when price gap exists'], confidence: state.competitors.some(c => (c.price ?? state.price) < state.price * 0.97) ? 0.42 : 0.52 },
   ];
   out.push(...evaluations);
   return out;
