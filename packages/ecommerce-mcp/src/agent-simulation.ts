@@ -68,6 +68,8 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
   let totalCalibrationError = 0;
   let learningSignals = 0;
   const strategyConfidence: Record<string, number> = {};
+  let continuationCooldown = 0;
+  let previousStopSignal = false;
 
   for (let round = 1; round <= rounds; round++) {
     const observedAt = new Date().toISOString();
@@ -91,17 +93,23 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
       strategyConfidence
     });
 
-    const action = decision.recommended?.action ?? 'HOLD';
+    let selected = decision.recommended;
+    if (previousStopSignal || continuationCooldown > 0) {
+      const safer = decision.candidates.find(c => c.risk.approved && !['INCREASE_BUDGET', 'INCREASE_BID'].includes(c.action));
+      if (safer) selected = safer;
+      continuationCooldown = Math.max(0, continuationCooldown - 1);
+    }
+    const action = selected?.action ?? 'HOLD';
     const decisionId = 'SIM-' + String(round).padStart(3, '0');
-    const expectedRoi = decision.recommended ? Math.max(0, state.roi ?? 0) + decision.recommended.score * 0.5 : Math.max(0, state.roi ?? 0);
+    const expectedRoi = selected ? Math.max(0, state.roi ?? 0) + selected.score * 0.5 : Math.max(0, state.roi ?? 0);
     const decisionRecord: DecisionRecord = {
       id: decisionId, shopId: state.shopId, productId: state.productId, campaignId: state.campaignId,
       observedState: { price: state.price, budget: state.budget, roi: state.roi ?? 0, ctr: state.ctr ?? 0, cvr: state.cvr ?? 0 },
-      hypothesis: decision.recommended?.reasons.join('; ') ?? 'hold because no approved action', action,
-      expected: { roi: expectedRoi }, constraints: decision.recommended?.risk.reasons ?? [], confidence: decision.recommended?.score ?? 0,
+      hypothesis: selected?.reasons.join('; ') ?? 'hold because no approved action', action,
+      expected: { roi: expectedRoi }, constraints: selected?.risk.reasons ?? [], confidence: selected?.score ?? 0,
       createdAt: observedAt
     };
-    const riskApproved = Boolean(decision.recommended?.risk.approved);
+    const riskApproved = Boolean(selected?.risk.approved);
     if (riskApproved) { approvedActions++; recentActions++; } else if (action !== 'HOLD') blockedActions++;
 
     if (riskApproved && action === 'INCREASE_BUDGET') state.budget *= 1.1;
@@ -112,7 +120,7 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
 
     const competitorShare = Math.max(0, Math.min(0.95, opponents.reduce((sum, o) => sum + o.trafficShare, 0)));
     const competitorPrice = opponents[0]?.price;
-    const stagedPlan = decision.recommended?.positionPlan;
+    const stagedPlan = selected?.positionPlan;
     const requestedSpend = action === 'HOLD'
       ? Math.min(state.budget, 100 / Math.max(0.5, market.trafficCost) + rnd() * 20)
       : riskApproved && stagedPlan
@@ -151,9 +159,11 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
     totalCalibrationError += learning.calibrationError;
     learningSignals += learning.useful ? 1 : 0;
     strategyConfidence[action] = Math.max(0, Math.min(1, (strategyConfidence[action] ?? decisionRecord.confidence) + (learning.useful ? (learning.calibrationError < 0.2 ? 0.02 : -0.04) : 0)));
+    previousStopSignal = nonlinear.stopSignal;
+    if (nonlinear.stopSignal) continuationCooldown = 1;
     const opponentActions = turns.map(t => t.opponentId + ':' + t.action);
 
-    const breakthrough = decision.recommended?.breakthrough?.type ?? 'NO_CLEAR_GAP';
+    const breakthrough = selected?.breakthrough?.type ?? 'NO_CLEAR_GAP';
     breakthroughCounts[breakthrough] = (breakthroughCounts[breakthrough] ?? 0) + 1;
     for (const turn of turns) opponentActionCounts[turn.action] = (opponentActionCounts[turn.action] ?? 0) + 1;
     out.push({
