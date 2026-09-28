@@ -85,7 +85,8 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
       inventory,
       cashflow,
       riskPolicy: config.riskPolicy,
-      recentActionCount: recentActions
+      recentActionCount: recentActions,
+      strategyConfidence
     });
 
     const action = decision.recommended?.action ?? 'HOLD';
