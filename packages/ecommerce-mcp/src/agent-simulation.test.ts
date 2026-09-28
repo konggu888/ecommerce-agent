@@ -79,6 +79,21 @@ test('action effects are reflected in observable market metrics', async () => {
   assert.ok(round.state.observedAt);
 });
 
+test('multi-round planner carries likely opponent response into continuation state', async () => {
+  const { planMultiRoundGame } = await import('./multi-round-game.ts');
+  const cfg = config();
+  const priceWar = planMultiRoundGame({
+    ...cfg.initial,
+    competitors: cfg.initial.competitors.map(x => ({...x, price: cfg.initial.price + 12}))
+  }, 2);
+  const calm = planMultiRoundGame({
+    ...cfg.initial,
+    competitors: cfg.initial.competitors.map(x => ({...x, price: cfg.initial.price - 2, trafficShare: 0.12}))
+  }, 2);
+  assert.notEqual(priceWar.bestScore, calm.bestScore);
+  assert.ok(priceWar.nodes.some(n => n.opponentRisk > 0));
+});
+
 test('benchmark covers all eight sandbox scenarios and game-agent diagnostics', () => {
   const rows = benchmark(createDefaultSandboxShop(), 5);
   const scenarios = new Set(rows.map(r => r.scenario));
