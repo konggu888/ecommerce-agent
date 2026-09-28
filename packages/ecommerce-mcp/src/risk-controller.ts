@@ -83,6 +83,59 @@ export function evaluateBusinessRisk(
   };
 }
 
+export interface MarketRiskContext {
+  marginalRoi: number;
+  totalRoi: number;
+  crowding: number;
+  bidEscalation: number;
+  priceWar: number;
+  stockConstraint: number;
+  cashConstraint: number;
+  stopSignal: boolean;
+  stopReason: string;
+  inventory?: number;
+  cashAvailable?: number;
+  opponentRisk?: number;
+}
+
+/**
+ * Reconcile the pre-action gate with observed nonlinear market feedback.
+ * This is the canonical post-action risk state used to decide continue/reduce/stop.
+ */
+export function reconcileMarketRisk(
+  action: ProposedAction,
+  policy: RiskPolicy,
+  recentActionCount: number,
+  context: MarketRiskContext
+): RiskDecision {
+  const unitEconomics = context.marginalRoi <= 0
+    ? 1
+    : Math.min(1, Math.max(0, 1 - context.marginalRoi / Math.max(0.01, context.totalRoi)));
+  const market = Math.min(1, Math.max(context.crowding, context.priceWar, Math.max(0, context.bidEscalation - 1) * 2));
+  const operations = Math.min(1, Math.max(1 - context.stockConstraint, 1 - context.cashConstraint));
+  const capital = Math.min(1, Math.max(0, 1 - context.cashConstraint));
+  const opponent = Math.min(1, Math.max(0, context.opponentRisk ?? 0));
+  const overall = Math.min(1, unitEconomics * 0.35 + market * 0.25 + operations * 0.15 + capital * 0.1 + opponent * 0.15);
+  const reasons = context.stopSignal ? [context.stopReason] : [];
+  if (unitEconomics >= 0.5) reasons.push('边际ROI相对整体ROI明显恶化');
+  if (market >= 0.7) reasons.push('市场拥挤/竞价/价格战达到高风险区');
+  if (operations >= 0.7) reasons.push('库存或现金约束达到高风险区');
+  if (opponent >= 0.7) reasons.push('对手反应风险达到高位');
+
+  const blocked = context.stopSignal || context.stockConstraint < 0.15 || context.cashConstraint < 0.15 || context.marginalRoi < 0.8;
+  const level: RiskLevel = blocked || overall >= 0.8 ? 'BLOCKED' : overall >= 0.55 ? 'HIGH' : overall >= 0.3 ? 'MEDIUM' : 'LOW';
+  const mode: ExecutionMode = level === 'BLOCKED' ? 'AUTO_DISABLED' : level === 'HIGH' ? 'APPROVAL_REQUIRED' : 'AUTO_LIMITED';
+  return {
+    level,
+    mode,
+    approved: level !== 'BLOCKED',
+    reasons,
+    dimensions: { capital, unitEconomics, market, operations, opponent, overall },
+    recommendedChangePct: level === 'BLOCKED' ? 0 : level === 'HIGH' ? Math.min(policy.maxBudgetChangePct, 5) : Math.min(policy.maxBudgetChangePct, 10),
+    stopConditions: ['边际ROI < 0.8', '库存约束 < 0.15', '现金约束 < 0.15', '市场停止信号触发']
+  };
+}
+
 export function evaluateRisk(action: ProposedAction, policy: RiskPolicy, recentActionCount: number): RiskDecision {
   const reasons: string[] = [];
   if (recentActionCount >= policy.maxActionsPerHour) reasons.push('hourly action limit reached');
