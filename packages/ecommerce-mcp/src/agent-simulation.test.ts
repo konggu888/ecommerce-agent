@@ -186,6 +186,27 @@ test('continuation policy reduces aggressive actions after a nonlinear stop sign
 });
 
 
+test('post-market risk is reconciled from nonlinear feedback', async () => {
+  const { reconcileMarketRisk } = await import('./risk-controller.ts');
+  const policy = riskPolicy;
+  const blocked = reconcileMarketRisk(
+    { action: 'INCREASE_BUDGET', changePct: 10, estimatedDailySpend: 100, confidence: 0.9 },
+    policy,
+    0,
+    {
+      marginalRoi: 0.6, totalRoi: 3, crowding: 0.2, bidEscalation: 1,
+      priceWar: 0, stockConstraint: 0.8, cashConstraint: 0.8,
+      stopSignal: true, stopReason: '边际ROI明显下降'
+    }
+  );
+  assert.equal(blocked.approved, false);
+  assert.equal(blocked.mode, 'AUTO_DISABLED');
+
+  const result = runAgentSimulation({...config(), rounds: 3});
+  assert.ok(result.rounds.every(r => r.postMarketRisk !== undefined));
+  assert.ok(result.rounds.every(r => Number.isFinite(r.postMarketRisk?.dimensions?.overall ?? 0)));
+});
+
 test('agent exposes adaptive breakthrough switching after repeated failed signals', () => {
   const result = runAgentSimulation({...config(), rounds: 30, seed: 7});
   const types = result.rounds.map(r => r.breakthroughSignal).filter(x => x && x !== 'NO_CLEAR_GAP');
