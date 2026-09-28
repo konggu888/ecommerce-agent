@@ -11,6 +11,7 @@ export interface BenchmarkResult {
   strategy: Strategy; scenario: Scenario; totalSpend: number; totalRevenue: number; totalConversions: number;
   finalStock: number; finalCash: number; avgRoi: number; actionCount: number;
   blockedActions?: number; learningSignals?: number; averageCalibrationError?: number;
+  breakthroughCounts?: Record<string, number>; opponentActions?: Record<string, number>;
 }
 
 const RISK_POLICY: RiskPolicy = { maxBudgetChangePct: 10, maxBidChangePct: 5, maxDailySpend: 2000, maxActionsPerHour: 4, allowBudgetChange: true, allowBidChange: true, allowPause: false };
@@ -81,7 +82,9 @@ function gameAgentBenchmark(shop: SimShop, scenario: Scenario, rounds: number): 
     finalCash:Math.max(0, shop.cash-sim.summary.totalSpend+sim.summary.totalConversions*p.marginPerOrder),
     avgRoi:sim.summary.finalRoi, actionCount:sim.summary.approvedActions,
     blockedActions:sim.summary.blockedActions, learningSignals:sim.summary.learningSignals,
-    averageCalibrationError:sim.summary.averageCalibrationError
+    averageCalibrationError:sim.summary.averageCalibrationError,
+    breakthroughCounts: sim.summary.breakthroughCounts,
+    opponentActions: sim.summary.opponentActions
   };
 }
 
