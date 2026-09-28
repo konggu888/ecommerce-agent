@@ -25,3 +25,5 @@ export * from './adversarial-game';
 export * from './opponent-behavior-tree';
 
 export * from './integrated-game-planner';
+
+export * from './breakthrough-engine';
