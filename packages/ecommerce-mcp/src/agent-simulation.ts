@@ -4,6 +4,7 @@ import { InventoryState, CashflowState } from './inventory-cashflow';
 import { RiskPolicy } from './risk-controller';
 import { SimMarketRound } from './simulated-market';
 import { createSimulatedOpponents, simulateOpponentTurn, snapshotsFromOpponents, SimulatedOpponent } from './opponent-simulator';
+import { DecisionRecord, OutcomeRecord, LearningSignal, evaluateLearning } from './learning-memory';
 
 export interface AgentSimulationConfig {
   rounds?: number;
@@ -22,6 +23,7 @@ export interface AgentSimulationRound extends SimMarketRound {
   decisionScore: number;
   opponentModel: string[];
   opponentTurns: ReturnType<typeof simulateOpponentTurn>;
+  learning: LearningSignal;
 }
 
 export interface AgentSimulationResult {
@@ -36,6 +38,8 @@ export interface AgentSimulationResult {
     blockedActions: number;
     breakthroughCounts: Record<string, number>;
     opponentActions: Record<string, number>;
+    learningSignals: number;
+    averageCalibrationError: number;
   };
 }
 
@@ -57,6 +61,9 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
   const breakthroughCounts: Record<string, number> = {};
   const opponentActionCounts: Record<string, number> = {};
   let totalSpend = 0, totalRevenue = 0, totalConversions = 0;
+  let totalCalibrationError = 0;
+  let learningSignals = 0;
+  const strategyConfidence: Record<string, number> = {};
 
   for (let round = 1; round <= rounds; round++) {
     const observedAt = new Date().toISOString();
@@ -80,6 +87,15 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
     });
 
     const action = decision.recommended?.action ?? 'HOLD';
+    const decisionId = 'SIM-' + String(round).padStart(3, '0');
+    const expectedRoi = decision.recommended ? Math.max(0, state.roi ?? 0) + decision.recommended.score * 0.5 : Math.max(0, state.roi ?? 0);
+    const decisionRecord: DecisionRecord = {
+      id: decisionId, shopId: state.shopId, productId: state.productId, campaignId: state.campaignId,
+      observedState: { price: state.price, budget: state.budget, roi: state.roi ?? 0, ctr: state.ctr ?? 0, cvr: state.cvr ?? 0 },
+      hypothesis: decision.recommended?.reasons.join('; ') ?? 'hold because no approved action', action,
+      expected: { roi: expectedRoi }, constraints: decision.recommended?.risk.reasons ?? [], confidence: decision.recommended?.score ?? 0,
+      createdAt: observedAt
+    };
     const riskApproved = Boolean(decision.recommended?.risk.approved);
     if (riskApproved) { approvedActions++; recentActions++; } else if (action !== 'HOLD') blockedActions++;
 
@@ -103,6 +119,12 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
     totalSpend += spend; totalRevenue += revenue; totalConversions += conversions;
 
     const turns = simulateOpponentTurn(opponents, state);
+    const evaluation: OutcomeRecord['evaluation'] = spend <= 0 || conversions < 1 ? 'INCONCLUSIVE' : state.roi >= expectedRoi ? 'POSITIVE' : 'NEGATIVE';
+    const outcome: OutcomeRecord = { decisionId, observed: { roi: state.roi ?? 0, revenue, conversions, spend }, evaluation, errorMetrics: { roi: Math.abs(expectedRoi - (state.roi ?? 0)) }, observedAt };
+    const learning = evaluateLearning(decisionRecord, outcome);
+    totalCalibrationError += learning.calibrationError;
+    learningSignals += learning.useful ? 1 : 0;
+    strategyConfidence[action] = Math.max(0, Math.min(1, (strategyConfidence[action] ?? decisionRecord.confidence) + (learning.useful ? (learning.calibrationError < 0.2 ? 0.02 : -0.04) : 0)));
     const opponentActions = turns.map(t => t.opponentId + ':' + t.action);
 
     const breakthrough = decision.recommended?.breakthrough?.type ?? 'NO_CLEAR_GAP';
@@ -119,7 +141,8 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
       riskMode: decision.recommended?.risk.mode ?? 'ANALYZE_ONLY',
       decisionScore: decision.recommended?.score ?? 0,
       opponentModel: decision.multiRound.bestPath,
-      opponentTurns: clone(turns)
+      opponentTurns: clone(turns),
+      learning
     });
 
     state.competitors = snapshotsFromOpponents(opponents, observedAt);
@@ -139,7 +162,9 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
       approvedActions,
       blockedActions,
       breakthroughCounts,
-      opponentActions: opponentActionCounts
+      opponentActions: opponentActionCounts,
+      learningSignals,
+      averageCalibrationError: rounds ? totalCalibrationError / rounds : 0
     }
   };
 }
