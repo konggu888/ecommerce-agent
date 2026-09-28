@@ -66,6 +66,19 @@ test('closed-loop candidate set includes all executable game levers', async () =
   }
 });
 
+test('action effects are reflected in observable market metrics', async () => {
+  const { runAgentSimulation } = await import('./agent-simulation.ts');
+  const base = config();
+  const result = runAgentSimulation({...base, rounds: 1});
+  const round = result.rounds[0];
+  assert.ok(round.state.clicks >= 0);
+  assert.ok(round.state.conversions >= 0);
+  assert.ok(Number.isFinite(round.state.ctr));
+  assert.ok(Number.isFinite(round.state.cvr));
+  assert.ok(Number.isFinite(round.state.roi));
+  assert.ok(round.state.observedAt);
+});
+
 test('benchmark covers all eight sandbox scenarios and game-agent diagnostics', () => {
   const rows = benchmark(createDefaultSandboxShop(), 5);
   const scenarios = new Set(rows.map(r => r.scenario));
