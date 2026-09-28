@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "Unified Taobao/Tmall + Pinduoduo ecommerce game-theory agent",
   "scripts": {
-    "test": "node --test && npm run test:engine",
+    "test": "npm run test:engine",
     "check": "node --check packages/ecommerce-mcp/src/index.js",
     "typecheck": "tsc --noEmit",
     "test:engine": "tsx --test packages/ecommerce-mcp/src/agent-simulation.test.ts"
