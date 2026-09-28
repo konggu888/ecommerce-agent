@@ -8,6 +8,8 @@ export interface GameNode {
   immediateScore: number;
   continuationScore: number;
   opponentRisk: number;
+  expectedGain: number;
+  marginalPenalty: number;
   path: string[];
 }
 
@@ -93,7 +95,10 @@ export function planMultiRoundGame(state: GameState, horizon = 3): MultiRoundPla
     for (const action of actions) {
       const opponent = modelOpponentResponses(current);
       const risk = opponentPenalty(action, opponent);
-      const immediate = actionBaseScore(current, action) - risk;
+      const scale = current.budget > 0 ? Math.min(1, Math.max(0, current.spend / current.budget)) : 1;
+      const marginalPenalty = Math.min(0.5, scale * 0.35 + risk * 0.35);
+      const expectedGain = Math.max(0, actionBaseScore(current, action) - marginalPenalty);
+      const immediate = expectedGain - risk;
       const discounted = immediate * Math.pow(0.85, round - 1);
       const nodeScore = score + discounted;
       nodes.push({
@@ -103,6 +108,8 @@ export function planMultiRoundGame(state: GameState, horizon = 3): MultiRoundPla
         immediateScore: immediate,
         continuationScore: nodeScore,
         opponentRisk: risk,
+        expectedGain,
+        marginalPenalty,
         path: [...path, action].map(String)
       });
       const primaryResponse = [...opponent].sort((a, b) => b.probability - a.probability)[0];
