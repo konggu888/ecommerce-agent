@@ -4,9 +4,10 @@ import { calculateScaleConstraints, InventoryState, CashflowState } from './inve
 import { evaluateRisk, RiskPolicy, ProposedAction, RiskDecision } from './risk-controller';
 import { modelOpponentResponses, detectBreakthrough, Breakthrough } from './opponent-model';
 import { planMultiRoundGame, MultiRoundPlan } from './multi-round-game';
+import { buildPositionPlan, PositionPlan } from './position-sizing';
 
 export interface ClosedLoopInput { state: GameState; economics: UnitEconomics; inventory: InventoryState; cashflow: CashflowState; riskPolicy: RiskPolicy; recentActionCount: number; strategyConfidence?: Record<string, number>; }
-export interface ClosedLoopCandidate { action: string; score: number; risk: RiskDecision; reasons: string[]; breakthrough?: Breakthrough; }
+export interface ClosedLoopCandidate { action: string; score: number; risk: RiskDecision; reasons: string[]; breakthrough?: Breakthrough; positionPlan?: PositionPlan; }
 export interface ClosedLoopOutput { candidates: ClosedLoopCandidate[]; blocked: ClosedLoopCandidate[]; recommended: ClosedLoopCandidate | null; multiRound: MultiRoundPlan; }
 
 export function runClosedLoop(input: ClosedLoopInput): ClosedLoopOutput {
@@ -30,7 +31,11 @@ export function runClosedLoop(input: ClosedLoopInput): ClosedLoopOutput {
     score += breakthrough.score * 0.25;
     reasons.push(`突破口: ${breakthrough.type} — ${breakthrough.reason}`);
     const risk = evaluateRisk(proposed, input.riskPolicy, input.recentActionCount);
-    candidates.push({ action: a.action, score, risk, reasons, breakthrough });
+    const positionPlan = (a.action === 'INCREASE_BUDGET' || a.action === 'DECREASE_BUDGET' || a.action === 'INCREASE_BID' || a.action === 'DECREASE_BID')
+      ? buildPositionPlan(a.action, input.state.budget, input.state.roi ?? 0, Math.max(0, Math.min(1, score)), breakthrough.opponentResponseRisk)
+      : undefined;
+    if (positionPlan) reasons.push(`分阶段投入: 首档 ${positionPlan.steps[0]?.amount?.toFixed(0) ?? 0}，建议上限 ${positionPlan.recommendedAmount.toFixed(0)}`);
+    candidates.push({ action: a.action, score, risk, reasons, breakthrough, positionPlan });
   }
   candidates.sort((x,y)=>y.score-x.score);
   const blocked = candidates.filter(x => !x.risk.approved);
