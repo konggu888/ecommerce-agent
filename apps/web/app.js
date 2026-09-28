@@ -158,9 +158,26 @@
   }
 
 
-  window.runSandboxBenchmark = function () {
-    if (sandboxReport) { sandboxReport = sandboxRun(30); render(); return; }
-    sandboxReport = sandboxRun(30); render();
+  window.runSandboxBenchmark = async function () {
+    var btns=document.querySelectorAll(".primary"); btns.forEach(function(b){b.disabled=true;});
+    try {
+      var response=await fetch("https://skuoxmrzlxhebzhfgbyn.supabase.co/functions/v1/sandbox-benchmark",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "apikey":"sb_publishable_u46tZ4GMUgwqSYhMJNFG8Q_IzYwl95T",
+          "Authorization":"Bearer sb_publishable_u46tZ4GMUgwqSYhMJNFG8Q_IzYwl95T"
+        },
+        body:JSON.stringify({rounds:30})
+      });
+      if(!response.ok) throw new Error("Sandbox API HTTP "+response.status);
+      var data=await response.json();
+      sandboxReport=data.scenarios||[];
+      render();
+    } catch(e) {
+      sandboxReport=null;
+      alert("Sandbox API 运行失败："+e.message);
+    } finally { btns.forEach(function(b){b.disabled=false;}); }
   };
 \n  window.runSandboxAgent = function () {
     var targets = [document.getElementById("agentOutput"), document.getElementById("inputAgentOutput")].filter(Boolean);
