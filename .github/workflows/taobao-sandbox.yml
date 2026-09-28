@@ -1,4 +1,4 @@
-name: Taobao sandbox connectivity
+name: Taobao sandbox full real-data test
 
 on:
   push:
@@ -11,12 +11,19 @@ permissions:
   contents: read
 
 jobs:
-  sandbox-connectivity:
+  sandbox-full-suite:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Call official Taobao sandbox
+
+      - name: Run repository tests
+        run: npm test
+
+      - name: Run real Taobao sandbox suite
         run: node packages/ecommerce-mcp/src/taobao-sandbox-client.mjs
