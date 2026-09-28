@@ -40,6 +40,8 @@ export interface AgentSimulationResult {
     opponentActions: Record<string, number>;
     learningSignals: number;
     averageCalibrationError: number;
+    finalStock: number;
+    finalCash: number;
   };
 }
 
@@ -164,7 +166,9 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
       breakthroughCounts,
       opponentActions: opponentActionCounts,
       learningSignals,
-      averageCalibrationError: rounds ? totalCalibrationError / rounds : 0
+      averageCalibrationError: rounds ? totalCalibrationError / rounds : 0,
+      finalStock: inventory.stockOnHand,
+      finalCash: cashflow.availableCash
     }
   };
 }
