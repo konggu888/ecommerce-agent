@@ -467,7 +467,7 @@
     if(location.hash!=='#strategy-center')return;
     var app=document.getElementById('app');if(!app)return;
     var H=lib('EA_HUMAN_BEHAVIOR_LIBRARY').slice(0,40);
-    var html='<h1 class="page-title">连续博弈策略中心 <span style="font-size:16px;font-weight:500;color:var(--accent);margin-left:10px">我变 → 对手学 → 我再变</span></h1>';
+    var html='<h1 class="page-title">连续博弈策略中心</h1>';
     html+='<div class="subtitle">40种行为人格 · 每个人格一张连续棋谱 · 自然收束 · 三大招式库混合使用</div>';
     html+='<div class="card" style="margin:10px 0 16px;border-left:4px solid var(--accent);background:rgba(255,180,0,.06)"><b>棋谱规则</b><div style="font-size:16px;line-height:1.7;margin-top:6px">';
     html+='不是“我方三步/一轮就结束”，也不是为了凑固定步数。每一套人格是一条完整连续链：<b>我方第1招 → 对手第2招 → 我方第3招 → 对手第4招 → ……</b>，最多40步；40步只是安全上限，不是目标。';
