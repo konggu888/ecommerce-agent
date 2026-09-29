@@ -3,7 +3,7 @@
 
   var app = document.getElementById('app');
   var nav = document.querySelectorAll('.nav');
-  var VERSION = '20260929-34';
+  var VERSION = '20260929-35';
   var BASE = 'https://skuoxmrzlxhebzhfgbyn.supabase.co';
   var KEY = 'sb_publishable_u46tZ4GMUgwqSYhMJNFG8Q_IzYwl95T';
   var CLIENT = 'ecommerce-agent-sandbox-v1';
@@ -247,10 +247,10 @@
     var opponentHtml = '';
     for (var o = 0; o < opponents.length; o++) {
       var op = opponents[o];
-      var active = op.action === r.actual_opponent_response;
+      var active = op.lastResponse === r.actual_opponent_response;
       opponentHtml += '<div style="flex:1;min-width:190px;border:1px solid var(--line);border-radius:10px;padding:10px;' + (active ? 'box-shadow:0 0 0 2px rgba(255,180,0,.25);' : '') + '">' +
         '<div class="label">' + esc(op.id) + '</div><b>' + esc(op.name) + '</b><br><span class="muted">' + esc(op.strategy) + '</span><br>' +
-        '<span class="tag ' + (active ? 'warning' : '') + '">' + esc(op.action) + '</span><br><span class="muted">' + esc(op.reactionToUs) + '</span>' +
+        '<span class="tag ' + (active ? 'warning' : '') + '">' + esc(op.lastResponse || '-') + '</span><br><span class="muted">压力 ' + esc(Number(op.pressure || 0).toFixed(2)) + ' · 适应 ' + esc(Number(op.adaptation || 0).toFixed(2)) + '</span>' +
         (active ? '<br><b>← 本轮实际进入主路径</b>' : '') + '</div>';
     }
 
