@@ -1009,7 +1009,7 @@
       nav[i].classList.toggle('active', nav[i].dataset.view === state.view);
     }
 
-    if (state.view === 'threats') { threats(); } else if (state.view === 'positive-attacks') { positiveAttacks(); } else if (state.view === 'human-behavior') { humanBehavior(); } else if (state.view === 'game-logic') {
+    if (state.view === 'strategy-center') { strategyCenter(); } else if (state.view === 'threats') { threats(); } else if (state.view === 'positive-attacks') { positiveAttacks(); } else if (state.view === 'human-behavior') { humanBehavior(); } else if (state.view === 'game-logic') {
       gameLogic();
     } else if (state.view === 'game') {
       game();
