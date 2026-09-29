@@ -465,7 +465,7 @@
       '<div class="notice"><b>自适应型</b><br>根据反馈不断改变策略。</div>' +
       '<div class="notice"><b>重点观察</b><br>行为转折点，而不是单次动作。</div>' +
       '</div></div>' +
-      notice('这里展示 Agent 每一轮的：决策 → 风险 → 投入 → 市场结果 → 边际收益 → 停止信号 → 下一轮输入。')
+      notice('这里展示 Agent 每一轮的：决策 → 风险 → 投入 → 市场结果 → 边际收益 → 停止信号 → 下一轮输入。'));
   }
 
   function gameLogic() {
