@@ -582,22 +582,22 @@
       }
       return out.slice(-10);
     }
-    function adaptiveTimelineHtml(){
+    function adaptiveTreeHtml(){
       var rows=routeTimeline();
-      if(!rows.length) return '<div class="notice">暂无模拟轨迹。开始 Sandbox 后，这里会显示每一轮的“路线 → 对手响应 → 反制压力 → 是否换路”。</div>';
-      var h='<div style="display:grid;gap:8px">';
+      if(!rows.length) return '<div class="notice">暂无动态博弈树。开始 Sandbox 后，系统会把每一轮路线、对手响应、反制压力和换路节点显示出来。</div>';
+      var h='<div style="overflow:auto"><div style="min-width:760px;display:grid;gap:6px">';
       for(var i=0;i<rows.length;i++){
-        var r=rows[i];
-        h+='<div class="notice" style="border-left:4px solid '+(r.switched?'var(--accent)':'var(--line)')+'">'+
-          '<b>R'+esc(r.round)+'</b>　'+esc(r.action)+
-          '　→　对手：<b>'+esc(r.response)+'</b>'+
-          '　→　反制压力：<b>'+r.pressure.toFixed(2)+'</b>'+
-          '　→　样本：'+esc(r.observations)+
-          (r.switched?'　<span class="tag positive">已换路</span>':'')+
-          '<div class="muted" style="margin-top:4px">'+esc(r.switched?r.reason:'持续观察当前路线')+
-          '；历史反制：'+esc(r.counter)+'</div></div>';
+        var r=rows[i], level=r.pressure>=0.72?'高':(r.pressure>=0.45?'中':'低');
+        h+='<div style="display:grid;grid-template-columns:80px 1fr 1fr 1fr 90px;gap:7px">'+
+          '<div class="notice"><b>R'+esc(r.round)+'</b><br><span class="muted">'+(r.switched?'↪ 换路':'当前')+'</span></div>'+
+          '<div class="notice"><span class="label">我方路线</span><br><b>'+esc(r.action)+'</b></div>'+
+          '<div class="notice"><span class="label">实际响应</span><br><b>'+esc(r.response)+'</b><br><span class="muted">预测≠事实</span></div>'+
+          '<div class="notice"><span class="label">反制学习</span><br>压力 <b>'+r.pressure.toFixed(2)+'</b> · '+level+'<br><span class="muted">'+esc(r.counter)+' · '+esc(r.observations)+'样本</span></div>'+
+          '<div class="notice">'+(r.switched?'<span class="tag positive">已换路</span>':'<span class="tag">继续</span>')+'</div>'+
+        '</div>';
+        if(i<rows.length-1) h+='<div style="height:7px;margin-left:38px;border-left:2px dashed var(--line)"></div>';
       }
-      return h+'</div>';
+      return h+'</div></div>';
     }
     function routePressure(x){
       var m=counterMap(), v=m[x.action||x.name]||m[x.id]||null;
@@ -667,7 +667,7 @@
       }
       html+='<div class="label" style="margin-top:14px">⑤ 对手学会后的换路</div><div class="notice">如果同一路线连续出现反制压力上升：降低重复暴露 → 从历史反制较少的替代变量中选一条 → 小规模验证 → 把实际响应写回记忆。<br><b>当前未知 ≠ 对手一定不会反制。</b></div>'+
         '<div class="card" style="margin-top:14px;border-left:4px solid var(--accent)"><b>连续博弈执行链</b><div style="font-size:19px;margin-top:6px">我变 → 对手学 → 我再变</div><div class="muted">实际响应优先于理论预测；数据不足时不强行归因。</div></div>'+
-        '<div class="card" style="margin-top:12px"><div class="label">本次模拟的路线轨迹</div>'+adaptiveTimelineHtml()+'</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button type="button" class="action sc-run">▶ 开始10轮 Sandbox 模拟</button><button type="button" class="action sc-refresh">↻ 读取最新模拟</button></div></div>';
+        '<div class="card" style="margin-top:12px"><div class="label">本次模拟的动态博弈树</div>'+adaptiveTreeHtml()+'</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button type="button" class="action sc-run">▶ 开始10轮 Sandbox 模拟</button><button type="button" class="action sc-refresh">↻ 读取最新模拟</button></div></div>';
       return html;
     }
     function cards(list,type){
@@ -682,7 +682,7 @@
       '<button class="action sc-tab" data-type="positive">正向攻势（'+positives.length+'）</button><button class="action sc-tab" data-type="threat">对手攻击面（'+threats.length+'）</button><button class="action sc-tab" data-type="human">人性行为（'+humans.length+'）</button></div>'+
       '<div id="sc-list" style="margin-top:12px">'+cards(positives,'positive')+'</div></div>'+
       '<div id="sc-detail">'+detail(selected,'positive')+'</div>'+
-      '<div class="card"><div class="label">② 自适应换路轨迹</div><div class="notice">这里直接显示 Sandbox 已经跑过的路线：我方动作 → 对手实际响应 → 历史反制压力 → 是否换路。实际响应优先于理论分支。</div>'+adaptiveTimelineHtml()+'</div>'+
+      '<div class="card"><div class="label">② 动态博弈树</div><div class="notice">这里直接显示 Sandbox 已经跑过的路线：我方动作 → 对手实际响应 → 历史反制压力 → 是否换路。实际响应优先于理论分支。</div>'+adaptiveTimelineHtml()+'</div>'+
       '<div class="card"><div class="label">③ 本页如何使用实际对手学习</div><div class="notice">每轮不只看理论分支：记录我方动作、对手实际响应、样本数和反制压力。历史上已经形成稳定反制的路线降低权重；没有足够样本的路线标记为未知，先实验再判断。</div></div>';
     show('连续博弈策略中心','实战工作台 · 攻略生成 → 多轮模拟 → 对手学习 → 换路',body);
     function bindSimulationButtons(){
