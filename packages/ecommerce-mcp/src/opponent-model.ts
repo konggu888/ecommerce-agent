@@ -21,7 +21,7 @@ export interface BreakthroughInput {
   opponent: OpponentModel[];
 }
 
-export interface Breakthrough {
+export interface OpponentBreakthrough {
   type: 'PRICE_GAP' | 'TRAFFIC_GAP' | 'CONVERSION_GAP' | 'CONTENT_GAP' | 'RESILIENCE_GAP' | 'NO_CLEAR_GAP';
   score: number;
   reason: string;
@@ -64,7 +64,7 @@ export function modelOpponentResponses(state: GameState): OpponentModel[] {
   return state.competitors.map(c => modelOne(c, state));
 }
 
-export function detectBreakthrough(input: BreakthroughInput): Breakthrough {
+export function detectBreakthrough(input: BreakthroughInput): OpponentBreakthrough {
   const s = input.state;
   const priceGaps = s.competitors.filter(c => c.price != null).map(c => (c.price! - s.price) / Math.max(1, s.price));
   const ctrGaps = s.competitors.filter(c => c.estimatedCtr != null).map(c => c.estimatedCtr! - (s.ctr ?? 0));
