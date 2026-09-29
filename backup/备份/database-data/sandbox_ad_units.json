@@ -1,0 +1,18 @@
+{
+  "table": "public.sandbox_ad_units",
+  "snapshot_at": "2026-09-29",
+  "row_count": 1,
+  "rows": [
+    {
+      "id": "97fb7ed5-2937-4652-b3ec-0a13599d14bb",
+      "name": "早餐核心单元",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "运行中",
+      "plan_id": "85355338-b239-47c7-85e2-6de9348bd5fb",
+      "product": "酸面包A",
+      "keyword_count": 8,
+      "audience_count": 4,
+      "creative_count": 3
+    }
+  ]
+}
