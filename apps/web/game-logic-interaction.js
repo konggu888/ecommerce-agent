@@ -19,15 +19,23 @@ function enhance(){
   var listBox=document.createElement('div');listBox.style.display='grid';listBox.style.gridTemplateColumns='repeat(auto-fill,minmax(280px,1fr))';listBox.style.gap='10px';listBox.style.marginTop='10px';
   var detail=document.createElement('div');detail.id='ea-game-detail';detail.style.marginTop='14px';
   list.forEach(function(x){
-    var item=document.createElement('button');item.type='button';item.className='notice';item.style.cssText='display:block;width:auto;text-align:left;cursor:pointer;border:1px solid var(--border);';
+    var wrap=document.createElement('div');wrap.style.cssText='min-width:0;';
+    var item=document.createElement('button');item.type='button';item.className='notice';item.style.cssText='display:block;width:100%;text-align:left;cursor:pointer;border:1px solid var(--border);';
     item.innerHTML='<b>'+esc(x.id)+' · '+esc(x.name)+'</b><div class="muted">'+esc(x.type||'博弈')+' · 点击展开完整棋谱</div>';
-    item.onclick=function(){show(x);};
-    listBox.appendChild(item);
+    var localDetail=document.createElement('div');localDetail.style.cssText='display:none;margin-top:8px;';
+    item.onclick=function(){
+      var opened=localDetail.style.display!=='none';
+      document.querySelectorAll('[data-game-detail]').forEach(function(d){d.style.display='none';d.innerHTML='';});
+      if(!opened)show(x,localDetail);
+    };
+    localDetail.setAttribute('data-game-detail','1');
+    wrap.appendChild(item);wrap.appendChild(localDetail);listBox.appendChild(wrap);
   });
-  card.appendChild(listBox);card.appendChild(detail);app.appendChild(card);
-  function show(x){
-    detail.innerHTML='<div class="card" style="margin-top:12px"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><div class="label">'+esc(x.type||'博弈')+'</div><h2 style="margin:4px 0">'+esc(x.id)+' · '+esc(x.name)+'</h2></div><button type="button" id="ea-game-close" class="action">收起</button></div><div class="notice" style="margin:10px 0"><b>触发条件</b><br>'+esc(x.trigger||'未定义')+'</div><div class="label">行动棋谱</div><ol style="line-height:1.8">'+(x.steps||[]).map(function(s){return'<li>'+esc(s)+'</li>';}).join('')+'</ol><div class="label" style="margin-top:12px">分支响应</div><div style="display:flex;gap:8px;flex-wrap:wrap">'+(x.branches||[]).map(function(b){return'<span class="tag">'+esc(b)+'</span>';}).join('')+'</div><div class="notice" style="margin-top:12px"><b>策略目标</b><br>'+esc(x.goal||'未定义')+'</div></div>';
-    document.getElementById('ea-game-close').onclick=function(){detail.innerHTML='';};
+  card.appendChild(listBox);app.appendChild(card);
+  function show(x,target){
+    target.style.display='block';
+    target.innerHTML='<div class="card" style="margin-top:0"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><div class="label">'+esc(x.type||'博弈')+'</div><h2 style="margin:4px 0">'+esc(x.id)+' · '+esc(x.name)+'</h2></div><button type="button" class="action ea-game-close">收起</button></div><div class="notice" style="margin:10px 0"><b>触发条件</b><br>'+esc(x.trigger||'未定义')+'</div><div class="label">行动棋谱</div><ol style="line-height:1.8">'+(x.steps||[]).map(function(s){return'<li>'+esc(s)+'</li>';}).join('')+'</ol><div class="label" style="margin-top:12px">分支响应</div><div style="display:flex;gap:8px;flex-wrap:wrap">'+(x.branches||[]).map(function(b){return'<span class="tag">'+esc(b)+'</span>';}).join('')+'</div><div class="notice" style="margin-top:12px"><b>策略目标</b><br>'+esc(x.goal||'未定义')+'</div></div>';
+    target.querySelector('.ea-game-close').onclick=function(){target.style.display='none';target.innerHTML='';};
   }
 }
 var obs=new MutationObserver(function(){enhance();});
