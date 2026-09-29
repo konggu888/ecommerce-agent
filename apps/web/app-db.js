@@ -3,7 +3,7 @@
 
   var app = document.getElementById('app');
   var nav = document.querySelectorAll('.nav');
-  var VERSION = '20260929-32';
+  var VERSION = '20260929-33';
   var BASE = 'https://skuoxmrzlxhebzhfgbyn.supabase.co';
   var KEY = 'sb_publishable_u46tZ4GMUgwqSYhMJNFG8Q_IzYwl95T';
   var CLIENT = 'ecommerce-agent-sandbox-v1';
@@ -214,9 +214,8 @@
   function playbackPanel() {
     var d = playbackData();
     if (!d) return notice('还没有可播放的 Agent 模拟轮次。');
-
     var r = d.current;
-    var status = state.playback.playing ? '▶ 正在模拟' : (d.index >= d.rounds.length - 1 ? '■ 模拟完成' : 'Ⅱ 已暂停');
+    var status = state.playback.playing ? '▶ 正在模拟' : (d.index >= d.rounds.length - 1 && state.run && state.run.status === 'completed' ? '■ 模拟完成' : 'Ⅱ 已暂停');
     var timeline = '<div style="display:flex;gap:6px;flex-wrap:wrap;margin:12px 0">';
     for (var i = 0; i < d.rounds.length; i++) {
       var cls = i === d.index ? 'tag warning' : (i < d.index ? 'tag positive' : 'tag');
@@ -226,29 +225,48 @@
 
     var branches = [];
     try { branches = r.response_branches ? (typeof r.response_branches === 'string' ? JSON.parse(r.response_branches) : r.response_branches) : []; } catch (e) { branches = []; }
+    var opponents = [];
+    try { opponents = r.opponent_participants ? (typeof r.opponent_participants === 'string' ? JSON.parse(r.opponent_participants) : r.opponent_participants) : []; } catch (e) { opponents = []; }
+
+    var opponentHtml = '';
+    for (var o = 0; o < opponents.length; o++) {
+      var op = opponents[o];
+      var active = op.action === r.actual_opponent_response;
+      opponentHtml += '<div style="flex:1;min-width:190px;border:1px solid var(--line);border-radius:10px;padding:10px;' + (active ? 'box-shadow:0 0 0 2px rgba(255,180,0,.25);' : '') + '">' +
+        '<div class="label">' + esc(op.id) + '</div><b>' + esc(op.name) + '</b><br>' +
+        '<span class="muted">' + esc(op.strategy) + '</span><br>' +
+        '<span class="tag ' + (active ? 'warning' : '') + '">' + esc(op.action) + '</span><br>' +
+        '<span class="muted">' + esc(op.reactionToUs) + '</span>' +
+        (active ? '<br><b>← 本轮实际进入主路径</b>' : '') + '</div>';
+    }
+
     var branchHtml = '';
     for (var b = 0; b < branches.length; b++) {
-      branchHtml += '<div class="card" style="margin-top:8px"><b>对手响应 ' + esc(branches[b].response) + '</b> · 概率 ' + esc(Math.round(Number(branches[b].probability || 0) * 100)) + '%<br>下一动作：<b>' + esc(branches[b].nextActionHint) + '</b><br><span class="muted">停止条件：' + esc(branches[b].stopCondition) + '；扩张条件：' + esc(branches[b].expansionCondition) + '</span></div>';
+      var chosen = branches[b].response === r.actual_opponent_response;
+      branchHtml += '<div style="padding:8px 10px;margin:6px 0;border-left:3px solid ' + (chosen ? 'var(--accent)' : 'var(--line)') + ';background:' + (chosen ? 'rgba(255,180,0,.08)' : 'transparent') + '">' +
+        '<b>' + (chosen ? '★ ' : '') + esc(branches[b].response) + '</b> · ' + esc(Math.round(Number(branches[b].probability || 0) * 100)) + '% → <b>' + esc(branches[b].nextActionHint) + '</b>' +
+        '<div class="muted">停止：' + esc(branches[b].stopCondition) + '；扩张：' + esc(branches[b].expansionCondition) + '</div></div>';
     }
+
+    var tree = '<div style="margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:12px;overflow:auto">' +
+      '<div class="label">多方博弈树 · 当前第 R' + esc(r.round) + ' 轮</div>' +
+      '<div style="min-width:760px;display:flex;align-items:stretch;gap:12px;margin-top:10px">' +
+      '<div style="width:190px;border:2px solid var(--accent);border-radius:12px;padding:12px;background:rgba(255,180,0,.07)"><div class="label">我们</div><b>' + esc(r.action) + '</b><br><span class="muted">突破：' + esc(r.breakthrough || '-') + '</span></div>' +
+      '<div style="width:30px;display:flex;align-items:center;justify-content:center;font-size:22px">→</div>' +
+      '<div style="flex:1"><div style="display:flex;gap:10px;flex-wrap:wrap">' + (opponentHtml || '<div class="muted">暂无多方响应数据</div>') + '</div></div>' +
+      '<div style="width:30px;display:flex;align-items:center;justify-content:center;font-size:22px">→</div>' +
+      '<div style="width:190px;border:2px solid var(--line);border-radius:12px;padding:12px"><div class="label">下一步</div><b>' + esc(r.next_action_hint || '-') + '</b><br><span class="muted">实际响应：' + esc(r.actual_opponent_response || '-') + '</span></div>' +
+      '</div>' +
+      '<div style="margin-top:12px"><div class="label">分支路径</div>' + (branchHtml || '<span class="muted">暂无分支</span>') + '</div></div>';
 
     return '<div class="card" id="agent-playback">' +
       '<div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">' +
       '<div><div class="label">Agent Sandbox 实时模拟器</div><div class="metric">' + status + ' · 第 ' + esc(r.round) + ' / ' + d.rounds.length + ' 轮</div></div>' +
-      '<div>' +
-      '<button class="action" id="sim-start">▶ 开始 / 新模拟</button>' +
-      '<button class="action" id="sim-step">⏭ 单步</button>' +
-      '<button class="action" id="sim-reset">↺ 重置</button>' +
-      '</div></div>' +
+      '<div><button class="action" id="sim-start">▶ 开始 / 新模拟</button><button class="action" id="sim-step">⏭ 单步</button><button class="action" id="sim-reset">↺ 重置</button></div></div>' +
       timeline +
-      '<div class="grid">' +
-      '<div class="card"><div class="label">我方动作</div><div class="metric">' + esc(r.action) + '</div></div>' +
-      '<div class="card"><div class="label">突破口</div><div class="metric">' + esc(r.breakthrough || '-') + '</div></div>' +
-      '<div class="card"><div class="label">实际对手响应</div><div class="metric">' + esc(r.actual_opponent_response || '-') + '</div></div>' +
-      '<div class="card"><div class="label">下一动作</div><div class="metric">' + esc(r.next_action_hint || '-') + '</div></div>' +
-      '</div>' +
+      '<div class="grid"><div class="card"><div class="label">我方动作</div><div class="metric">' + esc(r.action) + '</div></div><div class="card"><div class="label">突破口</div><div class="metric">' + esc(r.breakthrough || '-') + '</div></div><div class="card"><div class="label">实际主响应</div><div class="metric">' + esc(r.actual_opponent_response || '-') + '</div></div><div class="card"><div class="label">下一动作</div><div class="metric">' + esc(r.next_action_hint || '-') + '</div></div></div>' +
       '<div class="notice">本轮结果：消耗 ' + esc(r.spend) + ' · 收入 ' + esc(r.revenue) + ' · ROI ' + esc(r.roi) + ' · 边际ROI ' + esc(r.marginal_roi) + ' · 拥挤 ' + esc(r.crowding) + (r.stop_signal ? ' · <b>触发停止：' + esc(r.stop_reason) + '</b>' : ' · 继续观察') + '</div>' +
-      '<h3>对手响应分支</h3>' + (branchHtml || notice('本轮没有记录响应分支。')) +
-      '</div>';
+      tree + '</div>';
   }
 
   function stopPlayback() {
