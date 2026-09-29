@@ -133,7 +133,7 @@ export function planMultiRoundGame(state: GameState, horizon = 3): MultiRoundPla
           branch.response === 'DEFEND_TRAFFIC' ? '只有目标人群转化改善且拥挤度可控才扩大投入' :
           branch.response === 'SHIFT_TO_CONTENT' ? '只有内容侧新增转化超过搜索侧损失才迁移预算' :
           '连续两个观察窗口指标稳定后再扩大投入';
-        return { response: branch.response, probability: branch.probability, nextActionHint, stopCondition, expansionCondition };
+        return { response: branch.response, probability: branch.probability, nextActionHint: nextActionHint as Action, stopCondition, expansionCondition };
       });
       nodes[nodes.length - 1].responseBranch = responseBranch;
       // Branch-aware continuation: evaluate both likely responses instead of following
