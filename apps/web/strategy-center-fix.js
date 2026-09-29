@@ -171,7 +171,21 @@
     return d;
   }
 
+  function immediateResponseCandidate(state,side){
+    // 负向招式发生后，先给被攻击方一个正常应对窗口，再进入下一轮竞争。
+    // 应对内容来自原招式库的 defense 定义，不新增真实攻击方法。
+    if(side!=='我方' || state.lastSide!=='对手' || !state.lastMove)return null;
+    var lm=state.lastMove;
+    var text=(lm.name||'')+' '+(lm.category||'')+' '+(lm.signal||'');
+    var isNegative=modeOf(lm)==='负向施压' || /举报|投诉|低星|差评|刷量|点击|造谣|抄袭|侵权|退款|扰动|施压/.test(text);
+    if(!isNegative || !lm.defense || state.usedMoves['RESP_'+lm.id])return null;
+    var rid='RESP_'+lm.id;
+    return {m:{id:rid,name:'应对 '+(lm.id||'')+'：'+(lm.name||'负向攻击')+' · 事实核验与正规处置',category:'负向攻击应对',signal:lm.signal||'',action:'防守：'+lm.defense,goal:'先控制损失、核验事实并保留证据，再决定下一步博弈',defense:lm.defense,_responseTo:lm},kind:'负向攻击面应对',source:'负向招式库',mode:'防守',score:999};
+  }
+
   function candidateSpace(state,side){
+    var immediate=immediateResponseCandidate(state,side);
+    if(immediate)return [immediate];
     var weights=personalityWeights(state.personality,state,side), pool=movePool(), out=[], diagnoses=diagnoseProduct(state);
     pool.forEach(function(z){
       if(!z.m || state.usedMoves[z.m.id])return;
@@ -437,6 +451,10 @@
     else if(z.mode==='反制') parts.push('对手刚才给了我们压力，所以现在针对他的动作回应，而不是盲目加码。');
     else if(z.mode==='机制校验') parts.push('现在有些情况还没看清，所以先确认到底发生了什么，再决定下一步。');
     else if(z.mode==='负向施压') parts.push('现在需要给对手增加一点竞争压力，看看他会不会改变路线。');
+    if(z.mode==='防守' && z.m && z.m._responseTo){
+      parts.push('对手刚才的“'+(z.m._responseTo.name||'负向动作')+'”已经形成实际压力，所以这一手先不继续升级，而是先核验事实、整理证据并通过正常的平台、客服或申诉渠道处理。');
+      parts.push('只有这一轮应对完成并获得新的反馈后，下一手才继续选择竞争、转移、反制或其他路线。');
+    }
 
     var diagnoses=diagnoseProduct(state);
     if(diagnoses.length)parts.push('市场反馈显示：'+diagnoses.slice(0,2).map(function(d){return d.label+'（'+d.why+'）';}).join('、')+'，所以这一步优先处理这个问题。');
