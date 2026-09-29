@@ -529,6 +529,22 @@
     for(var j=0;j<cs.length;j++)cs[j].addEventListener('click',function(){var id=this.dataset.id,found=null;for(var k=0;k<list.length;k++)if(list[k].id===id){found=list[k];break;}if(!found)return;document.getElementById('threat-detail').innerHTML=detail(found);var all=document.querySelectorAll('.threat-choice');for(var q=0;q<all.length;q++)all[q].style.borderColor=all[q].dataset.id===id?'var(--accent)':'var(--line)';});
   }
 
+  function strategyCenter() {
+    var threats=window.EA_THREAT_LIBRARY||[], positives=window.EA_POSITIVE_ATTACK_LIBRARY||[], humans=window.EA_HUMAN_BEHAVIOR_LIBRARY||[];
+    function names(list){return list.slice(0,8).map(function(x){return '<div class="notice"><span class="tag">'+esc(x.id)+'</span> <b>'+esc(x.name)+'</b><div class="muted">'+esc(x.category||x.style||'策略')+'</div></div>';}).join('');}
+    var body='<div class="card"><div class="label">新版策略中心 · 独立于原页面</div><h2>同一个博弈引擎，三个入口</h2><div class="notice">这里不删除、不替换旧页面。新版只负责把“对手攻击面、人性行为、正向攻势”统一转换成连续博弈动作。</div></div>'+
+      '<div class="card"><div class="label">统一策略链</div><div style="display:flex;gap:8px;overflow:auto;padding:12px 0">'+
+      ['发现信号','证据/假设','防守','正向进攻','镜像反制','换路','记录实际响应','更新对手记忆'].map(function(x,i){return '<div style="min-width:150px;border:1px solid var(--line);border-radius:10px;padding:12px"><span class="tag">'+('0'+(i+1)).slice(-2)+'</span><br><b>'+x+'</b></div>'+(i<7?'<div style="align-self:center;font-size:20px">→</div>':'');}).join('')+'</div><div class="card" style="border-left:4px solid var(--accent)"><b>核心循环</b><div style="font-size:20px;margin-top:6px">我变 → 对手学 → 我再变</div></div></div>'+
+      '<div class="grid"><div class="card"><div class="label">对手攻击面</div><div class="metric">'+threats.length+'</div><div style="margin-top:8px">'+names(threats)+'</div></div>'+
+      '<div class="card"><div class="label">正向攻势</div><div class="metric">'+positives.length+'</div><div style="margin-top:8px">'+names(positives)+'</div></div>'+
+      '<div class="card"><div class="label">人性行为</div><div class="metric">'+humans.length+'</div><div style="margin-top:8px">'+names(humans)+'</div></div></div>'+
+      '<div class="card"><div class="label">四张策略牌</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:8px">'+
+      '<div class="notice"><b>① 防守</b><br>降低暴露、保护利润、留存证据</div><div class="notice"><b>② 正向进攻</b><br>产品、内容、服务、流量、供应链</div><div class="notice"><b>③ 镜像反制</b><br>回应竞争机制，但不复制违规行为</div><div class="notice"><b>④ 换路</b><br>压力持续或路线被学会时测试替代路径</div></div></div>'+
+      '<div class="card"><div class="label">新版运行规则</div><div class="notice">① 看得到的才是事实；② 看不到的只作为假设；③ 对手实际响应优先于理论预测；④ 每轮记录动作—反馈—响应；⑤ 反复暴露导致反制压力上升时，降低该路线权重；⑥ 数据不足时继续观察，不强行归因。</div></div>'+
+      '<div class="card"><div class="label">后续接入</div><div class="notice">下一阶段可把这里直接接入 opponentCounterMatrix：系统自动读取历史反制压力，为每张策略牌计算“预期收益 − 反制压力 − 风险 + 新颖性/替代路线价值”，然后进入 Sandbox 与 Risk Controller。</div></div>';
+    show('连续博弈策略中心','新版独立页面 · 原有三个页面完整保留',body);
+  }
+
   function positiveAttacks() {
     var list = window.EA_POSITIVE_ATTACK_LIBRARY || [];
     var selected = list.length ? list[0] : null;
