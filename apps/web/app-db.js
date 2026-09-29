@@ -457,7 +457,15 @@
       table(['产品','竞品','场景','竞品价格','我方价格','CPC','CVR'], rows) +
       '<h2>Agent 多轮闭环</h2>' +
       table(['轮次','实际动作','原推荐','突破口','风险','决策分','消耗','收入','成交','ROI','边际ROI','拥挤','对手响应','下一动作提示','响应分支','停止','停止原因'], rounds) +
-      notice('这里展示 Agent 每一轮的：决策 → 风险 → 投入 → 市场结果 → 边际收益 → 停止信号 → 下一轮输入。'));
+      '<div class="card"><div class="label">对手行为演变监控</div>' +
+      '<div class="muted">不要假设对手永远正向或永远负向。多轮模拟会把可观测响应归类为：正向建设 / 防守施压 / 观察，并持续寻找行为切换。</div>' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin-top:8px">' +
+      '<div class="notice"><b>稳定型</b><br>连续多个窗口保持同一路径。</div>' +
+      '<div class="notice"><b>交替型</b><br>正向 ↔ 防守施压反复切换。</div>' +
+      '<div class="notice"><b>自适应型</b><br>根据反馈不断改变策略。</div>' +
+      '<div class="notice"><b>重点观察</b><br>行为转折点，而不是单次动作。</div>' +
+      '</div></div>' +
+      notice('这里展示 Agent 每一轮的：决策 → 风险 → 投入 → 市场结果 → 边际收益 → 停止信号 → 下一轮输入。')
   }
 
   function gameLogic() {
