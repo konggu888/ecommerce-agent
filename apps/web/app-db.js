@@ -629,6 +629,65 @@
     });
   }
 
+  function humanBehavior() {
+    var list = window.EA_HUMAN_BEHAVIOR_LIBRARY || [];
+    var selected = list.length ? list[list.length - 1] : null;
+
+    function tone(x) {
+      if (x === '低') return 'positive';
+      if (x === '高' || x === '中高') return 'warn';
+      return '';
+    }
+
+    function detail(x) {
+      if (!x) return notice('暂无行为模型。');
+      var seq = x.sequence || [];
+      var flow = '';
+      for (var i=0;i<seq.length;i++) {
+        flow += '<span class="tag '+tone(x.risk)+'">'+esc(seq[i])+'</span>';
+        if(i<seq.length-1) flow += ' <span class="muted">→</span> ';
+      }
+      return '<div class="card" style="border:2px solid var(--accent);padding:16px">' +
+        '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="tag">'+esc(x.id)+'</span><span class="tag">'+esc(x.style)+'</span><span class="tag '+tone(x.risk)+'">风险：'+esc(x.risk)+'</span></div>' +
+        '<h2>'+esc(x.name)+'</h2>' +
+        '<div class="label">行为演变链</div><div class="notice">'+flow+'</div>' +
+        '<div class="label">可观测特征</div><div class="notice">'+esc(x.signal)+'</div>' +
+        '<div class="label">可能目标</div><div class="notice"><b>'+esc(x.goal)+'</b></div>' +
+        '<div class="muted" style="margin-top:12px">这是“行为假设”，不是对具体竞争者的心理诊断。系统只能根据连续可观测数据更新该假设的置信度。</div>' +
+        '</div>';
+    }
+
+    var buttons='<div class="card"><div class="label">人性行为演变 · '+list.length+'种行为模式</div>' +
+      '<div class="muted" style="margin:6px 0 12px">核心不是判断“对手是什么人”，而是判断：对手在连续博弈中会不会从正向转负向、从负向转正向，或者在两者之间切换以降低风险、获取信息或争夺主动权。</div>' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px">';
+    for(var j=0;j<list.length;j++){
+      var x=list[j];
+      buttons+='<button type="button" class="human-behavior-choice" data-id="'+esc(x.id)+'" style="text-align:left;padding:10px;border:1px solid '+(selected&&x.id===selected.id?'var(--accent)':'var(--line)')+';border-radius:8px;background:transparent;color:inherit;cursor:pointer"><span class="tag">'+esc(x.id)+'</span> <b>'+esc(x.name)+'</b><div class="muted">'+esc(x.style)+' · 风险 '+esc(x.risk)+'</div></button>';
+    }
+    buttons+='</div></div>' +
+      '<div class="card"><div class="label">三类最重要的行为路径</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:8px">' +
+      '<div class="notice"><b>① 单一路径</b><br>长期正向 / 长期负向。行为稳定，便于建立基线。</div>' +
+      '<div class="notice"><b>② 混合切换</b><br>正向 → 负向 → 正向。通过切换降低单一路径暴露。</div>' +
+      '<div class="notice"><b>③ 自适应演变</b><br>根据结果、风险和市场反馈不断改变策略。</div>' +
+      '</div></div>' +
+      '<div class="card"><div class="label">系统判断原则</div><div class="notice">' +
+      '不要因为一次差评、一次降价、一次流量变化就给对手贴上“负向型”标签。至少观察多个窗口，比较持续性、集中度、跨指标同步变化和行为转折点。最终输出的是“行为模式假设 + 置信度 + 下一观察项”。' +
+      '</div></div>' +
+      '<div id="human-behavior-detail">'+detail(selected)+'</div>';
+
+    show('人性行为演变','连续博弈中的对手行为模式 · 正向 / 负向 / 切换 / 自适应',buttons);
+    var cs=document.querySelectorAll('.human-behavior-choice');
+    for(var k=0;k<cs.length;k++) cs[k].addEventListener('click',function(){
+      var id=this.dataset.id, found=null;
+      for(var z=0;z<list.length;z++) if(list[z].id===id){found=list[z];break;}
+      if(!found)return;
+      document.getElementById('human-behavior-detail').innerHTML=detail(found);
+      var all=document.querySelectorAll('.human-behavior-choice');
+      for(var q=0;q<all.length;q++) all[q].style.borderColor=all[q].dataset.id===id?'var(--accent)':'var(--line)';
+      document.getElementById('human-behavior-detail').scrollIntoView({behavior:'smooth',block:'start'});
+    });
+  }
+
   function market() {
     var rows = [];
     for (var i = 0; i < state.market.length; i++) {
@@ -866,7 +925,7 @@
       nav[i].classList.toggle('active', nav[i].dataset.view === state.view);
     }
 
-    if (state.view === 'threats') { threats(); } else if (state.view === 'positive-attacks') { positiveAttacks(); } else if (state.view === 'game-logic') {
+    if (state.view === 'threats') { threats(); } else if (state.view === 'positive-attacks') { positiveAttacks(); } else if (state.view === 'human-behavior') { humanBehavior(); } else if (state.view === 'game-logic') {
       gameLogic();
     } else if (state.view === 'game') {
       game();
