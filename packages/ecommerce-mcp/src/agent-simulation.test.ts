@@ -103,6 +103,20 @@ test('breakthrough output includes a bounded path, signal and stop condition', a
   }
 });
 
+test('multi-round planner exposes adaptive opponent-response branches', async () => {
+  const { planMultiRoundGame } = await import('./multi-round-game.ts');
+  const cfg = config();
+  const plan = planMultiRoundGame(cfg.initial, 3);
+  assert.ok(plan.nodes.some(n => (n.responseBranch?.length ?? 0) > 0));
+  for (const node of plan.nodes.filter(n => (n.responseBranch?.length ?? 0) > 0)) {
+    assert.ok((node.responseBranch ?? []).length <= 2);
+    for (const branch of node.responseBranch ?? []) {
+      assert.ok(branch.probability >= 0 && branch.probability <= 1);
+      assert.ok(['HOLD','INCREASE_BUDGET','DECREASE_BUDGET','INCREASE_BID','DECREASE_BID','CHANGE_KEYWORD','CHANGE_TARGETING','CHANGE_PRICE'].includes(branch.nextActionHint));
+    }
+  }
+});
+
 test('multi-round planner carries likely opponent response into continuation state', async () => {
   const { planMultiRoundGame } = await import('./multi-round-game.ts');
   const cfg = config();
