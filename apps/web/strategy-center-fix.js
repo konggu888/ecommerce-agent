@@ -461,12 +461,21 @@
     app.innerHTML=html;
   }
 
+  function displayMoveId(id){
+    var map={
+      CHANGE_KEYWORD:'调整关键词',CHANGE_TARGETING:'调整投放定向',CHANGE_BID:'调整出价',
+      CHANGE_BUDGET:'调整预算',CHANGE_CREATIVE:'调整素材',CHANGE_PRICE:'调整价格',
+      CHANGE_PRODUCT:'调整商品配置',TEST_KEYWORD:'测试关键词',TEST_TARGETING:'测试投放定向'
+    };
+    return map[id]||id||'';
+  }
+
   function stepHtml(s){
     var m=s.move;
     var border=m.mode==='建设'?'var(--accent)':m.mode==='负向施压'?'#b44':m.mode==='机制校验'?'#777':'#777';
     var h='<div class="card" style="margin:0 0 8px;border-left:4px solid '+border+'">';
     h+='<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="tag">第'+s.no+'步</span><b>'+esc(s.side)+'</b><span class="tag">'+esc(m.kind)+'</span><span class="muted">'+esc(s.phase)+'</span></div>';
-    h+='<div style="font-size:17px;margin-top:7px"><span class="tag">'+esc(m.id)+'</span> <b>'+esc(m.name)+'</b></div>';
+    h+='<div style="font-size:17px;margin-top:7px"><span class="tag">'+esc(displayMoveId(m.id))+'</span> <b>'+esc(m.name)+'</b></div>';
     h+='<div class="notice" style="margin-top:7px"><b>为什么现在用这招</b><div style="margin-top:5px;line-height:1.7">'+esc(m.reason)+'</div></div>';
     h+='<div class="muted" style="margin-top:6px"><b>本手目标：</b>'+esc(m.mode||'自适应')+' · <b>前一手：</b>'+esc((s.stateBefore&&s.stateBefore.lastMode)||'开局')+' · '+esc((s.stateBefore&&s.stateBefore.lastDomain)||'通用')+'</div>';
     if(s.stateAfter&&s.stateAfter.productVariables){
