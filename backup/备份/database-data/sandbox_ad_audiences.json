@@ -1,0 +1,55 @@
+{
+  "table": "public.sandbox_ad_audiences",
+  "snapshot_at": "2026-09-29",
+  "row_count": 3,
+  "rows": [
+    {
+      "id": "20a13eae-e547-45ab-ab13-573810a1965a",
+      "bid": 2.6,
+      "cvr": 6.2,
+      "roi": 4.3,
+      "name": "近30天搜索早餐",
+      "size": 180000,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "投放中",
+      "overlap": 8,
+      "premium": 15,
+      "behavior": "搜索",
+      "coverage": 22.5,
+      "window_days": 30,
+      "audience_type": "行为人群"
+    },
+    {
+      "id": "7d5d9d38-0763-49b0-bbb0-ad8427a1efd5",
+      "bid": 3,
+      "cvr": 8.1,
+      "roi": 5.1,
+      "name": "近15天加购",
+      "size": 90000,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "投放中",
+      "overlap": 5,
+      "premium": 20,
+      "behavior": "加购",
+      "coverage": 11.2,
+      "window_days": 15,
+      "audience_type": "行为人群"
+    },
+    {
+      "id": "a3b469d9-1943-48d0-9f90-12667772f308",
+      "bid": 2.3,
+      "cvr": 4.8,
+      "roi": 3.6,
+      "name": "25-35岁女性一二线",
+      "size": 240000,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "投放中",
+      "overlap": 12,
+      "premium": 10,
+      "behavior": "年龄+性别+地域",
+      "coverage": 30.1,
+      "window_days": 0,
+      "audience_type": "基础人群"
+    }
+  ]
+}
