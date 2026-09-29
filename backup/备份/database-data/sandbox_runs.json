@@ -1,0 +1,6223 @@
+{
+  "table": "public.sandbox_runs",
+  "snapshot_at": "2026-09-29",
+  "row_count": 57,
+  "rows": [
+    {
+      "id": "01f50103-96ca-4101-896d-46a32400d515",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:50:30.304605+00:00",
+      "updated_at": "2026-09-29T03:50:43.512+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "05f3d053-b9f3-424c-8894-7e28336e8f46",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:55:58.893548+00:00",
+      "updated_at": "2026-09-29T03:56:12.065+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "082ed97e-9e8f-4d1d-b683-bb64bf88d58f",
+      "state": {
+        "error": "Error: sandbox_risk_results 写入失败: {\"code\":\"23502\",\"details\":\"Failing row contains (c6fad9c6-0041-4bc2-8147-64290ce46a5a, 082ed97e-9e8f-4d1d-b683-bb64bf88d58f, stop_reason, null, 2026-09-29 11:54:55.635+00).\",\"hint\":null,\"message\":\"null value in column \\\"value\\\" of relation \\\"sandbox_risk_results\\\" violates not-null constraint\"}"
+      },
+      "status": "failed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T11:54:54.350949+00:00",
+      "updated_at": "2026-09-29T11:54:56.106+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 10,
+      "backtest_progress": 0
+    },
+    {
+      "id": "0ab28381-0528-41bc-96e6-a098913f6930",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:51:55.267301+00:00",
+      "updated_at": "2026-09-29T03:52:11.158+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "0f0ba525-971c-42cc-b3c4-cc927118a1b0",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:56:05.686484+00:00",
+      "updated_at": "2026-09-29T03:56:19.05+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "10a16184-12e4-4d79-b2f8-7c1d3a61b042",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:51:58.502842+00:00",
+      "updated_at": "2026-09-29T03:52:11.829+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "142b5abc-11eb-4dfd-95b5-cf7258101213",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T04:00:12.353876+00:00",
+      "updated_at": "2026-09-29T04:00:26.097+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "14aca92d-8afa-4675-9478-219960109207",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:51:52.861529+00:00",
+      "updated_at": "2026-09-29T03:52:06.128+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "1b036b0e-1676-4a46-9e22-f72b597d63f4",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:48:53.953754+00:00",
+      "updated_at": "2026-09-29T03:49:07.266+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T06:24:03.20065+00:00",
+      "updated_at": "2026-09-29T06:24:16.678+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "2215edcb-6c27-409f-bb34-ea94e8876787",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:57:39.239936+00:00",
+      "updated_at": "2026-09-29T03:57:53.206+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "24e513b7-263f-436f-b5f7-5253bba48aeb",
+      "state": {
+        "error": "Error: sandbox_risk_results 写入失败: {\"code\":\"23502\",\"details\":\"Failing row contains (fd7be558-4c25-4b2c-a3d4-db6050da9176, 24e513b7-263f-436f-b5f7-5253bba48aeb, stop_reason, null, 2026-09-29 11:54:50.625+00).\",\"hint\":null,\"message\":\"null value in column \\\"value\\\" of relation \\\"sandbox_risk_results\\\" violates not-null constraint\"}"
+      },
+      "status": "failed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T11:54:49.331191+00:00",
+      "updated_at": "2026-09-29T11:54:51.009+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 10,
+      "backtest_progress": 0
+    },
+    {
+      "id": "2a7b6468-47e0-45cd-80c9-914844b58dbd",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T04:00:55.828291+00:00",
+      "updated_at": "2026-09-29T04:01:09.672+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "2e1dea42-92cb-4806-9c3b-bc2883af80cf",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:58:04.229913+00:00",
+      "updated_at": "2026-09-29T03:58:17.77+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "30eed3c4-8aef-4d84-8c5b-6214c1c804d9",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T04:00:06.226457+00:00",
+      "updated_at": "2026-09-29T04:00:24.383+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "35d9ba33-62ce-4632-92c5-42f373630a68",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:58:44.318874+00:00",
+      "updated_at": "2026-09-29T03:58:57.741+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T05:34:10.63169+00:00",
+      "updated_at": "2026-09-29T05:34:24.451+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "44c1bda8-d30e-442d-ac2b-626130564b34",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:58:03.89921+00:00",
+      "updated_at": "2026-09-29T03:58:17.172+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T06:23:58.833137+00:00",
+      "updated_at": "2026-09-29T06:24:12.676+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "4ab7ed6c-5e5c-4cf2-a27b-c77454e6b185",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:44:34.403448+00:00",
+      "updated_at": "2026-09-29T03:44:52.118+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "4e199d68-4df3-4f5a-872f-fc59c95655fa",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:59:03.48502+00:00",
+      "updated_at": "2026-09-29T03:59:16.328+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "579a5de3-32e5-4da5-bd10-6828d5da8d85",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:58:04.438643+00:00",
+      "updated_at": "2026-09-29T03:58:17.583+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "6a435d72-5193-44da-9e0b-63a148ec6856",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:56:13.963477+00:00",
+      "updated_at": "2026-09-29T03:56:27.079+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "6bae8c52-ef97-4ae0-a4eb-f4cc88acdd67",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:44:26.626966+00:00",
+      "updated_at": "2026-09-29T03:44:40.271+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "6e6bd6ee-ee1f-48ff-ba23-e4f76b626164",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:52:27.841151+00:00",
+      "updated_at": "2026-09-29T03:52:40.746+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T06:32:22.527526+00:00",
+      "updated_at": "2026-09-29T06:32:35.718+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "72929752-ca04-4e1c-a258-413e5de4a115",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:50:37.519021+00:00",
+      "updated_at": "2026-09-29T03:50:51.104+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T06:32:21.560517+00:00",
+      "updated_at": "2026-09-29T06:32:34.677+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "7cbf24b7-7ad2-4f62-a4f1-8289a467d649",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:44:35.556261+00:00",
+      "updated_at": "2026-09-29T03:44:51.303+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "7f14c994-38fd-4a44-9053-2f81f15e58b8",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:52:03.226788+00:00",
+      "updated_at": "2026-09-29T03:52:16.423+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "825355ab-6604-4e45-a5de-2722e42b13e5",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T04:00:04.169561+00:00",
+      "updated_at": "2026-09-29T04:00:20.497+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T06:32:21.474283+00:00",
+      "updated_at": "2026-09-29T06:32:34.516+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "91f55ab5-b3b9-4bc2-9d64-9bf384acaae7",
+      "state": {
+        "error": "Error: sandbox_risk_results 写入失败: {\"code\":\"23502\",\"details\":\"Failing row contains (fe83fbe3-0478-487c-af91-3d5cc4428746, 91f55ab5-b3b9-4bc2-9d64-9bf384acaae7, stop_reason, null, 2026-09-29 10:08:33.198+00).\",\"hint\":null,\"message\":\"null value in column \\\"value\\\" of relation \\\"sandbox_risk_results\\\" violates not-null constraint\"}"
+      },
+      "status": "failed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T10:08:31.763194+00:00",
+      "updated_at": "2026-09-29T10:08:33.694+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 10,
+      "backtest_progress": 0
+    },
+    {
+      "id": "92fc9c50-f8be-463c-a163-128913dd0ae4",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:55:58.22312+00:00",
+      "updated_at": "2026-09-29T03:56:12.364+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T06:23:59.130375+00:00",
+      "updated_at": "2026-09-29T06:24:12.532+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "9e69d947-915f-4689-adb2-01eb0c40a7d0",
+      "state": {
+        "error": "Error: sandbox_risk_results 写入失败: {\"code\":\"23502\",\"details\":\"Failing row contains (bfd25344-b1f6-47b9-830f-bdf324da0c47, 9e69d947-915f-4689-adb2-01eb0c40a7d0, stop_reason, null, 2026-09-29 10:08:33.2+00).\",\"hint\":null,\"message\":\"null value in column \\\"value\\\" of relation \\\"sandbox_risk_results\\\" violates not-null constraint\"}"
+      },
+      "status": "failed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T10:08:31.747734+00:00",
+      "updated_at": "2026-09-29T10:08:33.773+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 10,
+      "backtest_progress": 0
+    },
+    {
+      "id": "9fe18bad-4ba1-44f8-8b51-773f48da9065",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:56:13.860956+00:00",
+      "updated_at": "2026-09-29T03:56:27.426+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "a353ea1c-574e-4bd5-9333-9caf4b0545a8",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:44:26.626933+00:00",
+      "updated_at": "2026-09-29T03:44:40.452+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T06:23:57.921074+00:00",
+      "updated_at": "2026-09-29T06:24:12.058+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "aabdc955-075a-4340-85b2-6ed2e7699032",
+      "state": {
+        "error": "Error: sandbox_risk_results 写入失败: {\"code\":\"23502\",\"details\":\"Failing row contains (ffc96806-717d-4a35-afa7-da08d6cc1bad, aabdc955-075a-4340-85b2-6ed2e7699032, stop_reason, null, 2026-09-29 11:54:56.264+00).\",\"hint\":null,\"message\":\"null value in column \\\"value\\\" of relation \\\"sandbox_risk_results\\\" violates not-null constraint\"}"
+      },
+      "status": "failed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T11:54:54.888979+00:00",
+      "updated_at": "2026-09-29T11:54:57.368+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 10,
+      "backtest_progress": 0
+    },
+    {
+      "id": "ab3e3529-fa5f-498c-8c5c-c4e7338e34d2",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:46:04.582911+00:00",
+      "updated_at": "2026-09-29T03:46:18.308+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "b05c9a8a-fe25-48a6-9e8e-a5ecbbca7d32",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T04:00:04.445801+00:00",
+      "updated_at": "2026-09-29T04:00:20.443+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "b08d5d71-02df-4e25-a738-32423327bf3f",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T04:00:03.889881+00:00",
+      "updated_at": "2026-09-29T04:00:18.464+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "b4d0383a-937e-4c92-beee-def5fb6fd16d",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:58:36.474018+00:00",
+      "updated_at": "2026-09-29T03:58:49.797+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "b665eb02-0e17-46d3-861d-41eb4d4faf56",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:58:02.116731+00:00",
+      "updated_at": "2026-09-29T03:58:15.339+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "bb421780-db3b-474c-9e32-d4a29ec2d391",
+      "state": {
+        "error": "Error: sandbox_risk_results 写入失败: {\"code\":\"23502\",\"details\":\"Failing row contains (50bfb961-8dba-4359-9cf1-28a61ce90c61, bb421780-db3b-474c-9e32-d4a29ec2d391, stop_reason, null, 2026-09-29 11:54:49.449+00).\",\"hint\":null,\"message\":\"null value in column \\\"value\\\" of relation \\\"sandbox_risk_results\\\" violates not-null constraint\"}"
+      },
+      "status": "failed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T11:54:47.89558+00:00",
+      "updated_at": "2026-09-29T11:54:50.055+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 10,
+      "backtest_progress": 0
+    },
+    {
+      "id": "c02643fb-58c7-40c5-8336-3caad8d6b46f",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:56:05.467415+00:00",
+      "updated_at": "2026-09-29T03:56:18.528+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "c032656e-2375-4585-b03f-e0f0b4a4c5f2",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:58:04.702523+00:00",
+      "updated_at": "2026-09-29T03:58:17.926+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "d0c95172-2f5c-48e6-a621-ac35a692902b",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:46:04.58292+00:00",
+      "updated_at": "2026-09-29T03:46:18.536+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T05:44:49.827249+00:00",
+      "updated_at": "2026-09-29T05:45:03.61+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "d9b59dfe-396b-4ebb-aef9-f521efc2bf0b",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:58:03.69437+00:00",
+      "updated_at": "2026-09-29T03:58:16.872+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "df232131-8d9f-42bf-9f73-1e0a9c80667e",
+      "state": {
+        "error": "Error: sandbox_risk_results 写入失败: {\"code\":\"23502\",\"details\":\"Failing row contains (9015fd1f-a14c-459f-8cd8-f243c6337345, df232131-8d9f-42bf-9f73-1e0a9c80667e, stop_reason, null, 2026-09-29 11:54:50.018+00).\",\"hint\":null,\"message\":\"null value in column \\\"value\\\" of relation \\\"sandbox_risk_results\\\" violates not-null constraint\"}"
+      },
+      "status": "failed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T11:54:48.68212+00:00",
+      "updated_at": "2026-09-29T11:54:50.586+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 10,
+      "backtest_progress": 0
+    },
+    {
+      "id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "state": {
+        "ads": {
+          "keywords": [
+            {
+              "bid": 2.8,
+              "ctr": 3.8,
+              "cvr": 5.1,
+              "roi": 4.12,
+              "keyword": "酸面包早餐"
+            },
+            {
+              "bid": 2.6,
+              "ctr": 3.4,
+              "cvr": 4.7,
+              "roi": 3.64,
+              "keyword": "早餐酸面包"
+            },
+            {
+              "bid": 2.2,
+              "ctr": 2.8,
+              "cvr": 3.1,
+              "roi": 2.38,
+              "keyword": "健康早餐面包"
+            },
+            {
+              "bid": 1.9,
+              "ctr": 3.1,
+              "cvr": 3.8,
+              "roi": 2.71,
+              "keyword": "下午茶面包"
+            }
+          ],
+          "audiences": [
+            {
+              "cvr": 4.8,
+              "name": "近30天购买用户",
+              "size": 12800
+            },
+            {
+              "cvr": 3.6,
+              "name": "加购未购买",
+              "size": 6400
+            },
+            {
+              "cvr": 2.2,
+              "name": "类目兴趣/搜索行为",
+              "size": 38600
+            },
+            {
+              "cvr": 2.9,
+              "name": "内容互动人群",
+              "size": 21400
+            }
+          ],
+          "campaigns": [
+            {
+              "roi": 4.12,
+              "name": "核心成交计划",
+              "spend": 486,
+              "keyword": "酸面包早餐",
+              "audience": "近30天购买/高意向"
+            },
+            {
+              "roi": 3.64,
+              "name": "高意向计划",
+              "spend": 318,
+              "keyword": "早餐酸面包",
+              "audience": "加购未购买"
+            },
+            {
+              "roi": 2.38,
+              "name": "潜在人群计划",
+              "spend": 264,
+              "keyword": "健康早餐面包",
+              "audience": "类目兴趣/搜索行为"
+            },
+            {
+              "roi": 2.71,
+              "name": "内容引流计划",
+              "spend": 216,
+              "keyword": "下午茶面包",
+              "audience": "内容互动人群"
+            }
+          ],
+          "keyword_migration": [
+            {
+              "to": "早餐酸面包 → 全麦早餐面包 → 健康早餐面包",
+              "from": "酸面包早餐",
+              "kind": "同场景相关关键词"
+            },
+            {
+              "to": "下午茶 → 办公室加餐 → 咖啡搭配",
+              "from": "早餐",
+              "kind": "跨场景关键词"
+            }
+          ]
+        },
+        "game": {
+          "cpc": 2.14,
+          "cvr": 2.1,
+          "market": "早餐场景",
+          "our_price": 89,
+          "competitor": "竞品B",
+          "our_product": "产品A",
+          "competitor_price": 83.7
+        },
+        "market": {
+          "signals": [
+            {
+              "name": "竞品降价",
+              "type": "价格压力",
+              "detail": "竞品价格下降约6%，正常预期会压低我方转化",
+              "strength": "高"
+            },
+            {
+              "name": "流量成本上升",
+              "type": "流量成本压力",
+              "detail": "同类广告CPC连续3个窗口上升",
+              "strength": "中高"
+            },
+            {
+              "name": "需求变化",
+              "type": "需求变化",
+              "detail": "搜索/内容热度上升",
+              "strength": "中"
+            }
+          ]
+        },
+        "memory": [
+          {
+            "type": "决策记录",
+            "status": "有效",
+            "content": "降低低毛利计划预算",
+            "confidence": 0.82
+          },
+          {
+            "type": "反证记录",
+            "status": "测试中",
+            "content": "竞品降价后我方转化下降幅度低于模型预期；需要验证老客占比、品牌信任、内容价值、关键词覆盖、人群重叠度等抵消条件",
+            "confidence": 0.67
+          },
+          {
+            "type": "停止信号",
+            "status": "有效",
+            "content": "边际ROI持续下降",
+            "confidence": 0.91
+          },
+          {
+            "type": "突破口发现",
+            "status": "测试中",
+            "content": "从早餐场景切换到下午茶/办公室加餐场景进行测试",
+            "confidence": 0.65
+          },
+          {
+            "type": "对手行为假设",
+            "status": "假设中",
+            "content": "竞品可能跟随内容打法",
+            "confidence": 0.58
+          }
+        ],
+        "data_source": "sandbox",
+        "experiments": {
+          "scenarios": [
+            {
+              "roi": 3.42,
+              "name": "正常市场",
+              "risk": "高",
+              "action": "继续观察",
+              "rounds": 30
+            },
+            {
+              "roi": 2.91,
+              "name": "竞争加剧",
+              "risk": "中",
+              "action": "切换策略",
+              "rounds": 30
+            },
+            {
+              "roi": 2.31,
+              "name": "流量成本上升",
+              "risk": "中",
+              "action": "继续观察",
+              "rounds": 30
+            },
+            {
+              "roi": 1.88,
+              "name": "转化率下降",
+              "risk": "高",
+              "action": "切换策略",
+              "rounds": 30
+            },
+            {
+              "roi": 2.16,
+              "name": "价格战",
+              "risk": "中",
+              "action": "继续观察",
+              "rounds": 30
+            },
+            {
+              "roi": 2.74,
+              "name": "库存偏低",
+              "risk": "高",
+              "action": "切换策略",
+              "rounds": 30
+            },
+            {
+              "roi": 2.03,
+              "name": "现金紧张",
+              "risk": "中",
+              "action": "继续观察",
+              "rounds": 30
+            },
+            {
+              "roi": 3.86,
+              "name": "需求激增",
+              "risk": "高",
+              "action": "切换策略",
+              "rounds": 30
+            }
+          ]
+        }
+      },
+      "status": "ready",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T00:01:25.714158+00:00",
+      "updated_at": "2026-09-29T00:01:44.871338+00:00",
+      "memory_count": 5,
+      "risk_progress": 15,
+      "agent_progress": 25,
+      "backtest_progress": 100
+    },
+    {
+      "id": "e976f1b5-27a0-40ac-93ab-1045e3f8dd48",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:52:03.923228+00:00",
+      "updated_at": "2026-09-29T03:52:17.624+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T06:32:23.068732+00:00",
+      "updated_at": "2026-09-29T06:32:36.832+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "edff8299-9f88-48fa-952d-488dbed069a8",
+      "state": {
+        "mode": "SANDBOX",
+        "stopSignal": false,
+        "totalRounds": 10,
+        "currentRound": 10,
+        "executedPath": [
+          {
+            "round": 1,
+            "action": "HOLD",
+            "response": "HOLD",
+            "strategy": "等待/观察",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 2,
+            "action": "CHANGE_TARGETING",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 3,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 4,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 5,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 6,
+            "action": "CHANGE_TARGETING",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 7,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          },
+          {
+            "round": 8,
+            "action": "CHANGE_TARGETING",
+            "response": "HOLD",
+            "strategy": "定向切换/流量绕行",
+            "nextAction": "HOLD"
+          },
+          {
+            "round": 9,
+            "action": "INCREASE_BID",
+            "response": "SHIFT_TO_CONTENT",
+            "strategy": "阶段性抢量",
+            "nextAction": "CHANGE_KEYWORD"
+          },
+          {
+            "round": 10,
+            "action": "CHANGE_KEYWORD",
+            "response": "DEFEND_TRAFFIC",
+            "strategy": "关键词迁移/错位竞争",
+            "nextAction": "CHANGE_TARGETING"
+          }
+        ],
+        "latestAction": "CHANGE_KEYWORD",
+        "opponentState": [
+          {
+            "id": "OPP-01",
+            "name": "价格型竞品",
+            "pressure": 0.05,
+            "strategy": "PRICE_WAR",
+            "adaptation": 0.7400000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "HOLD"
+          },
+          {
+            "id": "OPP-02",
+            "name": "流量型竞品",
+            "pressure": 0.3049999999999998,
+            "strategy": "TRAFFIC_DEFENSE",
+            "adaptation": 0.8100000000000003,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "DEFEND_TRAFFIC"
+          },
+          {
+            "id": "OPP-03",
+            "name": "内容型竞品",
+            "pressure": 1,
+            "strategy": "CONTENT_SHIFT",
+            "adaptation": 0.7000000000000002,
+            "lastAction": "CHANGE_KEYWORD",
+            "lastResponse": "SHIFT_TO_CONTENT"
+          }
+        ],
+        "nextActionHint": "CHANGE_TARGETING",
+        "latestOpponentResponse": "DEFEND_TRAFFIC"
+      },
+      "status": "completed",
+      "run_count": 1,
+      "client_key": "ecommerce-agent-sandbox-v1",
+      "created_at": "2026-09-29T03:56:14.474405+00:00",
+      "updated_at": "2026-09-29T03:56:28.057+00:00",
+      "memory_count": 0,
+      "risk_progress": 0,
+      "agent_progress": 100,
+      "backtest_progress": 0
+    },
+    {
+      "id": "f6cba1ac-3005-4b2b-9d39-fdb8ce2f5bb4",
+      "state": {
+        "chain": [
+          "商业博弈 Agent",
+          "策略回测",
+          "风险控制器",
+          "学习记忆"
+        ],
+        "source": "verification"
+      },
+      "status": "running",
+      "run_count": 1,
+      "client_key": "verification",
+      "created_at": "2026-09-28T23:46:22.556489+00:00",
+      "updated_at": "2026-09-28T23:46:22.556489+00:00",
+      "memory_count": 1,
+      "risk_progress": 15,
+      "agent_progress": 25,
+      "backtest_progress": 100
+    }
+  ]
+}
