@@ -339,3 +339,19 @@ test('opponent simulator remembers our actions and adapts after negative outcome
   assert.equal(opponents[0].memory.ourActions.length, 1);
   assert.ok(opponents[0].memory.adaptationScore > 0.5);
 });
+
+
+test('opponent memory learns repeated actions and reuses the learned counter', async () => {
+  const { createSimulatedOpponents, simulateOpponentTurn, recordOpponentMemory } = await import('./opponent-simulator.ts');
+  const cfg = config();
+  const opponents = createSimulatedOpponents(cfg.initial);
+  for (let round = 1; round <= 3; round++) {
+    const turns = simulateOpponentTurn(opponents, cfg.initial);
+    recordOpponentMemory(opponents, 'CHANGE_PRICE', round, 'NEGATIVE', turns);
+  }
+  const memory = opponents[0].memory;
+  assert.equal(memory.learnedResponses.CHANGE_PRICE, 'PRICE_WAR');
+  assert.ok(memory.repetitionCount >= 2);
+  const afterLearning = simulateOpponentTurn(opponents, { ...cfg.initial, price: cfg.initial.price * 0.99 });
+  assert.ok(afterLearning[0]?.strategy === 'PRICE_WAR' || afterLearning[0]?.reason.includes('历史反制'));
+});
