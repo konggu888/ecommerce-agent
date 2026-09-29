@@ -3,7 +3,7 @@ import { GameState } from './game-state';
 import { InventoryState, CashflowState } from './inventory-cashflow';
 import { RiskPolicy, reconcileMarketRisk } from './risk-controller';
 import { SimMarketRound } from './simulated-market';
-import { createSimulatedOpponents, simulateOpponentTurn, snapshotsFromOpponents, recordOpponentMemory, SimulatedOpponent } from './opponent-simulator';
+import { createSimulatedOpponents, simulateOpponentTurn, snapshotsFromOpponents, recordOpponentMemory, buildOpponentCounterMatrix, SimulatedOpponent } from './opponent-simulator';
 import { DecisionRecord, OutcomeRecord, LearningSignal, evaluateLearning } from './learning-memory';
 import { simulateNonlinearMarket } from './nonlinear-market';
 import { BehaviorObservation, BehaviorMode, updateBehaviorState } from './human-behavior-engine';
@@ -95,7 +95,7 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
     };
 
     const decision = runClosedLoop({
-      state: { ...state, competitors: competitorSnapshots },
+      state: { ...state, competitors: competitorSnapshots, opponentCounterMatrix: buildOpponentCounterMatrix(opponents) },
       economics,
       inventory,
       cashflow,
