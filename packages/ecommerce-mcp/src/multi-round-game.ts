@@ -114,7 +114,7 @@ export function planMultiRoundGame(state: GameState, horizon = 3): MultiRoundPla
         path: [...path, action].map(String)
       });
       const branches = [...opponent].sort((a, b) => b.probability - a.probability).slice(0, 2);
-      const responseBranch = branches.map((branch) => {
+      const responseBranch: { response: string; probability: number; nextActionHint: Action; stopCondition: string; expansionCondition: string }[] = branches.map((branch) => {
         const nextActionHint =
           branch.response === 'MATCH_PRICE' ? 'CHANGE_TARGETING' :
           branch.response === 'RAISE_BID' ? 'CHANGE_KEYWORD' :
