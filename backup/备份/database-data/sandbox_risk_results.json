@@ -1,0 +1,406 @@
+{
+  "table": "public.sandbox_risk_results",
+  "snapshot_at": "2026-09-29",
+  "row_count": 52,
+  "rows": [
+    {
+      "id": "0321e86b-ac30-4e43-b0f6-7b5c775783be",
+      "value": false,
+      "metric": "stop_signal",
+      "run_id": "9e69d947-915f-4689-adb2-01eb0c40a7d0",
+      "created_at": "2026-09-29T10:08:33.2+00:00"
+    },
+    {
+      "id": "084f234a-f117-40a3-b390-d55f0b9d17b9",
+      "value": "ALLOW",
+      "metric": "risk_mode",
+      "run_id": "9e69d947-915f-4689-adb2-01eb0c40a7d0",
+      "created_at": "2026-09-29T10:08:33.2+00:00"
+    },
+    {
+      "id": "143a87b1-6ce1-4cb0-954a-5a6f2aef021c",
+      "value": "ALLOW",
+      "metric": "risk_mode",
+      "run_id": "bb421780-db3b-474c-9e32-d4a29ec2d391",
+      "created_at": "2026-09-29T11:54:49.449+00:00"
+    },
+    {
+      "id": "17f0e5b9-886a-4b32-9720-3bba7abdd3c6",
+      "value": 4.464999999999999,
+      "metric": "marginal_roi",
+      "run_id": "91f55ab5-b3b9-4bc2-9d64-9bf384acaae7",
+      "created_at": "2026-09-29T10:08:33.198+00:00"
+    },
+    {
+      "id": "25ac0c0f-773e-49aa-b525-50f0bc8217cd",
+      "value": 4.464999999999999,
+      "metric": "marginal_roi",
+      "run_id": "24e513b7-263f-436f-b5f7-5253bba48aeb",
+      "created_at": "2026-09-29T11:54:50.625+00:00"
+    },
+    {
+      "id": "2cde003d-151b-423e-acb6-560e551136ea",
+      "value": {
+        "market": "MEDIUM",
+        "funding": "LOW",
+        "opponent": "MEDIUM",
+        "unitEconomics": "MEDIUM"
+      },
+      "metric": "risk_dimensions",
+      "run_id": "9e69d947-915f-4689-adb2-01eb0c40a7d0",
+      "created_at": "2026-09-29T10:08:33.2+00:00"
+    },
+    {
+      "id": "34a38f62-b55e-479f-ab6e-feb048c4c2bd",
+      "value": {
+        "market": "MEDIUM",
+        "funding": "LOW",
+        "opponent": "MEDIUM",
+        "unitEconomics": "MEDIUM"
+      },
+      "metric": "risk_dimensions",
+      "run_id": "082ed97e-9e8f-4d1d-b683-bb64bf88d58f",
+      "created_at": "2026-09-29T11:54:55.635+00:00"
+    },
+    {
+      "id": "38d99a13-8314-4a71-9e90-3fc09a015d70",
+      "value": "ALLOW",
+      "metric": "risk_mode",
+      "run_id": "df232131-8d9f-42bf-9f73-1e0a9c80667e",
+      "created_at": "2026-09-29T11:54:50.018+00:00"
+    },
+    {
+      "id": "41570bcd-d532-4f4b-a853-0f0098928564",
+      "value": true,
+      "metric": "risk_approved",
+      "run_id": "24e513b7-263f-436f-b5f7-5253bba48aeb",
+      "created_at": "2026-09-29T11:54:50.625+00:00"
+    },
+    {
+      "id": "41a18cc1-a2b6-4881-a64a-50a7a1d03938",
+      "value": "MEDIUM",
+      "metric": "risk_level",
+      "run_id": "bb421780-db3b-474c-9e32-d4a29ec2d391",
+      "created_at": "2026-09-29T11:54:49.449+00:00"
+    },
+    {
+      "id": "421e5482-f104-49b2-b98c-fe49c54059a1",
+      "value": 0.162,
+      "metric": "crowding",
+      "run_id": "aabdc955-075a-4340-85b2-6ed2e7699032",
+      "created_at": "2026-09-29T11:54:56.264+00:00"
+    },
+    {
+      "id": "4b73b77d-98e5-4b05-8e87-a6d0d4982167",
+      "value": 15,
+      "metric": "risk_progress",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "created_at": "2026-09-29T00:22:26.368377+00:00"
+    },
+    {
+      "id": "55b9643c-8c8a-4eee-89ee-486e21d79aee",
+      "value": "MEDIUM",
+      "metric": "risk_level",
+      "run_id": "24e513b7-263f-436f-b5f7-5253bba48aeb",
+      "created_at": "2026-09-29T11:54:50.625+00:00"
+    },
+    {
+      "id": "5641a49b-dc3f-43cb-929b-f5caad4c7806",
+      "value": 0.162,
+      "metric": "crowding",
+      "run_id": "24e513b7-263f-436f-b5f7-5253bba48aeb",
+      "created_at": "2026-09-29T11:54:50.625+00:00"
+    },
+    {
+      "id": "5b66022c-4a7b-4339-9e1f-4d13f8947f4a",
+      "value": true,
+      "metric": "risk_approved",
+      "run_id": "aabdc955-075a-4340-85b2-6ed2e7699032",
+      "created_at": "2026-09-29T11:54:56.264+00:00"
+    },
+    {
+      "id": "5ba214c4-d237-45b2-88c8-62a088b2c3bb",
+      "value": false,
+      "metric": "stop_signal",
+      "run_id": "082ed97e-9e8f-4d1d-b683-bb64bf88d58f",
+      "created_at": "2026-09-29T11:54:55.635+00:00"
+    },
+    {
+      "id": "5c305556-cadc-4e0e-8f81-23efcd6e1ba5",
+      "value": 25,
+      "metric": "agent_progress",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "created_at": "2026-09-29T00:22:26.368377+00:00"
+    },
+    {
+      "id": "60320e91-285e-4ade-9813-eaf38d7315a4",
+      "value": "MEDIUM",
+      "metric": "risk_level",
+      "run_id": "df232131-8d9f-42bf-9f73-1e0a9c80667e",
+      "created_at": "2026-09-29T11:54:50.018+00:00"
+    },
+    {
+      "id": "61d46a5e-577f-4120-b8cd-9a353516a4f8",
+      "value": {
+        "market": "MEDIUM",
+        "funding": "LOW",
+        "opponent": "MEDIUM",
+        "unitEconomics": "MEDIUM"
+      },
+      "metric": "risk_dimensions",
+      "run_id": "bb421780-db3b-474c-9e32-d4a29ec2d391",
+      "created_at": "2026-09-29T11:54:49.449+00:00"
+    },
+    {
+      "id": "626ffaac-505c-4ada-aa5b-e714f31efba7",
+      "value": 0.162,
+      "metric": "crowding",
+      "run_id": "9e69d947-915f-4689-adb2-01eb0c40a7d0",
+      "created_at": "2026-09-29T10:08:33.2+00:00"
+    },
+    {
+      "id": "648ef362-76ec-442e-8019-b204f015e81a",
+      "value": "MEDIUM",
+      "metric": "risk_level",
+      "run_id": "aabdc955-075a-4340-85b2-6ed2e7699032",
+      "created_at": "2026-09-29T11:54:56.264+00:00"
+    },
+    {
+      "id": "68865ca8-2be2-4faa-aa63-b961d93790e3",
+      "value": 4.464999999999999,
+      "metric": "marginal_roi",
+      "run_id": "bb421780-db3b-474c-9e32-d4a29ec2d391",
+      "created_at": "2026-09-29T11:54:49.449+00:00"
+    },
+    {
+      "id": "6cc2983c-a4f3-41bd-972a-0650b115c30d",
+      "value": 4.464999999999999,
+      "metric": "marginal_roi",
+      "run_id": "df232131-8d9f-42bf-9f73-1e0a9c80667e",
+      "created_at": "2026-09-29T11:54:50.018+00:00"
+    },
+    {
+      "id": "7498ea3f-2f77-4d57-b3b3-c5a6d8936560",
+      "value": 0.162,
+      "metric": "crowding",
+      "run_id": "df232131-8d9f-42bf-9f73-1e0a9c80667e",
+      "created_at": "2026-09-29T11:54:50.018+00:00"
+    },
+    {
+      "id": "7d6a07e9-093e-4b59-9541-abc46ffe571e",
+      "value": true,
+      "metric": "risk_approved",
+      "run_id": "9e69d947-915f-4689-adb2-01eb0c40a7d0",
+      "created_at": "2026-09-29T10:08:33.2+00:00"
+    },
+    {
+      "id": "7dae066b-0239-40ec-810e-a92c49040688",
+      "value": {
+        "market": "MEDIUM",
+        "funding": "LOW",
+        "opponent": "MEDIUM",
+        "unitEconomics": "MEDIUM"
+      },
+      "metric": "risk_dimensions",
+      "run_id": "aabdc955-075a-4340-85b2-6ed2e7699032",
+      "created_at": "2026-09-29T11:54:56.264+00:00"
+    },
+    {
+      "id": "89487567-a2fc-4407-bb7d-08593597ec38",
+      "value": 100,
+      "metric": "backtest_progress",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "created_at": "2026-09-29T00:22:26.368377+00:00"
+    },
+    {
+      "id": "8974b043-884a-448c-81c6-22f76f8d0846",
+      "value": {
+        "market": "MEDIUM",
+        "funding": "LOW",
+        "opponent": "MEDIUM",
+        "unitEconomics": "MEDIUM"
+      },
+      "metric": "risk_dimensions",
+      "run_id": "24e513b7-263f-436f-b5f7-5253bba48aeb",
+      "created_at": "2026-09-29T11:54:50.625+00:00"
+    },
+    {
+      "id": "8a7946e9-2c3e-48a1-af90-d15347802928",
+      "value": true,
+      "metric": "risk_approved",
+      "run_id": "bb421780-db3b-474c-9e32-d4a29ec2d391",
+      "created_at": "2026-09-29T11:54:49.449+00:00"
+    },
+    {
+      "id": "8c691b0a-e96e-4bea-9e9b-651fae824bb2",
+      "value": false,
+      "metric": "stop_signal",
+      "run_id": "df232131-8d9f-42bf-9f73-1e0a9c80667e",
+      "created_at": "2026-09-29T11:54:50.018+00:00"
+    },
+    {
+      "id": "8d8c59c4-2ee1-4363-af91-103a89e895d3",
+      "value": 4.464999999999999,
+      "metric": "marginal_roi",
+      "run_id": "9e69d947-915f-4689-adb2-01eb0c40a7d0",
+      "created_at": "2026-09-29T10:08:33.2+00:00"
+    },
+    {
+      "id": "95c1bd3f-050f-4b8f-9da6-4fe459975bea",
+      "value": true,
+      "metric": "risk_approved",
+      "run_id": "91f55ab5-b3b9-4bc2-9d64-9bf384acaae7",
+      "created_at": "2026-09-29T10:08:33.198+00:00"
+    },
+    {
+      "id": "a84b14bd-beae-41fd-a2f0-37eb4592697e",
+      "value": true,
+      "metric": "risk_approved",
+      "run_id": "df232131-8d9f-42bf-9f73-1e0a9c80667e",
+      "created_at": "2026-09-29T11:54:50.018+00:00"
+    },
+    {
+      "id": "a8f39436-1819-47c8-bb17-5bb19f5cca0a",
+      "value": {
+        "market": "MEDIUM",
+        "funding": "LOW",
+        "opponent": "MEDIUM",
+        "unitEconomics": "MEDIUM"
+      },
+      "metric": "risk_dimensions",
+      "run_id": "91f55ab5-b3b9-4bc2-9d64-9bf384acaae7",
+      "created_at": "2026-09-29T10:08:33.198+00:00"
+    },
+    {
+      "id": "b0af131f-b3b2-4cf1-8791-c822846cef48",
+      "value": true,
+      "metric": "risk_approved",
+      "run_id": "082ed97e-9e8f-4d1d-b683-bb64bf88d58f",
+      "created_at": "2026-09-29T11:54:55.635+00:00"
+    },
+    {
+      "id": "b0dd65e8-6a1f-4def-8b43-1e7c0abde18a",
+      "value": 4.464999999999999,
+      "metric": "marginal_roi",
+      "run_id": "aabdc955-075a-4340-85b2-6ed2e7699032",
+      "created_at": "2026-09-29T11:54:56.264+00:00"
+    },
+    {
+      "id": "b155807b-0035-44c4-928f-9ad6485a5b5e",
+      "value": false,
+      "metric": "stop_signal",
+      "run_id": "91f55ab5-b3b9-4bc2-9d64-9bf384acaae7",
+      "created_at": "2026-09-29T10:08:33.198+00:00"
+    },
+    {
+      "id": "ba2c9777-a854-4380-8e51-10a23180d21d",
+      "value": 4.464999999999999,
+      "metric": "marginal_roi",
+      "run_id": "082ed97e-9e8f-4d1d-b683-bb64bf88d58f",
+      "created_at": "2026-09-29T11:54:55.635+00:00"
+    },
+    {
+      "id": "c226ff12-4679-4fcb-a2a7-e7a4ebca78f1",
+      "value": false,
+      "metric": "stop_signal",
+      "run_id": "bb421780-db3b-474c-9e32-d4a29ec2d391",
+      "created_at": "2026-09-29T11:54:49.449+00:00"
+    },
+    {
+      "id": "c639fcdc-314f-4426-b7ca-e4a166d7f1a8",
+      "value": "ALLOW",
+      "metric": "risk_mode",
+      "run_id": "91f55ab5-b3b9-4bc2-9d64-9bf384acaae7",
+      "created_at": "2026-09-29T10:08:33.198+00:00"
+    },
+    {
+      "id": "d7f7be52-2e44-4538-9cbe-18b713f34780",
+      "value": false,
+      "metric": "stop_signal",
+      "run_id": "24e513b7-263f-436f-b5f7-5253bba48aeb",
+      "created_at": "2026-09-29T11:54:50.625+00:00"
+    },
+    {
+      "id": "da33089f-ac1b-43e6-8324-47ad6cd60e4b",
+      "value": "ALLOW",
+      "metric": "risk_mode",
+      "run_id": "082ed97e-9e8f-4d1d-b683-bb64bf88d58f",
+      "created_at": "2026-09-29T11:54:55.635+00:00"
+    },
+    {
+      "id": "dab90a5c-04f7-47e4-92e8-77b518bbc2f9",
+      "value": "MEDIUM",
+      "metric": "risk_level",
+      "run_id": "91f55ab5-b3b9-4bc2-9d64-9bf384acaae7",
+      "created_at": "2026-09-29T10:08:33.198+00:00"
+    },
+    {
+      "id": "dc6ab849-6790-49c9-b0a1-b8426e2d1a60",
+      "value": false,
+      "metric": "stop_signal",
+      "run_id": "aabdc955-075a-4340-85b2-6ed2e7699032",
+      "created_at": "2026-09-29T11:54:56.264+00:00"
+    },
+    {
+      "id": "e8e80928-e04d-4080-a9c5-60a0ad895689",
+      "value": 0.162,
+      "metric": "crowding",
+      "run_id": "bb421780-db3b-474c-9e32-d4a29ec2d391",
+      "created_at": "2026-09-29T11:54:49.449+00:00"
+    },
+    {
+      "id": "eda5083d-245f-4da5-83c3-3e135b425bce",
+      "value": 0.162,
+      "metric": "crowding",
+      "run_id": "082ed97e-9e8f-4d1d-b683-bb64bf88d58f",
+      "created_at": "2026-09-29T11:54:55.635+00:00"
+    },
+    {
+      "id": "ee9343f6-4abd-499d-980d-957a0f82a53a",
+      "value": "MEDIUM",
+      "metric": "risk_level",
+      "run_id": "9e69d947-915f-4689-adb2-01eb0c40a7d0",
+      "created_at": "2026-09-29T10:08:33.2+00:00"
+    },
+    {
+      "id": "f0a32813-c2d2-4dbb-9492-fd29245798c1",
+      "value": {
+        "market": "MEDIUM",
+        "funding": "LOW",
+        "opponent": "MEDIUM",
+        "unitEconomics": "MEDIUM"
+      },
+      "metric": "risk_dimensions",
+      "run_id": "df232131-8d9f-42bf-9f73-1e0a9c80667e",
+      "created_at": "2026-09-29T11:54:50.018+00:00"
+    },
+    {
+      "id": "f0e2d164-d0ea-4c31-b16c-fa1bb662cfbb",
+      "value": 0.162,
+      "metric": "crowding",
+      "run_id": "91f55ab5-b3b9-4bc2-9d64-9bf384acaae7",
+      "created_at": "2026-09-29T10:08:33.198+00:00"
+    },
+    {
+      "id": "fb02b919-11b5-4fa5-b349-ea91bb57976a",
+      "value": "ALLOW",
+      "metric": "risk_mode",
+      "run_id": "24e513b7-263f-436f-b5f7-5253bba48aeb",
+      "created_at": "2026-09-29T11:54:50.625+00:00"
+    },
+    {
+      "id": "fd3c321f-2a89-4501-861b-a4dd3760ad3a",
+      "value": "ALLOW",
+      "metric": "risk_mode",
+      "run_id": "aabdc955-075a-4340-85b2-6ed2e7699032",
+      "created_at": "2026-09-29T11:54:56.264+00:00"
+    },
+    {
+      "id": "ff1876a3-7139-4393-a9eb-fc7a589497b2",
+      "value": "MEDIUM",
+      "metric": "risk_level",
+      "run_id": "082ed97e-9e8f-4d1d-b683-bb64bf88d58f",
+      "created_at": "2026-09-29T11:54:55.635+00:00"
+    }
+  ]
+}
