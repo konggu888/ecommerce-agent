@@ -504,7 +504,11 @@
     h+='<div class="muted" style="margin-top:6px"><b>本手目标：</b>'+esc(m.mode||'自适应')+' · <b>前一手：</b>'+esc((s.stateBefore&&s.stateBefore.lastMode)||'开局')+' · '+esc((s.stateBefore&&s.stateBefore.lastDomain)||'通用')+'</div>';
     if(s.stateAfter&&s.stateAfter.productVariables){
       var pv=s.stateAfter.productVariables, f=s.stateAfter.feedback||{};
+      var diag=diagnoseProduct(s.stateAfter);
       h+='<div class="notice" style="margin-top:6px"><b>商品变量反馈</b>：';
+      if(diag.length)h+='<b>当前优先修正：</b>'+esc(diag.slice(0,2).map(function(d){return d.label;}).join('、'))+' · ';
+      else h+='<b>当前没有单一故障变量：</b>继续收集反馈 · ';
+
       h+='长尾词版本 V'+pv.longTailKeywords.version+'（置信度 '+Math.round(pv.longTailKeywords.confidence*100)+'%）';
       if(f.ctr!==null)h+=' · 点击反馈 '+Math.round(f.ctr*100)+'%基准';
       if(f.conversion!==null)h+=' · 转化反馈 '+Math.round(f.conversion*100)+'%基准';
