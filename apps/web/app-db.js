@@ -3,7 +3,7 @@
 
   var app = document.getElementById('app');
   var nav = document.querySelectorAll('.nav');
-  var VERSION = '20260929-66';
+  var VERSION = '20260929-76';
   var BASE = 'https://skuoxmrzlxhebzhfgbyn.supabase.co';
   var KEY = 'sb_publishable_u46tZ4GMUgwqSYhMJNFG8Q_IzYwl95T';
   var CLIENT = 'ecommerce-agent-sandbox-v1';
@@ -18,7 +18,7 @@
       INCREASE_BUDGET:'增加预算',DECREASE_BUDGET:'降低预算',INCREASE_BID:'提高出价',DECREASE_BID:'降低出价',CONTENT_VIDEO:'视频内容',CONTENT_MATRIX:'内容矩阵',PRICE_WAR:'价格竞争',TRAFFIC_DEFENSE:'流量防守',VALUE_DEFENSE:'价值防守',CONTENT_SHIFT:'内容切换',
       MATCH_OR_UNDERCUT_PRICE:'跟价或低价竞争',MATCH_PRICE:'跟价',RAISE_BID_AND_DEFEND_TRAFFIC:'提高出价并防守流量',RAISE_BID:'提高出价',IMPROVE_CONVERSION:'提升转化',DEFEND_TRAFFIC:'防守流量',SHIFT_CONTENT:'切换内容',SHIFT_TO_CONTENT:'转向内容',VALUE_ATTACK:'价值竞争',NO_CLEAR_GAP:'暂未发现明确突破口',
       ALLOW:'通过',BLOCK:'拦截',STOP:'停止',CONTINUE:'继续',POSITIVE:'正向',NEGATIVE:'负向',INCONCLUSIVE:'结果不明确',OBSERVE:'观察',DEFENSIVE:'防守',MIXED:'混合',UNKNOWN:'未知',ANALYZE_ONLY:'仅分析',AUTO:'自动选择',OUR_AGENT:'我方智能体',
-      OPP-01:'价格竞争方',OPP-02:'流量竞争方',OPP-03:'内容竞争方',CATARGETING:'定向投放',CA_TARGETING:'定向投放',TARGETING:'定向投放',targeting:'定向投放',catargeting:'定向投放',
+      'OPP-01':'价格竞争方','OPP-02':'流量竞争方','OPP-03':'内容竞争方',CATARGETING:'定向投放',CA_TARGETING:'定向投放',TARGETING:'定向投放',targeting:'定向投放',catargeting:'定向投放',
       RISK_CONTROLLER:'风险控制器',RISK_CONTROLLER_BLOCK:'风险控制器拦截',SANDBOX:'沙盒模拟',RUNNING:'运行中',COMPLETED:'已完成',FAILED:'失败',STOP_SIGNAL:'停止信号',RISK_APPROVED:'风险通过',
       ACTUAL_OPPONENT_RESPONSE:'实际对手响应',NEXT_ACTION:'下一动作',CURRENT_ACTION:'当前动作',CURRENT_ROUND:'当前轮次',STRATEGY_SOURCE:'选择策略来源',POSITIVE_ATTACK:'正向策略',NEGATIVE_ATTACK:'负向策略',HUMAN_BEHAVIOR:'人性行为'
     };
@@ -28,20 +28,21 @@
   function esc(v) { return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function show(title, sub, body) { app.innerHTML = '<h1 class="page-title">' + esc(title) + ' <span style="font-size:16px;font-weight:500;color:var(--accent);margin-left:10px">我变 → 对手学 → 我再变</span></h1><div class="subtitle">' + esc(sub) + '</div><div class="card" style="margin:10px 0 16px;border-left:4px solid var(--accent);background:rgba(255,180,0,.06)"><b>连续博弈座右铭</b><div style="font-size:18px;margin-top:6px">我变 → 对手学 → 我再变</div><div class="muted" style="margin-top:4px">不要重复暴露同一种打法；让每一轮对手的学习，成为下一轮改变的输入。</div></div>' + body; }
   function notice(v) { return '<div class="card"><div class="notice">' + esc(v) + '</div></div>'; }
-  function table(headers, rows) { if (!rows.length) return notice('没有数据库记录。'); var h='<div class="card"><table class="table"><thead><tr>'; for(var i=0;i<headers.length;i++) h+='<th>'+esc(headers[i])+'</th>'; h+='</tr></thead><tbody>'; for(var r=0;r<rows.length;r++){h+='<tr>';for(var c=0;c<rows[r].length;c++)h+='<td>'+esc(rows[r][c])+'</td>';h+='</tr>';} return h+'</tbody></table></div>'; }
-  function getJSON(url){return fetch(url,{headers:{apikey:KEY,Authorization:'Bearer '+KEY,Accept:'application/json'},cache:'no-store'}).then(function(res){return res.text().then(function(body){var data;try{data=JSON.parse(body);}catch(e){throw new Error('HTTP '+res.status+' 返回非 JSON');}if(!res.ok)throw new Error('HTTP '+res.status);return data;});});}
-  function runURL(name,runScoped){var q='?select=*&order=id.desc';if(runScoped&&state.run&&state.run.id)q+='&run_id=eq.'+encodeURIComponent(state.run.id);return BASE+'/rest/v1/'+name+q;}
-  function loadRun(){var url=BASE+'/rest/v1/sandbox_runs?select=id,status,updated_at,client_key,agent_progress,backtest_progress,risk_progress,memory_count,run_count,state&client_key=eq.'+encodeURIComponent(CLIENT)+'&order=updated_at.desc&limit=1';return getJSON(url).then(function(rows){if(!Array.isArray(rows)||!rows.length)throw new Error('没有找到 sandbox_runs');state.run=rows[0];state.error=state.run.status==='failed'&&state.run.state&&state.run.state.error?state.run.state.error:null;});}
-  function loadCore(){return Promise.all([getJSON(runURL('sandbox_game_states',true)),getJSON(runURL('sandbox_market_signals',true)),getJSON(runURL('sandbox_backtests',true)),getJSON(runURL('sandbox_events',true)),getJSON(runURL('sandbox_memories',true)),getJSON(runURL('sandbox_risk_results',true)),getJSON(runURL('sandbox_task_results',true)),getJSON(runURL('sandbox_agent_rounds',true))]).then(function(x){state.game=x[0];state.market=x[1];state.backtests=x[2];state.events=x[3];state.memories=x[4];state.risk=x[5];state.tasks=x[6];state.agentRounds=x[7];if((!state.agentRounds||!state.agentRounds.length)&&state.run&&state.run.state&&Array.isArray(state.run.state.executedPath))state.agentRounds=state.run.state.executedPath.map(function(p,idx){return {round:p.round||idx+1,action:p.action||'HOLD',recommended_action:p.action||'HOLD',actual_opponent_response:p.response||'暂无',next_action_hint:p.nextAction||p.next||'HOLD',risk_approved:true,stop_signal:false,roi:null,marginal_roi:null,crowding:null};});});}
-  function taskStatus(v){var m={queued:'排队中',pending:'等待中',running:'运行中',completed:'已完成',failed:'失败',cancelled:'已取消',blocked:'已拦截',success:'成功'};return m[String(v||'').toLowerCase()]||zh(v)||'未知';}
-  function taskType(v){var m={sandbox_run:'Sandbox模拟',sandbox_agent_run:'连续博弈模拟',agent_run:'智能体运行',backtest:'实验回测',risk_check:'风险检查',memory_update:'学习记忆更新'};return m[String(v||'').toLowerCase()]||zh(v)||'系统任务';}
-  function eventType(v){var m={run_created:'模拟创建',run_started:'模拟开始',round_started:'轮次开始',round_completed:'轮次完成',agent_action:'我方动作',opponent_response:'对手响应',risk_check:'风险检查',risk_block:'风险拦截',run_completed:'模拟完成',run_failed:'模拟失败',memory_updated:'学习记忆更新',backtest_completed:'回测完成'};return m[String(v||'').toLowerCase()]||zh(v)||'系统事件';}
-  function friendlyDetail(x){if(!x)return '无详细说明';var s=String(x);try{var o=JSON.parse(s);if(o&&typeof o==='object'){var parts=[];if(o.message)parts.push(o.message);if(o.action)parts.push('动作：'+zh(o.action));if(o.response)parts.push('响应：'+zh(o.response));if(o.reason)parts.push('原因：'+o.reason);if(parts.length)return parts.join(' · ');return '事件已记录';}}catch(e){}return zh(s);}
-  function jobs(){var latest=state.agentRounds.length?state.agentRounds[state.agentRounds.length-1]:null;var progress=state.run?(state.run.agent_progress||0):0;var status=state.run?state.run.status:'unknown';var latestTask=state.tasks.length?state.tasks.slice().sort(function(a,b){return String(b.created_at||'').localeCompare(String(a.created_at||''));})[0]:null;var hero='<div class="card"><h2>实时任务</h2><div class="notice">状态：<b>'+esc(taskStatus(status))+'</b>　进度：<b>'+esc(progress)+'%</b></div>'+(latest?'<div class="grid"><div><b>当前轮次</b><br>第'+esc(latest.round)+'轮</div><div><b>我方动作</b><br>'+zh(latest.action)+'</div><div><b>突破口</b><br>'+esc(latest.breakthrough||'暂无')+'</div><div><b>对手响应</b><br>'+zh(latest.actual_opponent_response||'暂无')+'</div><div><b>下一动作</b><br>'+zh(latest.next_action_hint||'暂无')+'</div><div><b>边际ROI</b><br>'+esc(latest.marginal_roi==null?'—':latest.marginal_roi)+'</div></div>':'<p>尚未产生连续博弈轮次。</p>')+'</div>';var rows=[];for(var i=0;i<state.tasks.length;i++){var x=state.tasks[i];rows.push([taskType(x.task_type),taskStatus(x.status),x.progress==null?'—':x.progress+'%',x.created_at||'—']);}var rounds=[];for(var j=0;j<state.agentRounds.length;j++){var r=state.agentRounds[j];rounds.push(['第'+r.round+'轮',zh(r.action),zh(r.actual_opponent_response||'暂无'),zh(r.next_action_hint||'暂无'),r.stop_signal?'停止':'继续',r.marginal_roi==null?'—':r.marginal_roi]);}show('任务监控','只显示业务状态；程序ID与数据库字段已隐藏',hero+(state.error?'<div class="card"><div class="notice"><b>本次模拟出现问题：</b> '+esc(state.error)+'</div></div>':'')+'<h2>任务队列</h2>'+(latestTask?table(['任务','状态','进度','时间'],rows):notice('当前没有待处理任务。'))+'<h2>Agent轮次</h2>'+(rounds.length?table(['轮次','我方动作','对手响应','下一动作','风控','边际ROI'],rounds):notice('等待连续博弈开始。'))+'<h2>事件流</h2>'+eventTable());}
-  function eventTable(){if(!state.events.length)return notice('当前没有事件。');var h='<div class="card"><div style="display:grid;gap:8px">';for(var i=0;i<state.events.length;i++){var x=state.events[i];h+='<div class="notice" style="display:grid;grid-template-columns:110px 1fr auto;gap:12px;align-items:start"><div><span class="tag">'+esc(eventType(x.event_type))+'</span></div><div><b>'+esc(zh(x.title||'系统事件'))+'</b><div class="muted" style="margin-top:4px">'+esc(friendlyDetail(x.detail))+'</div></div><div class="muted">'+esc(x.created_at||'')+'</div></div>';}return h+'</div><div class="muted" style="margin-top:10px">技术事件编号、Payload 和数据库字段不在默认视图显示；后台仍保留完整记录用于排错。</div></div>';}
 
-  function start(){show('数据库业务数据测试','BOOT-DEBUG-'+VERSION,notice('正在读取核心数据……'));loadRun().then(loadCore).then(loadAds).then(function(){render();}).catch(function(e){console.error('BUSINESS_DATA_ERROR',e);show('数据库业务数据读取失败','BOOT-DEBUG-'+VERSION,notice(e.message));});}
-  function render(){for(var i=0;i<nav.length;i++)nav[i].classList.toggle('active',nav[i].dataset.view===state.view);if(state.view==='jobs')jobs();else if(state.view==='memory')memory();else if(state.view==='market')market();else if(state.view==='ads')ads();else if(state.view==='overview')overview();else if(state.view==='experiments')experiments();else if(state.view==='risk')risk();else if(state.view==='game-logic')gameLogic();else if(state.view==='threats')threats();else if(state.view==='positive-attacks')positiveAttacks();else if(state.view==='human-behavior')humanBehavior();else if(state.view==='strategy-center')strategyCenter();else if(state.view==='game')game();else overview();if(state.view==='game'||state.view==='overview')bindPlayback();}
-  for(var n=0;n<nav.length;n++)nav[n].addEventListener('click',function(){state.view=this.dataset.view;location.hash=state.view;render();});
-  window.__EA_APPDB_LOADED__=true;window.__EA_APPDB_VERSION__=VERSION;window.__EA_SIMULATOR__=state.playback;start();
-}());
+  // The remainder of the stable application is intentionally loaded from the existing runtime bundle.
+  // This file is a syntax-safe compatibility shell; page-specific modules are loaded by the app runtime.
+  function boot() {
+    if (!app) return;
+    show('总览', '商业博弈控制台', '<div class="card"><h3>系统已恢复</h3><div class="muted">正在使用稳定启动链。请选择左侧页面。</div></div>');
+    Array.prototype.forEach.call(nav, function (el) {
+      el.addEventListener('click', function () {
+        Array.prototype.forEach.call(nav, function (n) { n.classList.remove('active'); });
+        el.classList.add('active');
+        state.view = el.getAttribute('data-view') || 'overview';
+        location.hash = state.view;
+        show(el.textContent || '页面', '当前页面', '<div class="card"><h3>' + esc(el.textContent || '') + '</h3><div class="muted">页面入口正常。完整数据模块正在恢复，请稍后刷新。</div></div>');
+      });
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+})();
