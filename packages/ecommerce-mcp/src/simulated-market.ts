@@ -65,7 +65,7 @@ export function runSimulatedMarket(config: SimMarketConfig): SimMarketRound[] {
       } else opponentActions.push(c.competitorId + ':HOLD');
     }
 
-    const breakthroughSignal = s.cvr > market.categoryCvr * 1.08 ? 'CONVERSION_GAP' : s.ctr > 0.04 && pressure < 2 ? 'TRAFFIC_GAP' : s.roi > 3 ? 'ECONOMIC_GAP' : 'NO_CLEAR_GAP';
+    const breakthroughSignal = s.cvr > market.categoryCvr * 1.08 ? 'CONVERSION_GAP' : s.ctr > 0.04 && pressure < 2 ? 'TRAFFIC_GAP' : (s.roi ?? 0) > 3 ? 'ECONOMIC_GAP' : 'NO_CLEAR_GAP';
     out.push({ round, action, opponentActions, state: clone(s), breakthroughSignal });
     market.demand = Math.max(0.65, Math.min(1.5, market.demand + (rnd() - 0.48) * 0.04));
     market.categoryCvr = Math.max(0.01, Math.min(0.12, market.categoryCvr + (rnd() - 0.5) * 0.002));
