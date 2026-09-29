@@ -1,0 +1,29 @@
+{
+  "backup_name": "备份",
+  "backup_type": "disaster-recovery-v2",
+  "snapshot_at": "2026-09-29",
+  "repository": "konggu888/ecommerce-agent",
+  "branch": "备份",
+  "supabase_project_id": "skuoxmrzlxhebzhfgbyn",
+  "components": {
+    "website_code": true,
+    "database_schema_snapshot": true,
+    "database_nonempty_data": true,
+    "edge_function_source": true,
+    "extension_inventory": true,
+    "project_metadata": true,
+    "auth_storage_state": true,
+    "restore_program": true,
+    "restore_checklist": true,
+    "secrets": false,
+    "auth_user_data": false,
+    "storage_binary_objects": false
+  },
+  "current_empty_components": {
+    "auth_users": 0,
+    "auth_identities": 0,
+    "storage_buckets": 0,
+    "storage_objects": 0
+  },
+  "secret_policy": "The repository is public. Secrets are deliberately excluded and must be regenerated during recovery."
+}
