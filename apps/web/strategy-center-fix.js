@@ -178,6 +178,7 @@
       var mode=modeOf(z.m);
       if(mode==='机制校验' && state.risk<3 && state.pressure<4 && weights[mode]<1.4)return;
       var d=domain(z.m), score=weights[mode]*6, k=intensity(z.m);
+      var ms=(z.m.name||'')+' '+(z.m.action||'')+' '+(z.m.signal||'');
       // 开局不是“别人来抢我方”：我方是新商品，市场流量已经被现有商品占据。
       // 第一手优先寻找可以切入、争取、抢占的流量入口；防守/负向施压在开局明显降权。
       if(side==='我方' && state.turn===0){
@@ -201,7 +202,6 @@
       if(side==='对手' && mode==='负向施压' && state.lastMode!=='负向施压' && state.pressure<3)score-=1.5;
       if(side==='我方' && mode==='负向施压' && state.pressure<4 && state.risk<5)score-=1.2;
       // 商品已上线但初始配置来自热门/竞品复制；后续博弈可以继续纠偏，不把“已完成”当成“不可修改”。
-      var ms=(z.m.name||'')+' '+(z.m.action||'')+' '+(z.m.signal||'');
       if(side==='我方' && /关键词|长尾|搜索/.test(ms)){
         if(state.productVariables.longTailKeywords.needsReview)score+=2.2;
         if(state.feedback.ctr!==null && state.feedback.ctr<0.8)score+=1.4;
