@@ -250,7 +250,7 @@
     var z=pickCandidate(state,'对手');
     if(!z)return null;
     return {id:z.m.id,name:z.m.name,kind:z.kind,mode:z.mode,role:'对手（模拟）',source:z.m,
-      reason:'对手共享全部战略动作空间；下一手根据我方上一手、累计压力、风险与人格倾向选择，不再固定等于负向攻击。'};
+      reason:buildMoveReason(state,z,'对手')};
   }
 
   function stateSignature(s){
@@ -267,18 +267,6 @@
     if(meaningful){state.meaningfulMoves++;state.staleMoves=0;}
     else state.staleMoves++;
     return {meaningful:meaningful,delta:delta,changedDomain:changedDomain,changedMode:changedMode};
-  }
-
-  function shouldEnd(state, stepNo, change){
-    // 前6步用于建立基本局面，避免开局过早结束。
-    if(stepNo<6)return null;
-    if(state.risk>=10)return '风险达到封顶：进入防守/校验收束';
-    if(state.pressure>=11 && state.momentum<=1)return '对手压力持续累积：进入防守收束';
-    if(state.momentum>=9 && state.pressure<=3 && state.information>=5)return '我方优势已形成：进入成果兑现收束';
-    if(state.staleMoves>=2)return '连续两手没有产生足够新的有效变量：停止硬凑步数';
-    if(state.domainChanges>=8 && state.pressure<=2 && state.risk<=3)return '主要竞争变量已经轮换完成：进入复盘收束';
-    if(stepNo>=state.maxTurns)return '达到安全上限：进入复盘（40步只是上限，不是目标）';
-    return null;
   }
 
   function shouldEnd(state, stepNo, change){
