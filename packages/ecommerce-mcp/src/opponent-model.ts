@@ -1,4 +1,5 @@
 import { Action, CompetitorSnapshot, GameState } from './game-state';
+import { inferOpponentUncertainty } from './threat-inference';
 
 export type OpponentResponse =
   | 'MATCH_PRICE'
@@ -13,6 +14,10 @@ export interface OpponentModel {
   response: OpponentResponse;
   probability: number;
   rationale: string[];
+  /** Confidence in this response branch; not confidence that a specific competitor caused an event. */
+  confidence: number;
+  uncertainty: number;
+  evidenceBasis: 'OBSERVED_COMPETITOR_STATE' | 'INFERRED_THREAT' | 'WEAK_SIGNAL';
 }
 
 export interface BreakthroughInput {
@@ -57,11 +62,24 @@ function modelOne(c: CompetitorSnapshot, state: GameState): OpponentModel {
     rationale.push('当前公开信号不足以支持强响应判断');
   }
 
-  return { competitorId: c.competitorId, response, probability, rationale };
+  return { competitorId: c.competitorId, response, probability, rationale, confidence: probability, uncertainty: 1 - probability, evidenceBasis: 'OBSERVED_COMPETITOR_STATE' };
 }
 
 export function modelOpponentResponses(state: GameState): OpponentModel[] {
-  return state.competitors.map(c => modelOne(c, state));
+  const base = state.competitors.map(c => modelOne(c, state));
+  const uncertainty = inferOpponentUncertainty(state);
+  if (!uncertainty) return base;
+  return base.map(o => {
+    const p = o.probability * (1 - 0.45 * uncertainty);
+    return {
+      ...o,
+      probability: Math.max(0.05, Math.min(0.9, p)),
+      confidence: Math.max(0.05, Math.min(0.9, o.confidence * (1 - 0.55 * uncertainty))),
+      uncertainty: Math.min(1, o.uncertainty + 0.55 * uncertainty),
+      evidenceBasis: 'INFERRED_THREAT',
+      rationale: [...o.rationale, '存在可观测异常的竞争风险假设，因此降低对具体响应的确定性']
+    };
+  });
 }
 
 export function detectBreakthrough(input: BreakthroughInput): OpponentBreakthrough {
