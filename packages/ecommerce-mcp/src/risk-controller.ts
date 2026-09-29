@@ -1,3 +1,5 @@
+import { Action } from './game-state';
+
 export type RiskLevel = 'LOW' | 'MEDIUM' | 'HIGH' | 'BLOCKED';
 export type ExecutionMode = 'ANALYZE_ONLY' | 'APPROVAL_REQUIRED' | 'AUTO_LIMITED' | 'AUTO_DISABLED';
 
@@ -12,7 +14,7 @@ export interface RiskPolicy {
 }
 
 export interface ProposedAction {
-  action: 'INCREASE_BUDGET' | 'DECREASE_BUDGET' | 'INCREASE_BID' | 'DECREASE_BID' | 'PAUSE_CAMPAIGN' | 'RESUME_CAMPAIGN';
+  action: Action;
   currentValue?: number;
   requestedValue?: number;
   changePct?: number;
