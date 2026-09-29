@@ -15,10 +15,11 @@ jobs:
           from pathlib import Path
           p=Path("apps/web/index.html")
           s=p.read_text()
-          tag='<script src="./strategy-center-fix.js?v=20260929-59"></script>'
-          if tag not in s:
-              s=s.replace('</body>', tag+'</body>')
-              p.write_text(s)
+          tag='<script src="./strategy-center-fix.js?v=continuous-market-entry-20260930-3"></script>'
+          import re
+          s=re.sub(r'<script src="\.\/strategy-center-fix\.js\?v=[^"]+"></script>', '', s)
+          s=s.replace('</body>', tag+'</body>')
+          p.write_text(s)
           PY
       - name: Commit patch
         run: |
