@@ -530,19 +530,124 @@
   }
 
   function strategyCenter() {
-    var threats=window.EA_THREAT_LIBRARY||[], positives=window.EA_POSITIVE_ATTACK_LIBRARY||[], humans=window.EA_HUMAN_BEHAVIOR_LIBRARY||[];
-    function names(list){return list.slice(0,8).map(function(x){return '<div class="notice"><span class="tag">'+esc(x.id)+'</span> <b>'+esc(x.name)+'</b><div class="muted">'+esc(x.category||x.style||'策略')+'</div></div>';}).join('');}
-    var body='<div class="card"><div class="label">新版策略中心 · 独立于原页面</div><h2>同一个博弈引擎，三个入口</h2><div class="notice">这里不删除、不替换旧页面。新版只负责把“对手攻击面、人性行为、正向攻势”统一转换成连续博弈动作。</div></div>'+
-      '<div class="card"><div class="label">统一策略链</div><div style="display:flex;gap:8px;overflow:auto;padding:12px 0">'+
-      ['发现信号','证据/假设','防守','正向进攻','镜像反制','换路','记录实际响应','更新对手记忆'].map(function(x,i){return '<div style="min-width:150px;border:1px solid var(--line);border-radius:10px;padding:12px"><span class="tag">'+('0'+(i+1)).slice(-2)+'</span><br><b>'+x+'</b></div>'+(i<7?'<div style="align-self:center;font-size:20px">→</div>':'');}).join('')+'</div><div class="card" style="border-left:4px solid var(--accent)"><b>核心循环</b><div style="font-size:20px;margin-top:6px">我变 → 对手学 → 我再变</div></div></div>'+
-      '<div class="grid"><div class="card"><div class="label">对手攻击面</div><div class="metric">'+threats.length+'</div><div style="margin-top:8px">'+names(threats)+'</div></div>'+
-      '<div class="card"><div class="label">正向攻势</div><div class="metric">'+positives.length+'</div><div style="margin-top:8px">'+names(positives)+'</div></div>'+
-      '<div class="card"><div class="label">人性行为</div><div class="metric">'+humans.length+'</div><div style="margin-top:8px">'+names(humans)+'</div></div></div>'+
-      '<div class="card"><div class="label">四张策略牌</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:8px">'+
-      '<div class="notice"><b>① 防守</b><br>降低暴露、保护利润、留存证据</div><div class="notice"><b>② 正向进攻</b><br>产品、内容、服务、流量、供应链</div><div class="notice"><b>③ 镜像反制</b><br>回应竞争机制，但不复制违规行为</div><div class="notice"><b>④ 换路</b><br>压力持续或路线被学会时测试替代路径</div></div></div>'+
-      '<div class="card"><div class="label">新版运行规则</div><div class="notice">① 看得到的才是事实；② 看不到的只作为假设；③ 对手实际响应优先于理论预测；④ 每轮记录动作—反馈—响应；⑤ 反复暴露导致反制压力上升时，降低该路线权重；⑥ 数据不足时继续观察，不强行归因。</div></div>'+
-      '<div class="card"><div class="label">后续接入</div><div class="notice">下一阶段可把这里直接接入 opponentCounterMatrix：系统自动读取历史反制压力，为每张策略牌计算“预期收益 − 反制压力 − 风险 + 新颖性/替代路线价值”，然后进入 Sandbox 与 Risk Controller。</div></div>';
-    show('连续博弈策略中心','新版独立页面 · 原有三个页面完整保留',body);
+    var threats=window.EA_THREAT_LIBRARY||[];
+    var positives=window.EA_POSITIVE_ATTACK_LIBRARY||[];
+    var humans=window.EA_HUMAN_BEHAVIOR_LIBRARY||[];
+    var tplays=window.EA_THREAT_PLAYBOOKS||{};
+    var pplays=window.EA_POSITIVE_ATTACK_PLAYBOOKS||[];
+    var selectedType='positive', selected=positives.length?positives[0]:null;
+
+    function findPlaybook(id){
+      for(var i=0;i<pplays.length;i++) if(pplays[i].id===id) return pplays[i];
+      return null;
+    }
+    function counterMap(){
+      var latest=state.game&&state.game.length?state.game[state.game.length-1]:null, raw=latest&&latest.opponent_counter_matrix;
+      if(!raw && latest&&latest.state){
+        try{raw=typeof latest.state==='string'?JSON.parse(latest.state).opponentCounterMatrix:latest.state.opponentCounterMatrix;}catch(e){}
+      }
+      if(typeof raw==='string'){try{raw=JSON.parse(raw);}catch(e){raw=null;}}
+      return raw||{};
+    }
+    function routePressure(x){
+      var m=counterMap(), v=m[x.action||x.name]||m[x.id]||null;
+      if(!v) return {pressure:0,observations:0,counter:'暂无历史反制样本'};
+      return {pressure:Number(v.pressure||0),observations:Number(v.observations||0),counter:v.counter||'未知'};
+    }
+    function escList(items){
+      if(!items||!items.length)return '<div class="muted">暂无</div>';
+      var h='<div style="display:grid;gap:7px">';
+      for(var i=0;i<items.length;i++)h+='<div class="notice">• '+esc(items[i])+'</div>';
+      return h+'</div>';
+    }
+    function humanPlan(x){
+      var negative=String(x.risk||'').indexOf('高')>=0, seq=x.sequence||[];
+      for(var i=0;i<seq.length;i++)if(String(seq[i]).indexOf('负')>=0)negative=true;
+      return {
+        defense:['连续多个窗口观察，不把一次价格/流量/评价变化直接归因给对手','建立价格、流量、CTR、CVR、退款、评价、投诉、广告和排名基线','设置预算、库存、毛利和现金流保护线；保留可验证时间线'],
+        offense:[negative?'围绕对方施压变量建立替代路径：价值/套餐、内容/渠道、商品/信任资产':'优先做产品、内容、服务、品牌和供应链等真实增长变量','先小规模实验，再根据真实反馈扩大；把成功动作拆成多个变量','避免长期重复暴露同一入口，让每轮反馈成为下一轮路线选择依据'],
+        mirror:['镜像竞争机制，不复制虚假评价、恶意举报、骚扰、造谣、刷量等违规手段','如果对方切换路径，同步切换观察维度并测试替代入口','记录“对手实际动作 → 我方响应 → 市场反馈 → 对手下一次变化”']
+      };
+    }
+    function planFor(x,type){
+      if(type==='human') return humanPlan(x);
+      var pressure=routePressure(x);
+      if(type==='threat'){
+        return {
+          defense:[x.defense||'建立经营基线、降低单点依赖、留存证据','把异常拆成事实、可观测异常和待验证假设','数据不足时继续观察，不直接归因'],
+          offense:['把风险暴露点转换成建设性增长变量：产品、内容、服务、渠道或供应链','优先测试替代路径，避免在原攻击面持续消耗','用真实数据验证增量，再逐步扩大'],
+          mirror:['回应竞争机制，但只使用真实商品、真实数据、正常投放和平台允许的方式','观察对手是否跟随；跟随后改变变量组合、场景、人群或渠道','持续压力下进入换路，而不是无限升级对抗']
+        };
+      }
+      return {
+        defense:['先设预算、毛利、库存、履约和现金流保护线','监测搜索、流量、CTR、CVR、退款、评价、投诉等指标','低样本结果保持不确定，缩小实验继续采样'],
+        offense:[x.action||'围绕当前增长变量进行小规模实验','把动作拆成多个可验证变量，逐项测试','优先沉淀真实、可持续、难以单点复制的能力'],
+        mirror:['观察对手是否复制该增长动作','如果被跟随，改变变量组合、场景、人群或渠道','镜像竞争机制，不复制违规手段']
+      };
+    }
+    function detail(x,type){
+      if(!x)return notice('暂无策略数据。');
+      var plan=planFor(x,type), pb=type==='threat'?(tplays[x.id]||[]):(type==='positive'?findPlaybook(x.id):[]);
+      var pressure=routePressure(x);
+      var title=type==='threat'?'对手攻击面':(type==='human'?'人性行为':'正向攻势');
+      var html='<div class="card" style="border:2px solid var(--accent);padding:16px">'+
+        '<div style="display:flex;gap:8px;flex-wrap:wrap"><span class="tag">'+esc(x.id)+'</span><span class="tag">'+esc(x.category||x.style||title)+'</span><span class="tag warning">'+esc(title)+'</span></div>'+
+        '<h2>'+esc(x.name)+'</h2>'+
+        '<div class="grid"><div class="card"><div class="label">信号/条件</div><div>'+esc(x.signal||'根据行为序列与实际数据观察')+'</div></div><div class="card"><div class="label">战略目标</div><div>'+esc(x.goal||x.action||'保护经营空间并寻找下一条可验证路线')+'</div></div><div class="card"><div class="label">历史反制压力</div><div class="metric">'+pressure.pressure.toFixed(2)+'</div><div class="muted">'+esc(pressure.counter)+' · '+pressure.observations+'次样本</div></div></div>'+
+        '<div class="label">① 防守攻略</div>'+escList(plan.defense)+
+        '<div class="label" style="margin-top:14px">② 正向进攻攻略</div>'+escList(plan.offense)+
+        '<div class="label" style="margin-top:14px">③ 镜像反制攻略</div>'+escList(plan.mirror);
+
+      if(type==='human'){
+        html+='<div class="label" style="margin-top:14px">行为演变</div><div class="notice">'+esc((x.sequence||[]).join(' → '))+'</div>';
+      }
+      if(pb&&pb.length){
+        html+='<div class="label" style="margin-top:14px">④ 五轮攻略 · 不是一句建议，而是按轮次执行</div><div style="display:grid;gap:8px">';
+        for(var i=0;i<5;i++){
+          var st=pb[i]||'根据上一轮反馈决定下一步';
+          html+='<div class="notice"><b>R'+(i+1)+'</b>　'+esc(st)+'</div>';
+        }
+        html+='</div>';
+        if(type==='positive'){
+          var p=findPlaybook(x.id);
+          html+='<div class="grid"><div class="card"><div class="label">对手响应假设</div><div>'+esc((p.opponentResponses||[]).join(' / ')||'继续观察')+'</div></div><div class="card"><div class="label">终局状态</div><div>'+esc((p.endStates||[]).join(' / ')||'扩大 / 保持 / 降级 / 等待 / 停止')+'</div></div></div>';
+        }
+      } else {
+        html+='<div class="label" style="margin-top:14px">④ 五轮攻略</div><div class="notice"><b>R1</b> 记录基线 → <b>R2</b> 小规模实验 → <b>R3</b> 观察实际响应 → <b>R4</b> 根据响应换路/扩大 → <b>R5</b> 进入继续、降级、等待或停止。</div>';
+      }
+      html+='<div class="label" style="margin-top:14px">⑤ 对手学会后的换路</div><div class="notice">如果同一路线连续出现反制压力上升：降低重复暴露 → 从历史反制较少的替代变量中选一条 → 小规模验证 → 把实际响应写回记忆。<br><b>当前未知 ≠ 对手一定不会反制。</b></div>'+
+        '<div class="card" style="margin-top:14px;border-left:4px solid var(--accent)"><b>连续博弈执行链</b><div style="font-size:19px;margin-top:6px">我变 → 对手学 → 我再变</div><div class="muted">实际响应优先于理论预测；数据不足时不强行归因。</div></div></div>';
+      return html;
+    }
+    function cards(list,type){
+      var h='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px">';
+      for(var i=0;i<list.length;i++){var x=list[i],active=selectedType===type&&selected&&x.id===selected.id;h+='<button type="button" class="sc-choice" data-type="'+type+'" data-id="'+esc(x.id)+'" style="text-align:left;padding:11px;border:1px solid '+(active?'var(--accent)':'var(--line)')+';border-radius:9px;background:transparent;color:inherit;cursor:pointer"><span class="tag">'+esc(x.id)+'</span> <b>'+esc(x.name)+'</b><div class="muted">'+esc(x.category||x.style||'策略')+'</div></button>';}
+      return h+'</div>';
+    }
+    var latest=state.agentRounds&&state.agentRounds.length?state.agentRounds[state.agentRounds.length-1]:null;
+    var body='<div class="card"><div class="label">策略中心 · 实战工作台</div><h2>不是静态目录，而是“选问题 → 出攻略 → 多轮博弈 → 换路”</h2><div class="notice">旧页面全部保留；本页只做统一工作台。选择下面任一攻击面、行为模式或正向策略后，右侧/下方直接生成防守、正攻、镜像、五轮攻略和换路方案。</div></div>'+
+      '<div class="card"><div class="label">当前 Sandbox 状态</div><div class="grid"><div><b>当前轮次</b><br>'+(latest?'R'+esc(latest.round):'暂无')+'</div><div><b>当前动作</b><br>'+esc(latest&&latest.action||'等待选择策略')+'</div><div><b>实际对手响应</b><br>'+esc(latest&&latest.actual_opponent_response||'暂无')+'</div><div><b>下一动作</b><br>'+esc(latest&&latest.next_action_hint||'选择攻略后进入模拟')+'</div></div></div>'+
+      '<div class="card"><div class="label">① 选择策略来源</div><div style="display:flex;gap:8px;flex-wrap:wrap">'+
+      '<button class="action sc-tab" data-type="positive">正向攻势（'+positives.length+'）</button><button class="action sc-tab" data-type="threat">对手攻击面（'+threats.length+'）</button><button class="action sc-tab" data-type="human">人性行为（'+humans.length+'）</button></div>'+
+      '<div id="sc-list" style="margin-top:12px">'+cards(positives,'positive')+'</div></div>'+
+      '<div id="sc-detail">'+detail(selected,'positive')+'</div>'+
+      '<div class="card"><div class="label">② 本页如何使用实际对手学习</div><div class="notice">每轮不只看理论分支：记录我方动作、对手实际响应、样本数和反制压力。历史上已经形成稳定反制的路线降低权重；没有足够样本的路线标记为未知，先实验再判断。</div></div>';
+    show('连续博弈策略中心','实战工作台 · 攻略生成 → 多轮模拟 → 对手学习 → 换路',body);
+    function renderList(type){
+      var list=type==='positive'?positives:(type==='threat'?threats:humans);
+      document.getElementById('sc-list').innerHTML=cards(list,type);
+      var all=document.querySelectorAll('.sc-choice');
+      for(var i=0;i<all.length;i++)all[i].addEventListener('click',function(){
+        selectedType=this.dataset.type; var list2=selectedType==='positive'?positives:(selectedType==='threat'?threats:humans), found=null;
+        for(var j=0;j<list2.length;j++)if(list2[j].id===this.dataset.id){found=list2[j];break;}
+        selected=found; document.getElementById('sc-detail').innerHTML=detail(found,selectedType);
+        renderList(selectedType);
+        document.getElementById('sc-detail').scrollIntoView({behavior:'smooth',block:'start'});
+      });
+    }
+    var tabs=document.querySelectorAll('.sc-tab');
+    for(var i=0;i<tabs.length;i++)tabs[i].addEventListener('click',function(){selectedType=this.dataset.type;var list=selectedType==='positive'?positives:(selectedType==='threat'?threats:humans);selected=list.length?list[0]:null;renderList(selectedType);document.getElementById('sc-detail').innerHTML=detail(selected,selectedType);});
+    renderList('positive');
   }
 
   function positiveAttacks() {
