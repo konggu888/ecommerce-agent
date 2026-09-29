@@ -238,6 +238,20 @@
       if(actor==='our')delta.momentum-=.15;else delta.opponentMomentum+=.35;
     }
     Object.keys(delta).forEach(function(key){s[key]=Math.max(0,s[key]+delta[key]);});
+    // 把“出招”真正映射到商品变量：已上线不等于固定，博弈可以持续修改初始复制配置。
+    var nm=(m&&m.name)||'', ac=(m&&m.action)||'';
+    function revise(key,boost){
+      if(!s.productVariables[key])return;
+      s.productVariables[key].version++;
+      s.productVariables[key].confidence=Math.min(1,s.productVariables[key].confidence+boost);
+      s.productVariables[key].needsReview=false;
+    }
+    if(side==='我方'){
+      if(/核心关键词|关键词重构|长尾关键词/.test(nm+' '+ac)){revise('title',.12);revise('longTailKeywords',.18);}
+      if(/主图/.test(nm+' '+ac)){revise('mainImage',.16);if(s.feedback.ctr!==null)s.feedback.ctr=Math.min(1.2,s.feedback.ctr+.08);}
+      if(/详情|FAQ/.test(nm+' '+ac)){revise('detail',.15);if(s.feedback.conversion!==null)s.feedback.conversion=Math.min(1.2,s.feedback.conversion+.07);}
+      if(/视频|UGC|种草|内容/.test(nm+' '+ac)){revise('video',.12);revise('seeding',.12);}
+    }
     s.lastSide=side;s.lastMove=m;s.lastMode=mode;s.lastDomain=d;s.lastIntensity=k;s.turn++;
     s.history.push({side:side,id:m&&m.id,name:m&&m.name,kind:m&&m.kind,mode:mode,domain:d,intensity:k});
     if(d!==beforeDomain)s.domainChanges++;
