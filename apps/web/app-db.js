@@ -82,9 +82,10 @@
     });
   }
 
-  function runURL(name) {
-    return BASE + '/rest/v1/' + name +
-      '?select=*&order=id.desc';
+  function runURL(name, runScoped) {
+    var q = '?select=*&order=id.desc';
+    if (runScoped && state.run && state.run.id) q += '&run_id=eq.' + encodeURIComponent(state.run.id);
+    return BASE + '/rest/v1/' + name + q;
   }
 
   function loadRun() {
@@ -103,14 +104,14 @@
 
   function loadCore() {
     return Promise.all([
-      getJSON(runURL('sandbox_game_states')),
-      getJSON(runURL('sandbox_market_signals')),
-      getJSON(runURL('sandbox_backtests')),
-      getJSON(runURL('sandbox_events')),
-      getJSON(runURL('sandbox_memories')),
-      getJSON(runURL('sandbox_risk_results')),
-      getJSON(runURL('sandbox_task_results')),
-      getJSON(runURL('sandbox_agent_rounds'))
+      getJSON(runURL('sandbox_game_states', true)),
+      getJSON(runURL('sandbox_market_signals', true)),
+      getJSON(runURL('sandbox_backtests', true)),
+      getJSON(runURL('sandbox_events', true)),
+      getJSON(runURL('sandbox_memories', true)),
+      getJSON(runURL('sandbox_risk_results', true)),
+      getJSON(runURL('sandbox_task_results', true)),
+      getJSON(runURL('sandbox_agent_rounds', true))
     ]).then(function (x) {
       state.game = x[0];
       state.market = x[1];
