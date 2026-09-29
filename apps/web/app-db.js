@@ -106,7 +106,19 @@
 
   var adTables = [
     'sandbox_ad_plans',
-    'sandbox_ad_keywords'
+    'sandbox_ad_units',
+    'sandbox_ad_keywords',
+    'sandbox_ad_keyword_moves',
+    'sandbox_ad_audiences',
+    'sandbox_ad_audience_combos',
+    'sandbox_ad_creatives',
+    'sandbox_ad_placements',
+    'sandbox_ad_regions',
+    'sandbox_ad_timeslots',
+    'sandbox_ad_negative_keywords',
+    'sandbox_ad_agent_actions',
+    'sandbox_ad_results',
+    'sandbox_ad_reports'
   ];
 
   function loadAds() {
@@ -163,30 +175,131 @@
 
   function ads() {
     var a = state.ads;
-    var rows = [];
-    var keywords = a.sandbox_ad_keywords || [];
-    for (var i = 0; i < keywords.length; i++) {
-      var x = keywords[i];
-      rows.push([x.keyword, x.keyword_type, x.match_type, x.bid, x.impressions, x.clicks, x.ctr, x.conversions, x.cvr, x.spend, x.gmv, x.roi]);
-    }
-
     var plans = a.sandbox_ad_plans || [];
+    var units = a.sandbox_ad_units || [];
+    var keywords = a.sandbox_ad_keywords || [];
+    var moves = a.sandbox_ad_keyword_moves || [];
+    var audiences = a.sandbox_ad_audiences || [];
+    var combos = a.sandbox_ad_audience_combos || [];
+    var creatives = a.sandbox_ad_creatives || [];
+    var placements = a.sandbox_ad_placements || [];
+    var regions = a.sandbox_ad_regions || [];
+    var timeslots = a.sandbox_ad_timeslots || [];
+    var negatives = a.sandbox_ad_negative_keywords || [];
+    var actions = a.sandbox_ad_agent_actions || [];
+    var results = a.sandbox_ad_results || [];
+    var reports = a.sandbox_ad_reports || [];
+
     var planRows = [];
     for (var p = 0; p < plans.length; p++) {
       var q = plans[p];
       planRows.push([q.name, q.status, q.product, q.scene, q.daily_budget, q.bid_strategy]);
     }
 
+    var unitRows = [];
+    for (var u = 0; u < units.length; u++) {
+      var un = units[u];
+      unitRows.push([un.name, un.product, un.status, un.keyword_count, un.audience_count, un.creative_count]);
+    }
+
+    var keywordRows = [];
+    for (var i = 0; i < keywords.length; i++) {
+      var x = keywords[i];
+      keywordRows.push([x.keyword, x.keyword_type, x.match_type, x.bid, x.impressions, x.clicks, x.ctr, x.conversions, x.cvr, x.spend, x.gmv, x.roi]);
+    }
+
+    var moveRows = [];
+    for (var m = 0; m < moves.length; m++) {
+      var mv = moves[m];
+      moveRows.push([mv.source_keyword, mv.source_scene, mv.related_keyword, mv.related_scene, mv.move_type, mv.impressions, mv.clicks, mv.conversions, mv.cvr, mv.roi, mv.agent_conclusion, mv.status]);
+    }
+
+    var audienceRows = [];
+    for (var j = 0; j < audiences.length; j++) {
+      var au = audiences[j];
+      audienceRows.push([au.name, au.audience_type, au.behavior, au.window_days, au.size, au.coverage, au.cvr, au.roi, au.bid, au.premium, au.overlap, au.status]);
+    }
+
+    var comboRows = [];
+    for (var k = 0; k < combos.length; k++) {
+      var co = combos[k];
+      comboRows.push([co.name, JSON.stringify(co.components), co.size, co.overlap, co.cvr, co.roi, co.agent_conclusion]);
+    }
+
+    var creativeRows = [];
+    for (var cr = 0; cr < creatives.length; cr++) {
+      var cv = creatives[cr];
+      creativeRows.push([cv.name, cv.creative_type, cv.title, cv.audit_status, cv.impressions, cv.clicks, cv.ctr, cv.conversions, cv.roi, cv.status]);
+    }
+
+    var placementRows = [];
+    for (var pl = 0; pl < placements.length; pl++) {
+      var pp = placements[pl];
+      placementRows.push([pp.channel, pp.placement, pp.impressions, pp.clicks, pp.ctr, pp.spend, pp.conversions, pp.cvr, pp.gmv, pp.roi]);
+    }
+
+    var regionRows = [];
+    for (var rg = 0; rg < regions.length; rg++) {
+      var rr = regions[rg];
+      regionRows.push([rr.region, rr.impressions, rr.clicks, rr.ctr, rr.spend, rr.conversions, rr.cvr, rr.roi]);
+    }
+
+    var timeRows = [];
+    for (var ts = 0; ts < timeslots.length; ts++) {
+      var tt = timeslots[ts];
+      timeRows.push([tt.slot, tt.weekday, tt.impressions, tt.clicks, tt.ctr, tt.cpc, tt.conversions, tt.cvr, tt.roi]);
+    }
+
+    var negativeRows = [];
+    for (var ng = 0; ng < negatives.length; ng++) {
+      var nn = negatives[ng];
+      negativeRows.push([nn.keyword, nn.clicks, nn.spend, nn.conversions, nn.agent_conclusion, nn.status]);
+    }
+
+    var actionRows = [];
+    for (var ac = 0; ac < actions.length; ac++) {
+      var aa = actions[ac];
+      actionRows.push([aa.action_type, aa.target, aa.reason, JSON.stringify(aa.before_value), JSON.stringify(aa.after_value), aa.result, aa.status]);
+    }
+
+    var resultRows = [];
+    for (var rs = 0; rs < results.length; rs++) {
+      var re = results[rs];
+      resultRows.push([re.kind, JSON.stringify(re.payload), re.created_at]);
+    }
+
+    var reportRows = [];
+    for (var rp = 0; rp < reports.length; rp++) {
+      var rd = reports[rp];
+      reportRows.push([rd.dimension, rd.dimension_value, rd.impressions, rd.clicks, rd.ctr, rd.cpc, rd.spend, rd.conversions, rd.cvr, rd.gmv, rd.roi, rd.report_date]);
+    }
+
     show(
       '广告 / 流量',
-      'BOOT-DEBUG-' + VERSION + ' · Sandbox 模拟数据',
+      'BOOT-DEBUG-' + VERSION + ' · Sandbox 模拟数据 · 广告数据链',
       '<div class="grid">' +
       '<div class="card"><div class="label">投放计划</div><div class="metric">' + plans.length + '</div></div>' +
+      '<div class="card"><div class="label">投放单元</div><div class="metric">' + units.length + '</div></div>' +
       '<div class="card"><div class="label">关键词</div><div class="metric">' + keywords.length + '</div></div>' +
+      '<div class="card"><div class="label">人群</div><div class="metric">' + audiences.length + '</div></div>' +
+      '<div class="card"><div class="label">创意</div><div class="metric">' + creatives.length + '</div></div>' +
+      '<div class="card"><div class="label">Agent动作</div><div class="metric">' + actions.length + '</div></div>' +
       '</div>' +
-      table(['投放计划','状态','商品','场景','日预算','出价策略'], planRows) +
-      table(['关键词','类型','匹配','出价','展现','点击','CTR','成交','CVR','消耗','GMV','ROI'], rows) +
-      notice('广告模块第一阶段：先验证投放计划和关键词。其余广告表下一阶段恢复。')
+      '<h2>投放计划</h2>' + table(['投放计划','状态','商品','场景','日预算','出价策略'], planRows) +
+      '<h2>投放单元</h2>' + table(['单元','商品','状态','关键词数','人群数','创意数'], unitRows) +
+      '<h2>关键词</h2>' + table(['关键词','类型','匹配','出价','展现','点击','CTR','成交','CVR','消耗','GMV','ROI'], keywordRows) +
+      '<h2>关键词迁移 / 扩词</h2>' + table(['源关键词','源场景','关联关键词','关联场景','动作类型','展现','点击','成交','CVR','ROI','Agent结论','状态'], moveRows) +
+      '<h2>投放人群</h2>' + table(['人群','类型','行为','窗口天数','规模','覆盖率','CVR','ROI','出价','溢价','重叠','状态'], audienceRows) +
+      '<h2>人群组合</h2>' + table(['组合','组成','规模','重叠','CVR','ROI','Agent结论'], comboRows) +
+      '<h2>创意</h2>' + table(['名称','类型','标题','审核','展现','点击','CTR','成交','ROI','状态'], creativeRows) +
+      '<h2>资源位</h2>' + table(['渠道','资源位','展现','点击','CTR','消耗','成交','CVR','GMV','ROI'], placementRows) +
+      '<h2>地域</h2>' + table(['地域','展现','点击','CTR','消耗','成交','CVR','ROI'], regionRows) +
+      '<h2>时段</h2>' + table(['时段','星期','展现','点击','CTR','CPC','成交','CVR','ROI'], timeRows) +
+      '<h2>否定词</h2>' + table(['关键词','点击','消耗','成交','Agent结论','状态'], negativeRows) +
+      '<h2>Agent动作</h2>' + table(['动作','目标','原因','动作前','动作后','结果','状态'], actionRows) +
+      '<h2>投放结果</h2>' + table(['类型','Payload','时间'], resultRows) +
+      '<h2>广告报告</h2>' + table(['维度','维度值','展现','点击','CTR','CPC','消耗','成交','CVR','GMV','ROI','日期'], reportRows) +
+      notice('广告模块已恢复完整 Sandbox 数据链：计划 → 单元 → 关键词/扩词 → 人群 → 创意 → 资源位 → 地域 → 时段 → 否定词 → Agent动作 → 结果/报告。')
     );
   }
 
