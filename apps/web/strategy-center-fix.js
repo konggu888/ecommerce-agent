@@ -159,8 +159,18 @@
     return out;
   }
 
+  function diagnoseProduct(state){
+    var f=state.feedback||{}, d=[];
+    if(f.searchTerms!==null && f.searchTerms<.8)d.push({key:'longTailKeywords',label:'长尾关键词/搜索匹配',why:'搜索词匹配反馈偏弱'});
+    if(f.ctr!==null && f.ctr<.8)d.push({key:'mainImage',label:'主图/标题点击表达',why:'曝光后的点击反馈偏弱'});
+    if(f.conversion!==null && f.conversion<.8)d.push({key:'detail',label:'详情页/卖点承接',why:'点击后的转化反馈偏弱'});
+    if(f.contentSpread!==null && f.contentSpread<.8)d.push({key:'seeding',label:'视频/种草内容',why:'内容扩散反馈偏弱'});
+    if(f.competitorMoves!==null && f.competitorMoves>.7)d.push({key:'competition',label:'竞争变量',why:'对手动作频繁，需要重新观察竞争变量'});
+    return d;
+  }
+
   function candidateSpace(state,side){
-    var weights=personalityWeights(state.personality,state,side), pool=movePool(), out=[];
+    var weights=personalityWeights(state.personality,state,side), pool=movePool(), out=[], diagnoses=diagnoseProduct(state);
     pool.forEach(function(z){
       if(!z.m || state.usedMoves[z.m.id])return;
       var mode=modeOf(z.m);
@@ -185,6 +195,17 @@
       }
       if(side==='我方' && /视频|UGC|种草|内容/.test(ms)){
         if(state.feedback.contentSpread!==null && state.feedback.contentSpread<0.85)score+=1.8;
+      }
+      // 反馈诊断优先于人格偏好：棋谱先解决已经暴露的问题，再谈风格。
+      if(side==='我方' && diagnoses.length){
+        var targetText=ms;
+        diagnoses.forEach(function(di){
+          var hit=(di.key==='longTailKeywords'&&/关键词|长尾|搜索/.test(targetText)) ||
+                  (di.key==='mainImage'&&/主图|标题/.test(targetText)) ||
+                  (di.key==='detail'&&/详情|FAQ|卖点|痛点/.test(targetText)) ||
+                  (di.key==='seeding'&&/视频|UGC|种草|内容/.test(targetText));
+          if(hit)score+=3.2;
+        });
       }
       if(mode==='建设' && state.momentum>=7)score-=.5;
       if(mode==='防守' && state.pressure<=1 && state.risk<=2)score-=.5;
@@ -319,6 +340,9 @@
     else if(z.mode==='反制') parts.push(state.pressure>=5||state.lastMode==='负向施压'?'上一手形成了明显压力，本手针对性回应。':'存在可利用的回应窗口，因此不做无差别升级。');
     else if(z.mode==='机制校验') parts.push(state.risk>=5||state.pressure>=5?'风险或异常信号已经累积，需要先验证状态。':'当前不确定性较高，先确认机制层面的真实状态。');
     else if(z.mode==='负向施压') parts.push(state.pressure>=4||state.opponentMomentum>=5?'对抗变量已累积到可承受更强动作的程度，本手提高对手决策成本。':'人格允许主动施压，但当前仍控制强度，不直接升级到极端。');
+    var diagnoses=diagnoseProduct(state);
+    if(diagnoses.length)parts.push('当前反馈诊断：'+diagnoses.slice(0,2).map(function(d){return d.label+'（'+d.why+'）';}).join('、')+'；因此下一手优先修正已暴露变量。');
+    else if(state.turn>=2)parts.push('目前没有足够强的单一故障信号，先通过小幅试探继续获取反馈，再决定修改哪个商品变量。');
     var ms=(m.name||'')+' '+(m.action||'')+' '+(m.signal||'');
     if(/长尾关键词|关键词/.test(ms)){
       parts.push('作用变量：长尾关键词/标题。初始配置只是热门/竞品复制版，置信度仍低；本手通过市场反馈验证搜索意图是否匹配，验证后允许继续改词。');
