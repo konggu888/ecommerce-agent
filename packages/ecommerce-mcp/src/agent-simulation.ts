@@ -124,9 +124,17 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
     // keep the normal closed-loop recommendation and record the reason.
     if (forcedAction) {
       const guided = decision.candidates.find(c => c.action === forcedAction && c.risk.approved);
-      if (guided && (!selected || guided.score >= selected.score * 0.75)) {
+      const learnedCounter = guided ? state.opponentCounterMatrix?.[forcedAction] : undefined;
+      const pressure = learnedCounter?.pressure ?? 0;
+      const observations = learnedCounter?.observations ?? 0;
+      // Strategy-center guidance is an initial route preference, not a permanent lock.
+      // Once the observed counter pressure is strong enough, the adaptive selector may reroute.
+      const keepGuided = guided && pressure < 0.72 && observations < 4 && (!selected || guided.score >= selected.score * 0.75);
+      if (keepGuided) {
         selected = guided;
         guided.reasons.push('策略中心指定路线：' + (strategyContext.name || strategyContext.id || forcedAction));
+      } else if (guided && pressure >= 0.72) {
+        guided.reasons.push('策略中心路线已形成较强历史反制，交由自适应路线选择器换路');
       }
     }
     // Adaptive breakthrough switching: after a failed/blocked route, prefer a candidate
@@ -148,12 +156,18 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
       pendingActionHint = null;
     }
     const action = selected?.action ?? 'HOLD';
+    const selectedCounter = state.opponentCounterMatrix?.[action];
+    const routeSwitchReason = selectedCounter && selectedCounter.pressure >= 0.72
+      ? '历史反制压力较高，当前动作视为换路实验'
+      : null;
     const decisionId = 'SIM-' + String(round).padStart(3, '0');
     const expectedRoi = selected ? Math.max(0, state.roi ?? 0) + selected.score * 0.5 : Math.max(0, state.roi ?? 0);
     const decisionRecord: DecisionRecord = {
       id: decisionId, shopId: state.shopId, productId: state.productId, campaignId: state.campaignId,
       observedState: { price: state.price, budget: state.budget, roi: state.roi ?? 0, ctr: state.ctr ?? 0, cvr: state.cvr ?? 0 },
-      hypothesis: (selected?.reasons.join('; ') ?? 'hold because no approved action') + (strategyContext.name ? '；策略中心：' + strategyContext.name : ''), action,
+      hypothesis: (selected?.reasons.join('; ') ?? 'hold because no approved action')
+        + (strategyContext.name ? '；策略中心：' + strategyContext.name : '')
+        + (routeSwitchReason ? '；' + routeSwitchReason : ''), action,
       expected: { roi: expectedRoi }, constraints: selected?.risk.reasons ?? [], confidence: selected?.score ?? 0,
       createdAt: observedAt
     };
