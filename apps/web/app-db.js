@@ -3,7 +3,7 @@
 
   var app = document.getElementById('app');
   var nav = document.querySelectorAll('.nav');
-  var VERSION = '20260929-33';
+  var VERSION = '20260929-34';
   var BASE = 'https://skuoxmrzlxhebzhfgbyn.supabase.co';
   var KEY = 'sb_publishable_u46tZ4GMUgwqSYhMJNFG8Q_IzYwl95T';
   var CLIENT = 'ecommerce-agent-sandbox-v1';
@@ -223,41 +223,57 @@
     }
     timeline += '</div>';
 
-    var branches = [];
-    try { branches = r.response_branches ? (typeof r.response_branches === 'string' ? JSON.parse(r.response_branches) : r.response_branches) : []; } catch (e) { branches = []; }
-    var opponents = [];
-    try { opponents = r.opponent_participants ? (typeof r.opponent_participants === 'string' ? JSON.parse(r.opponent_participants) : r.opponent_participants) : []; } catch (e) { opponents = []; }
+    function parse(v, fallback) {
+      try { return v ? (typeof v === 'string' ? JSON.parse(v) : v) : fallback; } catch (e) { return fallback; }
+    }
+    var branches = parse(r.response_branches, []);
+    var opponents = parse(r.opponent_participants, []);
+    var pathHtml = '';
+    for (var p = 0; p <= d.index; p++) {
+      var pr = d.rounds[p];
+      var isCurrent = p === d.index;
+      pathHtml += '<div style="display:flex;gap:8px;align-items:center;margin:6px 0">' +
+        '<span class="tag ' + (isCurrent ? 'warning' : 'positive') + '">R' + esc(pr.round) + '</span>' +
+        '<b>' + esc(pr.action) + '</b><span>→</span><span class="tag">' + esc(pr.actual_opponent_response || '-') + '</span><span>→</span><b>' + esc(pr.next_action_hint || '-') + '</b>' +
+        (pr.stop_signal ? '<span class="tag warning">STOP</span>' : '') + '</div>';
+    }
+
+    var futureHtml = '';
+    for (var q = d.index + 1; q < d.rounds.length; q++) {
+      var fr = d.rounds[q];
+      futureHtml += '<div style="display:flex;gap:8px;align-items:center;margin:6px 0;opacity:.7"><span class="tag">R' + esc(fr.round) + '</span><span>' + esc(fr.action) + '</span><span>→</span><span>' + esc(fr.actual_opponent_response || '-') + '</span></div>';
+    }
 
     var opponentHtml = '';
     for (var o = 0; o < opponents.length; o++) {
       var op = opponents[o];
       var active = op.action === r.actual_opponent_response;
       opponentHtml += '<div style="flex:1;min-width:190px;border:1px solid var(--line);border-radius:10px;padding:10px;' + (active ? 'box-shadow:0 0 0 2px rgba(255,180,0,.25);' : '') + '">' +
-        '<div class="label">' + esc(op.id) + '</div><b>' + esc(op.name) + '</b><br>' +
-        '<span class="muted">' + esc(op.strategy) + '</span><br>' +
-        '<span class="tag ' + (active ? 'warning' : '') + '">' + esc(op.action) + '</span><br>' +
-        '<span class="muted">' + esc(op.reactionToUs) + '</span>' +
+        '<div class="label">' + esc(op.id) + '</div><b>' + esc(op.name) + '</b><br><span class="muted">' + esc(op.strategy) + '</span><br>' +
+        '<span class="tag ' + (active ? 'warning' : '') + '">' + esc(op.action) + '</span><br><span class="muted">' + esc(op.reactionToUs) + '</span>' +
         (active ? '<br><b>← 本轮实际进入主路径</b>' : '') + '</div>';
     }
 
     var branchHtml = '';
-    for (var b = 0; b < branches.length; b++) {
-      var chosen = branches[b].response === r.actual_opponent_response;
+    for (var x = 0; x < branches.length; x++) {
+      var chosen = branches[x].response === r.actual_opponent_response;
       branchHtml += '<div style="padding:8px 10px;margin:6px 0;border-left:3px solid ' + (chosen ? 'var(--accent)' : 'var(--line)') + ';background:' + (chosen ? 'rgba(255,180,0,.08)' : 'transparent') + '">' +
-        '<b>' + (chosen ? '★ ' : '') + esc(branches[b].response) + '</b> · ' + esc(Math.round(Number(branches[b].probability || 0) * 100)) + '% → <b>' + esc(branches[b].nextActionHint) + '</b>' +
-        '<div class="muted">停止：' + esc(branches[b].stopCondition) + '；扩张：' + esc(branches[b].expansionCondition) + '</div></div>';
+        '<b>' + (chosen ? '★ ' : '') + esc(branches[x].response) + '</b> · ' + esc(Math.round(Number(branches[x].probability || 0) * 100)) + '% → <b>' + esc(branches[x].nextActionHint) + '</b>' +
+        '<div class="muted">停止：' + esc(branches[x].stopCondition) + '；扩张：' + esc(branches[x].expansionCondition) + '</div></div>';
     }
 
     var tree = '<div style="margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:12px;overflow:auto">' +
-      '<div class="label">多方博弈树 · 当前第 R' + esc(r.round) + ' 轮</div>' +
-      '<div style="min-width:760px;display:flex;align-items:stretch;gap:12px;margin-top:10px">' +
-      '<div style="width:190px;border:2px solid var(--accent);border-radius:12px;padding:12px;background:rgba(255,180,0,.07)"><div class="label">我们</div><b>' + esc(r.action) + '</b><br><span class="muted">突破：' + esc(r.breakthrough || '-') + '</span></div>' +
-      '<div style="width:30px;display:flex;align-items:center;justify-content:center;font-size:22px">→</div>' +
-      '<div style="flex:1"><div style="display:flex;gap:10px;flex-wrap:wrap">' + (opponentHtml || '<div class="muted">暂无多方响应数据</div>') + '</div></div>' +
-      '<div style="width:30px;display:flex;align-items:center;justify-content:center;font-size:22px">→</div>' +
-      '<div style="width:190px;border:2px solid var(--line);border-radius:12px;padding:12px"><div class="label">下一步</div><b>' + esc(r.next_action_hint || '-') + '</b><br><span class="muted">实际响应：' + esc(r.actual_opponent_response || '-') + '</span></div>' +
+      '<div class="label">完整动态博弈树 · 已走路径 + 当前分支 + 后续轮次</div>' +
+      '<div style="min-width:900px;margin-top:10px">' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
+      '<div style="border:2px solid var(--accent);border-radius:12px;padding:10px;min-width:150px"><div class="label">当前轮 R' + esc(r.round) + '</div><b>我们：' + esc(r.action) + '</b><br><span class="muted">突破：' + esc(r.breakthrough || '-') + '</span></div>' +
+      '<div style="font-size:22px">→</div>' + (opponentHtml || '<span class="muted">暂无多方响应数据</span>') +
+      '<div style="font-size:22px">→</div><div style="border:2px solid var(--line);border-radius:12px;padding:10px;min-width:150px"><div class="label">下一步</div><b>' + esc(r.next_action_hint || '-') + '</b></div>' +
       '</div>' +
-      '<div style="margin-top:12px"><div class="label">分支路径</div>' + (branchHtml || '<span class="muted">暂无分支</span>') + '</div></div>';
+      '<div style="margin-top:14px"><div class="label">已发生主路径</div>' + pathHtml + '</div>' +
+      '<div style="margin-top:14px"><div class="label">未来模拟路径（尚未执行）</div>' + (futureHtml || '<span class="muted">当前已到最后一轮</span>') + '</div>' +
+      '<div style="margin-top:14px"><div class="label">当前轮所有可能分支</div>' + (branchHtml || '<span class="muted">暂无分支</span>') + '</div>' +
+      '</div></div>';
 
     return '<div class="card" id="agent-playback">' +
       '<div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">' +
