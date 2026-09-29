@@ -240,3 +240,20 @@ test('agent execution carries opponent branches into the next-round hint', () =>
   assert.ok(result.rounds.every(r => typeof r.nextActionHint === 'string'));
   assert.ok(result.rounds.some(r => r.responseBranches.length > 0));
 });
+
+
+test('multi-round plan scores both likely response branches', async () => {
+  const { planMultiRoundGame } = await import('./multi-round-game.ts');
+  const plan = planMultiRoundGame(config().initial, 3);
+  const branched = plan.nodes.filter(n => (n.responseBranch?.length ?? 0) >= 2);
+  assert.ok(branched.length > 0);
+  for (const node of branched) {
+    const totalProbability = (node.responseBranch ?? []).reduce((sum, b) => sum + b.probability, 0);
+    assert.ok(totalProbability > 0.5 && totalProbability <= 1.01);
+    for (const branch of node.responseBranch ?? []) {
+      assert.ok(branch.stopCondition.length > 0);
+      assert.ok(branch.expansionCondition.length > 0);
+    }
+    assert.ok(Number.isFinite(node.continuationScore));
+  }
+});
