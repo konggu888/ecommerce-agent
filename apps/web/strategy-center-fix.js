@@ -59,8 +59,20 @@
 
   function initialState(i,x){
     return {
-      turn:0,momentum:0,opponentMomentum:0,pressure:0,risk:0,information:0,resource:0,
+      turn:0,momentum:0,opponentMomentum:0,pressure:0,risk:0,information:7,resource:0,
       lastSide:'',lastMove:null,lastMode:'',lastDomain:'通用',lastIntensity:0,lastOutcome:'',
+      // 商品进入博弈前，默认已经完成基础商品建设；博弈从“上线后竞争”开始，而不是从“什么都没做”开始。
+      productBaseline:{
+        title:{done:true,source:'热门标题/竞争对手关键词'},
+        mainImage:{done:true,source:'热门商品与竞争对手主图结构'},
+        detail:{done:true,source:'商品卖点、规格、场景与对比信息'},
+        reviews:{done:true,count:5,type:'真实正向反馈，不以刷评作为假设'},
+        video:{done:true,source:'商品视频介绍'},
+        qa:{done:true,source:'问大家/常见问题'},
+        seeding:{done:true,source:'内容种草/场景传播'}
+      },
+      knownSignals:['标题已按市场热门与竞品关键词完成','主图已参考竞争环境完成','详情页已完成','已有5条正向真实评价作为基础反馈','商品视频已完成','问大家已完成','种草内容已完成'],
+      unknownSignals:['点击率','转化率','自然流量规模','搜索词实际分布','竞品即时动作','内容扩散效率'],
       personality:x,history:[],usedMoves:{},domainCooldown:{},domainChanges:0,staleMoves:0,
       meaningfulMoves:0,lastStateSignature:'',endReason:'',maxTurns:40
     };
@@ -224,8 +236,9 @@
 
   function buildMoveReason(state,z,side){
     var m=z.m, last=state.lastMove, parts=[];
-    if(!last) parts.push(side==='我方'?'开局信息不足，先用这一步建立可观察反馈。':'开局尚无历史动作，先用低承诺动作建立局面基线。');
+    if(!last) parts.push('商品基础建设已经完成：热门/竞品标题、主图、详情、5条正向真实评价、视频、问大家和种草均已具备；现在缺的不是基础素材，而是上线后的真实反馈。');
     else parts.push((side==='我方'?'对手':'我方')+'上一手是“'+(last.name||'未知')+'”，属于“'+(state.lastMode||'自适应')+'”，领域是“'+(state.lastDomain||'通用')+'”。');
+    if(!last && state.unknownSignals&&state.unknownSignals.length) parts.push('当前主要未知量是'+state.unknownSignals.slice(0,3).join('、')+'，所以首轮动作应优先获取这些反馈，而不是重复建设商品基础。');
     if(z.mode==='试探') parts.push(state.information<2?'当前信息量不足，直接扩大投入容易误判，所以先验证。':'已有初步信号，再验证一次以确认是否值得继续放大。');
     else if(z.mode==='建设') parts.push(state.momentum>=5?'已有有效动能，本手把信号转成增长动作。':'当前需要建立新的正向变量。');
     else if(z.mode==='防守') parts.push(state.pressure>=5||state.risk>=5?'压力或风险已经累积，先降低暴露。':'先保留资源和后续选择权。');
