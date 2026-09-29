@@ -572,24 +572,47 @@
       var p = null, ps = window.EA_POSITIVE_ATTACK_PLAYBOOKS || [];
       for (var pi=0;pi<ps.length;pi++) if(ps[pi].id===x.id){p=ps[pi];break;}
       var stages = p && p.stages ? p.stages : [];
+      var resp = p && p.opponentResponses ? p.opponentResponses.join(' / ') : '无数据';
+      var ends = p && p.endStates ? p.endStates.join(' / ') : '扩大 / 保持 / 降级 / 等待 / 停止';
+
+      var defense = [
+        '先设保护线：预算、毛利、库存、履约和现金流不能因为实验失控',
+        '监测搜索、流量、CTR、CVR、退款、评价、投诉等关键指标，区分市场自然波动与竞争响应',
+        '如果实验效果不确定，缩小规模继续采样，不把低样本结果当成结论'
+      ];
+      var offense = [
+        x.action || '围绕当前增长变量做小规模实验',
+        '把成功动作拆成多个可验证变量，逐项测试，避免一次性重投入',
+        '优先建设真实、可持续、难以被单点复制的产品/内容/服务/供应链能力'
+      ];
+      var mirror = [
+        '观察对手是否复制该增长动作，再决定是否迁移到下一条路线',
+        '如果对手跟随，改变变量组合、场景、人群或渠道，而不是长期重复同一种打法',
+        '镜像的是竞争机制，不复制虚假评价、恶意举报、骚扰、造谣、刷量等违规手段'
+      ];
+
+      function bullets(items){var h='<div style="display:grid;gap:7px">';for(var bi=0;bi<items.length;bi++)h+='<div class="notice">• '+esc(items[bi])+'</div>';return h+'</div>';}
       var stageHtml = stages.length ? '<div class="label">多轮博弈链</div><div style="display:grid;gap:8px">' +
         '<div class="notice"><b>R1 触发</b>：'+esc(stages[0])+'</div>' +
         '<div class="notice"><b>R2 我方动作</b>：'+esc(stages[1])+'</div>' +
         '<div class="notice"><b>R3 观察反馈</b>：'+esc(stages[2])+'</div>' +
-        '<div class="notice"><b>R4 对手/市场响应假设</b>：'+esc(stages[3])+'</div>' +
+        '<div class="notice"><b>R4 市场/对手响应假设</b>：'+esc(stages[3])+'</div>' +
         '<div class="notice"><b>R5 终局决策</b>：'+esc(stages[4])+'</div></div>' : '';
-      var resp = p && p.opponentResponses ? p.opponentResponses.join(' / ') : '无数据';
-      var ends = p && p.endStates ? p.endStates.join(' / ') : '扩大 / 保持 / 降级 / 等待 / 停止';
+
       return '<div class="card" style="border:2px solid var(--accent);padding:16px">' +
-        '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="tag">'+esc(x.id)+'</span><span class="tag">'+esc(x.category)+'</span><span class="tag positive">主动增长</span></div>' +
+        '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="tag positive">'+esc(x.id)+'</span><span class="tag">'+esc(x.category)+'</span><span class="tag positive">主动增长</span></div>' +
         '<h2>'+esc(x.name)+'</h2>' +
         '<div class="label">发现条件</div><div class="notice">'+esc(x.signal)+'</div>' +
         '<div class="label">建议动作</div><div class="notice">'+esc(x.action)+'</div>' +
         '<div class="label">战略目标</div><div class="notice"><b>'+esc(x.goal)+'</b></div>' +
+        '<div class="label">① 防守方案 · 防止增长实验反噬</div>'+bullets(defense) +
+        '<div class="label" style="margin-top:14px">② 正向进攻方案 · 主增长路线</div>'+bullets(offense) +
+        '<div class="label" style="margin-top:14px">③ 镜像应对 · 对手跟随后的换路方案</div>'+bullets(mirror) +
         stageHtml +
         '<div class="label">可能响应（假设，不是已观测事实）</div><div class="notice">'+esc(resp)+'</div>' +
         '<div class="label">终局状态</div><div class="notice">'+esc(ends)+'</div>' +
-        '<div class="muted" style="margin-top:12px">这是“正向攻势”模型：先做小规模 Sandbox 实验，再观察指标和市场响应；不把竞品隐藏动作当成已知事实。通过 Risk Controller 后，才进入下一轮。</div>' +
+        '<div class="card" style="margin-top:14px;border-left:4px solid var(--accent)"><b>连续博弈</b><div style="font-size:17px;margin-top:5px">我变 → 对手学 → 我再变</div><div class="muted" style="margin-top:5px">正向攻势不是找到一个“永久有效”的打法，而是建立一条能够持续实验、反馈、换路的增长路径。</div></div>' +
+        '<div class="muted" style="margin-top:12px">所有方案先进入 Sandbox，并经过 Risk Controller；不把竞品隐藏动作当成已知事实。</div>' +
         '</div>';
     }
 
@@ -599,7 +622,7 @@
       if(!groups[c]) groups[c]=[];
       groups[c].push(list[i]);
     }
-    var buttons='<div class="card"><div class="label">正向增长攻势 · '+list.length+'项</div>' +
+    var buttons='<div class="card"><div class="label">正向增长攻势 · '+list.length+'项 · 每项包含防守 / 正攻 / 镜像应对</div>' +
       '<div class="muted" style="margin:6px 0 12px">这里不是“防守对手”，而是寻找我方可以主动改变市场结果的变量：搜索、主图、详情、视频、真实评价、品牌合作、认证、产品、服务、供应链、渠道等。</div>' +
       '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px">';
     for(var j=0;j<list.length;j++){
