@@ -3,7 +3,7 @@
 
   var app = document.getElementById('app');
   var nav = document.querySelectorAll('.nav');
-  var VERSION = '20260929-27';
+  var VERSION = '20260929-29';
   var BASE = 'https://skuoxmrzlxhebzhfgbyn.supabase.co';
   var KEY = 'sb_publishable_u46tZ4GMUgwqSYhMJNFG8Q_IzYwl95T';
   var CLIENT = 'ecommerce-agent-sandbox-v1';
@@ -234,7 +234,7 @@
       '<div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">' +
       '<div><div class="label">Agent Sandbox 实时模拟器</div><div class="metric">' + status + ' · 第 ' + esc(r.round) + ' / ' + d.rounds.length + ' 轮</div></div>' +
       '<div>' +
-      '<button class="action" id="sim-start">▶ 开始</button>' +
+      '<button class="action" id="sim-start">▶ 开始 / 新模拟</button>' +
       '<button class="action" id="sim-step">⏭ 单步</button>' +
       '<button class="action" id="sim-reset">↺ 重置</button>' +
       '</div></div>' +
@@ -270,9 +270,42 @@
     render();
   }
 
+  function startNewSimulation() {
+    stopPlayback();
+    show('Agent 正在启动', 'Sandbox 新模拟', notice('正在创建新的 Agent 模拟任务……'));
+    fetch(BASE + '/functions/v1/sandbox-agent-runner', {
+      method: 'POST',
+      headers: { apikey: KEY, Authorization: 'Bearer ' + KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ client_key: CLIENT, rounds: 10 })
+    }).then(function (res) {
+      return res.text().then(function (body) {
+        var data = {};
+        try { data = JSON.parse(body); } catch (e) {}
+        if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
+        return data;
+      });
+    }).then(function (data) {
+      return loadRun().then(loadCore).then(function () {
+        state.playback.current = 0;
+        state.playback.playing = true;
+        render();
+        state.playback.timer = setInterval(function () {
+          if (state.view !== 'game') { stopPlayback(); return; }
+          advancePlayback();
+        }, 1800);
+      });
+    }).catch(function (e) {
+      console.error('SANDBOX_AGENT_RUN_ERROR', e);
+      show('Agent 模拟启动失败', 'Sandbox', notice(e.message));
+    });
+  }
+
   function startPlayback() {
     stopPlayback();
-    if (!state.agentRounds.length) return;
+    if (!state.agentRounds.length) {
+      startNewSimulation();
+      return;
+    }
     state.playback.playing = true;
     render();
     state.playback.timer = setInterval(function () {
