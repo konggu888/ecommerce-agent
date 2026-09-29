@@ -31,6 +31,25 @@ function config() {
   };
 }
 
+
+test('adaptive route selector penalizes learned counter pressure and can reroute', async () => {
+  const { selectAdaptiveRoute } = await import('./closed-loop-agent.ts');
+  const cfg = config();
+  const baseRisk = { approved: true, mode: 'ALLOW', reasons: [] } as any;
+  const candidates = [
+    { action: 'CHANGE_PRICE', score: 0.9, risk: baseRisk, reasons: [] },
+    { action: 'CHANGE_KEYWORD', score: 0.78, risk: baseRisk, reasons: [] },
+    { action: 'CONTENT_VIDEO', score: 0.74, risk: baseRisk, reasons: [] }
+  ];
+  const routes = selectAdaptiveRoute(candidates as any, {
+    CHANGE_PRICE: { counter: 'PRICE_WAR', pressure: 0.95, observations: 8 },
+    CHANGE_KEYWORD: { counter: 'TRAFFIC_DEFENSE', pressure: 0.1, observations: 1 }
+  });
+  assert.equal(routes[0].action, 'CHANGE_KEYWORD');
+  assert.ok(routes[0].totalScore < routes[0].baseScore + 0.1);
+  assert.ok(routes.find(r => r.action === 'CHANGE_PRICE')!.counterPressure > routes[0].counterPressure);
+});
+
 test('agent simulation preserves non-negative stock and cash', () => {
   const result = runAgentSimulation(config());
   assert.equal(result.rounds.length, 30);
