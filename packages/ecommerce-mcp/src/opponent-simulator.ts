@@ -10,6 +10,8 @@ export interface OpponentMemory {
   adaptationScore: number;
   /** How strongly this simulated opponent has learned our recurring action pattern. */
   learnedResponses: Record<string, string>;
+  /** Empirical response counts keyed by our action. */
+  learnedResponseCounts: Record<string, Record<string, number>>;
   /** Number of repeated actions the opponent has seen us use. */
   repetitionCount: number;
 }
@@ -52,7 +54,7 @@ export function createSimulatedOpponents(state: GameState): SimulatedOpponent[] 
     cvr: c.estimatedCvr ?? state.cvr ?? 0.04,
     inventory: 100 + i * 50,
     cash: 5000 + i * 1500,
-    memory: { ourActions: [], responseHistory: [], adaptationScore: 0.5, learnedResponses: {}, repetitionCount: 0 }
+    memory: { ourActions: [], responseHistory: [], adaptationScore: 0.5, learnedResponses: {}, learnedResponseCounts: {}, repetitionCount: 0 }
   }));
 }
 
@@ -101,10 +103,12 @@ export function recordOpponentMemory(opponents: SimulatedOpponent[], ourAction: 
     o.memory.lastOurAction = ourAction;
     o.memory.lastOutcome = outcome;
     const repeatedCount = o.memory.ourActions.filter(x => x.action === ourAction).length;
-    const learnedCounter = ourAction === 'CHANGE_PRICE' ? 'PRICE_WAR' :
-      ourAction === 'INCREASE_BID' || ourAction === 'INCREASE_BUDGET' ? 'TRAFFIC_DEFENSE' :
-      ourAction === 'CONTENT_VIDEO' || ourAction === 'CONTENT_MATRIX' ? 'CONTENT_SHIFT' : 'VALUE_DEFENSE';
-    if (repeatedCount >= 2) o.memory.learnedResponses[ourAction] = learnedCounter;
+    const observedResponse = turns.find(t => t.opponentId === o.id)?.strategy ?? o.strategy;
+    const counts = o.memory.learnedResponseCounts[ourAction] ?? {};
+    counts[observedResponse] = (counts[observedResponse] ?? 0) + 1;
+    o.memory.learnedResponseCounts[ourAction] = counts;
+    const learnedCounter = Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0];
+    if (repeatedCount >= 2 && learnedCounter) o.memory.learnedResponses[ourAction] = learnedCounter;
     o.memory.repetitionCount = Math.max(0, repeatedCount);
     if (outcome === 'NEGATIVE') o.memory.adaptationScore = Math.min(1, o.memory.adaptationScore + 0.08);
     if (outcome === 'POSITIVE') o.memory.adaptationScore = Math.max(0, o.memory.adaptationScore - 0.03);
