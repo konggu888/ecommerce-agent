@@ -33,3 +33,4 @@ export * from './url-data-intake';
 export * from './buyer-view-collector';
 export * from './positive-attack-engine';
 export * from './positive-strategy-planner';
+export * from './human-behavior-engine';
