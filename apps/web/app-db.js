@@ -164,7 +164,9 @@
   nav.forEach(function(n){n.addEventListener('click',function(){state.view=n.dataset.view;location.hash=state.view;render();});});
   window.__EA_APPDB_LOADED__=true;window.__EA_APPDB_VERSION__=VERSION;
   loadRun().then(loadCore).then(loadAds).then(render).catch(function(e){show('核心数据读取失败','请检查 Sandbox 数据连接',notice(e.message));});
-}())function adBidding(){var items=[
+}());
+
+function adBidding(){var items=[
 {id:'01',name:'投流博弈地图',sub:'先看全局，再决定投哪里',body:'把我方预算、出价、关键词、定向、人群、素材、位置、时间，与市场竞争强度放在同一张地图上。核心不是单纯追求曝光，而是寻找“我增加一单位投流资源 → 市场产生多少增量 → 对手可能如何响应 → 边际ROI是否继续成立”。'},
 {id:'02',name:'正向投流',sub:'主动寻找增量',body:'从真实可观测数据出发，寻找低拥挤、高转化或存在需求缺口的投流入口。可以测试关键词、人群、素材、位置和预算，但每次动作都要记录增量ROI、转化变化和市场反馈。'},
 {id:'03',name:'逆向防守',sub:'发现成本异常后先稳住',body:'不是看到流量下降就立刻加预算。先判断是否存在竞价抬升、流量结构变化、转化下降、无效点击增加或平台波动，再决定降价、换词、换人群、缩预算或暂缓投流。'},
