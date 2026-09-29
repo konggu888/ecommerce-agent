@@ -1,0 +1,39 @@
+{
+  "table": "public.sandbox_ad_keyword_moves",
+  "snapshot_at": "2026-09-29",
+  "row_count": 2,
+  "rows": [
+    {
+      "id": "13f78633-3c8f-48a9-85a4-825957f170a6",
+      "cvr": 3.89,
+      "roi": 3.46,
+      "clicks": 180,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "已完成",
+      "move_type": "跨场景迁移",
+      "conversions": 7,
+      "impressions": 6200,
+      "source_scene": "早餐",
+      "related_scene": "下午茶",
+      "source_keyword": "酸面包早餐",
+      "related_keyword": "下午茶面包",
+      "agent_conclusion": "发现跨场景增量候选"
+    },
+    {
+      "id": "98b8096c-2740-42dd-a2bb-435b6d80fb74",
+      "cvr": 5.28,
+      "roi": 3.77,
+      "clicks": 360,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "已完成",
+      "move_type": "同场景迁移",
+      "conversions": 19,
+      "impressions": 9800,
+      "source_scene": "早餐",
+      "related_scene": "早餐",
+      "source_keyword": "酸面包早餐",
+      "related_keyword": "早餐酸面包",
+      "agent_conclusion": "相关词保持测试"
+    }
+  ]
+}
