@@ -568,13 +568,27 @@
 
     function detail(x) {
       if (!x) return notice('暂无正向增长策略。');
+      var p = null, ps = window.EA_POSITIVE_ATTACK_PLAYBOOKS || [];
+      for (var pi=0;pi<ps.length;pi++) if(ps[pi].id===x.id){p=ps[pi];break;}
+      var stages = p && p.stages ? p.stages : [];
+      var stageHtml = stages.length ? '<div class="label">多轮博弈链</div><div style="display:grid;gap:8px">' +
+        '<div class="notice"><b>R1 触发</b>：'+esc(stages[0])+'</div>' +
+        '<div class="notice"><b>R2 我方动作</b>：'+esc(stages[1])+'</div>' +
+        '<div class="notice"><b>R3 观察反馈</b>：'+esc(stages[2])+'</div>' +
+        '<div class="notice"><b>R4 对手/市场响应假设</b>：'+esc(stages[3])+'</div>' +
+        '<div class="notice"><b>R5 终局决策</b>：'+esc(stages[4])+'</div></div>' : '';
+      var resp = p && p.opponentResponses ? p.opponentResponses.join(' / ') : '无数据';
+      var ends = p && p.endStates ? p.endStates.join(' / ') : '扩大 / 保持 / 降级 / 等待 / 停止';
       return '<div class="card" style="border:2px solid var(--accent);padding:16px">' +
         '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="tag">'+esc(x.id)+'</span><span class="tag">'+esc(x.category)+'</span><span class="tag positive">主动增长</span></div>' +
         '<h2>'+esc(x.name)+'</h2>' +
         '<div class="label">发现条件</div><div class="notice">'+esc(x.signal)+'</div>' +
         '<div class="label">建议动作</div><div class="notice">'+esc(x.action)+'</div>' +
         '<div class="label">战略目标</div><div class="notice"><b>'+esc(x.goal)+'</b></div>' +
-        '<div class="muted" style="margin-top:12px">这是“正向攻势”模型：通过真实产品、内容、品牌、服务、供应链或渠道能力获得增量，不把竞争建立在恶意操纵或虚假信息上。所有动作进入 Sandbox 后再进行多轮博弈与 Risk Controller 评估。</div>' +
+        stageHtml +
+        '<div class="label">可能响应（假设，不是已观测事实）</div><div class="notice">'+esc(resp)+'</div>' +
+        '<div class="label">终局状态</div><div class="notice">'+esc(ends)+'</div>' +
+        '<div class="muted" style="margin-top:12px">这是“正向攻势”模型：先做小规模 Sandbox 实验，再观察指标和市场响应；不把竞品隐藏动作当成已知事实。通过 Risk Controller 后，才进入下一轮。</div>' +
         '</div>';
     }
 
