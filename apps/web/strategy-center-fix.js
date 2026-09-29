@@ -319,7 +319,18 @@
     else if(z.mode==='反制') parts.push(state.pressure>=5||state.lastMode==='负向施压'?'上一手形成了明显压力，本手针对性回应。':'存在可利用的回应窗口，因此不做无差别升级。');
     else if(z.mode==='机制校验') parts.push(state.risk>=5||state.pressure>=5?'风险或异常信号已经累积，需要先验证状态。':'当前不确定性较高，先确认机制层面的真实状态。');
     else if(z.mode==='负向施压') parts.push(state.pressure>=4||state.opponentMomentum>=5?'对抗变量已累积到可承受更强动作的程度，本手提高对手决策成本。':'人格允许主动施压，但当前仍控制强度，不直接升级到极端。');
-    parts.push('本手不是重新建设商品基础，而是在已有标题、主图、详情、评价、视频、问大家和种草基础上，争取改变一个具体市场变量。');
+    var ms=(m.name||'')+' '+(m.action||'')+' '+(m.signal||'');
+    if(/长尾关键词|关键词/.test(ms)){
+      parts.push('作用变量：长尾关键词/标题。初始配置只是热门/竞品复制版，置信度仍低；本手通过市场反馈验证搜索意图是否匹配，验证后允许继续改词。');
+      if(state.feedback.searchTerms!==null)parts.push('已有搜索词反馈，当前搜索匹配基准约为'+Math.round(state.feedback.searchTerms*100)+'%，因此这不是重复建设，而是纠偏。');
+    }else if(/主图/.test(ms)){
+      parts.push('作用变量：主图。基础主图已经存在，但点击表现仍需验证；如果点击反馈没有改善，后续棋谱仍可再次换图。');
+    }else if(/详情|FAQ|卖点|痛点/.test(ms)){
+      parts.push('作用变量：详情页承接。商品已上线不代表卖点表达正确，转化反馈不足时继续重构。');
+    }else if(/视频|UGC|种草|内容/.test(ms)){
+      parts.push('作用变量：视频/内容传播。已有内容基础，但扩散效率仍需市场反馈验证。');
+    }
+    parts.push('本手不是重新建设商品基础，而是在已有商品基础上修改仍未验证正确的具体配置；基础完成度不锁死后续优化。');
     return parts.join(' ');
   }
 
