@@ -1,0 +1,529 @@
+{
+  "table": "public.sandbox_task_results",
+  "snapshot_at": "2026-09-29",
+  "row_count": 58,
+  "rows": [
+    {
+      "id": "0149f22b-d168-4301-91bc-3d82f1b1a190",
+      "run_id": "24e513b7-263f-436f-b5f7-5253bba48aeb",
+      "status": "running",
+      "task_id": "agent-24e513b7-263f-436f-b5f7-5253bba48aeb",
+      "progress": 0,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T11:54:49.292+00:00"
+    },
+    {
+      "id": "018ba850-3db2-4053-a459-735aeb412aa4",
+      "run_id": "edff8299-9f88-48fa-952d-488dbed069a8",
+      "status": "completed",
+      "task_id": "agent-edff8299-9f88-48fa-952d-488dbed069a8",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:56:14.452+00:00"
+    },
+    {
+      "id": "0ac36027-0d25-42c5-906d-dcd1ccd390bc",
+      "run_id": "4e199d68-4df3-4f5a-872f-fc59c95655fa",
+      "status": "completed",
+      "task_id": "agent-4e199d68-4df3-4f5a-872f-fc59c95655fa",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:59:03.479+00:00"
+    },
+    {
+      "id": "16bf5132-b36c-477e-994d-78d1f2447594",
+      "run_id": "a353ea1c-574e-4bd5-9333-9caf4b0545a8",
+      "status": "completed",
+      "task_id": "agent-a353ea1c-574e-4bd5-9333-9caf4b0545a8",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:44:26.273+00:00"
+    },
+    {
+      "id": "1f71987f-010a-480b-899e-87056b0aea10",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "status": "completed",
+      "task_id": "agent-790119b2-15a7-45e6-a7bb-518cadb74843",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T06:32:21.471+00:00"
+    },
+    {
+      "id": "1f9b4beb-37f9-4c10-b0ed-ba3c19df3c77",
+      "run_id": "9e69d947-915f-4689-adb2-01eb0c40a7d0",
+      "status": "running",
+      "task_id": "agent-9e69d947-915f-4689-adb2-01eb0c40a7d0",
+      "progress": 0,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T10:08:31.469+00:00"
+    },
+    {
+      "id": "21693c83-d120-429a-9f64-d63c3bfd8865",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "等待 Agent",
+      "task_id": "RISK-20260929-006",
+      "progress": 15,
+      "task_type": "风险控制器",
+      "created_at": "2026-09-29T00:22:26.368377+00:00"
+    },
+    {
+      "id": "2aba4c17-d9f8-4a14-b30e-984f7c239f6e",
+      "run_id": "d0c95172-2f5c-48e6-a621-ac35a692902b",
+      "status": "completed",
+      "task_id": "agent-d0c95172-2f5c-48e6-a621-ac35a692902b",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:46:04.345+00:00"
+    },
+    {
+      "id": "2be72d71-9c0e-4aa6-a979-f7f7c7df473e",
+      "run_id": "082ed97e-9e8f-4d1d-b683-bb64bf88d58f",
+      "status": "running",
+      "task_id": "agent-082ed97e-9e8f-4d1d-b683-bb64bf88d58f",
+      "progress": 0,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T11:54:54.303+00:00"
+    },
+    {
+      "id": "308fb27b-d166-4784-9ad0-0e4f91ce6a9b",
+      "run_id": "30eed3c4-8aef-4d84-8c5b-6214c1c804d9",
+      "status": "completed",
+      "task_id": "agent-30eed3c4-8aef-4d84-8c5b-6214c1c804d9",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T04:00:03.041+00:00"
+    },
+    {
+      "id": "33bbd5b1-d8dc-4c79-9444-2f313a6ae622",
+      "run_id": "01f50103-96ca-4101-896d-46a32400d515",
+      "status": "completed",
+      "task_id": "agent-01f50103-96ca-4101-896d-46a32400d515",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:50:30.221+00:00"
+    },
+    {
+      "id": "38259e18-d99f-4d99-95cb-90b4e7672248",
+      "run_id": "6a435d72-5193-44da-9e0b-63a148ec6856",
+      "status": "completed",
+      "task_id": "agent-6a435d72-5193-44da-9e0b-63a148ec6856",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:56:13.9+00:00"
+    },
+    {
+      "id": "3a4d2600-d13a-4dcb-b091-7ce71a2c8640",
+      "run_id": "2215edcb-6c27-409f-bb34-ea94e8876787",
+      "status": "completed",
+      "task_id": "agent-2215edcb-6c27-409f-bb34-ea94e8876787",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:57:39.13+00:00"
+    },
+    {
+      "id": "4e105010-88f5-4d12-bb9c-1da0ed57ce22",
+      "run_id": "e976f1b5-27a0-40ac-93ab-1045e3f8dd48",
+      "status": "completed",
+      "task_id": "agent-e976f1b5-27a0-40ac-93ab-1045e3f8dd48",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:52:03.907+00:00"
+    },
+    {
+      "id": "52fa2846-7a4a-4d3d-aae6-1537d65a8963",
+      "run_id": "c032656e-2375-4585-b03f-e0f0b4a4c5f2",
+      "status": "completed",
+      "task_id": "agent-c032656e-2375-4585-b03f-e0f0b4a4c5f2",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:58:04.693+00:00"
+    },
+    {
+      "id": "540632a8-59d8-4c5a-b5fb-f5af7502ae44",
+      "run_id": "7cbf24b7-7ad2-4f62-a4f1-8289a467d649",
+      "status": "completed",
+      "task_id": "agent-7cbf24b7-7ad2-4f62-a4f1-8289a467d649",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:44:35.463+00:00"
+    },
+    {
+      "id": "563c765d-191f-4930-88da-cbcbcf0340e1",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "status": "completed",
+      "task_id": "agent-ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T06:32:22.976+00:00"
+    },
+    {
+      "id": "5907c474-a05a-4008-8996-cc4a42069023",
+      "run_id": "c02643fb-58c7-40c5-8336-3caad8d6b46f",
+      "status": "completed",
+      "task_id": "agent-c02643fb-58c7-40c5-8336-3caad8d6b46f",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:56:05.467+00:00"
+    },
+    {
+      "id": "5a779545-865f-46f4-a24e-327144361f82",
+      "run_id": "579a5de3-32e5-4da5-bd10-6828d5da8d85",
+      "status": "completed",
+      "task_id": "agent-579a5de3-32e5-4da5-bd10-6828d5da8d85",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:58:04.43+00:00"
+    },
+    {
+      "id": "65be983e-4484-444e-b536-ebb66a5e4e23",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "status": "completed",
+      "task_id": "agent-a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T06:23:57.772+00:00"
+    },
+    {
+      "id": "65f1e23c-8651-478e-a176-881e81bfd093",
+      "run_id": "7f14c994-38fd-4a44-9053-2f81f15e58b8",
+      "status": "completed",
+      "task_id": "agent-7f14c994-38fd-4a44-9053-2f81f15e58b8",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:52:03.215+00:00"
+    },
+    {
+      "id": "668eaedf-5844-43c9-8472-bbed2505ed5d",
+      "run_id": "91f55ab5-b3b9-4bc2-9d64-9bf384acaae7",
+      "status": "running",
+      "task_id": "agent-91f55ab5-b3b9-4bc2-9d64-9bf384acaae7",
+      "progress": 0,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T10:08:31.462+00:00"
+    },
+    {
+      "id": "6814e399-1096-4c3e-9eb2-f6771ca49afc",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "status": "completed",
+      "task_id": "agent-88170583-dfbe-4317-b215-c1dafd3675e0",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T06:32:21.068+00:00"
+    },
+    {
+      "id": "68ff09e1-fd40-4952-9b25-e9f5aa0fd8b9",
+      "run_id": "df232131-8d9f-42bf-9f73-1e0a9c80667e",
+      "status": "running",
+      "task_id": "agent-df232131-8d9f-42bf-9f73-1e0a9c80667e",
+      "progress": 0,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T11:54:48.604+00:00"
+    },
+    {
+      "id": "6cf34a9a-bd8f-41a9-bcdd-a568f39dd340",
+      "run_id": "4ab7ed6c-5e5c-4cf2-a27b-c77454e6b185",
+      "status": "completed",
+      "task_id": "agent-4ab7ed6c-5e5c-4cf2-a27b-c77454e6b185",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:44:34.286+00:00"
+    },
+    {
+      "id": "6eb9e4af-709d-430b-b9e0-31d312b60519",
+      "run_id": "2e1dea42-92cb-4806-9c3b-bc2883af80cf",
+      "status": "completed",
+      "task_id": "agent-2e1dea42-92cb-4806-9c3b-bc2883af80cf",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:58:04.203+00:00"
+    },
+    {
+      "id": "72ed0ea2-906c-46b9-9c1e-2b36a437e878",
+      "run_id": "14aca92d-8afa-4675-9478-219960109207",
+      "status": "completed",
+      "task_id": "agent-14aca92d-8afa-4675-9478-219960109207",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:51:52.848+00:00"
+    },
+    {
+      "id": "75b1df63-3f6d-4134-aab6-753caacb9778",
+      "run_id": "b08d5d71-02df-4e25-a738-32423327bf3f",
+      "status": "completed",
+      "task_id": "agent-b08d5d71-02df-4e25-a738-32423327bf3f",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T04:00:03.697+00:00"
+    },
+    {
+      "id": "76abee1f-75a2-4e2a-888d-286ccf650900",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "status": "completed",
+      "task_id": "agent-7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T06:32:22.437+00:00"
+    },
+    {
+      "id": "78014d02-0560-457e-9b94-fa95a13fd5d5",
+      "run_id": "aabdc955-075a-4340-85b2-6ed2e7699032",
+      "status": "running",
+      "task_id": "agent-aabdc955-075a-4340-85b2-6ed2e7699032",
+      "progress": 0,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T11:54:54.805+00:00"
+    },
+    {
+      "id": "783845c5-3aaa-47c1-b42a-1bb9a0ed323b",
+      "run_id": "b4d0383a-937e-4c92-beee-def5fb6fd16d",
+      "status": "completed",
+      "task_id": "agent-b4d0383a-937e-4c92-beee-def5fb6fd16d",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:58:36.442+00:00"
+    },
+    {
+      "id": "7cb12ae2-86ac-4c11-85d9-e3ae5d007b91",
+      "run_id": "92fc9c50-f8be-463c-a163-128913dd0ae4",
+      "status": "completed",
+      "task_id": "agent-92fc9c50-f8be-463c-a163-128913dd0ae4",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:55:58.155+00:00"
+    },
+    {
+      "id": "7d7e6693-30c4-4657-9df9-faf574ffe6b1",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "已完成",
+      "task_id": "BT-20260929-004",
+      "progress": 100,
+      "task_type": "策略回测",
+      "created_at": "2026-09-29T00:22:26.368377+00:00"
+    },
+    {
+      "id": "832954de-09a3-459d-a239-959caf9654ac",
+      "run_id": "6e6bd6ee-ee1f-48ff-ba23-e4f76b626164",
+      "status": "completed",
+      "task_id": "agent-6e6bd6ee-ee1f-48ff-ba23-e4f76b626164",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:52:27.842+00:00"
+    },
+    {
+      "id": "84c60d8c-98d1-4cad-9c6c-9af93b6eab35",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "status": "completed",
+      "task_id": "agent-3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T05:34:10.145+00:00"
+    },
+    {
+      "id": "867befa9-43cc-4f0c-831e-c132bd8b31d0",
+      "run_id": "0f0ba525-971c-42cc-b3c4-cc927118a1b0",
+      "status": "completed",
+      "task_id": "agent-0f0ba525-971c-42cc-b3c4-cc927118a1b0",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:56:05.664+00:00"
+    },
+    {
+      "id": "876c9f8a-4378-4334-9848-254e9efd5e65",
+      "run_id": "72929752-ca04-4e1c-a258-413e5de4a115",
+      "status": "completed",
+      "task_id": "agent-72929752-ca04-4e1c-a258-413e5de4a115",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:50:37.508+00:00"
+    },
+    {
+      "id": "883255a5-ebab-48ad-a50f-da6bfef391f6",
+      "run_id": "0ab28381-0528-41bc-96e6-a098913f6930",
+      "status": "completed",
+      "task_id": "agent-0ab28381-0528-41bc-96e6-a098913f6930",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:51:55.216+00:00"
+    },
+    {
+      "id": "89d5acc6-dac4-4c05-b2be-4488b31dc2de",
+      "run_id": "ab3e3529-fa5f-498c-8c5c-c4e7338e34d2",
+      "status": "completed",
+      "task_id": "agent-ab3e3529-fa5f-498c-8c5c-c4e7338e34d2",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:46:04.353+00:00"
+    },
+    {
+      "id": "8b2b2a20-9a71-42ea-b9ae-c330bfb9bb39",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "status": "completed",
+      "task_id": "agent-95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T06:23:59.061+00:00"
+    },
+    {
+      "id": "aa521f80-9a52-4495-8a1b-f905c4b58b67",
+      "run_id": "44c1bda8-d30e-442d-ac2b-626130564b34",
+      "status": "completed",
+      "task_id": "agent-44c1bda8-d30e-442d-ac2b-626130564b34",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:58:03.876+00:00"
+    },
+    {
+      "id": "aacf8cb4-b720-49cc-a359-4ec304a2dbdb",
+      "run_id": "1b036b0e-1676-4a46-9e22-f72b597d63f4",
+      "status": "completed",
+      "task_id": "agent-1b036b0e-1676-4a46-9e22-f72b597d63f4",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:48:53.737+00:00"
+    },
+    {
+      "id": "af4ef39c-a57d-41d0-a0ee-9b967f34ba19",
+      "run_id": "d9b59dfe-396b-4ebb-aef9-f521efc2bf0b",
+      "status": "completed",
+      "task_id": "agent-d9b59dfe-396b-4ebb-aef9-f521efc2bf0b",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:58:03.667+00:00"
+    },
+    {
+      "id": "bc5edd87-81ef-4b6b-a35d-d4e040fbe865",
+      "run_id": "142b5abc-11eb-4dfd-95b5-cf7258101213",
+      "status": "completed",
+      "task_id": "agent-142b5abc-11eb-4dfd-95b5-cf7258101213",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T04:00:12.282+00:00"
+    },
+    {
+      "id": "bf7ef3e4-e338-4a51-89b3-bd777564118c",
+      "run_id": "35d9ba33-62ce-4632-92c5-42f373630a68",
+      "status": "completed",
+      "task_id": "agent-35d9ba33-62ce-4632-92c5-42f373630a68",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:58:44.309+00:00"
+    },
+    {
+      "id": "c07d9303-5ce8-4a5b-b500-a5b383e022da",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "status": "completed",
+      "task_id": "agent-216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T06:24:03.129+00:00"
+    },
+    {
+      "id": "c9f05e02-bcde-40ae-9cc6-d70a3af27636",
+      "run_id": "bb421780-db3b-474c-9e32-d4a29ec2d391",
+      "status": "running",
+      "task_id": "agent-bb421780-db3b-474c-9e32-d4a29ec2d391",
+      "progress": 0,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T11:54:47.779+00:00"
+    },
+    {
+      "id": "cc4d0a65-b8e9-4f46-b9d9-2211d782759d",
+      "run_id": "6bae8c52-ef97-4ae0-a4eb-f4cc88acdd67",
+      "status": "completed",
+      "task_id": "agent-6bae8c52-ef97-4ae0-a4eb-f4cc88acdd67",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:44:26.233+00:00"
+    },
+    {
+      "id": "d23ffea8-924b-463b-ae1a-92cfc91de2e9",
+      "run_id": "9fe18bad-4ba1-44f8-8b51-773f48da9065",
+      "status": "completed",
+      "task_id": "agent-9fe18bad-4ba1-44f8-8b51-773f48da9065",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:56:13.84+00:00"
+    },
+    {
+      "id": "d416910e-b9ce-4585-81bc-b881b9a92665",
+      "run_id": "b665eb02-0e17-46d3-861d-41eb4d4faf56",
+      "status": "completed",
+      "task_id": "agent-b665eb02-0e17-46d3-861d-41eb4d4faf56",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:58:02.006+00:00"
+    },
+    {
+      "id": "d79e461d-46d8-464e-a188-88ad55263b69",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "status": "completed",
+      "task_id": "agent-d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T05:44:49.335+00:00"
+    },
+    {
+      "id": "d7fa5cb9-d3ca-4111-8699-8bad2ab93716",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "运行中",
+      "task_id": "AGENT-20260929-005",
+      "progress": 25,
+      "task_type": "商业博弈 Agent",
+      "created_at": "2026-09-29T00:22:26.368377+00:00"
+    },
+    {
+      "id": "d83c4f00-0671-4212-86ea-2b623e477f77",
+      "run_id": "10a16184-12e4-4d79-b2f8-7c1d3a61b042",
+      "status": "completed",
+      "task_id": "agent-10a16184-12e4-4d79-b2f8-7c1d3a61b042",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:51:58.457+00:00"
+    },
+    {
+      "id": "e4e11ef5-1a1a-4baf-9f3e-2d1a7037ebc4",
+      "run_id": "b05c9a8a-fe25-48a6-9e8e-a5ecbbca7d32",
+      "status": "completed",
+      "task_id": "agent-b05c9a8a-fe25-48a6-9e8e-a5ecbbca7d32",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T04:00:04.418+00:00"
+    },
+    {
+      "id": "ebf24a1e-54a6-4bf9-81a4-e81ccf8510f2",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "status": "completed",
+      "task_id": "agent-460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T06:23:58.694+00:00"
+    },
+    {
+      "id": "efd91157-f57c-45bc-994b-5bb676fe602d",
+      "run_id": "825355ab-6604-4e45-a5de-2722e42b13e5",
+      "status": "completed",
+      "task_id": "agent-825355ab-6604-4e45-a5de-2722e42b13e5",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T04:00:04.154+00:00"
+    },
+    {
+      "id": "f9bd83d9-6485-42cf-b889-2a8b44621fd3",
+      "run_id": "05f3d053-b9f3-424c-8894-7e28336e8f46",
+      "status": "completed",
+      "task_id": "agent-05f3d053-b9f3-424c-8894-7e28336e8f46",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T03:55:58.876+00:00"
+    },
+    {
+      "id": "fb939211-b06a-413b-bedc-d9799b62648d",
+      "run_id": "2a7b6468-47e0-45cd-80c9-914844b58dbd",
+      "status": "completed",
+      "task_id": "agent-2a7b6468-47e0-45cd-80c9-914844b58dbd",
+      "progress": 100,
+      "task_type": "AGENT_SIMULATION",
+      "created_at": "2026-09-29T04:00:55.817+00:00"
+    }
+  ]
+}
