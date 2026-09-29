@@ -9,9 +9,7 @@
   var s = { view: location.hash.slice(1) || 'overview', run: null, db: {}, loading: false, error: null, diag: { supabase: '未开始', run: '未开始', modules: '未开始', state: '未开始', details: [] } };
 
   function esc(v) {
-    return String(v == null ? '' : v)
-      .split('&').join('&amp;').split('<').join('&lt;').split('>').join('&gt;')
-      .split('"').join('&quot;').split("'").join('&#39;');
+    return String(v == null ? '' : v).split('&').join('&amp;').split('<').join('&lt;').split('>').join('&gt;').split('"').join('&quot;').split("'").join('&#39;');
   }
   function page(title, sub, body) { return '<h1 class="page-title">' + esc(title) + '</h1><div class="subtitle">' + esc(sub) + '</div>' + body; }
   function table(head, rows) {
@@ -29,7 +27,7 @@
   function directRun() { return getJSON(SUPA + '/rest/v1/sandbox_runs?select=id,status,updated_at,client_key&client_key=eq.' + encodeURIComponent(KEY) + '&order=updated_at.desc&limit=1', 5000).then(function (a) { if (!a.length) throw Error('数据库已连接，但没有找到当前 Sandbox run'); return a[0]; }); }
   function rest(name) { return getJSON(SUPA + '/rest/v1/' + name + '?run_id=eq.' + encodeURIComponent(s.run.id) + '&order=created_at.desc', 5000); }
   function stateRun() { return getJSON(API + '?client_key=' + encodeURIComponent(KEY), 5000).then(function (j) { if (!j.data) throw Error('状态服务没有返回 data'); return j.data; }); }
-  function diagnostic() { var rows = [['JavaScript', '✓ 已执行'], ['Supabase', s.diag.supabase], ['sandbox_runs', s.diag.run], ['模块数据库', s.diag.modules], ['sandbox-state（辅助层）', s.diag.state]]; return page('数据库连接诊断', 'DATABASE-DEBUG-20260929-12 · 直接定位前端、数据库和状态层', table(['检查项', '结果'], rows.concat(s.diag.details))); }
+  function diagnostic() { var rows = [['JavaScript', '✓ 已执行'], ['Supabase', s.diag.supabase], ['sandbox_runs', s.diag.run], ['模块数据库', s.diag.modules], ['sandbox-state（辅助层）', s.diag.state]]; return page('数据库连接诊断', 'DATABASE-DEBUG-20260929-14 · 直接定位前端、数据库和状态层', table(['检查项', '结果'], rows.concat(s.diag.details))); }
   function render() {
     nav.forEach(function (b) { b.classList.toggle('active', b.dataset.view === s.view); });
     if (!s.run) { app.innerHTML = diagnostic(); return; }
@@ -67,7 +65,7 @@
   }
   nav.forEach(function(b){b.addEventListener('click',function(e){e.preventDefault();if(views[b.dataset.view]){s.view=b.dataset.view;location.hash=s.view;render();}});});
   addEventListener('hashchange',function(){s.view=location.hash.slice(1)||'overview';render();});
-  app.innerHTML=page('数据库连接诊断','BOOT-DEBUG-20260929-13 · JavaScript 已启动，准备读取数据库', '<div class="card"><div class="notice">正在启动诊断…</div></div>');
+  app.innerHTML=page('数据库连接诊断','BOOT-DEBUG-20260929-14 · JavaScript 已启动，准备读取数据库', '<div class="card"><div class="notice">正在启动诊断…</div></div>');
   render();
   load();
   setInterval(function(){if(!document.hidden&&s.run)load();},5000);
