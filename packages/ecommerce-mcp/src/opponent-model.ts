@@ -1,5 +1,6 @@
 import { Action, CompetitorSnapshot, GameState } from './game-state';
 import { inferOpponentUncertainty } from './threat-inference';
+import { BehaviorMode, BehaviorState } from './human-behavior-engine';
 
 export type OpponentResponse =
   | 'MATCH_PRICE'
@@ -18,6 +19,39 @@ export interface OpponentModel {
   confidence: number;
   uncertainty: number;
   evidenceBasis: 'OBSERVED_COMPETITOR_STATE' | 'INFERRED_THREAT' | 'WEAK_SIGNAL';
+}
+
+export interface OpponentBehaviorSignal {
+  mode: BehaviorMode;
+  weight: number;
+  rationale: string;
+}
+
+function behaviorAdjustment(mode: BehaviorMode, response: OpponentResponse): number {
+  if (mode === 'POSITIVE') return response === 'SHIFT_TO_CONTENT' ? 1.35 : response === 'HOLD' ? 0.85 : 0.95;
+  if (mode === 'NEGATIVE') return response === 'MATCH_PRICE' || response === 'RAISE_BID' ? 1.3 : 0.9;
+  if (mode === 'DEFENSIVE') return response === 'DEFEND_TRAFFIC' || response === 'HOLD' ? 1.3 : 0.9;
+  if (mode === 'OBSERVE') return response === 'HOLD' ? 1.3 : 0.9;
+  if (mode === 'MIXED') return response === 'MATCH_PRICE' || response === 'RAISE_BID' || response === 'SHIFT_TO_CONTENT' ? 1.12 : 1;
+  return 1;
+}
+
+function applyBehaviorState(models: OpponentModel[], behaviorState?: BehaviorState): OpponentModel[] {
+  if (!behaviorState || !models.length) return models;
+  const modes = behaviorState.nextLikelyModes.length ? behaviorState.nextLikelyModes : ['OBSERVE'];
+  return models.map(model => {
+    const weights = modes.map(mode => behaviorAdjustment(mode, model.response));
+    const avg = weights.reduce((a,b)=>a+b,0) / weights.length;
+    const uncertaintyPenalty = 1 - Math.min(0.35, behaviorState.uncertainty * 0.35);
+    const p = model.probability * avg * uncertaintyPenalty;
+    return {
+      ...model,
+      probability: Math.max(0.03, Math.min(0.9, p)),
+      confidence: Math.max(0.03, Math.min(0.9, model.confidence * (0.75 + 0.25 * avg))),
+      uncertainty: Math.min(1, model.uncertainty + behaviorState.uncertainty * 0.25),
+      rationale: [...model.rationale, `行为状态影响：${behaviorState.dominantMode}；下一可能行为：${modes.join(' / ')}`]
+    };
+  });
 }
 
 export interface BreakthroughInput {
@@ -66,7 +100,8 @@ function modelOne(c: CompetitorSnapshot, state: GameState): OpponentModel {
 }
 
 export function modelOpponentResponses(state: GameState): OpponentModel[] {
-  const base = state.competitors.map(c => modelOne(c, state));
+  let base = state.competitors.map(c => modelOne(c, state));
+  base = applyBehaviorState(base, state.behaviorState);
   const uncertainty = inferOpponentUncertainty(state);
   if (!uncertainty) return base;
   return base.map(o => {
