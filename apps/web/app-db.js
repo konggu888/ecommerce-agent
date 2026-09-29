@@ -17,7 +17,8 @@
     events: [],
     memories: [],
     risk: [],
-    tasks: []
+    tasks: [],
+    agentRounds: []
   };
 
   function esc(v) {
@@ -157,6 +158,28 @@
     });
   }
 
+  function agentSummary() {
+    var rounds = state.agentRounds || [];
+    if (!rounds.length) return notice('还没有 Agent 多轮闭环记录。');
+    var last = rounds[rounds.length - 1];
+    var stopped = 0;
+    var blocked = 0;
+    for (var i = 0; i < rounds.length; i++) {
+      if (rounds[i].stop_signal) stopped++;
+      if (!rounds[i].risk_approved) blocked++;
+    }
+    return '<div class="grid">' +
+      '<div class="card"><div class="label">已模拟轮次</div><div class="metric">' + rounds.length + '</div></div>' +
+      '<div class="card"><div class="label">风险拦截</div><div class="metric">' + blocked + '</div></div>' +
+      '<div class="card"><div class="label">停止信号</div><div class="metric">' + stopped + '</div></div>' +
+      '<div class="card"><div class="label">当前动作</div><div class="metric">' + esc(last.action) + '</div></div>' +
+      '</div>' +
+      '<div class="card"><div class="notice">最新一轮：' + esc(last.breakthrough || '') +
+      ' · ROI ' + esc(last.roi) + ' · 边际ROI ' + esc(last.marginal_roi) +
+      ' · 风险 ' + (last.risk_approved ? '通过' : '拦截') +
+      (last.stop_signal ? ' · 已触发停止：' + esc(last.stop_reason) : '') + '</div></div>';
+  }
+
   function overview() {
     show(
       '商业博弈总览',
@@ -164,7 +187,7 @@
       '<div class="grid">' +
       '<div class="card"><div class="label">Sandbox Run</div><div class="metric">' + esc(state.run.status) + '</div></div>' +
       '<div class="card"><div class="label">商业博弈记录</div><div class="metric">' + state.game.length + '</div></div>' +
-      '<div class="card"><div class="label">市场信号</div><div class="metric">' + state.market.length + '</div></div>' +
+      '<div class="card"><div class="label">市场信号</div><div class="metric">' + state.market.length + '</div></div>' +\n      '<div class="card"><div class="label">Agent闭环轮次</div><div class="metric">' + state.agentRounds.length + '</div></div>' +
       '</div>' +
       notice('核心数据库读取成功。广告模块也已进入读取阶段。')
     );
@@ -345,7 +368,17 @@
       rows.push([x.metric, JSON.stringify(x.value), x.created_at]);
     }
     show('风险控制器', 'BOOT-DEBUG-' + VERSION + ' · Sandbox 风险结果',
-      table(['指标','结果','时间'], rows));
+      table(['指标','结果','时间'], rows) + '<h2>Agent 事后风险</h2>' + agentRiskTable());
+  }
+
+  function agentRiskTable() {
+    var rounds = state.agentRounds || [];
+    var rows = [];
+    for (var i = 0; i < rounds.length; i++) {
+      var x = rounds[i];
+      rows.push([x.round, x.action, x.marginal_roi, x.crowding, x.stop_signal ? 'STOP' : 'CONTINUE', x.stop_reason]);
+    }
+    return table(['轮次','动作','边际ROI','拥挤','状态','原因'], rows);
   }
 
   function jobs() {
