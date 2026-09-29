@@ -216,6 +216,7 @@
   }
 
   // 兼容旧调用入口，但实际选牌已经统一进入“共享战略空间”。
+  // 统一选牌入口：我方与对手共享三大招式库，不再按阵营锁死。
   function getPositivePool(i,step,state){
     var z=pickCandidate(state,'我方');
     return z?z.m:null;
@@ -233,86 +234,6 @@
     if(!z)return null;
     return {id:z.m.id,name:z.m.name,kind:z.kind,mode:z.mode,role:'对手（模拟）',source:z.m,
       reason:'对手共享全部战略动作空间；下一手根据我方上一手、累计压力、风险与人格倾向选择，不再固定等于负向攻击。'};
-  }
-
-  function getPositivePool(i,step,state){
-    var a=lib('EA_POSITIVE_ATTACK_LIBRARY');
-    if(!a.length)return null;
-    var prev=state.lastMove, pd=state.lastDomain;
-    var domains=[], ids=[];
-    if(state.turn===0){
-      // 首手只能从低成本、可验证路线开始。
-      ids=['P02','P03','P12','P15','P25','P43','P49'];
-    }else if(prev && state.lastSide==='对手'){
-      // 我方读取对手刚刚打击的变量，但不能原地重复。
-      if(pd==='流量') {domains=['流量','内容口碑','渠道增长'];ids=['P02','P22','P25','P31','P45'];}
-      else if(pd==='价格商品') {domains=['商品策略','经营效率','产品策略'];ids=['P14','P15','P37','P38','P43'];}
-      else if(pd==='内容口碑') {domains=['内容增长','信任增长','品牌增长'];ids=['P06','P07','P10','P39','P46'];}
-      else if(pd==='供应链履约') {domains=['供应链','服务竞争','经营效率'];ids=['P19','P35','P36','P47'];}
-      else if(pd==='品牌知识产权') {domains=['品牌增长','信任增长','产品策略'];ids=['P09','P10','P11','P26'];}
-      else if(pd==='交易服务') {domains=['服务竞争','用户增长','经营效率'];ids=['P20','P21','P27','P28'];}
-      else if(pd==='机制') {domains=['信任增长','经营效率','博弈增长'];ids=['P39','P43','P44','P49'];}
-    }
-    var z=pickByScore(a,state.usedOur,domains,ids,state);
-    if(z)return z;
-    return pickByScore(a,state.usedOur,['流量','内容增长','商品策略','产品策略'],[],state);
-  }
-
-  function chooseOur(i,step,state){
-    var p=getPositivePool(i,step,state), b=lib('EA_BUG_ATTACK_LIBRARY');
-    var phase=phaseFromState(state);
-    // 机制型不是“补步数”的普通牌：只有异常持续/风险累积才进入棋谱。
-    if(b.length && (state.risk>=7 || state.pressure>=8)){
-      var bm=pickByScore(b,state.usedBug,['机制'],[],state);
-      if(bm)return {id:bm.id,name:bm.name,kind:'机制型攻防',role:'我方',source:bm,
-        reason:'压力/风险已累积到阈值，本手先处理异常与可验证性，而不是继续无条件扩张。'};
-    }
-    return p?{id:p.id,name:p.name,kind:'正向攻击',role:'我方',source:p,
-      reason:state.turn===0?'首手只建立一个可验证变量，先观察真实反馈。':
-      '读取对手上一手后切换到新的相关变量；已经使用过的招式不会再次拿来凑步数。'}:null;
-  }
-
-  function chooseOpponent(i,step,state){
-    var t=lib('EA_THREAT_LIBRARY'), b=lib('EA_BUG_ATTACK_LIBRARY');
-    if(!t.length&&!b.length)return null;
-    var our=state.lastMove, d=domain(our), ourI=intensity(our);
-    var map={
-      '流量':{domains:['广告竞争','流量攻击','内容竞争'],ids:['T19','T18','T17','T26']},
-      '内容口碑':{domains:['口碑与评价','舆情风险','内容竞争'],ids:['T01','T09','T25','T29','T08']},
-      '价格商品':{domains:['价格竞争','交易风险'],ids:['T20','T21','T16']},
-      '供应链履约':{domains:['供应链竞争','运营竞争'],ids:['T23','T24','T22']},
-      '品牌知识产权':{domains:['知识产权','品牌安全','渠道风险'],ids:['T03','T04','T05','T31','T32']},
-      '交易服务':{domains:['交易风险','平台治理','客户关系'],ids:['T13','T14','T12','T15','T10']},
-      '机制':{domains:['平台治理','流量攻击','交易风险'],ids:['T39','T17','T16']},
-      '通用':{domains:['价格竞争','内容竞争','平台治理'],ids:['T21','T19','T25']}
-    };
-    var m=map[d]||map['通用'];
-
-    // 强度随博弈阶段上升，但每一手仍必须换牌、换变量。
-    var ceiling=1;
-    if(ourI>=2 || state.momentum>=4)ceiling=2;
-    if(state.pressure>=6 || state.risk>=6)ceiling=3;
-
-    var candidates=unused(t,state.usedThreat).filter(function(z){return intensity(z)<=ceiling;});
-    var chosen=pickByScore(candidates,{},m.domains,m.ids,state);
-    if(chosen)return {id:chosen.id,name:chosen.name,kind:'负向攻击面',role:'对手（模拟）',source:chosen,
-      reason:'对手读取我方上一手的“'+d+'”变量后改变攻击面；同一招不会反复使用，强度也受当前累计压力限制。'};
-
-    // 只有在风险已经明显累积时，机制型响应才允许进入。
-    if(b.length && state.risk>=7){
-      var bm=pickByScore(b,state.usedBug,['机制'],[],state);
-      if(bm)return {id:bm.id,name:bm.name,kind:'机制型攻防',role:'对手（模拟）',source:bm,
-        reason:'累计异常已经达到高风险区，模拟对手转向机制层响应；这是防御性假设，不是漏洞操作。'};
-    }
-
-    // 当前领域没有合适牌时，明确“换战场”，而不是重复上一张。
-    var fallback=unused(t,state.usedThreat).filter(function(z){return intensity(z)<=ceiling;});
-    if(fallback.length){
-      var f=pickByScore(fallback,state.usedThreat,['价格竞争','内容竞争','平台治理','交易风险'],[],state);
-      if(f)return {id:f.id,name:f.name,kind:'负向攻击面',role:'对手（模拟）',source:f,
-        reason:'当前领域没有可升级的未使用招式，对手因此转向另一个竞争变量；不重复旧牌。'};
-    }
-    return null;
   }
 
   function stateSignature(s){
