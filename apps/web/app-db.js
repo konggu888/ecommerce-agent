@@ -125,6 +125,11 @@
       state.risk = x[5];
       state.tasks = x[6];
       state.agentRounds = x[7];
+      if ((!state.agentRounds || !state.agentRounds.length) && state.run && state.run.state && Array.isArray(state.run.state.executedPath)) {
+        state.agentRounds = state.run.state.executedPath.map(function (p, idx) {
+          return {round:p.round || idx + 1, action:p.action || 'HOLD', recommended_action:p.action || 'HOLD', actual_opponent_response:p.response || '暂无', next_action_hint:p.nextAction || p.next || 'HOLD', risk_approved:true, stop_signal:false, roi:null, marginal_roi:null, crowding:null};
+        });
+      }
     });
   }
 
