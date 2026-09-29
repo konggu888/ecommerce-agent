@@ -11,6 +11,7 @@ export interface GameNode {
   expectedGain: number;
   marginalPenalty: number;
   path: string[];
+  responseBranch?: { response: string; probability: number; nextActionHint: Action }[];
 }
 
 export interface MultiRoundPlan {
@@ -112,8 +113,24 @@ export function planMultiRoundGame(state: GameState, horizon = 3): MultiRoundPla
         marginalPenalty,
         path: [...path, action].map(String)
       });
-      const primaryResponse = [...opponent].sort((a, b) => b.probability - a.probability)[0];
-      search(projectState(current, action, primaryResponse), round + 1, nodeScore, [...path, action]);
+      const branches = [...opponent].sort((a, b) => b.probability - a.probability).slice(0, 2);
+      const nextHints: Action[] = [];
+      for (const branch of branches) {
+        if (branch.response === 'MATCH_PRICE') nextHints.push('CHANGE_TARGETING');
+        else if (branch.response === 'RAISE_BID') nextHints.push('CHANGE_KEYWORD');
+        else if (branch.response === 'DEFEND_TRAFFIC') nextHints.push('CHANGE_TARGETING');
+        else if (branch.response === 'SHIFT_TO_CONTENT') nextHints.push('CHANGE_KEYWORD');
+        else nextHints.push('HOLD');
+      }
+      nodes[nodes.length - 1].responseBranch = branches.map((branch, index) => ({
+        response: branch.response,
+        probability: branch.probability,
+        nextActionHint: nextHints[index] ?? 'HOLD'
+      }));
+      if (branches.length) {
+        const branch = branches[0];
+        search(projectState(current, action, branch), round + 1, nodeScore, [...path, action]);
+      }
     }
   }
 
@@ -131,9 +148,10 @@ export function planMultiRoundGame(state: GameState, horizon = 3): MultiRoundPla
     robustness,
     explanation: [
       `多轮视野: ${depth} 轮`,
-      `候选路径数: ${nodes.length}`,
+      `候选路径节点数: ${nodes.length}`,
       `最优路径的对手响应风险: ${avgRisk.toFixed(2)}`,
-      robustness >= 0.65 ? '路径具有较好的抗响应性' : '路径对对手响应较敏感，建议先做小规模实验'
+      robustness >= 0.65 ? '路径具有较好的抗响应性' : '路径对对手响应较敏感，建议先做小规模实验',
+      '每个节点保留最高概率的两种对手响应，并给出下一步动作提示'
     ]
   };
 }
