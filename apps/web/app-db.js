@@ -164,12 +164,4 @@
   nav.forEach(function(n){n.addEventListener('click',function(){state.view=n.dataset.view;location.hash=state.view;render();});});
   window.__EA_APPDB_LOADED__=true;window.__EA_APPDB_VERSION__=VERSION;
   loadRun().then(loadCore).then(loadAds).then(render).catch(function(e){show('核心数据读取失败','请检查 Sandbox 数据连接',notice(e.message));});
-}())  function experiments() {
-    var rows = [];
-    for (var i = 0; i < state.backtests.length; i++) {
-      var x = state.backtests[i];
-      rows.push([x.scenario, x.rounds, x.roi, x.risk, x.action, x.created_at]);
-    }
-    show('实验与回测', 'BOOT-DEBUG-' + VERSION + ' · Sandbox 模拟回测',
-      table(['场景','轮次','ROI','风险','动作','时间'], rows));
-  };
+}());
