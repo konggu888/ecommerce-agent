@@ -329,8 +329,73 @@
 
   function buildMoveReason(state,z,side){
     var m=z.m, last=state.lastMove, parts=[];
+    var ms=(m.name||'')+' '+(m.action||'')+' '+(m.signal||'');
+
+    // 对手说明必须从“模拟对手的决策逻辑”出发，不能复用我方商品优化说明。
+    if(side==='对手'){
+      if(last) parts.push('我方上一手是“'+(last.name||'未知')+'”，属于“'+(state.lastMode||'自适应')+'”，领域是“'+(state.lastDomain||'通用')+'”。');
+      else parts.push('这是开局的第一手对手模拟动作，当前还没有我方历史动作可供回应。');
+
+      if(z.mode==='试探'){
+        parts.push(state.information<3
+          ?'对手当前信息不足，不宜直接重投入，因此先用小动作观察我方和市场反馈。'
+          :'对手已经获得部分信号，本手继续低成本试探，确认我方下一步是否会调整。');
+      }else if(z.mode==='建设'){
+        parts.push(state.opponentMomentum>=5
+          ?'对手已经形成一定动能，本手把已有信号转成进一步增长动作。'
+          :'对手在当前竞争环境下补充自身优势变量，先建立可持续的竞争基础。');
+      }else if(z.mode==='防守'){
+        parts.push(state.pressure>=5||state.risk>=5
+          ?'当前压力或风险已经累积，对手优先降低暴露、保留后续选择权。'
+          :'对手暂时没有必要扩大投入，本手先控制风险和资源消耗。');
+      }else if(z.mode==='竞争'){
+        parts.push(state.pressure>=4
+          ?'双方竞争已经形成，对手开始争夺关键流量、价格、内容或其他当前战场变量。'
+          :'对手观察到竞争窗口，开始提高投入争夺同一批关键变量。');
+      }else if(z.mode==='诱导'){
+        parts.push('对手不直接暴露真实意图，而是先释放一个可观察信号，测试我方会如何回应。');
+      }else if(z.mode==='转移'){
+        parts.push('原竞争变量的边际收益下降，对手尝试换一个战场，避免继续在同一变量上消耗。');
+      }else if(z.mode==='反制'){
+        parts.push(state.lastMode==='负向施压'||state.pressure>=5
+          ?'我方上一轮或累计动作已经形成压力，对手因此采取针对性回应，而不是无依据地突然升级。'
+          :'对手识别到可回应的窗口，本手进行有限反制，保持升级幅度。');
+      }else if(z.mode==='机制校验'){
+        parts.push(state.risk>=5||state.pressure>=5
+          ?'当前风险或异常信号已经累积，对手先确认平台、规则或状态是否发生变化。'
+          :'对手面对不确定状态，先做机制层面的确认，再决定是否扩大行动。');
+      }else if(z.mode==='负向施压'){
+        parts.push(state.pressure>=4||state.opponentMomentum>=5
+          ?'竞争压力已经累积到一定程度，对手开始提高我方的决策成本，但仍受当前风险和压力约束。'
+          :'对手尝试施加有限竞争压力，观察我方是否改变路线，不直接跳到极端动作。');
+      }
+
+      if(state.feedback){
+        var f=state.feedback;
+        var feedbackParts=[];
+        if(f.ctr!==null)feedbackParts.push('点击反馈约'+Math.round(f.ctr*100)+'%基准');
+        if(f.conversion!==null)feedbackParts.push('转化反馈约'+Math.round(f.conversion*100)+'%基准');
+        if(f.contentSpread!==null)feedbackParts.push('内容扩散反馈约'+Math.round(f.contentSpread*100)+'%基准');
+        if(feedbackParts.length)parts.push('对手可观察到的模拟市场反馈包括：'+feedbackParts.join('、')+'；因此本手会据此调整回应强度。');
+      }
+
+      if(/关键词|搜索|长尾/.test(ms)){
+        parts.push('本手主要影响搜索/流量竞争变量，对手是在模拟争夺相关流量空间，而不是在替我方修改商品配置。');
+      }else if(/主图|点击/.test(ms)){
+        parts.push('本手主要作用于点击竞争变量，对手通过竞争动作观察我方点击表现变化。');
+      }else if(/详情|FAQ|卖点|痛点/.test(ms)){
+        parts.push('本手主要作用于转化承接竞争变量，对手观察双方商品表达变化后的市场反馈。');
+      }else if(/视频|UGC|种草|内容/.test(ms)){
+        parts.push('本手主要作用于内容传播竞争变量，对手观察内容扩散与市场响应。');
+      }
+
+      parts.push('以上是连续棋谱中的模拟对手决策，不代表真实竞争对手已经采取该动作；下一手仍会根据我方回应、累计压力和新的模拟反馈重新计算。');
+      return parts.join(' ');
+    }
+
+    // 我方说明：重点解释“为什么现在修改已有商品变量”。
     if(!last) parts.push('商品基础建设已经完成：热门/竞品标题、主图、详情、5条正向真实评价、视频、问大家和种草均已具备；现在缺的不是基础素材，而是上线后的真实反馈。');
-    else parts.push((side==='我方'?'对手':'我方')+'上一手是“'+(last.name||'未知')+'”，属于“'+(state.lastMode||'自适应')+'”，领域是“'+(state.lastDomain||'通用')+'”。');
+    else parts.push('对手上一手是“'+(last.name||'未知')+'”，属于“'+(state.lastMode||'自适应')+'”，领域是“'+(state.lastDomain||'通用')+'”。');
     if(!last && state.unknownSignals&&state.unknownSignals.length) parts.push('当前主要未知量是'+state.unknownSignals.slice(0,3).join('、')+'，所以首轮动作应优先获取这些反馈，而不是重复建设商品基础。');
     if(z.mode==='试探') parts.push(state.information<2?'当前信息量不足，直接扩大投入容易误判，所以先验证。':'已有初步信号，再验证一次以确认是否值得继续放大。');
     else if(z.mode==='建设') parts.push(state.momentum>=5?'已有有效动能，本手把信号转成增长动作。':'当前需要建立新的正向变量。');
@@ -344,7 +409,6 @@
     var diagnoses=diagnoseProduct(state);
     if(diagnoses.length)parts.push('当前反馈诊断：'+diagnoses.slice(0,2).map(function(d){return d.label+'（'+d.why+'）';}).join('、')+'；因此下一手优先修正已暴露变量。');
     else if(state.turn>=2)parts.push('目前没有足够强的单一故障信号，先通过小幅试探继续获取反馈，再决定修改哪个商品变量。');
-    var ms=(m.name||'')+' '+(m.action||'')+' '+(m.signal||'');
     if(/长尾关键词|关键词/.test(ms)){
       parts.push('作用变量：长尾关键词/标题。初始配置只是热门/竞品复制版，置信度仍低；本手通过市场反馈验证搜索意图是否匹配，验证后允许继续改词。');
       if(state.feedback.searchTerms!==null)parts.push('已有搜索词反馈，当前搜索匹配基准约为'+Math.round(state.feedback.searchTerms*100)+'%，因此这不是重复建设，而是纠偏。');
