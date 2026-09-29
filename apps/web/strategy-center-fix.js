@@ -84,6 +84,8 @@
         reviews:{version:1,confidence:0.45,needsReview:false}
       },
       feedback:{ctr:null,conversion:null,organicTraffic:null,searchTerms:null,competitorMoves:null,contentSpread:null},
+      productHistory:[],
+
       personality:x,history:[],usedMoves:{},domainCooldown:{},domainChanges:0,staleMoves:0,
       meaningfulMoves:0,lastStateSignature:'',endReason:'',maxTurns:40
     };
@@ -247,11 +249,40 @@
       s.productVariables[key].needsReview=false;
     }
     if(side==='我方'){
-      if(/核心关键词|关键词重构|长尾关键词/.test(nm+' '+ac)){revise('title',.12);revise('longTailKeywords',.18);}
-      if(/主图/.test(nm+' '+ac)){revise('mainImage',.16);if(s.feedback.ctr!==null)s.feedback.ctr=Math.min(1.2,s.feedback.ctr+.08);}
-      if(/详情|FAQ/.test(nm+' '+ac)){revise('detail',.15);if(s.feedback.conversion!==null)s.feedback.conversion=Math.min(1.2,s.feedback.conversion+.07);}
-      if(/视频|UGC|种草|内容/.test(nm+' '+ac)){revise('video',.12);revise('seeding',.12);}
+      if(/核心关键词|关键词重构|长尾关键词/.test(nm+' '+ac)){
+        revise('title',.12);revise('longTailKeywords',.18);
+        s.feedback.searchTerms=Math.min(1.2,(s.feedback.searchTerms===null?.35:s.feedback.searchTerms)+.12);
+        s.feedback.ctr=Math.min(1.2,(s.feedback.ctr===null?.55:s.feedback.ctr)+.06);
+      }
+      if(/主图/.test(nm+' '+ac)){
+        revise('mainImage',.16);
+        s.feedback.ctr=Math.min(1.2,(s.feedback.ctr===null?.55:s.feedback.ctr)+.1);
+      }
+      if(/详情|FAQ|卖点|痛点/.test(nm+' '+ac)){
+        revise('detail',.15);
+        s.feedback.conversion=Math.min(1.2,(s.feedback.conversion===null?.5:s.feedback.conversion)+.09);
+      }
+      if(/视频|UGC|种草|内容/.test(nm+' '+ac)){
+        revise('video',.12);revise('seeding',.12);
+        s.feedback.contentSpread=Math.min(1.2,(s.feedback.contentSpread===null?.5:s.feedback.contentSpread)+.1);
+      }
     }
+    // 对手动作也会改变反馈环境：不是“真实数据”，而是连续棋谱中的模拟市场反馈。
+    if(side==='对手'){
+      if(/关键词|搜索/.test(nm+' '+ac))s.feedback.ctr=Math.max(.15,(s.feedback.ctr===null?.55:s.feedback.ctr)-.06);
+      if(/主图|点击/.test(nm+' '+ac))s.feedback.ctr=Math.max(.15,(s.feedback.ctr===null?.55:s.feedback.ctr)-.07);
+      if(/价格|竞争|压制/.test(nm+' '+ac))s.feedback.conversion=Math.max(.15,(s.feedback.conversion===null?.5:s.feedback.conversion)-.05);
+      if(/内容|视频|种草/.test(nm+' '+ac))s.feedback.contentSpread=Math.max(.15,(s.feedback.contentSpread===null?.5:s.feedback.contentSpread)-.06);
+      s.feedback.competitorMoves=Math.min(1.2,(s.feedback.competitorMoves===null?.35:s.feedback.competitorMoves)+.1);
+    }
+    // 每次变量变化都留下版本记录，棋谱才能解释“为什么又改了一次”。
+    var touched=[];
+    if(/关键词|搜索/.test(nm+' '+ac))touched.push('长尾关键词/标题');
+    if(/主图/.test(nm+' '+ac))touched.push('主图');
+    if(/详情|FAQ|卖点|痛点/.test(nm+' '+ac))touched.push('详情页');
+    if(/视频|UGC/.test(nm+' '+ac))touched.push('商品视频');
+    if(/种草|内容/.test(nm+' '+ac))touched.push('种草内容');
+    if(touched.length)s.productHistory.push({turn:s.turn+1,side:side,move:nm,variables:touched});
     s.lastSide=side;s.lastMove=m;s.lastMode=mode;s.lastDomain=d;s.lastIntensity=k;s.turn++;
     s.history.push({side:side,id:m&&m.id,name:m&&m.name,kind:m&&m.kind,mode:mode,domain:d,intensity:k});
     if(d!==beforeDomain)s.domainChanges++;
@@ -349,7 +380,9 @@
       var after={
         pressure:state.pressure,risk:state.risk,momentum:state.momentum,
         opponentMomentum:state.opponentMomentum,information:state.information,
-        lastDomain:state.lastDomain,lastMode:state.lastMode
+        lastDomain:state.lastDomain,lastMode:state.lastMode,
+        productVariables:JSON.parse(JSON.stringify(state.productVariables)),
+        feedback:Object.assign({},state.feedback)
       };
       var change=evaluateMoveChange(before,after,state,m), endReason=shouldEnd(state,n,change);
       if(endReason)state.endReason=endReason;
@@ -425,6 +458,14 @@
     h+='<div style="font-size:17px;margin-top:7px"><span class="tag">'+esc(m.id)+'</span> <b>'+esc(m.name)+'</b></div>';
     h+='<div class="notice" style="margin-top:7px"><b>为什么现在用这招</b><div style="margin-top:5px;line-height:1.7">'+esc(m.reason)+'</div></div>';
     h+='<div class="muted" style="margin-top:6px"><b>本手目标：</b>'+esc(m.mode||'自适应')+' · <b>前一手：</b>'+esc((s.stateBefore&&s.stateBefore.lastMode)||'开局')+' · '+esc((s.stateBefore&&s.stateBefore.lastDomain)||'通用')+'</div>';
+    if(s.stateAfter&&s.stateAfter.productVariables){
+      var pv=s.stateAfter.productVariables, f=s.stateAfter.feedback||{};
+      h+='<div class="notice" style="margin-top:6px"><b>商品变量反馈</b>：';
+      h+='长尾词版本 V'+pv.longTailKeywords.version+'（置信度 '+Math.round(pv.longTailKeywords.confidence*100)+'%）';
+      if(f.ctr!==null)h+=' · 点击反馈 '+Math.round(f.ctr*100)+'%基准';
+      if(f.conversion!==null)h+=' · 转化反馈 '+Math.round(f.conversion*100)+'%基准';
+      h+='</div>';
+    }
     if(m.source){
       h+='<details style="margin-top:6px"><summary class="muted" style="cursor:pointer">查看招式来源与原始定义</summary><div class="muted" style="margin-top:4px">战略动作：'+esc(m.mode||'自适应')+' · 原招式库：'+esc(m.kind)+' · 原定义：'+esc(m.source.action||m.source.defense||m.source.mechanism||m.source.signal||'')+'</div></details>';
       if(m.source.combo&&Array.isArray(m.source.combo.steps)){
