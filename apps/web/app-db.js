@@ -3,30 +3,43 @@
 
   var app = document.getElementById('app');
   var nav = document.querySelectorAll('.nav');
-  var VERSION = '20260929-17';
+  var VERSION = '20260929-18';
   var SUPABASE_URL = 'https://skuoxmrzlxhebzhfgbyn.supabase.co';
   var ANON_KEY = 'sb_publishable_u46tZ4GMUgwqSYhMJNFG8Q_IzYwl95T';
   var CLIENT_KEY = 'ecommerce-agent-sandbox-v1';
-  var state = { view: location.hash.slice(1) || 'overview', run: null };
+  var state = { view: location.hash.slice(1) || 'overview', run: null, game: [], market: [] };
 
-  function text(value) {
-    return String(value == null ? '' : value);
+  function esc(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
-  function render(title, subtitle, message) {
+  function page(title, subtitle, body) {
     if (!app) return;
     app.innerHTML =
-      '<h1 class="page-title">' + text(title) + '</h1>' +
-      '<div class="subtitle">' + text(subtitle) + '</div>' +
-      '<div class="card"><div class="notice">' + text(message) + '</div></div>';
+      '<h1 class="page-title">' + esc(title) + '</h1>' +
+      '<div class="subtitle">' + esc(subtitle) + '</div>' + body;
   }
 
-  function requestSandboxRun() {
-    var url = SUPABASE_URL +
-      '/rest/v1/sandbox_runs?select=id,status,updated_at,client_key' +
-      '&client_key=eq.' + encodeURIComponent(CLIENT_KEY) +
-      '&order=updated_at.desc&limit=1';
+  function card(message) {
+    return '<div class="card"><div class="notice">' + esc(message) + '</div></div>';
+  }
 
+  function table(headers, rows) {
+    if (!rows.length) return card('该模块当前没有数据库记录。');
+    return '<div class="card"><table class="table"><thead><tr>' +
+      headers.map(function (x) { return '<th>' + esc(x) + '</th>'; }).join('') +
+      '</tr></thead><tbody>' +
+      rows.map(function (row) {
+        return '<tr>' + row.map(function (x) { return '<td>' + esc(x) + '</td>'; }).join('') + '</tr>';
+      }).join('') +
+      '</tbody></table></div>';
+  }
+
+  function getJSON(url) {
     return fetch(url, {
       method: 'GET',
       headers: {
@@ -41,58 +54,131 @@
         try {
           data = JSON.parse(body);
         } catch (error) {
-          throw new Error('Supabase 返回的不是 JSON，HTTP ' + response.status);
+          throw new Error('HTTP ' + response.status + ' 返回非 JSON');
         }
         if (!response.ok) {
-          throw new Error('Supabase HTTP ' + response.status);
+          throw new Error('HTTP ' + response.status);
         }
         return data;
       });
     });
   }
 
-  function load() {
-    render('Supabase 连接测试', 'BOOT-DEBUG-' + VERSION, '正在直接读取 sandbox_runs……');
+  function runURL(tableName) {
+    return SUPABASE_URL + '/rest/v1/' + tableName +
+      '?run_id=eq.' + encodeURIComponent(state.run.id) +
+      '&order=created_at.desc';
+  }
 
-    requestSandboxRun().then(function (rows) {
-      if (!Array.isArray(rows)) {
-        throw new Error('sandbox_runs 返回格式不是数组');
+  function loadRun() {
+    var url = SUPABASE_URL +
+      '/rest/v1/sandbox_runs?select=id,status,updated_at,client_key' +
+      '&client_key=eq.' + encodeURIComponent(CLIENT_KEY) +
+      '&order=updated_at.desc&limit=1';
+    return getJSON(url).then(function (rows) {
+      if (!Array.isArray(rows) || !rows.length) {
+        throw new Error('没有找到 sandbox_runs');
       }
-
-      if (!rows.length) {
-        render(
-          'Supabase 连接成功',
-          'BOOT-DEBUG-' + VERSION,
-          '数据库可以访问，但 sandbox_runs 中没有找到模拟运行记录。'
-        );
-        return;
-      }
-
       state.run = rows[0];
-      render(
-        'Supabase 连接成功',
-        'BOOT-DEBUG-' + VERSION,
-        '已读取 sandbox_runs：run=' + text(state.run.id) +
-        '，状态=' + text(state.run.status) +
-        '，更新时间=' + text(state.run.updated_at)
-      );
-    }).catch(function (error) {
-      console.error('SUPABASE_BOOT_ERROR', error);
-      render(
-        'Supabase 连接失败',
-        'BOOT-DEBUG-' + VERSION,
-        text(error && error.message ? error.message : error)
-      );
     });
+  }
+
+  function loadBusinessData() {
+    return Promise.all([
+      getJSON(runURL('sandbox_game_states')),
+      getJSON(runURL('sandbox_market_signals'))
+    ]).then(function (values) {
+      state.game = values[0];
+      state.market = values[1];
+    });
+  }
+
+  function overview() {
+    return page(
+      '商业博弈总览',
+      'BOOT-DEBUG-' + VERSION + ' · 第一批数据库业务数据',
+      '<div class="grid">' +
+      '<div class="card"><div class="label">Sandbox Run</div><div class="metric">' + esc(state.run.status) + '</div></div>' +
+      '<div class="card"><div class="label">商业博弈记录</div><div class="metric">' + state.game.length + '</div></div>' +
+      '<div class="card"><div class="label">市场信号</div><div class="metric">' + state.market.length + '</div></div>' +
+      '</div>' +
+      card('数据库连接、sandbox_runs、商业博弈和市场情报四层已完成读取。')
+    );
+  }
+
+  function game() {
+    return page(
+      '商业博弈',
+      '直接读取 sandbox_game_states · Sandbox 模拟数据',
+      table(
+        ['产品', '竞品', '场景', '竞品价格', '我方价格', 'CPC', 'CVR'],
+        state.game.map(function (x) {
+          return [
+            x.product,
+            x.competitor,
+            x.scenario,
+            x.competitor_price,
+            x.our_price,
+            x.cpc,
+            x.cvr
+          ];
+        })
+      )
+    );
+  }
+
+  function market() {
+    return page(
+      'Web 市场情报',
+      '直接读取 sandbox_market_signals · Sandbox 模拟数据',
+      table(
+        ['名称', '类型', '强度', '说明'],
+        state.market.map(function (x) {
+          return [x.name, x.signal_type, x.strength, x.detail];
+        })
+      )
+    );
+  }
+
+  function placeholder(title) {
+    return page(title, 'BOOT-DEBUG-' + VERSION, card('这一页暂时没有恢复。当前阶段只验证核心业务数据读取。'));
+  }
+
+  var views = {
+    overview: overview,
+    game: game,
+    market: market,
+    ads: function () { return placeholder('广告 / 流量'); },
+    experiments: function () { return placeholder('实验与回测'); },
+    risk: function () { return placeholder('风险控制器'); },
+    jobs: function () { return placeholder('任务监控'); },
+    memory: function () { return placeholder('学习记忆'); }
+  };
+
+  function render() {
+    for (var i = 0; i < nav.length; i++) {
+      nav[i].classList.toggle('active', nav[i].dataset.view === state.view);
+    }
+    (views[state.view] || overview)();
+  }
+
+  function load() {
+    page('数据库业务数据测试', 'BOOT-DEBUG-' + VERSION, card('正在读取 sandbox_runs、商业博弈、市场情报……'));
+
+    loadRun()
+      .then(loadBusinessData)
+      .then(render)
+      .catch(function (error) {
+        console.error('BUSINESS_DATA_ERROR', error);
+        page('数据库业务数据读取失败', 'BOOT-DEBUG-' + VERSION, card(error.message));
+      });
   }
 
   for (var i = 0; i < nav.length; i++) {
     nav[i].addEventListener('click', function () {
-      render(
-        'Supabase 连接测试',
-        'BOOT-DEBUG-' + VERSION,
-        '当前正在进行第一阶段：只测试 Supabase → sandbox_runs。'
-      );
+      state.view = this.dataset.view;
+      location.hash = state.view;
+      render();
     });
   }
 
