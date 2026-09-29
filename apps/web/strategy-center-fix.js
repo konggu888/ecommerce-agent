@@ -2,8 +2,9 @@
   'use strict';
 
   // 连贯式博弈棋谱：
-  // 每个人格 = 一张连续棋谱；默认40步。
-  // 不是“每轮三步后结束”，而是：我方一招 → 对手一招 → 我方一招 → 对手一招……
+  // 每个人格 = 一张连续棋谱；没有固定步数，最多40步。
+  // 不是“凑40步”，而是：我方一招 → 对手一招 → 我方一招 → 对手一招……
+  // 只有局面仍发生有意义的变化才继续；优势形成、僵持、路线失效或风险封顶时自然收束。
   // 正向攻击、负向/对手攻击、机制型攻防三类招式在同一条连续链中混合出现。
   // 所有对手动作均为模拟假设；机制型招式只用于模拟异常/校验/防守，不提供真实漏洞利用步骤。
 
@@ -71,7 +72,9 @@
       lastOutcome:'',
       personality:x,
       history:[],
-      usedOur:{},usedThreat:{},usedBug:{}
+      usedOur:{},usedThreat:{},usedBug:{},
+      domainCooldown:{},domainChanges:0,staleMoves:0,meaningfulMoves:0,
+      lastStateSignature:'',endReason:'',maxTurns:40
     };
   }
 
@@ -104,6 +107,11 @@
     s.lastIntensity=k;
     s.turn++;
     s.history.push({side:side,id:m&&m.id,name:m&&m.name,domain:d,intensity:k});
+    if(d!==s.lastDomain)s.domainChanges++;
+    s.domainCooldown[d]=2;
+    Object.keys(s.domainCooldown).forEach(function(k2){
+      if(k2!==d)s.domainCooldown[k2]=Math.max(0,(s.domainCooldown[k2]||0)-1);
+    });
     if(m&&m.id){if(m.kind==='正向攻击')s.usedOur[m.id]=1;else if(m.kind==='负向攻击面')s.usedThreat[m.id]=1;else s.usedBug[m.id]=1;}
   }
 
@@ -119,10 +127,12 @@
       var score=0,d=domain(m),k=intensity(m);
       if(preferredIds&&preferredIds.indexOf(m.id)>=0)score+=8;
       if(preferredDomains&&preferredDomains.indexOf(d)>=0)score+=5;
-      // 不允许连续重复领域，否则棋谱会变成“同一问题来回打”。
-      if(state.lastDomain===d)score-=3;
-      // 随着博弈推进，逐渐转向新的变量；不是永远盯着第一张牌。
-      score += Math.min(state.information,6)*((d!==state.lastDomain)?0.8:0);
+      // 不允许连续重复领域；刚解决过的变量进入冷却，除非局面发生反转。
+      if(state.lastDomain===d)score-=7;
+      if(state.domainCooldown[d]>0)score-=4;
+      // 随着博弈推进，逐渐转向新的变量，而不是永远盯着第一张牌。
+      score += Math.min(state.information,6)*((d!==state.lastDomain)?1.0:0);
+      score += (d!==state.lastDomain)?1.5:0;
       score -= Math.abs(k-Math.min(3,Math.floor(state.turn/6)))*0.7;
       score += ((idx+state.turn)%7)*0.01;
       if(score>bestScore){bestScore=score;best=m;}
@@ -157,7 +167,7 @@
     var p=getPositivePool(i,step,state), b=lib('EA_BUG_ATTACK_LIBRARY');
     var phase=phaseFromState(state);
     // 机制型不是“补步数”的普通牌：只有异常持续/风险累积才进入棋谱。
-    if(b.length && !state.usedBug && (state.risk>=7 || state.pressure>=8)){
+    if(b.length && (state.risk>=7 || state.pressure>=8)){
       var bm=pickByScore(b,state.usedBug,['机制'],[],state);
       if(bm)return {id:bm.id,name:bm.name,kind:'机制型攻防',role:'我方',source:bm,
         reason:'压力/风险已累积到阈值，本手先处理异常与可验证性，而不是继续无条件扩张。'};
@@ -210,32 +220,83 @@
     return null;
   }
 
+  function stateSignature(s){
+    return [Math.round(s.pressure),Math.round(s.risk),Math.round(s.momentum),Math.round(s.information),s.lastDomain].join('|');
+  }
+
+  function evaluateMoveChange(before,after,state,move){
+    var delta=Math.abs(after.pressure-before.pressure)+Math.abs(after.risk-before.risk)+
+      Math.abs(after.momentum-before.momentum)+Math.abs(after.information-before.information);
+    var changedDomain=before.lastDomain!==after.lastDomain;
+    var meaningful=delta>=0.55 || changedDomain || intensity(move)>=2;
+    if(meaningful){state.meaningfulMoves++;state.staleMoves=0;}
+    else state.staleMoves++;
+    return {meaningful:meaningful,delta:delta,changedDomain:changedDomain};
+  }
+
+  function shouldEnd(state, stepNo, change){
+    // 前6步用于建立基本局面，避免开局过早结束。
+    if(stepNo<6)return null;
+    if(state.risk>=10)return '风险达到封顶：进入防守/校验收束';
+    if(state.pressure>=11 && state.momentum<=1)return '对手压力持续累积：进入防守收束';
+    if(state.momentum>=9 && state.pressure<=3 && state.information>=5)return '我方优势已形成：进入成果兑现收束';
+    if(state.staleMoves>=2)return '连续两手没有产生足够新的有效变量：停止硬凑步数';
+    if(state.domainChanges>=8 && state.pressure<=2 && state.risk<=3)return '主要竞争变量已经轮换完成：进入复盘收束';
+    if(stepNo>=state.maxTurns)return '达到安全上限：进入复盘（40步只是上限，不是目标）';
+    return null;
+  }
+
   function build(i,x){
     var seq=Array.isArray(x.sequence)&&x.sequence.length?x.sequence:['正向'];
     var steps=[], state=initialState(i,x);
-    for(var n=1;n<=40;n++){
-      // 人格序列现在只作为“偏好权重”，不再直接决定抽哪张牌。
-      // 真正决定下一手的是上一手、累积压力、风险、信息和资源状态。
+    for(var n=1;n<=state.maxTurns;n++){
+      // 人格序列只作为长期倾向；真正下一手由局面驱动。
       var phase=phaseFromState(state), m;
       if(n%2===1)m=chooseOur(i,n,state);
       else m=chooseOpponent(i,n,state);
-      if(!m)break;
+      if(!m){state.endReason='当前没有足够新的未使用有效招式：自然结束';break;}
 
-      var before={pressure:state.pressure,risk:state.risk,momentum:state.momentum,information:state.information};
+      var before={
+        pressure:state.pressure,risk:state.risk,momentum:state.momentum,
+        information:state.information,lastDomain:state.lastDomain
+      };
       updateState(state,m,n%2?'我方':'对手');
-      var after={pressure:state.pressure,risk:state.risk,momentum:state.momentum,information:state.information};
+      var after={
+        pressure:state.pressure,risk:state.risk,momentum:state.momentum,
+        information:state.information,lastDomain:state.lastDomain
+      };
+      var change=evaluateMoveChange(before,after,state,m);
+      var endReason=shouldEnd(state,n,change);
+      if(endReason)state.endReason=endReason;
+
+      var deltaText=[];
+      if(before.lastDomain!==after.lastDomain)deltaText.push('战场从'+before.lastDomain+'切换到'+after.lastDomain);
+      if(after.pressure>before.pressure+0.1)deltaText.push('对抗压力上升');
+      if(after.pressure<before.pressure-0.1)deltaText.push('对抗压力下降');
+      if(after.risk>before.risk+0.1)deltaText.push('风险上升');
+      if(after.momentum>before.momentum+0.1)deltaText.push('我方动能增加');
+      if(after.momentum<before.momentum-0.1)deltaText.push('我方动能下降');
+      if(!deltaText.length)deltaText.push('局面变化有限，下一手需寻找新的有效变量');
 
       steps.push({
         no:n,side:n%2?'我方':'对手',role:m.role,
         token:seq[mod(n-1,seq.length)],
         phase:phase,move:m,
         stateBefore:before,stateAfter:after,
-        response:n===40?'本局结束：进入复盘。':
+        stateDelta:deltaText.join('；'),
+        meaningful:change.meaningful,
+        response:endReason?'本局在本手后自然收束：'+endReason:
           (n%2===1?'我方出牌后，对手只能根据这张牌及当前累积状态作出下一手模拟响应。':
           '对手刚刚出牌，我方下一手必须读取这次压力变化后再调整。')
       });
+
+      if(endReason)break;
     }
-    return {id:x.id,name:x.name,style:x.style||'',risk:x.risk||'中',signal:x.signal||'',goal:x.goal||'',sequence:seq,steps:steps};
+    if(!state.endReason)state.endReason='达到默认安全上限：进入复盘';
+    return {
+      id:x.id,name:x.name,style:x.style||'',risk:x.risk||'中',signal:x.signal||'',goal:x.goal||'',
+      sequence:seq,steps:steps,endReason:state.endReason,meaningfulMoves:state.meaningfulMoves
+    };
   }
 
   function coverage(){
@@ -256,18 +317,18 @@
     var app=document.getElementById('app');if(!app)return;
     var H=lib('EA_HUMAN_BEHAVIOR_LIBRARY').slice(0,40);
     var html='<h1 class="page-title">连续博弈策略中心 <span style="font-size:16px;font-weight:500;color:var(--accent);margin-left:10px">我变 → 对手学 → 我再变</span></h1>';
-    html+='<div class="subtitle">40种行为人格 · 每个人格一张连续棋谱 · 40步连续交锋 · 三大招式库混合使用</div>';
+    html+='<div class="subtitle">40种行为人格 · 每个人格一张连续棋谱 · 自然收束 · 三大招式库混合使用</div>';
     html+='<div class="card" style="margin:10px 0 16px;border-left:4px solid var(--accent);background:rgba(255,180,0,.06)"><b>棋谱规则</b><div style="font-size:16px;line-height:1.7;margin-top:6px">';
-    html+='不是“我方三步/一轮就结束”。每一套人格是一条完整连续链：<b>我方第1招 → 对手第2招 → 我方第3招 → 对手第4招 → …… → 第40招</b>。';
-    html+='正向攻击面、负向攻击面、机制型攻防招式会在同一张棋谱中穿插；人格决定节奏和阶段，上一招改变下一招的状态。对手招式是模拟假设，机制型招式用于识别、校验、隔离和防守。';
+    html+='不是“我方三步/一轮就结束”，也不是为了凑固定步数。每一套人格是一条完整连续链：<b>我方第1招 → 对手第2招 → 我方第3招 → 对手第4招 → ……</b>，最多40步。';
+    html+='正向攻击面、负向攻击面、机制型攻防招式会在同一张棋谱中穿插；人格决定长期反应倾向，上一招改变下一招的状态。只有局面继续产生有效变化才继续；优势形成、僵持、路线失效或风险封顶时自然收束。对手招式是模拟假设，机制型招式用于识别、校验、隔离和防守。';
     html+='</div></div>';
     html+='<div class="card"><div class="label">40套连续博弈棋谱</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px;margin-top:12px">';
     H.forEach(function(x,i){
       html+='<div class="game-wrap" data-game="'+esc(x.id)+'"><div class="card"><span class="tag">'+esc(x.id)+'</span><b style="display:block;margin-top:7px">'+esc(x.name)+'</b>';
       html+='<div class="muted" style="margin-top:5px">模式：'+esc(x.style)+' · '+esc(x.risk)+'风险</div><div style="margin-top:5px">信号：'+esc(x.signal)+'</div>';
       html+='<div style="margin-top:5px"><b>人格序列：</b>'+esc((x.sequence||[]).join(' → '))+'</div>';
-      html+='<div style="margin-top:7px"><b>连续长度：</b>40步，不按“三步一局”截断</div>';
-      html+='<div style="display:flex;gap:8px;margin-top:10px"><button type="button" class="game-card" data-mode="playbook">♟ 查看40步连续棋谱</button><button type="button" class="game-card" data-mode="reasoning">🧠 查看人格逻辑</button></div></div><div class="game-detail" style="display:none;margin-top:8px"></div></div>';
+      html+='<div style="margin-top:7px"><b>连续长度：</b>自然收束，最多40步（40只是上限）</div>';
+      html+='<div style="display:flex;gap:8px;margin-top:10px"><button type="button" class="game-card" data-mode="playbook">♟ 查看连续棋谱</button><button type="button" class="game-card" data-mode="reasoning">🧠 查看人格逻辑</button></div></div><div class="game-detail" style="display:none;margin-top:8px"></div></div>';
     });
     html+='</div></div>'+coverage();
     app.innerHTML=html;
@@ -311,9 +372,10 @@
     var h='<div class="card" style="margin:0;border-left:3px solid var(--accent)"><div class="label">'+esc(data.id)+' · '+esc(data.name)+'</div>';
     h+='<div style="margin-top:8px"><b>人格：</b>'+esc(data.signal)+'<br><b>目标：</b>'+esc(data.goal)+'</div>';
     if(mode==='playbook'){
-      h+='<div style="margin-top:12px"><b>一条连续40步棋谱</b></div>';
-      h+='<div class="muted" style="margin:5px 0 12px">注意：这里是“连续交锋”，不是每三步重新开始。第1步结束后立即进入第2步，第2步又改变第3步，以此连续到第40步。</div>';
+      h+='<div style="margin-top:12px"><b>一条连续棋谱 · '+data.steps.length+'步自然收束</b></div>';
+      h+='<div class="muted" style="margin:5px 0 12px">注意：这里是“连续交锋”，不是每三步重新开始，也不是硬凑40步。40步只是安全上限，局面达到结束条件会提前停止。</div>';
       data.steps.forEach(function(s){h+=stepHtml(s);});
+      h+='<div class="notice" style="margin-top:10px"><b>本局收束：</b>'+esc(data.endReason)+' · 有效局面变化 '+data.meaningfulMoves+' 次</div>';
     }else{
       h+='<div style="margin-top:10px;line-height:1.8"><b>这个人格为什么这样走？</b><br>';
       h+='人格序列只负责定义长期行为倾向；真正的棋谱由连续状态驱动。奇数步是我方，偶数步是对手。三类招式不是三条互相独立的棋谱，而是同一条链里的不同类型：正向攻击用于建设优势，负向攻击面必须针对我方上一手作出渐进式回应，机制型攻防只在异常、压力或风险累积后介入。';
