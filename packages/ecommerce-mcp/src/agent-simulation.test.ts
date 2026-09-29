@@ -316,3 +316,12 @@ test('opponent response probabilities react to persisted behavior state', async 
   assert.ok(adaptiveDefend >= baseDefend || adaptiveDefend > 0);
   assert.ok(adaptive.every(x => x.rationale.some(r => r.includes('行为状态影响'))));
 });
+
+
+test('simulation feeds actual opponent responses back into behavior state', () => {
+  const result = runAgentSimulation(config());
+  assert.ok(result.finalState.behaviorState);
+  assert.ok((result.finalState.behaviorState?.recentModes.length ?? 0) > 0);
+  assert.ok((result.finalState.behaviorState?.nextLikelyModes.length ?? 0) > 0);
+  assert.ok(result.rounds.some(r => r.actualOpponentResponse));
+});
