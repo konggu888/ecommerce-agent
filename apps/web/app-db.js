@@ -3,7 +3,7 @@
 
   var app = document.getElementById('app');
   var nav = document.querySelectorAll('.nav');
-  var VERSION = '20260929-39';
+  var VERSION = '20260929-40';
   var BASE = 'https://skuoxmrzlxhebzhfgbyn.supabase.co';
   var KEY = 'sb_publishable_u46tZ4GMUgwqSYhMJNFG8Q_IzYwl95T';
   var CLIENT = 'ecommerce-agent-sandbox-v1';
@@ -504,7 +504,7 @@
 
   function threats() {
     var list=window.EA_THREAT_LIBRARY||[], selected=list.length?list[0]:null;
-    function detail(x){if(!x)return notice('暂无对手攻击面数据。');return '<div class="card"><span class="tag">'+esc(x.id)+'</span><span class="tag">'+esc(x.category)+'</span><h2>'+esc(x.name)+'</h2><div class="label">识别信号</div><div class="notice">'+esc(x.signal)+'</div><div class="label" style="margin-top:12px">防范重点</div><div class="notice">'+esc(x.defense)+'</div></div>';}
+    function detail(x){if(!x)return notice('暂无对手攻击面数据。');var steps=(window.EA_THREAT_PLAYBOOKS||{})[x.id]||[];var h='<div class="card"><span class="tag">'+esc(x.id)+'</span><span class="tag">'+esc(x.category)+'</span><h2>'+esc(x.name)+'</h2><div class="label">识别信号</div><div class="notice">'+esc(x.signal)+'</div><h3>可能的攻击链（防御视角）</h3><div style="display:grid;gap:8px">';for(var s=0;s<steps.length;s++){h+='<div style="padding:10px;border:1px solid var(--line);border-radius:8px"><span class="tag">第'+(s+1)+'步</span> '+esc(steps[s])+'</div>';}h+='</div><div class="label" style="margin-top:12px">防范重点</div><div class="notice">'+esc(x.defense)+'</div><div class="muted" style="margin-top:10px">重点不是猜测某个对手，而是监控每一步是否出现可验证信号；出现多步连续信号时，再升级事件等级。</div></div>';return h;}
     var b='<div class="card"><div class="label">对手可能的恶意竞争 / 攻击方式 · '+list.length+'项</div><div class="muted" style="margin:6px 0 12px">防御清单：先识别信号，再根据真实数据决定是否纳入博弈模型。</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px">';
     for(var i=0;i<list.length;i++){var x=list[i];b+='<button type="button" class="threat-choice" data-id="'+esc(x.id)+'" style="text-align:left;padding:10px;border:1px solid '+(selected&&x.id===selected.id?'var(--accent)':'var(--line)')+';border-radius:8px;background:transparent;color:inherit;cursor:pointer"><span class="tag">'+esc(x.id)+'</span> <b>'+esc(x.name)+'</b><div class="muted">'+esc(x.category)+'</div></button>';}
     b+='</div></div><div id="threat-detail">'+detail(selected)+'</div>';show('对手攻击面','恶意竞争 / 平台风险防御清单 · '+list.length+'项预设',b);
