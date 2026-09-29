@@ -2,6 +2,14 @@ import { CompetitorSnapshot, GameState } from './game-state';
 
 export type OpponentStrategy = 'VALUE_DEFENSE' | 'TRAFFIC_DEFENSE' | 'PRICE_WAR' | 'HOLD' | 'CONTENT_SHIFT';
 
+export interface OpponentMemory {
+  ourActions: Array<{ action: string; round: number; outcome?: 'POSITIVE' | 'NEGATIVE' | 'INCONCLUSIVE' }>;
+  responseHistory: Array<{ action: string; round: number }>;
+  lastOurAction?: string;
+  lastOutcome?: 'POSITIVE' | 'NEGATIVE' | 'INCONCLUSIVE';
+  adaptationScore: number;
+}
+
 export interface SimulatedOpponent {
   id: string;
   strategy: OpponentStrategy;
@@ -13,6 +21,7 @@ export interface SimulatedOpponent {
   cvr: number;
   inventory: number;
   cash: number;
+  memory: OpponentMemory;
 }
 
 export interface OpponentTurn {
@@ -38,37 +47,55 @@ export function createSimulatedOpponents(state: GameState): SimulatedOpponent[] 
     ctr: c.estimatedCtr ?? 0.03,
     cvr: c.estimatedCvr ?? state.cvr ?? 0.04,
     inventory: 100 + i * 50,
-    cash: 5000 + i * 1500
+    cash: 5000 + i * 1500,
+    memory: { ourActions: [], responseHistory: [], adaptationScore: 0.5 }
   }));
 }
 
 export function simulateOpponentTurn(opponents: SimulatedOpponent[], state: GameState): OpponentTurn[] {
   return opponents.map(o => {
+    const lastAction = o.memory.lastOurAction;
+    const lastOutcome = o.memory.lastOutcome;
     let action = 'HOLD';
     let reason = 'no strong threat detected';
-    if (o.strategy === 'PRICE_WAR' && state.price < o.price * 1.03) {
+    const learnedCounter = lastAction === 'CHANGE_PRICE' ? 'PRICE_WAR' : lastAction === 'INCREASE_BID' || lastAction === 'INCREASE_BUDGET' ? 'TRAFFIC_DEFENSE' : lastAction === 'CONTENT_VIDEO' || lastAction === 'CONTENT_MATRIX' ? 'CONTENT_SHIFT' : lastAction ? 'VALUE_DEFENSE' : o.strategy;
+    const activeStrategy = lastOutcome === 'NEGATIVE' ? learnedCounter as OpponentStrategy : o.strategy;
+    if (activeStrategy === 'PRICE_WAR' && state.price < o.price * 1.03) {
       o.price = Math.max(1, Math.min(o.price, state.price * 0.995));
       action = 'MATCH_OR_UNDERCUT_PRICE';
       reason = 'protect price competitiveness';
-    } else if (o.strategy === 'TRAFFIC_DEFENSE' && (state.ctr ?? 0) > o.ctr * 1.05) {
+    } else if (activeStrategy === 'TRAFFIC_DEFENSE' && (state.ctr ?? 0) > o.ctr * 1.05) {
       o.bid *= 1.06;
       o.trafficShare = Math.min(0.7, o.trafficShare + 0.03);
       action = 'RAISE_BID_AND_DEFEND_TRAFFIC';
       reason = 'respond to traffic advantage';
-    } else if (o.strategy === 'VALUE_DEFENSE' && (state.cvr ?? 0) > o.cvr * 1.05) {
+    } else if (activeStrategy === 'VALUE_DEFENSE' && (state.cvr ?? 0) > o.cvr * 1.05) {
       o.cvr = Math.min(0.2, o.cvr * 1.05);
       action = 'IMPROVE_CONVERSION';
       reason = 'respond to conversion disadvantage';
-    } else if (o.strategy === 'CONTENT_SHIFT') {
+    } else if (activeStrategy === 'CONTENT_SHIFT') {
       o.ctr = Math.min(0.12, o.ctr * 1.015);
       action = 'SHIFT_CONTENT';
       reason = 'seek attention without price escalation';
     }
     return {
-      opponentId: o.id, strategy: o.strategy, action, price: o.price, bid: o.bid,
+      opponentId: o.id, strategy: activeStrategy, action, price: o.price, bid: o.bid,
       trafficShare: o.trafficShare, estimatedCtr: o.ctr, estimatedCvr: o.cvr, reason
     };
   });
+}
+
+export function recordOpponentMemory(opponents: SimulatedOpponent[], ourAction: string, round: number, outcome: 'POSITIVE' | 'NEGATIVE' | 'INCONCLUSIVE', turns: OpponentTurn[]): void {
+  for (const o of opponents) {
+    o.memory.ourActions.push({ action: ourAction, round, outcome });
+    o.memory.responseHistory.push({ action: turns.find(t => t.opponentId === o.id)?.action ?? 'HOLD', round });
+    o.memory.lastOurAction = ourAction;
+    o.memory.lastOutcome = outcome;
+    if (outcome === 'NEGATIVE') o.memory.adaptationScore = Math.min(1, o.memory.adaptationScore + 0.08);
+    if (outcome === 'POSITIVE') o.memory.adaptationScore = Math.max(0, o.memory.adaptationScore - 0.03);
+    o.memory.ourActions = o.memory.ourActions.slice(-12);
+    o.memory.responseHistory = o.memory.responseHistory.slice(-12);
+  }
 }
 
 export function snapshotsFromOpponents(opponents: SimulatedOpponent[], observedAt: string): CompetitorSnapshot[] {
