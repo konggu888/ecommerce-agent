@@ -1,0 +1,27 @@
+{
+  "table": "public.sandbox_ad_negative_keywords",
+  "snapshot_at": "2026-09-29",
+  "row_count": 2,
+  "rows": [
+    {
+      "id": "2b5132bd-ac8a-4759-a2a4-3bd2b24873ed",
+      "spend": 112,
+      "clicks": 95,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "候选",
+      "keyword": "配方教程",
+      "conversions": 0,
+      "agent_conclusion": "意图偏内容而非购买"
+    },
+    {
+      "id": "4a7c0662-17c5-4858-ba4d-3cdede5c26e4",
+      "spend": 150,
+      "clicks": 120,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "候选",
+      "keyword": "免费试吃",
+      "conversions": 0,
+      "agent_conclusion": "高消耗零转化，加入否定词候选"
+    }
+  ]
+}
