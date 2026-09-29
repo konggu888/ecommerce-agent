@@ -35,6 +35,7 @@
     app.innerHTML =
       '<h1 class="page-title">' + esc(title) + '</h1>' +
       '<div class="subtitle">' + esc(sub) + '</div>' +
+      '<div class="card" style="margin:10px 0 16px;border-left:4px solid var(--accent);background:rgba(255,180,0,.06)"><b>连续博弈座右铭</b><div style="font-size:18px;margin-top:6px">我变 → 对手学 → 我再变</div><div class="muted" style="margin-top:4px">不要重复暴露同一种打法；让每一轮对手的学习，成为下一轮改变的输入。</div></div>' +
       body;
   }
 
