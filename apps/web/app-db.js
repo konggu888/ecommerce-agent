@@ -707,13 +707,27 @@
       '<div class="card"><div class="label">③ 本页如何使用实际对手学习</div><div class="notice">每轮不只看理论分支：记录我方动作、对手实际响应、样本数和反制压力。历史上已经形成稳定反制的路线降低权重；没有足够样本的路线标记为未知，先实验再判断。</div></div>';
     show('连续博弈策略中心','实战工作台 · 攻略生成 → 多轮模拟 → 对手学习 → 换路',body);
     function bindSimulationButtons(){
-      var run=document.querySelector('.sc-run');
-      if(run) run.addEventListener('click',function(){
-        if(!selected)return;
-        startNewSimulation({type:selectedType,id:selected.id,name:selected.name,action:selected.action,signal:selected.signal,goal:selected.goal});
-      });
-      var refresh=document.querySelector('.sc-refresh');
-      if(refresh) refresh.addEventListener('click',function(){ loadRun().then(loadCore).then(render).catch(function(e){state.error=e.message;render();}); });
+      var runs=document.querySelectorAll('.sc-run');
+      for(var ri=0;ri<runs.length;ri++) runs[ri].onclick=(function(){
+        var ctx={type:selectedType,id:selected&&selected.id,name:selected&&selected.name,action:selected&&selected.action,signal:selected&&selected.signal,goal:selected&&selected.goal};
+        return function(){ if(!ctx.id)return; startNewSimulation(ctx); };
+      })();
+      var refreshes=document.querySelectorAll('.sc-refresh');
+      for(var fi=0;fi<refreshes.length;fi++) refreshes[fi].onclick=function(){
+        state.simulation={status:'loading',name:'最新 Sandbox 模拟',message:'正在读取最新模拟……'};
+        render();
+        loadRun().then(loadCore).then(function(){
+          state.simulation.status=state.run&&state.run.status==='completed'?'completed':(state.run&&state.run.status==='failed'?'failed':'running');
+          state.simulation.name='最新 Sandbox 模拟';
+          state.simulation.message='已读取：'+state.agentRounds.length+' 轮。';
+          render();
+          if(state.run&&state.run.status!=='completed'&&state.run.status!=='failed') pollNewSimulation();
+        }).catch(function(e){
+          state.error=e.message;
+          state.simulation={status:'failed',name:'读取失败',message:e.message};
+          render();
+        });
+      };
     }
     function renderList(type){
       var list=type==='positive'?positives:(type==='threat'?threats:humans);
