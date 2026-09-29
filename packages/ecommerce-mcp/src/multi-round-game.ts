@@ -113,7 +113,8 @@ export function planMultiRoundGame(state: GameState, horizon = 3): MultiRoundPla
         marginalPenalty,
         path: [...path, action].map(String)
       });
-      const branches = [...opponent].sort((a, b) => b.probability - a.probability).slice(0, 2);\n      const branchProbabilityTotal = branches.reduce((sum, branch) => sum + branch.probability, 0);
+      const branches = [...opponent].sort((a, b) => b.probability - a.probability).slice(0, 2);
+      const branchProbabilityTotal = branches.reduce((sum, branch) => sum + branch.probability, 0);
       const responseBranch: { response: string; probability: number; nextActionHint: Action; stopCondition: string; expansionCondition: string }[] = branches.map((branch) => {
         const nextActionHint =
           branch.response === 'MATCH_PRICE' ? 'CHANGE_TARGETING' :
