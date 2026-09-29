@@ -10,6 +10,8 @@ export interface CompetitorSnapshot {
   observedAt: string;
 }
 
+import { ThreatInference } from './threat-inference';
+
 export interface GameState {
   shopId: string;
   productId: string;
@@ -27,6 +29,8 @@ export interface GameState {
   cpc?: number;
   roi?: number;
   competitors: CompetitorSnapshot[];
+  /** Evidence-based threat hypotheses; never treated as direct attribution. */
+  threatInferences?: ThreatInference[];
   observedAt: string;
 }
 
