@@ -12,6 +12,50 @@ export interface ClosedLoopInput { state: GameState; economics: UnitEconomics; i
 export interface ClosedLoopCandidate { action: string; score: number; risk: RiskDecision; reasons: string[]; breakthrough?: OpponentBreakthrough; positionPlan?: PositionPlan; }
 export interface ClosedLoopOutput { candidates: ClosedLoopCandidate[]; blocked: ClosedLoopCandidate[]; recommended: ClosedLoopCandidate | null; multiRound: MultiRoundPlan; positivePlan: { selectedStrategy: PositiveStrategyPlan | null; candidates: PositiveStrategyPlan[]; nextObservation: string; }; }
 
+export interface AdaptiveRouteCandidate extends ClosedLoopCandidate {
+  baseScore: number;
+  counterPressure: number;
+  counterConfidence: number;
+  sampleSize: number;
+  novelty: number;
+  totalScore: number;
+}
+
+export function selectAdaptiveRoute(
+  candidates: ClosedLoopCandidate[],
+  counterMatrix: GameState['opponentCounterMatrix'] = {},
+  limit = 5
+): AdaptiveRouteCandidate[] {
+  return candidates
+    .filter(c => c.risk.approved)
+    .map(c => {
+      const counter = counterMatrix?.[c.action];
+      const sampleSize = counter?.observations ?? 0;
+      const counterPressure = counter?.pressure ?? 0;
+      const counterConfidence = Math.min(1, sampleSize / 5);
+      const novelty = Math.max(0, 1 - counterPressure) * (sampleSize === 0 ? 0.35 : 0.15);
+      const totalScore =
+        c.score
+        - counterPressure * (0.45 + counterConfidence * 0.25)
+        + novelty;
+      return {
+        ...c,
+        baseScore: c.score,
+        counterPressure,
+        counterConfidence,
+        sampleSize,
+        novelty,
+        totalScore,
+        reasons: [
+          ...c.reasons,
+          `自适应路线：反制压力 ${counterPressure.toFixed(2)} / 样本 ${sampleSize} / 新颖度 ${novelty.toFixed(2)}`
+        ]
+      };
+    })
+    .sort((a,b) => b.totalScore - a.totalScore)
+    .slice(0, limit);
+}
+
 export function runClosedLoop(input: ClosedLoopInput): ClosedLoopOutput {
   const economics = calculateAdConstraints(input.economics, input.state.cvr ?? 0);
   const contributionAfterAds = Math.max(0, economics.contributionBeforeAds - (input.state.spend / Math.max(1, input.state.conversions)));
@@ -86,5 +130,10 @@ export function runClosedLoop(input: ClosedLoopInput): ClosedLoopOutput {
   candidates.sort((x,y)=>y.score-x.score);
   const blocked = candidates.filter(x => !x.risk.approved);
   const allowed = candidates.filter(x => x.risk.approved);
-  return { candidates, blocked, recommended: allowed[0] ?? null, multiRound, positivePlan };
+  const adaptive = selectAdaptiveRoute(candidates, input.state.opponentCounterMatrix);
+  const adaptiveRecommended = adaptive[0] ?? null;
+  if (adaptiveRecommended) {
+    adaptiveRecommended.reasons.push('路线选择器：综合基础价值、历史反制压力、样本量与新颖路线价值后选择');
+  }
+  return { candidates, blocked, recommended: adaptiveRecommended ?? allowed[0] ?? null, multiRound, positivePlan };
 }
