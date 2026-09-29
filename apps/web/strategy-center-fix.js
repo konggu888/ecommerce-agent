@@ -222,11 +222,28 @@
     return z?z.m:null;
   }
 
+  function buildMoveReason(state,z,side){
+    var m=z.m, last=state.lastMove, parts=[];
+    if(!last) parts.push(side==='我方'?'开局信息不足，先用这一步建立可观察反馈。':'开局尚无历史动作，先用低承诺动作建立局面基线。');
+    else parts.push((side==='我方'?'对手':'我方')+'上一手是“'+(last.name||'未知')+'”，属于“'+(state.lastMode||'自适应')+'”，领域是“'+(state.lastDomain||'通用')+'”。');
+    if(z.mode==='试探') parts.push(state.information<2?'当前信息量不足，直接扩大投入容易误判，所以先验证。':'已有初步信号，再验证一次以确认是否值得继续放大。');
+    else if(z.mode==='建设') parts.push(state.momentum>=5?'已有有效动能，本手把信号转成增长动作。':'当前需要建立新的正向变量。');
+    else if(z.mode==='防守') parts.push(state.pressure>=5||state.risk>=5?'压力或风险已经累积，先降低暴露。':'先保留资源和后续选择权。');
+    else if(z.mode==='竞争') parts.push(state.pressure>=4?'对抗已经形成，本手争夺关键变量。':'已有足够信号，可以把试探转成竞争动作。');
+    else if(z.mode==='诱导') parts.push('直接暴露意图的收益有限，本手先观察对手如何响应。');
+    else if(z.mode==='转移') parts.push('上一阶段的边际收益下降，继续原路推进容易重复，因此换一个竞争变量。');
+    else if(z.mode==='反制') parts.push(state.pressure>=5||state.lastMode==='负向施压'?'上一手形成了明显压力，本手针对性回应。':'存在可利用的回应窗口，因此不做无差别升级。');
+    else if(z.mode==='机制校验') parts.push(state.risk>=5||state.pressure>=5?'风险或异常信号已经累积，需要先验证状态。':'当前不确定性较高，先确认机制层面的真实状态。');
+    else if(z.mode==='负向施压') parts.push(state.pressure>=4||state.opponentMomentum>=5?'对抗变量已累积到可承受更强动作的程度，本手提高对手决策成本。':'人格允许主动施压，但当前仍控制强度，不直接升级到极端。');
+    parts.push('本手战略动作是“'+z.mode+'”，目标是改变当前局面，而不是重复上一手。');
+    return parts.join(' ');
+  }
+
   function chooseOur(i,step,state){
     var z=pickCandidate(state,'我方');
     if(!z)return null;
     return {id:z.m.id,name:z.m.name,kind:z.kind,mode:z.mode,role:'我方',source:z.m,
-      reason:'人格倾向 + 当前局面 + 对手上一手共同决定动作；我方不再被固定限制为正向招式。'};
+      reason:buildMoveReason(state,z,'我方')};
   }
 
   function chooseOpponent(i,step,state){
