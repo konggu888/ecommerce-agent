@@ -1,0 +1,49 @@
+{
+  "table": "public.sandbox_ad_placements",
+  "snapshot_at": "2026-09-29",
+  "row_count": 3,
+  "rows": [
+    {
+      "id": "32688c64-e2d3-4423-ba4a-58bc2406f2cb",
+      "ctr": 3.81,
+      "cvr": 5.74,
+      "gmv": 3100,
+      "roi": 4.56,
+      "spend": 680,
+      "clicks": 610,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "channel": "搜索",
+      "placement": "搜索首屏",
+      "conversions": 35,
+      "impressions": 16000
+    },
+    {
+      "id": "543f7985-da87-4ca5-8839-c305c5efa573",
+      "ctr": 3.85,
+      "cvr": 5.4,
+      "gmv": 2250,
+      "roi": 4.41,
+      "spend": 510,
+      "clicks": 500,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "channel": "推荐",
+      "placement": "商品推荐",
+      "conversions": 27,
+      "impressions": 13000
+    },
+    {
+      "id": "f4dd37bc-115c-45fa-aa73-f746751db7aa",
+      "ctr": 3.33,
+      "cvr": 4,
+      "gmv": 980,
+      "roi": 3.5,
+      "spend": 280,
+      "clicks": 300,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "channel": "内容",
+      "placement": "内容流",
+      "conversions": 12,
+      "impressions": 9000
+    }
+  ]
+}
