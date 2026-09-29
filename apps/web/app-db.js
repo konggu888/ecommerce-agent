@@ -1,7 +1,7 @@
 (function () {
   'use strict';
   var app=document.getElementById('app'), nav=document.querySelectorAll('.nav');
-  var VERSION='20260929-70';
+  var VERSION='20260929-71';
   var BASE='https://skuoxmrzlxhebzhfgbyn.supabase.co';
   var KEY='sb_publishable_u46tZ4GMUgwqSYhMJNFG8Q_IzYwl95T';
   var CLIENT='ecommerce-agent-sandbox-v1';
@@ -164,4 +164,86 @@
   nav.forEach(function(n){n.addEventListener('click',function(){state.view=n.dataset.view;location.hash=state.view;render();});});
   window.__EA_APPDB_LOADED__=true;window.__EA_APPDB_VERSION__=VERSION;
   loadRun().then(loadCore).then(loadAds).then(render).catch(function(e){show('核心数据读取失败','请检查 Sandbox 数据连接',notice(e.message));});
-}());
+}())  function experiments() {
+    var rows = [];
+    var rounds = state.agentRounds || [];
+    for (var i = 0; i < state.backtests.length; i++) {
+      var x = state.backtests[i];
+      rows.push([x.scenario || '未命名场景', x.rounds || '-', x.roi == null ? '-' : x.roi, x.risk || '-', zh(x.action || '-'), x.created_at || '-']);
+    }
+
+    var actionCount = {};
+    var responseCount = {};
+    var stopCount = 0;
+    var blockedCount = 0;
+    for (var j = 0; j < rounds.length; j++) {
+      var r = rounds[j];
+      var a = zh(r.action || 'HOLD');
+      var o = zh(r.actual_opponent_response || '-');
+      actionCount[a] = (actionCount[a] || 0) + 1;
+      responseCount[o] = (responseCount[o] || 0) + 1;
+      if (r.stop_signal) stopCount++;
+      if (r.risk_approved === false) blockedCount++;
+    }
+
+    var actionRows = [];
+    Object.keys(actionCount).forEach(function(k){ actionRows.push([k, actionCount[k]]); });
+    var responseRows = [];
+    Object.keys(responseCount).forEach(function(k){ responseRows.push([k, responseCount[k]]); });
+
+    var roundRows = [];
+    for (var k = 0; k < rounds.length; k++) {
+      var rr = rounds[k];
+      roundRows.push([
+        'R' + (rr.round || k + 1),
+        zh(rr.action || '-'),
+        zh(rr.actual_opponent_response || '-'),
+        zh(rr.next_action_hint || '-'),
+        rr.roi == null ? '-' : rr.roi,
+        rr.marginal_roi == null ? '-' : rr.marginal_roi,
+        rr.crowding == null ? '-' : rr.crowding,
+        rr.risk_approved === false ? '拦截' : '通过',
+        rr.stop_signal ? '停止' : '继续'
+      ]);
+    }
+
+    var latest = rounds.length ? rounds[rounds.length - 1] : null;
+    var summary =
+      '<div class="grid">' +
+      '<div class="card"><div class="label">回测场景</div><div class="metric">' + state.backtests.length + '</div></div>' +
+      '<div class="card"><div class="label">模拟轮次</div><div class="metric">' + rounds.length + '</div></div>' +
+      '<div class="card"><div class="label">风险拦截</div><div class="metric">' + blockedCount + '</div></div>' +
+      '<div class="card"><div class="label">停止信号</div><div class="metric">' + stopCount + '</div></div>' +
+      '</div>';
+
+    var concept =
+      '<div class="card">' +
+      '<div class="label">实验与回测 · 不是只看最终 ROI</div>' +
+      '<div class="notice">把不同策略放进 Sandbox 做多轮实验：同一市场状态下比较不同动作，再观察对手响应、边际 ROI、拥挤度、风险拦截和停止条件。实际响应进入下一轮，避免只用一次结果判断策略。</div>' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin-top:10px">' +
+      '<div class="notice"><b>① 基准组</b><br>保持原策略，作为对照</div>' +
+      '<div class="notice"><b>② 变量组</b><br>只改变一个关键动作</div>' +
+      '<div class="notice"><b>③ 连续博弈</b><br>让对手响应进入下一轮</div>' +
+      '<div class="notice"><b>④ 风险组</b><br>测试何时应该降级、等待或停止</div>' +
+      '</div></div>';
+
+    var latestBox = latest ?
+      '<div class="card"><div class="label">最新实验状态 · R' + esc(latest.round) + '</div>' +
+      '<div class="notice">我方：<b>' + zh(latest.action || '-') + '</b> → 对手实际响应：<b>' + zh(latest.actual_opponent_response || '-') + '</b> → 下一动作：<b>' + zh(latest.next_action_hint || '-') + '</b>' +
+      ' · ROI：' + esc(latest.roi == null ? '-' : latest.roi) +
+      ' · 边际ROI：' + esc(latest.marginal_roi == null ? '-' : latest.marginal_roi) +
+      ' · 拥挤度：' + esc(latest.crowding == null ? '-' : latest.crowding) + '</div></div>' :
+      notice('当前还没有 Agent 实验轮次；可以先从总览或策略中心启动10轮 Sandbox 模拟。');
+
+    show('实验与回测', '策略实验 → 多轮回测 → 对手响应 → 风险验证 → 学习',
+      summary + concept + latestBox +
+      '<h2>Sandbox 回测记录</h2>' +
+      (rows.length ? table(['场景','轮次','ROI','风险','动作','时间'], rows) : notice('暂无 Sandbox 回测记录。')) +
+      '<h2>多轮实验轨迹</h2>' +
+      (roundRows.length ? table(['轮次','我方动作','对手实际响应','下一动作','ROI','边际ROI','拥挤度','风险','状态'], roundRows) : notice('暂无多轮实验轨迹。')) +
+      '<div class="grid">' +
+      '<div><h2>动作分布</h2>' + (actionRows.length ? table(['动作','次数'], actionRows) : notice('暂无动作记录。')) + '</div>' +
+      '<div><h2>对手响应分布</h2>' + (responseRows.length ? table(['响应','次数'], responseRows) : notice('暂无响应记录。')) + '</div>' +
+      '</div>' +
+      notice('回测原则：事实结果优先于预测；不要因为一次实验成功就固定策略。只有重复实验、跨窗口验证后，才提高策略置信度。');
+  };
