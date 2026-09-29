@@ -27,6 +27,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Verify deployed source
+        run: |
+          echo "Commit: $GITHUB_SHA"
+          echo "Index markers:"
+          grep -n "BOOT-DEBUG\|DATABASE-DEBUG" apps/web/index.html || true
+          echo "app-db.js size:"
+          wc -c apps/web/app-db.js
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
