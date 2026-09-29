@@ -78,7 +78,7 @@
   function runURL(name) {
     return BASE + '/rest/v1/' + name +
       '?run_id=eq.' + encodeURIComponent(state.run.id) +
-      '&order=created_at.desc';
+      '&order=id.desc';
   }
 
   function loadRun() {
@@ -107,17 +107,7 @@
 
   var adTables = [
     'sandbox_ad_plans',
-    'sandbox_ad_units',
-    'sandbox_ad_keywords',
-    'sandbox_ad_keyword_moves',
-    'sandbox_ad_audiences',
-    'sandbox_ad_audience_combos',
-    'sandbox_ad_creatives',
-    'sandbox_ad_placements',
-    'sandbox_ad_regions',
-    'sandbox_ad_timeslots',
-    'sandbox_ad_negative_keywords',
-    'sandbox_ad_agent_actions'
+    'sandbox_ad_keywords'
   ];
 
   function loadAds() {
