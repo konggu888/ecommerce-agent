@@ -640,6 +640,73 @@
       return '';
     }
 
+    function hasNegative(x) {
+      var seq = x.sequence || [];
+      for (var i=0;i<seq.length;i++) {
+        if (String(seq[i]).indexOf('负') >= 0 || String(seq[i]).indexOf('强负') >= 0) return true;
+      }
+      return x.risk === '高' || x.risk === '中高';
+    }
+
+    function hasPositive(x) {
+      var seq = x.sequence || [];
+      for (var i=0;i<seq.length;i++) if (String(seq[i]).indexOf('正') >= 0) return true;
+      return false;
+    }
+
+    function hasSwitch(x) {
+      var seq = x.sequence || [];
+      var last = '';
+      for (var i=0;i<seq.length;i++) {
+        var cur = String(seq[i]);
+        if (last && cur !== last) return true;
+        last = cur;
+      }
+      return seq.length >= 3;
+    }
+
+    function planFor(x) {
+      var negative = hasNegative(x);
+      var positive = hasPositive(x);
+      var switching = hasSwitch(x);
+      var defense = [];
+      var offense = [];
+      var mirror = [];
+
+      defense.push('把该行为当作“可观测模式”而不是人格结论；至少连续观察多个窗口');
+      defense.push('建立价格、流量、转化、评价、退款、投诉、广告和排名的异常基线，发现异常先记录事实再归因');
+      if (negative) {
+        defense.push('对负向压力做隔离：降低单一渠道/单一关键词/单一爆款依赖，并设置预算、库存和利润保护线');
+        defense.push('保存可验证证据与时间线；遇到平台规则相关问题走正式申诉/举证渠道，不用情绪化响应');
+      } else {
+        defense.push('保持低成本监测，不因正常竞争动作过度反应');
+      }
+
+      if (positive) {
+        offense.push('正向竞争：把产品、内容、服务、评价、供应链和品牌资产做成对手难以快速复制的长期变量');
+        offense.push('优先做小规模实验，用真实反馈验证增量，再逐步扩大，不把一次成功当成永久优势');
+      }
+      if (negative) {
+        offense.push('针对其施压所在的变量建立替代路线：价格压力→价值/套餐/成本结构；流量压力→关键词/内容/渠道分散；转化压力→商品与信任资产强化');
+        offense.push('只在有证据支持时做“精准反制”，目标是恢复我方经营空间，而不是无差别升级冲突');
+      } else {
+        offense.push('以正向增长为主：抢占真实需求、内容入口、服务体验和供应链效率等可持续变量');
+      }
+
+      mirror.push('镜像反制：可以复制“竞争机制”，但必须使用真实商品、真实数据、正常投放和平台允许的方式');
+      if (negative) {
+        mirror.push('如果对方持续价格施压，可做有边界的价格/套餐实验；如果对方强化内容覆盖，可增加内容覆盖；如果对方争夺流量，可测试替代入口');
+        mirror.push('不要复制虚假评价、恶意举报、骚扰、造谣、刷量或其他违规手段；这些不进入策略库');
+      } else {
+        mirror.push('如果对方以建设性方式竞争，优先用更好的产品、内容、服务和效率回应，而不是把正向竞争转成负向对抗');
+      }
+      if (switching) {
+        mirror.push('对手一旦切换路径，我方同步切换观察维度；不要在同一位置长期重复暴露');
+      }
+
+      return {defense:defense, offense:offense, mirror:mirror};
+    }
+
     function detail(x) {
       if (!x) return notice('暂无行为模型。');
       var seq = x.sequence || [];
@@ -648,35 +715,46 @@
         flow += '<span class="tag '+tone(x.risk)+'">'+esc(seq[i])+'</span>';
         if(i<seq.length-1) flow += ' <span class="muted">→</span> ';
       }
+      var plan = planFor(x);
+      function bullets(items, cls) {
+        var h='<div style="display:grid;gap:7px">';
+        for(var bi=0;bi<items.length;bi++) h+='<div class="notice '+(cls||'')+'">• '+esc(items[bi])+'</div>';
+        return h+'</div>';
+      }
       return '<div class="card" style="border:2px solid var(--accent);padding:16px">' +
         '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="tag">'+esc(x.id)+'</span><span class="tag">'+esc(x.style)+'</span><span class="tag '+tone(x.risk)+'">风险：'+esc(x.risk)+'</span></div>' +
         '<h2>'+esc(x.name)+'</h2>' +
         '<div class="label">行为演变链</div><div class="notice">'+flow+'</div>' +
         '<div class="label">可观测特征</div><div class="notice">'+esc(x.signal)+'</div>' +
         '<div class="label">可能目标</div><div class="notice"><b>'+esc(x.goal)+'</b></div>' +
-        '<div class="muted" style="margin-top:12px">这是“行为假设”，不是对具体竞争者的心理诊断。系统只能根据连续可观测数据更新该假设的置信度。</div>' +
+        '<div class="label">① 防守方案 · 先保护自己</div>'+bullets(plan.defense) +
+        '<div class="label" style="margin-top:14px">② 正向进攻方案 · 建设自己的优势</div>'+bullets(plan.offense,'positive') +
+        '<div class="label" style="margin-top:14px">③ 镜像反制 · 以其竞争机制还之，但不复制违规手段</div>'+bullets(plan.mirror,'warning') +
+        '<div class="card" style="margin-top:14px;border-left:4px solid var(--accent)"><b>连续博弈规则</b><div style="font-size:17px;margin-top:5px">我变 → 对手学 → 我再变</div><div class="muted" style="margin-top:5px">每次反制都要记录：对手实际行为 → 我方响应 → 市场反馈 → 对手下一次是否改变。未知就是未知，不把推测写成事实。</div></div>' +
+        '<div class="muted" style="margin-top:12px">这是行为模式假设，不是心理诊断。所有“进攻/反制”仅进入商业竞争范围，并受平台规则、法律和 Risk Controller 约束。</div>' +
         '</div>';
     }
 
     var buttons='<div class="card"><div class="label">人性行为演变 · '+list.length+'种行为模式</div>' +
-      '<div class="muted" style="margin:6px 0 12px">核心不是判断“对手是什么人”，而是判断：对手在连续博弈中会不会从正向转负向、从负向转正向，或者在两者之间切换以降低风险、获取信息或争夺主动权。</div>' +
+      '<div class="muted" style="margin:6px 0 12px">这里不只回答“他是什么行为模式”，而是把识别结果直接转换成三套可执行方案：防守、正向进攻、镜像反制。每套方案都要根据新的观测持续更新。</div>' +
       '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px">';
     for(var j=0;j<list.length;j++){
       var x=list[j];
       buttons+='<button type="button" class="human-behavior-choice" data-id="'+esc(x.id)+'" style="text-align:left;padding:10px;border:1px solid '+(selected&&x.id===selected.id?'var(--accent)':'var(--line)')+';border-radius:8px;background:transparent;color:inherit;cursor:pointer"><span class="tag">'+esc(x.id)+'</span> <b>'+esc(x.name)+'</b><div class="muted">'+esc(x.style)+' · 风险 '+esc(x.risk)+'</div></button>';
     }
     buttons+='</div></div>' +
-      '<div class="card"><div class="label">三类最重要的行为路径</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:8px">' +
-      '<div class="notice"><b>① 单一路径</b><br>长期正向 / 长期负向。行为稳定，便于建立基线。</div>' +
-      '<div class="notice"><b>② 混合切换</b><br>正向 → 负向 → 正向。通过切换降低单一路径暴露。</div>' +
-      '<div class="notice"><b>③ 自适应演变</b><br>根据结果、风险和市场反馈不断改变策略。</div>' +
+      '<div class="card"><div class="label">四层输出</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:8px">' +
+      '<div class="notice"><b>① 识别</b><br>行为模式、证据、置信度、下一观察项</div>' +
+      '<div class="notice"><b>② 防守</b><br>隔离风险、降低暴露、保护利润和数据</div>' +
+      '<div class="notice"><b>③ 正攻</b><br>产品、内容、服务、流量、供应链等建设性竞争</div>' +
+      '<div class="notice"><b>④ 镜像反制</b><br>在合规边界内回应对方的竞争机制，不复制违规行为</div>' +
       '</div></div>' +
       '<div class="card"><div class="label">系统判断原则</div><div class="notice">' +
-      '不要因为一次差评、一次降价、一次流量变化就给对手贴上“负向型”标签。至少观察多个窗口，比较持续性、集中度、跨指标同步变化和行为转折点。最终输出的是“行为模式假设 + 置信度 + 下一观察项”。' +
+      '不要因为一次差评、一次降价、一次流量变化就给对手贴上“负向型”标签。至少观察多个窗口，比较持续性、集中度、跨指标同步变化和行为转折点。最终输出“行为模式假设 + 置信度 + 防守方案 + 正向进攻方案 + 镜像反制方案 + 下一观察项”。' +
       '</div></div>' +
       '<div id="human-behavior-detail">'+detail(selected)+'</div>';
 
-    show('人性行为演变','连续博弈中的对手行为模式 · 正向 / 负向 / 切换 / 自适应',buttons);
+    show('人性行为演变','连续博弈中的行为识别 → 防守 → 正向进攻 → 镜像反制',buttons);
     var cs=document.querySelectorAll('.human-behavior-choice');
     for(var k=0;k<cs.length;k++) cs[k].addEventListener('click',function(){
       var id=this.dataset.id, found=null;
