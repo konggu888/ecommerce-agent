@@ -1,0 +1,40 @@
+{
+  "table": "public.sandbox_ad_agent_actions",
+  "snapshot_at": "2026-09-29",
+  "row_count": 2,
+  "rows": [
+    {
+      "id": "67bc472c-a6f0-42b6-b582-8f33619614be",
+      "reason": "点击高但零转化",
+      "result": "等待确认",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "待确认",
+      "target": "免费试吃",
+      "created_at": "2026-09-29T00:26:59.639001+00:00",
+      "action_type": "否定关键词",
+      "after_value": {
+        "status": "候选屏蔽"
+      },
+      "before_value": {
+        "status": "投放"
+      }
+    },
+    {
+      "id": "77431d49-89a4-4cd5-9466-3cdd29a0dfd5",
+      "reason": "早餐核心词竞争升高",
+      "result": "跨场景测试ROI 3.46",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "已完成",
+      "target": "下午茶面包",
+      "created_at": "2026-09-29T00:26:59.639001+00:00",
+      "action_type": "关键词迁移",
+      "after_value": {
+        "bid": 2.1,
+        "scene": "下午茶"
+      },
+      "before_value": {
+        "bid": 2.8
+      }
+    }
+  ]
+}
