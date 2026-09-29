@@ -3,7 +3,7 @@
 
   var app = document.getElementById('app');
   var nav = document.querySelectorAll('.nav');
-  var VERSION = '20260929-30';
+  var VERSION = '20260929-31';
   var BASE = 'https://skuoxmrzlxhebzhfgbyn.supabase.co';
   var KEY = 'sb_publishable_u46tZ4GMUgwqSYhMJNFG8Q_IzYwl95T';
   var CLIENT = 'ecommerce-agent-sandbox-v1';
@@ -527,14 +527,44 @@
   }
 
   function jobs() {
+    var latest = state.agentRounds.length ? state.agentRounds[state.agentRounds.length - 1] : null;
+    var progress = state.run ? (state.run.agent_progress || 0) : 0;
+    var status = state.run ? state.run.status : 'unknown';
+    var latestTask = state.tasks.length ? state.tasks[0] : null;
+    var hero =
+      '<div class="card">' +
+      '<h2>Agent 实时任务</h2>' +
+      '<div class="notice">' +
+      'Run：' + esc(state.run ? state.run.id : '未启动') +
+      '　状态：<b>' + esc(status) + '</b>' +
+      '　进度：<b>' + esc(progress) + '%</b>' +
+      '</div>' +
+      (latest ? '<div class="grid">' +
+        '<div><b>当前轮次</b><br>R' + esc(latest.round) + '</div>' +
+        '<div><b>我方动作</b><br>' + esc(latest.action) + '</div>' +
+        '<div><b>突破口</b><br>' + esc(latest.breakthrough) + '</div>' +
+        '<div><b>对手响应</b><br>' + esc(latest.actual_opponent_response) + '</div>' +
+        '<div><b>下一动作</b><br>' + esc(latest.next_action_hint) + '</div>' +
+        '<div><b>边际ROI</b><br>' + esc(latest.marginal_roi) + '</div>' +
+        '</div>' : '<p>尚未产生 Agent 轮次。</p>') +
+      '</div>';
     var rows = [];
     for (var i = 0; i < state.tasks.length; i++) {
       var x = state.tasks[i];
       rows.push([x.task_id, x.task_type, x.status, x.progress + '%', x.created_at]);
     }
-    show('任务监控', 'BOOT-DEBUG-' + VERSION + ' · Sandbox 任务状态',
-      table(['任务ID','任务类型','状态','进度','创建时间'], rows) +
-      '<h2>事件</h2>' + eventTable());
+    var rounds = [];
+    for (var j = 0; j < state.agentRounds.length; j++) {
+      var r = state.agentRounds[j];
+      rounds.push(['R' + r.round, r.action, r.actual_opponent_response, r.next_action_hint, r.stop_signal ? 'STOP' : 'CONTINUE', r.marginal_roi]);
+    }
+    show('任务监控', 'BOOT-DEBUG-' + VERSION + ' · Sandbox Agent 执行过程',
+      hero +
+      '<h2>任务队列</h2>' +
+      (latestTask ? table(['任务ID','任务类型','状态','进度','创建时间'], rows) : notice('当前 Run 尚未创建任务。')) +
+      '<h2>Agent 轮次</h2>' +
+      (rounds.length ? table(['轮次','我方动作','对手响应','下一动作','风控信号','边际ROI'], rounds) : notice('等待 Agent 开始第一轮。')) +
+      '<h2>事件流</h2>' + eventTable());
   }
 
   function eventTable() {
