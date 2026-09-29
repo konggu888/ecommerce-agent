@@ -123,3 +123,26 @@ export function snapshotsFromOpponents(opponents: SimulatedOpponent[], observedA
     observedAt
   }));
 }
+
+
+export interface OpponentCounterMatrixEntry {
+  counter: OpponentStrategy;
+  pressure: number;
+  observations: number;
+}
+
+export function buildOpponentCounterMatrix(opponents: SimulatedOpponent[]): Record<string, OpponentCounterMatrixEntry> {
+  const matrix: Record<string, OpponentCounterMatrixEntry> = {};
+  for (const o of opponents) {
+    for (const [action, counter] of Object.entries(o.memory.learnedResponses)) {
+      const observations = o.memory.ourActions.filter(x => x.action === action).length;
+      const entry = matrix[action];
+      const learning = Math.max(0, Math.min(1, (o.memory.adaptationScore - 0.4) / 0.6));
+      const pressure = Math.min(1, 0.25 + learning * 0.5 + Math.min(0.25, observations * 0.05));
+      if (!entry || pressure > entry.pressure) {
+        matrix[action] = { counter: counter as OpponentStrategy, pressure, observations };
+      }
+    }
+  }
+  return matrix;
+}
