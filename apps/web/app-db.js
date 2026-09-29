@@ -3,7 +3,7 @@
 
   var app = document.getElementById('app');
   var nav = document.querySelectorAll('.nav');
-  var VERSION = '20260929-45';
+  var VERSION = '20260929-64';
   var BASE = 'https://skuoxmrzlxhebzhfgbyn.supabase.co';
   var KEY = 'sb_publishable_u46tZ4GMUgwqSYhMJNFG8Q_IzYwl95T';
   var CLIENT = 'ecommerce-agent-sandbox-v1';
@@ -23,6 +23,53 @@
     playback: { playing: false, current: 0, timer: null, poll: null },
     simulation: { status: 'idle', name: '', message: '' }
   };
+
+  function zh(v) {
+    var s = String(v == null ? '' : v);
+    var map = {
+      'HOLD':'保持观察',
+      'CHANGE_PRICE':'调整价格',
+      'INCREASE_BUDGET':'增加预算',
+      'DECREASE_BUDGET':'降低预算',
+      'INCREASE_BID':'提高出价',
+      'DECREASE_BID':'降低出价',
+      'CONTENT_VIDEO':'视频内容',
+      'CONTENT_MATRIX':'内容矩阵',
+      'PRICE_WAR':'价格竞争',
+      'TRAFFIC_DEFENSE':'流量防守',
+      'VALUE_DEFENSE':'价值防守',
+      'CONTENT_SHIFT':'内容切换',
+      'MATCH_OR_UNDERCUT_PRICE':'跟价或低价竞争',
+      'MATCH_PRICE':'跟价',
+      'RAISE_BID_AND_DEFEND_TRAFFIC':'提高出价并防守流量',
+      'RAISE_BID':'提高出价',
+      'IMPROVE_CONVERSION':'提升转化',
+      'DEFEND_TRAFFIC':'防守流量',
+      'SHIFT_CONTENT':'切换内容',
+      'SHIFT_TO_CONTENT':'转向内容',
+      'VALUE_ATTACK':'价值竞争',
+      'NO_CLEAR_GAP':'暂未发现明确突破口',
+      'ALLOW':'通过',
+      'BLOCK':'拦截',
+      'STOP':'停止',
+      'CONTINUE':'继续',
+      'POSITIVE':'正向',
+      'NEGATIVE':'负向',
+      'INCONCLUSIVE':'结果不明确',
+      'OBSERVE':'观察',
+      'DEFENSIVE':'防守',
+      'MIXED':'混合',
+      'UNKNOWN':'未知',
+      'ANALYZE_ONLY':'仅分析',
+      'AUTO':'自动选择',
+      'OUR_AGENT':'我方智能体',
+      'OPP-01':'价格竞争方',
+      'OPP-02':'流量竞争方',
+      'OPP-03':'内容竞争方'
+    };
+    if (Object.prototype.hasOwnProperty.call(map, s)) return map[s];
+    return s.replace(/\b(HOLD|CHANGE_PRICE|INCREASE_BUDGET|DECREASE_BUDGET|INCREASE_BID|DECREASE_BID|CONTENT_VIDEO|CONTENT_MATRIX|PRICE_WAR|TRAFFIC_DEFENSE|VALUE_DEFENSE|CONTENT_SHIFT|MATCH_OR_UNDERCUT_PRICE|MATCH_PRICE|RAISE_BID_AND_DEFEND_TRAFFIC|RAISE_BID|IMPROVE_CONVERSION|DEFEND_TRAFFIC|SHIFT_CONTENT|SHIFT_TO_CONTENT|NO_CLEAR_GAP|ALLOW|BLOCK|STOP|CONTINUE|POSITIVE|NEGATIVE|INCONCLUSIVE|OBSERVE|DEFENSIVE|MIXED|UNKNOWN|ANALYZE_ONLY|OUR_AGENT|OPP-01|OPP-02|OPP-03)\b/g, function(x){ return map[x] || x; });
+  }
 
   function esc(v) {
     return String(v == null ? '' : v)
@@ -187,7 +234,7 @@
       html+='<div style="min-width:150px;border:1px solid var(--line);border-radius:10px;padding:10px;background:'+(latest&&i===6?'rgba(255,180,0,.08)':'transparent')+'"><span class="tag">'+steps[i][0]+'</span><br><b>'+esc(steps[i][1])+'</b><div class="muted">'+esc(steps[i][2])+'</div></div>';
       if(i<steps.length-1) html+='<div style="font-size:20px;align-self:center">→</div>';
     }
-    html+='</div>'+(latest?'<div class="notice">当前执行位置：R'+esc(latest.round)+' · '+esc(latest.action)+' → '+esc(latest.actual_opponent_response||'-')+' → '+esc(latest.next_action_hint||'-')+' · '+(latest.stop_signal?'已停止':'继续')+'</div>':'<div class="notice">等待第一轮模拟。</div>')+'</div>';
+    html+='</div>'+(latest?'<div class="notice">当前执行位置：R'+esc(latest.round)+' · '+zh(latest.action)+' → '+zh(latest.actual_opponent_response||'-')+' → '+zh(latest.next_action_hint||'-')+' · '+(latest.stop_signal?'已停止':'继续')+'</div>':'<div class="notice">等待第一轮模拟。</div>')+'</div>';
     return html;
   }
 
@@ -205,7 +252,7 @@
       '<div class="card"><div class="label">已模拟轮次</div><div class="metric">' + rounds.length + '</div></div>' +
       '<div class="card"><div class="label">风险拦截</div><div class="metric">' + blocked + '</div></div>' +
       '<div class="card"><div class="label">停止信号</div><div class="metric">' + stopped + '</div></div>' +
-      '<div class="card"><div class="label">当前动作</div><div class="metric">' + esc(last.action) + '</div></div>' +
+      '<div class="card"><div class="label">当前动作</div><div class="metric">' + zh(last.action) + '</div></div>' +
       '</div>' +
       '<div class="card"><div class="notice">最新一轮：' + esc(last.breakthrough || '') +
       ' · ROI ' + esc(last.roi) + ' · 边际ROI ' + esc(last.marginal_roi) +
@@ -252,8 +299,8 @@
     for (var i=0;i<steps.length;i++) {
       var s=steps[i], mine=s.actor==='OUR_AGENT', hit=s.actor!=='OUR_AGENT' && s.responseToUs===round.actual_opponent_response;
       html += '<div style="border:1px solid var(--line);border-radius:10px;padding:10px;background:'+(mine?'rgba(80,160,255,.06)':(hit?'rgba(255,180,0,.08)':'transparent'))+'">' +
-        '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="tag '+(mine?'positive':(hit?'warning':''))+'">'+esc(s.actorName||s.participant||s.actor)+'</span><b>策略：'+esc(s.strategy||s.strategyCode||'-')+'</b><span>→</span><b>动作：'+esc(s.action||'-')+'</b>'+(hit?'<span class="tag warning">实际响应</span>':'')+'</div>' +
-        '<div class="muted" style="margin-top:5px">触发：'+esc(s.trigger||'-')+'；原因：'+esc(s.rationale||'-')+'</div><div style="margin-top:5px">对我方：'+esc(s.responseToUs||s.result||'-')+' · 下一策略：'+esc(s.nextStrategy||'-')+'</div></div>';
+        '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="tag '+(mine?'positive':(hit?'warning':''))+'">'+esc(s.actorName||s.participant||s.actor)+'</span><b>策略：'+zh(s.strategy||s.strategyCode||'-')+'</b><span>→</span><b>动作：'+zh(s.action||'-')+'</b>'+(hit?'<span class="tag warning">实际响应</span>':'')+'</div>' +
+        '<div class="muted" style="margin-top:5px">触发：'+esc(s.trigger||'-')+'；原因：'+esc(s.rationale||'-')+'</div><div style="margin-top:5px">对我方：'+zh(s.responseToUs||s.result||'-')+' · 下一策略：'+zh(s.nextStrategy||'-')+'</div></div>';
     }
     html += '</div></div>';
     if (allRounds && allRounds.length) {
@@ -261,7 +308,7 @@
       for (var j=0;j<allRounds.length;j++) {
         var rr=allRounds[j], ss=parseSteps(rr.strategy_steps || (rr.decision_tree && rr.decision_tree.strategySteps)), map={};
         for(var z=0;z<ss.length;z++) map[ss[z].actor]=ss[z];
-        html += '<tr><td>R'+esc(rr.round)+'</td><td>'+esc(map.OUR_AGENT&&map.OUR_AGENT.strategy||'-')+'</td><td>'+esc(rr.action||'-')+'</td><td>'+esc(map['OPP-01']&&map['OPP-01'].strategy||'-')+' / '+esc(map['OPP-01']&&map['OPP-01'].action||'-')+'</td><td>'+esc(map['OPP-02']&&map['OPP-02'].strategy||'-')+' / '+esc(map['OPP-02']&&map['OPP-02'].action||'-')+'</td><td>'+esc(map['OPP-03']&&map['OPP-03'].strategy||'-')+' / '+esc(map['OPP-03']&&map['OPP-03'].action||'-')+'</td><td><b>'+esc(rr.actual_opponent_response||'-')+'</b></td><td>'+esc(rr.next_action_hint||'-')+'</td></tr>';
+        html += '<tr><td>R'+esc(rr.round)+'</td><td>'+zh(map.OUR_AGENT&&map.OUR_AGENT.strategy||'-')+'</td><td>'+zh(rr.action||'-')+'</td><td>'+zh(map['OPP-01']&&map['OPP-01'].strategy||'-')+' / '+zh(map['OPP-01']&&map['OPP-01'].action||'-')+'</td><td>'+zh(map['OPP-02']&&map['OPP-02'].strategy||'-')+' / '+zh(map['OPP-02']&&map['OPP-02'].action||'-')+'</td><td>'+zh(map['OPP-03']&&map['OPP-03'].strategy||'-')+' / '+zh(map['OPP-03']&&map['OPP-03'].action||'-')+'</td><td><b>'+zh(rr.actual_opponent_response||'-')+'</b></td><td>'+zh(rr.next_action_hint||'-')+'</td></tr>';
       }
       html += '</tbody></table></div></div>';
     }
@@ -291,14 +338,14 @@
       var isCurrent = p === d.index;
       pathHtml += '<div style="display:flex;gap:8px;align-items:center;margin:6px 0">' +
         '<span class="tag ' + (isCurrent ? 'warning' : 'positive') + '">R' + esc(pr.round) + '</span>' +
-        '<b>' + esc(pr.action) + '</b><span>→</span><span class="tag">' + esc(pr.actual_opponent_response || '-') + '</span><span>→</span><b>' + esc(pr.next_action_hint || '-') + '</b>' +
+        '<b>' + zh(pr.action) + '</b><span>→</span><span class="tag">' + zh(pr.actual_opponent_response || '-') + '</span><span>→</span><b>' + zh(pr.next_action_hint || '-') + '</b>' +
         (pr.stop_signal ? '<span class="tag warning">STOP</span>' : '') + '</div>';
     }
 
     var futureHtml = '';
     for (var q = d.index + 1; q < d.rounds.length; q++) {
       var fr = d.rounds[q];
-      futureHtml += '<div style="display:flex;gap:8px;align-items:center;margin:6px 0;opacity:.7"><span class="tag">R' + esc(fr.round) + '</span><span>' + esc(fr.action) + '</span><span>→</span><span>' + esc(fr.actual_opponent_response || '-') + '</span></div>';
+      futureHtml += '<div style="display:flex;gap:8px;align-items:center;margin:6px 0;opacity:.7"><span class="tag">R' + esc(fr.round) + '</span><span>' + zh(fr.action) + '</span><span>→</span><span>' + zh(fr.actual_opponent_response || '-') + '</span></div>';
     }
 
     var opponentHtml = '';
@@ -307,7 +354,7 @@
       var active = op.lastResponse === r.actual_opponent_response;
       opponentHtml += '<div style="flex:1;min-width:190px;border:1px solid var(--line);border-radius:10px;padding:10px;' + (active ? 'box-shadow:0 0 0 2px rgba(255,180,0,.25);' : '') + '">' +
         '<div class="label">' + esc(op.id) + '</div><b>' + esc(op.name) + '</b><br><span class="muted">' + esc(op.strategy) + '</span><br>' +
-        '<span class="tag ' + (active ? 'warning' : '') + '">' + esc(op.lastResponse || '-') + '</span><br><span class="muted">压力 ' + esc(Number(op.pressure || 0).toFixed(2)) + ' · 适应 ' + esc(Number(op.adaptation || 0).toFixed(2)) + '</span>' +
+        '<span class="tag ' + (active ? 'warning' : '') + '">' + zh(op.lastResponse || '-') + '</span><br><span class="muted">压力 ' + esc(Number(op.pressure || 0).toFixed(2)) + ' · 适应 ' + esc(Number(op.adaptation || 0).toFixed(2)) + '</span>' +
         (active ? '<br><b>← 本轮实际进入主路径</b>' : '') + '</div>';
     }
 
@@ -315,7 +362,7 @@
     for (var x = 0; x < branches.length; x++) {
       var chosen = branches[x].response === r.actual_opponent_response;
       branchHtml += '<div style="padding:8px 10px;margin:6px 0;border-left:3px solid ' + (chosen ? 'var(--accent)' : 'var(--line)') + ';background:' + (chosen ? 'rgba(255,180,0,.08)' : 'transparent') + '">' +
-        '<b>' + (chosen ? '★ ' : '') + esc(branches[x].response) + '</b> · ' + esc(Math.round(Number(branches[x].probability || 0) * 100)) + '% → <b>' + esc(branches[x].nextActionHint) + '</b>' +
+        '<b>' + (chosen ? '★ ' : '') + zh(branches[x].response) + '</b> · ' + esc(Math.round(Number(branches[x].probability || 0) * 100)) + '% → <b>' + zh(branches[x].nextActionHint) + '</b>' +
         '<div class="muted">停止：' + esc(branches[x].stopCondition) + '；扩张：' + esc(branches[x].expansionCondition) + '</div></div>';
     }
 
@@ -323,7 +370,7 @@
       '<div class="label">完整动态博弈树 · 已走路径 + 当前分支 + 后续轮次</div>' +
       '<div style="min-width:900px;margin-top:10px">' +
       '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
-      '<div style="border:2px solid var(--accent);border-radius:12px;padding:10px;min-width:150px"><div class="label">当前轮 R' + esc(r.round) + '</div><b>我们：' + esc(r.action) + '</b><br><span class="muted">突破：' + esc(r.breakthrough || '-') + '</span></div>' +
+      '<div style="border:2px solid var(--accent);border-radius:12px;padding:10px;min-width:150px"><div class="label">当前轮 R' + esc(r.round) + '</div><b>我们：' + zh(r.action) + '</b><br><span class="muted">突破：' + esc(r.breakthrough || '-') + '</span></div>' +
       '<div style="font-size:22px">→</div>' + (opponentHtml || '<span class="muted">暂无多方响应数据</span>') +
       '<div style="font-size:22px">→</div><div style="border:2px solid var(--line);border-radius:12px;padding:10px;min-width:150px"><div class="label">下一步</div><b>' + esc(r.next_action_hint || '-') + '</b></div>' +
       '</div>' +
@@ -337,7 +384,7 @@
       '<div><div class="label">Agent Sandbox 实时模拟器</div><div class="metric">' + status + ' · 第 ' + esc(r.round) + ' / ' + d.rounds.length + ' 轮</div></div>' +
       '<div><button class="action" id="sim-start">▶ 开始 / 新模拟</button><button class="action" id="sim-step">⏭ 单步</button><button class="action" id="sim-reset">↺ 重置</button></div></div>' +
       timeline +
-      '<div class="grid"><div class="card"><div class="label">我方动作</div><div class="metric">' + esc(r.action) + '</div></div><div class="card"><div class="label">突破口</div><div class="metric">' + esc(r.breakthrough || '-') + '</div></div><div class="card"><div class="label">实际主响应</div><div class="metric">' + esc(r.actual_opponent_response || '-') + '</div></div><div class="card"><div class="label">下一动作</div><div class="metric">' + esc(r.next_action_hint || '-') + '</div></div></div>' +
+      '<div class="grid"><div class="card"><div class="label">我方动作</div><div class="metric">' + zh(r.action) + '</div></div><div class="card"><div class="label">突破口</div><div class="metric">' + esc(r.breakthrough || '-') + '</div></div><div class="card"><div class="label">实际主响应</div><div class="metric">' + esc(r.actual_opponent_response || '-') + '</div></div><div class="card"><div class="label">下一动作</div><div class="metric">' + esc(r.next_action_hint || '-') + '</div></div></div>' +
       strategyStepsPanel(r, d.rounds) +
       '<div class="notice">本轮结果：消耗 ' + esc(r.spend) + ' · 收入 ' + esc(r.revenue) + ' · ROI ' + esc(r.roi) + ' · 边际ROI ' + esc(r.marginal_roi) + ' · 拥挤 ' + esc(r.crowding) + (r.stop_signal ? ' · <b>触发停止：' + esc(r.stop_reason) + '</b>' : ' · 继续观察') + '</div>' +
       tree + '</div>';
@@ -657,9 +704,9 @@
         var r=rows[i], level=r.pressure>=0.72?'高':(r.pressure>=0.45?'中':'低');
         h+='<div style="display:grid;grid-template-columns:80px 1fr 1fr 1fr 90px;gap:7px">'+
           '<div class="notice"><b>R'+esc(r.round)+'</b><br><span class="muted">'+(r.switched?'↪ 换路':'当前')+'</span></div>'+
-          '<div class="notice"><span class="label">我方路线</span><br><b>'+esc(r.action)+'</b></div>'+
-          '<div class="notice"><span class="label">实际响应</span><br><b>'+esc(r.response)+'</b><br><span class="muted">预测≠事实</span></div>'+
-          '<div class="notice"><span class="label">反制学习</span><br>压力 <b>'+r.pressure.toFixed(2)+'</b> · '+level+'<br><span class="muted">'+esc(r.counter)+' · '+esc(r.observations)+'样本</span></div>'+
+          '<div class="notice"><span class="label">我方路线</span><br><b>'+zh(r.action)+'</b></div>'+
+          '<div class="notice"><span class="label">实际响应</span><br><b>'+zh(r.response)+'</b><br><span class="muted">预测≠事实</span></div>'+
+          '<div class="notice"><span class="label">反制学习</span><br>压力 <b>'+r.pressure.toFixed(2)+'</b> · '+level+'<br><span class="muted">'+zh(r.counter)+' · '+esc(r.observations)+'样本</span></div>'+
           '<div class="notice">'+(r.switched?'<span class="tag positive">已换路</span>':'<span class="tag">继续</span>')+'</div>'+
         '</div>';
         if(i<rows.length-1) h+='<div style="height:7px;margin-left:38px;border-left:2px dashed var(--line)"></div>';
@@ -710,7 +757,7 @@
       var html='<div class="card" style="border:2px solid var(--accent);padding:16px">'+
         '<div style="display:flex;gap:8px;flex-wrap:wrap"><span class="tag">'+esc(x.id)+'</span><span class="tag">'+esc(x.category||x.style||title)+'</span><span class="tag warning">'+esc(title)+'</span></div>'+
         '<h2>'+esc(x.name)+'</h2>'+
-        '<div class="grid"><div class="card"><div class="label">信号/条件</div><div>'+esc(x.signal||'根据行为序列与实际数据观察')+'</div></div><div class="card"><div class="label">战略目标</div><div>'+esc(x.goal||x.action||'保护经营空间并寻找下一条可验证路线')+'</div></div><div class="card"><div class="label">历史反制压力</div><div class="metric">'+pressure.pressure.toFixed(2)+'</div><div class="muted">'+esc(pressure.counter)+' · '+pressure.observations+'次样本</div></div></div>'+
+        '<div class="grid"><div class="card"><div class="label">信号/条件</div><div>'+esc(x.signal||'根据行为序列与实际数据观察')+'</div></div><div class="card"><div class="label">战略目标</div><div>'+esc(x.goal||x.action||'保护经营空间并寻找下一条可验证路线')+'</div></div><div class="card"><div class="label">历史反制压力</div><div class="metric">'+pressure.pressure.toFixed(2)+'</div><div class="muted">'+zh(pressure.counter)+' · '+pressure.observations+'次样本</div></div></div>'+
         '<div class="label">① 防守攻略</div>'+escList(plan.defense)+
         '<div class="label" style="margin-top:14px">② 正向进攻攻略</div>'+escList(plan.offense)+
         '<div class="label" style="margin-top:14px">③ 镜像反制攻略</div>'+escList(plan.mirror);
@@ -1208,7 +1255,7 @@
       '</div>' +
       (latest ? '<div class="grid">' +
         '<div><b>当前轮次</b><br>R' + esc(latest.round) + '</div>' +
-        '<div><b>我方动作</b><br>' + esc(latest.action) + '</div>' +
+        '<div><b>我方动作</b><br>' + zh(latest.action) + '</div>' +
         '<div><b>突破口</b><br>' + esc(latest.breakthrough) + '</div>' +
         '<div><b>对手响应</b><br>' + esc(latest.actual_opponent_response) + '</div>' +
         '<div><b>下一动作</b><br>' + esc(latest.next_action_hint) + '</div>' +
