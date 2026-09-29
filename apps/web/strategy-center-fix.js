@@ -142,6 +142,14 @@
     h+='<div class="muted" style="margin-top:5px">'+esc(m.reason)+'</div>';
     if(m.source){
       h+='<div class="muted" style="margin-top:4px">招式原定义：'+esc(m.source.action||m.source.defense||m.source.mechanism||m.source.signal||'')+'</div>';
+      if(m.source.combo&&Array.isArray(m.source.combo.steps)){
+        h+='<details style="margin-top:8px"><summary style="cursor:pointer;font-weight:700">🔗 查看具体组合方式</summary>';
+        h+='<div class="notice" style="margin-top:6px"><b>'+esc(m.source.combo.name||'组合路径')+'</b><div style="margin-top:6px">';
+        m.source.combo.steps.forEach(function(z){
+          h+='<div style="margin:7px 0;padding:7px;border-left:3px solid var(--accent)"><b>'+esc(z.no)+' · '+esc(z.name)+'</b><div>'+esc((z.moves||[]).join(' → '))+'</div><div class="muted">目的：'+esc(z.purpose||'')+'</div></div>';
+        });
+        h+='</div><div class="muted" style="margin-top:6px"><b>组合规则：</b>'+esc(m.source.combo.rule||'按反馈逐段推进，不要求一次全部执行。')+'</div></div></details>';
+      }
     }
     h+='<div class="notice" style="margin-top:6px">'+esc(s.response)+'</div>';
     h+='</div>';
