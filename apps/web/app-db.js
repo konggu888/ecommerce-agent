@@ -377,14 +377,26 @@
     render();
   }
 
-  function startNewSimulation() {
+  function startNewSimulation(strategyContext) {
     stopPlayback();
     state.error = null;
-    show('Agent 正在启动', 'Sandbox 新模拟', chainPanel(null) + notice('正在创建新的 Agent 模拟任务……'));
+    var ctx = strategyContext || {};
+    show('Agent 正在启动', 'Sandbox 新模拟 · '+(ctx.name || '自动选择策略'), chainPanel(null) + '<div class="card"><div class="notice">正在创建新的 Agent 模拟任务……<br>策略入口：<b>'+esc(ctx.name || '自动选择')+'</b> · 类型：'+esc(ctx.type || 'AUTO')+'</div></div>');
     fetch(BASE + '/functions/v1/sandbox-agent-runner', {
       method: 'POST',
       headers: { apikey: KEY, Authorization: 'Bearer ' + KEY, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ client_key: CLIENT, rounds: 10 })
+      body: JSON.stringify({
+        client_key: CLIENT,
+        rounds: 10,
+        strategy_context: {
+          type: ctx.type || 'AUTO',
+          id: ctx.id || '',
+          name: ctx.name || '',
+          action: ctx.action || '',
+          signal: ctx.signal || '',
+          goal: ctx.goal || ''
+        }
+      })
     }).then(function (res) {
       return res.text().then(function (body) {
         var data = {};
