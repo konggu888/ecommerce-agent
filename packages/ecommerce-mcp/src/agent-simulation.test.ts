@@ -325,3 +325,17 @@ test('simulation feeds actual opponent responses back into behavior state', () =
   assert.ok((result.finalState.behaviorState?.nextLikelyModes.length ?? 0) > 0);
   assert.ok(result.rounds.some(r => r.actualOpponentResponse));
 });
+
+
+test('opponent simulator remembers our actions and adapts after negative outcomes', async () => {
+  const { createSimulatedOpponents, simulateOpponentTurn, recordOpponentMemory } = await import('./opponent-simulator.ts');
+  const cfg = config();
+  const opponents = createSimulatedOpponents(cfg.initial);
+  assert.ok(opponents[0]?.memory);
+  const turns = simulateOpponentTurn(opponents, cfg.initial);
+  recordOpponentMemory(opponents, 'CHANGE_PRICE', 1, 'NEGATIVE', turns);
+  assert.equal(opponents[0].memory.lastOurAction, 'CHANGE_PRICE');
+  assert.equal(opponents[0].memory.lastOutcome, 'NEGATIVE');
+  assert.equal(opponents[0].memory.ourActions.length, 1);
+  assert.ok(opponents[0].memory.adaptationScore > 0.5);
+});
