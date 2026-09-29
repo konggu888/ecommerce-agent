@@ -437,6 +437,49 @@
     });
   }
 
+  window.__EA_START_SIM__ = function () {
+    try {
+      var choices = document.querySelectorAll('.sc-choice'), pick = null;
+      for (var i = 0; i < choices.length; i++) {
+        if (String(choices[i].style.borderColor || '').indexOf('accent') >= 0) { pick = choices[i]; break; }
+      }
+      if (!pick && choices.length) pick = choices[0];
+      if (!pick) { alert('请先选择一个策略。'); return; }
+      var type = pick.dataset.type || 'AUTO', id = pick.dataset.id || '';
+      var list = type === 'positive' ? (window.EA_POSITIVE_ATTACK_LIBRARY || []) :
+        type === 'threat' ? (window.EA_THREAT_LIBRARY || []) : (window.EA_HUMAN_BEHAVIOR_LIBRARY || []);
+      var x = null;
+      for (var j = 0; j < list.length; j++) if (list[j].id === id) { x = list[j]; break; }
+      if (!x) { alert('当前策略数据未找到，请重新选择。'); return; }
+      startNewSimulation({type:type,id:id,name:x.name||'',action:x.action||'',signal:x.signal||'',goal:x.goal||''});
+    } catch (e) {
+      console.error('EA_INLINE_START_ERROR', e);
+      alert('启动模拟失败：' + e.message);
+    }
+  };
+
+  window.__EA_REFRESH_SIM__ = function () {
+    try {
+      state.simulation = {status:'loading',name:'最新 Sandbox 模拟',message:'正在读取最新模拟……'};
+      render();
+      loadRun().then(loadCore).then(function () {
+        state.simulation.status = state.run && state.run.status === 'completed' ? 'completed' :
+          (state.run && state.run.status === 'failed' ? 'failed' : 'running');
+        state.simulation.name = '最新 Sandbox 模拟';
+        state.simulation.message = '已读取：' + state.agentRounds.length + ' 轮。';
+        render();
+        if (state.run && state.run.status !== 'completed' && state.run.status !== 'failed') pollNewSimulation();
+      }).catch(function (e) {
+        state.error = e.message;
+        state.simulation = {status:'failed',name:'读取失败',message:e.message};
+        render();
+      });
+    } catch (e) {
+      console.error('EA_INLINE_REFRESH_ERROR', e);
+      alert('读取最新模拟失败：' + e.message);
+    }
+  };
+
   function startPlayback() {
     stopPlayback();
     if (!state.agentRounds.length) {
@@ -686,7 +729,7 @@
       }
       html+='<div class="label" style="margin-top:14px">⑤ 对手学会后的换路</div><div class="notice">如果同一路线连续出现反制压力上升：降低重复暴露 → 从历史反制较少的替代变量中选一条 → 小规模验证 → 把实际响应写回记忆。<br><b>当前未知 ≠ 对手一定不会反制。</b></div>'+
         '<div class="card" style="margin-top:14px;border-left:4px solid var(--accent)"><b>连续博弈执行链</b><div style="font-size:19px;margin-top:6px">我变 → 对手学 → 我再变</div><div class="muted">实际响应优先于理论预测；数据不足时不强行归因。</div></div>'+
-        '<div class="card" style="margin-top:12px"><div class="label">本次模拟的动态博弈树</div>'+adaptiveTreeHtml()+'</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button type="button" class="action sc-run">▶ 开始10轮 Sandbox 模拟</button><button type="button" class="action sc-refresh">↻ 读取最新模拟</button></div></div>';
+        '<div class="card" style="margin-top:12px"><div class="label">本次模拟的动态博弈树</div>'+adaptiveTreeHtml()+'</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button type="button" class="action sc-run" onclick="window.__EA_START_SIM__&&window.__EA_START_SIM__();return false;">▶ 开始10轮 Sandbox 模拟</button><button type="button" class="action sc-refresh" onclick="window.__EA_REFRESH_SIM__&&window.__EA_REFRESH_SIM__();return false;">↻ 读取最新模拟</button></div></div>';
       return html;
     }
     function cards(list,type){
