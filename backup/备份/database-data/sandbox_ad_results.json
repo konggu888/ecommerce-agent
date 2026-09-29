@@ -1,0 +1,177 @@
+{
+  "table": "public.sandbox_ad_results",
+  "snapshot_at": "2026-09-29",
+  "row_count": 14,
+  "rows": [
+    {
+      "id": "1596398a-6ce6-4fb3-b246-0c97b149b07c",
+      "kind": "campaign",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "payload": {
+        "roi": 2.38,
+        "name": "潜在人群计划",
+        "spend": 264,
+        "keyword": "健康早餐面包",
+        "audience": "类目兴趣/搜索行为"
+      },
+      "created_at": "2026-09-29T00:22:26.368377+00:00"
+    },
+    {
+      "id": "1e0db491-e9e1-489f-b379-2e2aade98854",
+      "kind": "campaign",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "payload": {
+        "roi": 3.64,
+        "name": "高意向计划",
+        "spend": 318,
+        "keyword": "早餐酸面包",
+        "audience": "加购未购买"
+      },
+      "created_at": "2026-09-29T00:22:26.368377+00:00"
+    },
+    {
+      "id": "2b7efda7-b9b1-4cd5-8a51-af35a8b825bb",
+      "kind": "audience",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "payload": {
+        "cvr": 4.8,
+        "name": "近30天购买用户",
+        "size": 12800
+      },
+      "created_at": "2026-09-29T00:22:26.368377+00:00"
+    },
+    {
+      "id": "2e34c13b-fbf3-4b8c-b4c6-eea4a4fee329",
+      "kind": "keyword_migration",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "payload": {
+        "to": "下午茶 → 办公室加餐 → 咖啡搭配",
+        "from": "早餐",
+        "kind": "跨场景关键词"
+      },
+      "created_at": "2026-09-29T00:22:26.368377+00:00"
+    },
+    {
+      "id": "32066485-6395-4ee5-8d89-f6fa56a11b98",
+      "kind": "campaign",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "payload": {
+        "roi": 4.12,
+        "name": "核心成交计划",
+        "spend": 486,
+        "keyword": "酸面包早餐",
+        "audience": "近30天购买/高意向"
+      },
+      "created_at": "2026-09-29T00:22:26.368377+00:00"
+    },
+    {
+      "id": "373c888c-a06c-475e-9759-01e3f755a0d2",
+      "kind": "keyword_migration",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "payload": {
+        "to": "早餐酸面包 → 全麦早餐面包 → 健康早餐面包",
+        "from": "酸面包早餐",
+        "kind": "同场景相关关键词"
+      },
+      "created_at": "2026-09-29T00:22:26.368377+00:00"
+    },
+    {
+      "id": "3b3b76dd-cad0-43b8-9c76-e289fbdc8e6d",
+      "kind": "keyword",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "payload": {
+        "bid": 2.8,
+        "ctr": 3.8,
+        "cvr": 5.1,
+        "roi": 4.12,
+        "keyword": "酸面包早餐"
+      },
+      "created_at": "2026-09-29T00:22:26.368377+00:00"
+    },
+    {
+      "id": "3c81c25a-9ad6-48ef-b263-3a380acbf716",
+      "kind": "audience",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "payload": {
+        "cvr": 2.2,
+        "name": "类目兴趣/搜索行为",
+        "size": 38600
+      },
+      "created_at": "2026-09-29T00:22:26.368377+00:00"
+    },
+    {
+      "id": "91b2b378-a9da-4e7c-8dfd-e9a3adb2fff7",
+      "kind": "audience",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "payload": {
+        "cvr": 3.6,
+        "name": "加购未购买",
+        "size": 6400
+      },
+      "created_at": "2026-09-29T00:22:26.368377+00:00"
+    },
+    {
+      "id": "a9f71a02-e182-4d67-8f8f-ec8e0d1d22ad",
+      "kind": "keyword",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "payload": {
+        "bid": 2.2,
+        "ctr": 2.8,
+        "cvr": 3.1,
+        "roi": 2.38,
+        "keyword": "健康早餐面包"
+      },
+      "created_at": "2026-09-29T00:22:26.368377+00:00"
+    },
+    {
+      "id": "c6f7041b-249a-4d9d-aa71-30de9e1716cc",
+      "kind": "campaign",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "payload": {
+        "roi": 2.71,
+        "name": "内容引流计划",
+        "spend": 216,
+        "keyword": "下午茶面包",
+        "audience": "内容互动人群"
+      },
+      "created_at": "2026-09-29T00:22:26.368377+00:00"
+    },
+    {
+      "id": "d020fe4f-47c1-44b6-8e71-36bb9f2b5ebf",
+      "kind": "audience",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "payload": {
+        "cvr": 2.9,
+        "name": "内容互动人群",
+        "size": 21400
+      },
+      "created_at": "2026-09-29T00:22:26.368377+00:00"
+    },
+    {
+      "id": "d9923172-14af-4dd9-8efc-f057426238ce",
+      "kind": "keyword",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "payload": {
+        "bid": 1.9,
+        "ctr": 3.1,
+        "cvr": 3.8,
+        "roi": 2.71,
+        "keyword": "下午茶面包"
+      },
+      "created_at": "2026-09-29T00:22:26.368377+00:00"
+    },
+    {
+      "id": "dc6aed87-24de-4c96-b502-6e0814bf5f30",
+      "kind": "keyword",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "payload": {
+        "bid": 2.6,
+        "ctr": 3.4,
+        "cvr": 4.7,
+        "roi": 3.64,
+        "keyword": "早餐酸面包"
+      },
+      "created_at": "2026-09-29T00:22:26.368377+00:00"
+    }
+  ]
+}
