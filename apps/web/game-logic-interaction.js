@@ -16,10 +16,10 @@ function enhance(){
   var sub=document.createElement('div');sub.className='subtitle';sub.textContent='50套可点击博弈棋谱 · 我变 → 对手学 → 我再变';app.appendChild(sub);
   var card=document.createElement('div');card.className='card';
   var head=document.createElement('div');head.className='label';head.textContent='博弈逻辑库 · '+list.length+'套';card.appendChild(head);
-  var listBox=document.createElement('div');listBox.style.display='grid';listBox.style.gap='8px';listBox.style.marginTop='10px';
+  var listBox=document.createElement('div');listBox.style.display='grid';listBox.style.gridTemplateColumns='repeat(auto-fill,minmax(280px,1fr))';listBox.style.gap='10px';listBox.style.marginTop='10px';
   var detail=document.createElement('div');detail.id='ea-game-detail';detail.style.marginTop='14px';
   list.forEach(function(x){
-    var item=document.createElement('button');item.type='button';item.className='notice';item.style.cssText='display:block;width:100%;text-align:left;cursor:pointer;border:1px solid var(--border);';
+    var item=document.createElement('button');item.type='button';item.className='notice';item.style.cssText='display:block;width:auto;text-align:left;cursor:pointer;border:1px solid var(--border);';
     item.innerHTML='<b>'+esc(x.id)+' · '+esc(x.name)+'</b><div class="muted">'+esc(x.type||'博弈')+' · 点击展开完整棋谱</div>';
     item.onclick=function(){show(x);};
     listBox.appendChild(item);
