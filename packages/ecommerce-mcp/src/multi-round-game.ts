@@ -1,6 +1,6 @@
 import { Action, GameState } from './game-state';
 import { OpponentModel, modelOpponentResponses } from './opponent-model';
-import { BehaviorMode, BehaviorObservation, inferHumanBehavior, nextBehaviorObservation } from './human-behavior-engine';
+import { BehaviorMode, BehaviorObservation, BehaviorState, inferHumanBehavior, nextBehaviorObservation, updateBehaviorState } from './human-behavior-engine';
 
 export interface GameNode {
   round: number;
@@ -25,6 +25,7 @@ export interface MultiRoundPlan {
   robustness: number;
   explanation: string[];
   behaviorTrajectory: BehaviorObservation[];
+  behaviorState: BehaviorState;
   behaviorHypotheses: { id: string; name: string; confidence: number; nextLikelyModes: BehaviorMode[] }[];
   nextBehaviorObservation: string;
 }
@@ -91,6 +92,7 @@ export function planMultiRoundGame(state: GameState, horizon = 3): MultiRoundPla
   let bestPath: Action[] = [];
   let bestScore = -Infinity;
   let bestBehaviorTrajectory: BehaviorObservation[] = [];
+  let bestBehaviorState: BehaviorState = updateBehaviorState([]);
   let bestBehaviorHypotheses: { id: string; name: string; confidence: number; nextLikelyModes: BehaviorMode[] }[] = [];
   let bestNextBehaviorObservation = '继续观察对手行为';
 
@@ -100,6 +102,7 @@ export function planMultiRoundGame(state: GameState, horizon = 3): MultiRoundPla
         bestScore = score;
         bestPath = [...path];
         bestBehaviorTrajectory = [...behaviorTrajectory];
+        bestBehaviorState = updateBehaviorState(bestBehaviorTrajectory);
         bestBehaviorHypotheses = inferHumanBehavior(bestBehaviorTrajectory, 4).map(h => ({ id: h.id, name: h.name, confidence: h.confidence, nextLikelyModes: h.nextLikelyModes }));
         bestNextBehaviorObservation = nextBehaviorObservation(bestBehaviorTrajectory);
       }
@@ -200,6 +203,7 @@ export function planMultiRoundGame(state: GameState, horizon = 3): MultiRoundPla
       `下一行为观察: ${bestNextBehaviorObservation}`
     ],
     behaviorTrajectory: bestBehaviorTrajectory,
+    behaviorState: bestBehaviorState,
     behaviorHypotheses: bestBehaviorHypotheses,
     nextBehaviorObservation: bestNextBehaviorObservation
   };
