@@ -1,16 +1,20 @@
 <!doctype html>
 <html lang="zh-CN">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ecommerce Agent · 商业博弈控制台</title><link rel="stylesheet" href="./styles.css?v=nav-isolation-2"></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ecommerce Agent · 商业博弈控制台</title><link rel="stylesheet" href="./styles.css?v=nav-isolation-3"></head>
 <body><header class="topbar"><div><strong>Ecommerce Agent</strong><span class="muted">商业博弈控制台</span></div><div class="status"><span class="dot"></span>系统运行中 · Sandbox</div></header>
 <main class="layout"><aside class="sidebar"><div class="label" style="padding:8px 10px">控制台页面</div>
 <button type="button" class="nav" data-view="overview">总览</button><button type="button" class="nav" data-view="market">外部市场情报</button><button type="button" class="nav" data-view="game-logic">博弈逻辑</button><button type="button" class="nav" data-view="positive-attacks">正向攻击</button><button type="button" class="nav" data-view="threats">对手攻击面</button><button type="button" class="nav" data-view="human-behavior">人性行为演变</button><button type="button" class="nav" data-view="strategy-center">连续博弈策略中心</button><button type="button" class="nav" data-view="ad-bidding-game">广告投流博弈</button><button type="button" class="nav" data-view="ads">广告流量</button><button type="button" class="nav" data-view="experiments">实验与回测</button><button type="button" class="nav" data-view="risk">风险控制器</button><button type="button" class="nav" data-view="jobs">任务监控</button><button type="button" class="nav" data-view="memory">学习记忆</button>
 </aside><section class="content"><div id="app"></div></section></main>
 <script>
 (function(){
+'use strict';
 var app=document.getElementById('app'),buttons=document.querySelectorAll('.nav');
 var titles={overview:'总览',market:'外部市场情报','game-logic':'博弈逻辑','positive-attacks':'正向攻击',threats:'对手攻击面','human-behavior':'人性行为演变','strategy-center':'连续博弈策略中心','ad-bidding-game':'广告投流博弈',ads:'广告流量',experiments:'实验与回测',risk:'风险控制器',jobs:'任务监控',memory:'学习记忆'};
-function render(v){v=titles[v]?v:'overview';for(var i=0;i<buttons.length;i++){buttons[i].classList.toggle('active',buttons[i].getAttribute('data-view')===v);}app.innerHTML='<h1 class="page-title">'+titles[v]+'</h1><div class="subtitle">导航测试页面</div><div class="card"><div class="notice">当前页面：'+titles[v]+'</div></div>';}
-for(var i=0;i<buttons.length;i++){buttons[i].addEventListener('click',function(){render(this.getAttribute('data-view'));});}
-render('overview');
+var desc={overview:'商业博弈控制台',market:'市场信号与外部环境','game-logic':'50套博弈逻辑与棋谱','positive-attacks':'正向增长与竞争动作',threats:'对手攻击路径与防守', 'human-behavior':'对手行为模式与演变','strategy-center':'我变 → 对手学 → 我再变','ad-bidding-game':'投流博弈与连续投流','ads':'广告计划、关键词、人群与素材',experiments:'实验、回测与结果',risk:'风险拦截与保护线',jobs:'任务状态与事件流',memory:'学习记录与策略记忆'};
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function render(v){if(!titles[v])v='overview';for(var i=0;i<buttons.length;i++)buttons[i].classList.toggle('active',buttons[i].getAttribute('data-view')===v);app.innerHTML='<h1 class="page-title">'+esc(titles[v])+'</h1><div class="subtitle">'+esc(desc[v])+'</div><div class="card"><div class="notice">基础导航与页面容器正常运行。当前正在显示：'+esc(titles[v])+'</div></div>';if(location.hash.slice(1)!==v)history.replaceState(null,'','#'+v);}
+for(var i=0;i<buttons.length;i++)buttons[i].addEventListener('click',function(){render(this.getAttribute('data-view'));});
+render(location.hash.slice(1)||'overview');
 })();
-</script><script src="./strategy-center-fix.js?v=20260929-59"></script></body></html>
+</script>
+</body></html>
