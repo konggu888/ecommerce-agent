@@ -355,3 +355,28 @@ test('opponent memory learns repeated actions and reuses the learned counter', a
   const afterLearning = simulateOpponentTurn(opponents, { ...cfg.initial, price: cfg.initial.price * 0.99 });
   assert.ok(afterLearning[0]?.strategy === 'PRICE_WAR' || afterLearning[0]?.reason.includes('历史反制'));
 });
+
+
+test('opponent counter matrix feeds learned pressure back into strategy selection', async () => {
+  const { createSimulatedOpponents, simulateOpponentTurn, recordOpponentMemory, buildOpponentCounterMatrix } = await import('./opponent-simulator.ts');
+  const { runClosedLoop } = await import('./closed-loop-agent.ts');
+  const cfg = config();
+  const opponents = createSimulatedOpponents(cfg.initial);
+  for (let round = 1; round <= 3; round++) {
+    const turns = simulateOpponentTurn(opponents, cfg.initial);
+    recordOpponentMemory(opponents, 'CHANGE_PRICE', round, 'NEGATIVE', turns);
+  }
+  const matrix = buildOpponentCounterMatrix(opponents);
+  assert.equal(matrix.CHANGE_PRICE?.counter, 'PRICE_WAR');
+  assert.ok((matrix.CHANGE_PRICE?.pressure ?? 0) > 0);
+  const result = runClosedLoop({
+    state: { ...cfg.initial, opponentCounterMatrix: matrix },
+    economics: { sellingPrice: cfg.initial.price, productCost: cfg.initial.price * 0.6, fulfillmentCost: 0, platformFee: 0, paymentFee: 0, otherVariableCost: 0 },
+    inventory: cfg.inventory,
+    cashflow: cfg.cashflow,
+    riskPolicy,
+    recentActionCount: 0
+  });
+  const price = result.candidates.find(x => x.action === 'CHANGE_PRICE');
+  assert.ok(price?.reasons.some(r => r.includes('对手历史反制压力')));
+});
