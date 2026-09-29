@@ -59,5 +59,48 @@ window.EA_THREAT_INFERENCE = {
     T39:['规则投诉/审核事件增加','时间与规则变化相关'],
     T40:['多个攻击面信号同时异常','时间上存在关联','跨渠道一致']
   }
+  ,visibility:{
+    T01:{level:'中',data:['评价时间/星级/文本','订单与售后关联(若平台提供)'],missing:['评价账号真实关系','对手身份'],alternatives:['商品/服务真实问题','活动后评价结构变化']},
+    T02:{level:'低-中',data:['投诉/处罚通知','投诉结果','时间'],missing:['举报发起方真实意图','是否多人协同'],alternatives:['真实合规风险','平台治理变化']},
+    T03:{level:'低',data:['公开商标信息','品牌词变化'],missing:['申请人意图与后续策略'],alternatives:['正常品牌注册']},
+    T04:{level:'中',data:['投诉通知','素材原始文件/发布时间'],missing:['对方内部组织行为'],alternatives:['真实权利主张']},
+    T05:{level:'中',data:['投诉通知','公开权利状态'],missing:['投诉方真实目的'],alternatives:['真实专利争议']},
+    T06:{level:'中',data:['投诉/下架通知','采购/授权/批次证据'],missing:['投诉方动机'],alternatives:['真实授权或真伪问题']},
+    T07:{level:'中',data:['相似店铺/账号公开信息','客户反馈'],missing:['运营主体真实关系'],alternatives:['普通模仿/独立相似']},
+    T08:{level:'高',data:['公开商品图/视频/文案','发布时间'],missing:['对方内部复制过程'],alternatives:['同源素材/行业模板']},
+    T09:{level:'低-中',data:['评价文本/时间/订单关联(若有)'],missing:['账号是否受组织控制'],alternatives:['真实集中反馈']},
+    T10:{level:'低-中',data:['客户反馈','异常联系方式'],missing:['第三方真实身份'],alternatives:['客户误操作/其他诈骗']},
+    T11:{level:'中',data:['客户反馈','公开账号/联系方式'],missing:['冒充者身份'],alternatives:['非竞争性诈骗']},
+    T12:{level:'高',data:['订单/退款/退货记录','商品批次或序列证据'],missing:['买家真实意图'],alternatives:['正常退货/仓储错误']},
+    T13:{level:'高',data:['退款率/原因/时间','订单结构'],missing:['账号背后关系'],alternatives:['商品质量/预期不符']},
+    T14:{level:'高',data:['支付争议结果','签收/履约记录'],missing:['争议方真实动机'],alternatives:['支付渠道问题']},
+    T15:{level:'高',data:['订单量/金额/取消/退款','履约数据'],missing:['下单者组织关系'],alternatives:['活动爆发/正常需求']},
+    T16:{level:'中-高',data:['优惠使用/订单数据(若平台提供)'],missing:['账号控制关系'],alternatives:['正常活动传播']},
+    T17:{level:'中',data:['曝光/点击/访问/转化','来源维度(若平台提供)'],missing:['流量操作者身份'],alternatives:['算法分发变化/人群变化']},
+    T18:{level:'中-高',data:['广告消耗/点击/转化','时间维度'],missing:['点击来源真实身份'],alternatives:['素材疲劳/人群变化/算法变化']},
+    T19:{level:'中',data:['关键词成本/曝光/点击/转化'],missing:['竞品具体出价'],alternatives:['行业竞争加剧/平台流量调整']},
+    T20:{level:'中-高',data:['公开价格/促销/库存信号','自身单位经济'],missing:['竞品真实成本/现金流'],alternatives:['正常价格竞争/清库存']},
+    T21:{level:'低-中',data:['公开价格/促销页面'],missing:['真实库存与内部策略'],alternatives:['页面延迟/活动规则差异']},
+    T22:{level:'低-中',data:['自身库存/订单/取消数据'],missing:['对方采购行为'],alternatives:['正常需求增长']},
+    T23:{level:'中',data:['供应商交期/价格/到货'],missing:['第三方施压行为'],alternatives:['原料价格/产能/物流变化']},
+    T24:{level:'高',data:['物流节点/签收/区域履约'],missing:['是否人为造成'],alternatives:['天气/物流拥堵/区域波动']},
+    T25:{level:'中',data:['公开内容/发布时间/传播关系'],missing:['账号真实控制关系'],alternatives:['自然传播/真实用户反馈']},
+    T26:{level:'中',data:['公开搜索结果/页面'],missing:['发布者身份与组织关系'],alternatives:['自然搜索变化']},
+    T27:{level:'高',data:['公开域名注册/解析信息'],missing:['实际控制人意图'],alternatives:['正常域名注册']},
+    T28:{level:'中',data:['公开评价/时间/文本'],missing:['账号关系'],alternatives:['真实用户评价']},
+    T29:{level:'中',data:['截图原件/时间/原始后台数据'],missing:['截图制作过程'],alternatives:['误传/旧截图']},
+    T30:{level:'中',data:['投诉文本/时间/处理结果'],missing:['投诉组织关系'],alternatives:['官方模板或真实共性问题']},
+    T31:{level:'中',data:['多类IP投诉通知/时间'],missing:['投诉方协同关系'],alternatives:['多个独立权利人同时维权']},
+    T32:{level:'中',data:['授权名单/授权文件','客户反馈'],missing:['第三方真实身份'],alternatives:['过期授权/渠道信息不同步']},
+    T33:{level:'高',data:['公开包装/商品页面','发布时间'],missing:['设计过程'],alternatives:['行业同质化设计']},
+    T34:{level:'低-中',data:['客户流失/反馈','公开联系信息'],missing:['第三方获客行为'],alternatives:['价格/服务变化']},
+    T35:{level:'中',data:['公开负面内容','批次/质检记录'],missing:['传播组织关系'],alternatives:['真实质量问题']},
+    T36:{level:'低-中',data:['公开传播内容','内部日志(若有)'],missing:['信息泄露源头'],alternatives:['公开资料拼接']},
+    T37:{level:'中',data:['相似账号/店铺公开信息','客户反馈'],missing:['实际控制关系'],alternatives:['普通相似账号']},
+    T38:{level:'低',data:['权限/账号日志(若有)','客户反馈'],missing:['个人真实动机'],alternatives:['正常离职交接/误传']},
+    T39:{level:'中-高',data:['规则版本/审核通知/处罚结果'],missing:['对手具体操作'],alternatives:['平台规则变化/自身合规问题']},
+    T40:{level:'低-中',data:['多个独立异常指标/事件时间线'],missing:['不同事件是否由同一主体造成'],alternatives:['多个独立市场因素同时发生']}
+  }
+
 };
 })();
