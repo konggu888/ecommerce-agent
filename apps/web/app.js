@@ -112,6 +112,13 @@
       '<button class="primary" onclick="window.runSandboxAgent()">运行 Sandbox Agent</button><div id="inputAgentOutput" class="notice">等待运行。</div></div>');
   }
 
+  function renderExternalLinks() {
+    return page("友情链接", "用于保存值得参考的外部项目和工具。",
+      '<div class="card"><h3 class="section-title">Easel · 社交媒体运营 AI Agent</h3>' +
+      '<div class="notice">社交媒体运营开源项目：热点发现、账号画像、内容策划、内容制作、多平台发布与数据复盘。</div>' +
+      '<a class="action" href="https://github.com/ZJU-REAL/Easel" target="_blank" rel="noopener noreferrer" style="display:block;text-decoration:none">' +
+      '<b>打开 Easel 项目 →</b><br><span class="muted">GitHub · ZJU-REAL/Easel</span></a></div>');
+  }
 
   var sandboxReport = null;
   function sandboxRun(rounds) {
@@ -152,7 +159,8 @@
     else if (state.view === "ads") body = renderGeneric("广告 / 流量", "Sandbox 广告市场数据。", cards([["广告预算","¥2,000/日","上限"],["已消耗","¥1,284","64.2%"],["CPC","¥2.14","+14.2%"],["边际 ROAS","2.86","可继续测试"]]));
     else if (state.view === "experiments") body = renderExperimentsLive();
     else if (state.view === "risk") body = renderGeneric("Risk Controller", "写操作必须经过风险控制。", cards([["ANALYZE_ONLY","只分析","当前默认"],["APPROVAL_REQUIRED","需审批","高风险动作"],["AUTO_LIMITED","受限自动","小幅调整"],["AUTO_DISABLED","禁止","突破硬限制"]]) + '<div class="notice">当前真实平台保持 Read-only。</div>');
-    else if (state.view === "jobs") body = renderGeneric("任务监控", "Sandbox 任务状态。", '<div class="card"><table class="table"><tr><th>任务</th><th>类型</th><th>状态</th><th>进度</th></tr>' + jobs.map(function(x){return '<tr><td>'+x[0]+'</td><td>'+x[1]+'</td><td>'+x[2]+'</td><td>'+x[3]+'%</td></tr>';}).join("") + '</table></div>');
+    else if (state.view === "jobs") body = renderGeneric("任务监控", "Sandbox 任务状态。", '<div class="card"><table class="table"><tr><th>任务</th><th>类型</th><th>状态</th><th>进度</th></tr>' + jobs.map(function(x){return '<tr><td>'+x[0]+'</td><td>'+x[1]+'</td><td>'+x[2]+'</td><td>'+x[3]+'%</td></tr>').join("") + '</table></div>');
+    else if (state.view === "external-links") body = renderExternalLinks();
     else body = renderGeneric("学习记忆", "Sandbox 学习记录。", '<div class="card"><table class="table"><tr><th>策略</th><th>预期 ROI</th><th>实际 ROI</th><th>信号</th></tr><tr><td>出价 +8%</td><td>3.10</td><td>2.86</td><td class="warning">低于预期</td></tr><tr><td>保持预算</td><td>2.70</td><td>2.74</td><td class="positive">符合</td></tr></table></div>');
     app.innerHTML = body;
   }
@@ -179,7 +187,8 @@
       alert("Sandbox API 运行失败："+e.message);
     } finally { btns.forEach(function(b){b.disabled=false;}); }
   };
-\n  window.runSandboxAgent = function () {
+
+  window.runSandboxAgent = function () {
     var targets = [document.getElementById("agentOutput"), document.getElementById("inputAgentOutput")].filter(Boolean);
     targets.forEach(function (el) {
       el.innerHTML = "<b>Sandbox Agent 正在推演…</b><br>我方动作 → 对手响应 → 第二轮响应 → 风险约束 → 寻找突破口";
