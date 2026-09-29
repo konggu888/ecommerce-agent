@@ -315,9 +315,9 @@
         no:n,side:n%2?'我方':'对手',role:m.role,token:seq[mod(n-1,seq.length)],
         phase:phase,move:m,stateBefore:before,stateAfter:after,stateDelta:deltaText.join('；'),
         meaningful:change.meaningful,
-        response:endReason?'本局在本手后自然收束：'+endReason:
-          (n%2===1?'我方出牌后，对手读取本手的战略动作、领域、强度和累计状态再响应。':
-          '对手刚刚出牌，我方读取其动作及局面变化后再调整。')
+        response:endReason?'本手改变了局面，触发自然收束：'+endReason:
+          ('本手实际变化：'+deltaText.join('；')+'。'+
+           (change.meaningful?' 下一步应围绕这些变化继续调整，而不是重复当前动作。':' 本手没有形成明显新变量，下一步优先换变量或降低投入。'))
       });
       if(endReason)break;
     }
@@ -372,7 +372,7 @@
     h+='<div class="notice" style="margin-top:7px"><b>为什么现在用这招</b><div style="margin-top:5px;line-height:1.7">'+esc(m.reason)+'</div></div>';
     h+='<div class="muted" style="margin-top:6px"><b>本手目标：</b>'+esc(m.mode||'自适应')+' · <b>前一手：</b>'+esc((s.stateBefore&&s.stateBefore.lastMode)||'开局')+' · '+esc((s.stateBefore&&s.stateBefore.lastDomain)||'通用')+'</div>';
     if(m.source){
-      h+='<div class="muted" style="margin-top:4px">战略动作：'+esc(m.mode||'自适应')+' · 原招式库：'+esc(m.kind)+' · 原定义：'+esc(m.source.action||m.source.defense||m.source.mechanism||m.source.signal||'')+'</div>';
+      h+='<details style="margin-top:6px"><summary class="muted" style="cursor:pointer">查看招式来源与原始定义</summary><div class="muted" style="margin-top:4px">战略动作：'+esc(m.mode||'自适应')+' · 原招式库：'+esc(m.kind)+' · 原定义：'+esc(m.source.action||m.source.defense||m.source.mechanism||m.source.signal||'')+'</div></details>';
       if(m.source.combo&&Array.isArray(m.source.combo.steps)){
         h+='<details style="margin-top:8px"><summary style="cursor:pointer;font-weight:700">🔗 查看具体组合方式</summary>';
         h+='<div class="notice" style="margin-top:6px"><b>'+esc(m.source.combo.name||'组合路径')+'</b><div style="margin-top:6px">';
