@@ -113,7 +113,7 @@ export function planMultiRoundGame(state: GameState, horizon = 3): MultiRoundPla
         marginalPenalty,
         path: [...path, action].map(String)
       });
-      const branches = [...opponent].sort((a, b) => b.probability - a.probability).slice(0, 2);
+      const branches = [...opponent].sort((a, b) => b.probability - a.probability).slice(0, 2);\n      const branchProbabilityTotal = branches.reduce((sum, branch) => sum + branch.probability, 0);
       const responseBranch: { response: string; probability: number; nextActionHint: Action; stopCondition: string; expansionCondition: string }[] = branches.map((branch) => {
         const nextActionHint =
           branch.response === 'MATCH_PRICE' ? 'CHANGE_TARGETING' :
@@ -133,7 +133,7 @@ export function planMultiRoundGame(state: GameState, horizon = 3): MultiRoundPla
           branch.response === 'DEFEND_TRAFFIC' ? '只有目标人群转化改善且拥挤度可控才扩大投入' :
           branch.response === 'SHIFT_TO_CONTENT' ? '只有内容侧新增转化超过搜索侧损失才迁移预算' :
           '连续两个观察窗口指标稳定后再扩大投入';
-        return { response: branch.response, probability: branch.probability, nextActionHint: nextActionHint as Action, stopCondition, expansionCondition };
+        return { response: branch.response, probability: branchProbabilityTotal > 0 ? branch.probability / branchProbabilityTotal : 0, nextActionHint: nextActionHint as Action, stopCondition, expansionCondition };
       });
       nodes[nodes.length - 1].responseBranch = responseBranch;
       // Branch-aware continuation: evaluate both likely responses instead of following
