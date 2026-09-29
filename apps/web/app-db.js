@@ -20,7 +20,8 @@
     risk: [],
     tasks: [],
     agentRounds: [],
-    playback: { playing: false, current: 0, timer: null, poll: null }
+    playback: { playing: false, current: 0, timer: null, poll: null },
+    simulation: { status: 'idle', name: '', message: '' }
   };
 
   function esc(v) {
@@ -350,6 +351,16 @@
     state.playback.poll = setInterval(function () {
       loadRun().then(loadCore).then(function () {
         state.playback.current = Math.max(0, state.agentRounds.length - 1);
+        if (state.run && state.run.status === 'completed') {
+          state.simulation.status = 'completed';
+          state.simulation.message = '10轮 Sandbox 模拟已完成，动态博弈树已更新。';
+        } else if (state.run && state.run.status === 'failed') {
+          state.simulation.status = 'failed';
+          state.simulation.message = (state.run.state && state.run.state.error) || 'Sandbox 模拟失败';
+        } else {
+          state.simulation.status = 'running';
+          state.simulation.message = 'Sandbox 正在运行：已记录 ' + state.agentRounds.length + ' 轮。';
+        }
         render();
         if (state.run && (state.run.status === 'completed' || state.run.status === 'failed')) {
           if (state.playback.poll) clearInterval(state.playback.poll);
@@ -359,6 +370,9 @@
         }
       }).catch(function (e) {
         console.error('SANDBOX_AGENT_POLL_ERROR', e);
+        state.simulation.status = 'error';
+        state.simulation.message = e.message;
+        render();
       });
     }, 1200);
   }
@@ -381,7 +395,8 @@
     stopPlayback();
     state.error = null;
     var ctx = strategyContext || {};
-    show('Agent 正在启动', 'Sandbox 新模拟 · '+(ctx.name || '自动选择策略'), chainPanel(null) + '<div class="card"><div class="notice">正在创建新的 Agent 模拟任务……<br>策略入口：<b>'+esc(ctx.name || '自动选择')+'</b> · 类型：'+esc(ctx.type || 'AUTO')+'</div></div>');
+    state.simulation = { status: 'starting', name: ctx.name || '自动选择策略', message: '正在创建新的 Agent 模拟任务……' };
+    render();
     fetch(BASE + '/functions/v1/sandbox-agent-runner', {
       method: 'POST',
       headers: { apikey: KEY, Authorization: 'Bearer ' + KEY, 'Content-Type': 'application/json' },
@@ -405,6 +420,8 @@
         return data;
       });
     }).then(function (data) {
+      state.simulation.status = 'running';
+      state.simulation.message = '任务已创建，正在逐轮生成 Sandbox 数据……';
       return loadRun().then(loadCore).then(function () {
         state.playback.current = 0;
         state.playback.playing = true;
@@ -414,7 +431,9 @@
     }).catch(function (e) {
       console.error('SANDBOX_AGENT_RUN_ERROR', e);
       state.error = e.message;
-      show('Agent 模拟启动失败', 'Sandbox', chainPanel(null) + '<div class="card"><div class="notice"><b>错误已进入网页事件链：</b> ' + esc(e.message) + '</div></div>' + eventTable());
+      state.simulation.status = 'failed';
+      state.simulation.message = e.message;
+      render();
     });
   }
 
@@ -676,7 +695,9 @@
       return h+'</div>';
     }
     var latest=state.agentRounds&&state.agentRounds.length?state.agentRounds[state.agentRounds.length-1]:null;
-    var body='<div class="card"><div class="label">策略中心 · 实战工作台</div><h2>不是静态目录，而是“选问题 → 出攻略 → 多轮博弈 → 换路”</h2><div class="notice">旧页面全部保留；本页只做统一工作台。选择下面任一攻击面、行为模式或正向策略后，右侧/下方直接生成防守、正攻、镜像、五轮攻略和换路方案。</div></div>'+
+    var sim=state.simulation||{status:'idle',name:'',message:''};
+    var simCard=sim.status!=='idle' ? '<div class="card" style="border-left:4px solid var(--accent)"><div class="label">Sandbox 模拟状态</div><b>'+esc(sim.name||'当前策略')+'</b><div style="margin-top:6px">'+esc(sim.message||'')+'</div><div class="muted" style="margin-top:6px">状态：'+esc(sim.status)+' · 已生成轮次：'+esc(state.agentRounds.length)+'</div></div>' : '';
+    var body=simCard+'<div class="card"><div class="label">策略中心 · 实战工作台</div><h2>不是静态目录，而是“选问题 → 出攻略 → 多轮博弈 → 换路”</h2><div class="notice">旧页面全部保留；本页只做统一工作台。选择下面任一攻击面、行为模式或正向策略后，右侧/下方直接生成防守、正攻、镜像、五轮攻略和换路方案。</div></div>'+
       '<div class="card"><div class="label">当前 Sandbox 状态</div><div class="grid"><div><b>当前轮次</b><br>'+(latest?'R'+esc(latest.round):'暂无')+'</div><div><b>当前动作</b><br>'+esc(latest&&latest.action||'等待选择策略')+'</div><div><b>实际对手响应</b><br>'+esc(latest&&latest.actual_opponent_response||'暂无')+'</div><div><b>下一动作</b><br>'+esc(latest&&latest.next_action_hint||'选择攻略后进入模拟')+'</div></div></div>'+
       '<div class="card"><div class="label">① 选择策略来源</div><div style="display:flex;gap:8px;flex-wrap:wrap">'+
       '<button class="action sc-tab" data-type="positive">正向攻势（'+positives.length+'）</button><button class="action sc-tab" data-type="threat">对手攻击面（'+threats.length+'）</button><button class="action sc-tab" data-type="human">人性行为（'+humans.length+'）</button></div>'+
