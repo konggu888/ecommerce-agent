@@ -24,75 +24,212 @@
     return'自适应阶段';
   }
 
-  function positive(i,step){
-    var a=lib('EA_POSITIVE_ATTACK_LIBRARY');
-    return a.length?a[mod(i*7+step*11+3,a.length)]:null;
-  }
-  function threat(i,step){
-    var a=lib('EA_THREAT_LIBRARY');
-    return a.length?a[mod(i*5+step*13+1,a.length)]:null;
-  }
-  function bug(i,step){
-    var a=lib('EA_BUG_ATTACK_LIBRARY');
-    return a.length?a[mod(i*3+step*7+5,a.length)]:null;
+  function findMove(arr,id){
+    for(var j=0;j<arr.length;j++) if(arr[j] && arr[j].id===id) return arr[j];
+    return null;
   }
 
-  function chooseOur(i,step,phase){
-    var p=positive(i,step),b=bug(i,step);
-    // 防守/异常阶段优先机制型招式；其他阶段以正向招式推进。
-    if((phase==='防守阶段'||phase==='对抗阶段')&&b){
-      return {id:b.id,name:b.name,kind:'机制型攻防',role:'我方',source:b,
-        reason:'先识别、校验和隔离异常，再决定是否继续投入资源。'};
+  // 连续博弈不是“随机抽牌”：后一手必须能解释为对前一手的回应。
+  // 这里把三类招式放进同一个状态机：
+  // 我方动作 -> 对手根据动作强度/领域回应 -> 我方根据回应调整 -> ...
+  // 对手越界升级只在压力、风险和前序信号累积后才允许出现。
+
+  function intensity(m){
+    if(!m)return 0;
+    var s=(m.name||'')+' '+(m.category||'')+' '+(m.signal||'');
+    if(/组合式|强|报复|集中|持续|大幅|抢|恶意组合/.test(s))return 3;
+    if(/升级|扩大|压制|竞争|挤压|套利|异常|投诉|举报|低星|价格战/.test(s))return 2;
+    if(/观察|跟随|小试|内容|长尾|优化|服务|测试|检测|验证/.test(s))return 0;
+    return 1;
+  }
+
+  function domain(m){
+    if(!m)return'通用';
+    var s=(m.name||'')+' '+(m.category||'');
+    if(/关键词|搜索|SEO|流量|点击/.test(s))return'流量';
+    if(/评价|口碑|UGC|内容|视频|直播|达人|舆情/.test(s))return'内容口碑';
+    if(/价格|优惠|套餐|SKU|成本/.test(s))return'价格商品';
+    if(/供应|物流|履约|库存/.test(s))return'供应链履约';
+    if(/品牌|商标|版权|专利|授权/.test(s))return'品牌知识产权';
+    if(/客服|售后|退款|退货|支付|订单/.test(s))return'交易服务';
+    if(/机制|账号|平台|规则|API|状态/.test(s))return'机制';
+    return'通用';
+  }
+
+  function initialState(i,x){
+    return {
+      turn:0,
+      momentum:0,
+      pressure:0,
+      risk:0,
+      information:0,
+      resource:0,
+      lastSide:'',
+      lastMove:null,
+      lastDomain:'通用',
+      lastIntensity:0,
+      lastOutcome:'',
+      personality:x,
+      history:[]
+    };
+  }
+
+  function phaseFromState(s){
+    if(s.risk>=7 || s.pressure>=8)return'防守/校验阶段';
+    if(s.pressure>=5)return'对抗升级阶段';
+    if(s.information<2 && s.turn<=4)return'观察试探阶段';
+    if(s.momentum>=5)return'增长推进阶段';
+    return'自适应调整阶段';
+  }
+
+  function updateState(s,m,side){
+    var d=domain(m), k=intensity(m);
+    if(side==='我方'){
+      s.momentum += k>=2?1:0.6;
+      s.information += /观察|测试|内容|评价|检测|搜索/.test((m&&m.name)||'')?1:0.2;
+      s.resource += k;
+      s.pressure = Math.max(0,s.pressure-0.3);
+      if(k>=3)s.risk+=1;
+    }else{
+      s.pressure += k*1.2;
+      s.risk += k>=2?0.8:0.2;
+      s.momentum = Math.max(0,s.momentum-0.5);
+      s.information += 0.3;
+      s.resource += k;
+    }
+    s.lastSide=side;
+    s.lastMove=m;
+    s.lastDomain=d;
+    s.lastIntensity=k;
+    s.turn++;
+    s.history.push({side:side,id:m&&m.id,name:m&&m.name,domain:d,intensity:k});
+  }
+
+  function getPositivePool(i,step,state){
+    var a=lib('EA_POSITIVE_ATTACK_LIBRARY');
+    if(!a.length)return null;
+    var desired=[];
+    var prev=state.lastMove, pd=state.lastDomain;
+    // 我方不是重新抽一张牌，而是先处理对手刚刚造成的压力。
+    if(prev && state.lastSide==='对手'){
+      if(pd==='流量') desired=['P02','P03','P22','P25','P31'];
+      else if(pd==='价格商品') desired=['P14','P15','P37','P38','P49'];
+      else if(pd==='内容口碑') desired=['P06','P07','P10','P39','P46'];
+      else if(pd==='供应链履约') desired=['P19','P35','P36','P47'];
+      else if(pd==='品牌知识产权') desired=['P09','P10','P11','P26'];
+      else if(pd==='交易服务') desired=['P20','P21','P27','P28'];
+      else if(pd==='机制') desired=['P39','P43','P44','P49'];
+    }
+    // 第一手优先低成本、可验证动作；不能开局直接跳到最高强度。
+    if(state.turn===0) desired=['P02','P03','P12','P15','P25','P43','P49'];
+    for(var q=0;q<desired.length;q++){
+      var z=findMove(a,desired[q]);
+      if(z && (!state.lastMove || z.id!==state.lastMove.id))return z;
+    }
+    return a[mod(i*7+step*11+3,a.length)];
+  }
+
+  function chooseOur(i,step,state){
+    var p=getPositivePool(i,step,state), b=lib('EA_BUG_ATTACK_LIBRARY');
+    var phase=phaseFromState(state);
+    // 机制型招式只有在出现异常/高风险/组合式攻击信号时介入，避免“第一张牌就防漏洞”。
+    if(b.length && (state.risk>=7 || state.pressure>=8) && state.lastMove && intensity(state.lastMove)>=2){
+      var bi=mod(i*3+step*7+state.history.length,b.length), bm=b[bi];
+      return {id:bm.id,name:bm.name,kind:'机制型攻防',role:'我方',source:bm,
+        reason:'对手压力已经累积到防守阈值，先做识别、校验和隔离，再决定是否恢复增长。'};
     }
     return p?{id:p.id,name:p.name,kind:'正向攻击',role:'我方',source:p,
-      reason:'根据该人格当前阶段推进自身产品、内容、流量、服务、品牌或供应链优势。'}:
-      {id:b?b.id:'',name:b?b.name:'',kind:'机制型攻防',role:'我方',source:b,
-      reason:'正向招式不足时，用机制校验保持可验证性。'};
+      reason:state.turn===0?'首手采用低成本、可验证动作，先获取市场反馈。':
+      '根据上一手对手响应调整方向，不重复上一招，优先处理刚出现的压力来源。'}:null;
   }
 
-  function chooseOpponent(i,step,phase){
-    var t=threat(i,step),b=bug(i,step);
-    // 对手主要来自负向攻击面；在机制异常信号明显时穿插机制型攻防作为“模拟机制响应”。
-    if((step%7===0||phase==='防守阶段')&&b){
-      return {id:b.id,name:b.name,kind:'机制型攻防',role:'对手（模拟）',source:b,
-        reason:'模拟对手利用机制层信号制造异常反馈；这里只作为待验证假设。'};
+  function threatCandidates(){
+    var t=lib('EA_THREAT_LIBRARY');
+    return t;
+  }
+
+  function chooseOpponent(i,step,state){
+    var t=threatCandidates(), b=lib('EA_BUG_ATTACK_LIBRARY');
+    if(!t.length && !b.length)return null;
+    var our=state.lastMove, d=domain(our), ourI=intensity(our);
+    // “回应矩阵”：先回应我方刚打出的领域，而不是随机抽一个大招。
+    var map={
+      '流量':['T19','T26','T18','T17'],
+      '内容口碑':['T01','T09','T25','T29'],
+      '价格商品':['T20','T21','T16'],
+      '供应链履约':['T23','T24','T22'],
+      '品牌知识产权':['T03','T04','T05','T31'],
+      '交易服务':['T13','T14','T12','T15'],
+      '机制':['T39','T17','T40'],
+      '通用':['T21','T19','T25']
+    };
+    var ids=map[d]||map['通用'];
+    // 对手反应强度由我方上一手 + 已累积压力决定：
+    // 低压力只能试探；中压力才升级；高压力才允许组合式/机制型强响应。
+    var ceiling=1;
+    if(ourI>=2 || state.momentum>=4)ceiling=2;
+    if(state.pressure>=6 || state.risk>=6)ceiling=3;
+    for(var q=0;q<ids.length;q++){
+      var z=findMove(t,ids[q]);
+      if(z && intensity(z)<=ceiling && (!our || z.id!==our.id))return {
+        id:z.id,name:z.name,kind:'负向攻击面',role:'对手（模拟）',source:z,
+        reason:'模拟对手针对我方上一手的“'+d+'”领域做渐进式回应；当前压力等级限制了它的升级幅度。'
+      };
     }
-    return t?{id:t.id,name:t.name,kind:'负向攻击面',role:'对手（模拟）',source:t,
-      reason:'模拟对手观察到我方动作后，选择相应的竞争、流量、口碑、价格、渠道或规则压力。'}:
-      {id:b?b.id:'',name:b?b.name:'',kind:'机制型攻防',role:'对手（模拟）',source:b,
-      reason:'暂无负向招式时，用机制异常作为模拟响应。'};
+    // 若映射招式都超过当前强度上限，选择全库中最接近的低强度回应。
+    var best=null,bestScore=999;
+    for(var j=0;j<t.length;j++){
+      var tm=t[j], sc=Math.abs(intensity(tm)-ceiling)+(domain(tm)===d?0:2);
+      if(tm.id===our?.id)sc+=5;
+      if(sc<bestScore){bestScore=sc;best=tm;}
+    }
+    if(best)return {id:best.id,name:best.name,kind:'负向攻击面',role:'对手（模拟）',source:best,
+      reason:'没有合适的同领域升级牌，因此选择最接近当前压力等级的模拟回应，不直接跳到极端动作。'};
+    if(b.length){
+      var bm=b[mod(i*3+step*7+state.history.length,b.length)];
+      return {id:bm.id,name:bm.name,kind:'机制型攻防',role:'对手（模拟）',source:bm,
+        reason:'仅作为异常机制响应假设；当前不是实际平台漏洞操作。'};
+    }
+    return null;
   }
 
   function build(i,x){
     var seq=Array.isArray(x.sequence)&&x.sequence.length?x.sequence:['正向'];
-    var steps=[];
-    var seen={};
-    // 一张棋谱连续40步：1我方、2对手、3我方、4对手……
+    var steps=[], seen={}, state=initialState(i,x);
     for(var n=1;n<=40;n++){
-      var token=seq[mod(Math.floor((n-1)/4),seq.length)];
-      var phase=phaseOf(token);
-      var m;
-      if(n%2===1){
-        m=chooseOur(i,n,phase);
-      }else{
-        m=chooseOpponent(i,n,phase);
-      }
-      // 避免连续重复同一招；库内还有其他招式时换一个索引。
+      // 人格序列现在只作为“偏好权重”，不再直接决定抽哪张牌。
+      // 真正决定下一手的是上一手、累积压力、风险、信息和资源状态。
+      var phase=phaseFromState(state), m;
+      if(n%2===1)m=chooseOur(i,n,state);
+      else m=chooseOpponent(i,n,state);
+      if(!m)break;
+
       var key=m.kind+':'+m.id;
-      if(seen[key]){
-        if(m.kind==='正向攻击'){
-          var p=positive(i,n+7); if(p){m.id=p.id;m.name=p.name;m.source=p;}
-        }else if(m.kind==='负向攻击面'){
-          var t=threat(i,n+9); if(t){m.id=t.id;m.name=t.name;m.source=t;}
-        }else{
-          var b=bug(i,n+11); if(b){m.id=b.id;m.name=b.name;m.source=b;}
+      // 连续棋谱允许同一招在远期再次出现，但禁止紧邻重复。
+      if(seen[key] && state.lastMove && state.lastMove.id===m.id){
+        var pool=m.kind==='负向攻击面'?threatCandidates():
+          m.kind==='正向攻击'?lib('EA_POSITIVE_ATTACK_LIBRARY'):lib('EA_BUG_ATTACK_LIBRARY');
+        for(var k=0;k<pool.length;k++){
+          if(pool[k].id!==m.id && domain(pool[k])===domain(state.lastMove)){
+            m={id:pool[k].id,name:pool[k].name,kind:m.kind,role:m.role,source:pool[k],
+              reason:m.reason+' 由于上一手相同招式刚出现，本步切换到同领域的另一张牌。'};
+            break;
+          }
         }
       }
-      seen[m.kind+':'+m.id]=1;
+
+      var before={pressure:state.pressure,risk:state.risk,momentum:state.momentum,information:state.information};
+      updateState(state,m,n%2?'我方':'对手');
+      var after={pressure:state.pressure,risk:state.risk,momentum:state.momentum,information:state.information};
+
       steps.push({
         no:n,side:n%2?'我方':'对手',role:m.role,
-        token:token,phase:phase,move:m,
-        response:n===40?'本局结束：进入复盘。':'这一招改变下一步可观察状态，下一步继续根据当前状态选招。'
+        token:seq[mod(n-1,seq.length)],
+        phase:phase,move:m,
+        stateBefore:before,stateAfter:after,
+        response:n===40?'本局结束：进入复盘。':
+          (n%2===1?'我方出牌后，对手只能根据这张牌及当前累积状态作出下一手模拟响应。':
+          '对手刚刚出牌，我方下一手必须读取这次压力变化后再调整。')
       });
     }
     return {id:x.id,name:x.name,style:x.style||'',risk:x.risk||'中',signal:x.signal||'',goal:x.goal||'',sequence:seq,steps:steps};
@@ -152,6 +289,7 @@
       }
     }
     h+='<div class="notice" style="margin-top:6px">'+esc(s.response)+'</div>';
+    if(s.stateBefore&&s.stateAfter){h+='<div class="muted" style="margin-top:5px">状态：压力 '+s.stateBefore.pressure.toFixed(1)+' → '+s.stateAfter.pressure.toFixed(1)+' · 风险 '+s.stateBefore.risk.toFixed(1)+' → '+s.stateAfter.risk.toFixed(1)+' · 动能 '+s.stateBefore.momentum.toFixed(1)+' → '+s.stateAfter.momentum.toFixed(1)+'</div>';}
     h+='</div>';
     return h;
   }
@@ -175,8 +313,8 @@
       data.steps.forEach(function(s){h+=stepHtml(s);});
     }else{
       h+='<div style="margin-top:10px;line-height:1.8"><b>这个人格为什么这样走？</b><br>';
-      h+='人格序列只负责定义长期行为倾向；真正的棋谱由连续状态驱动。奇数步是我方，偶数步是对手。三类招式不是三条互相独立的棋谱，而是同一条链里的不同类型：正向攻击用于建设优势，负向攻击面用于模拟对手施压，机制型攻防用于处理异常信号和防守校验。';
-      h+='</div><div class="notice" style="margin-top:10px"><b>关键：</b>不能看到某一招就认定对手一定会这样做；实际系统运行时，应把真实市场反馈替换“模拟假设”，再继续生成下一步。</div>';
+      h+='人格序列只负责定义长期行为倾向；真正的棋谱由连续状态驱动。奇数步是我方，偶数步是对手。三类招式不是三条互相独立的棋谱，而是同一条链里的不同类型：正向攻击用于建设优势，负向攻击面必须针对我方上一手作出渐进式回应，机制型攻防只在异常、压力或风险累积后介入。';
+      h+='</div><div class="notice" style="margin-top:10px"><b>关键：</b>不是“我方随便打一张牌、对手随机出大招”。下一手必须读取上一手的领域、强度和累计状态；对手强度有上限，只有压力累积后才允许升级。实际系统运行时，再把真实市场反馈替换“模拟假设”。</div>';
       h+='<div style="margin-top:10px"><b>40步类型轨迹：</b><div style="line-height:2;margin-top:5px">';
       data.steps.forEach(function(s){h+='<span class="tag" style="margin:2px">'+s.no+' '+esc(s.move.kind)+'</span>';});
       h+='</div></div>';
