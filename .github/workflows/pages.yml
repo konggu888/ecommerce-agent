@@ -1,4 +1,5 @@
 name: Deploy web dashboard to GitHub Pages
+# force-pages-redeploy-20260930-1
 
 on:
   push:
