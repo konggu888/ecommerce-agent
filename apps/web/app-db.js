@@ -628,7 +628,7 @@
         html+='<div class="label" style="margin-top:14px">④ 五轮攻略</div><div class="notice"><b>R1</b> 记录基线 → <b>R2</b> 小规模实验 → <b>R3</b> 观察实际响应 → <b>R4</b> 根据响应换路/扩大 → <b>R5</b> 进入继续、降级、等待或停止。</div>';
       }
       html+='<div class="label" style="margin-top:14px">⑤ 对手学会后的换路</div><div class="notice">如果同一路线连续出现反制压力上升：降低重复暴露 → 从历史反制较少的替代变量中选一条 → 小规模验证 → 把实际响应写回记忆。<br><b>当前未知 ≠ 对手一定不会反制。</b></div>'+
-        '<div class="card" style="margin-top:14px;border-left:4px solid var(--accent)"><b>连续博弈执行链</b><div style="font-size:19px;margin-top:6px">我变 → 对手学 → 我再变</div><div class="muted">实际响应优先于理论预测；数据不足时不强行归因。</div></div></div>';
+        '<div class="card" style="margin-top:14px;border-left:4px solid var(--accent)"><b>连续博弈执行链</b><div style="font-size:19px;margin-top:6px">我变 → 对手学 → 我再变</div><div class="muted">实际响应优先于理论预测；数据不足时不强行归因。</div></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px"><button type="button" class="action sc-run">▶ 开始10轮 Sandbox 模拟</button><button type="button" class="action sc-refresh">↻ 读取最新模拟</button></div></div>';
       return html;
     }
     function cards(list,type){
@@ -645,20 +645,31 @@
       '<div id="sc-detail">'+detail(selected,'positive')+'</div>'+
       '<div class="card"><div class="label">② 本页如何使用实际对手学习</div><div class="notice">每轮不只看理论分支：记录我方动作、对手实际响应、样本数和反制压力。历史上已经形成稳定反制的路线降低权重；没有足够样本的路线标记为未知，先实验再判断。</div></div>';
     show('连续博弈策略中心','实战工作台 · 攻略生成 → 多轮模拟 → 对手学习 → 换路',body);
+    function bindSimulationButtons(){
+      var run=document.querySelector('.sc-run');
+      if(run) run.addEventListener('click',function(){
+        if(!selected)return;
+        startNewSimulation({type:selectedType,id:selected.id,name:selected.name,action:selected.action,signal:selected.signal,goal:selected.goal});
+      });
+      var refresh=document.querySelector('.sc-refresh');
+      if(refresh) refresh.addEventListener('click',function(){ loadRun().then(loadCore).then(render).catch(function(e){state.error=e.message;render();}); });
+    }
     function renderList(type){
       var list=type==='positive'?positives:(type==='threat'?threats:humans);
       document.getElementById('sc-list').innerHTML=cards(list,type);
+      bindSimulationButtons();
       var all=document.querySelectorAll('.sc-choice');
       for(var i=0;i<all.length;i++)all[i].addEventListener('click',function(){
         selectedType=this.dataset.type; var list2=selectedType==='positive'?positives:(selectedType==='threat'?threats:humans), found=null;
         for(var j=0;j<list2.length;j++)if(list2[j].id===this.dataset.id){found=list2[j];break;}
         selected=found; document.getElementById('sc-detail').innerHTML=detail(found,selectedType);
+        bindSimulationButtons();
         renderList(selectedType);
         document.getElementById('sc-detail').scrollIntoView({behavior:'smooth',block:'start'});
       });
     }
     var tabs=document.querySelectorAll('.sc-tab');
-    for(var i=0;i<tabs.length;i++)tabs[i].addEventListener('click',function(){selectedType=this.dataset.type;var list=selectedType==='positive'?positives:(selectedType==='threat'?threats:humans);selected=list.length?list[0]:null;renderList(selectedType);document.getElementById('sc-detail').innerHTML=detail(selected,selectedType);});
+    for(var i=0;i<tabs.length;i++)tabs[i].addEventListener('click',function(){selectedType=this.dataset.type;var list=selectedType==='positive'?positives:(selectedType==='threat'?threats:humans);selected=list.length?list[0]:null;renderList(selectedType);document.getElementById('sc-detail').innerHTML=detail(selected,selectedType);bindSimulationButtons();});
     renderList('positive');
   }
 
