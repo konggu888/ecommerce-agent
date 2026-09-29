@@ -201,7 +201,13 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
     );
 
     const turns = simulateOpponentTurn(opponents, state);
-    const actualOpponentResponse = turns[0]?.action ?? 'HOLD';
+    const actualOpponentAction = turns[0]?.action ?? 'HOLD';
+    const actualOpponentResponse =
+      actualOpponentAction === 'MATCH_OR_UNDERCUT_PRICE' ? 'MATCH_PRICE' :
+      actualOpponentAction === 'RAISE_BID_AND_DEFEND_TRAFFIC' ? 'RAISE_BID' :
+      actualOpponentAction === 'SHIFT_CONTENT' ? 'SHIFT_TO_CONTENT' :
+      actualOpponentAction === 'IMPROVE_CONVERSION' ? 'DEFEND_TRAFFIC' :
+      'HOLD';
     const bestNode = decision.multiRound.nodes.find(n => n.round === 1 && n.action === action);
     const responseBranches = bestNode?.responseBranch ?? [];
     const matchedBranch = responseBranches.find(b => b.response === actualOpponentResponse);
