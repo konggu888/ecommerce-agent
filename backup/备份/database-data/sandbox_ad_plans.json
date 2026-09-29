@@ -1,0 +1,20 @@
+{
+  "table": "public.sandbox_ad_plans",
+  "snapshot_at": "2026-09-29",
+  "row_count": 1,
+  "rows": [
+    {
+      "id": "85355338-b239-47c7-85e2-6de9348bd5fb",
+      "name": "核心搜索计划",
+      "scene": "早餐场景",
+      "end_at": null,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "运行中",
+      "product": "酸面包A",
+      "start_at": null,
+      "created_at": "2026-09-29T00:26:59.639001+00:00",
+      "bid_strategy": "目标ROI",
+      "daily_budget": 300
+    }
+  ]
+}
