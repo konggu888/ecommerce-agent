@@ -1,0 +1,1257 @@
+{
+  "table": "public.sandbox_backtests",
+  "snapshot_at": "2026-09-29",
+  "row_count": 125,
+  "rows": [
+    {
+      "id": "034e6636-4e3d-4cbd-87e2-967d79b55a6a",
+      "roi": 3.5700000000000003,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 10,
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "scenario": "连续博弈第10轮",
+      "created_at": "2026-09-29T05:45:03.61+00:00"
+    },
+    {
+      "id": "041fffa8-0f35-4f4e-9dde-75b5dfa98240",
+      "roi": 3.88,
+      "risk": "MEDIUM",
+      "action": "HOLD",
+      "rounds": 4,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "scenario": "连续博弈第4轮",
+      "created_at": "2026-09-29T01:32:48.664375+00:00"
+    },
+    {
+      "id": "0640ce2f-42c7-421f-834a-747ea446c256",
+      "roi": 3.5700000000000003,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 10,
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "scenario": "连续博弈第10轮",
+      "created_at": "2026-09-29T06:24:12.532+00:00"
+    },
+    {
+      "id": "082ddaec-6925-40b0-a26c-285acc804606",
+      "roi": 3.61,
+      "risk": "MEDIUM",
+      "action": "INCREASE_BUDGET",
+      "rounds": 7,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "scenario": "连续博弈第7轮",
+      "created_at": "2026-09-29T01:32:48.664375+00:00"
+    },
+    {
+      "id": "08e54915-4fd6-4168-9524-817d2f11a0a9",
+      "roi": 4.574999999999999,
+      "risk": "MEDIUM",
+      "action": "HOLD",
+      "rounds": 1,
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "scenario": "连续博弈第1轮",
+      "created_at": "2026-09-29T06:24:04.521+00:00"
+    },
+    {
+      "id": "0a7d91f3-e718-46ae-a69a-c4f24a62965c",
+      "roi": 3.8400000000000003,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 8,
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "scenario": "连续博弈第8轮",
+      "created_at": "2026-09-29T06:24:09.887+00:00"
+    },
+    {
+      "id": "0b412ef2-14e1-49dc-98b5-ce2e541f4e74",
+      "roi": 4.2,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 4,
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "scenario": "连续博弈第4轮",
+      "created_at": "2026-09-29T05:34:16.262+00:00"
+    },
+    {
+      "id": "0d319289-536d-4d9a-aee4-ba26198125f4",
+      "roi": 4.574999999999999,
+      "risk": "MEDIUM",
+      "action": "HOLD",
+      "rounds": 1,
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "scenario": "连续博弈第1轮",
+      "created_at": "2026-09-29T06:32:24.34+00:00"
+    },
+    {
+      "id": "0fe5d200-e000-428b-8bee-b1de81bd3050",
+      "roi": 2.91,
+      "risk": "中",
+      "action": "切换策略",
+      "rounds": 30,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "scenario": "竞争加剧",
+      "created_at": "2026-09-29T00:22:26.368377+00:00"
+    },
+    {
+      "id": "11e23369-f174-4c8a-ac95-ecf00f0a7cc2",
+      "roi": 3.99,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 6,
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "scenario": "连续博弈第6轮",
+      "created_at": "2026-09-29T05:34:19.067+00:00"
+    },
+    {
+      "id": "12a39a92-02b4-4e60-be8d-8c8df9325a95",
+      "roi": 3.8850000000000002,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 7,
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "scenario": "连续博弈第7轮",
+      "created_at": "2026-09-29T05:34:20.423+00:00"
+    },
+    {
+      "id": "155f3164-f023-483e-acf3-0014c73c162c",
+      "roi": 4.364999999999999,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 3,
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "scenario": "连续博弈第3轮",
+      "created_at": "2026-09-29T06:24:02.923+00:00"
+    },
+    {
+      "id": "17803d70-0cb7-4f0b-91bb-0e4af777f8dd",
+      "roi": 3.6750000000000003,
+      "risk": "MEDIUM",
+      "action": "INCREASE_BID",
+      "rounds": 9,
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "scenario": "连续博弈第9轮",
+      "created_at": "2026-09-29T06:32:33.159+00:00"
+    },
+    {
+      "id": "17c966cf-c3ab-467f-a0f8-4b79d918088d",
+      "roi": 4.364999999999999,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 3,
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "scenario": "连续博弈第3轮",
+      "created_at": "2026-09-29T06:32:27.201+00:00"
+    },
+    {
+      "id": "1d90bb01-3b15-4ecc-9f28-f9e97e06306a",
+      "roi": 4.364999999999999,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 3,
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "scenario": "连续博弈第3轮",
+      "created_at": "2026-09-29T06:32:25.481+00:00"
+    },
+    {
+      "id": "20ba651f-b6bb-4694-aecd-511b31f0a4cd",
+      "roi": 4.19,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 1,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "scenario": "连续博弈第1轮",
+      "created_at": "2026-09-29T01:32:48.664375+00:00"
+    },
+    {
+      "id": "22e3c9cf-4751-4773-88c5-f0a82ddcb134",
+      "roi": 3.8850000000000002,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 7,
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "scenario": "连续博弈第7轮",
+      "created_at": "2026-09-29T06:32:30.578+00:00"
+    },
+    {
+      "id": "276c3f84-053e-46d3-a7f1-f09faac79e8c",
+      "roi": 4.574999999999999,
+      "risk": "MEDIUM",
+      "action": "HOLD",
+      "rounds": 1,
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "scenario": "连续博弈第1轮",
+      "created_at": "2026-09-29T06:24:00.151+00:00"
+    },
+    {
+      "id": "27841a86-6cf1-49da-8243-cdc4fca1aac1",
+      "roi": 4.41,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 2,
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "scenario": "连续博弈第2轮",
+      "created_at": "2026-09-29T06:24:01.95+00:00"
+    },
+    {
+      "id": "2e29f55c-31c2-4a57-9a23-c7c8a1b6a744",
+      "roi": 4.574999999999999,
+      "risk": "MEDIUM",
+      "action": "HOLD",
+      "rounds": 1,
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "scenario": "连续博弈第1轮",
+      "created_at": "2026-09-29T06:32:22.861+00:00"
+    },
+    {
+      "id": "2f415433-0be2-4ae0-8fed-a6d6bbdbb970",
+      "roi": 3.65,
+      "risk": "MEDIUM",
+      "action": "CHANGE_PRICE",
+      "rounds": 5,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "scenario": "连续博弈第5轮",
+      "created_at": "2026-09-29T01:32:48.664375+00:00"
+    },
+    {
+      "id": "30b043e5-f02f-41d0-9472-e604379998ab",
+      "roi": 3.5700000000000003,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 10,
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "scenario": "连续博弈第10轮",
+      "created_at": "2026-09-29T06:32:34.677+00:00"
+    },
+    {
+      "id": "3502124f-8b1a-4fad-9cea-6c97b0685491",
+      "roi": 3.99,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 6,
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "scenario": "连续博弈第6轮",
+      "created_at": "2026-09-29T06:24:07.067+00:00"
+    },
+    {
+      "id": "35f2f487-12c8-47c7-a4d5-57b0c44cd469",
+      "roi": 4.2,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 4,
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "scenario": "连续博弈第4轮",
+      "created_at": "2026-09-29T06:32:26.695+00:00"
+    },
+    {
+      "id": "3a534d8a-a36b-46d0-9d2f-ee6b1823f9fa",
+      "roi": 3.99,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 6,
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "scenario": "连续博弈第6轮",
+      "created_at": "2026-09-29T06:32:31.329+00:00"
+    },
+    {
+      "id": "3b9107bd-1db3-45dd-9c6d-039e0d899407",
+      "roi": 3.99,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 6,
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "scenario": "连续博弈第6轮",
+      "created_at": "2026-09-29T06:32:29.295+00:00"
+    },
+    {
+      "id": "3c5f8272-9c05-421f-aad6-b485f0f75226",
+      "roi": 4.364999999999999,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 3,
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "scenario": "连续博弈第3轮",
+      "created_at": "2026-09-29T06:24:03.289+00:00"
+    },
+    {
+      "id": "3e3fc656-9f00-4f2e-aebf-a13a407ad153",
+      "roi": 4.364999999999999,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 3,
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "scenario": "连续博弈第3轮",
+      "created_at": "2026-09-29T06:32:25.413+00:00"
+    },
+    {
+      "id": "3fd7e31d-01a5-4a69-8b12-5d24b116d208",
+      "roi": 3.5700000000000003,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 10,
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "scenario": "连续博弈第10轮",
+      "created_at": "2026-09-29T06:32:36.832+00:00"
+    },
+    {
+      "id": "4417301a-f242-457d-aeec-eb2c7d18c85d",
+      "roi": 3.5700000000000003,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 10,
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "scenario": "连续博弈第10轮",
+      "created_at": "2026-09-29T05:34:24.451+00:00"
+    },
+    {
+      "id": "442d3a15-9e85-4066-a052-244cedf68bce",
+      "roi": 4.095,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 5,
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "scenario": "连续博弈第5轮",
+      "created_at": "2026-09-29T05:34:17.64+00:00"
+    },
+    {
+      "id": "446655e6-75b3-43b8-a912-783bc6416ada",
+      "roi": 3.8850000000000002,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 7,
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "scenario": "连续博弈第7轮",
+      "created_at": "2026-09-29T06:24:08.568+00:00"
+    },
+    {
+      "id": "45587bca-a4fb-4f16-a6c2-291ef5c6cc23",
+      "roi": 4.095,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 5,
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "scenario": "连续博弈第5轮",
+      "created_at": "2026-09-29T05:44:56.791+00:00"
+    },
+    {
+      "id": "47c21672-b2b0-4a5d-ac22-9b46ec55b236",
+      "roi": 3.6750000000000003,
+      "risk": "MEDIUM",
+      "action": "INCREASE_BID",
+      "rounds": 9,
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "scenario": "连续博弈第9轮",
+      "created_at": "2026-09-29T06:24:10.712+00:00"
+    },
+    {
+      "id": "4b0d7ca0-bcbc-40b8-9f3a-e82cef0d9cf5",
+      "roi": 3.8850000000000002,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 7,
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "scenario": "连续博弈第7轮",
+      "created_at": "2026-09-29T06:24:08.413+00:00"
+    },
+    {
+      "id": "4d0e06e2-b764-4f55-bf62-b4cf39fa717c",
+      "roi": 4.2,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 4,
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "scenario": "连续博弈第4轮",
+      "created_at": "2026-09-29T06:24:04.028+00:00"
+    },
+    {
+      "id": "4d367fa2-0d75-4634-9b39-edafcb4f7827",
+      "roi": 4.574999999999999,
+      "risk": "MEDIUM",
+      "action": "HOLD",
+      "rounds": 1,
+      "run_id": "bb421780-db3b-474c-9e32-d4a29ec2d391",
+      "scenario": "连续博弈第1轮",
+      "created_at": "2026-09-29T11:54:49.449+00:00"
+    },
+    {
+      "id": "4f681d00-882a-4e7e-a7ac-37e57d61e4ae",
+      "roi": 4.2,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 4,
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "scenario": "连续博弈第4轮",
+      "created_at": "2026-09-29T06:32:28.615+00:00"
+    },
+    {
+      "id": "5832e879-62b8-446f-8dbf-0c73eecb4cb1",
+      "roi": 3.86,
+      "risk": "高",
+      "action": "切换策略",
+      "rounds": 30,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "scenario": "需求激增",
+      "created_at": "2026-09-29T00:22:26.368377+00:00"
+    },
+    {
+      "id": "5aced3f8-5915-401d-8da2-7131fb9c11f5",
+      "roi": 3.6750000000000003,
+      "risk": "MEDIUM",
+      "action": "INCREASE_BID",
+      "rounds": 9,
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "scenario": "连续博弈第9轮",
+      "created_at": "2026-09-29T05:34:23.104+00:00"
+    },
+    {
+      "id": "5b34037e-ef66-4f31-ab89-3ae63035d0bc",
+      "roi": 3.99,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 6,
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "scenario": "连续博弈第6轮",
+      "created_at": "2026-09-29T06:24:06.665+00:00"
+    },
+    {
+      "id": "5b9a4eba-dfec-41ab-8fff-e648cb4f1f08",
+      "roi": 3.8850000000000002,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 7,
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "scenario": "连续博弈第7轮",
+      "created_at": "2026-09-29T06:32:32.705+00:00"
+    },
+    {
+      "id": "5faa956d-bcc0-4e38-874d-881ec4ef6663",
+      "roi": 4.06,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 2,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "scenario": "连续博弈第2轮",
+      "created_at": "2026-09-29T01:32:48.664375+00:00"
+    },
+    {
+      "id": "624365f5-72a9-4343-b611-a0cebddff291",
+      "roi": 3.6750000000000003,
+      "risk": "MEDIUM",
+      "action": "INCREASE_BID",
+      "rounds": 9,
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "scenario": "连续博弈第9轮",
+      "created_at": "2026-09-29T06:24:15.355+00:00"
+    },
+    {
+      "id": "647cccea-ec40-46e5-8f01-452c65fc4940",
+      "roi": 4.574999999999999,
+      "risk": "MEDIUM",
+      "action": "HOLD",
+      "rounds": 1,
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "scenario": "连续博弈第1轮",
+      "created_at": "2026-09-29T06:24:00.47+00:00"
+    },
+    {
+      "id": "64efbcac-2316-42cf-980b-2dba1f1b497d",
+      "roi": 3.5700000000000003,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 10,
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "scenario": "连续博弈第10轮",
+      "created_at": "2026-09-29T06:24:12.058+00:00"
+    },
+    {
+      "id": "65fa0953-f92b-4f7c-b4bf-c4019d6b148a",
+      "roi": 2.74,
+      "risk": "高",
+      "action": "切换策略",
+      "rounds": 30,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "scenario": "库存偏低",
+      "created_at": "2026-09-29T00:22:26.368377+00:00"
+    },
+    {
+      "id": "681852dd-fb58-42da-92ff-4e08f9a4986f",
+      "roi": 4.364999999999999,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 3,
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "scenario": "连续博弈第3轮",
+      "created_at": "2026-09-29T06:24:07.239+00:00"
+    },
+    {
+      "id": "6843f0af-027b-41f5-8d24-2a4c5f6f7478",
+      "roi": 3.15,
+      "risk": "MEDIUM",
+      "action": "INCREASE_BID",
+      "rounds": 9,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "scenario": "连续博弈第9轮",
+      "created_at": "2026-09-29T01:32:48.664375+00:00"
+    },
+    {
+      "id": "6db3730d-5a36-4ff7-9f04-e02aba799244",
+      "roi": 2.31,
+      "risk": "中",
+      "action": "继续观察",
+      "rounds": 30,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "scenario": "流量成本上升",
+      "created_at": "2026-09-29T00:22:26.368377+00:00"
+    },
+    {
+      "id": "700355eb-0ed7-46c3-b1f7-6b515ad5c2aa",
+      "roi": 3.8400000000000003,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 8,
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "scenario": "连续博弈第8轮",
+      "created_at": "2026-09-29T06:32:32.066+00:00"
+    },
+    {
+      "id": "71998845-d222-4aec-a0f7-66c58dc3da6f",
+      "roi": 4.41,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 2,
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "scenario": "连续博弈第2轮",
+      "created_at": "2026-09-29T06:24:05.885+00:00"
+    },
+    {
+      "id": "7202c7b0-febf-48e1-ab3a-f12802763855",
+      "roi": 4.2,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 4,
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "scenario": "连续博弈第4轮",
+      "created_at": "2026-09-29T05:44:55.45+00:00"
+    },
+    {
+      "id": "728c1909-47c8-4154-a3c7-d5bd584afb4a",
+      "roi": 3.8850000000000002,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 7,
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "scenario": "连续博弈第7轮",
+      "created_at": "2026-09-29T06:24:07.995+00:00"
+    },
+    {
+      "id": "74a6d330-841d-4eaf-bb45-90d87d8ec77f",
+      "roi": 4.095,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 5,
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "scenario": "连续博弈第5轮",
+      "created_at": "2026-09-29T06:24:05.352+00:00"
+    },
+    {
+      "id": "74cb0969-a08f-478b-b3e0-df65f4f255f2",
+      "roi": 1.88,
+      "risk": "高",
+      "action": "切换策略",
+      "rounds": 30,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "scenario": "转化率下降",
+      "created_at": "2026-09-29T00:22:26.368377+00:00"
+    },
+    {
+      "id": "7562389e-657c-4927-aeb9-72fb88061954",
+      "roi": 4.574999999999999,
+      "risk": "MEDIUM",
+      "action": "HOLD",
+      "rounds": 1,
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "scenario": "连续博弈第1轮",
+      "created_at": "2026-09-29T06:32:23.794+00:00"
+    },
+    {
+      "id": "7583a843-58fc-4a0f-87ab-a52021780777",
+      "roi": 3.8400000000000003,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 8,
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "scenario": "连续博弈第8轮",
+      "created_at": "2026-09-29T06:24:09.378+00:00"
+    },
+    {
+      "id": "781e1da9-44bf-43ac-960f-03cf5c272161",
+      "roi": 4.574999999999999,
+      "risk": "MEDIUM",
+      "action": "HOLD",
+      "rounds": 1,
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "scenario": "连续博弈第1轮",
+      "created_at": "2026-09-29T05:34:12.082+00:00"
+    },
+    {
+      "id": "7b46f64c-7f8c-4774-be8a-c0b5759ad560",
+      "roi": 3.6750000000000003,
+      "risk": "MEDIUM",
+      "action": "INCREASE_BID",
+      "rounds": 9,
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "scenario": "连续博弈第9轮",
+      "created_at": "2026-09-29T06:24:11.197+00:00"
+    },
+    {
+      "id": "7f0014a9-7e88-4745-889f-81f5d6c52717",
+      "roi": 3.8400000000000003,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 8,
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "scenario": "连续博弈第8轮",
+      "created_at": "2026-09-29T05:45:00.902+00:00"
+    },
+    {
+      "id": "7f51ebd6-6940-4e6b-b586-5d9f6f09d599",
+      "roi": 3.6750000000000003,
+      "risk": "MEDIUM",
+      "action": "INCREASE_BID",
+      "rounds": 9,
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "scenario": "连续博弈第9轮",
+      "created_at": "2026-09-29T06:32:33.379+00:00"
+    },
+    {
+      "id": "7f7fece7-7053-4349-b60b-d52f046584d5",
+      "roi": 4.364999999999999,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 3,
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "scenario": "连续博弈第3轮",
+      "created_at": "2026-09-29T06:32:26.417+00:00"
+    },
+    {
+      "id": "8148d9e7-c738-482a-b4c9-64811d1376e1",
+      "roi": 3.6750000000000003,
+      "risk": "MEDIUM",
+      "action": "INCREASE_BID",
+      "rounds": 9,
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "scenario": "连续博弈第9轮",
+      "created_at": "2026-09-29T06:24:11.262+00:00"
+    },
+    {
+      "id": "83356769-2445-4f62-8116-8e1457b5e153",
+      "roi": 4.574999999999999,
+      "risk": "MEDIUM",
+      "action": "HOLD",
+      "rounds": 1,
+      "run_id": "24e513b7-263f-436f-b5f7-5253bba48aeb",
+      "scenario": "连续博弈第1轮",
+      "created_at": "2026-09-29T11:54:50.625+00:00"
+    },
+    {
+      "id": "8744046a-6ac9-405a-b88a-ba3b056980af",
+      "roi": 4.095,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 5,
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "scenario": "连续博弈第5轮",
+      "created_at": "2026-09-29T06:32:28.099+00:00"
+    },
+    {
+      "id": "8dfa6702-e2c1-418f-ad55-014700593423",
+      "roi": 4.2,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 4,
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "scenario": "连续博弈第4轮",
+      "created_at": "2026-09-29T06:24:08.569+00:00"
+    },
+    {
+      "id": "93424ba6-245c-49cd-aa25-99a17f661ff6",
+      "roi": 3.8850000000000002,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 7,
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "scenario": "连续博弈第7轮",
+      "created_at": "2026-09-29T06:24:12.668+00:00"
+    },
+    {
+      "id": "9429e428-8f03-4e60-b60b-f0a41d7a788c",
+      "roi": 4.41,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 2,
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "scenario": "连续博弈第2轮",
+      "created_at": "2026-09-29T06:32:25.109+00:00"
+    },
+    {
+      "id": "953d6eb7-bca5-48c4-86c1-07e1335afa10",
+      "roi": 4.095,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 5,
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "scenario": "连续博弈第5轮",
+      "created_at": "2026-09-29T06:32:29.063+00:00"
+    },
+    {
+      "id": "95d9edb5-bbb5-41eb-bbc5-481198dfd156",
+      "roi": 3.8850000000000002,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 7,
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "scenario": "连续博弈第7轮",
+      "created_at": "2026-09-29T06:32:30.719+00:00"
+    },
+    {
+      "id": "9a4e2c38-19e5-4681-8b4f-11d4e71941c5",
+      "roi": 4.095,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 5,
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "scenario": "连续博弈第5轮",
+      "created_at": "2026-09-29T06:32:27.998+00:00"
+    },
+    {
+      "id": "9a6448db-ac54-4ca5-9153-508d31c5174b",
+      "roi": 3.99,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 6,
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "scenario": "连续博弈第6轮",
+      "created_at": "2026-09-29T06:32:30.369+00:00"
+    },
+    {
+      "id": "9c83217c-98c6-42ea-84ce-a8ee09a720bb",
+      "roi": 4.095,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 5,
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "scenario": "连续博弈第5轮",
+      "created_at": "2026-09-29T06:24:09.937+00:00"
+    },
+    {
+      "id": "9e38f4cc-7905-4954-a796-e1179fc8059e",
+      "roi": 3.42,
+      "risk": "高",
+      "action": "继续观察",
+      "rounds": 30,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "scenario": "正常市场",
+      "created_at": "2026-09-29T00:22:26.368377+00:00"
+    },
+    {
+      "id": "a1283c5d-6b37-430f-92a3-53a4eed5e2ab",
+      "roi": 3.8400000000000003,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 8,
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "scenario": "连续博弈第8轮",
+      "created_at": "2026-09-29T05:34:21.769+00:00"
+    },
+    {
+      "id": "a30a0ead-e08d-4511-aa50-81afec28b42c",
+      "roi": 4.574999999999999,
+      "risk": "MEDIUM",
+      "action": "HOLD",
+      "rounds": 1,
+      "run_id": "91f55ab5-b3b9-4bc2-9d64-9bf384acaae7",
+      "scenario": "连续博弈第1轮",
+      "created_at": "2026-09-29T10:08:33.198+00:00"
+    },
+    {
+      "id": "a394fd72-89cb-442d-b609-ea42cb59db99",
+      "roi": 3.8400000000000003,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 8,
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "scenario": "连续博弈第8轮",
+      "created_at": "2026-09-29T06:24:09.881+00:00"
+    },
+    {
+      "id": "a4f91a5b-b703-43c6-9733-61ac61fde6a8",
+      "roi": 4.2,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 6,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "scenario": "连续博弈第6轮",
+      "created_at": "2026-09-29T01:32:48.664375+00:00"
+    },
+    {
+      "id": "a6289d65-35ca-4bea-aa15-e2cd1e21c622",
+      "roi": 3.6750000000000003,
+      "risk": "MEDIUM",
+      "action": "INCREASE_BID",
+      "rounds": 9,
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "scenario": "连续博弈第9轮",
+      "created_at": "2026-09-29T06:32:34.388+00:00"
+    },
+    {
+      "id": "a6ee99ee-a722-4ed4-aa13-af45cd20b255",
+      "roi": 3.8400000000000003,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 8,
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "scenario": "连续博弈第8轮",
+      "created_at": "2026-09-29T06:32:31.86+00:00"
+    },
+    {
+      "id": "aa027c1a-ad27-424f-8ada-a541fc92a6ad",
+      "roi": 4.574999999999999,
+      "risk": "MEDIUM",
+      "action": "HOLD",
+      "rounds": 1,
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "scenario": "连续博弈第1轮",
+      "created_at": "2026-09-29T05:44:51.295+00:00"
+    },
+    {
+      "id": "aa781a37-b0ff-439e-9ed2-7ca35daccc63",
+      "roi": 4.41,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 2,
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "scenario": "连续博弈第2轮",
+      "created_at": "2026-09-29T05:34:13.544+00:00"
+    },
+    {
+      "id": "abf64f75-060e-417e-822b-b9be09bc4827",
+      "roi": 3.68,
+      "risk": "MEDIUM",
+      "action": "INCREASE_BID",
+      "rounds": 3,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "scenario": "连续博弈第3轮",
+      "created_at": "2026-09-29T01:32:48.664375+00:00"
+    },
+    {
+      "id": "ace0a721-6d73-4cef-9f77-c1c8b7d93b59",
+      "roi": 4.095,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 5,
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "scenario": "连续博弈第5轮",
+      "created_at": "2026-09-29T06:32:29.962+00:00"
+    },
+    {
+      "id": "afc22a6f-fcc0-4462-b71b-87d8bb6fc986",
+      "roi": 3.99,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 6,
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "scenario": "连续博弈第6轮",
+      "created_at": "2026-09-29T06:32:29.411+00:00"
+    },
+    {
+      "id": "b1076e0b-6979-4759-8536-ced4306e2863",
+      "roi": 3.8850000000000002,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 7,
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "scenario": "连续博弈第7轮",
+      "created_at": "2026-09-29T05:44:59.496+00:00"
+    },
+    {
+      "id": "b3d6212e-6b17-4f12-beb0-e2d73c43731e",
+      "roi": 4.574999999999999,
+      "risk": "MEDIUM",
+      "action": "HOLD",
+      "rounds": 1,
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "scenario": "连续博弈第1轮",
+      "created_at": "2026-09-29T06:23:59.496+00:00"
+    },
+    {
+      "id": "b48dddd1-da84-4e55-ba76-198d2eca0222",
+      "roi": 4.2,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 4,
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "scenario": "连续博弈第4轮",
+      "created_at": "2026-09-29T06:32:26.795+00:00"
+    },
+    {
+      "id": "b766efb1-8f25-4fc8-a58c-dfd638c5a631",
+      "roi": 3.6750000000000003,
+      "risk": "MEDIUM",
+      "action": "INCREASE_BID",
+      "rounds": 9,
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "scenario": "连续博弈第9轮",
+      "created_at": "2026-09-29T05:45:02.279+00:00"
+    },
+    {
+      "id": "b9c5ce8d-37ad-41b6-8f81-66f0a4bcc699",
+      "roi": 3.99,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 6,
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "scenario": "连续博弈第6轮",
+      "created_at": "2026-09-29T06:24:07.265+00:00"
+    },
+    {
+      "id": "c18b6694-285d-4330-b9b6-73e54925bdd5",
+      "roi": 4.095,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 5,
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "scenario": "连续博弈第5轮",
+      "created_at": "2026-09-29T06:24:05.938+00:00"
+    },
+    {
+      "id": "c604f571-83a5-4454-b699-28490944bf7a",
+      "roi": 4.364999999999999,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 3,
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "scenario": "连续博弈第3轮",
+      "created_at": "2026-09-29T06:24:02.695+00:00"
+    },
+    {
+      "id": "c87379c0-5af3-4034-a79c-eef66d5caba1",
+      "roi": 4.2,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 4,
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "scenario": "连续博弈第4轮",
+      "created_at": "2026-09-29T06:24:04.615+00:00"
+    },
+    {
+      "id": "c899b7ba-e19f-4199-a117-de56728dfd4d",
+      "roi": 2.03,
+      "risk": "中",
+      "action": "继续观察",
+      "rounds": 30,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "scenario": "现金紧张",
+      "created_at": "2026-09-29T00:22:26.368377+00:00"
+    },
+    {
+      "id": "c8b85b25-5811-4820-8999-02dbd5d13cee",
+      "roi": 4.07,
+      "risk": "MEDIUM",
+      "action": "DECREASE_BID",
+      "rounds": 8,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "scenario": "连续博弈第8轮",
+      "created_at": "2026-09-29T01:32:48.664375+00:00"
+    },
+    {
+      "id": "ce171223-2a8d-4d35-8fb8-7853e842d3b7",
+      "roi": 4.41,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 2,
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "scenario": "连续博弈第2轮",
+      "created_at": "2026-09-29T06:24:00.89+00:00"
+    },
+    {
+      "id": "d3d79d98-c905-4fa9-a9d6-9f6e82a0aa86",
+      "roi": 3.8400000000000003,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 8,
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "scenario": "连续博弈第8轮",
+      "created_at": "2026-09-29T06:24:14.005+00:00"
+    },
+    {
+      "id": "d4ac2d55-fab6-4c5e-9f30-2ae8bdb343fc",
+      "roi": 3.8400000000000003,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 8,
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "scenario": "连续博弈第8轮",
+      "created_at": "2026-09-29T06:32:33.063+00:00"
+    },
+    {
+      "id": "d64b024f-ae33-4b19-8196-7de130b19fd2",
+      "roi": 4.33,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 10,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "scenario": "连续博弈第10轮",
+      "created_at": "2026-09-29T01:32:48.664375+00:00"
+    },
+    {
+      "id": "d6f834ce-219e-4306-9444-35af60c3fd26",
+      "roi": 2.16,
+      "risk": "中",
+      "action": "继续观察",
+      "rounds": 30,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "scenario": "价格战",
+      "created_at": "2026-09-29T00:22:26.368377+00:00"
+    },
+    {
+      "id": "d737af90-325d-4867-8534-a645fa533054",
+      "roi": 3.99,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 6,
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "scenario": "连续博弈第6轮",
+      "created_at": "2026-09-29T05:44:58.133+00:00"
+    },
+    {
+      "id": "d78a3e61-ddcb-430f-a0a0-3c9feed23ffd",
+      "roi": 3.6750000000000003,
+      "risk": "MEDIUM",
+      "action": "INCREASE_BID",
+      "rounds": 9,
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "scenario": "连续博弈第9轮",
+      "created_at": "2026-09-29T06:32:35.497+00:00"
+    },
+    {
+      "id": "d91a2d00-c27f-46bf-8135-ac0f81050f98",
+      "roi": 4.41,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 2,
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "scenario": "连续博弈第2轮",
+      "created_at": "2026-09-29T05:44:52.689+00:00"
+    },
+    {
+      "id": "d9447d7c-3d1f-4068-bd9e-905f70689c82",
+      "roi": 4.574999999999999,
+      "risk": "MEDIUM",
+      "action": "HOLD",
+      "rounds": 1,
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "scenario": "连续博弈第1轮",
+      "created_at": "2026-09-29T06:32:22.803+00:00"
+    },
+    {
+      "id": "db76ea0f-7188-41d4-a477-118c5f3356d1",
+      "roi": 3.5700000000000003,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 10,
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "scenario": "连续博弈第10轮",
+      "created_at": "2026-09-29T06:32:34.516+00:00"
+    },
+    {
+      "id": "dbb77ef3-1369-4362-bc20-bf34f75b4fd1",
+      "roi": 4.095,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 5,
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "scenario": "连续博弈第5轮",
+      "created_at": "2026-09-29T06:24:05.724+00:00"
+    },
+    {
+      "id": "dc725dec-9ad0-43b0-96fb-56a91aa26b44",
+      "roi": 4.41,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 2,
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "scenario": "连续博弈第2轮",
+      "created_at": "2026-09-29T06:32:24.102+00:00"
+    },
+    {
+      "id": "ddc3bfbe-b039-4ca3-b940-0e62a94a7e27",
+      "roi": 4.41,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 2,
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "scenario": "连续博弈第2轮",
+      "created_at": "2026-09-29T06:32:25.801+00:00"
+    },
+    {
+      "id": "e053b67e-45e6-4a2c-85a7-0cde791a9cee",
+      "roi": 4.2,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 4,
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "scenario": "连续博弈第4轮",
+      "created_at": "2026-09-29T06:24:04.333+00:00"
+    },
+    {
+      "id": "e119c1a2-8ce4-47c9-9868-325a0ea9a4f4",
+      "roi": 3.5700000000000003,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 10,
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "scenario": "连续博弈第10轮",
+      "created_at": "2026-09-29T06:24:12.676+00:00"
+    },
+    {
+      "id": "e1ad34e5-ac12-4f55-8495-bdf22188203e",
+      "roi": 4.574999999999999,
+      "risk": "MEDIUM",
+      "action": "HOLD",
+      "rounds": 1,
+      "run_id": "082ed97e-9e8f-4d1d-b683-bb64bf88d58f",
+      "scenario": "连续博弈第1轮",
+      "created_at": "2026-09-29T11:54:55.635+00:00"
+    },
+    {
+      "id": "e244a7ea-0397-4736-baf3-2f0a85bda68d",
+      "roi": 4.574999999999999,
+      "risk": "MEDIUM",
+      "action": "HOLD",
+      "rounds": 1,
+      "run_id": "df232131-8d9f-42bf-9f73-1e0a9c80667e",
+      "scenario": "连续博弈第1轮",
+      "created_at": "2026-09-29T11:54:50.018+00:00"
+    },
+    {
+      "id": "e3185734-0edb-481a-ae89-d9c438d37502",
+      "roi": 4.574999999999999,
+      "risk": "MEDIUM",
+      "action": "HOLD",
+      "rounds": 1,
+      "run_id": "aabdc955-075a-4340-85b2-6ed2e7699032",
+      "scenario": "连续博弈第1轮",
+      "created_at": "2026-09-29T11:54:56.264+00:00"
+    },
+    {
+      "id": "e38ceedd-2457-4806-a586-b59fff5bd312",
+      "roi": 4.574999999999999,
+      "risk": "MEDIUM",
+      "action": "HOLD",
+      "rounds": 1,
+      "run_id": "9e69d947-915f-4689-adb2-01eb0c40a7d0",
+      "scenario": "连续博弈第1轮",
+      "created_at": "2026-09-29T10:08:33.2+00:00"
+    },
+    {
+      "id": "e3de6deb-29b4-4433-b278-259edef8ce92",
+      "roi": 3.8850000000000002,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 7,
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "scenario": "连续博弈第7轮",
+      "created_at": "2026-09-29T06:32:31.673+00:00"
+    },
+    {
+      "id": "e44e4f11-382e-452f-9c36-78c64891dc0c",
+      "roi": 4.364999999999999,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 3,
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "scenario": "连续博弈第3轮",
+      "created_at": "2026-09-29T05:44:54.087+00:00"
+    },
+    {
+      "id": "e4710c8e-06cf-4a9f-b20a-6066185e45f5",
+      "roi": 3.8400000000000003,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 8,
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "scenario": "连续博弈第8轮",
+      "created_at": "2026-09-29T06:32:34.125+00:00"
+    },
+    {
+      "id": "e82a00de-3b10-40e0-bea8-fdf5b727c66f",
+      "roi": 3.99,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 6,
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "scenario": "连续博弈第6轮",
+      "created_at": "2026-09-29T06:24:11.268+00:00"
+    },
+    {
+      "id": "ebecf7e8-545b-468f-8831-c20abfadb1d4",
+      "roi": 3.5700000000000003,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 10,
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "scenario": "连续博弈第10轮",
+      "created_at": "2026-09-29T06:24:16.678+00:00"
+    },
+    {
+      "id": "f29a29e2-0cbd-4858-a36a-886af719c25d",
+      "roi": 4.2,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 4,
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "scenario": "连续博弈第4轮",
+      "created_at": "2026-09-29T06:32:27.741+00:00"
+    },
+    {
+      "id": "f51c84e3-f1ea-4c85-b225-d0c82070a1e0",
+      "roi": 4.364999999999999,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 3,
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "scenario": "连续博弈第3轮",
+      "created_at": "2026-09-29T05:34:14.915+00:00"
+    },
+    {
+      "id": "f816e0f4-8197-44cd-ab0f-f57af7924745",
+      "roi": 3.5700000000000003,
+      "risk": "MEDIUM",
+      "action": "CHANGE_KEYWORD",
+      "rounds": 10,
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "scenario": "连续博弈第10轮",
+      "created_at": "2026-09-29T06:32:35.718+00:00"
+    },
+    {
+      "id": "f8d3fdf6-0b14-4cc3-95a3-4cf7988da515",
+      "roi": 4.41,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 2,
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "scenario": "连续博弈第2轮",
+      "created_at": "2026-09-29T06:32:24.173+00:00"
+    },
+    {
+      "id": "fa0816a1-ea40-47be-b400-241f929d79f2",
+      "roi": 4.41,
+      "risk": "MEDIUM",
+      "action": "CHANGE_TARGETING",
+      "rounds": 2,
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "scenario": "连续博弈第2轮",
+      "created_at": "2026-09-29T06:24:01.53+00:00"
+    }
+  ]
+}
