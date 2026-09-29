@@ -504,112 +504,29 @@
   }
 
   function threats() {
-    var list=window.EA_THREAT_LIBRARY||[], selected=list.length?list[0]:null;
-    var playbooks=window.EA_THREAT_PLAYBOOKS||{};
-    var inf=window.EA_THREAT_INFERENCE||{};
-
-    function arr(v){ return Array.isArray(v)?v:[]; }
-    function planFor(x){
-      var name=String(x.name||''), cat=String(x.category||'');
-      var defense=[
-        '先确认事实：记录订单、流量、广告、评价、退款、投诉、排名、履约等可观测变化，建立时间线和历史基线',
-        '把单一异常与正常市场波动、平台算法变化、季节/需求变化、竞品正常竞争等替代解释同时保留，不提前归因',
-        x.defense || '建立证据留存、异常监测和正式申诉/举证流程'
-      ];
-      var offense=[
-        '不要机械追着攻击信号响应；优先攻击造成经营脆弱性的变量，用真实商品、内容、服务、流量、供应链和品牌能力扩大自己的安全空间',
-        '针对该风险建立替代路径：减少单一关键词、单一渠道、单一SKU、单一供应商或单一平台入口依赖',
-        '把防守产生的数据反向用于增长实验：找到受影响变量后，在 Sandbox 中测试新的流量、转化、产品或履约组合'
-      ];
-      if(cat.indexOf('价格')>=0){
-        offense.push('价格压力出现时，优先测试套餐、规格、成本结构、服务和价值差异，不把跟价作为唯一动作');
-      } else if(cat.indexOf('广告')>=0 || cat.indexOf('流量')>=0 || cat.indexOf('内容')>=0){
-        offense.push('流量受压时，测试长尾搜索、内容入口、达人/渠道和自然流量组合，降低对单一入口的依赖');
-      } else if(cat.indexOf('知识产权')>=0 || cat.indexOf('品牌')>=0){
-        offense.push('品牌/IP压力出现时，强化原创资产、授权链、认证、品牌识别和可验证的内容资产');
-      } else if(cat.indexOf('交易')>=0 || cat.indexOf('运营')>=0 || cat.indexOf('供应链')>=0){
-        offense.push('交易/供应链压力出现时，建立分层订单、库存安全线、替代供应源和多履约路径');
-      } else if(cat.indexOf('舆情')>=0 || cat.indexOf('口碑')>=0){
-        offense.push('口碑压力出现时，用真实用户体验、事实核验、内容资产和服务质量建立新的信任信号');
-      }
-      var mirror=[
-        '镜像的是竞争机制，不复制虚假评价、恶意举报、刷量、骚扰、造谣、冒充等违规手段',
-        '如果对手实际增加某一竞争压力，我方可以在同一变量上做合规的正向竞争实验，同时准备第二条替代路线',
-        '只有出现可观测旁证才提高反制强度；没有旁证时保持“未知”，不把理论攻击链当成事实'
-      ];
-      var reroute=[
-        'R1：继续观察当前风险变量，确认是否持续、集中、跨指标同步',
-        'R2：若压力持续，降低当前暴露并启动替代路线的小规模实验',
-        'R3：若替代路线有效，逐步扩大；若无效，保留原路线安全底线并测试下一路线',
-        'R4：记录对手实际响应；下一轮不重复暴露已被对手明显学会的动作'
-      ];
-      if(name.indexOf('价格')>=0) reroute.push('价格路线 → 价值/套餐/规格/成本路线');
-      if(name.indexOf('关键词')>=0 || name.indexOf('广告')>=0 || name.indexOf('流量')>=0) reroute.push('核心流量路线 → 长尾/内容/渠道/自然流量路线');
-      if(name.indexOf('评价')>=0 || name.indexOf('舆情')>=0) reroute.push('口碑路线 → 商品体验/服务/真实内容/品牌信任路线');
-      return {defense:defense,offense:offense,mirror:mirror,reroute:reroute};
-    }
-
-    function bullets(items, cls){
-      var h='<div style="display:grid;gap:7px">';
-      for(var i=0;i<items.length;i++) h+='<div class="notice '+(cls||'')+'">• '+esc(items[i])+'</div>';
-      return h+'</div>';
-    }
-
+    var list=window.EA_THREAT_LIBRARY||[];
+    var selected=list.length?list[0]:null;
     function detail(x){
       if(!x)return notice('暂无对手攻击面数据。');
-      var steps=arr(playbooks[x.id]), signals=(inf.threatSignals&&inf.threatSignals[x.id])||[], vis=(inf.visibility&&inf.visibility[x.id])||{level:'未知',data:[],missing:[],alternatives:[]};
-      var plan=planFor(x);
-      var h='<div class="card" style="border:2px solid var(--accent);padding:16px">' +
-        '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="tag">'+esc(x.id)+'</span><span class="tag">'+esc(x.category)+'</span><span class="tag warning">潜在攻击机制</span></div>' +
-        '<h2>'+esc(x.name)+'</h2>' +
-        '<div class="notice"><b>现实数据原则：</b>攻击链只是理论机制；淘宝/拼多多等通常只能看到结果性信号。系统不把对手隐藏动作、账号来源或主观意图当成已知事实。</div>' +
-        '<div class="label">① 事实与可观测信号</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0">'+signals.map(function(v){return '<span class="tag">'+esc(v)+'</span>';}).join('')+'</div>' +
-        '<div class="notice"><b>原始信号：</b>'+esc(x.signal)+'</div>' +
-        '<div class="label">② 数据可见性与多假设</div><div class="notice"><b>可见程度：</b><span class="tag">'+esc(vis.level)+'</span><br><b>可用数据：</b>'+esc(arr(vis.data).join('、')||'暂无明确数据')+'<br><b>通常缺失：</b>'+esc(arr(vis.missing).join('、')||'暂无')+'<br><b>替代解释：</b>'+esc(arr(vis.alternatives).join('、')||'暂无')+'</div>' +
-        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin-top:8px">' +
-        '<div class="notice"><span class="tag positive">H0</span><br>正常市场/平台波动</div>' +
-        '<div class="notice"><span class="tag">H1</span><br>竞品正常竞争</div>' +
-        '<div class="notice"><span class="tag warning">H2</span><br>疑似异常竞争/攻击</div>' +
-        '<div class="notice"><span class="tag">H3</span><br>其他未知原因</div></div>' +
-        '<div class="label" style="margin-top:14px">③ 理论攻击链 · 仅用于生成假设</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin-top:8px">';
-      for(var s=0;s<steps.length;s++) h+='<div style="padding:12px;border:1px solid var(--line);border-radius:10px;min-height:72px"><span class="tag warning">STEP '+(s+1)+'</span><div style="margin-top:7px"><b>'+esc(steps[s])+'</b></div></div>';
-      h+='</div>' +
-        '<div class="label" style="margin-top:14px">④ 防守方案 · 先保护经营空间</div>'+bullets(plan.defense) +
-        '<div class="label" style="margin-top:14px">⑤ 正向进攻方案 · 把攻击面变成增长变量</div>'+bullets(plan.offense,'positive') +
-        '<div class="label" style="margin-top:14px">⑥ 镜像反制 · 回应竞争机制，但不复制违规手段</div>'+bullets(plan.mirror,'warning') +
-        '<div class="label" style="margin-top:14px">⑦ 换路方案 · 对手学会/压力持续后的下一条路径</div>'+bullets(plan.reroute) +
-        '<div class="label" style="margin-top:14px">⑧ 推断流程</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:8px">';
-      var stages=arr(inf.stages);
-      for(var q=0;q<stages.length;q++) h+='<div style="padding:10px;border:1px solid var(--line);border-radius:9px"><span class="tag">'+esc(stages[q].id)+'</span><b>'+esc(stages[q].name)+'</b><div class="muted">'+esc(stages[q].desc)+'</div></div>';
-      h+='</div>' +
-        '<div class="card" style="margin-top:14px;border-left:4px solid var(--accent)"><b>连续博弈</b><div style="font-size:17px;margin-top:5px">我变 → 对手学 → 我再变</div><div class="muted" style="margin-top:5px">每轮记录：可观测信号 → 我方响应 → 市场反馈 → 对手实际响应 → 下一路线。对手没有被直接观察到的动作，只能作为假设，不进入“事实”栏。</div></div>' +
-        '<div class="muted" style="margin-top:12px">当前方案统一进入 Sandbox 与 Risk Controller；目标不是把每个异常都认定为攻击，而是在不确定条件下保持经营连续性并持续换路。</div></div>';
+      var playbooks=(window.EA_THREAT_PLAYBOOKS||{})[x.id]||[];
+      var inf=window.EA_THREAT_INFERENCE||{};
+      var signals=(inf.threatSignals&&inf.threatSignals[x.id])||[];
+      var vis=(inf.visibility&&inf.visibility[x.id])||{level:'未知',data:[],missing:[],alternatives:[]};
+      var h='<div class="card"><span class="tag warning">'+esc(x.id)+'</span> <span class="tag">'+esc(x.category)+'</span><h2>'+esc(x.name)+'</h2>'+
+        '<div class="label">实际能看到的信号</div><div class="notice">'+esc(x.signal)+'</div>'+
+        '<div class="label">数据可见性</div><div class="notice"><b>'+esc(vis.level)+'</b><br>可用：'+esc((vis.data||[]).join('、'))+'<br>缺失：'+esc((vis.missing||[]).join('、'))+'<br>替代解释：'+esc((vis.alternatives||[]).join('、'))+'</div>'+
+        '<div class="label">理论攻击链</div><div style="display:grid;gap:6px">';
+      for(var i=0;i<playbooks.length;i++)h+='<div class="notice"><span class="tag warning">STEP '+(i+1)+'</span> '+esc(playbooks[i])+'</div>';
+      h+='</div><div class="label">推断流程</div><div class="notice">先观察结果性信号 → 建立多个假设 → 寻找旁证 → 更新置信度 → 决定下一观察项。没有旁证时不把理论攻击链当成事实。</div>'+
+        '<div class="label">防范重点</div><div class="notice">'+esc(x.defense||'建立基线、留存证据、降低单点依赖并使用平台正常申诉/举证渠道。')+'</div></div>';
       return h;
     }
-
-    var b='<div class="card"><div class="label">潜在攻击机制 · '+list.length+'项 · 每项均包含防守 / 正攻 / 镜像反制 / 换路</div>' +
-      '<div class="muted" style="margin:6px 0 12px">选择一个攻击面后，不再只回答“对手可能怎么打”，而是直接生成：发生了什么 → 怎么防 → 怎么正向进攻 → 怎么镜像回应 → 对手学会后怎么换路。</div>' +
-      '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px">';
+    var b='<div class="card"><div class="label">潜在攻击机制 · '+list.length+'项</div><div class="muted">旧版攻击面分析保留：只展示可观测信号、数据可见性、理论攻击链与防范重点。</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px;margin-top:12px">';
     for(var i=0;i<list.length;i++){var x=list[i];b+='<button type="button" class="threat-choice" data-id="'+esc(x.id)+'" style="text-align:left;padding:10px;border:1px solid '+(selected&&x.id===selected.id?'var(--accent)':'var(--line)')+';border-radius:8px;background:transparent;color:inherit;cursor:pointer"><span class="tag warning">'+esc(x.id)+'</span> <b>'+esc(x.name)+'</b><div class="muted">'+esc(x.category)+'</div></button>';}
-    b+='</div></div>' +
-      '<div class="card"><div class="label">攻击面统一输出</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px;margin-top:8px">' +
-      '<div class="notice"><b>① 事实</b><br>只使用可观测信号</div>' +
-      '<div class="notice"><b>② 防守</b><br>隔离暴露、保护利润、证据化</div>' +
-      '<div class="notice"><b>③ 正攻</b><br>产品、内容、服务、流量、供应链</div>' +
-      '<div class="notice"><b>④ 镜像</b><br>回应竞争机制，不复制违规手段</div>' +
-      '<div class="notice"><b>⑤ 换路</b><br>压力上升就测试替代路径</div>' +
-      '<div class="notice"><b>⑥ 学习</b><br>记录对手实际响应，更新下一轮</div>' +
-      '</div></div>' +
-      '<div class="card"><div class="label">系统判断原则</div><div class="notice">先证明“发生了什么”，再讨论“为什么发生”；最后才讨论“是否存在攻击”。一次异常不足以归因。没有证据时保留多个假设，并把“下一步该观察什么”作为输出。</div></div>' +
-      '<div id="threat-detail">'+detail(selected)+'</div>';
-    show('对手攻击面','现实数据推断 → 防守 → 正向进攻 → 镜像反制 → 换路 → 连续博弈',b);
+    b+='</div></div><div id="threat-detail">'+detail(selected)+'</div>';
+    show('对手攻击面','现实数据推断：可观测信号 → 多假设 → 理论攻击链 → 防范重点',b);
     var cs=document.querySelectorAll('.threat-choice');
-    for(var j=0;j<cs.length;j++)cs[j].addEventListener('click',function(){
-      var id=this.dataset.id,found=null;for(var k=0;k<list.length;k++)if(list[k].id===id){found=list[k];break;}if(!found)return;
-      document.getElementById('threat-detail').innerHTML=detail(found);
-      var all=document.querySelectorAll('.threat-choice');for(var q=0;q<all.length;q++)all[q].style.borderColor=all[q].dataset.id===id?'var(--accent)':'var(--line)';
-      document.getElementById('threat-detail').scrollIntoView({behavior:'smooth',block:'start'});
-    });
+    for(var j=0;j<cs.length;j++)cs[j].addEventListener('click',function(){var id=this.dataset.id,found=null;for(var k=0;k<list.length;k++)if(list[k].id===id){found=list[k];break;}if(!found)return;document.getElementById('threat-detail').innerHTML=detail(found);var all=document.querySelectorAll('.threat-choice');for(var q=0;q<all.length;q++)all[q].style.borderColor=all[q].dataset.id===id?'var(--accent)':'var(--line)';});
   }
 
   function positiveAttacks() {
