@@ -1,0 +1,2203 @@
+{
+  "table": "public.sandbox_market_signals",
+  "snapshot_at": "2026-09-29",
+  "row_count": 244,
+  "rows": [
+    {
+      "id": "002935bc-413d-4b75-b796-623e40378961",
+      "name": "实际对手响应",
+      "detail": "第1轮实际响应：HOLD",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:22.861+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "002f44cd-6ecf-494d-a9a5-08b0c81ce99e",
+      "name": "竞争拥挤度",
+      "detail": "第7轮竞争拥挤度：0.41400000000000003",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:30.719+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "0066db60-b506-4096-905d-c1b1a2224df6",
+      "name": "竞争拥挤度",
+      "detail": "第3轮竞争拥挤度：0.246",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:03.289+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "00bfaca2-15dc-4ec9-95aa-e45493d5aa50",
+      "name": "边际ROI",
+      "detail": "当前边际ROI 4.464999999999999",
+      "run_id": "bb421780-db3b-474c-9e32-d4a29ec2d391",
+      "strength": "POSITIVE",
+      "created_at": "2026-09-29T11:54:49.449+00:00",
+      "signal_type": "UNIT_ECONOMICS"
+    },
+    {
+      "id": "014e4b72-5c89-49c4-b202-950c1a381fd5",
+      "name": "竞争拥挤度",
+      "detail": "第8轮竞争拥挤度：0.456",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:33.063+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "01ea7863-207a-4907-bbb6-a869047a8f1f",
+      "name": "竞争拥挤度",
+      "detail": "第8轮竞争拥挤度：0.456",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "strength": "LOW",
+      "created_at": "2026-09-29T05:45:00.902+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "0325bdbf-c9e6-4616-8c34-d2ce92bc7199",
+      "name": "竞争拥挤度",
+      "detail": "第9轮竞争拥挤度：0.498",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:33.379+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "04816ef6-a6b6-43e7-8cd4-9932b50ac73d",
+      "name": "实际对手响应",
+      "detail": "第7轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:07.995+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "04edbe0e-92be-477f-a101-4b470e26de3c",
+      "name": "实际对手响应",
+      "detail": "第8轮实际响应：HOLD",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:31.86+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "056c771d-a5a8-4d26-a708-4f6e52a595ed",
+      "name": "竞争拥挤度",
+      "detail": "第9轮竞争拥挤度：0.498",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:10.712+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "05edd2ff-b55a-4251-8839-91a9fa7bb164",
+      "name": "竞争拥挤度",
+      "detail": "第8轮竞争拥挤度：0.36",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "strength": "LOW",
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "086b1717-a889-4def-96f9-aa1b767ffdf3",
+      "name": "流量成本上升",
+      "detail": "同类广告CPC连续3个窗口上升",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "strength": "中高",
+      "created_at": "2026-09-29T00:22:26.368377+00:00",
+      "signal_type": "流量成本压力"
+    },
+    {
+      "id": "0886982c-90ba-4b9f-b307-bc4992db6544",
+      "name": "竞争拥挤度",
+      "detail": "第5轮竞争拥挤度：0.33",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "strength": "LOW",
+      "created_at": "2026-09-29T05:44:56.791+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "0ab7b474-5a9e-45e8-be1b-8f554855fd40",
+      "name": "实际对手响应",
+      "detail": "第8轮实际响应：HOLD",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T05:45:00.902+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "0b8e1047-6741-44d1-8a3e-e706e0c9ea7c",
+      "name": "实际对手响应",
+      "detail": "第8轮实际响应：HOLD",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:09.378+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "0d7e84a4-bea7-4479-bf6f-f252ba642caa",
+      "name": "实际对手响应",
+      "detail": "第1轮实际响应：HOLD",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:22.803+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "0d93180b-5587-43ff-9ab4-f34b7d0cc85f",
+      "name": "实际对手响应",
+      "detail": "第4轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:04.028+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "0f147b3b-73f1-45cd-92e7-689a64dc255b",
+      "name": "实际对手响应",
+      "detail": "第9轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:35.497+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "0f45901f-510d-4dd7-8cd4-4286fcecdc03",
+      "name": "实际对手响应",
+      "detail": "第9轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:15.355+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "0f66d15f-55e8-4925-ba82-b27d1afc9a5c",
+      "name": "实际对手响应",
+      "detail": "第7轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T05:44:59.496+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "1187c48f-5622-47a4-8798-58d4033c938d",
+      "name": "实际对手响应",
+      "detail": "第4轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:27.741+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "1227b752-7a45-4b62-a1f8-78dce7700dfa",
+      "name": "实际对手响应",
+      "detail": "第8轮实际响应：HOLD",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:33.063+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "12987a6f-15a9-48a5-8823-e8a7e5533f09",
+      "name": "实际对手响应",
+      "detail": "第5轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T05:34:17.64+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "12b3430c-6d26-4404-8420-6386e0a7e377",
+      "name": "竞争拥挤度",
+      "detail": "第6轮竞争拥挤度：0.372",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:07.265+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "163a9947-417d-4efd-bad7-4dd0866d7531",
+      "name": "竞争拥挤度",
+      "detail": "第5轮竞争拥挤度：0.33",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:05.938+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "1643959d-2bfb-4b1f-925c-73f2dbc5d110",
+      "name": "竞争拥挤度",
+      "detail": "第1轮竞争拥挤度：0.162",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:00.47+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "1645e011-7f93-48be-b0d9-624a72ba7988",
+      "name": "竞争拥挤度",
+      "detail": "第1轮竞争拥挤度：0.162",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "strength": "LOW",
+      "created_at": "2026-09-29T05:44:51.295+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "16c5b439-be2e-44f5-82b4-cd3b3945566e",
+      "name": "竞争拥挤度",
+      "detail": "第3轮竞争拥挤度：0.246",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:02.695+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "16c6946d-bb10-46a7-8f56-3a4a8a512acf",
+      "name": "竞争拥挤度",
+      "detail": "第4轮竞争拥挤度：0.28800000000000003",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:04.028+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "17051b37-647f-4f95-9f28-d8d485bc0f94",
+      "name": "竞争拥挤度",
+      "detail": "第6轮竞争拥挤度：0.372",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:06.665+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "19ae7204-7487-447a-b3bd-f3fd1362c89c",
+      "name": "竞争拥挤度",
+      "detail": "第3轮竞争拥挤度：0.246",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "strength": "LOW",
+      "created_at": "2026-09-29T05:34:14.915+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "1f125f68-0824-4047-a760-41acf7353b1b",
+      "name": "实际对手响应",
+      "detail": "第7轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:31.673+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "2027b39d-3c6d-4f0d-a23e-41aa95237878",
+      "name": "对手响应",
+      "detail": "实际响应 HOLD",
+      "run_id": "aabdc955-075a-4340-85b2-6ed2e7699032",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T11:54:56.264+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "244ac29c-137e-451c-bee3-a7dd54631b00",
+      "name": "竞争拥挤度",
+      "detail": "第3轮竞争拥挤度：0.246",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:25.413+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "24df3a3c-7ea2-4af3-9acf-a9c8d570259d",
+      "name": "竞争拥挤度",
+      "detail": "第3轮竞争拥挤度：0.246",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:02.923+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "25bdfebf-b40d-40dc-bf5e-7a7bbedc5efb",
+      "name": "竞争拥挤度",
+      "detail": "第4轮竞争拥挤度：0.28800000000000003",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:04.615+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "26fca223-00eb-48af-9cfb-7ed35d7b441e",
+      "name": "竞争拥挤度",
+      "detail": "第7轮竞争拥挤度：0.41400000000000003",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:12.668+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "27a5b628-5377-4df9-b842-53048a492d6e",
+      "name": "实际对手响应",
+      "detail": "第9轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:10.712+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "2a9d71d5-86f3-421c-a5c3-4c681ad29803",
+      "name": "实际对手响应",
+      "detail": "第9轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:34.388+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "2b5d4fbc-9243-4cdc-ad19-2f6752e71b36",
+      "name": "实际对手响应",
+      "detail": "第6轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "2ba04546-a9aa-4936-9e2e-165fa2469f4f",
+      "name": "实际对手响应",
+      "detail": "第1轮实际响应：HOLD",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T05:34:12.082+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "2c0f7ac6-9ee2-44e7-87cb-ee21098726ce",
+      "name": "竞争拥挤度",
+      "detail": "第6轮竞争拥挤度：0.28",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "strength": "LOW",
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "2d7c6e4a-a680-4f4b-9c49-8c79c96e111b",
+      "name": "竞争拥挤度",
+      "detail": "第4轮竞争拥挤度：0.28800000000000003",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:04.333+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "2f1f7806-22c0-4353-98c5-9cca7bba9c2c",
+      "name": "实际对手响应",
+      "detail": "第2轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:24.102+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "2fd0491d-95d7-474c-a5ea-8947117a7988",
+      "name": "实际对手响应",
+      "detail": "第3轮实际响应：HOLD",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:25.481+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "33f88bf7-c5f1-48b5-8dcf-2eb6a1b38344",
+      "name": "实际对手响应",
+      "detail": "第10轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:34.516+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "3653491f-6d66-438a-b0a6-3c727b7c0687",
+      "name": "竞争拥挤度",
+      "detail": "第8轮竞争拥挤度：0.456",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "strength": "LOW",
+      "created_at": "2026-09-29T05:34:21.769+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "36655bd8-902c-448e-82cb-b84237dbf9ff",
+      "name": "竞争拥挤度",
+      "detail": "第1轮竞争拥挤度：0.12",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "strength": "LOW",
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "36ed9c03-a996-4b4c-92f6-8539bd713479",
+      "name": "竞争拥挤度",
+      "detail": "第5轮竞争拥挤度：0.33",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:29.962+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "3c3e48db-5d6a-4f04-be4c-762e031280c3",
+      "name": "实际对手响应",
+      "detail": "第4轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T05:34:16.262+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "3d4f2805-2ee6-496e-b650-e0ee8755926a",
+      "name": "实际对手响应",
+      "detail": "第1轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "3ee60832-b258-492f-b943-4037ab2a4abc",
+      "name": "实际对手响应",
+      "detail": "第7轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:08.568+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "3f6a23ba-6aa6-4f45-a1f8-0e7ae74320f8",
+      "name": "对手响应",
+      "detail": "实际响应 HOLD",
+      "run_id": "df232131-8d9f-42bf-9f73-1e0a9c80667e",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T11:54:50.018+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "3fbb1aeb-c882-45af-8fee-c82da5f1ef7f",
+      "name": "实际对手响应",
+      "detail": "第6轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T05:34:19.067+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "43f9bdaf-94c3-4417-8fe7-743deff1a78f",
+      "name": "实际对手响应",
+      "detail": "第1轮实际响应：HOLD",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:23.794+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "4504e1ce-6993-46d2-8ccb-991cb5c1d85d",
+      "name": "竞争拥挤度",
+      "detail": "第1轮竞争拥挤度：0.162",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:22.803+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "478dd76c-3ede-4024-9ba3-7432a5c53b5d",
+      "name": "实际对手响应",
+      "detail": "第8轮实际响应：HOLD",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:32.066+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "47fc4652-46cd-4f53-b575-bbe0aadf829a",
+      "name": "实际对手响应",
+      "detail": "第7轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T05:34:20.423+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "490b3ee5-13b9-4da2-bba6-6450bb7e3ddc",
+      "name": "实际对手响应",
+      "detail": "第1轮实际响应：HOLD",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:24.34+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "4929952e-e25d-438e-a6e1-416f0b98f60f",
+      "name": "实际对手响应",
+      "detail": "第9轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:33.379+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "4a5251f2-d6ef-4ebc-a212-6ff49b8623c5",
+      "name": "竞争拥挤度",
+      "detail": "当前竞争拥挤度 0.162",
+      "run_id": "9e69d947-915f-4689-adb2-01eb0c40a7d0",
+      "strength": "LOW",
+      "created_at": "2026-09-29T10:08:33.2+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "4ba82bad-5cc6-49a0-9770-b08e9f86c357",
+      "name": "竞争拥挤度",
+      "detail": "第10轮竞争拥挤度：0.54",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "strength": "MEDIUM",
+      "created_at": "2026-09-29T05:45:03.61+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "4ca08f86-26a6-4fdd-8827-a2c891b2ef68",
+      "name": "竞争拥挤度",
+      "detail": "第7轮竞争拥挤度：0.41400000000000003",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:08.413+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "4cdebfce-2f5d-416f-bf09-8bed1c916506",
+      "name": "竞争拥挤度",
+      "detail": "当前竞争拥挤度 0.162",
+      "run_id": "91f55ab5-b3b9-4bc2-9d64-9bf384acaae7",
+      "strength": "LOW",
+      "created_at": "2026-09-29T10:08:33.198+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "4ce5ec74-635f-410d-8720-8ef783279206",
+      "name": "竞争拥挤度",
+      "detail": "第5轮竞争拥挤度：0.33",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:29.063+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "4d726e2f-299f-48f1-9eb1-50ef5841246e",
+      "name": "竞争拥挤度",
+      "detail": "第6轮竞争拥挤度：0.372",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "strength": "LOW",
+      "created_at": "2026-09-29T05:44:58.133+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "4d96d0d0-5e70-49b5-bc81-4fade3de72b4",
+      "name": "实际对手响应",
+      "detail": "第10轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:35.718+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "4f6884c0-2290-46a7-95ef-fbf1251f8e6a",
+      "name": "实际对手响应",
+      "detail": "第3轮实际响应：RAISE_BID",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "4f7c41b9-b98b-4b47-841b-c9f1793e9a81",
+      "name": "实际对手响应",
+      "detail": "第2轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:25.109+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "4ff9ff34-77b0-4832-b6bf-0c5d56cce753",
+      "name": "竞争拥挤度",
+      "detail": "第9轮竞争拥挤度：0.498",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:11.197+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "50bb2735-9df6-46d3-a86c-0e0994a4bc94",
+      "name": "实际对手响应",
+      "detail": "第7轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:30.719+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "52155509-db7d-424a-8309-1d95b196b416",
+      "name": "实际对手响应",
+      "detail": "第10轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "5345a099-4689-438a-9653-55c2b4e5c006",
+      "name": "对手响应",
+      "detail": "实际响应 HOLD",
+      "run_id": "9e69d947-915f-4689-adb2-01eb0c40a7d0",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T10:08:33.2+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "537d8d56-c422-4c4e-8b26-b3d6b0e5283b",
+      "name": "竞争拥挤度",
+      "detail": "第10轮竞争拥挤度：0.54",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "strength": "MEDIUM",
+      "created_at": "2026-09-29T06:32:35.718+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "5422f926-738a-4348-9c27-a6b47e26f1ad",
+      "name": "竞争拥挤度",
+      "detail": "第7轮竞争拥挤度：0.41400000000000003",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:08.568+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "54bf62dd-3ff5-4e7e-be25-fdc3741e7d04",
+      "name": "竞争拥挤度",
+      "detail": "第8轮竞争拥挤度：0.456",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:09.881+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "54f00767-03cd-4344-8d78-6a52b2d1893c",
+      "name": "实际对手响应",
+      "detail": "第2轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T05:34:13.544+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "5529bf3f-bc8d-4393-8f85-a1f1507e5246",
+      "name": "竞争拥挤度",
+      "detail": "第2轮竞争拥挤度：0.20400000000000001",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "strength": "LOW",
+      "created_at": "2026-09-29T05:34:13.544+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "552f873e-8add-4f91-b38c-75b1236f007a",
+      "name": "实际对手响应",
+      "detail": "第3轮实际响应：HOLD",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:07.239+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "5546e4c0-9454-4737-b272-287845434433",
+      "name": "竞争拥挤度",
+      "detail": "第5轮竞争拥挤度：0.33",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:27.998+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "564bf6ff-b47b-4e1b-8d28-4ec9fdad6e5d",
+      "name": "实际对手响应",
+      "detail": "第6轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:30.369+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "568cb8e9-6802-4987-989d-615ad281676f",
+      "name": "竞争拥挤度",
+      "detail": "第6轮竞争拥挤度：0.372",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:31.329+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "574e6fc9-dd70-4877-8bfa-8619db67e15f",
+      "name": "实际对手响应",
+      "detail": "第8轮实际响应：HOLD",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T05:34:21.769+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "57e580d7-da2c-4e81-ba3f-8f508833d70a",
+      "name": "竞争拥挤度",
+      "detail": "第6轮竞争拥挤度：0.372",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:07.067+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "5e17bf09-34c1-4bd4-b806-146da299c2b7",
+      "name": "实际对手响应",
+      "detail": "第2轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:24.173+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "5ece99e6-15aa-4766-b0c9-431df79fbb30",
+      "name": "实际对手响应",
+      "detail": "第1轮实际响应：HOLD",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:00.47+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "5f3bfe10-5472-4395-92bd-1eb3f5284ecc",
+      "name": "实际对手响应",
+      "detail": "第2轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T05:44:52.689+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "5fb07bcd-5d62-4fc4-8f53-151a95549d16",
+      "name": "实际对手响应",
+      "detail": "第4轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:04.615+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "5fb2b38e-8a04-412d-a77a-d0b5e69ae4f4",
+      "name": "实际对手响应",
+      "detail": "第5轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:05.352+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "60c438a5-b5ea-4f9a-ae12-d55896174f8a",
+      "name": "竞争拥挤度",
+      "detail": "第7轮竞争拥挤度：0.39",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "strength": "LOW",
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "60faf182-79ec-4754-8fc3-62f1770b96cb",
+      "name": "实际对手响应",
+      "detail": "第10轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:16.678+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "6191100b-ec65-45d1-8fa6-8f3e00cef9b2",
+      "name": "竞争拥挤度",
+      "detail": "第10轮竞争拥挤度：0.54",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "strength": "MEDIUM",
+      "created_at": "2026-09-29T06:24:12.058+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "64a5b0b9-83fd-433e-98e0-ad0ed4b016fb",
+      "name": "实际对手响应",
+      "detail": "第4轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:08.569+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "6553eab2-209c-4a1e-b685-4b1c9ff4eb07",
+      "name": "实际对手响应",
+      "detail": "第9轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:33.159+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "66823ae1-6a07-4592-b40a-674af5bf5a95",
+      "name": "竞争拥挤度",
+      "detail": "第10轮竞争拥挤度：0.54",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "strength": "MEDIUM",
+      "created_at": "2026-09-29T06:24:12.676+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "669b535c-8bf8-4113-af78-4c9a7778a89a",
+      "name": "实际对手响应",
+      "detail": "第6轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:29.295+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "67ae9478-f923-48a4-8961-a083617ed44d",
+      "name": "竞争拥挤度",
+      "detail": "当前竞争拥挤度 0.162",
+      "run_id": "24e513b7-263f-436f-b5f7-5253bba48aeb",
+      "strength": "LOW",
+      "created_at": "2026-09-29T11:54:50.625+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "67f89ba7-174c-40c6-a022-5169bd1bac11",
+      "name": "实际对手响应",
+      "detail": "第4轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T05:44:55.45+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "684d2433-b011-4ab5-9d35-0d545ca0a486",
+      "name": "实际对手响应",
+      "detail": "第5轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:09.937+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "6ace5b4d-3a54-421f-ab9b-bc3504c7a462",
+      "name": "竞争拥挤度",
+      "detail": "第8轮竞争拥挤度：0.456",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:09.887+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "6c2c003b-dbc0-407a-9dff-da3e3ae4c1eb",
+      "name": "实际对手响应",
+      "detail": "第1轮实际响应：HOLD",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:04.521+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "6cabb364-89a7-4a97-ac53-0350c38def34",
+      "name": "竞争拥挤度",
+      "detail": "第1轮竞争拥挤度：0.162",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:23.794+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "6cd6fd2a-7e7b-4fef-9f22-279924fddab5",
+      "name": "实际对手响应",
+      "detail": "第3轮实际响应：HOLD",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:03.289+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "6ce9f211-cc33-491b-bd33-eb1e68239ac6",
+      "name": "竞争拥挤度",
+      "detail": "第7轮竞争拥挤度：0.41400000000000003",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:30.578+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "6d480985-80aa-46c1-a7bf-2832ea61426e",
+      "name": "竞争拥挤度",
+      "detail": "第5轮竞争拥挤度：0.33",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:05.724+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "6dd52de0-d26c-4795-a1ed-cc9fb0bd5b07",
+      "name": "对手响应",
+      "detail": "实际响应 HOLD",
+      "run_id": "082ed97e-9e8f-4d1d-b683-bb64bf88d58f",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T11:54:55.635+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "6e6dc620-84b9-4838-b5f6-57a76c4f63f3",
+      "name": "实际对手响应",
+      "detail": "第4轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:28.615+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "705d2a3a-a75f-4817-9aca-b88b1feab1f3",
+      "name": "实际对手响应",
+      "detail": "第3轮实际响应：HOLD",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:02.695+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "70854612-e307-4d0f-a576-8743514859cf",
+      "name": "竞争拥挤度",
+      "detail": "第10轮竞争拥挤度：0.54",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "strength": "MEDIUM",
+      "created_at": "2026-09-29T06:24:16.678+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "72e92274-ed17-421a-948c-21fec8d4adbc",
+      "name": "实际对手响应",
+      "detail": "第5轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:05.724+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "7309845d-0a92-43a6-99bc-f30ac977e36c",
+      "name": "竞品降价",
+      "detail": "竞品价格下降约6%，正常预期会压低我方转化",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "strength": "高",
+      "created_at": "2026-09-29T00:22:26.368377+00:00",
+      "signal_type": "价格压力"
+    },
+    {
+      "id": "747e34df-5fca-4657-971c-afa2661a95de",
+      "name": "竞争拥挤度",
+      "detail": "第1轮竞争拥挤度：0.162",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:22.861+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "74fe34bb-4fc6-4cdd-bb82-cf8cc48ca6ff",
+      "name": "竞争拥挤度",
+      "detail": "第2轮竞争拥挤度：0.20400000000000001",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:01.53+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "75a0c8e4-6f2d-4d34-9fce-211961f73c20",
+      "name": "实际对手响应",
+      "detail": "第3轮实际响应：HOLD",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:27.201+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "75bb8d78-6cc6-466a-bf3e-f1b67fb7fbed",
+      "name": "实际对手响应",
+      "detail": "第10轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:12.058+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "766f1ab6-7147-452e-b454-12bf687fbcdb",
+      "name": "竞争拥挤度",
+      "detail": "第2轮竞争拥挤度：0.20400000000000001",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "strength": "LOW",
+      "created_at": "2026-09-29T05:44:52.689+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "77231ff7-8f58-4738-8ff4-6ac1a56183b7",
+      "name": "竞争拥挤度",
+      "detail": "第9轮竞争拥挤度：0.498",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:33.159+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "776b8f71-4229-41fa-b08b-56a86af6b4fa",
+      "name": "竞争拥挤度",
+      "detail": "第4轮竞争拥挤度：0.28800000000000003",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:27.741+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "77b9327b-185b-4309-b305-f4d261cf48e0",
+      "name": "竞争拥挤度",
+      "detail": "第9轮竞争拥挤度：0.58",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "strength": "MEDIUM",
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "7860519f-f363-47c0-b158-b90c8706ec59",
+      "name": "竞争拥挤度",
+      "detail": "当前竞争拥挤度 0.162",
+      "run_id": "082ed97e-9e8f-4d1d-b683-bb64bf88d58f",
+      "strength": "LOW",
+      "created_at": "2026-09-29T11:54:55.635+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "7ac4a7dc-8b86-4c9d-a813-2de617ba1fa0",
+      "name": "实际对手响应",
+      "detail": "第8轮实际响应：HOLD",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:34.125+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "7c748616-c38c-4f67-aaaa-74beb4c8dbfa",
+      "name": "边际ROI",
+      "detail": "当前边际ROI 4.464999999999999",
+      "run_id": "082ed97e-9e8f-4d1d-b683-bb64bf88d58f",
+      "strength": "POSITIVE",
+      "created_at": "2026-09-29T11:54:55.635+00:00",
+      "signal_type": "UNIT_ECONOMICS"
+    },
+    {
+      "id": "7d24dc8e-635d-40b1-b744-9700ffb83ab6",
+      "name": "实际对手响应",
+      "detail": "第9轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:11.262+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "7de9e9e9-a114-4bd3-87ff-e1b009d2abb8",
+      "name": "实际对手响应",
+      "detail": "第6轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:31.329+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "7e58d5dd-2316-4f72-aa00-20c9eba137ec",
+      "name": "实际对手响应",
+      "detail": "第5轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:29.063+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "7fe9490e-eb30-4fa1-b88c-4f08a9dd0806",
+      "name": "竞争拥挤度",
+      "detail": "第4轮竞争拥挤度：0.28800000000000003",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:26.695+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "80417f3e-1b17-4fb5-af5c-9eda24c6227c",
+      "name": "竞争拥挤度",
+      "detail": "第3轮竞争拥挤度：0.24",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "strength": "LOW",
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "80bb6cc0-e2a1-472b-8817-e59ac8907795",
+      "name": "实际对手响应",
+      "detail": "第1轮实际响应：HOLD",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:00.151+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "8180908d-f568-4b13-9acc-50b740ba3c53",
+      "name": "实际对手响应",
+      "detail": "第10轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T05:34:24.451+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "82fb0754-b88d-4500-876e-da255ac9dc3a",
+      "name": "竞争拥挤度",
+      "detail": "第2轮竞争拥挤度：0.20400000000000001",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:05.885+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "833bbc48-9ad3-40aa-a705-3a8ebf270291",
+      "name": "实际对手响应",
+      "detail": "第2轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "83783f92-15bc-4ff6-97b0-e72ef121797f",
+      "name": "竞争拥挤度",
+      "detail": "第5轮竞争拥挤度：0.33",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:05.352+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "84429d74-c315-4114-b5d8-ba9ee9050bd1",
+      "name": "实际对手响应",
+      "detail": "第4轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:26.795+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "84aee648-53e3-4956-8909-f3e71af845eb",
+      "name": "边际ROI",
+      "detail": "当前边际ROI 4.464999999999999",
+      "run_id": "9e69d947-915f-4689-adb2-01eb0c40a7d0",
+      "strength": "POSITIVE",
+      "created_at": "2026-09-29T10:08:33.2+00:00",
+      "signal_type": "UNIT_ECONOMICS"
+    },
+    {
+      "id": "873b32ff-0888-49bb-b795-bfe633652db7",
+      "name": "竞争拥挤度",
+      "detail": "第10轮竞争拥挤度：0.54",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "strength": "MEDIUM",
+      "created_at": "2026-09-29T05:34:24.451+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "889d5344-f8f8-43cd-b5df-1c6001b8c7c1",
+      "name": "对手响应",
+      "detail": "实际响应 HOLD",
+      "run_id": "24e513b7-263f-436f-b5f7-5253bba48aeb",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T11:54:50.625+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "8b04c3c2-f233-4ac5-a057-f4290f3cdfb3",
+      "name": "实际对手响应",
+      "detail": "第10轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:34.677+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "8cc2aca9-8244-4ee0-926b-c6ad1a3ca27d",
+      "name": "实际对手响应",
+      "detail": "第4轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:04.333+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "8cceb944-7522-4c56-b321-2802bab58fbf",
+      "name": "实际对手响应",
+      "detail": "第8轮实际响应：HOLD",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:09.887+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "8de3eabf-ce97-49bd-bb4e-7348cafeb702",
+      "name": "实际对手响应",
+      "detail": "第5轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T05:44:56.791+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "90099dc9-46d6-4a0a-be5e-ce4da22249dc",
+      "name": "竞争拥挤度",
+      "detail": "第6轮竞争拥挤度：0.372",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:30.369+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "90cc1244-1038-4422-b319-adff53e89b46",
+      "name": "实际对手响应",
+      "detail": "第5轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:27.998+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "90f758eb-8e3e-45fb-bd90-558b6aae9f18",
+      "name": "竞争拥挤度",
+      "detail": "当前竞争拥挤度 0.162",
+      "run_id": "bb421780-db3b-474c-9e32-d4a29ec2d391",
+      "strength": "LOW",
+      "created_at": "2026-09-29T11:54:49.449+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "9101f005-d6f9-4b1c-9fa6-806ab74c4966",
+      "name": "实际对手响应",
+      "detail": "第3轮实际响应：HOLD",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T05:44:54.087+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "91bd131f-ad80-4195-8b0f-a164020aaa27",
+      "name": "竞争拥挤度",
+      "detail": "第8轮竞争拥挤度：0.456",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:34.125+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "93632cad-d03f-48a3-aa75-a0b2bbd3d7eb",
+      "name": "实际对手响应",
+      "detail": "第9轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:11.197+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "95dd7db4-6493-4d08-a1bb-f55f58287fd9",
+      "name": "实际对手响应",
+      "detail": "第9轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T05:45:02.279+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "96188f10-d71f-4233-8b6e-47e1c435b5cb",
+      "name": "边际ROI",
+      "detail": "当前边际ROI 4.464999999999999",
+      "run_id": "df232131-8d9f-42bf-9f73-1e0a9c80667e",
+      "strength": "POSITIVE",
+      "created_at": "2026-09-29T11:54:50.018+00:00",
+      "signal_type": "UNIT_ECONOMICS"
+    },
+    {
+      "id": "968fcc8f-065b-4998-a258-a26d4833c1cf",
+      "name": "实际对手响应",
+      "detail": "第5轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:05.938+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "96a61fa3-e553-461c-a2c1-7d9b676d159a",
+      "name": "竞争拥挤度",
+      "detail": "第5轮竞争拥挤度：0.33",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:28.099+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "98eedb2d-9407-42b5-8777-864e36d59829",
+      "name": "竞争拥挤度",
+      "detail": "第1轮竞争拥挤度：0.162",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "strength": "LOW",
+      "created_at": "2026-09-29T05:34:12.082+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "995af95f-e1f7-40c3-925b-f1c4c6a7b7f7",
+      "name": "实际对手响应",
+      "detail": "第5轮实际响应：MATCH_PRICE",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "9964940c-ea4a-4942-ae5e-e83ce4caddbd",
+      "name": "竞争拥挤度",
+      "detail": "第9轮竞争拥挤度：0.498",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "strength": "LOW",
+      "created_at": "2026-09-29T05:45:02.279+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "9ce84116-f8f4-4039-bdbe-caa4c850e31c",
+      "name": "竞争拥挤度",
+      "detail": "第5轮竞争拥挤度：0.33",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:09.937+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "9d2705e9-4814-4027-ba95-7f6e2a94e7d6",
+      "name": "实际对手响应",
+      "detail": "第4轮实际响应：HOLD",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "9f211e45-ad88-4285-be17-2acd9ff277c7",
+      "name": "竞争拥挤度",
+      "detail": "第4轮竞争拥挤度：0.28800000000000003",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:08.569+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "a0e258c5-a8ae-4c21-9012-d37ca1375de3",
+      "name": "竞争拥挤度",
+      "detail": "第5轮竞争拥挤度：0.33",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "strength": "LOW",
+      "created_at": "2026-09-29T05:34:17.64+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "a14fc7a9-d094-4a7c-96ab-a5328b247896",
+      "name": "实际对手响应",
+      "detail": "第3轮实际响应：HOLD",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:26.417+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "a2ead8ef-cacf-42c5-8ee8-a3237dd76580",
+      "name": "竞争拥挤度",
+      "detail": "第6轮竞争拥挤度：0.372",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:11.268+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "a6526adb-6480-475b-ab3b-1f6a7a44ba72",
+      "name": "实际对手响应",
+      "detail": "第6轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T05:44:58.133+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "a829bd20-27c7-4a96-9743-b6774a628e0f",
+      "name": "竞争拥挤度",
+      "detail": "第6轮竞争拥挤度：0.372",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "strength": "LOW",
+      "created_at": "2026-09-29T05:34:19.067+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "a97eae79-51e5-46c1-9efe-d4f03413144f",
+      "name": "实际对手响应",
+      "detail": "第10轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:36.832+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "ac8f40f2-9dea-4883-995e-7c102dc373c9",
+      "name": "竞争拥挤度",
+      "detail": "第9轮竞争拥挤度：0.498",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:35.497+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "acb54ccc-e3ae-49f5-9d96-1959f75cd06e",
+      "name": "实际对手响应",
+      "detail": "第3轮实际响应：HOLD",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:25.413+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "ae001b44-028e-423f-9fcc-e9d471d2b000",
+      "name": "竞争拥挤度",
+      "detail": "第2轮竞争拥挤度：0.20400000000000001",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:24.173+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "ae2109ae-4a93-4bbb-93b9-269f1ed95c00",
+      "name": "竞争拥挤度",
+      "detail": "第2轮竞争拥挤度：0.16",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "strength": "LOW",
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "aef66409-2b3c-4973-941d-6ddad2d49f5f",
+      "name": "竞争拥挤度",
+      "detail": "第6轮竞争拥挤度：0.372",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:29.411+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "b1b5147f-92d8-416b-beea-21b47ac8a5e0",
+      "name": "竞争拥挤度",
+      "detail": "第3轮竞争拥挤度：0.246",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:25.481+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "b1cf6b38-9926-4958-9829-6396b38116f9",
+      "name": "竞争拥挤度",
+      "detail": "第10轮竞争拥挤度：0.54",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "strength": "MEDIUM",
+      "created_at": "2026-09-29T06:32:34.516+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "b4c58913-13da-40b8-a385-b9d9dcfc13bd",
+      "name": "实际对手响应",
+      "detail": "第5轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:28.099+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "b7ede0c5-1021-4d93-914d-0948536618b8",
+      "name": "竞争拥挤度",
+      "detail": "第2轮竞争拥挤度：0.20400000000000001",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:25.109+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "b82923dc-f68c-40c1-9875-df67482c5114",
+      "name": "实际对手响应",
+      "detail": "第1轮实际响应：HOLD",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T05:44:51.295+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "b8c46368-d7a8-40ba-a95b-4ee55d4d5748",
+      "name": "竞争拥挤度",
+      "detail": "第4轮竞争拥挤度：0.28800000000000003",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:26.795+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "b8e6326a-faa0-4bac-92d7-2dc41d8f43c8",
+      "name": "实际对手响应",
+      "detail": "第10轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T05:45:03.61+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "b955f273-4246-4b1e-a498-dba63f6acd88",
+      "name": "实际对手响应",
+      "detail": "第10轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:12.676+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "b9e5ca8f-69b0-4e3e-801b-6cdca0a97c01",
+      "name": "竞争拥挤度",
+      "detail": "第9轮竞争拥挤度：0.498",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:11.262+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "b9fa4add-f6d5-4c2f-816c-4e3c37e5c98f",
+      "name": "竞争拥挤度",
+      "detail": "第10轮竞争拥挤度：0.54",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "strength": "MEDIUM",
+      "created_at": "2026-09-29T06:24:12.532+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "ba482086-dc62-4a7a-8319-28b8a1740327",
+      "name": "竞争拥挤度",
+      "detail": "第8轮竞争拥挤度：0.456",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:32.066+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "bb3f3314-02fb-4c23-aabd-509f486ffd50",
+      "name": "边际ROI",
+      "detail": "当前边际ROI 4.464999999999999",
+      "run_id": "aabdc955-075a-4340-85b2-6ed2e7699032",
+      "strength": "POSITIVE",
+      "created_at": "2026-09-29T11:54:56.264+00:00",
+      "signal_type": "UNIT_ECONOMICS"
+    },
+    {
+      "id": "bbf2e2ed-d84c-49b1-8cc0-a0835cd56e2d",
+      "name": "竞争拥挤度",
+      "detail": "第5轮竞争拥挤度：0.3",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "strength": "LOW",
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "c01c5714-8d4a-43ba-9e0f-090ede4114ce",
+      "name": "实际对手响应",
+      "detail": "第7轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:32.705+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "c1207d0b-b611-4117-a423-3b4127580e69",
+      "name": "竞争拥挤度",
+      "detail": "第10轮竞争拥挤度：0.31",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "strength": "LOW",
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "c6f18371-cfd7-471c-a3b5-a2be9a64d661",
+      "name": "竞争拥挤度",
+      "detail": "第7轮竞争拥挤度：0.41400000000000003",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:31.673+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "c7fd46d3-ebd1-48d0-b49c-ba6992a6e657",
+      "name": "实际对手响应",
+      "detail": "第6轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:07.067+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "c870bb2c-e32b-4e8c-b049-27e0585caf43",
+      "name": "对手响应",
+      "detail": "实际响应 HOLD",
+      "run_id": "91f55ab5-b3b9-4bc2-9d64-9bf384acaae7",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T10:08:33.198+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "c88863f0-26fa-4133-8af6-5d10a7f3b53a",
+      "name": "竞争拥挤度",
+      "detail": "第9轮竞争拥挤度：0.498",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:15.355+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "c9db94ec-f852-4641-8fbb-10d69e0170a9",
+      "name": "实际对手响应",
+      "detail": "第2轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:05.885+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "ca768094-79b7-4060-ab23-b3f706d20901",
+      "name": "竞争拥挤度",
+      "detail": "第7轮竞争拥挤度：0.41400000000000003",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:07.995+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "cac5ff54-24c2-430a-bab4-c51d317e964f",
+      "name": "竞争拥挤度",
+      "detail": "第10轮竞争拥挤度：0.54",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "strength": "MEDIUM",
+      "created_at": "2026-09-29T06:32:34.677+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "ccb49c02-92d7-403e-826d-92d34485d2ec",
+      "name": "竞争拥挤度",
+      "detail": "第3轮竞争拥挤度：0.246",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "strength": "LOW",
+      "created_at": "2026-09-29T05:44:54.087+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "cdab2597-f1d1-4436-b73a-0c6edf6cef6a",
+      "name": "竞争拥挤度",
+      "detail": "第2轮竞争拥挤度：0.20400000000000001",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:24.102+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "cdb1b3b7-7aa3-4361-9f94-fd0e5053b962",
+      "name": "实际对手响应",
+      "detail": "第4轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:26.695+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "cf9904b8-f807-43cc-9047-bf7bdc4d0de4",
+      "name": "实际对手响应",
+      "detail": "第10轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:12.532+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "d18050b3-0f7b-4376-bae7-8cf093c2b8ac",
+      "name": "实际对手响应",
+      "detail": "第7轮实际响应：RAISE_BID",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "d2abb713-21ff-4250-a3cb-61a18c554b56",
+      "name": "竞争拥挤度",
+      "detail": "第9轮竞争拥挤度：0.498",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:34.388+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "d390704e-0e1e-489b-aa68-ceb72439d1c8",
+      "name": "竞争拥挤度",
+      "detail": "第1轮竞争拥挤度：0.162",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:00.151+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "d6da6330-4232-417b-a81a-3eaca44fefb5",
+      "name": "竞争拥挤度",
+      "detail": "第9轮竞争拥挤度：0.498",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "strength": "LOW",
+      "created_at": "2026-09-29T05:34:23.104+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "d75bb7f5-9dc4-430f-9208-4f6a6710621f",
+      "name": "实际对手响应",
+      "detail": "第2轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:01.95+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "d77a695c-f211-4296-9d5a-b9bff11199fc",
+      "name": "竞争拥挤度",
+      "detail": "第1轮竞争拥挤度：0.162",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:23:59.496+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "da1467cc-d05f-4152-94da-430ae8fd3f97",
+      "name": "实际对手响应",
+      "detail": "第8轮实际响应：HOLD",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "dccabf91-db74-456a-9a29-ee77bdae7aa0",
+      "name": "实际对手响应",
+      "detail": "第7轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:12.668+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "dd5fa948-2935-4d02-a733-9c965bd91520",
+      "name": "竞争拥挤度",
+      "detail": "第3轮竞争拥挤度：0.246",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:27.201+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "dd825adb-e981-422f-abd3-4f4d33f5d343",
+      "name": "竞争拥挤度",
+      "detail": "第4轮竞争拥挤度：0.27",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "strength": "LOW",
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "dde4cfc9-d2ad-455d-9840-35e29d36b3f6",
+      "name": "竞争拥挤度",
+      "detail": "第4轮竞争拥挤度：0.28800000000000003",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "strength": "LOW",
+      "created_at": "2026-09-29T05:34:16.262+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "de24a27b-e02d-4059-884a-165e3a75134f",
+      "name": "竞争拥挤度",
+      "detail": "第7轮竞争拥挤度：0.41400000000000003",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:32.705+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "dfce0f83-bcb4-4ac3-ab75-74f801e2b0cf",
+      "name": "实际对手响应",
+      "detail": "第2轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:01.53+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "dfe22f7b-71f2-4228-ae49-ade2619b4937",
+      "name": "竞争拥挤度",
+      "detail": "第8轮竞争拥挤度：0.456",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:09.378+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "e0447fc8-1299-4e3e-9094-b20021cee179",
+      "name": "实际对手响应",
+      "detail": "第5轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:29.962+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "e0c1cd7c-7473-465c-8c94-ff4075b004ad",
+      "name": "实际对手响应",
+      "detail": "第6轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:11.268+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "e131df60-5e30-4459-aa6a-3558e3424fd2",
+      "name": "竞争拥挤度",
+      "detail": "第2轮竞争拥挤度：0.20400000000000001",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:01.95+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "e1979a3a-0463-4d7e-91bd-3a7eed70c531",
+      "name": "实际对手响应",
+      "detail": "第2轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:00.89+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "e231f245-4582-467d-9c19-2c832bf1d17a",
+      "name": "实际对手响应",
+      "detail": "第8轮实际响应：HOLD",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:09.881+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "e3316278-0a03-4311-bd53-e0b21c54ee7b",
+      "name": "竞争拥挤度",
+      "detail": "第7轮竞争拥挤度：0.41400000000000003",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "strength": "LOW",
+      "created_at": "2026-09-29T05:44:59.496+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "e5352330-4e6b-45f0-8ea2-2a957233dca5",
+      "name": "对手响应",
+      "detail": "实际响应 HOLD",
+      "run_id": "bb421780-db3b-474c-9e32-d4a29ec2d391",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T11:54:49.449+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "e6c47830-ce60-46b7-8bc4-452d6a688c53",
+      "name": "实际对手响应",
+      "detail": "第8轮实际响应：HOLD",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:14.005+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "e6c4adaa-5acc-4ae5-9f97-3e76a6328805",
+      "name": "边际ROI",
+      "detail": "当前边际ROI 4.464999999999999",
+      "run_id": "24e513b7-263f-436f-b5f7-5253bba48aeb",
+      "strength": "POSITIVE",
+      "created_at": "2026-09-29T11:54:50.625+00:00",
+      "signal_type": "UNIT_ECONOMICS"
+    },
+    {
+      "id": "e79f46f7-c4d0-46a3-b512-3d6a92e10c02",
+      "name": "竞争拥挤度",
+      "detail": "第8轮竞争拥挤度：0.456",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:14.005+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "e7ab5f39-c78b-4ebf-90be-29da40e8d580",
+      "name": "竞争拥挤度",
+      "detail": "第8轮竞争拥挤度：0.456",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:31.86+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "e7e8072f-aeb0-4b23-bec7-b34b937fff13",
+      "name": "竞争拥挤度",
+      "detail": "第3轮竞争拥挤度：0.246",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:07.239+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "e7e82bca-3245-4c8d-901a-aaa75acf22a5",
+      "name": "竞争拥挤度",
+      "detail": "第1轮竞争拥挤度：0.162",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:04.521+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "e870d069-ce9d-4d62-83fc-47676c0b5ec0",
+      "name": "竞争拥挤度",
+      "detail": "第4轮竞争拥挤度：0.28800000000000003",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "strength": "LOW",
+      "created_at": "2026-09-29T05:44:55.45+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "e9ef0ba2-566f-45d8-a21a-39445d5974a9",
+      "name": "竞争拥挤度",
+      "detail": "第7轮竞争拥挤度：0.41400000000000003",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "strength": "LOW",
+      "created_at": "2026-09-29T05:34:20.423+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "eae7fe5d-8d59-4d35-9f7f-47becc6dc1fd",
+      "name": "竞争拥挤度",
+      "detail": "当前竞争拥挤度 0.162",
+      "run_id": "aabdc955-075a-4340-85b2-6ed2e7699032",
+      "strength": "LOW",
+      "created_at": "2026-09-29T11:54:56.264+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "eb36172b-073d-478a-b093-ea1db295acdf",
+      "name": "实际对手响应",
+      "detail": "第6轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:07.265+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "eb9c0e75-10d6-4c34-b304-692492e9df27",
+      "name": "竞争拥挤度",
+      "detail": "第10轮竞争拥挤度：0.54",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "strength": "MEDIUM",
+      "created_at": "2026-09-29T06:32:36.832+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "ebb14f42-b4a9-4676-9731-b8c41e2c0827",
+      "name": "实际对手响应",
+      "detail": "第1轮实际响应：HOLD",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:23:59.496+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "ec71ed2c-7e1d-4738-8151-89f8066d0343",
+      "name": "实际对手响应",
+      "detail": "第6轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:29.411+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "eca11db5-9a7c-4392-8ecf-61e010d215ed",
+      "name": "实际对手响应",
+      "detail": "第9轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T05:34:23.104+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "ed2338a4-eb38-4f50-bcf5-a14779db1c1f",
+      "name": "竞争拥挤度",
+      "detail": "第6轮竞争拥挤度：0.372",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:29.295+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "ee3ebb1e-ab36-4fc8-b745-811124079d5e",
+      "name": "竞争拥挤度",
+      "detail": "当前竞争拥挤度 0.162",
+      "run_id": "df232131-8d9f-42bf-9f73-1e0a9c80667e",
+      "strength": "LOW",
+      "created_at": "2026-09-29T11:54:50.018+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "ef81c82b-63b8-41cc-adf1-3ec6979891b7",
+      "name": "竞争拥挤度",
+      "detail": "第2轮竞争拥挤度：0.20400000000000001",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:24:00.89+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "f1558167-6d7b-48c5-b402-94981260803f",
+      "name": "实际对手响应",
+      "detail": "第7轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:30.578+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "f17e7e8c-ab2e-4fd6-bd3e-44deba8398b9",
+      "name": "竞争拥挤度",
+      "detail": "第2轮竞争拥挤度：0.20400000000000001",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:25.801+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "f415681f-3e64-4d13-a2bc-7f211d9d46a4",
+      "name": "竞争拥挤度",
+      "detail": "第3轮竞争拥挤度：0.246",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:26.417+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "f44a7f5e-d888-4205-9dbc-2a696284e1d1",
+      "name": "竞争拥挤度",
+      "detail": "第4轮竞争拥挤度：0.28800000000000003",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:28.615+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "f678f6c8-055a-48ae-b365-4405ce084ab0",
+      "name": "实际对手响应",
+      "detail": "第2轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:32:25.801+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "f7f002e3-2762-47f6-bf0c-1abe0a193cad",
+      "name": "需求变化",
+      "detail": "搜索/内容热度上升",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "strength": "中",
+      "created_at": "2026-09-29T00:22:26.368377+00:00",
+      "signal_type": "需求变化"
+    },
+    {
+      "id": "f84d7ed0-291c-4286-9385-54d6af06c83c",
+      "name": "实际对手响应",
+      "detail": "第6轮实际响应：SHIFT_TO_CONTENT",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:06.665+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "fac75ea2-2074-434f-a9cf-e113b7baa855",
+      "name": "边际ROI",
+      "detail": "当前边际ROI 4.464999999999999",
+      "run_id": "91f55ab5-b3b9-4bc2-9d64-9bf384acaae7",
+      "strength": "POSITIVE",
+      "created_at": "2026-09-29T10:08:33.198+00:00",
+      "signal_type": "UNIT_ECONOMICS"
+    },
+    {
+      "id": "fb3aa70f-381c-4d49-8f5e-e8755ad790fb",
+      "name": "竞争拥挤度",
+      "detail": "第1轮竞争拥挤度：0.162",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "strength": "LOW",
+      "created_at": "2026-09-29T06:32:24.34+00:00",
+      "signal_type": "COMPETITION"
+    },
+    {
+      "id": "fd1c7e48-ecdf-48eb-8b29-e4fb80177f4d",
+      "name": "实际对手响应",
+      "detail": "第3轮实际响应：HOLD",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:02.923+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "fd3beca3-fb19-431a-97af-1588a844f2da",
+      "name": "实际对手响应",
+      "detail": "第3轮实际响应：HOLD",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T05:34:14.915+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "fd5836c5-9fb5-4b62-bcfe-06a7803b919f",
+      "name": "实际对手响应",
+      "detail": "第9轮实际响应：RAISE_BID",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    },
+    {
+      "id": "fedf031c-26a6-43a3-a9f1-571cbfb283cb",
+      "name": "实际对手响应",
+      "detail": "第7轮实际响应：DEFEND_TRAFFIC",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "strength": "OBSERVED",
+      "created_at": "2026-09-29T06:24:08.413+00:00",
+      "signal_type": "OPPONENT_RESPONSE"
+    }
+  ]
+}
