@@ -3,7 +3,7 @@
 
   var app = document.getElementById('app');
   var nav = document.querySelectorAll('.nav');
-  var VERSION = '20260929-43';
+  var VERSION = '20260929-44';
   var BASE = 'https://skuoxmrzlxhebzhfgbyn.supabase.co';
   var KEY = 'sb_publishable_u46tZ4GMUgwqSYhMJNFG8Q_IzYwl95T';
   var CLIENT = 'ecommerce-agent-sandbox-v1';
@@ -562,6 +562,59 @@
     });
   }
 
+  function positiveAttacks() {
+    var list = window.EA_POSITIVE_ATTACK_LIBRARY || [];
+    var selected = list.length ? list[0] : null;
+
+    function detail(x) {
+      if (!x) return notice('暂无正向增长策略。');
+      return '<div class="card" style="border:2px solid var(--accent);padding:16px">' +
+        '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="tag">'+esc(x.id)+'</span><span class="tag">'+esc(x.category)+'</span><span class="tag positive">主动增长</span></div>' +
+        '<h2>'+esc(x.name)+'</h2>' +
+        '<div class="label">发现条件</div><div class="notice">'+esc(x.signal)+'</div>' +
+        '<div class="label">建议动作</div><div class="notice">'+esc(x.action)+'</div>' +
+        '<div class="label">战略目标</div><div class="notice"><b>'+esc(x.goal)+'</b></div>' +
+        '<div class="muted" style="margin-top:12px">这是“正向攻势”模型：通过真实产品、内容、品牌、服务、供应链或渠道能力获得增量，不把竞争建立在恶意操纵或虚假信息上。所有动作进入 Sandbox 后再进行多轮博弈与 Risk Controller 评估。</div>' +
+        '</div>';
+    }
+
+    var groups = {};
+    for (var i=0;i<list.length;i++) {
+      var c=list[i].category;
+      if(!groups[c]) groups[c]=[];
+      groups[c].push(list[i]);
+    }
+    var buttons='<div class="card"><div class="label">正向增长攻势 · '+list.length+'项</div>' +
+      '<div class="muted" style="margin:6px 0 12px">这里不是“防守对手”，而是寻找我方可以主动改变市场结果的变量：搜索、主图、详情、视频、真实评价、品牌合作、认证、产品、服务、供应链、渠道等。</div>' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px">';
+    for(var j=0;j<list.length;j++){
+      var x=list[j];
+      buttons+='<button type="button" class="positive-attack-choice" data-id="'+esc(x.id)+'" style="text-align:left;padding:10px;border:1px solid '+(selected&&x.id===selected.id?'var(--accent)':'var(--line)')+';border-radius:8px;background:transparent;color:inherit;cursor:pointer"><span class="tag positive">'+esc(x.id)+'</span> <b>'+esc(x.name)+'</b><div class="muted">'+esc(x.category)+'</div></button>';
+    }
+    buttons+='</div></div>' +
+      '<div class="card"><div class="label">正向攻势的六大变量</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin-top:8px">' +
+      '<div class="notice"><b>流量</b><br>关键词、搜索内容、达人、渠道</div>' +
+      '<div class="notice"><b>点击</b><br>主图、标题、素材、视频</div>' +
+      '<div class="notice"><b>转化</b><br>详情页、评价、信任、服务</div>' +
+      '<div class="notice"><b>商品</b><br>SKU、规格、套餐、新品</div>' +
+      '<div class="notice"><b>品牌</b><br>合作、授权、认证、心智</div>' +
+      '<div class="notice"><b>供给</b><br>成本、库存、履约、独家合作</div>' +
+      '</div></div>' +
+      '<div id="positive-attack-detail">'+detail(selected)+'</div>';
+
+    show('正向攻势','主动增长模型 · '+list.length+'种可观察、可实验的竞争动作',buttons);
+    var cs=document.querySelectorAll('.positive-attack-choice');
+    for(var k=0;k<cs.length;k++) cs[k].addEventListener('click',function(){
+      var id=this.dataset.id, found=null;
+      for(var z=0;z<list.length;z++) if(list[z].id===id){found=list[z];break;}
+      if(!found)return;
+      document.getElementById('positive-attack-detail').innerHTML=detail(found);
+      var all=document.querySelectorAll('.positive-attack-choice');
+      for(var q=0;q<all.length;q++) all[q].style.borderColor=all[q].dataset.id===id?'var(--accent)':'var(--line)';
+      document.getElementById('positive-attack-detail').scrollIntoView({behavior:'smooth',block:'start'});
+    });
+  }
+
   function market() {
     var rows = [];
     for (var i = 0; i < state.market.length; i++) {
@@ -799,7 +852,7 @@
       nav[i].classList.toggle('active', nav[i].dataset.view === state.view);
     }
 
-    if (state.view === 'threats') { threats(); } else if (state.view === 'game-logic') {
+    if (state.view === 'threats') { threats(); } else if (state.view === 'positive-attacks') { positiveAttacks(); } else if (state.view === 'game-logic') {
       gameLogic();
     } else if (state.view === 'game') {
       game();
