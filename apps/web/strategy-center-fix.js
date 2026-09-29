@@ -583,7 +583,7 @@
     html+='三大招式库不再按阵营分配：我方和对手共享建设、防守、试探、竞争、诱导、转移、反制、机制校验、负向施压九类战略动作。人格只改变动作权重，不锁死动作类型；上一招、累计状态、对手回应以及当前市场反馈共同决定下一招。对手招式全部是模拟假设，不代表真实对手已经采取该动作；机制型招式用于识别、校验、隔离和防守。开局关系明确为：<b>我方是刚进入市场的新商品，基础建设已经完成，但暂时没有稳定流量；市场流量原本属于现有商品，所以第一目标是主动找到入口，从现有商品手里争取流量、点击和成交。</b>';
     html+='同时，商品基础建设已经完成，后续不是重新做商品，而是在进入市场后不断调整已经存在的配置。连续闭环改为：<b>我方主动抢流量 → 市场反馈 → 对手发现自己的流量受到影响后回应 → 我方再调整 → 新反馈</b>。只有局面仍产生有效的新变化才继续；我方形成稳定优势、双方僵持、突破路线失效或风险封顶时自然收束。';
     html+='</div></div>';
-    html+='<div class="card" style="margin:10px 0 16px;border-left:4px solid var(--accent)"><b>开局市场位置：我方主动抢市场</b><div style="margin-top:8px;line-height:1.8">我方：新商品，基础建设全部完成，但初始稳定流量≈0 · 对手：已有商品，已经占据搜索、内容、人群等流量入口</div><div class="muted" style="margin-top:6px">所以第一手不是防守，也不是等对手攻击；第一手的任务是找一个可以切进去的流量入口。只有当我方实际造成流量/点击/成交影响后，对手才逐步进入防守、竞争和反制。</div></div>'+
+    html+='<div class="card" style="margin:10px 0 16px;border-left:4px solid var(--accent)"><b>开局市场位置：我方主动抢市场</b><div style="margin-top:8px;line-height:1.8">我方：新商品，基础建设全部完成，但初始稳定流量≈0 · 对手：已有商品，已经占据搜索、内容、人群等流量入口</div><div class="muted" style="margin-top:6px">所以第一手不是防守，也不是等对手攻击；第一手的任务是找一个可以切进去的流量入口。只有当我方实际造成流量/点击/成交影响后，对手才逐步进入防守、竞争和反制。</div></div>';
     html+='<div class="card"><div class="label">40套连续博弈棋谱</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px;margin-top:12px">';
     H.forEach(function(x,i){
       html+='<div class="game-wrap" data-game="'+esc(x.id)+'"><div class="card"><span class="tag">'+esc(x.id)+'</span><b style="display:block;margin-top:7px">'+esc(x.name)+'</b>';
