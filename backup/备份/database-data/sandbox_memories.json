@@ -1,0 +1,1105 @@
+{
+  "table": "public.sandbox_memories",
+  "snapshot_at": "2026-09-29",
+  "row_count": 122,
+  "rows": [
+    {
+      "id": "01be6e72-607d-4b1e-87f5-4e934ca76aba",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "status": "ACTIVE",
+      "content": "第9轮：我方INCREASE_BID → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T05:34:23.104+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "02a51779-0101-4d1f-af2e-6d9ae577ee4e",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "status": "ACTIVE",
+      "content": "第6轮：我方CHANGE_TARGETING → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:31.329+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "0acd2ec9-dd12-4da9-8945-43add1944405",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "ACTIVE",
+      "content": "第1轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "0da353d9-7656-4c45-8655-4d954f2c069b",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "status": "ACTIVE",
+      "content": "第4轮：我方CHANGE_TARGETING → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:08.569+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "0f22d989-364f-4f71-942c-c951048ebbb0",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "status": "ACTIVE",
+      "content": "第2轮：我方CHANGE_TARGETING → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:25.801+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "0f354f4c-8148-4f26-8a1a-a0eb63e64f8c",
+      "run_id": "df232131-8d9f-42bf-9f73-1e0a9c80667e",
+      "status": "ACTIVE",
+      "content": "第1轮：我方HOLD → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T11:54:50.018+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "1030a82e-e9b6-4197-a3e7-76f2e3db8a58",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "status": "ACTIVE",
+      "content": "第6轮：我方CHANGE_TARGETING → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:29.411+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "10dbb710-295b-4c55-af74-24ca0e1fcf33",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "status": "ACTIVE",
+      "content": "第1轮：我方HOLD → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T05:44:51.295+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "11389d0a-c2d7-480a-97c5-e4815e0d390c",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "status": "ACTIVE",
+      "content": "第6轮：我方CHANGE_TARGETING → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:30.369+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "12f35fd2-b381-4dd1-8685-85acbae22fd3",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "status": "ACTIVE",
+      "content": "第2轮：我方CHANGE_TARGETING → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:05.885+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "12f52495-afec-4edc-8edd-e9e2cbadc9b2",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "status": "ACTIVE",
+      "content": "第3轮：我方CHANGE_TARGETING → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:25.413+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "13e16999-5aa9-48ee-93fd-56b6164c9bd8",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "status": "ACTIVE",
+      "content": "第3轮：我方CHANGE_TARGETING → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T05:44:54.087+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "1cca32c7-77f3-4cc4-86cf-b86ae8c3882c",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "status": "ACTIVE",
+      "content": "第5轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:05.352+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "1de5f99a-2f90-4b41-a500-f55955cbc4a2",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "测试中",
+      "content": "竞品降价后我方转化下降幅度低于模型预期；需要验证老客占比、品牌信任、内容价值、关键词覆盖、人群重叠度等抵消条件",
+      "confidence": 0.67,
+      "created_at": "2026-09-29T00:22:26.368377+00:00",
+      "memory_type": "反证记录"
+    },
+    {
+      "id": "21d0fa76-4e10-4456-b246-b47d82a2f8bc",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "有效",
+      "content": "降低低毛利计划预算",
+      "confidence": 0.82,
+      "created_at": "2026-09-29T00:22:26.368377+00:00",
+      "memory_type": "决策记录"
+    },
+    {
+      "id": "227550ae-430b-4fba-a03e-907d17561a38",
+      "run_id": "91f55ab5-b3b9-4bc2-9d64-9bf384acaae7",
+      "status": "ACTIVE",
+      "content": "第1轮：我方HOLD → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T10:08:33.198+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "255d91c8-dd68-4894-a038-fd6bb8ddca8d",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "status": "ACTIVE",
+      "content": "第10轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T05:34:24.451+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "25a378bf-ba36-4fec-b9e9-49a6493c8151",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "status": "ACTIVE",
+      "content": "第9轮：我方INCREASE_BID → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:34.388+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "26799fae-c074-4442-8c32-9c84cb47ff7e",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "status": "ACTIVE",
+      "content": "第8轮：我方CHANGE_TARGETING → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:33.063+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "270b1e32-c47f-4354-b8a4-f46717d4d47a",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "status": "ACTIVE",
+      "content": "第4轮：我方CHANGE_TARGETING → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T05:44:55.45+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "27b27daf-e035-4f73-b8e0-7bab2747440d",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "status": "ACTIVE",
+      "content": "第9轮：我方INCREASE_BID → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:33.379+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "2abfb806-e436-468e-b928-eb0cf3d58623",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "status": "ACTIVE",
+      "content": "第5轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:27.998+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "2e4011cf-359d-4a37-b06f-79099199d941",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "ACTIVE",
+      "content": "第9轮：我方INCREASE_BID → 实际响应RAISE_BID → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "2eaaced3-194e-4446-83db-a2c6efe6b1c6",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "status": "ACTIVE",
+      "content": "第4轮：我方CHANGE_TARGETING → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:04.028+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "2eeac3ef-4509-4ac3-8e80-2e4aec38ecbf",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "status": "ACTIVE",
+      "content": "第7轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T05:44:59.496+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "313b94e9-4c43-4cce-8037-10bcef5561cd",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "status": "ACTIVE",
+      "content": "第7轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:08.568+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "37477716-0974-4b44-badf-fb9e754dbbc8",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "status": "ACTIVE",
+      "content": "第9轮：我方INCREASE_BID → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:35.497+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "3b93615b-3659-4e7e-80a5-49d1d0ea7175",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "status": "ACTIVE",
+      "content": "第10轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T05:45:03.61+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "428be6e9-0549-4728-91d3-198dbe148b1a",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "status": "ACTIVE",
+      "content": "第2轮：我方CHANGE_TARGETING → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:00.89+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "4655a0d0-007d-4861-b7e6-5cd026121d1c",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "有效",
+      "content": "边际ROI持续下降",
+      "confidence": 0.91,
+      "created_at": "2026-09-29T00:22:26.368377+00:00",
+      "memory_type": "停止信号"
+    },
+    {
+      "id": "4878ffba-6d9a-477d-83c7-0a01f03488a0",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "status": "ACTIVE",
+      "content": "第2轮：我方CHANGE_TARGETING → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T05:34:13.544+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "499e60b1-0ed3-4ed0-bc7f-c08ea71bc358",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "status": "ACTIVE",
+      "content": "第2轮：我方CHANGE_TARGETING → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:01.53+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "4df3aa30-635e-4732-adea-5110eac4f913",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "status": "ACTIVE",
+      "content": "第8轮：我方CHANGE_TARGETING → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:09.887+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "4f9d618f-0518-4964-a13c-a6e00ac656de",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "status": "ACTIVE",
+      "content": "第8轮：我方CHANGE_TARGETING → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:31.86+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "50739a5c-2862-47cb-be6c-28af26849d4f",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "status": "ACTIVE",
+      "content": "第5轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:05.724+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "5153d84e-3a82-4595-a041-f1bda695141c",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "status": "ACTIVE",
+      "content": "第10轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:12.676+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "56044f84-646b-4323-8ad7-d9e62d540a28",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "status": "ACTIVE",
+      "content": "第2轮：我方CHANGE_TARGETING → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:01.95+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "5803e1fa-607d-4e2e-a753-e40c9796da3a",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "status": "ACTIVE",
+      "content": "第1轮：我方HOLD → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:23:59.496+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "59830315-9735-473e-b1b0-1c2101da9496",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "status": "ACTIVE",
+      "content": "第5轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T05:44:56.791+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "59c29f20-d831-4b37-b607-ce7a938d0301",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "status": "ACTIVE",
+      "content": "第4轮：我方CHANGE_TARGETING → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T05:34:16.262+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "5a349e56-b168-4c83-aa8d-66d6a0be2e86",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "测试中",
+      "content": "从早餐场景切换到下午茶/办公室加餐场景进行测试",
+      "confidence": 0.65,
+      "created_at": "2026-09-29T00:22:26.368377+00:00",
+      "memory_type": "突破口发现"
+    },
+    {
+      "id": "5c38569f-0096-4f91-8f2f-353838144642",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "status": "ACTIVE",
+      "content": "第8轮：我方CHANGE_TARGETING → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:14.005+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "6049cf58-e9df-461d-b3a0-312aeb336bb4",
+      "run_id": "aabdc955-075a-4340-85b2-6ed2e7699032",
+      "status": "ACTIVE",
+      "content": "第1轮：我方HOLD → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T11:54:56.264+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "6782581e-923e-4f4f-ab11-30c180d91c41",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "status": "ACTIVE",
+      "content": "第8轮：我方CHANGE_TARGETING → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T05:34:21.769+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "747a5441-356e-48ff-aa33-2d71a2db33ee",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "status": "ACTIVE",
+      "content": "第4轮：我方CHANGE_TARGETING → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:28.615+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "748c6d82-9f73-433f-b61d-e31f89401ded",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "status": "ACTIVE",
+      "content": "第3轮：我方CHANGE_TARGETING → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:02.923+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "751fe202-8cba-4d06-937f-86303662c23a",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "status": "ACTIVE",
+      "content": "第5轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:28.099+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "79a23baf-b49f-49bc-bb8c-c72a1a00448f",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "status": "ACTIVE",
+      "content": "第7轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T05:34:20.423+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "79ac7b3e-7d82-4cdc-b873-9360d40de3c4",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "status": "ACTIVE",
+      "content": "第1轮：我方HOLD → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T05:34:12.082+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "7f0f2c22-bdef-4bec-9893-e58402e6190a",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "status": "ACTIVE",
+      "content": "第10轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:36.832+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "80832c1d-6422-45ca-91f8-3bd274528ad7",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "status": "ACTIVE",
+      "content": "第6轮：我方CHANGE_TARGETING → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:06.665+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "865be9ac-c9e8-4698-a2a9-89dc3e94cc18",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "ACTIVE",
+      "content": "第7轮：我方INCREASE_BUDGET → 实际响应RAISE_BID → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "875037a9-f3f8-424f-a636-98a497cfc794",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "status": "ACTIVE",
+      "content": "第1轮：我方HOLD → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:22.861+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "8cde8872-2a9a-4918-9d4e-d51ab4943698",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "status": "ACTIVE",
+      "content": "第7轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:30.578+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "91387a32-0ef2-4284-bf37-191b1cd7a248",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "status": "ACTIVE",
+      "content": "第2轮：我方CHANGE_TARGETING → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:25.109+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "91702e8c-8a09-4827-8cd8-f34b32eeceb4",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "status": "ACTIVE",
+      "content": "第1轮：我方HOLD → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:04.521+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "919d17a5-9fcf-40bd-8b26-6143f220c188",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "status": "ACTIVE",
+      "content": "第8轮：我方CHANGE_TARGETING → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:09.881+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "929beb30-0904-42b3-999b-af4542da7a64",
+      "run_id": "bb421780-db3b-474c-9e32-d4a29ec2d391",
+      "status": "ACTIVE",
+      "content": "第1轮：我方HOLD → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T11:54:49.449+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "949ba9e8-237e-4f65-85ac-de52646d0915",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "status": "ACTIVE",
+      "content": "第5轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:05.938+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "94d7105c-9bae-4660-b72a-504114b06c3f",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "ACTIVE",
+      "content": "第6轮：我方CHANGE_TARGETING → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "99ccb98c-d5fa-4c44-8399-4d6b6a3c7de1",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "status": "ACTIVE",
+      "content": "第10轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:12.058+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "9a9612e1-d0d2-4502-8a10-7ac9522f1ff2",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "status": "ACTIVE",
+      "content": "第5轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T05:34:17.64+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "9d50c0d9-1cb1-4dfc-bd0c-0f9ca5bd0e29",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "status": "ACTIVE",
+      "content": "第4轮：我方CHANGE_TARGETING → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:26.695+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "9e37a72a-6228-428c-8dae-62ef3dfadf64",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "status": "ACTIVE",
+      "content": "第7轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:31.673+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "9f52d7f9-86cf-4d53-a9e5-89b203008931",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "status": "ACTIVE",
+      "content": "第1轮：我方HOLD → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:22.803+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "a0dc276c-585f-4944-bbe4-24f5a47bc287",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "status": "ACTIVE",
+      "content": "第8轮：我方CHANGE_TARGETING → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:09.378+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "a1fb868e-0836-4ed6-9c6f-ec0e8b92d905",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "status": "ACTIVE",
+      "content": "第6轮：我方CHANGE_TARGETING → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:07.067+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "a2d5ce67-b094-447d-b50f-a30c9295033f",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "ACTIVE",
+      "content": "第3轮：我方INCREASE_BID → 实际响应RAISE_BID → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "a311d6d9-4a79-4952-b458-344de9a29985",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "status": "ACTIVE",
+      "content": "第2轮：我方CHANGE_TARGETING → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:24.173+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "a33c2c27-0d59-4053-8959-22be6c26e1a1",
+      "run_id": "082ed97e-9e8f-4d1d-b683-bb64bf88d58f",
+      "status": "ACTIVE",
+      "content": "第1轮：我方HOLD → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T11:54:55.635+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "a422bcfe-80cd-4f3f-8fd6-989c42b1493f",
+      "run_id": "9e69d947-915f-4689-adb2-01eb0c40a7d0",
+      "status": "ACTIVE",
+      "content": "第1轮：我方HOLD → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T10:08:33.2+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "a45e2b01-9c08-4745-bdc8-3d87e8ccae56",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "status": "ACTIVE",
+      "content": "第9轮：我方INCREASE_BID → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T05:45:02.279+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "ab929c95-a3aa-4225-8033-9f291c187029",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "status": "ACTIVE",
+      "content": "第10轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:12.532+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "adab4b64-b692-41c4-b188-93366fda6e78",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "status": "ACTIVE",
+      "content": "第8轮：我方CHANGE_TARGETING → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:32.066+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "aec21c0e-189c-47d8-953b-737cb02876c7",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "status": "ACTIVE",
+      "content": "第10轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:34.677+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "b0f6cb30-b80f-4045-84a4-661c9ac0ea1c",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "status": "ACTIVE",
+      "content": "第9轮：我方INCREASE_BID → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:11.262+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "b346019d-68f5-471f-845a-bfcfa171fc2a",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "status": "ACTIVE",
+      "content": "第7轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:07.995+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "b49753d1-10ca-4646-aedc-151c90d71ae7",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "status": "ACTIVE",
+      "content": "第1轮：我方HOLD → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:00.151+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "b4f70773-08d9-4d95-90bc-04958d782ac1",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "status": "ACTIVE",
+      "content": "第3轮：我方CHANGE_TARGETING → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:26.417+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "b573d386-6178-4606-83fd-c78fa6cd9aa5",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "status": "ACTIVE",
+      "content": "第9轮：我方INCREASE_BID → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:11.197+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "b7e2c795-33ae-4111-b6fe-5d9b9a8f8b39",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "status": "ACTIVE",
+      "content": "第3轮：我方CHANGE_TARGETING → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:27.201+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "ba26b2c3-3b1a-484b-aade-9bc9e54c561c",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "status": "ACTIVE",
+      "content": "第7轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:32.705+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "bad7f248-f27c-4f68-b073-24b0561a13c8",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "ACTIVE",
+      "content": "第10轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "c050568a-b64b-4bb2-b071-d4af3dcc439c",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "status": "ACTIVE",
+      "content": "第1轮：我方HOLD → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:24.34+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "c22cb77c-c96a-414a-aaad-1976ad8e4dd9",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "status": "ACTIVE",
+      "content": "第1轮：我方HOLD → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:23.794+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "c48abe5d-9609-459f-886a-9a893d0818fd",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "status": "ACTIVE",
+      "content": "第7轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:08.413+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "c54a0d4c-cb9a-495f-861d-5a6b496f0e96",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "status": "ACTIVE",
+      "content": "第4轮：我方CHANGE_TARGETING → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:26.795+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "c5708f95-a102-416e-8fca-594737a10f4a",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "status": "ACTIVE",
+      "content": "第10轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:35.718+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "c594b4b6-08cd-49a2-b0f3-ab1c86627a71",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "status": "ACTIVE",
+      "content": "第4轮：我方CHANGE_TARGETING → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:04.615+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "ca680372-04ba-4208-a6f4-51c349405d3c",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "status": "ACTIVE",
+      "content": "第4轮：我方CHANGE_TARGETING → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:27.741+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "d29d1fd5-f2c5-4638-b408-25958d74d1e8",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "ACTIVE",
+      "content": "第4轮：我方HOLD → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "d3590e53-807b-4dee-acb0-05e1f594566e",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "status": "ACTIVE",
+      "content": "第10轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:34.516+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "d72fb450-eb92-47e9-b945-1a371c8de3d7",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "status": "ACTIVE",
+      "content": "第5轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:09.937+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "d83e83c1-a3d9-4880-b768-fa1683812782",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "status": "ACTIVE",
+      "content": "第6轮：我方CHANGE_TARGETING → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T05:44:58.133+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "d885e7b9-a323-462e-bc62-665fcecddfae",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "status": "ACTIVE",
+      "content": "第1轮：我方HOLD → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:00.47+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "d9c04d8f-b25e-4709-a036-d45eaee4c243",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "status": "ACTIVE",
+      "content": "第3轮：我方CHANGE_TARGETING → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T05:34:14.915+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "d9c56817-1fdd-4c3b-91e1-df8a0d997b66",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "ACTIVE",
+      "content": "第8轮：我方DECREASE_BID → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "d9ded8e0-dbf3-43f5-9c4d-403b243dae58",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "status": "ACTIVE",
+      "content": "第7轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:12.668+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "df49f6a3-6e2f-4505-a7ba-452ae56cafd1",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "假设中",
+      "content": "竞品可能跟随内容打法",
+      "confidence": 0.58,
+      "created_at": "2026-09-29T00:22:26.368377+00:00",
+      "memory_type": "对手行为假设"
+    },
+    {
+      "id": "df9357b8-1787-4b67-8c73-789849b24c7f",
+      "run_id": "460e8436-2bae-4678-b4b3-0e0249f160fe",
+      "status": "ACTIVE",
+      "content": "第4轮：我方CHANGE_TARGETING → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:04.333+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "e315666f-02e3-46a7-802f-ea95a9b1e98b",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "status": "ACTIVE",
+      "content": "第8轮：我方CHANGE_TARGETING → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T05:45:00.902+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "e36199b0-f9f4-4f7c-9da0-cc960a26427f",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "status": "ACTIVE",
+      "content": "第5轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:29.962+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "e392e7d1-c1ec-4932-9fd0-156a3076a406",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "ACTIVE",
+      "content": "第2轮：我方CHANGE_TARGETING → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "e5545adb-e0da-4489-8647-f8b629de7a2e",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "status": "ACTIVE",
+      "content": "第9轮：我方INCREASE_BID → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:15.355+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "e6e24f7e-0de7-4d81-a3f1-4de7f851d48b",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "ACTIVE",
+      "content": "第5轮：我方CHANGE_PRICE → 实际响应MATCH_PRICE → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T01:32:48.664375+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "e7b57c27-e9c2-466d-9f9d-cb8ca5eea561",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "status": "ACTIVE",
+      "content": "第2轮：我方CHANGE_TARGETING → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:24.102+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "e81166de-9678-4383-b23a-fdde9a4c00d7",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "status": "ACTIVE",
+      "content": "第6轮：我方CHANGE_TARGETING → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:11.268+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "eae51ee1-03bb-414d-8060-655c067a518a",
+      "run_id": "7100b635-93eb-4297-83a4-b8221b94e7d4",
+      "status": "ACTIVE",
+      "content": "第5轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:29.063+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "ec3d81b7-1488-439e-b33a-a1e9a58f91d9",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "status": "ACTIVE",
+      "content": "第3轮：我方CHANGE_TARGETING → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:07.239+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "ed889f9f-9cbb-4ff2-953a-c0261a613d9b",
+      "run_id": "24e513b7-263f-436f-b5f7-5253bba48aeb",
+      "status": "ACTIVE",
+      "content": "第1轮：我方HOLD → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T11:54:50.625+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "edfc2519-c088-4223-901e-046d8bcc3138",
+      "run_id": "3e4529f7-4c34-4190-a38d-8528bfac0322",
+      "status": "ACTIVE",
+      "content": "第6轮：我方CHANGE_TARGETING → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T05:34:19.067+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "f03477dc-4b8c-4e3a-aeba-d4a4030eb3e0",
+      "run_id": "d602ab2c-1353-4da7-b2bd-08cf7619324d",
+      "status": "ACTIVE",
+      "content": "第2轮：我方CHANGE_TARGETING → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T05:44:52.689+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "f1d2303c-ff5b-4970-aff2-7a1db101baf9",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "status": "ACTIVE",
+      "content": "第3轮：我方CHANGE_TARGETING → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:03.289+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "f271ba30-11ee-4683-b541-846f69e5d246",
+      "run_id": "216f591b-37a6-4da6-9f44-1b1bd90db291",
+      "status": "ACTIVE",
+      "content": "第10轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:16.678+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "f68f56d9-7cc1-469a-ae65-c05ccba20ec6",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "status": "ACTIVE",
+      "content": "第7轮：我方CHANGE_KEYWORD → 实际响应DEFEND_TRAFFIC → 下一动作CHANGE_TARGETING",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:30.719+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "f7e94c99-dea8-421e-b9aa-aba962a984b5",
+      "run_id": "ec92be5f-1628-428d-a1cc-5e0ca3f36276",
+      "status": "ACTIVE",
+      "content": "第8轮：我方CHANGE_TARGETING → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:34.125+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "f8ba7aef-1137-4848-b75e-5df85994852f",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "status": "ACTIVE",
+      "content": "第9轮：我方INCREASE_BID → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:33.159+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "f8fa4c43-b0db-42b8-9101-b20ec5fcc0a3",
+      "run_id": "790119b2-15a7-45e6-a7bb-518cadb74843",
+      "status": "ACTIVE",
+      "content": "第3轮：我方CHANGE_TARGETING → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:25.481+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "f928b1cf-7a10-4634-8ce2-0475a403a33f",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "status": "ACTIVE",
+      "content": "第9轮：我方INCREASE_BID → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:10.712+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "fc2710f9-3ca4-457a-affb-c2484e8b509c",
+      "run_id": "95b0148c-9b5b-4f07-9e2f-23e57660477a",
+      "status": "ACTIVE",
+      "content": "第6轮：我方CHANGE_TARGETING → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:07.265+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "fdd2263f-ea58-4ea6-a07c-5bed4f299775",
+      "run_id": "88170583-dfbe-4317-b215-c1dafd3675e0",
+      "status": "ACTIVE",
+      "content": "第6轮：我方CHANGE_TARGETING → 实际响应SHIFT_TO_CONTENT → 下一动作CHANGE_KEYWORD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:32:29.295+00:00",
+      "memory_type": "ROUND_LEARNING"
+    },
+    {
+      "id": "ff958e4f-8dde-4efd-a0c5-f9ee0903188b",
+      "run_id": "a95a0f7b-cd67-4f60-a9a9-7e6d5d40ea75",
+      "status": "ACTIVE",
+      "content": "第3轮：我方CHANGE_TARGETING → 实际响应HOLD → 下一动作HOLD",
+      "confidence": 0.8,
+      "created_at": "2026-09-29T06:24:02.695+00:00",
+      "memory_type": "ROUND_LEARNING"
+    }
+  ]
+}
