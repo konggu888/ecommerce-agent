@@ -6,6 +6,7 @@ import { SimMarketRound } from './simulated-market';
 import { createSimulatedOpponents, simulateOpponentTurn, snapshotsFromOpponents, SimulatedOpponent } from './opponent-simulator';
 import { DecisionRecord, OutcomeRecord, LearningSignal, evaluateLearning } from './learning-memory';
 import { simulateNonlinearMarket } from './nonlinear-market';
+import { BehaviorObservation, BehaviorMode, updateBehaviorState } from './human-behavior-engine';
 
 export interface AgentSimulationConfig {
   rounds?: number;
@@ -79,6 +80,7 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
   let activeBreakthrough: string | null = null;
   let breakthroughFailures = 0;
   let pendingActionHint: string | null = null;
+  let behaviorObservations: BehaviorObservation[] = [];
 
   for (let round = 1; round <= rounds; round++) {
     const observedAt = new Date().toISOString();
@@ -208,6 +210,17 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
       actualOpponentAction === 'SHIFT_CONTENT' ? 'SHIFT_TO_CONTENT' :
       actualOpponentAction === 'IMPROVE_CONVERSION' ? 'DEFEND_TRAFFIC' :
       'HOLD';
+    const actualBehaviorMode: BehaviorMode =
+      actualOpponentResponse === 'SHIFT_TO_CONTENT' ? 'POSITIVE' :
+      actualOpponentResponse === 'MATCH_PRICE' || actualOpponentResponse === 'RAISE_BID' ? 'NEGATIVE' :
+      actualOpponentResponse === 'DEFEND_TRAFFIC' ? 'DEFENSIVE' :
+      'OBSERVE';
+    behaviorObservations = [...behaviorObservations, {
+      mode: actualBehaviorMode,
+      observedAt,
+      evidence: `模拟中实际观察到对手响应: ${actualOpponentResponse}`
+    }].slice(-12);
+    state.behaviorState = updateBehaviorState(behaviorObservations, state.behaviorState);
     const bestNode = decision.multiRound.nodes.find(n => n.round === 1 && n.action === action);
     const responseBranches = bestNode?.responseBranch ?? [];
     const matchedBranch = responseBranches.find(b => b.response === actualOpponentResponse);
