@@ -107,7 +107,8 @@
       getJSON(runURL('sandbox_events')),
       getJSON(runURL('sandbox_memories')),
       getJSON(runURL('sandbox_risk_results')),
-      getJSON(runURL('sandbox_task_results'))
+      getJSON(runURL('sandbox_task_results')),
+      getJSON(runURL('sandbox_agent_rounds'))
     ]).then(function (x) {
       state.game = x[0];
       state.market = x[1];
@@ -116,6 +117,7 @@
       state.memories = x[4];
       state.risk = x[5];
       state.tasks = x[6];
+      state.agentRounds = x[7];
     });
   }
 
@@ -174,8 +176,16 @@
       var x = state.game[i];
       rows.push([x.product, x.competitor, x.scenario, x.competitor_price, x.our_price, x.cpc, x.cvr]);
     }
+    var rounds = [];
+    for (var j = 0; j < state.agentRounds.length; j++) {
+      var r = state.agentRounds[j];
+      rounds.push([r.round, r.action, r.recommended_action, r.breakthrough, r.risk_approved ? 'ALLOW' : 'BLOCK', r.decision_score, r.spend, r.revenue, r.conversions, r.roi, r.marginal_roi, r.crowding, r.stop_signal ? 'STOP' : '', r.stop_reason]);
+    }
     show('商业博弈', 'BOOT-DEBUG-' + VERSION + ' · Sandbox 模拟数据',
-      table(['产品','竞品','场景','竞品价格','我方价格','CPC','CVR'], rows));
+      table(['产品','竞品','场景','竞品价格','我方价格','CPC','CVR'], rows) +
+      '<h2>Agent 多轮闭环</h2>' +
+      table(['轮次','实际动作','原推荐','突破口','风险','决策分','消耗','收入','成交','ROI','边际ROI','拥挤','停止','停止原因'], rounds) +
+      notice('这里展示 Agent 每一轮的：决策 → 风险 → 投入 → 市场结果 → 边际收益 → 停止信号 → 下一轮输入。'));
   }
 
   function market() {
