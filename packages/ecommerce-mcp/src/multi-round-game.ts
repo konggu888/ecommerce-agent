@@ -11,7 +11,7 @@ export interface GameNode {
   expectedGain: number;
   marginalPenalty: number;
   path: string[];
-  responseBranch?: { response: string; probability: number; nextActionHint: Action }[];
+  responseBranch?: { response: string; probability: number; nextActionHint: Action; stopCondition: string; expansionCondition: string }[];
 }
 
 export interface MultiRoundPlan {
@@ -114,22 +114,48 @@ export function planMultiRoundGame(state: GameState, horizon = 3): MultiRoundPla
         path: [...path, action].map(String)
       });
       const branches = [...opponent].sort((a, b) => b.probability - a.probability).slice(0, 2);
-      const nextHints: Action[] = [];
-      for (const branch of branches) {
-        if (branch.response === 'MATCH_PRICE') nextHints.push('CHANGE_TARGETING');
-        else if (branch.response === 'RAISE_BID') nextHints.push('CHANGE_KEYWORD');
-        else if (branch.response === 'DEFEND_TRAFFIC') nextHints.push('CHANGE_TARGETING');
-        else if (branch.response === 'SHIFT_TO_CONTENT') nextHints.push('CHANGE_KEYWORD');
-        else nextHints.push('HOLD');
-      }
-      nodes[nodes.length - 1].responseBranch = branches.map((branch, index) => ({
-        response: branch.response,
-        probability: branch.probability,
-        nextActionHint: nextHints[index] ?? 'HOLD'
-      }));
+      const branchProbabilityTotal = branches.reduce((sum, branch) => sum + branch.probability, 0);
+      const responseBranch: { response: string; probability: number; nextActionHint: Action; stopCondition: string; expansionCondition: string }[] = branches.map((branch) => {
+        const nextActionHint =
+          branch.response === 'MATCH_PRICE' ? 'CHANGE_TARGETING' :
+          branch.response === 'RAISE_BID' ? 'CHANGE_KEYWORD' :
+          branch.response === 'DEFEND_TRAFFIC' ? 'CHANGE_TARGETING' :
+          branch.response === 'SHIFT_TO_CONTENT' ? 'CHANGE_KEYWORD' :
+          'HOLD';
+        const stopCondition =
+          branch.response === 'RAISE_BID' ? '若边际ROI继续下降或竞品连续抬价则停止扩量' :
+          branch.response === 'MATCH_PRICE' ? '若价格战导致毛利跌破安全线则停止降价' :
+          branch.response === 'DEFEND_TRAFFIC' ? '若拥挤度继续上升且转化不改善则停止追加流量' :
+          branch.response === 'SHIFT_TO_CONTENT' ? '若内容流量抢占且搜索效率下降则停止原路径扩张' :
+          '若边际ROI下降则保持观察';
+        const expansionCondition =
+          branch.response === 'RAISE_BID' ? '只有边际ROI保持高于阈值且现金充足才切换关键词后扩量' :
+          branch.response === 'MATCH_PRICE' ? '只有降价后的转化/毛利同时达标才继续扩张' :
+          branch.response === 'DEFEND_TRAFFIC' ? '只有目标人群转化改善且拥挤度可控才扩大投入' :
+          branch.response === 'SHIFT_TO_CONTENT' ? '只有内容侧新增转化超过搜索侧损失才迁移预算' :
+          '连续两个观察窗口指标稳定后再扩大投入';
+        return { response: branch.response, probability: branchProbabilityTotal > 0 ? branch.probability / branchProbabilityTotal : 0, nextActionHint: nextActionHint as Action, stopCondition, expansionCondition };
+      });
+      nodes[nodes.length - 1].responseBranch = responseBranch;
+      // Branch-aware continuation: evaluate both likely responses instead of following
+      // only the highest-probability branch. The probability-weighted continuation
+      // becomes the node's continuation value; the highest-probability branch still
+      // determines the concrete default path shown to the operator.
       if (branches.length) {
-        const branch = branches[0];
-        search(projectState(current, action, branch), round + 1, nodeScore, [...path, action]);
+        let weightedContinuation = 0;
+        branches.forEach((branch, index) => {
+          const childPath = [...path, action, responseBranch[index].nextActionHint];
+          const branchState = projectState(current, action, branch);
+          const branchAction = responseBranch[index].nextActionHint;
+          const branchImmediate = actionBaseScore(branchState, branchAction);
+          const branchRisk = opponentPenalty(branchAction, modelOpponentResponses(branchState));
+          const branchValue = Math.max(0, branchImmediate - branchRisk);
+          weightedContinuation += branch.probability * branchValue;
+          if (index === 0) {
+            search(branchState, round + 1, nodeScore + branch.probability * branchValue, [...path, action]);
+          }
+        });
+        nodes[nodes.length - 1].continuationScore = score + discounted + Math.pow(0.85, round) * weightedContinuation;
       }
     }
   }

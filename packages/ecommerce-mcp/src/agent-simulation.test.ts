@@ -222,12 +222,38 @@ test('post-market risk is reconciled from nonlinear feedback', async () => {
 });
 
 test('agent exposes adaptive breakthrough switching after repeated failed signals', () => {
-  const result = runAgentSimulation({...config(), rounds: 30, seed: 7});
+  const base = config();\n  const result = runAgentSimulation({...base, rounds: 30, seed: 7, initial: { ...base.initial, competitors: base.initial.competitors.map((x, i) => ({ ...x, price: 101 + i * 6, estimatedCvr: 0.06 + i * 0.005 })) }});
   const types = result.rounds.map(r => r.breakthroughSignal).filter(x => x && x !== 'NO_CLEAR_GAP');
   assert.ok(types.length > 0);
   const unique = new Set(types);
   assert.ok(unique.size >= 1);
   for (const round of result.rounds) {
     assert.ok(typeof round.breakthroughSignal === 'string');
+  }
+});
+
+
+test('agent execution carries opponent branches into the next-round hint', () => {
+  const result = runAgentSimulation({...config(), rounds: 8, seed: 42});
+  assert.ok(result.rounds.every(r => Array.isArray(r.responseBranches)));
+  assert.ok(result.rounds.every(r => typeof r.actualOpponentResponse === 'string'));
+  assert.ok(result.rounds.every(r => typeof r.nextActionHint === 'string'));
+  assert.ok(result.rounds.some(r => r.responseBranches.length > 0));
+});
+
+
+test('multi-round plan scores both likely response branches', async () => {
+  const { planMultiRoundGame } = await import('./multi-round-game.ts');
+  const plan = planMultiRoundGame(config().initial, 3);
+  const branched = plan.nodes.filter(n => (n.responseBranch?.length ?? 0) >= 2);
+  assert.ok(branched.length > 0);
+  for (const node of branched) {
+    const totalProbability = (node.responseBranch ?? []).reduce((sum, b) => sum + b.probability, 0);
+    assert.ok(totalProbability > 0.5 && totalProbability <= 1.01);
+    for (const branch of node.responseBranch ?? []) {
+      assert.ok(branch.stopCondition.length > 0);
+      assert.ok(branch.expansionCondition.length > 0);
+    }
+    assert.ok(Number.isFinite(node.continuationScore));
   }
 });

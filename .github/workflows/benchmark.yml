@@ -6,6 +6,7 @@ on:
       - 'packages/ecommerce-mcp/src/**'
       - 'package.json'
       - 'tsconfig.json'
+      - 'README.md'
 jobs:
   benchmark:
     runs-on: ubuntu-latest

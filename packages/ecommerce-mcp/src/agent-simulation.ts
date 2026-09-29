@@ -23,6 +23,9 @@ export interface AgentSimulationRound extends SimMarketRound {
   riskMode: string;
   decisionScore: number;
   opponentModel: string[];
+  responseBranches: { response: string; probability: number; nextActionHint: string }[];
+  actualOpponentResponse: string;
+  nextActionHint: string;
   opponentTurns: ReturnType<typeof simulateOpponentTurn>;
   learning: LearningSignal;
   nonlinear: { marginalRoi: number; crowding: number; bidEscalation: number; priceWar: number; stockConstraint: number; cashConstraint: number; stopSignal: boolean; stopReason: string };
@@ -75,6 +78,7 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
   let previousStopSignal = false;
   let activeBreakthrough: string | null = null;
   let breakthroughFailures = 0;
+  let pendingActionHint: string | null = null;
 
   for (let round = 1; round <= rounds; round++) {
     const observedAt = new Date().toISOString();
@@ -111,6 +115,11 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
       const safer = decision.candidates.find(c => c.risk.approved && !['INCREASE_BUDGET', 'INCREASE_BID'].includes(c.action));
       if (safer) selected = safer;
       continuationCooldown = Math.max(0, continuationCooldown - 1);
+    }
+    if (pendingActionHint) {
+      const hinted = decision.candidates.find(c => c.risk.approved && c.action === pendingActionHint);
+      if (hinted && (!selected || hinted.score >= selected.score * 0.85)) selected = hinted;
+      pendingActionHint = null;
     }
     const action = selected?.action ?? 'HOLD';
     const decisionId = 'SIM-' + String(round).padStart(3, '0');
@@ -192,7 +201,19 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
     );
 
     const turns = simulateOpponentTurn(opponents, state);
-    const evaluation: OutcomeRecord['evaluation'] = spend <= 0 || conversions < 1 ? 'INCONCLUSIVE' : state.roi >= expectedRoi ? 'POSITIVE' : 'NEGATIVE';
+    const actualOpponentAction = turns[0]?.action ?? 'HOLD';
+    const actualOpponentResponse =
+      actualOpponentAction === 'MATCH_OR_UNDERCUT_PRICE' ? 'MATCH_PRICE' :
+      actualOpponentAction === 'RAISE_BID_AND_DEFEND_TRAFFIC' ? 'RAISE_BID' :
+      actualOpponentAction === 'SHIFT_CONTENT' ? 'SHIFT_TO_CONTENT' :
+      actualOpponentAction === 'IMPROVE_CONVERSION' ? 'DEFEND_TRAFFIC' :
+      'HOLD';
+    const bestNode = decision.multiRound.nodes.find(n => n.round === 1 && n.action === action);
+    const responseBranches = bestNode?.responseBranch ?? [];
+    const matchedBranch = responseBranches.find(b => b.response === actualOpponentResponse);
+    const nextActionHint = matchedBranch?.nextActionHint ?? responseBranches[0]?.nextActionHint ?? 'HOLD';
+    pendingActionHint = nextActionHint;
+    const evaluation: OutcomeRecord['evaluation'] = spend <= 0 || conversions < 1 ? 'INCONCLUSIVE' : (state.roi ?? 0) >= expectedRoi ? 'POSITIVE' : 'NEGATIVE';
     const currentBreakthrough = selected?.breakthrough?.type ?? 'NO_CLEAR_GAP';
     if (activeBreakthrough === null) activeBreakthrough = currentBreakthrough;
     if (currentBreakthrough !== activeBreakthrough) breakthroughFailures = 0;
@@ -222,6 +243,9 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
       riskMode: decision.recommended?.risk.mode ?? 'ANALYZE_ONLY',
       decisionScore: decision.recommended?.score ?? 0,
       opponentModel: decision.multiRound.bestPath,
+      responseBranches: responseBranches.map(b => ({ response: b.response, probability: b.probability, nextActionHint: b.nextActionHint })),
+      actualOpponentResponse,
+      nextActionHint,
       opponentTurns: clone(turns),
       learning,
       nonlinear: { marginalRoi: nonlinear.marginalRoi, crowding: nonlinear.crowding, bidEscalation: nonlinear.bidEscalation, priceWar: nonlinear.priceWar, stockConstraint: nonlinear.stockConstraint, cashConstraint: nonlinear.cashConstraint, stopSignal: nonlinear.stopSignal, stopReason: nonlinear.stopReason },
