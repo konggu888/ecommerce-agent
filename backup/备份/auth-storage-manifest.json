@@ -1,0 +1,9 @@
+{
+  "snapshot_at": "2026-09-29",
+  "auth": {"users": 0, "identities": 0, "note": "No Auth user data existed at snapshot time."},
+  "storage": {"buckets": 0, "objects": 0, "note": "No Storage buckets or objects existed at snapshot time."},
+  "security": {
+    "secrets_in_github": false,
+    "restore_action": "Regenerate project secrets/keys after disaster recovery; do not copy secrets into this public repository."
+  }
+}
