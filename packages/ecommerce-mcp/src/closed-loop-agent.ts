@@ -2,12 +2,12 @@ import { GameState, evaluateActions } from './game-state';
 import { calculateAdConstraints, UnitEconomics } from './unit-economics';
 import { calculateScaleConstraints, InventoryState, CashflowState } from './inventory-cashflow';
 import { evaluateBusinessRisk, RiskPolicy, ProposedAction, RiskDecision } from './risk-controller';
-import { modelOpponentResponses, detectBreakthrough, Breakthrough } from './opponent-model';
+import { modelOpponentResponses, detectBreakthrough, OpponentBreakthrough } from './opponent-model';
 import { planMultiRoundGame, MultiRoundPlan } from './multi-round-game';
 import { buildPositionPlan, PositionPlan } from './position-sizing';
 
 export interface ClosedLoopInput { state: GameState; economics: UnitEconomics; inventory: InventoryState; cashflow: CashflowState; riskPolicy: RiskPolicy; recentActionCount: number; strategyConfidence?: Record<string, number>; }
-export interface ClosedLoopCandidate { action: string; score: number; risk: RiskDecision; reasons: string[]; breakthrough?: Breakthrough; positionPlan?: PositionPlan; }
+export interface ClosedLoopCandidate { action: string; score: number; risk: RiskDecision; reasons: string[]; breakthrough?: OpponentBreakthrough; positionPlan?: PositionPlan; }
 export interface ClosedLoopOutput { candidates: ClosedLoopCandidate[]; blocked: ClosedLoopCandidate[]; recommended: ClosedLoopCandidate | null; multiRound: MultiRoundPlan; }
 
 export function runClosedLoop(input: ClosedLoopInput): ClosedLoopOutput {
