@@ -222,7 +222,8 @@ test('post-market risk is reconciled from nonlinear feedback', async () => {
 });
 
 test('agent exposes adaptive breakthrough switching after repeated failed signals', () => {
-  const base = config();\n  const result = runAgentSimulation({...base, rounds: 30, seed: 7, initial: { ...base.initial, competitors: base.initial.competitors.map((x, i) => ({ ...x, price: 101 + i * 6, estimatedCvr: 0.06 + i * 0.005 })) }});
+  const base = config();
+  const result = runAgentSimulation({...base, rounds: 30, seed: 7, initial: { ...base.initial, competitors: base.initial.competitors.map((x, i) => ({ ...x, price: 101 + i * 6, estimatedCvr: 0.06 + i * 0.005 })) }});
   const types = result.rounds.map(r => r.breakthroughSignal).filter(x => x && x !== 'NO_CLEAR_GAP');
   assert.ok(types.length > 0);
   const unique = new Set(types);
