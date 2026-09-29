@@ -18,7 +18,8 @@
     memories: [],
     risk: [],
     tasks: [],
-    agentRounds: []
+    agentRounds: [],
+    playback: { playing: false, current: 0, timer: null }
   };
 
   function esc(v) {
@@ -194,6 +195,113 @@
     );
   }
 
+
+  function sortedRounds() {
+    return (state.agentRounds || []).slice().sort(function (a, b) {
+      return Number(a.round || 0) - Number(b.round || 0);
+    });
+  }
+
+  function playbackData() {
+    var rounds = sortedRounds();
+    if (!rounds.length) return null;
+    var index = Math.max(0, Math.min(state.playback.current, rounds.length - 1));
+    return { rounds: rounds, index: index, current: rounds[index] };
+  }
+
+  function playbackPanel() {
+    var d = playbackData();
+    if (!d) return notice('还没有可播放的 Agent 模拟轮次。');
+
+    var r = d.current;
+    var status = state.playback.playing ? '▶ 正在模拟' : (d.index >= d.rounds.length - 1 ? '■ 模拟完成' : 'Ⅱ 已暂停');
+    var timeline = '<div style="display:flex;gap:6px;flex-wrap:wrap;margin:12px 0">';
+    for (var i = 0; i < d.rounds.length; i++) {
+      var cls = i === d.index ? 'tag warning' : (i < d.index ? 'tag positive' : 'tag');
+      timeline += '<span class="' + cls + '">R' + esc(d.rounds[i].round) + '</span>';
+    }
+    timeline += '</div>';
+
+    var branches = [];
+    try { branches = r.response_branches ? (typeof r.response_branches === 'string' ? JSON.parse(r.response_branches) : r.response_branches) : []; } catch (e) { branches = []; }
+    var branchHtml = '';
+    for (var b = 0; b < branches.length; b++) {
+      branchHtml += '<div class="card" style="margin-top:8px"><b>对手响应 ' + esc(branches[b].response) + '</b> · 概率 ' + esc(Math.round(Number(branches[b].probability || 0) * 100)) + '%<br>下一动作：<b>' + esc(branches[b].nextActionHint) + '</b><br><span class="muted">停止条件：' + esc(branches[b].stopCondition) + '；扩张条件：' + esc(branches[b].expansionCondition) + '</span></div>';
+    }
+
+    return '<div class="card" id="agent-playback">' +
+      '<div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">' +
+      '<div><div class="label">Agent Sandbox 实时模拟器</div><div class="metric">' + status + ' · 第 ' + esc(r.round) + ' / ' + d.rounds.length + ' 轮</div></div>' +
+      '<div>' +
+      '<button class="action" id="sim-start">▶ 开始</button>' +
+      '<button class="action" id="sim-step">⏭ 单步</button>' +
+      '<button class="action" id="sim-reset">↺ 重置</button>' +
+      '</div></div>' +
+      timeline +
+      '<div class="grid">' +
+      '<div class="card"><div class="label">我方动作</div><div class="metric">' + esc(r.action) + '</div></div>' +
+      '<div class="card"><div class="label">突破口</div><div class="metric">' + esc(r.breakthrough || '-') + '</div></div>' +
+      '<div class="card"><div class="label">实际对手响应</div><div class="metric">' + esc(r.actual_opponent_response || '-') + '</div></div>' +
+      '<div class="card"><div class="label">下一动作</div><div class="metric">' + esc(r.next_action_hint || '-') + '</div></div>' +
+      '</div>' +
+      '<div class="notice">本轮结果：消耗 ' + esc(r.spend) + ' · 收入 ' + esc(r.revenue) + ' · ROI ' + esc(r.roi) + ' · 边际ROI ' + esc(r.marginal_roi) + ' · 拥挤 ' + esc(r.crowding) + (r.stop_signal ? ' · <b>触发停止：' + esc(r.stop_reason) + '</b>' : ' · 继续观察') + '</div>' +
+      '<h3>对手响应分支</h3>' + (branchHtml || notice('本轮没有记录响应分支。')) +
+      '</div>';
+  }
+
+  function stopPlayback() {
+    if (state.playback.timer) {
+      clearInterval(state.playback.timer);
+      state.playback.timer = null;
+    }
+    state.playback.playing = false;
+  }
+
+  function advancePlayback() {
+    var rounds = sortedRounds();
+    if (!rounds.length) return;
+    if (state.playback.current >= rounds.length - 1) {
+      stopPlayback();
+      render();
+      return;
+    }
+    state.playback.current++;
+    render();
+  }
+
+  function startPlayback() {
+    stopPlayback();
+    if (!state.agentRounds.length) return;
+    state.playback.playing = true;
+    render();
+    state.playback.timer = setInterval(function () {
+      if (state.view !== 'game') {
+        stopPlayback();
+        return;
+      }
+      advancePlayback();
+    }, 1800);
+  }
+
+  function bindPlayback() {
+    var start = document.getElementById('sim-start');
+    var step = document.getElementById('sim-step');
+    var reset = document.getElementById('sim-reset');
+    if (start) start.addEventListener('click', function () {
+      if (state.playback.playing) stopPlayback(); else startPlayback();
+      render();
+    });
+    if (step) step.addEventListener('click', function () {
+      stopPlayback();
+      advancePlayback();
+    });
+    if (reset) reset.addEventListener('click', function () {
+      stopPlayback();
+      state.playback.current = 0;
+      render();
+    });
+  }
+
   function game() {
     var rows = [];
     for (var i = 0; i < state.game.length; i++) {
@@ -205,7 +313,8 @@
       var r = state.agentRounds[j];
       rounds.push([r.round, r.action, r.recommended_action, r.breakthrough, r.risk_approved ? 'ALLOW' : 'BLOCK', r.decision_score, r.spend, r.revenue, r.conversions, r.roi, r.marginal_roi, r.crowding, r.actual_opponent_response || '', r.next_action_hint || '', (r.response_branches ? JSON.stringify(r.response_branches) : ''), r.stop_signal ? 'STOP' : '', r.stop_reason]);
     }
-    show('商业博弈', 'BOOT-DEBUG-' + VERSION + ' · Sandbox 模拟数据',
+    show('商业博弈', 'BOOT-DEBUG-' + VERSION + ' · Sandbox 模拟数据 · 可视化模拟器',
+      playbackPanel() +
       table(['产品','竞品','场景','竞品价格','我方价格','CPC','CVR'], rows) +
       '<h2>Agent 多轮闭环</h2>' +
       table(['轮次','实际动作','原推荐','突破口','风险','决策分','消耗','收入','成交','ROI','边际ROI','拥挤','对手响应','下一动作提示','响应分支','停止','停止原因'], rounds) +
@@ -436,6 +545,7 @@
     } else {
       overview();
     }
+    if (state.view === 'game') bindPlayback();
   }
 
   function start() {
@@ -463,5 +573,6 @@
 
   window.__EA_APPDB_LOADED__ = true;
   window.__EA_APPDB_VERSION__ = VERSION;
+  window.__EA_SIMULATOR__ = state.playback;
   start();
 }());
