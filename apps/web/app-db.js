@@ -3,13 +3,14 @@
 
   var app = document.getElementById('app');
   var nav = document.querySelectorAll('.nav');
-  var VERSION = '20260929-35';
+  var VERSION = '20260929-36';
   var BASE = 'https://skuoxmrzlxhebzhfgbyn.supabase.co';
   var KEY = 'sb_publishable_u46tZ4GMUgwqSYhMJNFG8Q_IzYwl95T';
   var CLIENT = 'ecommerce-agent-sandbox-v1';
   var state = {
     view: location.hash.slice(1) || 'overview',
     run: null,
+    error: null,
     game: [],
     market: [],
     ads: {},
@@ -90,7 +91,7 @@
 
   function loadRun() {
     var url = BASE +
-      '/rest/v1/sandbox_runs?select=id,status,updated_at,client_key' +
+      '/rest/v1/sandbox_runs?select=id,status,updated_at,client_key,agent_progress,backtest_progress,risk_progress,memory_count,run_count,state' +
       '&client_key=eq.' + encodeURIComponent(CLIENT) +
       '&order=updated_at.desc&limit=1';
 
@@ -99,6 +100,7 @@
         throw new Error('没有找到 sandbox_runs');
       }
       state.run = rows[0];
+      state.error = state.run.status === 'failed' && state.run.state && state.run.state.error ? state.run.state.error : null;
     });
   }
 
@@ -160,6 +162,28 @@
     });
   }
 
+  function chainPanel(latest) {
+    var steps = [
+      ['01','输入','我方 + 对手 + 市场 Sandbox 数据'],
+      ['02','突破口','识别可利用的竞争结构'],
+      ['03','策略','选择本轮动作与后续动作'],
+      ['04','Risk Controller','资金 / 单位经济 / 市场 / 对手风险拦截'],
+      ['05','执行','模拟投入、出价、价格、关键词/定向'],
+      ['06','对手','多个参与者分别响应并更新压力/适应'],
+      ['07','市场','收入、ROI、边际ROI、拥挤、库存/现金'],
+      ['08','反馈','真实响应写回下一轮决策状态'],
+      ['09','继续/停止','扩张、降级、等待或 STOP'],
+      ['10','学习','把本轮结果作为下一轮输入']
+    ];
+    var html='<div class="card"><div class="label">完整闭环链路 · 每一轮都从左向右经过</div><div style="display:flex;gap:8px;overflow:auto;padding:12px 0">';
+    for(var i=0;i<steps.length;i++){
+      html+='<div style="min-width:150px;border:1px solid var(--line);border-radius:10px;padding:10px;background:'+(latest&&i===6?'rgba(255,180,0,.08)':'transparent')+'"><span class="tag">'+steps[i][0]+'</span><br><b>'+esc(steps[i][1])+'</b><div class="muted">'+esc(steps[i][2])+'</div></div>';
+      if(i<steps.length-1) html+='<div style="font-size:20px;align-self:center">→</div>';
+    }
+    html+='</div>'+(latest?'<div class="notice">当前执行位置：R'+esc(latest.round)+' · '+esc(latest.action)+' → '+esc(latest.actual_opponent_response||'-')+' → '+esc(latest.next_action_hint||'-')+' · '+(latest.stop_signal?'已停止':'继续')+'</div>':'<div class="notice">等待第一轮模拟。</div>')+'</div>';
+    return html;
+  }
+
   function agentSummary() {
     var rounds = state.agentRounds || [];
     if (!rounds.length) return notice('还没有 Agent 多轮闭环记录。');
@@ -192,6 +216,7 @@
       '<div class="card"><div class="label">市场信号</div><div class="metric">' + state.market.length + '</div></div>' +
       '<div class="card"><div class="label">Agent闭环轮次</div><div class="metric">' + state.agentRounds.length + '</div></div>' +
       '</div>' +
+      chainPanel((state.agentRounds||[]).length ? state.agentRounds[state.agentRounds.length-1] : null) +
       playbackPanel() +
       notice('上面的模拟器会按轮次播放当前 Sandbox Agent 的已生成结果；点击“开始”后每 1.8 秒推进一轮。当前仍不接真实店铺。')
     );
@@ -327,7 +352,8 @@
 
   function startNewSimulation() {
     stopPlayback();
-    show('Agent 正在启动', 'Sandbox 新模拟', notice('正在创建新的 Agent 模拟任务……'));
+    state.error = null;
+    show('Agent 正在启动', 'Sandbox 新模拟', chainPanel(null) + notice('正在创建新的 Agent 模拟任务……'));
     fetch(BASE + '/functions/v1/sandbox-agent-runner', {
       method: 'POST',
       headers: { apikey: KEY, Authorization: 'Bearer ' + KEY, 'Content-Type': 'application/json' },
@@ -348,7 +374,8 @@
       });
     }).catch(function (e) {
       console.error('SANDBOX_AGENT_RUN_ERROR', e);
-      show('Agent 模拟启动失败', 'Sandbox', notice(e.message));
+      state.error = e.message;
+      show('Agent 模拟启动失败', 'Sandbox', chainPanel(null) + '<div class="card"><div class="notice"><b>错误已进入网页事件链：</b> ' + esc(e.message) + '</div></div>' + eventTable());
     });
   }
 
@@ -611,6 +638,8 @@
     }
     show('任务监控', 'BOOT-DEBUG-' + VERSION + ' · Sandbox Agent 执行过程',
       hero +
+      chainPanel(latest) +
+      (state.error ? '<div class="card"><div class="notice"><b>当前 Run 错误：</b> ' + esc(state.error) + '</div></div>' : '') +
       '<h2>任务队列</h2>' +
       (latestTask ? table(['任务ID','任务类型','状态','进度','创建时间'], rows) : notice('当前 Run 尚未创建任务。')) +
       '<h2>Agent 轮次</h2>' +
