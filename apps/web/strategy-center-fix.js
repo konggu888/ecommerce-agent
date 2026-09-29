@@ -4,62 +4,16 @@
   var KEY='sb_publishable_u46tZ4GMUgwqSYhMJNFG8Q_IzYwl95T';
   var CLIENT='ecommerce-agent-sandbox-v1';
   var busy=false;
-
-  function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-  function activeContext(){
-    var choices=document.querySelectorAll('.sc-choice'), pick=null;
-    for(var i=0;i<choices.length;i++){
-      if(String(choices[i].style.borderColor||'').indexOf('accent')>=0){pick=choices[i];break;}
-    }
-    if(!pick && choices.length) pick=choices[0];
-    if(!pick) return {type:'AUTO',id:'',name:'自动选择策略',action:'',signal:'',goal:''};
-    var type=pick.dataset.type||'AUTO', id=pick.dataset.id||'', list=type==='positive'?(window.EA_POSITIVE_ATTACK_LIBRARY||[]):type==='threat'?(window.EA_THREAT_LIBRARY||[]):(window.EA_HUMAN_BEHAVIOR_LIBRARY||[]);
-    for(var j=0;j<list.length;j++) if(list[j].id===id) return {type:type,id:id,name:list[j].name||'',action:list[j].action||'',signal:list[j].signal||'',goal:list[j].goal||''};
-    return {type:type,id:id,name:pick.textContent.trim(),action:'',signal:'',goal:''};
-  }
-  function setStatus(name,msg,runId){
-    var old=document.getElementById('ea-sim-guard');
-    if(!old){old=document.createElement('div');old.id='ea-sim-guard';old.className='card';old.style.cssText='position:sticky;top:8px;z-index:20;border:2px solid var(--accent);background:var(--panel);margin-bottom:10px';var app=document.getElementById('app');if(app)app.insertBefore(old,app.firstChild);}
-    old.innerHTML='<b>'+esc(name)+'</b><div style="margin-top:6px">'+esc(msg)+'</div>'+(runId?'<div class="muted" style="margin-top:5px">Run: '+esc(runId)+'</div>':'');
-  }
+  function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;');}
   function headers(){return {apikey:KEY,Authorization:'Bearer '+KEY,Accept:'application/json'};}
   function get(url){return fetch(url,{headers:headers(),cache:'no-store'}).then(function(r){return r.text().then(function(t){var d;try{d=JSON.parse(t)}catch(e){throw new Error('HTTP '+r.status+' 返回非JSON')};if(!r.ok)throw new Error('HTTP '+r.status);return d;});});}
-  function run(runId){
-    return get(BASE+'/rest/v1/sandbox_runs?select=id,status,agent_progress,state&id=eq.'+encodeURIComponent(runId)+'&limit=1').then(function(a){return a&&a[0];});
-  }
-  function waitRun(runId,attempt){
-    run(runId).then(function(r){
-      if(!r){setStatus('Sandbox 模拟','找不到新 Run，请重新点击。');busy=false;return;}
-      if(r.status==='completed'){setStatus('Sandbox 模拟完成','10轮模拟已完成，正在刷新策略中心……',runId);setTimeout(function(){location.reload();},500);return;}
-      if(r.status==='failed'){setStatus('Sandbox 模拟失败',(r.state&&r.state.error)||'Edge Function 执行失败',runId);busy=false;return;}
-      setStatus('Sandbox 模拟运行中','已完成 '+Number(r.agent_progress||0)+'%，等待下一轮……',runId);
-      if(attempt<90)setTimeout(function(){waitRun(runId,attempt+1);},1200);else{setStatus('Sandbox 模拟超时','Run仍在运行，请点击“读取最新模拟”。',runId);busy=false;}
-    }).catch(function(e){setStatus('读取模拟状态失败',e.message,runId);busy=false;});
-  }
-  function start(){
-    if(busy)return;
-    busy=true;
-    var ctx=activeContext();
-    if(!ctx.id){setStatus('Sandbox 模拟','请先选择一个策略。');busy=false;return;}
-    setStatus('正在启动 Sandbox 模拟','正在创建独立 Run，请不要重复点击……');
-    fetch(BASE+'/functions/v1/sandbox-agent-runner',{
-      method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},
-      body:JSON.stringify({client_key:CLIENT,rounds:10,strategy_context:ctx})
-    }).then(function(r){return r.text().then(function(t){var d;try{d=JSON.parse(t)}catch(e){d={}};if(!r.ok)throw new Error(d.error||('HTTP '+r.status));return d;});})
-    .then(function(d){if(!d.run_id)throw new Error('Edge Function 未返回 run_id');setStatus('Sandbox 模拟运行中','Run 已创建，正在逐轮生成数据……',d.run_id);waitRun(d.run_id,0);})
-    .catch(function(e){setStatus('Sandbox 模拟启动失败',e.message);busy=false;});
-  }
-  function refresh(){
-    if(busy)return;
-    busy=true;setStatus('读取最新 Sandbox 模拟','正在读取最近一次 Run……');
-    get(BASE+'/rest/v1/sandbox_runs?select=id,status,agent_progress,state&client_key=eq.'+encodeURIComponent(CLIENT)+'&order=updated_at.desc&limit=1')
-      .then(function(a){var r=a&&a[0];if(!r)throw new Error('没有找到 sandbox_runs');setStatus('最新 Sandbox 模拟',r.status==='completed'?'已完成，正在刷新……':'当前状态：'+r.status+' · '+Number(r.agent_progress||0)+'%',r.id);if(r.status==='completed')setTimeout(function(){location.reload();},400);else{busy=false;waitRun(r.id,0);}})
-      .catch(function(e){setStatus('读取失败',e.message);busy=false;});
-  }
-  document.addEventListener('click',function(e){
-    var t=e.target&&e.target.closest?e.target.closest('.sc-run'):null;
-    if(t){e.preventDefault();e.stopImmediatePropagation();start();return;}
-    t=e.target&&e.target.closest?e.target.closest('.sc-refresh'):null;
-    if(t){e.preventDefault();e.stopImmediatePropagation();refresh();}
-  },true);
+  function setStatus(name,msg,runId){var old=document.getElementById('ea-sim-guard');if(!old){old=document.createElement('div');old.id='ea-sim-guard';old.className='card';old.style.cssText='position:sticky;top:8px;z-index:20;border:2px solid var(--accent);background:var(--panel);margin-bottom:10px';var app=document.getElementById('app');if(app)app.insertBefore(old,app.firstChild);}old.innerHTML='<b>'+esc(name)+'</b><div style="margin-top:6px">'+esc(msg)+'</div>'+(runId?'<div class="muted" style="margin-top:5px">Run: '+esc(runId)+'</div>':'');}
+  function activeContext(){var choices=document.querySelectorAll('.sc-choice'),pick=null;for(var i=0;i<choices.length;i++){if(String(choices[i].style.borderColor||'').indexOf('accent')>=0){pick=choices[i];break;}}if(!pick&&choices.length)pick=choices[0];if(!pick)return {type:'AUTO',id:'',name:'自动选择策略',action:'',signal:'',goal:''};var type=pick.dataset.type||'AUTO',id=pick.dataset.id||'',list=type==='positive'?(window.EA_POSITIVE_ATTACK_LIBRARY||[]):type==='threat'?(window.EA_THREAT_LIBRARY||[]):(window.EA_HUMAN_BEHAVIOR_LIBRARY||[]);for(var j=0;j<list.length;j++)if(list[j].id===id)return{type:type,id:id,name:list[j].name||'',action:list[j].action||'',signal:list[j].signal||'',goal:list[j].goal||''};return{type:type,id:id,name:pick.textContent.trim(),action:'',signal:'',goal:''};}
+  function waitRun(runId,attempt){get(BASE+'/rest/v1/sandbox_runs?select=id,status,agent_progress,state&id=eq.'+encodeURIComponent(runId)+'&limit=1').then(function(a){var r=a&&a[0];if(!r){setStatus('Sandbox 模拟','找不到新 Run，请重新点击。');busy=false;return;}if(r.status==='completed'){setStatus('Sandbox 模拟完成','10轮模拟已完成，正在刷新策略中心……',runId);setTimeout(function(){location.reload();},500);return;}if(r.status==='failed'){setStatus('Sandbox 模拟失败',(r.state&&r.state.error)||'Edge Function 执行失败',runId);busy=false;return;}setStatus('Sandbox 模拟运行中','已完成 '+Number(r.agent_progress||0)+'%，等待下一轮……',runId);if(attempt<90)setTimeout(function(){waitRun(runId,attempt+1);},1200);else{setStatus('Sandbox 模拟超时','Run仍在运行，请点击“读取最新模拟”。',runId);busy=false;}}).catch(function(e){setStatus('读取模拟状态失败',e.message,runId);busy=false;});}
+  function start(){if(busy)return;busy=true;var ctx=activeContext();if(!ctx.id){setStatus('Sandbox 模拟','请先选择一个策略。');busy=false;return;}setStatus('正在启动 Sandbox 模拟','正在创建独立 Run，请不要重复点击……');fetch(BASE+'/functions/v1/sandbox-agent-runner',{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json'},body:JSON.stringify({client_key:CLIENT,rounds:10,strategy_context:ctx})}).then(function(r){return r.text().then(function(t){var d;try{d=JSON.parse(t)}catch(e){d={}};if(!r.ok)throw new Error(d.error||('HTTP '+r.status));return d;});}).then(function(d){if(!d.run_id)throw new Error('Edge Function 未返回 run_id');setStatus('Sandbox 模拟运行中','Run 已创建，正在逐轮生成数据……',d.run_id);waitRun(d.run_id,0);}).catch(function(e){setStatus('Sandbox 模拟启动失败',e.message);busy=false;});}
+  function refresh(){if(busy)return;busy=true;setStatus('读取最新 Sandbox 模拟','正在读取最近一次 Run……');get(BASE+'/rest/v1/sandbox_runs?select=id,status,agent_progress,state&client_key=eq.'+encodeURIComponent(CLIENT)+'&order=updated_at.desc&limit=1').then(function(a){var r=a&&a[0];if(!r)throw new Error('没有找到 sandbox_runs');setStatus('最新 Sandbox 模拟',r.status==='completed'?'已完成，正在刷新……':'当前状态：'+r.status+' · '+Number(r.agent_progress||0)+'%',r.id);if(r.status==='completed')setTimeout(function(){location.reload();},400);else{busy=false;waitRun(r.id,0);}}).catch(function(e){setStatus('读取失败',e.message);busy=false;});}
+  function renderCenter(){if(location.hash!=='#strategy-center')return;var app=document.getElementById('app');if(!app)return;get(BASE+'/rest/v1/sandbox_agent_rounds?select=round,action,actual_opponent_response,next_action_hint,roi,risk_approved&order=round.asc&limit=30').then(function(rounds){rounds=rounds||[];var h='<h1 class="page-title">连续博弈中心 <span style="font-size:16px;font-weight:500;color:var(--accent);margin-left:10px">我变 → 对手学 → 我再变</span></h1><div class="subtitle">多轮 Sandbox 策略闭环</div><div class="card" style="margin:10px 0 16px;border-left:4px solid var(--accent);background:rgba(255,180,0,.06)"><b>连续博弈主链</b><div style="font-size:18px;margin-top:6px">我方动作 → 对手学习/响应 → 市场反馈 → 我方调整 → 风险控制 → 下一轮</div></div><div class="grid"><div class="card"><span class="tag">01</span><h3>我方策略</h3><div class="muted">当前轮选择动作、目标与突破口</div></div><div class="card"><span class="tag">02</span><h3>对手学习</h3><div class="muted">记录对手响应，不预设固定反应</div></div><div class="card"><span class="tag">03</span><h3>我再变化</h3><div class="muted">根据实际反馈调整下一轮动作</div></div><div class="card"><span class="tag">04</span><h3>风险拦截</h3><div class="muted">动作进入下一轮前经过风控</div></div></div><div class="card" style="margin-top:12px"><div class="label">连续轮次回放 · '+rounds.length+'轮</div>';if(rounds.length){h+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-top:12px">';rounds.forEach(function(r){h+='<div class="card"><b>R'+esc(r.round)+' · '+esc(r.action||'HOLD')+'</b><div style="margin-top:6px">对手响应：'+esc(r.actual_opponent_response||'暂无')+'</div><div style="margin-top:6px">下一动作：'+esc(r.next_action_hint||'HOLD')+'</div><div class="muted" style="margin-top:6px">ROI：'+esc(r.roi==null?'-':r.roi)+' · 风险：'+(r.risk_approved===false?'拦截':'通过')+'</div></div>';});h+='</div>';}else h+='<div class="notice" style="margin-top:12px">暂无轮次。选择策略后启动10轮 Sandbox，结果会按轮次显示在这里。</div>';h+='</div><div class="card" style="margin-top:12px"><button type="button" class="action sc-run">▶ 开始10轮模拟</button><button type="button" class="action sc-refresh">↻ 读取最新模拟</button></div>';app.innerHTML=h;}).catch(function(e){setStatus('连续博弈中心','读取轮次失败：'+e.message);});}
+  document.addEventListener('click',function(e){var t=e.target&&e.target.closest?e.target.closest('.sc-run'):null;if(t){e.preventDefault();e.stopImmediatePropagation();start();return;}t=e.target&&e.target.closest?e.target.closest('.sc-refresh'):null;if(t){e.preventDefault();e.stopImmediatePropagation();refresh();}},true);
+  window.addEventListener('hashchange',function(){setTimeout(renderCenter,50);});
+  setTimeout(renderCenter,300);
 })();
