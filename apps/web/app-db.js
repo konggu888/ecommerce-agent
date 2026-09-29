@@ -191,7 +191,8 @@
       '<div class="card"><div class="label">市场信号</div><div class="metric">' + state.market.length + '</div></div>' +
       '<div class="card"><div class="label">Agent闭环轮次</div><div class="metric">' + state.agentRounds.length + '</div></div>' +
       '</div>' +
-      notice('核心数据库读取成功。广告模块也已进入读取阶段。')
+      playbackPanel() +
+      notice('上面的模拟器会按轮次播放当前 Sandbox Agent 的已生成结果；点击“开始”后每 1.8 秒推进一轮。当前仍不接真实店铺。')
     );
   }
 
