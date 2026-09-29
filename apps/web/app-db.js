@@ -3,46 +3,34 @@
 
   var app = document.getElementById('app');
   var nav = document.querySelectorAll('.nav');
-  var VERSION = '20260929-76';
+  var VERSION = '20260929-64';
   var BASE = 'https://skuoxmrzlxhebzhfgbyn.supabase.co';
   var KEY = 'sb_publishable_u46tZ4GMUgwqSYhMJNFG8Q_IzYwl95T';
   var CLIENT = 'ecommerce-agent-sandbox-v1';
-  var state = {
-    view: location.hash.slice(1) || 'overview', run: null, error: null, game: [], market: [], ads: {}, backtests: [], events: [], memories: [], risk: [], tasks: [], agentRounds: [], playback: { playing: false, current: 0, timer: null, poll: null }, simulation: { status: 'idle', name: '', message: '' }
-  };
-
-  function zh(v) {
-    var s = String(v == null ? '' : v);
-    var map = {
-      HOLD:'保持观察',CHANGE_KEYWORD:'调整关键词',CHANGE_TARGETING:'调整定向',CHANGE_CONTENT:'调整内容',CHANGE_AUDIENCE:'调整人群',CHANGE_CREATIVE:'调整创意',CHANGE_PRICE:'调整价格',
-      INCREASE_BUDGET:'增加预算',DECREASE_BUDGET:'降低预算',INCREASE_BID:'提高出价',DECREASE_BID:'降低出价',CONTENT_VIDEO:'视频内容',CONTENT_MATRIX:'内容矩阵',PRICE_WAR:'价格竞争',TRAFFIC_DEFENSE:'流量防守',VALUE_DEFENSE:'价值防守',CONTENT_SHIFT:'内容切换',
-      MATCH_OR_UNDERCUT_PRICE:'跟价或低价竞争',MATCH_PRICE:'跟价',RAISE_BID_AND_DEFEND_TRAFFIC:'提高出价并防守流量',RAISE_BID:'提高出价',IMPROVE_CONVERSION:'提升转化',DEFEND_TRAFFIC:'防守流量',SHIFT_CONTENT:'切换内容',SHIFT_TO_CONTENT:'转向内容',VALUE_ATTACK:'价值竞争',NO_CLEAR_GAP:'暂未发现明确突破口',
-      ALLOW:'通过',BLOCK:'拦截',STOP:'停止',CONTINUE:'继续',POSITIVE:'正向',NEGATIVE:'负向',INCONCLUSIVE:'结果不明确',OBSERVE:'观察',DEFENSIVE:'防守',MIXED:'混合',UNKNOWN:'未知',ANALYZE_ONLY:'仅分析',AUTO:'自动选择',OUR_AGENT:'我方智能体',
-      'OPP-01':'价格竞争方','OPP-02':'流量竞争方','OPP-03':'内容竞争方',CATARGETING:'定向投放',CA_TARGETING:'定向投放',TARGETING:'定向投放',targeting:'定向投放',catargeting:'定向投放',
-      RISK_CONTROLLER:'风险控制器',RISK_CONTROLLER_BLOCK:'风险控制器拦截',SANDBOX:'沙盒模拟',RUNNING:'运行中',COMPLETED:'已完成',FAILED:'失败',STOP_SIGNAL:'停止信号',RISK_APPROVED:'风险通过',
-      ACTUAL_OPPONENT_RESPONSE:'实际对手响应',NEXT_ACTION:'下一动作',CURRENT_ACTION:'当前动作',CURRENT_ROUND:'当前轮次',STRATEGY_SOURCE:'选择策略来源',POSITIVE_ATTACK:'正向策略',NEGATIVE_ATTACK:'负向策略',HUMAN_BEHAVIOR:'人性行为'
-    };
-    if (Object.prototype.hasOwnProperty.call(map, s)) return map[s];
-    return s.replace(/\b(CATARGETING|CA_TARGETING|TARGETING|CHANGE_KEYWORD|CHANGE_TARGETING|CHANGE_CONTENT|CHANGE_AUDIENCE|CHANGE_CREATIVE|HOLD|CHANGE_PRICE|INCREASE_BUDGET|DECREASE_BUDGET|INCREASE_BID|DECREASE_BID|CONTENT_VIDEO|CONTENT_MATRIX|PRICE_WAR|TRAFFIC_DEFENSE|VALUE_DEFENSE|CONTENT_SHIFT|MATCH_OR_UNDERCUT_PRICE|MATCH_PRICE|RAISE_BID_AND_DEFEND_TRAFFIC|RAISE_BID|IMPROVE_CONVERSION|DEFEND_TRAFFIC|SHIFT_CONTENT|SHIFT_TO_CONTENT|NO_CLEAR_GAP|ALLOW|BLOCK|STOP|CONTINUE|POSITIVE|NEGATIVE|INCONCLUSIVE|OBSERVE|DEFENSIVE|MIXED|UNKNOWN|ANALYZE_ONLY|OUR_AGENT|OPP-01|OPP-02|OPP-03)\b/g, function (x) { return map[x] || map[String(x).toUpperCase()] || x; });
-  }
-  function esc(v) { return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
-  function show(title, sub, body) { app.innerHTML = '<h1 class="page-title">' + esc(title) + ' <span style="font-size:16px;font-weight:500;color:var(--accent);margin-left:10px">我变 → 对手学 → 我再变</span></h1><div class="subtitle">' + esc(sub) + '</div><div class="card" style="margin:10px 0 16px;border-left:4px solid var(--accent);background:rgba(255,180,0,.06)"><b>连续博弈座右铭</b><div style="font-size:18px;margin-top:6px">我变 → 对手学 → 我再变</div><div class="muted" style="margin-top:4px">不要重复暴露同一种打法；让每一轮对手的学习，成为下一轮改变的输入。</div></div>' + body; }
-  function notice(v) { return '<div class="card"><div class="notice">' + esc(v) + '</div></div>'; }
-
-  // The remainder of the stable application is intentionally loaded from the existing runtime bundle.
-  // This file is a syntax-safe compatibility shell; page-specific modules are loaded by the app runtime.
-  function boot() {
-    if (!app) return;
-    show('总览', '商业博弈控制台', '<div class="card"><h3>系统已恢复</h3><div class="muted">正在使用稳定启动链。请选择左侧页面。</div></div>');
-    Array.prototype.forEach.call(nav, function (el) {
-      el.addEventListener('click', function () {
-        Array.prototype.forEach.call(nav, function (n) { n.classList.remove('active'); });
-        el.classList.add('active');
-        state.view = el.getAttribute('data-view') || 'overview';
-        location.hash = state.view;
-        show(el.textContent || '页面', '当前页面', '<div class="card"><h3>' + esc(el.textContent || '') + '</h3><div class="muted">页面入口正常。完整数据模块正在恢复，请稍后刷新。</div></div>');
-      });
-    });
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
-})();
+  var state = { view: location.hash.slice(1) || 'overview', run: null, error: null, game: [], market: [], ads: {}, backtests: [], events: [], memories: [], risk: [], tasks: [], agentRounds: [], playback: { playing: false, current: 0, timer: null, poll: null }, simulation: { status: 'idle', name: '', message: '' } };
+  function zh(v){var s=String(v==null?'':v),m={'HOLD':'保持观察','CHANGE_KEYWORD':'调整关键词','CHANGE_TARGETING':'调整定向','CHANGE_CONTENT':'调整内容','CHANGE_AUDIENCE':'调整人群','CHANGE_CREATIVE':'调整创意','CHANGE_PRICE':'调整价格','INCREASE_BUDGET':'增加预算','DECREASE_BUDGET':'降低预算','INCREASE_BID':'提高出价','DECREASE_BID':'降低出价','DEFEND_TRAFFIC':'防守流量','SHIFT_CONTENT':'切换内容','VALUE_ATTACK':'价值竞争','NO_CLEAR_GAP':'暂未发现明确突破口','ALLOW':'通过','BLOCK':'拦截','STOP':'停止','CONTINUE':'继续','POSITIVE':'正向','NEGATIVE':'负向','INCONCLUSIVE':'结果不明确','OBSERVE':'观察','DEFENSIVE':'防守','MIXED':'混合','UNKNOWN':'未知','ANALYZE_ONLY':'仅分析','AUTO':'自动选择','OUR_AGENT':'我方智能体','OPP-01':'价格竞争方','OPP-02':'流量竞争方','OPP-03':'内容竞争方','CATARGETING':'定向投放','CA_TARGETING':'定向投放','TARGETING':'定向投放','targeting':'定向投放','catargeting':'定向投放'};return Object.prototype.hasOwnProperty.call(m,s)?m[s]:s;}
+  function esc(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function show(t,s,b){app.innerHTML='<h1 class="page-title">'+esc(t)+' <span style="font-size:16px;font-weight:500;color:var(--accent);margin-left:10px">我变 → 对手学 → 我再变</span></h1><div class="subtitle">'+esc(s)+'</div><div class="card" style="margin:10px 0 16px;border-left:4px solid var(--accent);background:rgba(255,180,0,.06)"><b>连续博弈座右铭</b><div style="font-size:18px;margin-top:6px">我变 → 对手学 → 我再变</div></div>'+b;}
+  function notice(v){return '<div class="card"><div class="notice">'+esc(v)+'</div></div>';}
+  function table(h,rows){if(!rows.length)return notice('没有数据库记录。');var x='<div class="card"><table class="table"><thead><tr>';for(var i=0;i<h.length;i++)x+='<th>'+esc(h[i])+'</th>';x+='</tr></thead><tbody>';for(var r=0;r<rows.length;r++){x+='<tr>';for(var c=0;c<rows[r].length;c++)x+='<td>'+esc(rows[r][c])+'</td>';x+='</tr>';}return x+'</tbody></table></div>';}
+  function getJSON(url){return fetch(url,{headers:{apikey:KEY,Authorization:'Bearer '+KEY,Accept:'application/json'},cache:'no-store'}).then(function(res){return res.text().then(function(body){var data;try{data=JSON.parse(body);}catch(e){throw new Error('HTTP '+res.status+' 返回非 JSON');}if(!res.ok)throw new Error('HTTP '+res.status);return data;});});}
+  function runURL(name,scoped){var q='?select=*&order=id.desc';if(scoped&&state.run&&state.run.id)q+='&run_id=eq.'+encodeURIComponent(state.run.id);return BASE+'/rest/v1/'+name+q;}
+  function loadRun(){return getJSON(BASE+'/rest/v1/sandbox_runs?select=id,status,updated_at,client_key,agent_progress,backtest_progress,risk_progress,memory_count,run_count,state&client_key=eq.'+encodeURIComponent(CLIENT)+'&order=updated_at.desc&limit=1').then(function(rows){if(!rows||!rows.length)throw new Error('没有找到 sandbox_runs');state.run=rows[0];});}
+  function loadCore(){return Promise.all([getJSON(runURL('sandbox_game_states',true)),getJSON(runURL('sandbox_market_signals',true)),getJSON(runURL('sandbox_backtests',true)),getJSON(runURL('sandbox_events',true)),getJSON(runURL('sandbox_memories',true)),getJSON(runURL('sandbox_risk_results',true)),getJSON(runURL('sandbox_task_results',true)),getJSON(runURL('sandbox_agent_rounds',true))]).then(function(x){state.game=x[0];state.market=x[1];state.backtests=x[2];state.events=x[3];state.memories=x[4];state.risk=x[5];state.tasks=x[6];state.agentRounds=x[7];});}
+  var adTables=['sandbox_ad_plans','sandbox_ad_units','sandbox_ad_keywords','sandbox_ad_keyword_moves','sandbox_ad_audiences','sandbox_ad_audience_combos','sandbox_ad_creatives','sandbox_ad_placements','sandbox_ad_regions','sandbox_ad_timeslots','sandbox_ad_negative_keywords','sandbox_ad_agent_actions','sandbox_ad_results','sandbox_ad_reports'];
+  function loadAds(){return Promise.all(adTables.map(function(n){return getJSON(runURL(n)).then(function(rows){return {n:n,rows:rows};});})).then(function(items){state.ads={};items.forEach(function(x){state.ads[x.n]=x.rows;});});}
+  function overview(){show('商业博弈总览','BOOT-DEBUG-'+VERSION,'<div class="grid"><div class="card"><div class="label">Sandbox Run</div><div class="metric">'+esc(state.run&&state.run.status||'unknown')+'</div></div><div class="card"><div class="label">商业博弈记录</div><div class="metric">'+state.game.length+'</div></div><div class="card"><div class="label">市场信号</div><div class="metric">'+state.market.length+'</div></div><div class="card"><div class="label">Agent轮次</div><div class="metric">'+state.agentRounds.length+'</div></div></div><div class="card"><h3>系统恢复基准</h3><div class="notice">核心数据模块已恢复。后续页面按独立模块逐个恢复，单个页面异常不会修改主启动链。</div></div>');}
+  function market(){var rows=state.market.map(function(x){return[x.name,x.signal_type,x.strength,x.detail];});show('外部市场情报','Sandbox 市场信号',table(['名称','类型','强度','说明'],rows));}
+  function gameLogic(){var list=window.EA_GAME_LOGICS||[];var h='<div class="card"><div class="label">预设博弈逻辑</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px">';list.forEach(function(x){h+='<button class="game-logic-choice" data-id="'+esc(x.id)+'" style="text-align:left;padding:10px;border:1px solid var(--line);border-radius:8px;background:transparent;color:inherit"><b>'+esc(x.id)+' '+esc(x.name)+'</b><div class="muted">'+esc(x.type)+'</div></button>';});h+='</div></div><div id="game-detail">'+(list[0]?'<div class="card"><h2>'+esc(list[0].name)+'</h2><div class="label">完整博弈过程</div>'+list[0].steps.map(function(s,i){return'<div class="notice">第'+(i+1)+'步：'+esc(s)+'</div>';}).join('')+'</div>':notice('暂无博弈逻辑'))+'</div>';show('博弈逻辑','预设博弈过程',h);document.querySelectorAll('.game-logic-choice').forEach(function(b){b.onclick=function(){var x=list.find(function(a){return a.id===b.dataset.id;});if(x)document.getElementById('game-detail').innerHTML='<div class="card"><h2>'+esc(x.name)+'</h2>'+x.steps.map(function(s,i){return'<div class="notice">第'+(i+1)+'步：'+esc(s)+'</div>';}).join('')+'</div>';};});}
+  function generic(view,title){var maps={'positive-attacks':'EA_POSITIVE_ATTACK_LIBRARY','threats':'EA_THREAT_LIBRARY','human-behavior':'EA_HUMAN_BEHAVIOR_LIBRARY'};var list=window[maps[view]]||[];var h='<div class="card"><div class="label">'+list.length+'项</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px">';list.forEach(function(x){h+='<div class="notice"><b>'+esc(x.id)+' '+esc(x.name)+'</b><br><span class="muted">'+esc(x.signal||x.style||x.category||'')+'</span></div>';});h+='</div></div>';show(title,'模块数据恢复中',h);}
+  function ads(){var a=state.ads,h='<div class="grid">';adTables.forEach(function(n){h+='<div class="card"><div class="label">'+esc(n.replace('sandbox_ad_',''))+'</div><div class="metric">'+((a[n]||[]).length)+'</div></div>';});h+='</div>';show('广告 / 流量','Sandbox 广告数据链',h);}
+  function experiments(){show('实验与回测','Sandbox',table(['场景','轮次','ROI','风险','动作','时间'],state.backtests.map(function(x){return[x.scenario,x.rounds,x.roi,x.risk,x.action,x.created_at];})));}
+  function risk(){show('风险控制器','Sandbox',table(['指标','结果','时间'],state.risk.map(function(x){return[x.metric,JSON.stringify(x.value),x.created_at];})));}
+  function jobs(){show('任务监控','Sandbox Agent',table(['任务类型','状态','进度','时间'],state.tasks.map(function(x){return[x.task_type,x.status,x.progress+'%',x.created_at];}))+'<h2>事件流</h2>'+table(['事件类型','标题','详情','时间'],state.events.map(function(x){return[x.event_type,x.title,x.detail,x.created_at];}))+'<div class="card"><div class="notice">程序内部 Payload、ID 和 JSON 已隐藏；需要排错时再进入技术详情。</div></div>');}
+  function memory(){show('学习记忆','Sandbox',table(['记忆类型','内容','置信度','状态','时间'],state.memories.map(function(x){return[x.memory_type,x.content,x.confidence,x.status,x.created_at];})));}
+  function game(){show('商业博弈','Sandbox',table(['产品','竞品','场景','竞品价格','我方价格','CPC','CVR'],state.game.map(function(x){return[x.product,x.competitor,x.scenario,x.competitor_price,x.our_price,x.cpc,x.cvr];})));}
+  function render(){nav.forEach(function(n){n.classList.toggle('active',n.dataset.view===state.view);});try{if(state.view==='overview')overview();else if(state.view==='market')market();else if(state.view==='game-logic')gameLogic();else if(state.view==='positive-attacks')generic('positive-attacks','正向攻击');else if(state.view==='threats')generic('threats','对手攻击面');else if(state.view==='human-behavior')generic('human-behavior','人性行为演变');else if(state.view==='strategy-center')generic('human-behavior','连续博弈策略中心');else if(state.view==='ad-bidding-game')generic('positive-attacks','广告投流博弈');else if(state.view==='ads')ads();else if(state.view==='experiments')experiments();else if(state.view==='risk')risk();else if(state.view==='jobs')jobs();else if(state.view==='memory')memory();else game();}catch(e){show('当前模块加载失败','其他页面不受影响','<div class="card"><div class="notice">'+esc(e.message)+'</div></div>');}}
+  nav.forEach(function(n){n.addEventListener('click',function(){state.view=n.dataset.view;location.hash=state.view;render();});});
+  window.__EA_APPDB_LOADED__=true;window.__EA_APPDB_VERSION__=VERSION;
+  loadRun().then(loadCore).then(loadAds).then(render).catch(function(e){show('核心数据读取失败','其他页面仍可进入','<div class="card"><div class="notice">'+esc(e.message)+'</div></div>');});
+}());
