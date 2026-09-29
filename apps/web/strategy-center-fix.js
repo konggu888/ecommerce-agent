@@ -381,7 +381,8 @@
     var h='<div class="card" style="margin:0 0 8px;border-left:4px solid '+border+'">';
     h+='<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="tag">第'+s.no+'步</span><b>'+esc(s.side)+'</b><span class="tag">'+esc(m.kind)+'</span><span class="muted">'+esc(s.phase)+'</span></div>';
     h+='<div style="font-size:17px;margin-top:7px"><span class="tag">'+esc(m.id)+'</span> <b>'+esc(m.name)+'</b></div>';
-    h+='<div class="muted" style="margin-top:5px">'+esc(m.reason)+'</div>';
+    h+='<div class="notice" style="margin-top:7px"><b>为什么现在用这招</b><div style="margin-top:5px;line-height:1.7">'+esc(m.reason)+'</div></div>';
+    h+='<div class="muted" style="margin-top:6px"><b>本手目标：</b>'+esc(m.mode||'自适应')+' · <b>前一手：</b>'+esc((s.stateBefore&&s.stateBefore.lastMode)||'开局')+' · '+esc((s.stateBefore&&s.stateBefore.lastDomain)||'通用')+'</div>';
     if(m.source){
       h+='<div class="muted" style="margin-top:4px">战略动作：'+esc(m.mode||'自适应')+' · 原招式库：'+esc(m.kind)+' · 原定义：'+esc(m.source.action||m.source.defense||m.source.mechanism||m.source.signal||'')+'</div>';
       if(m.source.combo&&Array.isArray(m.source.combo.steps)){
