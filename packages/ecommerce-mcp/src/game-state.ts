@@ -11,6 +11,7 @@ export interface CompetitorSnapshot {
 }
 
 import { ThreatInference } from './threat-inference';
+import { BehaviorState } from './human-behavior-engine';
 
 export interface GameState {
   shopId: string;
@@ -31,6 +32,8 @@ export interface GameState {
   competitors: CompetitorSnapshot[];
   /** Evidence-based threat hypotheses; never treated as direct attribution. */
   threatInferences?: ThreatInference[];
+  /** Persistent, evidence-based opponent behavior state; not a psychological diagnosis. */
+  behaviorState?: BehaviorState;
   observedAt: string;
 }
 
