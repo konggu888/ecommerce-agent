@@ -7,7 +7,7 @@
   var SUPABASE_URL = 'https://skuoxmrzlxhebzhfgbyn.supabase.co';
   var ANON_KEY = 'sb_publishable_u46tZ4GMUgwqSYhMJNFG8Q_IzYwl95T';
   var CLIENT_KEY = 'ecommerce-agent-sandbox-v1';
-  var state = { view: location.hash.slice(1) || 'overview', run: null, game: [], market: [] };
+  var state = { view: location.hash.slice(1) || 'overview', run: null, game: [], market: [], ads: {} };
 
   function esc(value) {
     return String(value == null ? '' : value)
@@ -83,6 +83,8 @@
     });
   }
 
+  var adTables = ['sandbox_ad_plans','sandbox_ad_units','sandbox_ad_keywords','sandbox_ad_keyword_moves','sandbox_ad_audiences','sandbox_ad_audience_combos','sandbox_ad_creatives','sandbox_ad_placements','sandbox_ad_regions','sandbox_ad_timeslots','sandbox_ad_negative_keywords','sandbox_ad_agent_actions'];
+
   function loadBusinessData() {
     return Promise.all([
       getJSON(runURL('sandbox_game_states')),
@@ -90,6 +92,15 @@
     ]).then(function (values) {
       state.game = values[0];
       state.market = values[1];
+    });
+  }
+
+  function loadAdData() {
+    return Promise.all(adTables.map(function (name) {
+      return getJSON(runURL(name)).then(function (rows) { return { name: name, rows: rows }; });
+    })).then(function (values) {
+      state.ads = {};
+      values.forEach(function (item) { state.ads[item.name] = item.rows; });
     });
   }
 
@@ -140,6 +151,22 @@
     );
   }
 
+  function ads() {
+    var a = state.ads;
+    return page('广告 / 流量', '直接读取广告模块数据库 · Sandbox 模拟数据',
+      table(['投放计划','状态','商品','场景','日预算','出价策略'], (a.sandbox_ad_plans || []).map(function (x) { return [x.name,x.status,x.product,x.scene,x.daily_budget,x.bid_strategy]; })) +
+      table(['关键词','类型','匹配','出价','展现','点击','CTR','成交','CVR','消耗','GMV','ROI'], (a.sandbox_ad_keywords || []).map(function (x) { return [x.keyword,x.keyword_type,x.match_type,x.bid,x.impressions,x.clicks,x.ctr,x.conversions,x.cvr,x.spend,x.gmv,x.roi]; })) +
+      table(['迁移类型','原关键词/场景','新关键词/场景','点击','成交','CVR','ROI','Agent结论','状态'], (a.sandbox_ad_keyword_moves || []).map(function (x) { return [x.move_type,x.source_keyword,x.related_keyword,x.clicks,x.conversions,x.cvr,x.roi,x.agent_conclusion,x.status]; })) +
+      table(['人群','类型','行为','窗口','规模','覆盖','CVR','ROI','出价','溢价','重合'], (a.sandbox_ad_audiences || []).map(function (x) { return [x.name,x.audience_type,x.behavior,x.window_days,x.size,x.coverage,x.cvr,x.roi,x.bid,x.premium,x.overlap]; })) +
+      table(['人群组合','规模','重合','CVR','ROI','Agent结论'], (a.sandbox_ad_audience_combos || []).map(function (x) { return [x.name,x.size,x.overlap,x.cvr,x.roi,x.agent_conclusion]; })) +
+      table(['创意','类型','标题','审核','展现','点击','CTR','成交','ROI','状态'], (a.sandbox_ad_creatives || []).map(function (x) { return [x.name,x.creative_type,x.title,x.audit_status,x.impressions,x.clicks,x.ctr,x.conversions,x.roi,x.status]; })) +
+      table(['渠道','资源位','展现','点击','CTR','消耗','成交','CVR','GMV','ROI'], (a.sandbox_ad_placements || []).map(function (x) { return [x.channel,x.placement,x.impressions,x.clicks,x.ctr,x.spend,x.conversions,x.cvr,x.gmv,x.roi]; })) +
+      table(['地域','展现','点击','CTR','消耗','成交','CVR','ROI'], (a.sandbox_ad_regions || []).map(function (x) { return [x.region,x.impressions,x.clicks,x.ctr,x.spend,x.conversions,x.cvr,x.roi]; })) +
+      table(['时段','星期','展现','点击','CTR','CPC','成交','CVR','ROI'], (a.sandbox_ad_timeslots || []).map(function (x) { return [x.slot,x.weekday,x.impressions,x.clicks,x.ctr,x.cpc,x.conversions,x.cvr,x.roi]; })) +
+      table(['否定/屏蔽词','点击','消耗','成交','Agent结论','状态'], (a.sandbox_ad_negative_keywords || []).map(function (x) { return [x.keyword,x.clicks,x.spend,x.conversions,x.agent_conclusion,x.status]; })) +
+      table(['Agent动作','目标','原因','结果','状态'], (a.sandbox_ad_agent_actions || []).map(function (x) { return [x.action_type,x.target,x.reason,x.result,x.status]; }));
+  }
+
   function placeholder(title) {
     return page(title, 'BOOT-DEBUG-' + VERSION, card('这一页暂时没有恢复。当前阶段只验证核心业务数据读取。'));
   }
@@ -148,7 +175,7 @@
     overview: overview,
     game: game,
     market: market,
-    ads: function () { return placeholder('广告 / 流量'); },
+    ads: ads,
     experiments: function () { return placeholder('实验与回测'); },
     risk: function () { return placeholder('风险控制器'); },
     jobs: function () { return placeholder('任务监控'); },
@@ -167,6 +194,7 @@
 
     loadRun()
       .then(loadBusinessData)
+      .then(loadAdData)
       .then(render)
       .catch(function (error) {
         console.error('BUSINESS_DATA_ERROR', error);
