@@ -34,6 +34,8 @@ export interface GameState {
   threatInferences?: ThreatInference[];
   /** Persistent, evidence-based opponent behavior state; not a psychological diagnosis. */
   behaviorState?: BehaviorState;
+  /** Simulation-only memory pressure: how strongly observed opponent history counters each action. */
+  opponentCounterMatrix?: Record<string, { counter: string; pressure: number; observations: number }>;
   observedAt: string;
 }
 
