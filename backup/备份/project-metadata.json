@@ -1,0 +1,13 @@
+{
+  "snapshot_at": "2026-09-29",
+  "project": "ecommerce-agent",
+  "project_id": "skuoxmrzlxhebzhfgbyn",
+  "organization_id": "fvgwekoaxkjgoxurvpca",
+  "region": "ap-southeast-1",
+  "status": "ACTIVE_HEALTHY",
+  "postgres_version": "17.6.1.166",
+  "postgres_engine": "17",
+  "site": "https://konggu888.github.io/ecommerce-agent/#strategy-center",
+  "github_repository": "konggu888/ecommerce-agent",
+  "github_branch": "备份"
+}
