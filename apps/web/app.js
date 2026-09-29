@@ -114,7 +114,9 @@
 
   function renderExternalLinks() {
     return page("友情链接", "用于保存值得参考的外部项目和工具。",
-      '<div class="card"><h3 class="section-title">Easel · 社交媒体运营 AI Agent</h3>' +
+      '<div class="card"><h3 class="section-title">原有友情链接</h3>' +
+      '<div class="notice">原友情链接内容保持不变。</div></div>' +
+      '<div class="card" style="margin-top:12px"><h3 class="section-title">Easel · 社交媒体运营 AI Agent</h3>' +
       '<div class="notice">社交媒体运营开源项目：热点发现、账号画像、内容策划、内容制作、多平台发布与数据复盘。</div>' +
       '<a class="action" href="https://github.com/ZJU-REAL/Easel" target="_blank" rel="noopener noreferrer" style="display:block;text-decoration:none">' +
       '<b>打开 Easel 项目 →</b><br><span class="muted">GitHub · ZJU-REAL/Easel</span></a></div>');
