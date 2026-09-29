@@ -1,0 +1,37 @@
+{
+  "table": "public.sandbox_ad_creatives",
+  "snapshot_at": "2026-09-29",
+  "row_count": 2,
+  "rows": [
+    {
+      "id": "0e09140f-ba95-4287-975e-55f095521204",
+      "ctr": 4,
+      "roi": 4.7,
+      "name": "创意A",
+      "title": "早餐轻食酸面包",
+      "clicks": 720,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "投放中",
+      "asset_url": null,
+      "conversions": 42,
+      "impressions": 18000,
+      "audit_status": "通过",
+      "creative_type": "图片"
+    },
+    {
+      "id": "41458e8f-583d-4e95-adb8-65ad5bd18f21",
+      "ctr": 4.6,
+      "roi": 5.1,
+      "name": "创意B",
+      "title": "办公室健康加餐",
+      "clicks": 690,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "status": "投放中",
+      "asset_url": null,
+      "conversions": 39,
+      "impressions": 15000,
+      "audit_status": "通过",
+      "creative_type": "短视频"
+    }
+  ]
+}
