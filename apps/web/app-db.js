@@ -388,7 +388,7 @@
     state.playback.playing = true;
     render();
     state.playback.timer = setInterval(function () {
-      if (state.view !== 'game') {
+      if (state.view !== 'game' && state.view !== 'overview') {
         stopPlayback();
         return;
       }
@@ -608,7 +608,7 @@
     var latest = state.agentRounds.length ? state.agentRounds[state.agentRounds.length - 1] : null;
     var progress = state.run ? (state.run.agent_progress || 0) : 0;
     var status = state.run ? state.run.status : 'unknown';
-    var latestTask = state.tasks.length ? state.tasks[0] : null;
+    var latestTask = state.tasks.length ? state.tasks.slice().sort(function(a,b){ return String(b.created_at||'').localeCompare(String(a.created_at||'')); })[0] : null;
     var hero =
       '<div class="card">' +
       '<h2>Agent 实时任务</h2>' +
@@ -690,7 +690,7 @@
     } else {
       overview();
     }
-    if (state.view === 'game') bindPlayback();
+    if (state.view === 'game' || state.view === 'overview') bindPlayback();
   }
 
   function start() {
