@@ -3,7 +3,7 @@
 
   var app = document.getElementById('app');
   var nav = document.querySelectorAll('.nav');
-  var VERSION = '20260929-18';
+  var VERSION = '20260929-19';
   var SUPABASE_URL = 'https://skuoxmrzlxhebzhfgbyn.supabase.co';
   var ANON_KEY = 'sb_publishable_u46tZ4GMUgwqSYhMJNFG8Q_IzYwl95T';
   var CLIENT_KEY = 'ecommerce-agent-sandbox-v1';
@@ -153,18 +153,65 @@
 
   function ads() {
     var a = state.ads;
-    return page('广告 / 流量', '直接读取广告模块数据库 · Sandbox 模拟数据',
-      table(['投放计划','状态','商品','场景','日预算','出价策略'], (a.sandbox_ad_plans || []).map(function (x) { return [x.name,x.status,x.product,x.scene,x.daily_budget,x.bid_strategy]; })) +
-      table(['关键词','类型','匹配','出价','展现','点击','CTR','成交','CVR','消耗','GMV','ROI'], (a.sandbox_ad_keywords || []).map(function (x) { return [x.keyword,x.keyword_type,x.match_type,x.bid,x.impressions,x.clicks,x.ctr,x.conversions,x.cvr,x.spend,x.gmv,x.roi]; })) +
-      table(['迁移类型','原关键词/场景','新关键词/场景','点击','成交','CVR','ROI','Agent结论','状态'], (a.sandbox_ad_keyword_moves || []).map(function (x) { return [x.move_type,x.source_keyword,x.related_keyword,x.clicks,x.conversions,x.cvr,x.roi,x.agent_conclusion,x.status]; })) +
-      table(['人群','类型','行为','窗口','规模','覆盖','CVR','ROI','出价','溢价','重合'], (a.sandbox_ad_audiences || []).map(function (x) { return [x.name,x.audience_type,x.behavior,x.window_days,x.size,x.coverage,x.cvr,x.roi,x.bid,x.premium,x.overlap]; })) +
-      table(['人群组合','规模','重合','CVR','ROI','Agent结论'], (a.sandbox_ad_audience_combos || []).map(function (x) { return [x.name,x.size,x.overlap,x.cvr,x.roi,x.agent_conclusion]; })) +
-      table(['创意','类型','标题','审核','展现','点击','CTR','成交','ROI','状态'], (a.sandbox_ad_creatives || []).map(function (x) { return [x.name,x.creative_type,x.title,x.audit_status,x.impressions,x.clicks,x.ctr,x.conversions,x.roi,x.status]; })) +
-      table(['渠道','资源位','展现','点击','CTR','消耗','成交','CVR','GMV','ROI'], (a.sandbox_ad_placements || []).map(function (x) { return [x.channel,x.placement,x.impressions,x.clicks,x.ctr,x.spend,x.conversions,x.cvr,x.gmv,x.roi]; })) +
-      table(['地域','展现','点击','CTR','消耗','成交','CVR','ROI'], (a.sandbox_ad_regions || []).map(function (x) { return [x.region,x.impressions,x.clicks,x.ctr,x.spend,x.conversions,x.cvr,x.roi]; })) +
-      table(['时段','星期','展现','点击','CTR','CPC','成交','CVR','ROI'], (a.sandbox_ad_timeslots || []).map(function (x) { return [x.slot,x.weekday,x.impressions,x.clicks,x.ctr,x.cpc,x.conversions,x.cvr,x.roi]; })) +
-      table(['否定/屏蔽词','点击','消耗','成交','Agent结论','状态'], (a.sandbox_ad_negative_keywords || []).map(function (x) { return [x.keyword,x.clicks,x.spend,x.conversions,x.agent_conclusion,x.status]; })) +
-      table(['Agent动作','目标','原因','结果','状态'], (a.sandbox_ad_agent_actions || []).map(function (x) { return [x.action_type,x.target,x.reason,x.result,x.status]; }));
+    var plans = a.sandbox_ad_plans || [];
+    var keywords = a.sandbox_ad_keywords || [];
+    var moves = a.sandbox_ad_keyword_moves || [];
+    var audiences = a.sandbox_ad_audiences || [];
+    var combos = a.sandbox_ad_audience_combos || [];
+    var creatives = a.sandbox_ad_creatives || [];
+    var placements = a.sandbox_ad_placements || [];
+    var regions = a.sandbox_ad_regions || [];
+    var timeslots = a.sandbox_ad_timeslots || [];
+    var negative = a.sandbox_ad_negative_keywords || [];
+    var actions = a.sandbox_ad_agent_actions || [];
+
+    var summary = '<div class="grid">' +
+      '<div class="card"><div class="label">投放计划</div><div class="metric">' + plans.length + '</div></div>' +
+      '<div class="card"><div class="label">关键词</div><div class="metric">' + keywords.length + '</div></div>' +
+      '<div class="card"><div class="label">人群</div><div class="metric">' + audiences.length + '</div></div>' +
+      '<div class="card"><div class="label">创意</div><div class="metric">' + creatives.length + '</div></div>' +
+      '<div class="card"><div class="label">资源位</div><div class="metric">' + placements.length + '</div></div>' +
+      '<div class="card"><div class="label">Agent动作</div><div class="metric">' + actions.length + '</div></div>' +
+      '</div>';
+
+    return page(
+      '广告 / 流量',
+      'BOOT-DEBUG-' + VERSION + ' · 直接读取广告模块数据库 · Sandbox 模拟数据',
+      summary +
+      table(['投放计划','状态','商品','场景','日预算','出价策略'], plans.map(function (x) {
+        return [x.name, x.status, x.product, x.scene, x.daily_budget, x.bid_strategy];
+      })) +
+      table(['关键词','类型','匹配','出价','展现','点击','CTR','成交','CVR','消耗','GMV','ROI'], keywords.map(function (x) {
+        return [x.keyword, x.keyword_type, x.match_type, x.bid, x.impressions, x.clicks, x.ctr, x.conversions, x.cvr, x.spend, x.gmv, x.roi];
+      })) +
+      table(['关键词迁移','原关键词','新关键词','点击','成交','CVR','ROI','Agent结论','状态'], moves.map(function (x) {
+        return [x.move_type, x.source_keyword, x.related_keyword, x.clicks, x.conversions, x.cvr, x.roi, x.agent_conclusion, x.status];
+      })) +
+      table(['人群','类型','行为','窗口','规模','覆盖','CVR','ROI'], audiences.map(function (x) {
+        return [x.name, x.audience_type, x.behavior, x.window_days, x.size, x.coverage, x.cvr, x.roi];
+      })) +
+      table(['人群组合','规模','重合','CVR','ROI','Agent结论'], combos.map(function (x) {
+        return [x.name, x.size, x.overlap, x.cvr, x.roi, x.agent_conclusion];
+      })) +
+      table(['创意','类型','标题','审核','展现','点击','CTR','成交','ROI','状态'], creatives.map(function (x) {
+        return [x.name, x.creative_type, x.title, x.audit_status, x.impressions, x.clicks, x.ctr, x.conversions, x.roi, x.status];
+      })) +
+      table(['渠道','资源位','展现','点击','CTR','消耗','成交','CVR','GMV','ROI'], placements.map(function (x) {
+        return [x.channel, x.placement, x.impressions, x.clicks, x.ctr, x.spend, x.conversions, x.cvr, x.gmv, x.roi];
+      })) +
+      table(['地域','展现','点击','CTR','消耗','成交','CVR','ROI'], regions.map(function (x) {
+        return [x.region, x.impressions, x.clicks, x.ctr, x.spend, x.conversions, x.cvr, x.roi];
+      })) +
+      table(['时段','星期','展现','点击','CTR','CPC','成交','CVR','ROI'], timeslots.map(function (x) {
+        return [x.slot, x.weekday, x.impressions, x.clicks, x.ctr, x.cpc, x.conversions, x.cvr, x.roi];
+      })) +
+      table(['否定词','点击','消耗','成交','Agent结论','状态'], negative.map(function (x) {
+        return [x.keyword, x.clicks, x.spend, x.conversions, x.agent_conclusion, x.status];
+      })) +
+      table(['Agent动作','目标','原因','结果','状态'], actions.map(function (x) {
+        return [x.action_type, x.target, x.reason, x.result, x.status];
+      }))
+    );
   }
 
   function placeholder(title) {
