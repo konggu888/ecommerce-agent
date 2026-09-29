@@ -1,0 +1,43 @@
+{
+  "table": "public.sandbox_ad_regions",
+  "snapshot_at": "2026-09-29",
+  "row_count": 3,
+  "rows": [
+    {
+      "id": "5244a86c-0eca-464f-9e26-af6a55f03c0d",
+      "ctr": 4.42,
+      "cvr": 6.52,
+      "roi": 4.8,
+      "spend": 250,
+      "clicks": 230,
+      "region": "上海",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "conversions": 15,
+      "impressions": 5200
+    },
+    {
+      "id": "8a57dbde-20dc-4a4f-ae4e-1c0527fe7b6e",
+      "ctr": 3.96,
+      "cvr": 6.32,
+      "roi": 4.3,
+      "spend": 210,
+      "clicks": 190,
+      "region": "江苏",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "conversions": 12,
+      "impressions": 4800
+    },
+    {
+      "id": "b55c7a00-d042-4d96-8675-3e16b195ec73",
+      "ctr": 3.61,
+      "cvr": 5,
+      "roi": 3.7,
+      "spend": 260,
+      "clicks": 220,
+      "region": "广东",
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "conversions": 11,
+      "impressions": 6100
+    }
+  ]
+}
