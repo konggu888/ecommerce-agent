@@ -6,10 +6,9 @@ import { modelOpponentResponses, detectBreakthrough, OpponentBreakthrough } from
 import { planMultiRoundGame, MultiRoundPlan } from './multi-round-game';
 import { buildPositionPlan, PositionPlan } from './position-sizing';
 import { inferOpponentUncertainty } from './threat-inference';
-import { rankPositiveStrategies } from './positive-attack-engine';
 
 export interface ClosedLoopInput { state: GameState; economics: UnitEconomics; inventory: InventoryState; cashflow: CashflowState; riskPolicy: RiskPolicy; recentActionCount: number; strategyConfidence?: Record<string, number>; }
-export interface ClosedLoopCandidate { action: string; score: number; risk: RiskDecision; reasons: string[]; breakthrough?: OpponentBreakthrough; positionPlan?: PositionPlan; strategyId?: string; strategyName?: string; }
+export interface ClosedLoopCandidate { action: string; score: number; risk: RiskDecision; reasons: string[]; breakthrough?: OpponentBreakthrough; positionPlan?: PositionPlan; }
 export interface ClosedLoopOutput { candidates: ClosedLoopCandidate[]; blocked: ClosedLoopCandidate[]; recommended: ClosedLoopCandidate | null; multiRound: MultiRoundPlan; }
 
 export function runClosedLoop(input: ClosedLoopInput): ClosedLoopOutput {
@@ -49,44 +48,6 @@ export function runClosedLoop(input: ClosedLoopInput): ClosedLoopOutput {
     if (positionPlan) reasons.push(`分阶段投入: 首档 ${positionPlan.steps[0]?.amount?.toFixed(0) ?? 0}，建议上限 ${positionPlan.recommendedAmount.toFixed(0)}`);
     candidates.push({ action: a.action, score, risk, reasons, breakthrough, positionPlan });
   }
-  // Add legitimate positive-growth strategies as distinct candidates.
-  // They share the same risk gate and uncertainty model as budget/bid actions.
-  const positive = rankPositiveStrategies(input.state, 8);
-  for (const p of positive) {
-    let score = p.score - inferenceUncertainty * 0.08;
-    const reasons = [
-      `正向攻势 ${p.strategyId}: ${p.strategyName}`,
-      `触发条件: ${p.trigger}`,
-      `下一观察: ${p.nextObservation}`,
-      '竞品响应仅作为假设，不视为已观测事实'
-    ];
-    const proposed: ProposedAction = {
-      action: p.mappedAction as ProposedAction['action'],
-      changePct: 5,
-      estimatedDailySpend: input.state.budget,
-      confidence: score
-    };
-    const breakthrough = detectBreakthrough({ state: input.state, action: p.mappedAction, opponent });
-    score += breakthrough.score * 0.15;
-    const risk = evaluateBusinessRisk(proposed, input.riskPolicy, input.recentActionCount, {
-      cashAvailable: input.cashflow.availableCash,
-      inventory: input.inventory.stockOnHand,
-      contributionAfterAds,
-      currentRoi: input.state.roi ?? 0,
-      marginalRoi: input.state.roi ?? 0,
-      opponentRisk: Math.max(breakthrough.opponentResponseRisk, inferenceUncertainty)
-    });
-    candidates.push({
-      action: p.mappedAction,
-      score,
-      risk,
-      reasons,
-      breakthrough,
-      strategyId: p.strategyId,
-      strategyName: p.strategyName
-    });
-  }
-
   candidates.sort((x,y)=>y.score-x.score);
   const blocked = candidates.filter(x => !x.risk.approved);
   const allowed = candidates.filter(x => x.risk.approved);
