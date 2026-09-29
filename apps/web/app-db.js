@@ -3,7 +3,7 @@
 
   var app = document.getElementById('app');
   var nav = document.querySelectorAll('.nav');
-  var VERSION = '20260929-31';
+  var VERSION = '20260929-32';
   var BASE = 'https://skuoxmrzlxhebzhfgbyn.supabase.co';
   var KEY = 'sb_publishable_u46tZ4GMUgwqSYhMJNFG8Q_IzYwl95T';
   var CLIENT = 'ecommerce-agent-sandbox-v1';
@@ -19,7 +19,7 @@
     risk: [],
     tasks: [],
     agentRounds: [],
-    playback: { playing: false, current: 0, timer: null }
+    playback: { playing: false, current: 0, timer: null, poll: null }
   };
 
   function esc(v) {
@@ -252,22 +252,42 @@
   }
 
   function stopPlayback() {
-    if (state.playback.timer) {
-      clearInterval(state.playback.timer);
-      state.playback.timer = null;
-    }
+    if (state.playback.timer) clearInterval(state.playback.timer);
+    if (state.playback.poll) clearInterval(state.playback.poll);
+    state.playback.timer = null;
+    state.playback.poll = null;
     state.playback.playing = false;
   }
 
+  function pollNewSimulation() {
+    if (state.playback.poll) clearInterval(state.playback.poll);
+    state.playback.poll = setInterval(function () {
+      loadRun().then(loadCore).then(function () {
+        state.playback.current = Math.max(0, state.agentRounds.length - 1);
+        render();
+        if (state.run && (state.run.status === 'completed' || state.run.status === 'failed')) {
+          if (state.playback.poll) clearInterval(state.playback.poll);
+          state.playback.poll = null;
+          state.playback.playing = false;
+          render();
+        }
+      }).catch(function (e) {
+        console.error('SANDBOX_AGENT_POLL_ERROR', e);
+      });
+    }, 1200);
+  }
+
   function advancePlayback() {
-    var rounds = sortedRounds();
-    if (!rounds.length) return;
-    if (state.playback.current >= rounds.length - 1) {
-      stopPlayback();
-      render();
-      return;
+    if (!state.agentRounds.length) return;
+    state.playback.current = Math.min(
+      state.agentRounds.length - 1,
+      state.playback.current + 1
+    );
+    if (state.playback.current >= state.agentRounds.length - 1 && state.run && state.run.status === 'completed') {
+      state.playback.playing = false;
+      if (state.playback.timer) clearInterval(state.playback.timer);
+      state.playback.timer = null;
     }
-    state.playback.current++;
     render();
   }
 
@@ -290,10 +310,7 @@
         state.playback.current = 0;
         state.playback.playing = true;
         render();
-        state.playback.timer = setInterval(function () {
-          if (state.view !== 'game') { stopPlayback(); return; }
-          advancePlayback();
-        }, 1800);
+        pollNewSimulation();
       });
     }).catch(function (e) {
       console.error('SANDBOX_AGENT_RUN_ERROR', e);
