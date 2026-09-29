@@ -3,7 +3,7 @@
 
   var app = document.getElementById('app');
   var nav = document.querySelectorAll('.nav');
-  var VERSION = '20260929-26';
+  var VERSION = '20260929-27';
   var BASE = 'https://skuoxmrzlxhebzhfgbyn.supabase.co';
   var KEY = 'sb_publishable_u46tZ4GMUgwqSYhMJNFG8Q_IzYwl95T';
   var CLIENT = 'ecommerce-agent-sandbox-v1';
@@ -203,12 +203,12 @@
     var rounds = [];
     for (var j = 0; j < state.agentRounds.length; j++) {
       var r = state.agentRounds[j];
-      rounds.push([r.round, r.action, r.recommended_action, r.breakthrough, r.risk_approved ? 'ALLOW' : 'BLOCK', r.decision_score, r.spend, r.revenue, r.conversions, r.roi, r.marginal_roi, r.crowding, r.actual_opponent_response || '', r.next_action_hint || '', r.stop_signal ? 'STOP' : '', r.stop_reason]);
+      rounds.push([r.round, r.action, r.recommended_action, r.breakthrough, r.risk_approved ? 'ALLOW' : 'BLOCK', r.decision_score, r.spend, r.revenue, r.conversions, r.roi, r.marginal_roi, r.crowding, r.actual_opponent_response || '', r.next_action_hint || '', (r.response_branches ? JSON.stringify(r.response_branches) : ''), r.stop_signal ? 'STOP' : '', r.stop_reason]);
     }
     show('商业博弈', 'BOOT-DEBUG-' + VERSION + ' · Sandbox 模拟数据',
       table(['产品','竞品','场景','竞品价格','我方价格','CPC','CVR'], rows) +
       '<h2>Agent 多轮闭环</h2>' +
-      table(['轮次','实际动作','原推荐','突破口','风险','决策分','消耗','收入','成交','ROI','边际ROI','拥挤','对手响应','下一动作提示','停止','停止原因'], rounds) +
+      table(['轮次','实际动作','原推荐','突破口','风险','决策分','消耗','收入','成交','ROI','边际ROI','拥挤','对手响应','下一动作提示','响应分支','停止','停止原因'], rounds) +
       notice('这里展示 Agent 每一轮的：决策 → 风险 → 投入 → 市场结果 → 边际收益 → 停止信号 → 下一轮输入。'));
   }
 
