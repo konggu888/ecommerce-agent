@@ -3,7 +3,7 @@
 
   var app = document.getElementById('app');
   var nav = document.querySelectorAll('.nav');
-  var VERSION = '20260929-42';
+  var VERSION = '20260929-43';
   var BASE = 'https://skuoxmrzlxhebzhfgbyn.supabase.co';
   var KEY = 'sb_publishable_u46tZ4GMUgwqSYhMJNFG8Q_IzYwl95T';
   var CLIENT = 'ecommerce-agent-sandbox-v1';
@@ -515,22 +515,23 @@
         '<h2>'+esc(x.name)+'</h2>' +
         '<div class="notice"><b>重要：</b>以下“攻击链”是理论机制，不代表我们能从淘宝/拼多多直接看到对手的每一步。系统真正判断时，只使用可观测信号。</div>' +
         '<div class="label">① 我们实际能看到的信号</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0">'+signals.map(function(v){return '<span class="tag">'+esc(v)+'</span>';}).join('')+'</div>' +
-        '<div class="label">② 理论攻击链（不可直接观测的部分）</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin-top:8px">';
+        '<div class="label">② 数据可见性</div><div class="notice"><b>可见程度：</b><span class="tag">'+esc(vis.level)+'</span><br><b>可用数据：</b>'+esc((vis.data||[]).join('、')||'暂无明确数据')+'<br><b>通常缺失：</b>'+esc((vis.missing||[]).join('、')||'暂无')+'<br><b>替代解释：</b>'+esc((vis.alternatives||[]).join('、')||'暂无')+'</div>' +
+        '<div class="label">③ 理论攻击链（不可直接观测的部分）</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin-top:8px">';
       for(var s=0;s<steps.length;s++) h+='<div style="padding:12px;border:1px solid var(--line);border-radius:10px;min-height:72px"><span class="tag warning">STEP '+(s+1)+'</span><div style="margin-top:7px"><b>'+esc(steps[s])+'</b></div></div>';
       h+='</div>' +
-        '<div class="label" style="margin-top:14px">③ 不可观测环节</div><div class="notice">账号实际来源、对方内部操作、具体投放/投诉路径、对方意图等，除非平台或外部证据直接提供，否则统一标记为“未知”。</div>' +
-        '<div class="label" style="margin-top:14px">④ 多假设推断</div>' +
+        '<div class="label" style="margin-top:14px">④ 不可观测环节</div><div class="notice">账号实际来源、对方内部操作、具体投放/投诉路径、对方意图等，除非平台或外部证据直接提供，否则统一标记为“未知”。</div>' +
+        '<div class="label" style="margin-top:14px">⑤ 多假设推断</div>' +
         '<div style="display:grid;gap:6px;margin-top:8px">' +
         '<div><span class="tag positive">H0</span> 正常市场/平台波动</div>' +
         '<div><span class="tag">H1</span> 竞品正常竞争行为</div>' +
         '<div><span class="tag warning">H2</span> 疑似异常竞争/攻击</div>' +
         '<div><span class="tag">H3</span> 其他未知原因</div>' +
         '</div>' +
-        '<div class="label" style="margin-top:14px">⑤ 推断流程</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:8px">';
+        '<div class="label" style="margin-top:14px">⑥ 推断流程</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:8px">';
       var stages=inf.stages||[];
       for(var q=0;q<stages.length;q++) h+='<div style="padding:10px;border:1px solid var(--line);border-radius:9px"><span class="tag">'+esc(stages[q].id)+'</span><b>'+esc(stages[q].name)+'</b><div class="muted">'+esc(stages[q].desc)+'</div></div>';
       h+='</div>' +
-        '<div class="label" style="margin-top:14px">⑥ 防范重点</div><div class="notice">'+esc(x.defense)+'</div>' +
+        '<div class="label" style="margin-top:14px">⑦ 防范重点</div><div class="notice">'+esc(x.defense)+'</div>' +
         '<div class="muted" style="margin-top:12px">当前设计原则：先证明“发生了什么”，再讨论“为什么发生”；最后才考虑“是否存在攻击”。不根据单一异常直接归因。</div></div>';
       return h;
     }
