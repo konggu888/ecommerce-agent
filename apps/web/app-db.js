@@ -3,7 +3,7 @@
 
   var app = document.getElementById('app');
   var nav = document.querySelectorAll('.nav');
-  var VERSION = '20260929-20';
+  var VERSION = '20260929-21';
   var BASE = 'https://skuoxmrzlxhebzhfgbyn.supabase.co';
   var KEY = 'sb_publishable_u46tZ4GMUgwqSYhMJNFG8Q_IzYwl95T';
   var CLIENT = 'ecommerce-agent-sandbox-v1';
@@ -77,8 +77,7 @@
 
   function runURL(name) {
     return BASE + '/rest/v1/' + name +
-      '?run_id=eq.' + encodeURIComponent(state.run.id) +
-      '&order=id.desc';
+      '?select=*&order=id.desc';
   }
 
   function loadRun() {
