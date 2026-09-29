@@ -15,10 +15,12 @@ jobs:
           from pathlib import Path
           p=Path("apps/web/index.html")
           s=p.read_text()
-          tag='<script src="./strategy-center-fix.js?v=continuous-market-entry-20260930-3"></script>'
+          tag='<script src="./strategy-center-fix.js?v=continuous-market-entry-20260930-7"></script>'
           import re
           s=re.sub(r'<script src="\.\/strategy-center-fix\.js\?v=[^"]+"></script>', '', s)
-          s=s.replace('</body>', tag+'</body>')
+          s=re.sub(r'<script src="\.\/strategy-center-fix\.js\?v=[^"]+"></script>\s*', '', s)
+          marker='<script src="./app-db.js?v=easel-20260930-1"></script>'
+          s=s.replace(marker, tag+'\n'+marker)
           p.write_text(s)
           PY
       - name: Commit patch
