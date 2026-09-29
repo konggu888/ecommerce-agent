@@ -248,7 +248,7 @@
     else if(z.mode==='反制') parts.push(state.pressure>=5||state.lastMode==='负向施压'?'上一手形成了明显压力，本手针对性回应。':'存在可利用的回应窗口，因此不做无差别升级。');
     else if(z.mode==='机制校验') parts.push(state.risk>=5||state.pressure>=5?'风险或异常信号已经累积，需要先验证状态。':'当前不确定性较高，先确认机制层面的真实状态。');
     else if(z.mode==='负向施压') parts.push(state.pressure>=4||state.opponentMomentum>=5?'对抗变量已累积到可承受更强动作的程度，本手提高对手决策成本。':'人格允许主动施压，但当前仍控制强度，不直接升级到极端。');
-    parts.push('本手战略动作是“'+z.mode+'”，目标是改变当前局面，而不是重复上一手。');
+    parts.push('本手不是重新建设商品基础，而是在已有标题、主图、详情、评价、视频、问大家和种草基础上，争取改变一个具体市场变量。');
     return parts.join(' ');
   }
 
@@ -364,6 +364,7 @@
     html+='不是“我方三步/一轮就结束”，也不是为了凑固定步数。每一套人格是一条完整连续链：<b>我方第1招 → 对手第2招 → 我方第3招 → 对手第4招 → ……</b>，最多40步。';
     html+='三大招式库不再按阵营分配：我方和对手都可以使用建设、防守、试探、竞争、诱导、转移、反制、机制校验、负向施压九类战略动作；人格只改变权重，上一招与累计状态决定下一招。只有局面继续产生有效变化才继续；优势形成、僵持、路线失效或风险封顶时自然收束。对手招式是模拟假设，机制型招式用于识别、校验、隔离和防守。';
     html+='</div></div>';
+    html+='<div class="card" style="margin:10px 0 16px;border-left:4px solid var(--accent)"><b>商品初始状态：基础建设已完成</b><div style="margin-top:8px;line-height:1.8">标题（热门/竞品关键词） · 主图（竞争参考） · 详情页 · 5条正向真实评价 · 商品视频 · 问大家 · 种草内容</div><div class="muted" style="margin-top:6px">因此棋谱不会从“什么都没做”开始。现在主要观察：点击率、转化率、自然流量、实际搜索词、竞品即时动作、内容扩散效率。</div></div>';
     html+='<div class="card"><div class="label">40套连续博弈棋谱</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px;margin-top:12px">';
     H.forEach(function(x,i){
       html+='<div class="game-wrap" data-game="'+esc(x.id)+'"><div class="card"><span class="tag">'+esc(x.id)+'</span><b style="display:block;margin-top:7px">'+esc(x.name)+'</b>';
