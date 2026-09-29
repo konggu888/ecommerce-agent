@@ -1,5 +1,6 @@
 import { Action, GameState } from './game-state';
 import { OpponentModel, modelOpponentResponses } from './opponent-model';
+import { BehaviorMode, BehaviorObservation, inferHumanBehavior, nextBehaviorObservation } from './human-behavior-engine';
 
 export interface GameNode {
   round: number;
@@ -11,7 +12,9 @@ export interface GameNode {
   expectedGain: number;
   marginalPenalty: number;
   path: string[];
-  responseBranch?: { response: string; probability: number; nextActionHint: Action; stopCondition: string; expansionCondition: string }[];
+  responseBranch?: { response: string; probability: number; nextActionHint: Action; stopCondition: string; expansionCondition: string; behaviorMode: BehaviorMode; }[];
+  behaviorHypotheses?: { id: string; name: string; confidence: number; nextLikelyModes: BehaviorMode[] }[];
+  nextBehaviorObservation?: string;
 }
 
 export interface MultiRoundPlan {
@@ -21,6 +24,9 @@ export interface MultiRoundPlan {
   bestScore: number;
   robustness: number;
   explanation: string[];
+  behaviorTrajectory: BehaviorObservation[];
+  behaviorHypotheses: { id: string; name: string; confidence: number; nextLikelyModes: BehaviorMode[] }[];
+  nextBehaviorObservation: string;
 }
 
 const actions: Action[] = [
@@ -84,12 +90,18 @@ export function planMultiRoundGame(state: GameState, horizon = 3): MultiRoundPla
   const nodes: GameNode[] = [];
   let bestPath: Action[] = [];
   let bestScore = -Infinity;
+  let bestBehaviorTrajectory: BehaviorObservation[] = [];
+  let bestBehaviorHypotheses: { id: string; name: string; confidence: number; nextLikelyModes: BehaviorMode[] }[] = [];
+  let bestNextBehaviorObservation = '继续观察对手行为';
 
-  function search(current: GameState, round: number, score: number, path: Action[]) {
+  function search(current: GameState, round: number, score: number, path: Action[], behaviorTrajectory: BehaviorObservation[] = []) {
     if (round > depth) {
       if (score > bestScore) {
         bestScore = score;
         bestPath = [...path];
+        bestBehaviorTrajectory = [...behaviorTrajectory];
+        bestBehaviorHypotheses = inferHumanBehavior(bestBehaviorTrajectory, 4).map(h => ({ id: h.id, name: h.name, confidence: h.confidence, nextLikelyModes: h.nextLikelyModes }));
+        bestNextBehaviorObservation = nextBehaviorObservation(bestBehaviorTrajectory);
       }
       return;
     }
@@ -115,7 +127,7 @@ export function planMultiRoundGame(state: GameState, horizon = 3): MultiRoundPla
       });
       const branches = [...opponent].sort((a, b) => b.probability - a.probability).slice(0, 2);
       const branchProbabilityTotal = branches.reduce((sum, branch) => sum + branch.probability, 0);
-      const responseBranch: { response: string; probability: number; nextActionHint: Action; stopCondition: string; expansionCondition: string }[] = branches.map((branch) => {
+      const responseBranch: { response: string; probability: number; nextActionHint: Action; stopCondition: string; expansionCondition: string; behaviorMode: BehaviorMode }[] = branches.map((branch) => {
         const nextActionHint =
           branch.response === 'MATCH_PRICE' ? 'CHANGE_TARGETING' :
           branch.response === 'RAISE_BID' ? 'CHANGE_KEYWORD' :
@@ -134,9 +146,15 @@ export function planMultiRoundGame(state: GameState, horizon = 3): MultiRoundPla
           branch.response === 'DEFEND_TRAFFIC' ? '只有目标人群转化改善且拥挤度可控才扩大投入' :
           branch.response === 'SHIFT_TO_CONTENT' ? '只有内容侧新增转化超过搜索侧损失才迁移预算' :
           '连续两个观察窗口指标稳定后再扩大投入';
-        return { response: branch.response, probability: branchProbabilityTotal > 0 ? branch.probability / branchProbabilityTotal : 0, nextActionHint: nextActionHint as Action, stopCondition, expansionCondition };
+        const behaviorMode: BehaviorMode = branch.response === 'SHIFT_TO_CONTENT' ? 'POSITIVE' : branch.response === 'HOLD' ? 'OBSERVE' : 'DEFENSIVE';
+        return { response: branch.response, probability: branchProbabilityTotal > 0 ? branch.probability / branchProbabilityTotal : 0, nextActionHint: nextActionHint as Action, stopCondition, expansionCondition, behaviorMode };
       });
-      nodes[nodes.length - 1].responseBranch = responseBranch;
+      const nodeIndex = nodes.length - 1;
+      nodes[nodeIndex].responseBranch = responseBranch;
+      const behaviorTrajectory: BehaviorObservation[] = responseBranch.map(branch => ({ mode: branch.behaviorMode, evidence: `模型响应假设: ${branch.response}` }));
+      const behaviorHypotheses = inferHumanBehavior(behaviorTrajectory, 4).map(h => ({ id: h.id, name: h.name, confidence: h.confidence, nextLikelyModes: h.nextLikelyModes }));
+      nodes[nodeIndex].behaviorHypotheses = behaviorHypotheses;
+      nodes[nodeIndex].nextBehaviorObservation = nextBehaviorObservation(behaviorTrajectory);
       // Branch-aware continuation: evaluate both likely responses instead of following
       // only the highest-probability branch. The probability-weighted continuation
       // becomes the node's continuation value; the highest-probability branch still
@@ -152,7 +170,7 @@ export function planMultiRoundGame(state: GameState, horizon = 3): MultiRoundPla
           const branchValue = Math.max(0, branchImmediate - branchRisk);
           weightedContinuation += branch.probability * branchValue;
           if (index === 0) {
-            search(branchState, round + 1, nodeScore + branch.probability * branchValue, [...path, action]);
+            search(branchState, round + 1, nodeScore + branch.probability * branchValue, [...path, action], [...behaviorTrajectory, { mode: responseBranch[index].behaviorMode, evidence: `模型响应假设: ${branch.response}` }]);
           }
         });
         nodes[nodes.length - 1].continuationScore = score + discounted + Math.pow(0.85, round) * weightedContinuation;
@@ -177,7 +195,13 @@ export function planMultiRoundGame(state: GameState, horizon = 3): MultiRoundPla
       `候选路径节点数: ${nodes.length}`,
       `最优路径的对手响应风险: ${avgRisk.toFixed(2)}`,
       robustness >= 0.65 ? '路径具有较好的抗响应性' : '路径对对手响应较敏感，建议先做小规模实验',
-      '每个节点保留最高概率的两种对手响应，并给出下一步动作提示'
-    ]
+      '每个节点保留最高概率的两种对手响应，并给出下一步动作提示',
+      `行为演变轨迹: ${bestBehaviorTrajectory.map(x => x.mode).join(' → ') || '暂无'}`,
+      `下一行为观察: ${bestNextBehaviorObservation}`
+    ],
+    behaviorTrajectory: bestBehaviorTrajectory,
+    behaviorHypotheses: bestBehaviorHypotheses,
+    nextBehaviorObservation: bestNextBehaviorObservation
+  }
   };
 }
