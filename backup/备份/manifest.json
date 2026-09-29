@@ -1,0 +1,90 @@
+{
+  "backup_name": "备份",
+  "snapshot_at": "2026-09-29",
+  "repository": "konggu888/ecommerce-agent",
+  "branch": "备份",
+  "site": "https://konggu888.github.io/ecommerce-agent/#strategy-center",
+  "supabase_project_id": "skuoxmrzlxhebzhfgbyn",
+  "supabase_project": "ecommerce-agent",
+  "supabase_migrations": [
+    {
+      "version": "20260928153709",
+      "name": "core_ecommerce_schema"
+    },
+    {
+      "version": "20260928154521",
+      "name": "multi_shop_authorizations_permissions"
+    },
+    {
+      "version": "20260928234444",
+      "name": "sandbox_run_persistence"
+    },
+    {
+      "version": "20260928234847",
+      "name": "sandbox_public_access_policies"
+    },
+    {
+      "version": "20260929002226",
+      "name": "split_sandbox_module_results"
+    },
+    {
+      "version": "20260929002643",
+      "name": "expand_ad_traffic_sandbox_schema"
+    },
+    {
+      "version": "20260929002737",
+      "name": "sandbox_ad_public_read_policies"
+    },
+    {
+      "version": "20260929013153",
+      "name": "add_sandbox_agent_rounds"
+    },
+    {
+      "version": "20260929013901",
+      "name": "add_response_aware_agent_round_fields"
+    }
+  ],
+  "edge_functions": [
+    {
+      "id": "f1b54fd8-1f4c-4b6a-9b96-f79ec9a18f50",
+      "slug": "sandbox-benchmark",
+      "name": "sandbox-benchmark",
+      "status": "ACTIVE",
+      "version": 1,
+      "created_at": 1790616831023,
+      "updated_at": 1790616831023,
+      "verify_jwt": true,
+      "import_map": false,
+      "entrypoint_path": "file:///tmp/user_fn_skuoxmrzlxhebzhfgbyn_f1b54fd8-1f4c-4b6a-9b96-f79ec9a18f50_1/source/index.ts",
+      "ezbr_sha256": "9ec38b539f17e53077af624ab488fe8618ec5394cb0b44bf7cbd14d9a4d40c1b"
+    },
+    {
+      "id": "ae7c1da4-d306-4a0b-9f64-44fae91c001e",
+      "slug": "sandbox-state",
+      "name": "sandbox-state",
+      "status": "ACTIVE",
+      "version": 1,
+      "created_at": 1790639135654,
+      "updated_at": 1790639135654,
+      "verify_jwt": false,
+      "import_map": true,
+      "entrypoint_path": "file:///tmp/user_fn_skuoxmrzlxhebzhfgbyn_ae7c1da4-d306-4a0b-9f64-44fae91c001e_1/source/index.ts",
+      "import_map_path": "file:///tmp/user_fn_skuoxmrzlxhebzhfgbyn_ae7c1da4-d306-4a0b-9f64-44fae91c001e_1/source/deno.json",
+      "ezbr_sha256": "ab5dd0d70e9c109d6c5d41c24a1bb6fe347f04a1c6ec767cea413731d8f4b1da"
+    },
+    {
+      "id": "e6e4f04b-0a1e-4e7e-b6f4-758b623eee5a",
+      "slug": "sandbox-agent-runner",
+      "name": "sandbox-agent-runner",
+      "status": "ACTIVE",
+      "version": 11,
+      "created_at": 1790647033061,
+      "updated_at": 1790663926484,
+      "verify_jwt": false,
+      "import_map": false,
+      "entrypoint_path": "file:///tmp/user_fn_skuoxmrzlxhebzhfgbyn_e6e4f04b-0a1e-4e7e-b6f4-758b623eee5a_11/source/index.ts",
+      "ezbr_sha256": "1abf8621203aa7dc8cd2217eb6a22ef83d2000839020293c91deadb7fab140e7"
+    }
+  ],
+  "note": "网站代码、前端内容、Git历史基线由分支“备份”冻结；数据库结构见 database-schema.json；非空数据库表数据见 database-data/；Edge Functions 需另行保存源码。"
+}
