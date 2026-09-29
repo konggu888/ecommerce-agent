@@ -231,3 +231,12 @@ test('agent exposes adaptive breakthrough switching after repeated failed signal
     assert.ok(typeof round.breakthroughSignal === 'string');
   }
 });
+
+
+test('agent execution carries opponent branches into the next-round hint', () => {
+  const result = runAgentSimulation({...config(), rounds: 8, seed: 42});
+  assert.ok(result.rounds.every(r => Array.isArray(r.responseBranches)));
+  assert.ok(result.rounds.every(r => typeof r.actualOpponentResponse === 'string'));
+  assert.ok(result.rounds.every(r => typeof r.nextActionHint === 'string'));
+  assert.ok(result.rounds.some(r => r.responseBranches.length > 0));
+});
