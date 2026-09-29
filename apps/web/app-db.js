@@ -3,7 +3,7 @@
 
   var app = document.getElementById('app');
   var nav = document.querySelectorAll('.nav');
-  var VERSION = '20260929-21';
+  var VERSION = '20260929-23';
   var BASE = 'https://skuoxmrzlxhebzhfgbyn.supabase.co';
   var KEY = 'sb_publishable_u46tZ4GMUgwqSYhMJNFG8Q_IzYwl95T';
   var CLIENT = 'ecommerce-agent-sandbox-v1';
@@ -12,7 +12,12 @@
     run: null,
     game: [],
     market: [],
-    ads: {}
+    ads: {},
+    backtests: [],
+    events: [],
+    memories: [],
+    risk: [],
+    tasks: []
   };
 
   function esc(v) {
@@ -97,10 +102,20 @@
   function loadCore() {
     return Promise.all([
       getJSON(runURL('sandbox_game_states')),
-      getJSON(runURL('sandbox_market_signals'))
+      getJSON(runURL('sandbox_market_signals')),
+      getJSON(runURL('sandbox_backtests')),
+      getJSON(runURL('sandbox_events')),
+      getJSON(runURL('sandbox_memories')),
+      getJSON(runURL('sandbox_risk_results')),
+      getJSON(runURL('sandbox_task_results'))
     ]).then(function (x) {
       state.game = x[0];
       state.market = x[1];
+      state.backtests = x[2];
+      state.events = x[3];
+      state.memories = x[4];
+      state.risk = x[5];
+      state.tasks = x[6];
     });
   }
 
@@ -303,8 +318,54 @@
     );
   }
 
-  function placeholder(title) {
-    show(title, 'BOOT-DEBUG-' + VERSION, notice('这一页暂时没有恢复。'));
+  function experiments() {
+    var rows = [];
+    for (var i = 0; i < state.backtests.length; i++) {
+      var x = state.backtests[i];
+      rows.push([x.scenario, x.rounds, x.roi, x.risk, x.action, x.created_at]);
+    }
+    show('实验与回测', 'BOOT-DEBUG-' + VERSION + ' · Sandbox 模拟回测',
+      table(['场景','轮次','ROI','风险','动作','时间'], rows));
+  }
+
+  function risk() {
+    var rows = [];
+    for (var i = 0; i < state.risk.length; i++) {
+      var x = state.risk[i];
+      rows.push([x.metric, JSON.stringify(x.value), x.created_at]);
+    }
+    show('风险控制器', 'BOOT-DEBUG-' + VERSION + ' · Sandbox 风险结果',
+      table(['指标','结果','时间'], rows));
+  }
+
+  function jobs() {
+    var rows = [];
+    for (var i = 0; i < state.tasks.length; i++) {
+      var x = state.tasks[i];
+      rows.push([x.task_id, x.task_type, x.status, x.progress + '%', x.created_at]);
+    }
+    show('任务监控', 'BOOT-DEBUG-' + VERSION + ' · Sandbox 任务状态',
+      table(['任务ID','任务类型','状态','进度','创建时间'], rows) +
+      '<h2>事件</h2>' + eventTable());
+  }
+
+  function eventTable() {
+    var rows = [];
+    for (var i = 0; i < state.events.length; i++) {
+      var x = state.events[i];
+      rows.push([x.event_type, x.title, x.detail, JSON.stringify(x.payload), x.created_at]);
+    }
+    return table(['事件类型','标题','详情','Payload','时间'], rows);
+  }
+
+  function memory() {
+    var rows = [];
+    for (var i = 0; i < state.memories.length; i++) {
+      var x = state.memories[i];
+      rows.push([x.memory_type, x.content, x.confidence, x.status, x.created_at]);
+    }
+    show('学习记忆', 'BOOT-DEBUG-' + VERSION + ' · Sandbox 学习结果',
+      table(['记忆类型','内容','置信度','状态','时间'], rows));
   }
 
   function render() {
@@ -321,13 +382,13 @@
     } else if (state.view === 'overview') {
       overview();
     } else if (state.view === 'experiments') {
-      placeholder('实验与回测');
+      experiments();
     } else if (state.view === 'risk') {
-      placeholder('风险控制器');
+      risk();
     } else if (state.view === 'jobs') {
-      placeholder('任务监控');
+      jobs();
     } else if (state.view === 'memory') {
-      placeholder('学习记忆');
+      memory();
     } else {
       overview();
     }
