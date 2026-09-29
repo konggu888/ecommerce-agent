@@ -8,7 +8,17 @@ import { DecisionRecord, OutcomeRecord, LearningSignal, evaluateLearning } from 
 import { simulateNonlinearMarket } from './nonlinear-market';
 import { BehaviorObservation, BehaviorMode, updateBehaviorState } from './human-behavior-engine';
 
+export interface StrategyContext {
+  type?: string;
+  id?: string;
+  name?: string;
+  action?: string;
+  signal?: string;
+  goal?: string;
+}
+
 export interface AgentSimulationConfig {
+  strategyContext?: StrategyContext;
   rounds?: number;
   seed?: number;
   initial: GameState;
@@ -81,6 +91,10 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
   let breakthroughFailures = 0;
   let pendingActionHint: string | null = null;
   let behaviorObservations: BehaviorObservation[] = [];
+  const strategyContext = config.strategyContext ?? {};
+  const forcedAction = strategyContext.action && ['HOLD','CHANGE_PRICE','INCREASE_BUDGET','DECREASE_BUDGET','INCREASE_BID','DECREASE_BID','CONTENT_VIDEO','CONTENT_MATRIX'].includes(strategyContext.action)
+    ? strategyContext.action
+    : null;
 
   for (let round = 1; round <= rounds; round++) {
     const observedAt = new Date().toISOString();
@@ -105,6 +119,16 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
     });
 
     let selected = decision.recommended;
+    // The selected playbook is an execution input, not just UI metadata.
+    // Prefer its concrete action when Risk Controller approves it; otherwise
+    // keep the normal closed-loop recommendation and record the reason.
+    if (forcedAction) {
+      const guided = decision.candidates.find(c => c.action === forcedAction && c.risk.approved);
+      if (guided && (!selected || guided.score >= selected.score * 0.75)) {
+        selected = guided;
+        guided.reasons.push('策略中心指定路线：' + (strategyContext.name || strategyContext.id || forcedAction));
+      }
+    }
     // Adaptive breakthrough switching: after a failed/blocked route, prefer a candidate
     // attacking a different bottleneck instead of repeating the same game lever.
     if (activeBreakthrough && breakthroughFailures >= 1) {
@@ -129,7 +153,7 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
     const decisionRecord: DecisionRecord = {
       id: decisionId, shopId: state.shopId, productId: state.productId, campaignId: state.campaignId,
       observedState: { price: state.price, budget: state.budget, roi: state.roi ?? 0, ctr: state.ctr ?? 0, cvr: state.cvr ?? 0 },
-      hypothesis: selected?.reasons.join('; ') ?? 'hold because no approved action', action,
+      hypothesis: (selected?.reasons.join('; ') ?? 'hold because no approved action') + (strategyContext.name ? '；策略中心：' + strategyContext.name : ''), action,
       expected: { roi: expectedRoi }, constraints: selected?.risk.reasons ?? [], confidence: selected?.score ?? 0,
       createdAt: observedAt
     };
