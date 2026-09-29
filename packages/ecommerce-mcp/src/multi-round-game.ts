@@ -1,6 +1,5 @@
 import { Action, GameState } from './game-state';
 import { OpponentModel, modelOpponentResponses } from './opponent-model';
-import { rankPositiveStrategies } from './positive-attack-engine';
 
 export interface GameNode {
   round: number;
@@ -24,7 +23,7 @@ export interface MultiRoundPlan {
   explanation: string[];
 }
 
-const coreActions: Action[] = [
+const actions: Action[] = [
   'HOLD',
   'INCREASE_BUDGET',
   'DECREASE_BUDGET',
@@ -42,7 +41,6 @@ function actionBaseScore(state: GameState, action: Action): number {
   if (action === 'HOLD') return 0.35;
   if (action === 'CHANGE_TARGETING') return cvr > 0.03 ? 0.72 : 0.58;
   if (action === 'CHANGE_KEYWORD') return ctr < 0.03 ? 0.68 : 0.55;
-  if (action !== 'HOLD' && !['INCREASE_BUDGET','DECREASE_BUDGET','INCREASE_BID','DECREASE_BID','CHANGE_KEYWORD','CHANGE_TARGETING','CHANGE_PRICE'].includes(action)) return rankPositiveStrategies(state,40).find(x=>x.mappedAction===action)?.score ?? 0.42;
   if (action === 'CHANGE_PRICE') return state.price > 0 ? 0.55 : 0.3;
   if (action === 'INCREASE_BID') return roi > 2 && ctr > 0.02 ? 0.58 : 0.35;
   if (action === 'INCREASE_BUDGET') return roi > 2.5 ? 0.62 : 0.34;
@@ -95,7 +93,6 @@ export function planMultiRoundGame(state: GameState, horizon = 3): MultiRoundPla
       }
       return;
     }
-    const actions: Action[] = [...coreActions, ...rankPositiveStrategies(current, 6).map(x => x.mappedAction)].filter((a, i, arr) => arr.indexOf(a) === i);
     for (const action of actions) {
       const opponent = modelOpponentResponses(current);
       const risk = opponentPenalty(action, opponent);
