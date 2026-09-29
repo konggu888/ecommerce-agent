@@ -24,6 +24,12 @@ export function runClosedLoop(input: ClosedLoopInput): ClosedLoopOutput {
   const candidates: ClosedLoopCandidate[] = [];
   for (const a of actions) {
     let score = a.confidence;
+    const counter = input.state.opponentCounterMatrix?.[a.action];
+    if (counter) {
+      const penalty = counter.pressure * 0.3;
+      score -= penalty;
+      reasons.push(`对手历史反制压力：${counter.counter}，压力 ${counter.pressure.toFixed(2)}；当前应避免重复暴露`);
+    }
     const learnedConfidence = input.strategyConfidence?.[a.action];
     if (learnedConfidence !== undefined) score += (learnedConfidence - 0.5) * 0.2;
     const reasons = [...a.evidence];
