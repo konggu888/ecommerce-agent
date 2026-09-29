@@ -6,6 +6,23 @@ export interface BehaviorObservation {
   evidence?: string;
 }
 
+export interface BehaviorTransition {
+  from: BehaviorMode;
+  to: BehaviorMode;
+  evidence: string[];
+  confidence: number;
+}
+
+export interface BehaviorState {
+  dominantMode: BehaviorMode;
+  uncertainty: number;
+  recentModes: BehaviorMode[];
+  hypotheses: BehaviorHypothesis[];
+  transitions: BehaviorTransition[];
+  nextLikelyModes: BehaviorMode[];
+  nextObservation: string;
+}
+
 export interface BehaviorHypothesis {
   id: string;
   name: string;
@@ -76,4 +93,50 @@ export function nextBehaviorObservation(observations: BehaviorObservation[]): st
   const prev = observations[observations.length-2].mode;
   if (last !== prev) return '重点观察策略切换是否持续，以及切换后对市场指标造成的变化';
   return '重点观察当前行为是否连续三个窗口保持一致，避免把短期波动误判为稳定行为模式';
+}
+
+
+export function updateBehaviorState(
+  observations: BehaviorObservation[],
+  previous?: BehaviorState,
+  limit = 5
+): BehaviorState {
+  const hypotheses = inferHumanBehavior(observations, limit);
+  const recentModes = normalize(observations).slice(-6);
+  const top = hypotheses[0];
+  const transitions: BehaviorTransition[] = [];
+  for (let i = 1; i < recentModes.length; i++) {
+    const from = recentModes[i - 1], to = recentModes[i];
+    if (from !== to) {
+      transitions.push({
+        from,
+        to,
+        evidence: [`观察到行为模式切换: ${from} → ${to}`],
+        confidence: Math.min(0.9, 0.5 + (recentModes.length - i) * 0.05)
+      });
+    }
+  }
+  const previousMode = previous?.dominantMode;
+  const dominantMode = top?.nextLikelyModes?.[0] && top.confidence >= 0.35
+    ? top.nextLikelyModes[0]
+    : (recentModes[recentModes.length - 1] ?? 'UNKNOWN');
+  const uncertainty = Math.max(
+    0,
+    Math.min(
+      1,
+      1 - (top?.confidence ?? 0) + (previousMode && previousMode !== dominantMode ? 0.08 : 0)
+    )
+  );
+  const nextLikelyModes = Array.from(new Set(
+    hypotheses.flatMap(h => h.nextLikelyModes)
+  )).slice(0, 5);
+  return {
+    dominantMode,
+    uncertainty,
+    recentModes,
+    hypotheses,
+    transitions,
+    nextLikelyModes: nextLikelyModes.length ? nextLikelyModes : ['OBSERVE'],
+    nextObservation: nextBehaviorObservation(observations)
+  };
 }
