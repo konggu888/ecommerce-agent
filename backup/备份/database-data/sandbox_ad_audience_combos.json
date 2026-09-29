@@ -1,0 +1,21 @@
+{
+  "table": "public.sandbox_ad_audience_combos",
+  "snapshot_at": "2026-09-29",
+  "row_count": 1,
+  "rows": [
+    {
+      "id": "57af4f71-ea15-4a00-9264-805ef1618b5f",
+      "cvr": 9.4,
+      "roi": 5.8,
+      "name": "搜索早餐+近15天加购",
+      "size": 52000,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "overlap": 4.1,
+      "components": [
+        "近30天搜索早餐",
+        "近15天加购"
+      ],
+      "agent_conclusion": "组合人群CVR显著高于单人群"
+    }
+  ]
+}
