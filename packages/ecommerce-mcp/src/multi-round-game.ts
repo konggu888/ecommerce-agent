@@ -12,6 +12,8 @@ export interface GameNode {
   marginalPenalty: number;
   path: string[];
   responseBranch?: { response: string; probability: number; nextActionHint: Action; stopCondition: string; expansionCondition: string }[];
+  strategyId?: string;
+  strategyName?: string;
 }
 
 export interface MultiRoundPlan {
@@ -102,6 +104,7 @@ export function planMultiRoundGame(state: GameState, horizon = 3): MultiRoundPla
       const immediate = expectedGain - risk;
       const discounted = immediate * Math.pow(0.85, round - 1);
       const nodeScore = score + discounted;
+      const positiveMeta = rankPositiveStrategies(current, 40).find(x => x.mappedAction === action);
       nodes.push({
         round,
         action,
@@ -111,7 +114,9 @@ export function planMultiRoundGame(state: GameState, horizon = 3): MultiRoundPla
         opponentRisk: risk,
         expectedGain,
         marginalPenalty,
-        path: [...path, action].map(String)
+        path: [...path, action].map(String),
+        strategyId: positiveMeta?.strategyId,
+        strategyName: positiveMeta?.strategyName
       });
       const branches = [...opponent].sort((a, b) => b.probability - a.probability).slice(0, 2);
       const branchProbabilityTotal = branches.reduce((sum, branch) => sum + branch.probability, 0);
