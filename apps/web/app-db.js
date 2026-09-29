@@ -307,8 +307,9 @@
     var branchHtml = '';
     for (var x = 0; x < branches.length; x++) {
       var chosen = branches[x].response === r.actual_opponent_response;
+      var branchP = Number(branches[x].probability != null ? branches[x].probability : branches[x].p);
       branchHtml += '<div style="padding:8px 10px;margin:6px 0;border-left:3px solid ' + (chosen ? 'var(--accent)' : 'var(--line)') + ';background:' + (chosen ? 'rgba(255,180,0,.08)' : 'transparent') + '">' +
-        '<b>' + (chosen ? '★ ' : '') + esc(branches[x].response) + '</b> · ' + esc(Math.round(Number(branches[x].probability || 0) * 100)) + '% → <b>' + esc(branches[x].nextActionHint) + '</b>' +
+        '<b>' + (chosen ? '★ ' : '') + esc(branches[x].response) + '</b> · ' + esc(Math.round(branchP * 100)) + '% → <b>' + esc(branches[x].nextActionHint) + '</b>' +
         '<div class="muted">停止：' + esc(branches[x].stopCondition) + '；扩张：' + esc(branches[x].expansionCondition) + '</div></div>';
     }
 
