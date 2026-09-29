@@ -174,3 +174,4 @@
   nav.forEach(function(n){n.addEventListener('click',function(){state.view=n.dataset.view;location.hash=state.view;render();});});
   window.__EA_APPDB_LOADED__=true;window.__EA_APPDB_VERSION__=VERSION;
   loadRun().then(loadCore).then(loadAds).then(render).catch(function(e){show('核心数据读取失败','请检查 Sandbox 数据连接',notice(e.message));});
+}());
