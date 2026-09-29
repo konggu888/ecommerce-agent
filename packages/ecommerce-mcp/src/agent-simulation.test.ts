@@ -258,3 +258,14 @@ test('multi-round plan scores both likely response branches', async () => {
     assert.ok(Number.isFinite(node.continuationScore));
   }
 });
+
+test('positive strategy planner selects observable-data strategy and builds 5 rounds', async () => {
+  const { buildPositiveStrategyPlan } = await import('./positive-strategy-planner.ts');
+  const plan = buildPositiveStrategyPlan(config().initial, 5, 5);
+  assert.equal(plan.horizon, 5);
+  assert.ok(plan.candidates.length > 0);
+  assert.ok(plan.selectedStrategy);
+  assert.equal(plan.selectedStrategy?.rounds.length, 5);
+  assert.ok(plan.nextObservation.length > 0);
+  assert.match(plan.principle, /可观测数据|假设/);
+});
