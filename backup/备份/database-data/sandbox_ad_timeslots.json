@@ -1,0 +1,33 @@
+{
+  "table": "public.sandbox_ad_timeslots",
+  "snapshot_at": "2026-09-29",
+  "row_count": 2,
+  "rows": [
+    {
+      "id": "5af61b58-8711-4002-874d-bc3c6aee3db4",
+      "cpc": 1.03,
+      "ctr": 4.31,
+      "cvr": 6.13,
+      "roi": 4.9,
+      "slot": "09:00-12:00",
+      "clicks": 310,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "weekday": "工作日",
+      "conversions": 19,
+      "impressions": 7200
+    },
+    {
+      "id": "ab957ade-123b-4063-9c0b-683ea0097859",
+      "cpc": 1.12,
+      "ctr": 4.19,
+      "cvr": 6.11,
+      "roi": 4.6,
+      "slot": "18:00-22:00",
+      "clicks": 360,
+      "run_id": "e93236dd-b461-45b7-b13e-d9bb520efb60",
+      "weekday": "工作日",
+      "conversions": 22,
+      "impressions": 8600
+    }
+  ]
+}
