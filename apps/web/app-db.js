@@ -462,33 +462,44 @@
 
   function gameLogic() {
     var list = window.EA_GAME_LOGICS || [];
-    var filter = '<div class="card"><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
-      '<input id="game-logic-search" placeholder="搜索：价格、流量、竞品、库存、现金……" style="flex:1;min-width:240px;background:#0d1324;color:#e8ecf5;border:1px solid var(--line);border-radius:8px;padding:10px">' +
-      '<select id="game-logic-type" style="background:#0d1324;color:#e8ecf5;border:1px solid var(--line);border-radius:8px;padding:10px"><option value="">全部类型</option></select>' +
-      '</div><div class="muted" style="margin-top:8px">这里是“预设博弈逻辑库”：先定义我方第1步 → 对手响应 → 我方第2步 → 对手再响应 → 终局动作。后续 Agent 可以把当前市场状态匹配到这些逻辑，再进入动态博弈树。</div></div>';
-    var types = {};
-    for (var i=0;i<list.length;i++) types[list[i].type]=true;
-    for (var t in types) filter=filter.replace('</select>','<option value="'+esc(t)+'">'+esc(t)+'</option></select>');
-    var cards='<div id="game-logic-list" style="display:grid;gap:12px">';
+    var selectedId = list.length ? list[0].id : '';
+
+    function renderDetail(x) {
+      if (!x) return notice('没有预设博弈逻辑。');
+      var h = '<div class="card"><span class="tag">' + esc(x.id) + '</span><span class="tag">' + esc(x.type) + '</span>' +
+        '<h2>' + esc(x.name) + '</h2><div class="muted">触发条件：' + esc(x.trigger) + '</div>' +
+        '<h3>完整博弈过程</h3><div style="display:grid;gap:8px">';
+      for (var i=0;i<x.steps.length;i++) {
+        h += '<div style="padding:10px;border:1px solid var(--line);border-radius:8px"><span class="tag">第' + (i+1) + '步</span> ' + esc(x.steps[i]) + '</div>';
+      }
+      h += '</div><h3>对手可能分支</h3><div class="notice">' + x.branches.map(esc).join('　|　') + '</div>' +
+        '<div class="notice"><b>终局目标：</b>' + esc(x.goal) + '</div></div>';
+      return h;
+    }
+
+    var buttons='<div class="card"><div class="label">30套预设博弈逻辑</div><div class="muted" style="margin:6px 0 12px">点击 G01、G02、G03……查看对应的完整博弈过程。</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px">';
     for(var j=0;j<list.length;j++){
       var x=list[j];
-      cards+='<div class="card game-logic-card" data-search="'+esc((x.id+' '+x.name+' '+x.type+' '+x.trigger+' '+x.steps.join(' ')).toLowerCase())+'" data-type="'+esc(x.type)+'">' +
-        '<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap"><div><span class="tag">'+esc(x.id)+'</span><span class="tag">'+esc(x.type)+'</span><h2 style="margin:8px 0 4px">'+esc(x.name)+'</h2><div class="muted">适用条件：'+esc(x.trigger)+'</div></div><span class="tag">预设逻辑</span></div>' +
-        '<div style="display:grid;gap:6px;margin-top:12px">';
-      for(var k=0;k<x.steps.length;k++){
-        cards+='<div style="display:flex;gap:8px;align-items:flex-start;border-left:2px solid '+(k%2?'var(--line)':'var(--accent)')+';padding:7px 10px"><span class="tag">'+(k+1)+'</span><span>'+esc(x.steps[k])+'</span></div>';
-      }
-      cards+='</div><div style="margin-top:10px"><b>分支：</b>'+x.branches.map(esc).join('　|　')+'</div><div class="notice" style="margin-top:10px">终局目标：'+esc(x.goal)+'</div></div>';
+      buttons+='<button type="button" class="game-logic-choice" data-id="'+esc(x.id)+'" style="text-align:left;padding:10px;border:1px solid '+(x.id===selectedId?'var(--accent)':'var(--line)')+';border-radius:8px;background:transparent;color:inherit;cursor:pointer"><span class="tag">'+esc(x.id)+'</span> <b>'+esc(x.name)+'</b><div class="muted">'+esc(x.type)+'</div></button>';
     }
-    cards+='</div>';
-    show('博弈逻辑', '30套预设商业博弈逻辑 · 可作为 Agent 动态博弈树的策略模板', filter+cards);
-    var input=document.getElementById('game-logic-search'), select=document.getElementById('game-logic-type');
-    function apply(){
-      var q=(input.value||'').toLowerCase(), ty=select.value;
-      var cs=document.querySelectorAll('.game-logic-card');
-      for(var n=0;n<cs.length;n++) cs[n].style.display=(!q||cs[n].dataset.search.indexOf(q)>=0)&&(!ty||cs[n].dataset.type===ty)?'block':'none';
+    buttons+='</div></div><div id="game-logic-detail">'+renderDetail(list[0])+'</div>';
+
+    show('博弈逻辑','30套预设商业博弈逻辑 · 点击编号查看完整博弈过程',buttons);
+
+    var choices=document.querySelectorAll('.game-logic-choice');
+    for(var k=0;k<choices.length;k++){
+      choices[k].addEventListener('click',function(){
+        var id=this.dataset.id, found=null;
+        for(var z=0;z<list.length;z++) if(list[z].id===id){found=list[z];break;}
+        if(!found) return;
+        selectedId=id;
+        document.getElementById('game-logic-detail').innerHTML=renderDetail(found);
+        var all=document.querySelectorAll('.game-logic-choice');
+        for(var q=0;q<all.length;q++){
+          all[q].style.borderColor=all[q].dataset.id===id?'var(--accent)':'var(--line)';
+        }
+      });
     }
-    input.addEventListener('input',apply); select.addEventListener('change',apply);
   }
 
   function market() {
