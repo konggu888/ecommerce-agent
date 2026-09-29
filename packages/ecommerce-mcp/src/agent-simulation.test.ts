@@ -269,3 +269,13 @@ test('positive strategy planner selects observable-data strategy and builds 5 ro
   assert.ok(plan.nextObservation.length > 0);
   assert.match(plan.principle, /可观测数据|假设/);
 });
+
+
+test('multi-round game tracks opponent behavior evolution hypotheses', async () => {
+  const { planMultiRoundGame } = await import('./multi-round-game.ts');
+  const plan = planMultiRoundGame(config().initial, 3);
+  assert.ok(Array.isArray(plan.behaviorTrajectory));
+  assert.ok(Array.isArray(plan.behaviorHypotheses));
+  assert.ok(plan.nextBehaviorObservation.length > 0);
+  assert.ok(plan.nodes.some(n => Array.isArray(n.behaviorHypotheses)));
+});
