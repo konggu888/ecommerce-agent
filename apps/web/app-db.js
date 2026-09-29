@@ -3,7 +3,7 @@
 
   var app = document.getElementById('app');
   var nav = document.querySelectorAll('.nav');
-  var VERSION = '20260929-41';
+  var VERSION = '20260929-42';
   var BASE = 'https://skuoxmrzlxhebzhfgbyn.supabase.co';
   var KEY = 'sb_publishable_u46tZ4GMUgwqSYhMJNFG8Q_IzYwl95T';
   var CLIENT = 'ecommerce-agent-sandbox-v1';
@@ -505,66 +505,58 @@
   function threats() {
     var list=window.EA_THREAT_LIBRARY||[], selected=list.length?list[0]:null;
     var playbooks=window.EA_THREAT_PLAYBOOKS||{};
+    var inf=window.EA_THREAT_INFERENCE||{};
 
     function detail(x){
       if(!x)return notice('暂无对手攻击面数据。');
-      var steps=playbooks[x.id]||[];
+      var steps=playbooks[x.id]||[], signals=(inf.threatSignals&&inf.threatSignals[x.id])||[];
       var h='<div class="card" style="border:2px solid var(--accent);padding:16px">' +
-        '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="tag">'+esc(x.id)+'</span><span class="tag">'+esc(x.category)+'</span><span class="tag warning">攻击链</span></div>' +
+        '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="tag">'+esc(x.id)+'</span><span class="tag">'+esc(x.category)+'</span><span class="tag warning">潜在攻击机制</span></div>' +
         '<h2>'+esc(x.name)+'</h2>' +
-        '<div class="label">① 识别信号</div><div class="notice">'+esc(x.signal)+'</div>' +
-        '<div class="label" style="margin-top:14px">② 攻击链：对方如何逐步形成影响</div>' +
-        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin-top:8px">';
-      for(var s=0;s<steps.length;s++){
-        h+='<div style="position:relative;padding:12px;border:1px solid var(--line);border-radius:10px;min-height:72px">' +
-          '<span class="tag warning">STEP '+(s+1)+'</span><div style="margin-top:7px"><b>'+esc(steps[s])+'</b></div>' +
-          (s<steps.length-1?'<div style="position:absolute;right:-7px;top:35px;z-index:2;background:var(--bg);padding:0 2px">→</div>':'') +
-          '</div>';
-      }
+        '<div class="notice"><b>重要：</b>以下“攻击链”是理论机制，不代表我们能从淘宝/拼多多直接看到对手的每一步。系统真正判断时，只使用可观测信号。</div>' +
+        '<div class="label">① 我们实际能看到的信号</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0">'+signals.map(function(v){return '<span class="tag">'+esc(v)+'</span>';}).join('')+'</div>' +
+        '<div class="label">② 理论攻击链（不可直接观测的部分）</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin-top:8px">';
+      for(var s=0;s<steps.length;s++) h+='<div style="padding:12px;border:1px solid var(--line);border-radius:10px;min-height:72px"><span class="tag warning">STEP '+(s+1)+'</span><div style="margin-top:7px"><b>'+esc(steps[s])+'</b></div></div>';
       h+='</div>' +
-        '<div class="label" style="margin-top:14px">③ 防御检查点</div>' +
-        '<div class="notice">'+esc(x.defense)+'</div>' +
-        '<div class="label" style="margin-top:14px">④ 事件升级规则</div>' +
+        '<div class="label" style="margin-top:14px">③ 不可观测环节</div><div class="notice">账号实际来源、对方内部操作、具体投放/投诉路径、对方意图等，除非平台或外部证据直接提供，否则统一标记为“未知”。</div>' +
+        '<div class="label" style="margin-top:14px">④ 多假设推断</div>' +
         '<div style="display:grid;gap:6px;margin-top:8px">' +
-        '<div><span class="tag">观察</span> 单一异常信号出现，先记录证据。</div>' +
-        '<div><span class="tag warning">预警</span> 两个以上步骤信号连续出现，建立事件时间线。</div>' +
-        '<div><span class="tag warning">高度警戒</span> 跨渠道信号相互印证，进入人工复核。</div>' +
-        '<div><span class="tag positive">防御</span> 证据充分后按平台、知识产权、交易或安全流程处置。</div>' +
+        '<div><span class="tag positive">H0</span> 正常市场/平台波动</div>' +
+        '<div><span class="tag">H1</span> 竞品正常竞争行为</div>' +
+        '<div><span class="tag warning">H2</span> 疑似异常竞争/攻击</div>' +
+        '<div><span class="tag">H3</span> 其他未知原因</div>' +
         '</div>' +
-        '<div class="muted" style="margin-top:12px">这是防御视角的可观测攻击链，不等同于认定某个具体竞争对手实施了攻击；归因必须基于可验证证据。</div>' +
-        '</div>';
+        '<div class="label" style="margin-top:14px">⑤ 推断流程</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:8px">';
+      var stages=inf.stages||[];
+      for(var q=0;q<stages.length;q++) h+='<div style="padding:10px;border:1px solid var(--line);border-radius:9px"><span class="tag">'+esc(stages[q].id)+'</span><b>'+esc(stages[q].name)+'</b><div class="muted">'+esc(stages[q].desc)+'</div></div>';
+      h+='</div>' +
+        '<div class="label" style="margin-top:14px">⑥ 防范重点</div><div class="notice">'+esc(x.defense)+'</div>' +
+        '<div class="muted" style="margin-top:12px">当前设计原则：先证明“发生了什么”，再讨论“为什么发生”；最后才考虑“是否存在攻击”。不根据单一异常直接归因。</div></div>';
       return h;
     }
 
     function radar(){
-      return '<div class="card"><div class="label">攻击链反制雷达</div>' +
-        '<div class="muted" style="margin:6px 0 12px">不要等到“最后一步”才处理：系统按异常出现的阶段提前升级。</div>' +
+      return '<div class="card"><div class="label">攻击推断雷达 · 现实数据版</div>' +
+        '<div class="muted" style="margin:6px 0 12px">淘宝/拼多多通常只能提供结果性数据，因此系统默认采用“可观测信号 → 多假设 → 旁证 → 置信度”的方式。</div>' +
         '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px">' +
-        '<div style="padding:12px;border:1px solid var(--line);border-radius:10px"><span class="tag">01</span><b>观察</b><div class="muted">单点异常：记录时间、订单、流量、投诉等证据。</div></div>' +
-        '<div style="padding:12px;border:1px solid var(--line);border-radius:10px"><span class="tag">02</span><b>预警</b><div class="muted">连续异常：检查是否进入同一攻击链。</div></div>' +
-        '<div style="padding:12px;border:1px solid var(--line);border-radius:10px"><span class="tag warning">03</span><b>高度警戒</b><div class="muted">跨渠道相关：合并事件，不再孤立看待。</div></div>' +
-        '<div style="padding:12px;border:1px solid var(--line);border-radius:10px"><span class="tag warning">04</span><b>主动防御</b><div class="muted">证据充分：启动平台、交易、品牌或安全处置。</div></div>' +
-        '<div style="padding:12px;border:1px solid var(--line);border-radius:10px"><span class="tag positive">05</span><b>恢复学习</b><div class="muted">复盘损失与信号，把结果写回博弈模型。</div></div>' +
+        '<div style="padding:12px;border:1px solid var(--line);border-radius:10px"><span class="tag">S1</span><b>事实</b><div class="muted">记录订单、评价、流量、退款等实际数据。</div></div>' +
+        '<div style="padding:12px;border:1px solid var(--line);border-radius:10px"><span class="tag">S2</span><b>异常</b><div class="muted">和历史/同周期基线比较。</div></div>' +
+        '<div style="padding:12px;border:1px solid var(--line);border-radius:10px"><span class="tag">S3</span><b>假设</b><div class="muted">同时保留正常波动、平台因素、竞品因素等解释。</div></div>' +
+        '<div style="padding:12px;border:1px solid var(--line);border-radius:10px"><span class="tag warning">S4</span><b>旁证</b><div class="muted">检查多个指标是否同时变化。</div></div>' +
+        '<div style="padding:12px;border:1px solid var(--line);border-radius:10px"><span class="tag warning">S5</span><b>置信度</b><div class="muted">证据增加才提高判断强度。</div></div>' +
+        '<div style="padding:12px;border:1px solid var(--line);border-radius:10px"><span class="tag positive">S6</span><b>处置</b><div class="muted">达到阈值才进入防御流程。</div></div>' +
         '</div></div>';
     }
 
-    var b='<div class="card"><div class="label">对手可能的恶意竞争 / 攻击方式 · '+list.length+'项</div>' +
-      '<div class="muted" style="margin:6px 0 12px">点击任意项目后，下方会直接显示完整“识别信号 → 5步攻击链 → 防御检查点 → 升级规则”。</div>' +
-      '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px">';
-    for(var i=0;i<list.length;i++){
-      var x=list[i];
-      b+='<button type="button" class="threat-choice" data-id="'+esc(x.id)+'" style="text-align:left;padding:10px;border:1px solid '+(selected&&x.id===selected.id?'var(--accent)':'var(--line)')+';border-radius:8px;background:transparent;color:inherit;cursor:pointer"><span class="tag">'+esc(x.id)+'</span> <b>'+esc(x.name)+'</b><div class="muted">'+esc(x.category)+'</div></button>';
-    }
+    var b='<div class="card"><div class="label">潜在攻击机制 · '+list.length+'项</div><div class="muted" style="margin:6px 0 12px">点击任意项目：查看“可观测信号 / 理论攻击链 / 不可观测环节 / 多假设 / 推断流程”。</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px">';
+    for(var i=0;i<list.length;i++){var x=list[i];b+='<button type="button" class="threat-choice" data-id="'+esc(x.id)+'" style="text-align:left;padding:10px;border:1px solid '+(selected&&x.id===selected.id?'var(--accent)':'var(--line)')+';border-radius:8px;background:transparent;color:inherit;cursor:pointer"><span class="tag">'+esc(x.id)+'</span> <b>'+esc(x.name)+'</b><div class="muted">'+esc(x.category)+'</div></button>';}
     b+='</div></div>'+radar()+'<div id="threat-detail">'+detail(selected)+'</div>';
-    show('对手攻击面','恶意竞争 / 平台风险防御清单 · '+list.length+'项预设 · 攻击链已展开',b);
+    show('对手攻击面','现实数据推断模型 · '+list.length+'项潜在攻击机制',b);
     var cs=document.querySelectorAll('.threat-choice');
     for(var j=0;j<cs.length;j++)cs[j].addEventListener('click',function(){
-      var id=this.dataset.id,found=null;
-      for(var k=0;k<list.length;k++)if(list[k].id===id){found=list[k];break;}
-      if(!found)return;
+      var id=this.dataset.id,found=null;for(var k=0;k<list.length;k++)if(list[k].id===id){found=list[k];break;}if(!found)return;
       document.getElementById('threat-detail').innerHTML=detail(found);
-      var all=document.querySelectorAll('.threat-choice');
-      for(var q=0;q<all.length;q++)all[q].style.borderColor=all[q].dataset.id===id?'var(--accent)':'var(--line)';
+      var all=document.querySelectorAll('.threat-choice');for(var q=0;q<all.length;q++)all[q].style.borderColor=all[q].dataset.id===id?'var(--accent)':'var(--line)';
       document.getElementById('threat-detail').scrollIntoView({behavior:'smooth',block:'start'});
     });
   }
