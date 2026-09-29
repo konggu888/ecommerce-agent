@@ -3,13 +3,14 @@
 
   var app = document.getElementById('app');
   var nav = document.querySelectorAll('.nav');
-  var VERSION = '20260929-25';
+  var VERSION = '20260929-36';
   var BASE = 'https://skuoxmrzlxhebzhfgbyn.supabase.co';
   var KEY = 'sb_publishable_u46tZ4GMUgwqSYhMJNFG8Q_IzYwl95T';
   var CLIENT = 'ecommerce-agent-sandbox-v1';
   var state = {
     view: location.hash.slice(1) || 'overview',
     run: null,
+    error: null,
     game: [],
     market: [],
     ads: {},
@@ -18,7 +19,8 @@
     memories: [],
     risk: [],
     tasks: [],
-    agentRounds: []
+    agentRounds: [],
+    playback: { playing: false, current: 0, timer: null, poll: null }
   };
 
   function esc(v) {
@@ -81,14 +83,15 @@
     });
   }
 
-  function runURL(name) {
-    return BASE + '/rest/v1/' + name +
-      '?select=*&order=id.desc';
+  function runURL(name, runScoped) {
+    var q = '?select=*&order=id.desc';
+    if (runScoped && state.run && state.run.id) q += '&run_id=eq.' + encodeURIComponent(state.run.id);
+    return BASE + '/rest/v1/' + name + q;
   }
 
   function loadRun() {
     var url = BASE +
-      '/rest/v1/sandbox_runs?select=id,status,updated_at,client_key' +
+      '/rest/v1/sandbox_runs?select=id,status,updated_at,client_key,agent_progress,backtest_progress,risk_progress,memory_count,run_count,state' +
       '&client_key=eq.' + encodeURIComponent(CLIENT) +
       '&order=updated_at.desc&limit=1';
 
@@ -97,19 +100,20 @@
         throw new Error('没有找到 sandbox_runs');
       }
       state.run = rows[0];
+      state.error = state.run.status === 'failed' && state.run.state && state.run.state.error ? state.run.state.error : null;
     });
   }
 
   function loadCore() {
     return Promise.all([
-      getJSON(runURL('sandbox_game_states')),
-      getJSON(runURL('sandbox_market_signals')),
-      getJSON(runURL('sandbox_backtests')),
-      getJSON(runURL('sandbox_events')),
-      getJSON(runURL('sandbox_memories')),
-      getJSON(runURL('sandbox_risk_results')),
-      getJSON(runURL('sandbox_task_results')),
-      getJSON(runURL('sandbox_agent_rounds'))
+      getJSON(runURL('sandbox_game_states', true)),
+      getJSON(runURL('sandbox_market_signals', true)),
+      getJSON(runURL('sandbox_backtests', true)),
+      getJSON(runURL('sandbox_events', true)),
+      getJSON(runURL('sandbox_memories', true)),
+      getJSON(runURL('sandbox_risk_results', true)),
+      getJSON(runURL('sandbox_task_results', true)),
+      getJSON(runURL('sandbox_agent_rounds', true))
     ]).then(function (x) {
       state.game = x[0];
       state.market = x[1];
@@ -158,6 +162,28 @@
     });
   }
 
+  function chainPanel(latest) {
+    var steps = [
+      ['01','输入','我方 + 对手 + 市场 Sandbox 数据'],
+      ['02','突破口','识别可利用的竞争结构'],
+      ['03','策略','选择本轮动作与后续动作'],
+      ['04','Risk Controller','资金 / 单位经济 / 市场 / 对手风险拦截'],
+      ['05','执行','模拟投入、出价、价格、关键词/定向'],
+      ['06','对手','多个参与者分别响应并更新压力/适应'],
+      ['07','市场','收入、ROI、边际ROI、拥挤、库存/现金'],
+      ['08','反馈','真实响应写回下一轮决策状态'],
+      ['09','继续/停止','扩张、降级、等待或 STOP'],
+      ['10','学习','把本轮结果作为下一轮输入']
+    ];
+    var html='<div class="card"><div class="label">完整闭环链路 · 每一轮都从左向右经过</div><div style="display:flex;gap:8px;overflow:auto;padding:12px 0">';
+    for(var i=0;i<steps.length;i++){
+      html+='<div style="min-width:150px;border:1px solid var(--line);border-radius:10px;padding:10px;background:'+(latest&&i===6?'rgba(255,180,0,.08)':'transparent')+'"><span class="tag">'+steps[i][0]+'</span><br><b>'+esc(steps[i][1])+'</b><div class="muted">'+esc(steps[i][2])+'</div></div>';
+      if(i<steps.length-1) html+='<div style="font-size:20px;align-self:center">→</div>';
+    }
+    html+='</div>'+(latest?'<div class="notice">当前执行位置：R'+esc(latest.round)+' · '+esc(latest.action)+' → '+esc(latest.actual_opponent_response||'-')+' → '+esc(latest.next_action_hint||'-')+' · '+(latest.stop_signal?'已停止':'继续')+'</div>':'<div class="notice">等待第一轮模拟。</div>')+'</div>';
+    return html;
+  }
+
   function agentSummary() {
     var rounds = state.agentRounds || [];
     if (!rounds.length) return notice('还没有 Agent 多轮闭环记录。');
@@ -190,8 +216,203 @@
       '<div class="card"><div class="label">市场信号</div><div class="metric">' + state.market.length + '</div></div>' +
       '<div class="card"><div class="label">Agent闭环轮次</div><div class="metric">' + state.agentRounds.length + '</div></div>' +
       '</div>' +
-      notice('核心数据库读取成功。广告模块也已进入读取阶段。')
+      chainPanel((state.agentRounds||[]).length ? state.agentRounds[state.agentRounds.length-1] : null) +
+      playbackPanel() +
+      notice('上面的模拟器会按轮次播放当前 Sandbox Agent 的已生成结果；点击“开始”后每 1.8 秒推进一轮。当前仍不接真实店铺。')
     );
+  }
+
+
+  function sortedRounds() {
+    return (state.agentRounds || []).slice().sort(function (a, b) {
+      return Number(a.round || 0) - Number(b.round || 0);
+    });
+  }
+
+  function playbackData() {
+    var rounds = sortedRounds();
+    if (!rounds.length) return null;
+    var index = Math.max(0, Math.min(state.playback.current, rounds.length - 1));
+    return { rounds: rounds, index: index, current: rounds[index] };
+  }
+
+  function playbackPanel() {
+    var d = playbackData();
+    if (!d) return notice('还没有可播放的 Agent 模拟轮次。');
+    var r = d.current;
+    var status = state.playback.playing ? '▶ 正在模拟' : (d.index >= d.rounds.length - 1 && state.run && state.run.status === 'completed' ? '■ 模拟完成' : 'Ⅱ 已暂停');
+    var timeline = '<div style="display:flex;gap:6px;flex-wrap:wrap;margin:12px 0">';
+    for (var i = 0; i < d.rounds.length; i++) {
+      var cls = i === d.index ? 'tag warning' : (i < d.index ? 'tag positive' : 'tag');
+      timeline += '<span class="' + cls + '">R' + esc(d.rounds[i].round) + '</span>';
+    }
+    timeline += '</div>';
+
+    function parse(v, fallback) {
+      try { return v ? (typeof v === 'string' ? JSON.parse(v) : v) : fallback; } catch (e) { return fallback; }
+    }
+    var branches = parse(r.response_branches, []);
+    var opponents = parse(r.opponent_participants, []);
+    var pathHtml = '';
+    for (var p = 0; p <= d.index; p++) {
+      var pr = d.rounds[p];
+      var isCurrent = p === d.index;
+      pathHtml += '<div style="display:flex;gap:8px;align-items:center;margin:6px 0">' +
+        '<span class="tag ' + (isCurrent ? 'warning' : 'positive') + '">R' + esc(pr.round) + '</span>' +
+        '<b>' + esc(pr.action) + '</b><span>→</span><span class="tag">' + esc(pr.actual_opponent_response || '-') + '</span><span>→</span><b>' + esc(pr.next_action_hint || '-') + '</b>' +
+        (pr.stop_signal ? '<span class="tag warning">STOP</span>' : '') + '</div>';
+    }
+
+    var futureHtml = '';
+    for (var q = d.index + 1; q < d.rounds.length; q++) {
+      var fr = d.rounds[q];
+      futureHtml += '<div style="display:flex;gap:8px;align-items:center;margin:6px 0;opacity:.7"><span class="tag">R' + esc(fr.round) + '</span><span>' + esc(fr.action) + '</span><span>→</span><span>' + esc(fr.actual_opponent_response || '-') + '</span></div>';
+    }
+
+    var opponentHtml = '';
+    for (var o = 0; o < opponents.length; o++) {
+      var op = opponents[o];
+      var active = op.lastResponse === r.actual_opponent_response;
+      opponentHtml += '<div style="flex:1;min-width:190px;border:1px solid var(--line);border-radius:10px;padding:10px;' + (active ? 'box-shadow:0 0 0 2px rgba(255,180,0,.25);' : '') + '">' +
+        '<div class="label">' + esc(op.id) + '</div><b>' + esc(op.name) + '</b><br><span class="muted">' + esc(op.strategy) + '</span><br>' +
+        '<span class="tag ' + (active ? 'warning' : '') + '">' + esc(op.lastResponse || '-') + '</span><br><span class="muted">压力 ' + esc(Number(op.pressure || 0).toFixed(2)) + ' · 适应 ' + esc(Number(op.adaptation || 0).toFixed(2)) + '</span>' +
+        (active ? '<br><b>← 本轮实际进入主路径</b>' : '') + '</div>';
+    }
+
+    var branchHtml = '';
+    for (var x = 0; x < branches.length; x++) {
+      var chosen = branches[x].response === r.actual_opponent_response;
+      branchHtml += '<div style="padding:8px 10px;margin:6px 0;border-left:3px solid ' + (chosen ? 'var(--accent)' : 'var(--line)') + ';background:' + (chosen ? 'rgba(255,180,0,.08)' : 'transparent') + '">' +
+        '<b>' + (chosen ? '★ ' : '') + esc(branches[x].response) + '</b> · ' + esc(Math.round(Number(branches[x].probability || 0) * 100)) + '% → <b>' + esc(branches[x].nextActionHint) + '</b>' +
+        '<div class="muted">停止：' + esc(branches[x].stopCondition) + '；扩张：' + esc(branches[x].expansionCondition) + '</div></div>';
+    }
+
+    var tree = '<div style="margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:12px;overflow:auto">' +
+      '<div class="label">完整动态博弈树 · 已走路径 + 当前分支 + 后续轮次</div>' +
+      '<div style="min-width:900px;margin-top:10px">' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">' +
+      '<div style="border:2px solid var(--accent);border-radius:12px;padding:10px;min-width:150px"><div class="label">当前轮 R' + esc(r.round) + '</div><b>我们：' + esc(r.action) + '</b><br><span class="muted">突破：' + esc(r.breakthrough || '-') + '</span></div>' +
+      '<div style="font-size:22px">→</div>' + (opponentHtml || '<span class="muted">暂无多方响应数据</span>') +
+      '<div style="font-size:22px">→</div><div style="border:2px solid var(--line);border-radius:12px;padding:10px;min-width:150px"><div class="label">下一步</div><b>' + esc(r.next_action_hint || '-') + '</b></div>' +
+      '</div>' +
+      '<div style="margin-top:14px"><div class="label">已发生主路径</div>' + pathHtml + '</div>' +
+      '<div style="margin-top:14px"><div class="label">未来模拟路径（尚未执行）</div>' + (futureHtml || '<span class="muted">当前已到最后一轮</span>') + '</div>' +
+      '<div style="margin-top:14px"><div class="label">当前轮所有可能分支</div>' + (branchHtml || '<span class="muted">暂无分支</span>') + '</div>' +
+      '</div></div>';
+
+    return '<div class="card" id="agent-playback">' +
+      '<div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">' +
+      '<div><div class="label">Agent Sandbox 实时模拟器</div><div class="metric">' + status + ' · 第 ' + esc(r.round) + ' / ' + d.rounds.length + ' 轮</div></div>' +
+      '<div><button class="action" id="sim-start">▶ 开始 / 新模拟</button><button class="action" id="sim-step">⏭ 单步</button><button class="action" id="sim-reset">↺ 重置</button></div></div>' +
+      timeline +
+      '<div class="grid"><div class="card"><div class="label">我方动作</div><div class="metric">' + esc(r.action) + '</div></div><div class="card"><div class="label">突破口</div><div class="metric">' + esc(r.breakthrough || '-') + '</div></div><div class="card"><div class="label">实际主响应</div><div class="metric">' + esc(r.actual_opponent_response || '-') + '</div></div><div class="card"><div class="label">下一动作</div><div class="metric">' + esc(r.next_action_hint || '-') + '</div></div></div>' +
+      '<div class="notice">本轮结果：消耗 ' + esc(r.spend) + ' · 收入 ' + esc(r.revenue) + ' · ROI ' + esc(r.roi) + ' · 边际ROI ' + esc(r.marginal_roi) + ' · 拥挤 ' + esc(r.crowding) + (r.stop_signal ? ' · <b>触发停止：' + esc(r.stop_reason) + '</b>' : ' · 继续观察') + '</div>' +
+      tree + '</div>';
+  }
+
+  function stopPlayback() {
+    if (state.playback.timer) clearInterval(state.playback.timer);
+    if (state.playback.poll) clearInterval(state.playback.poll);
+    state.playback.timer = null;
+    state.playback.poll = null;
+    state.playback.playing = false;
+  }
+
+  function pollNewSimulation() {
+    if (state.playback.poll) clearInterval(state.playback.poll);
+    state.playback.poll = setInterval(function () {
+      loadRun().then(loadCore).then(function () {
+        state.playback.current = Math.max(0, state.agentRounds.length - 1);
+        render();
+        if (state.run && (state.run.status === 'completed' || state.run.status === 'failed')) {
+          if (state.playback.poll) clearInterval(state.playback.poll);
+          state.playback.poll = null;
+          state.playback.playing = false;
+          render();
+        }
+      }).catch(function (e) {
+        console.error('SANDBOX_AGENT_POLL_ERROR', e);
+      });
+    }, 1200);
+  }
+
+  function advancePlayback() {
+    if (!state.agentRounds.length) return;
+    state.playback.current = Math.min(
+      state.agentRounds.length - 1,
+      state.playback.current + 1
+    );
+    if (state.playback.current >= state.agentRounds.length - 1 && state.run && state.run.status === 'completed') {
+      state.playback.playing = false;
+      if (state.playback.timer) clearInterval(state.playback.timer);
+      state.playback.timer = null;
+    }
+    render();
+  }
+
+  function startNewSimulation() {
+    stopPlayback();
+    state.error = null;
+    show('Agent 正在启动', 'Sandbox 新模拟', chainPanel(null) + notice('正在创建新的 Agent 模拟任务……'));
+    fetch(BASE + '/functions/v1/sandbox-agent-runner', {
+      method: 'POST',
+      headers: { apikey: KEY, Authorization: 'Bearer ' + KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ client_key: CLIENT, rounds: 10 })
+    }).then(function (res) {
+      return res.text().then(function (body) {
+        var data = {};
+        try { data = JSON.parse(body); } catch (e) {}
+        if (!res.ok) throw new Error(data.error || ('HTTP ' + res.status));
+        return data;
+      });
+    }).then(function (data) {
+      return loadRun().then(loadCore).then(function () {
+        state.playback.current = 0;
+        state.playback.playing = true;
+        render();
+        pollNewSimulation();
+      });
+    }).catch(function (e) {
+      console.error('SANDBOX_AGENT_RUN_ERROR', e);
+      state.error = e.message;
+      show('Agent 模拟启动失败', 'Sandbox', chainPanel(null) + '<div class="card"><div class="notice"><b>错误已进入网页事件链：</b> ' + esc(e.message) + '</div></div>' + eventTable());
+    });
+  }
+
+  function startPlayback() {
+    stopPlayback();
+    if (!state.agentRounds.length) {
+      startNewSimulation();
+      return;
+    }
+    state.playback.playing = true;
+    render();
+    state.playback.timer = setInterval(function () {
+      if (state.view !== 'game') {
+        stopPlayback();
+        return;
+      }
+      advancePlayback();
+    }, 1800);
+  }
+
+  function bindPlayback() {
+    var start = document.getElementById('sim-start');
+    var step = document.getElementById('sim-step');
+    var reset = document.getElementById('sim-reset');
+    if (start) start.addEventListener('click', function () {
+      if (state.playback.playing) stopPlayback(); else startPlayback();
+      render();
+    });
+    if (step) step.addEventListener('click', function () {
+      stopPlayback();
+      advancePlayback();
+    });
+    if (reset) reset.addEventListener('click', function () {
+      stopPlayback();
+      state.playback.current = 0;
+      render();
+    });
   }
 
   function game() {
@@ -203,12 +424,13 @@
     var rounds = [];
     for (var j = 0; j < state.agentRounds.length; j++) {
       var r = state.agentRounds[j];
-      rounds.push([r.round, r.action, r.recommended_action, r.breakthrough, r.risk_approved ? 'ALLOW' : 'BLOCK', r.decision_score, r.spend, r.revenue, r.conversions, r.roi, r.marginal_roi, r.crowding, r.stop_signal ? 'STOP' : '', r.stop_reason]);
+      rounds.push([r.round, r.action, r.recommended_action, r.breakthrough, r.risk_approved ? 'ALLOW' : 'BLOCK', r.decision_score, r.spend, r.revenue, r.conversions, r.roi, r.marginal_roi, r.crowding, r.actual_opponent_response || '', r.next_action_hint || '', (r.response_branches ? JSON.stringify(r.response_branches) : ''), r.stop_signal ? 'STOP' : '', r.stop_reason]);
     }
-    show('商业博弈', 'BOOT-DEBUG-' + VERSION + ' · Sandbox 模拟数据',
+    show('商业博弈', 'BOOT-DEBUG-' + VERSION + ' · Sandbox 模拟数据 · 可视化模拟器',
+      playbackPanel() +
       table(['产品','竞品','场景','竞品价格','我方价格','CPC','CVR'], rows) +
       '<h2>Agent 多轮闭环</h2>' +
-      table(['轮次','实际动作','原推荐','突破口','风险','决策分','消耗','收入','成交','ROI','边际ROI','拥挤','停止','停止原因'], rounds) +
+      table(['轮次','实际动作','原推荐','突破口','风险','决策分','消耗','收入','成交','ROI','边际ROI','拥挤','对手响应','下一动作提示','响应分支','停止','停止原因'], rounds) +
       notice('这里展示 Agent 每一轮的：决策 → 风险 → 投入 → 市场结果 → 边际收益 → 停止信号 → 下一轮输入。'));
   }
 
@@ -383,14 +605,46 @@
   }
 
   function jobs() {
+    var latest = state.agentRounds.length ? state.agentRounds[state.agentRounds.length - 1] : null;
+    var progress = state.run ? (state.run.agent_progress || 0) : 0;
+    var status = state.run ? state.run.status : 'unknown';
+    var latestTask = state.tasks.length ? state.tasks[0] : null;
+    var hero =
+      '<div class="card">' +
+      '<h2>Agent 实时任务</h2>' +
+      '<div class="notice">' +
+      'Run：' + esc(state.run ? state.run.id : '未启动') +
+      '　状态：<b>' + esc(status) + '</b>' +
+      '　进度：<b>' + esc(progress) + '%</b>' +
+      '</div>' +
+      (latest ? '<div class="grid">' +
+        '<div><b>当前轮次</b><br>R' + esc(latest.round) + '</div>' +
+        '<div><b>我方动作</b><br>' + esc(latest.action) + '</div>' +
+        '<div><b>突破口</b><br>' + esc(latest.breakthrough) + '</div>' +
+        '<div><b>对手响应</b><br>' + esc(latest.actual_opponent_response) + '</div>' +
+        '<div><b>下一动作</b><br>' + esc(latest.next_action_hint) + '</div>' +
+        '<div><b>边际ROI</b><br>' + esc(latest.marginal_roi) + '</div>' +
+        '</div>' : '<p>尚未产生 Agent 轮次。</p>') +
+      '</div>';
     var rows = [];
     for (var i = 0; i < state.tasks.length; i++) {
       var x = state.tasks[i];
       rows.push([x.task_id, x.task_type, x.status, x.progress + '%', x.created_at]);
     }
-    show('任务监控', 'BOOT-DEBUG-' + VERSION + ' · Sandbox 任务状态',
-      table(['任务ID','任务类型','状态','进度','创建时间'], rows) +
-      '<h2>事件</h2>' + eventTable());
+    var rounds = [];
+    for (var j = 0; j < state.agentRounds.length; j++) {
+      var r = state.agentRounds[j];
+      rounds.push(['R' + r.round, r.action, r.actual_opponent_response, r.next_action_hint, r.stop_signal ? 'STOP' : 'CONTINUE', r.marginal_roi]);
+    }
+    show('任务监控', 'BOOT-DEBUG-' + VERSION + ' · Sandbox Agent 执行过程',
+      hero +
+      chainPanel(latest) +
+      (state.error ? '<div class="card"><div class="notice"><b>当前 Run 错误：</b> ' + esc(state.error) + '</div></div>' : '') +
+      '<h2>任务队列</h2>' +
+      (latestTask ? table(['任务ID','任务类型','状态','进度','创建时间'], rows) : notice('当前 Run 尚未创建任务。')) +
+      '<h2>Agent 轮次</h2>' +
+      (rounds.length ? table(['轮次','我方动作','对手响应','下一动作','风控信号','边际ROI'], rounds) : notice('等待 Agent 开始第一轮。')) +
+      '<h2>事件流</h2>' + eventTable());
   }
 
   function eventTable() {
@@ -436,6 +690,7 @@
     } else {
       overview();
     }
+    if (state.view === 'game') bindPlayback();
   }
 
   function start() {
@@ -463,5 +718,6 @@
 
   window.__EA_APPDB_LOADED__ = true;
   window.__EA_APPDB_VERSION__ = VERSION;
+  window.__EA_SIMULATOR__ = state.playback;
   start();
 }());
