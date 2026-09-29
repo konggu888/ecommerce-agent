@@ -187,7 +187,8 @@
       '<div class="grid">' +
       '<div class="card"><div class="label">Sandbox Run</div><div class="metric">' + esc(state.run.status) + '</div></div>' +
       '<div class="card"><div class="label">商业博弈记录</div><div class="metric">' + state.game.length + '</div></div>' +
-      '<div class="card"><div class="label">市场信号</div><div class="metric">' + state.market.length + '</div></div>' +\n      '<div class="card"><div class="label">Agent闭环轮次</div><div class="metric">' + state.agentRounds.length + '</div></div>' +
+      '<div class="card"><div class="label">市场信号</div><div class="metric">' + state.market.length + '</div></div>' +
+      '<div class="card"><div class="label">Agent闭环轮次</div><div class="metric">' + state.agentRounds.length + '</div></div>' +
       '</div>' +
       notice('核心数据库读取成功。广告模块也已进入读取阶段。')
     );
