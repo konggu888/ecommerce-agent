@@ -62,6 +62,7 @@
     return {
       turn:0,momentum:0,opponentMomentum:0,pressure:0,risk:0,information:7,resource:0,
       lastSide:'',lastMove:null,lastMode:'',lastDomain:'通用',lastIntensity:0,lastOutcome:'',
+      marketPosition:{ourTraffic:0,ourShare:0,opponentTraffic:10,opponentShare:1,threatLevel:0,firstMove:true},
       // 商品进入博弈前，默认已经完成基础商品建设；博弈从“上线后竞争”开始，而不是从“什么都没做”开始。
       productBaseline:{
         title:{done:true,source:'热门标题/竞争对手关键词'},
@@ -177,6 +178,23 @@
       var mode=modeOf(z.m);
       if(mode==='机制校验' && state.risk<3 && state.pressure<4 && weights[mode]<1.4)return;
       var d=domain(z.m), score=weights[mode]*6, k=intensity(z.m);
+      // 开局不是“别人来抢我方”：我方是新商品，市场流量已经被现有商品占据。
+      // 第一手优先寻找可以切入、争取、抢占的流量入口；防守/负向施压在开局明显降权。
+      if(side==='我方' && state.turn===0){
+        if(/关键词|长尾|搜索|流量|点击|人群|内容|种草|竞品/.test(ms||''))score+=6;
+        if(mode==='竞争')score+=2.5;
+        if(mode==='转移')score+=1.5;
+        if(mode==='防守' || mode==='负向施压' || mode==='机制校验')score-=4;
+      }
+      // 对手在第一轮并不知道我方能抢走多少流量：先观察/守住自己的位置，只有受到实际影响后才升级竞争。
+      if(side==='对手' && state.turn===1){
+        if(mode==='试探')score+=4;
+        if(mode==='防守')score+=2.5;
+        if(mode==='建设')score+=1.5;
+        if(mode==='竞争')score-=1.5;
+        if(mode==='负向施压')score-=5;
+        if(mode==='反制')score-=3;
+      }
       if(d===state.lastDomain)score-=6;
       if(state.domainCooldown[d]>0)score-=3;
       if(state.lastMode===mode)score-=1.2;
@@ -290,12 +308,24 @@
       }
     }
     // 对手动作也会改变反馈环境：不是“真实数据”，而是连续棋谱中的模拟市场反馈。
+    if(side==='我方'){
+      // 我方每次主动进入市场，都先产生一部分“争取流量”的效果；具体大小仍由后续反馈决定。
+      var marketGain=mode==='竞争'?1.4:(mode==='转移'?1.0:(mode==='试探'?.55:.75));
+      if(/关键词|搜索|流量|点击/.test(nm+' '+ac))marketGain+=.45;
+      s.marketPosition.ourTraffic=Math.min(10,s.marketPosition.ourTraffic+marketGain);
+      s.marketPosition.ourShare=Math.min(1,s.marketPosition.ourTraffic/10);
+      s.marketPosition.threatLevel=Math.min(10,s.marketPosition.ourTraffic*.7);
+    }
     if(side==='对手'){
       if(/关键词|搜索/.test(nm+' '+ac))s.feedback.ctr=Math.max(.15,(s.feedback.ctr===null?.55:s.feedback.ctr)-.06);
       if(/主图|点击/.test(nm+' '+ac))s.feedback.ctr=Math.max(.15,(s.feedback.ctr===null?.55:s.feedback.ctr)-.07);
       if(/价格|竞争|压制/.test(nm+' '+ac))s.feedback.conversion=Math.max(.15,(s.feedback.conversion===null?.5:s.feedback.conversion)-.05);
       if(/内容|视频|种草/.test(nm+' '+ac))s.feedback.contentSpread=Math.max(.15,(s.feedback.contentSpread===null?.5:s.feedback.contentSpread)-.06);
-      s.feedback.competitorMoves=Math.min(1.2,(s.feedback.competitorMoves===null?.35:s.feedback.competitorMoves)+.1);
+      if(mode==='竞争' || mode==='反制' || mode==='负向施压' || /抢占|压制|价格战|竞争/.test(nm+' '+ac)){
+        s.feedback.competitorMoves=Math.min(1.2,(s.feedback.competitorMoves===null?.35:s.feedback.competitorMoves)+.1);
+        s.marketPosition.threatLevel=Math.min(10,s.marketPosition.threatLevel+1.2);
+        s.marketPosition.opponentTraffic=Math.max(0,s.marketPosition.opponentTraffic-.25);
+      }
     }
     // 每次变量变化都留下版本记录，棋谱才能解释“为什么又改了一次”。
     var touched=[];
@@ -331,10 +361,10 @@
     var m=z.m, last=state.lastMove, parts=[];
     var ms=(m.name||'')+' '+(m.action||'')+' '+(m.signal||'');
 
-    // 棋盘解释统一使用人话：发生了什么 → 看到了什么 → 为什么这么做 → 影响什么 → 下一步看什么。
+    // 棋盘解释统一使用人话：发生了什么 → 谁在抢谁的流量 → 为什么回应 → 影响什么 → 下一步看什么。
     if(side==='对手'){
       if(last) parts.push('我方刚才做了“'+(last.name||'未知')+'”。');
-      else parts.push('这是开局，对手先根据当前市场情况做出第一步动作。');
+      else parts.push('这是开局。市场原本已经有其他商品在拿流量，所以对手没有理由一上来就攻击我方。');
 
       var reason='';
       if(z.mode==='试探'){
@@ -483,6 +513,7 @@
         pressure:state.pressure,risk:state.risk,momentum:state.momentum,
         opponentMomentum:state.opponentMomentum,information:state.information,
         lastDomain:state.lastDomain,lastMode:state.lastMode,
+        marketPosition:Object.assign({},state.marketPosition),
         productVariables:JSON.parse(JSON.stringify(state.productVariables)),
         feedback:Object.assign({},state.feedback)
       };
@@ -549,10 +580,10 @@
     html+='<div class="subtitle">40种行为人格 · 每个人格一张连续棋谱 · 自然收束 · 三大招式库混合使用</div>';
     html+='<div class="card" style="margin:10px 0 16px;border-left:4px solid var(--accent);background:rgba(255,180,0,.06)"><b>棋谱规则</b><div style="font-size:16px;line-height:1.7;margin-top:6px">';
     html+='不是“我方三步/一轮就结束”，也不是为了凑固定步数。每一套人格是一条完整连续链：<b>我方第1招 → 对手第2招 → 我方第3招 → 对手第4招 → ……</b>，最多40步；40步只是安全上限，不是目标。';
-    html+='三大招式库不再按阵营分配：我方和对手共享建设、防守、试探、竞争、诱导、转移、反制、机制校验、负向施压九类战略动作。人格只改变动作权重，不锁死动作类型；上一招、累计状态、对手回应以及当前市场反馈共同决定下一招。对手招式全部是模拟假设，不代表真实对手已经采取该动作；机制型招式用于识别、校验、隔离和防守。';
-    html+='同时，商品基础建设完成不等于配置已经正确：初始商品是基于热门/竞品信息形成的复制式基线，进入棋谱后持续通过模拟反馈诊断问题、定位变量并纠偏。每次修改都产生新的反馈，再进入下一手决策，形成“市场反馈 → 问题诊断 → 变量修改 → 对手响应 → 新反馈”的连续闭环。只有局面仍产生有效的新变化才继续；优势形成、僵持、路线失效、反馈不足以支持继续行动或风险封顶时自然收束。';
+    html+='三大招式库不再按阵营分配：我方和对手共享建设、防守、试探、竞争、诱导、转移、反制、机制校验、负向施压九类战略动作。人格只改变动作权重，不锁死动作类型；上一招、累计状态、对手回应以及当前市场反馈共同决定下一招。对手招式全部是模拟假设，不代表真实对手已经采取该动作；机制型招式用于识别、校验、隔离和防守。开局关系明确为：<b>我方是刚进入市场的新商品，基础建设已经完成，但暂时没有稳定流量；市场流量原本属于现有商品，所以第一目标是主动找到入口，从现有商品手里争取流量、点击和成交。</b>';
+    html+='同时，商品基础建设已经完成，后续不是重新做商品，而是在进入市场后不断调整已经存在的配置。连续闭环改为：<b>我方主动抢流量 → 市场反馈 → 对手发现自己的流量受到影响后回应 → 我方再调整 → 新反馈</b>。只有局面仍产生有效的新变化才继续；我方形成稳定优势、双方僵持、突破路线失效或风险封顶时自然收束。';
     html+='</div></div>';
-    html+='<div class="card" style="margin:10px 0 16px;border-left:4px solid var(--accent)"><b>商品初始状态：基础建设已完成</b><div style="margin-top:8px;line-height:1.8">标题（热门/竞品关键词） · 主图（竞争参考） · 详情页 · 5条正向真实评价 · 商品视频 · 问大家 · 种草内容</div><div class="muted" style="margin-top:6px">因此棋谱不会从“什么都没做”开始。现在主要观察：点击率、转化率、自然流量、实际搜索词、竞品即时动作、内容扩散效率。</div></div>';
+    html+='<div class="card" style="margin:10px 0 16px;border-left:4px solid var(--accent)"><b>开局市场位置：我方主动抢市场</b><div style="margin-top:8px;line-height:1.8">我方：新商品，基础建设全部完成，但初始稳定流量≈0 · 对手：已有商品，已经占据搜索、内容、人群等流量入口</div><div class="muted" style="margin-top:6px">所以第一手不是防守，也不是等对手攻击；第一手的任务是找一个可以切进去的流量入口。只有当我方实际造成流量/点击/成交影响后，对手才逐步进入防守、竞争和反制。</div></div>'+
     html+='<div class="card"><div class="label">40套连续博弈棋谱</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px;margin-top:12px">';
     H.forEach(function(x,i){
       html+='<div class="game-wrap" data-game="'+esc(x.id)+'"><div class="card"><span class="tag">'+esc(x.id)+'</span><b style="display:block;margin-top:7px">'+esc(x.name)+'</b>';
@@ -606,7 +637,8 @@
       }
     }
     h+='<div class="notice" style="margin-top:6px">'+esc(s.response)+'</div>';
-    if(s.stateBefore&&s.stateAfter){h+='<div class="muted" style="margin-top:5px">状态：压力 '+s.stateBefore.pressure.toFixed(1)+' → '+s.stateAfter.pressure.toFixed(1)+' · 风险 '+s.stateBefore.risk.toFixed(1)+' → '+s.stateAfter.risk.toFixed(1)+' · 动能 '+s.stateBefore.momentum.toFixed(1)+' → '+s.stateAfter.momentum.toFixed(1)+'</div>';}
+    if(s.stateBefore&&s.stateAfter){h+='<div class="muted" style="margin-top:5px">状态：压力 '+s.stateBefore.pressure.toFixed(1)+' → '+s.stateAfter.pressure.toFixed(1)+' · 风险 '+s.stateBefore.risk.toFixed(1)+' → '+s.stateAfter.risk.toFixed(1)+' · 动能 '+s.stateBefore.momentum.toFixed(1)+' → '+s.stateAfter.momentum.toFixed(1)+'</div>';
+    if(s.stateAfter&&s.stateAfter.marketPosition){h+='<div class="muted" style="margin-top:4px">市场位置：我方已争取流量 '+s.stateAfter.marketPosition.ourTraffic.toFixed(1)+'/10 · 对手原有流量 '+s.stateAfter.marketPosition.opponentTraffic.toFixed(1)+'/10 · 对手受影响程度 '+s.stateAfter.marketPosition.threatLevel.toFixed(1)+'/10</div>';}}
     h+='</div>';
     return h;
   }
