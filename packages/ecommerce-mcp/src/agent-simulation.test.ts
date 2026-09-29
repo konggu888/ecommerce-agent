@@ -279,3 +279,17 @@ test('multi-round game tracks opponent behavior evolution hypotheses', async () 
   assert.ok(plan.nextBehaviorObservation.length > 0);
   assert.ok(plan.nodes.some(n => Array.isArray(n.behaviorHypotheses)));
 });
+
+
+test('behavior state updates across observed opponent mode switches', async () => {
+  const { updateBehaviorState } = await import('./human-behavior-engine.ts');
+  const state = updateBehaviorState([
+    { mode: 'POSITIVE', evidence: 'observed growth action' },
+    { mode: 'NEGATIVE', evidence: 'observed defensive pressure signal' },
+    { mode: 'POSITIVE', evidence: 'observed renewed growth action' }
+  ]);
+  assert.ok(state.hypotheses.length > 0);
+  assert.ok(state.transitions.length >= 2);
+  assert.ok(state.nextLikelyModes.length > 0);
+  assert.ok(state.nextObservation.length > 0);
+});
