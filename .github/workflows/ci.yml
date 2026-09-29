@@ -23,6 +23,16 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Frontend syntax check
+        run: |
+          node --check apps/web/game-logic-library.js
+          node --check apps/web/threat-library.js
+          node --check apps/web/threat-playbooks.js
+          node --check apps/web/positive-attack-library.js
+          node --check apps/web/positive-attack-playbooks.js
+          node --check apps/web/human-behavior-library.js
+          node --check apps/web/app-db.js
+
       - name: Typecheck
         run: npm run typecheck
 
