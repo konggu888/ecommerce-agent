@@ -3,7 +3,7 @@
 
   var app = document.getElementById('app');
   var nav = document.querySelectorAll('.nav');
-  var VERSION = '20260929-38';
+  var VERSION = '20260929-39';
   var BASE = 'https://skuoxmrzlxhebzhfgbyn.supabase.co';
   var KEY = 'sb_publishable_u46tZ4GMUgwqSYhMJNFG8Q_IzYwl95T';
   var CLIENT = 'ecommerce-agent-sandbox-v1';
@@ -502,6 +502,15 @@
     }
   }
 
+  function threats() {
+    var list=window.EA_THREAT_LIBRARY||[], selected=list.length?list[0]:null;
+    function detail(x){if(!x)return notice('暂无对手攻击面数据。');return '<div class="card"><span class="tag">'+esc(x.id)+'</span><span class="tag">'+esc(x.category)+'</span><h2>'+esc(x.name)+'</h2><div class="label">识别信号</div><div class="notice">'+esc(x.signal)+'</div><div class="label" style="margin-top:12px">防范重点</div><div class="notice">'+esc(x.defense)+'</div></div>';}
+    var b='<div class="card"><div class="label">对手可能的恶意竞争 / 攻击方式 · '+list.length+'项</div><div class="muted" style="margin:6px 0 12px">防御清单：先识别信号，再根据真实数据决定是否纳入博弈模型。</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px">';
+    for(var i=0;i<list.length;i++){var x=list[i];b+='<button type="button" class="threat-choice" data-id="'+esc(x.id)+'" style="text-align:left;padding:10px;border:1px solid '+(selected&&x.id===selected.id?'var(--accent)':'var(--line)')+';border-radius:8px;background:transparent;color:inherit;cursor:pointer"><span class="tag">'+esc(x.id)+'</span> <b>'+esc(x.name)+'</b><div class="muted">'+esc(x.category)+'</div></button>';}
+    b+='</div></div><div id="threat-detail">'+detail(selected)+'</div>';show('对手攻击面','恶意竞争 / 平台风险防御清单 · '+list.length+'项预设',b);
+    var cs=document.querySelectorAll('.threat-choice');for(var j=0;j<cs.length;j++)cs[j].addEventListener('click',function(){var id=this.dataset.id,found=null;for(var k=0;k<list.length;k++)if(list[k].id===id){found=list[k];break;}if(!found)return;document.getElementById('threat-detail').innerHTML=detail(found);var all=document.querySelectorAll('.threat-choice');for(var q=0;q<all.length;q++)all[q].style.borderColor=all[q].dataset.id===id?'var(--accent)':'var(--line)';});
+  }
+
   function market() {
     var rows = [];
     for (var i = 0; i < state.market.length; i++) {
@@ -739,7 +748,7 @@
       nav[i].classList.toggle('active', nav[i].dataset.view === state.view);
     }
 
-    if (state.view === 'game-logic') {
+    if (state.view === 'threats') { threats(); } else if (state.view === 'game-logic') {
       gameLogic();
     } else if (state.view === 'game') {
       game();
