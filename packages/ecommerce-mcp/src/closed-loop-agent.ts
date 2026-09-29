@@ -24,6 +24,7 @@ export function runClosedLoop(input: ClosedLoopInput): ClosedLoopOutput {
   const candidates: ClosedLoopCandidate[] = [];
   for (const a of actions) {
     let score = a.confidence;
+    const reasons = [...a.evidence];
     const counter = input.state.opponentCounterMatrix?.[a.action];
     if (counter) {
       const penalty = counter.pressure * 0.3;
@@ -32,7 +33,6 @@ export function runClosedLoop(input: ClosedLoopInput): ClosedLoopOutput {
     }
     const learnedConfidence = input.strategyConfidence?.[a.action];
     if (learnedConfidence !== undefined) score += (learnedConfidence - 0.5) * 0.2;
-    const reasons = [...a.evidence];
     if (inferenceUncertainty > 0) reasons.push(`对手行为存在信息不完全：不确定性 ${inferenceUncertainty.toFixed(2)}`);
     if (scale.reasons.length && a.action === 'INCREASE_BUDGET') { score -= 0.3; reasons.push(...scale.reasons); }
     if (!Number.isFinite(economics.breakEvenRoas) && a.action === 'INCREASE_BUDGET') { score -= 0.4; reasons.push('unit economics do not support scaling'); }
