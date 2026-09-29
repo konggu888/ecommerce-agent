@@ -682,7 +682,7 @@
       '<button class="action sc-tab" data-type="positive">正向攻势（'+positives.length+'）</button><button class="action sc-tab" data-type="threat">对手攻击面（'+threats.length+'）</button><button class="action sc-tab" data-type="human">人性行为（'+humans.length+'）</button></div>'+
       '<div id="sc-list" style="margin-top:12px">'+cards(positives,'positive')+'</div></div>'+
       '<div id="sc-detail">'+detail(selected,'positive')+'</div>'+
-      '<div class="card"><div class="label">② 动态博弈树</div><div class="notice">这里直接显示 Sandbox 已经跑过的路线：我方动作 → 对手实际响应 → 历史反制压力 → 是否换路。实际响应优先于理论分支。</div>'+adaptiveTimelineHtml()+'</div>'+
+      '<div class="card"><div class="label">② 动态博弈树</div><div class="notice">这里直接显示 Sandbox 已经跑过的路线：我方动作 → 对手实际响应 → 历史反制压力 → 是否换路。实际响应优先于理论分支。</div>'+adaptiveTreeHtml()+'</div>'+
       '<div class="card"><div class="label">③ 本页如何使用实际对手学习</div><div class="notice">每轮不只看理论分支：记录我方动作、对手实际响应、样本数和反制压力。历史上已经形成稳定反制的路线降低权重；没有足够样本的路线标记为未知，先实验再判断。</div></div>';
     show('连续博弈策略中心','实战工作台 · 攻略生成 → 多轮模拟 → 对手学习 → 换路',body);
     function bindSimulationButtons(){
