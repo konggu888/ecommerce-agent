@@ -213,7 +213,7 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
     const matchedBranch = responseBranches.find(b => b.response === actualOpponentResponse);
     const nextActionHint = matchedBranch?.nextActionHint ?? responseBranches[0]?.nextActionHint ?? 'HOLD';
     pendingActionHint = nextActionHint;
-    const evaluation: OutcomeRecord['evaluation'] = spend <= 0 || conversions < 1 ? 'INCONCLUSIVE' : state.roi >= expectedRoi ? 'POSITIVE' : 'NEGATIVE';
+    const evaluation: OutcomeRecord['evaluation'] = spend <= 0 || conversions < 1 ? 'INCONCLUSIVE' : (state.roi ?? 0) >= expectedRoi ? 'POSITIVE' : 'NEGATIVE';
     const currentBreakthrough = selected?.breakthrough?.type ?? 'NO_CLEAR_GAP';
     if (activeBreakthrough === null) activeBreakthrough = currentBreakthrough;
     if (currentBreakthrough !== activeBreakthrough) breakthroughFailures = 0;
