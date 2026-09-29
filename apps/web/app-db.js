@@ -3,7 +3,7 @@
 
   var app = document.getElementById('app');
   var nav = document.querySelectorAll('.nav');
-  var VERSION = '20260929-36';
+  var VERSION = '20260929-37';
   var BASE = 'https://skuoxmrzlxhebzhfgbyn.supabase.co';
   var KEY = 'sb_publishable_u46tZ4GMUgwqSYhMJNFG8Q_IzYwl95T';
   var CLIENT = 'ecommerce-agent-sandbox-v1';
@@ -236,6 +236,31 @@
     return { rounds: rounds, index: index, current: rounds[index] };
   }
 
+  function strategyStepsPanel(round, allRounds) {
+    function parseSteps(v) { try { return v ? (typeof v === 'string' ? JSON.parse(v) : v) : []; } catch(e) { return []; } }
+    var steps = parseSteps(round.strategy_steps || (round.decision_tree && round.decision_tree.strategySteps));
+    var html = '<div style="margin-top:14px"><div class="label">本轮博弈：每一个参与者采用了什么策略</div>';
+    if (!steps.length) return html + '<div class="muted">本轮暂无策略拆解数据。</div></div>';
+    html += '<div style="display:grid;gap:8px;margin-top:8px">';
+    for (var i=0;i<steps.length;i++) {
+      var s=steps[i], mine=s.actor==='OUR_AGENT', hit=s.actor!=='OUR_AGENT' && s.responseToUs===round.actual_opponent_response;
+      html += '<div style="border:1px solid var(--line);border-radius:10px;padding:10px;background:'+(mine?'rgba(80,160,255,.06)':(hit?'rgba(255,180,0,.08)':'transparent'))+'">' +
+        '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="tag '+(mine?'positive':(hit?'warning':''))+'">'+esc(s.actorName||s.participant||s.actor)+'</span><b>策略：'+esc(s.strategy||s.strategyCode||'-')+'</b><span>→</span><b>动作：'+esc(s.action||'-')+'</b>'+(hit?'<span class="tag warning">实际响应</span>':'')+'</div>' +
+        '<div class="muted" style="margin-top:5px">触发：'+esc(s.trigger||'-')+'；原因：'+esc(s.rationale||'-')+'</div><div style="margin-top:5px">对我方：'+esc(s.responseToUs||s.result||'-')+' · 下一策略：'+esc(s.nextStrategy||'-')+'</div></div>';
+    }
+    html += '</div></div>';
+    if (allRounds && allRounds.length) {
+      html += '<div style="margin-top:14px"><div class="label">全程策略轨迹（每一轮都记录）</div><div style="overflow:auto"><table class="table"><thead><tr><th>轮次</th><th>我方策略</th><th>我方动作</th><th>价格竞品</th><th>流量竞品</th><th>内容竞品</th><th>实际主响应</th><th>下一策略</th></tr></thead><tbody>';
+      for (var j=0;j<allRounds.length;j++) {
+        var rr=allRounds[j], ss=parseSteps(rr.strategy_steps || (rr.decision_tree && rr.decision_tree.strategySteps)), map={};
+        for(var z=0;z<ss.length;z++) map[ss[z].actor]=ss[z];
+        html += '<tr><td>R'+esc(rr.round)+'</td><td>'+esc(map.OUR_AGENT&&map.OUR_AGENT.strategy||'-')+'</td><td>'+esc(rr.action||'-')+'</td><td>'+esc(map['OPP-01']&&map['OPP-01'].strategy||'-')+' / '+esc(map['OPP-01']&&map['OPP-01'].action||'-')+'</td><td>'+esc(map['OPP-02']&&map['OPP-02'].strategy||'-')+' / '+esc(map['OPP-02']&&map['OPP-02'].action||'-')+'</td><td>'+esc(map['OPP-03']&&map['OPP-03'].strategy||'-')+' / '+esc(map['OPP-03']&&map['OPP-03'].action||'-')+'</td><td><b>'+esc(rr.actual_opponent_response||'-')+'</b></td><td>'+esc(rr.next_action_hint||'-')+'</td></tr>';
+      }
+      html += '</tbody></table></div></div>';
+    }
+    return html;
+  }
+
   function playbackPanel() {
     var d = playbackData();
     if (!d) return notice('还没有可播放的 Agent 模拟轮次。');
@@ -306,6 +331,7 @@
       '<div><button class="action" id="sim-start">▶ 开始 / 新模拟</button><button class="action" id="sim-step">⏭ 单步</button><button class="action" id="sim-reset">↺ 重置</button></div></div>' +
       timeline +
       '<div class="grid"><div class="card"><div class="label">我方动作</div><div class="metric">' + esc(r.action) + '</div></div><div class="card"><div class="label">突破口</div><div class="metric">' + esc(r.breakthrough || '-') + '</div></div><div class="card"><div class="label">实际主响应</div><div class="metric">' + esc(r.actual_opponent_response || '-') + '</div></div><div class="card"><div class="label">下一动作</div><div class="metric">' + esc(r.next_action_hint || '-') + '</div></div></div>' +
+      strategyStepsPanel(r, d.rounds) +
       '<div class="notice">本轮结果：消耗 ' + esc(r.spend) + ' · 收入 ' + esc(r.revenue) + ' · ROI ' + esc(r.roi) + ' · 边际ROI ' + esc(r.marginal_roi) + ' · 拥挤 ' + esc(r.crowding) + (r.stop_signal ? ' · <b>触发停止：' + esc(r.stop_reason) + '</b>' : ' · 继续观察') + '</div>' +
       tree + '</div>';
   }
