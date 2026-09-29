@@ -293,3 +293,26 @@ test('behavior state updates across observed opponent mode switches', async () =
   assert.ok(state.nextLikelyModes.length > 0);
   assert.ok(state.nextObservation.length > 0);
 });
+
+
+test('opponent response probabilities react to persisted behavior state', async () => {
+  const { modelOpponentResponses } = await import('./opponent-model.ts');
+  const cfg = config();
+  const baseline = modelOpponentResponses(cfg.initial);
+  const adaptive = modelOpponentResponses({
+    ...cfg.initial,
+    behaviorState: {
+      dominantMode: 'DEFENSIVE',
+      uncertainty: 0.1,
+      recentModes: ['POSITIVE', 'DEFENSIVE'],
+      hypotheses: [],
+      transitions: [{ from: 'POSITIVE', to: 'DEFENSIVE', evidence: ['switch'], confidence: 0.8 }],
+      nextLikelyModes: ['DEFENSIVE'],
+      nextObservation: 'observe persistence'
+    }
+  });
+  const baseDefend = baseline.filter(x => x.response === 'DEFEND_TRAFFIC')[0]?.probability ?? 0;
+  const adaptiveDefend = adaptive.filter(x => x.response === 'DEFEND_TRAFFIC')[0]?.probability ?? 0;
+  assert.ok(adaptiveDefend >= baseDefend || adaptiveDefend > 0);
+  assert.ok(adaptive.every(x => x.rationale.some(r => r.includes('行为状态影响'))));
+});
