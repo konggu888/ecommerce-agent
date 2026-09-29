@@ -73,6 +73,17 @@
       },
       knownSignals:['标题已按市场热门与竞品关键词完成','主图已参考竞争环境完成','详情页已完成','已有5条正向真实评价作为基础反馈','商品视频已完成','问大家已完成','种草内容已完成'],
       unknownSignals:['点击率','转化率','自然流量规模','搜索词实际分布','竞品即时动作','内容扩散效率'],
+      productVariables:{
+        title:{version:1,confidence:0.35,needsReview:true},
+        longTailKeywords:{version:1,confidence:0.2,needsReview:true},
+        mainImage:{version:1,confidence:0.35,needsReview:true},
+        detail:{version:1,confidence:0.35,needsReview:true},
+        video:{version:1,confidence:0.35,needsReview:true},
+        qa:{version:1,confidence:0.35,needsReview:true},
+        seeding:{version:1,confidence:0.3,needsReview:true},
+        reviews:{version:1,confidence:0.45,needsReview:false}
+      },
+      feedback:{ctr:null,conversion:null,organicTraffic:null,searchTerms:null,competitorMoves:null,contentSpread:null},
       personality:x,history:[],usedMoves:{},domainCooldown:{},domainChanges:0,staleMoves:0,
       meaningfulMoves:0,lastStateSignature:'',endReason:'',maxTurns:40
     };
@@ -158,6 +169,21 @@
       if(state.lastMode===mode)score-=1.2;
       if(side==='对手' && mode==='负向施压' && state.lastMode!=='负向施压' && state.pressure<3)score-=1.5;
       if(side==='我方' && mode==='负向施压' && state.pressure<4 && state.risk<5)score-=1.2;
+      // 商品已上线但初始配置来自热门/竞品复制；后续博弈可以继续纠偏，不把“已完成”当成“不可修改”。
+      var ms=(z.m.name||'')+' '+(z.m.action||'')+' '+(z.m.signal||'');
+      if(side==='我方' && /关键词|长尾|搜索/.test(ms)){
+        if(state.productVariables.longTailKeywords.needsReview)score+=2.2;
+        if(state.feedback.ctr!==null && state.feedback.ctr<0.8)score+=1.4;
+      }
+      if(side==='我方' && /主图/.test(ms)){
+        if(state.feedback.ctr!==null && state.feedback.ctr<0.85)score+=2.5;
+      }
+      if(side==='我方' && /详情|FAQ|卖点|痛点/.test(ms)){
+        if(state.feedback.conversion!==null && state.feedback.conversion<0.85)score+=2.4;
+      }
+      if(side==='我方' && /视频|UGC|种草|内容/.test(ms)){
+        if(state.feedback.contentSpread!==null && state.feedback.contentSpread<0.85)score+=1.8;
+      }
       if(mode==='建设' && state.momentum>=7)score-=.5;
       if(mode==='防守' && state.pressure<=1 && state.risk<=2)score-=.5;
       score+=((d!==state.lastDomain)?1.5:0);
