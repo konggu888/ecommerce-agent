@@ -202,6 +202,5 @@ export function planMultiRoundGame(state: GameState, horizon = 3): MultiRoundPla
     behaviorTrajectory: bestBehaviorTrajectory,
     behaviorHypotheses: bestBehaviorHypotheses,
     nextBehaviorObservation: bestNextBehaviorObservation
-  }
   };
 }
