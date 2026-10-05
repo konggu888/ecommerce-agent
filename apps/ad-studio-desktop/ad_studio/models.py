@@ -41,6 +41,7 @@ class Project:
     actor_id: Optional[str]
     scene_id: Optional[str]
     shots: list[Shot]
+    cost_estimate: dict = field(default_factory=dict)
     created_at: str=field(default_factory=now)
     updated_at: str=field(default_factory=now)
     def save(self, root: Path):
