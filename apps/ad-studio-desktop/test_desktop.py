@@ -14,8 +14,9 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertEqual(detect_platform("https://mobile.yangkeduo.com/goods.html"), "拼多多")
 
     def test_budget_policy(self):
-        self.assertFalse(estimate_cost(5)["超预算"])
-        self.assertFalse(estimate_cost(6)["超预算"])
+        self.assertTrue(estimate_cost(5)["超预算"])
+        self.assertEqual(estimate_cost(5)["总计"], 3.6)
+        self.assertEqual(estimate_cost(6)["总计"], 4.32)
 
     def test_only_selected_shot_changes_version(self):
         p = new_project("https://item.jd.com/123.html", 2, "真人口播")
