@@ -114,9 +114,8 @@ class ModelRouter:
     def create_plan(self, product: dict[str, Any], constraints: dict[str, Any]) -> dict[str, Any]:
         """Creative-plan entry point. Current route is the main creative model."""
         profile = self.route("商品理解")
-        prompt = constraints.pop("_creative_prompt", None)
-        if not prompt:
-            raise RuntimeError("缺少创意引擎提示词")
+        from .creative_engine import build_creative_prompt
+        prompt = build_creative_prompt(product, constraints)
         return self.complete_json(profile, prompt)
 
     def complete_json(self, profile: ModelProfile, prompt: str) -> dict[str, Any]:
