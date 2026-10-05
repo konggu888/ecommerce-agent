@@ -66,7 +66,7 @@ function fit(observed: BehaviorMode[], pattern: BehaviorMode[]): number {
 
 export function inferHumanBehavior(observations: BehaviorObservation[], limit = 5): BehaviorHypothesis[] {
   const observed = normalize(observations);
-  if (!observed.length) return [{id:'UNKNOWN',name:'信息不足',confidence:0,evidence:['尚无足够连续观察'],nextLikelyModes:['OBSERVE']}];
+  if (!observed.length) return [{id:'UNKNOWN',name:'信息不足',confidence:0,sequenceFit:0,evidence:['尚无足够连续观察'],nextLikelyModes:['OBSERVE']}];
 
   const scored = PATTERNS.map(p => {
     const confidence = fit(observed, p.sequence);
