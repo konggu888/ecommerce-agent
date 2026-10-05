@@ -35,6 +35,16 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(len(again), 1)
             self.assertEqual(again[0].id, a.id)
 
+    def test_default_assets_have_stable_ids(self):
+        with tempfile.TemporaryDirectory() as td:
+            lib = LocalLibrary(Path(td) / 'library')
+            lib.ensure_defaults()
+            ids = {a.id for a in lib.all()}
+            self.assertIn('actor-linchuan', ids)
+            self.assertIn('scene-home', ids)
+            lib.ensure_defaults()
+            self.assertEqual(len(ids), len(lib.all()))
+
     def test_project_save_load(self):
         with tempfile.TemporaryDirectory() as td:
             store = ProductionStore(Path(td))
