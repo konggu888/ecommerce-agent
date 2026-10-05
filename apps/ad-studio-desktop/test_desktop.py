@@ -14,9 +14,20 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertEqual(detect_platform("https://mobile.yangkeduo.com/goods.html"), "拼多多")
 
     def test_budget_policy(self):
-        self.assertTrue(estimate_cost(5)["超预算"])
-        self.assertEqual(estimate_cost(5)["总计"], 3.6)
+        c = estimate_cost(5)
+        self.assertTrue(c["超预算"])
+        self.assertEqual(c["总计"], 3.6)
         self.assertEqual(estimate_cost(6)["总计"], 4.32)
+
+    def test_cost_breakdown_is_auditable_and_configurable(self):
+        c = estimate_cost(5, {"cloud_video_per_shot": 1.0})
+        self.assertEqual(c["云端"], 5.0)
+        self.assertEqual(c["总计"], 5.0)
+        video = next(x for x in c["明细"] if x["项目"] == "云端视频生成")
+        self.assertEqual(video["数量"], 5)
+        self.assertEqual(video["单价"], 1.0)
+        self.assertEqual(video["小计"], 5.0)
+        self.assertTrue(c["计价说明"])
 
     def test_only_selected_shot_changes_version(self):
         p = new_project("https://item.jd.com/123.html", 2, "真人口播")
@@ -50,11 +61,13 @@ class DesktopCoreTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             store = ProductionStore(Path(td))
             p = new_project("https://item.jd.com/123.html", 2, "真人口播")
+            p.cost_estimate = estimate_cost(len(p.shots))
             store.save(p)
             restored = store.load(p.id)
             self.assertIsNotNone(restored)
             self.assertEqual(restored.id, p.id)
             self.assertEqual(len(restored.shots), len(p.shots))
+            self.assertEqual(restored.cost_estimate["总计"], 3.6)
 
 
 if __name__ == "__main__":
