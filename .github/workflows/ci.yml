@@ -9,7 +9,7 @@ on:
 jobs:
   typecheck-and-test:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -18,7 +18,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
 
       - name: Install dependencies
         run: npm install
@@ -32,6 +31,11 @@ jobs:
           node --check apps/web/positive-attack-playbooks.js
           node --check apps/web/human-behavior-library.js
           node --check apps/web/app-db.js
+
+      - name: Desktop Python syntax check
+        run: |
+          python3 -m py_compile apps/ad-studio-desktop/run.py
+          python3 -m compileall -q apps/ad-studio-desktop/ad_studio
 
       - name: Typecheck
         run: npm run typecheck
