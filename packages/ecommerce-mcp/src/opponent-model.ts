@@ -38,7 +38,7 @@ function behaviorAdjustment(mode: BehaviorMode, response: OpponentResponse): num
 
 function applyBehaviorState(models: OpponentModel[], behaviorState?: BehaviorState): OpponentModel[] {
   if (!behaviorState || !models.length) return models;
-  const modes = behaviorState.nextLikelyModes.length ? behaviorState.nextLikelyModes : ['OBSERVE'];
+  const modes: BehaviorMode[] = behaviorState.nextLikelyModes.length ? behaviorState.nextLikelyModes : ['OBSERVE'];
   return models.map(model => {
     const weights = modes.map(mode => behaviorAdjustment(mode, model.response));
     const avg = weights.reduce((a,b)=>a+b,0) / weights.length;
