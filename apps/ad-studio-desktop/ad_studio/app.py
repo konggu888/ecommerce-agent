@@ -7,6 +7,7 @@ from .gpu import detect_gpu
 from .production import ProductionStore
 from .product_parser import parse_product_url, save_product
 from .creative_engine import CreativeEngine
+from .model_router import ModelRouter, ModelProfile, FUNCTIONS
 
 
 class UnconfiguredCreativeLLM:
@@ -23,7 +24,10 @@ PROJECTS=ROOT/'projects'
 class App(tk.Tk):
     def __init__(self):
         super().__init__(); self.title('AI 商品广告工厂 · 本地版'); self.geometry('1180x760'); self.minsize(980,650)
-        self.lib=LocalLibrary(ROOT); self.lib.ensure_defaults(); self.store=ProductionStore(PROJECTS); self.project=None; self.creative_engine=CreativeEngine(UnconfiguredCreativeLLM()); self.ui(); self.refresh_assets(); self.refresh_gpu()
+        self.lib=LocalLibrary(ROOT); self.lib.ensure_defaults(); self.store=ProductionStore(PROJECTS); self.project=None
+        self.model_router=ModelRouter(ROOT/'model-config.json')
+        self.creative_engine=CreativeEngine(self.model_router)
+        self.ui(); self.refresh_assets(); self.refresh_gpu()
 
     def ui(self):
         top=ttk.Frame(self,padding=16); top.pack(fill='x')
@@ -34,7 +38,7 @@ class App(tk.Tk):
         ttk.Label(setup,text='广告强度').grid(row=1,column=0,sticky='w'); self.level=tk.IntVar(value=2); ttk.Combobox(setup,textvariable=self.level,values=[1,2,3,4,5],state='readonly',width=8).grid(row=1,column=1,sticky='w')
         ttk.Label(setup,text='留空/自动：交给AI判断；手动选择仅作为约束').grid(row=1,column=2,columnspan=2,sticky='w')
         ttk.Label(setup,text='视频形式').grid(row=2,column=0,sticky='w'); self.form=tk.StringVar(value='AI自动选择'); ttk.Combobox(setup,textvariable=self.form,values=['AI自动选择']+FORMS,state='readonly',width=22).grid(row=2,column=1,sticky='w')
-        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8)
+        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e')
         main=ttk.Panedwindow(self,orient='horizontal'); main.pack(fill='both',expand=True,padx=16,pady=8)
         left=ttk.Frame(main,padding=8); right=ttk.Frame(main,padding=8); main.add(left,weight=3); main.add(right,weight=2)
         ttk.Label(left,text='② 分镜生产链',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
@@ -50,6 +54,64 @@ class App(tk.Tk):
         self.detail=tk.StringVar(value='等待创建项目'); ttk.Label(right,textvariable=self.detail,justify='left',wraplength=470).pack(fill='x',pady=10); ttk.Button(right,text='编辑当前分镜',command=self.edit_shot).pack(anchor='w',pady=4)
         self.cost=tk.StringVar(value='成本：尚未计算'); ttk.Label(right,textvariable=self.cost,font=('Microsoft YaHei UI',12,'bold')).pack(anchor='w')
         ttk.Label(self,text='本地存储：本机磁盘  |  资产库：永久复用  |  云端生成：仅在需要时调用',relief='sunken',anchor='w',padding=8).pack(fill='x',side='bottom')
+
+
+    def model_settings(self):
+        win=tk.Toplevel(self); win.title('AI 模型池与功能路由'); win.geometry('820x680'); win.transient(self)
+        frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
+        ttk.Label(frm,text='多模型池',font=('Microsoft YaHei UI',16,'bold')).pack(anchor='w')
+        ttk.Label(frm,text='默认 GPT；不同功能可以分别指定不同模型。API Key 只保存在本机。').pack(anchor='w',pady=(2,10))
+
+        profiles=self.model_router.profiles()
+        selected=tk.StringVar(value=profiles[0].id if profiles else '')
+        ttk.Label(frm,text='模型').pack(anchor='w')
+        model_box=ttk.Combobox(frm,textvariable=selected,values=[p.id for p in profiles],state='readonly')
+        model_box.pack(fill='x',pady=4)
+
+        fields=ttk.Frame(frm); fields.pack(fill='x',pady=4)
+        name=tk.StringVar(); provider=tk.StringVar(value='openai_compatible'); base=tk.StringVar(); model=tk.StringVar(); key=tk.StringVar()
+        for row,label,var in [(0,'名称',name),(1,'提供方式',provider),(2,'Base URL',base),(3,'模型 ID',model),(4,'API Key',key)]:
+            ttk.Label(fields,text=label,width=12).grid(row=row,column=0,sticky='w',pady=3)
+            ttk.Entry(fields,textvariable=var,show='*' if label=='API Key' else '').grid(row=row,column=1,sticky='ew',padx=8,pady=3)
+        fields.columnconfigure(1,weight=1)
+
+        def load_profile(_=None):
+            try:p=self.model_router.get(selected.get())
+            except Exception:return
+            name.set(p.name); provider.set(p.provider); base.set(p.base_url); model.set(p.model); key.set(p.api_key)
+
+        def save_profile():
+            mid=selected.get() or f'model-{len(self.model_router.profiles())+1}'
+            p=ModelProfile(mid,name.get().strip() or mid,provider.get().strip() or 'openai_compatible',base.get().strip(),model.get().strip(),key.get().strip())
+            self.model_router.add_or_update(p); self.model_router.set_default(mid)
+            selected.set(mid); model_box['values']=[x.id for x in self.model_router.profiles()]
+            messagebox.showinfo('已保存','模型已加入本机模型池，并设为默认模型。')
+
+        def new_profile():
+            mid=f'model-{len(self.model_router.profiles())+1}'
+            p=ModelProfile(mid,f'模型 {len(self.model_router.profiles())+1}')
+            self.model_router.add_or_update(p); selected.set(mid); model_box['values']=[x.id for x in self.model_router.profiles()]; load_profile()
+
+        model_box.bind('<<ComboboxSelected>>',load_profile); load_profile()
+        btn=ttk.Frame(frm); btn.pack(fill='x',pady=8)
+        ttk.Button(btn,text='＋新增模型',command=new_profile).pack(side='left'); ttk.Button(btn,text='保存模型并设为默认',command=save_profile).pack(side='left',padx=8)
+
+        ttk.Label(frm,text='功能 → 模型',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w',pady=(14,6))
+        route_frame=ttk.Frame(frm); route_frame.pack(fill='both',expand=True)
+        route_vars={}
+        ids=[p.id for p in self.model_router.profiles()]
+        for i,function in enumerate(FUNCTIONS):
+            ttk.Label(route_frame,text=function,width=18).grid(row=i,column=0,sticky='w',pady=3)
+            v=tk.StringVar(value=self.model_router.route(function).id); route_vars[function]=v
+            ttk.Combobox(route_frame,textvariable=v,values=ids,state='readonly',width=28).grid(row=i,column=1,sticky='w',padx=8)
+
+        def save_routes():
+            for function,v in route_vars.items():
+                if v.get(): self.model_router.set_route(function,v.get())
+            messagebox.showinfo('已保存','功能路由已保存。以后可以让不同功能使用不同模型。')
+            win.destroy()
+
+        ttk.Button(frm,text='保存全部功能路由',command=save_routes).pack(anchor='e',pady=10)
 
     def refresh_gpu(self):
         g=detect_gpu(); self.gpu_text.set(('🟢 '+g.get('name','NVIDIA')+' · '+g.get('mode','CPU')) if g.get('available') else '⚪ 未检测到 NVIDIA GPU · CPU模式')
