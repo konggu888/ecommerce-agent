@@ -3,5 +3,29 @@
   "budget_rmb": 3.0,
   "gpu_mode": "auto",
   "cloud_generation": "adapter",
-  "ffmpeg": "auto"
+  "ffmpeg": "auto",
+  "models": {
+    "default": "gpt-default",
+    "profiles": [
+      {
+        "id": "gpt-default",
+        "name": "GPT（默认）",
+        "provider": "openai_compatible",
+        "base_url": "https://api.openai.com/v1",
+        "model": "gpt-5.6",
+        "api_key": ""
+      }
+    ],
+    "routes": {
+      "商品理解": "gpt-default",
+      "卖点提炼": "gpt-default",
+      "人群与痛点": "gpt-default",
+      "广告策略": "gpt-default",
+      "广告强度判断": "gpt-default",
+      "视频形式判断": "gpt-default",
+      "剧本": "gpt-default",
+      "分镜": "gpt-default",
+      "素材选择": "gpt-default"
+    }
+  }
 }
