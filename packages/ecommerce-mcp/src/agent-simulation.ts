@@ -139,7 +139,7 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
     }
     // Adaptive breakthrough switching: after a failed/blocked route, prefer a candidate
     // attacking a different bottleneck instead of repeating the same game lever.
-    if (activeBreakthrough && breakthroughFailures >= 1) {
+    if ((!selected?.breakthrough || selected.breakthrough.type === 'NO_CLEAR_GAP') && breakthroughFailures >= 1) {\n      const breakthroughCandidate = decision.candidates.find(c => c.risk.approved && c.breakthrough?.type && c.breakthrough.type !== 'NO_CLEAR_GAP');\n      if (breakthroughCandidate && (!selected || breakthroughCandidate.score >= selected.score * 0.6)) selected = breakthroughCandidate;\n    }\n    if (activeBreakthrough && breakthroughFailures >= 1) {
       const alternative = decision.candidates.find(c =>
         c.risk.approved && c.breakthrough?.type && c.breakthrough.type !== activeBreakthrough
       );
