@@ -98,13 +98,12 @@ class App(tk.Tk):
         for x in self.assets.get_children(): self.assets.delete(x)
         for a in self.lib.all(): self.assets.insert('', 'end',text=a.name,values=(a.kind,a.source,a.path or ''))
     def final_render(self):
-        if not self.project:return messagebox.showinfo('提示','先创建项目。')
+        if not self.project:
+            return messagebox.showinfo('提示','先创建项目。')
         try:
-            out=self.store.build_final(self.project)\n            self.detail.set(f'最终成片已输出：{out}')
+            out=self.store.build_final(self.project)
+            self.detail.set(f'最终成片已输出：{out}')
             messagebox.showinfo('完成',f'最终广告已生成\\n{out}')
         except Exception as e:
             messagebox.showerror('暂不能成片',str(e))
-\n    def save(self):
-        if self.project:self.store.save(self.project); self.detail.set(f'项目已保存到本机：{PROJECTS/self.project.id}.json')
 
-if __name__=='__main__': App().mainloop()
