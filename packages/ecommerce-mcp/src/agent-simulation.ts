@@ -286,7 +286,7 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
 
     recordOpponentMemory(opponents, action, round, evaluation, turns);
 
-    const breakthrough = selected?.breakthrough?.type ?? 'NO_CLEAR_GAP';
+    const breakthrough = selected?.breakthrough?.type ?? decision.candidates.find(c => c.risk.approved && c.breakthrough?.type && c.breakthrough.type !== 'NO_CLEAR_GAP')?.breakthrough?.type ?? 'NO_CLEAR_GAP';
     breakthroughCounts[breakthrough] = (breakthroughCounts[breakthrough] ?? 0) + 1;
     for (const turn of turns) opponentActionCounts[turn.action] = (opponentActionCounts[turn.action] ?? 0) + 1;
     out.push({
