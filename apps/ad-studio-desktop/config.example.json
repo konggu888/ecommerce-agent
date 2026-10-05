@@ -1,0 +1,7 @@
+{
+  "data_dir": "./data/ad-studio",
+  "budget_rmb": 3.0,
+  "gpu_mode": "auto",
+  "cloud_generation": "adapter",
+  "ffmpeg": "auto"
+}
