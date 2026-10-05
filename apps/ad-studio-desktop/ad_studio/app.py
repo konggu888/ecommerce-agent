@@ -45,13 +45,21 @@ class App(tk.Tk):
     def refresh_gpu(self):
         g=detect_gpu(); self.gpu_text.set(('🟢 '+g.get('name','NVIDIA')+' · '+g.get('mode','CPU')) if g.get('available') else '⚪ 未检测到 NVIDIA GPU · CPU模式')
     def create(self):
-        self.project=new_project(self.url.get(),self.level.get(),self.form.get()); self.refresh_shots(); c=estimate(len(self.project.shots)); self.cost.set(f"预计成本 ¥{c['总计']:.2f} / 预算 ¥{c['预算']:.2f}"); self.detail.set('项目已创建：商品解析 → 策略 → 分镜 → 单镜头生成 → 本地合成。');
-        if c['超预算']:
-            self.project=None
-            self.refresh_shots()
-            self.detail.set('预算拦截：预计成本超过 ¥3，未开始生产。')
-            messagebox.showwarning('预算拦截','预计超过 ¥3，生产尚未开始。请调整方案后重新创建。')
+        url=self.url.get().strip()
+        if not url:
+            return messagebox.showinfo('提示','请先输入商品链接。')
+        level=self.level.get(); form=self.form.get()
+        planned_shots=6 if level>=3 else 5
+        c=estimate_cost(planned_shots)
+        self.cost.set(f"项目预估：¥{c['总计']:.2f}（本地 ¥{c['本地']:.2f} + 云端 ¥{c['云端']:.2f}）/ 预算 ¥{c['预算']:.2f}")
+        msg=f"开始项目前预计成本：¥{c['总计']:.2f}\n\n本地：¥{c['本地']:.2f}\n云端：¥{c['云端']:.2f}\n预算线：¥{c['预算']:.2f}\n\n超过预算也不会自动降质、换模型或减少镜头。是否现在开始？"
+        if not messagebox.askyesno('项目预算确认',msg):
+            self.detail.set('已取消项目创建，尚未产生生成费用。')
             return
+        self.project=new_project(url,level,form)
+        self.refresh_shots()
+        self.detail.set('项目已开始：商品解析 → 策略 → 分镜 → 单镜头生成 → 本地合成。')
+
     def refresh_shots(self):
         for x in self.shots.get_children(): self.shots.delete(x)
         if self.project:
