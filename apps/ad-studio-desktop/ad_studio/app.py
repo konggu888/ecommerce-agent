@@ -2,8 +2,7 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from pathlib import Path
 from .library import LocalLibrary
-from .engine import FORMS, new_project, mark_regenerate
-from .engine import estimate_cost
+from .engine import FORMS, new_project, mark_regenerate, estimate_cost
 from .gpu import detect_gpu
 from .production import ProductionStore
 
@@ -44,22 +43,26 @@ class App(tk.Tk):
         ttk.Label(self,text='本地存储：本机磁盘  |  资产库：永久复用  |  云端生成：仅在需要时调用',relief='sunken',anchor='w',padding=8).pack(fill='x',side='bottom')
     def refresh_gpu(self):
         g=detect_gpu(); self.gpu_text.set(('🟢 '+g.get('name','NVIDIA')+' · '+g.get('mode','CPU')) if g.get('available') else '⚪ 未检测到 NVIDIA GPU · CPU模式')
+    def _show_cost_breakdown(self,c):
+        lines=[f"项目预估：¥{c['总计']:.2f}",f"本地4050/FFmpeg：¥{c['本地']:.2f}",f"云端任务：¥{c['云端']:.2f}"]
+        for item in c.get('明细',[]):
+            if item['数量']:
+                lines.append(f"  {item['项目']}：{item['数量']} × ¥{item['单价']:.2f} = ¥{item['小计']:.2f}")
+        self.cost.set(' | '.join(lines))
     def create(self):
         url=self.url.get().strip()
         if not url:
             return messagebox.showinfo('提示','请先输入商品链接。')
-        level=self.level.get(); form=self.form.get()
-        planned_shots=6 if level>=3 else 5
-        c=estimate_cost(planned_shots)
-        self.cost.set(f"项目预估：¥{c['总计']:.2f}（本地 ¥{c['本地']:.2f} + 云端 ¥{c['云端']:.2f}）/ 预算 ¥{c['预算']:.2f}")
-        msg=f"开始项目前预计成本：¥{c['总计']:.2f}\n\n本地：¥{c['本地']:.2f}\n云端：¥{c['云端']:.2f}\n预算线：¥{c['预算']:.2f}\n\n超过预算也不会自动降质、换模型或减少镜头。是否现在开始？"
-        if not messagebox.askyesno('项目预算确认',msg):
-            self.detail.set('已取消项目创建，尚未产生生成费用。')
-            return
-        self.project=new_project(url,level,form)
-        self.refresh_shots()
+        level=self.level.get(); form=self.form.get(); planned_shots=6 if level>=3 else 5
+        c=estimate_cost(planned_shots); self._show_cost_breakdown(c)
+        detail='\n'.join([f"开始项目前预计成本：¥{c['总计']:.2f}",'',f"本地4050/FFmpeg：¥{c['本地']:.2f}",f"云端任务：¥{c['云端']:.2f}"]+
+                         [f"{x['项目']}：{x['数量']} × ¥{x['单价']:.2f} = ¥{x['小计']:.2f}" for x in c['明细'] if x['数量']]+
+                         ['',f"预算线：¥{c['预算']:.2f}",c['计价说明'],'','超过预算不会自动降质、换模型或减少镜头。是否现在开始？'])
+        if not messagebox.askyesno('项目预算确认',detail):
+            self.detail.set('已取消项目创建，尚未产生生成费用。'); return
+        self.project=new_project(url,level,form); self.project.cost_estimate=c
+        self.store.save(self.project); self.refresh_shots()
         self.detail.set('项目已开始：商品解析 → 策略 → 分镜 → 单镜头生成 → 本地合成。')
-
     def refresh_shots(self):
         for x in self.shots.get_children(): self.shots.delete(x)
         if self.project:
@@ -73,17 +76,15 @@ class App(tk.Tk):
         s=self.selected()
         if not s:return messagebox.showinfo('提示','先选择一个镜头。')
         try:
-            out=self.store.render_placeholder_shot(self.project,s)
-            self.refresh_shots()
+            out=self.store.render_placeholder_shot(self.project,s); self.refresh_shots()
             self.detail.set(f'镜头 {s.index} 已生成 v{s.version}。本地FFmpeg输出：{out}')
         except Exception as e:
-            s.status='生成失败'
-            self.store.save(self.project)
-            messagebox.showerror('镜头生成失败',str(e))
+            s.status='生成失败'; self.store.save(self.project); messagebox.showerror('镜头生成失败',str(e))
     def regen_shot(self):
         s=self.selected()
         if not s:return messagebox.showinfo('提示','先选择要重新生成的镜头。')
-        old=s.version; mark_regenerate(self.project,self.project.shots.index(s)); self.refresh_shots(); self.detail.set(f'镜头 {s.index}：v{old} → v{s.version}。其他镜头版本保持不变。')
+        old=s.version; mark_regenerate(self.project,self.project.shots.index(s)); self.store.save(self.project); self.refresh_shots()
+        self.detail.set(f'镜头 {s.index}：v{old} → v{s.version}。其他镜头版本保持不变。')
     def edit_shot(self):
         s=self.selected()
         if not s:return messagebox.showinfo('提示','先选择一个镜头。')
@@ -102,16 +103,13 @@ class App(tk.Tk):
         def apply():
             s.title=title.get().strip() or s.title; s.visual=visual.get('1.0','end').strip(); s.script=script.get('1.0','end').strip()
             s.actor_id=actor_map.get(av.get()); s.scene_id=scene_map.get(sv.get()); s.status='需重生成'; s.video_path=None; s.version+=1
-            self.store.save(self.project); self.refresh_shots(); self.show_shot(); win.destroy()
+            self.store.save(self.project); self.refresh_shots(); win.destroy()
         ttk.Button(frm,text='保存修改并生成新版本',command=apply).pack(anchor='e',pady=10)
-
     def load_project(self):
         files=sorted(PROJECTS.glob('project-*.json'), key=lambda p: p.stat().st_mtime, reverse=True)
-        if not files:
-            return messagebox.showinfo('提示','本地还没有已保存的广告项目。')
+        if not files:return messagebox.showinfo('提示','本地还没有已保存的广告项目。')
         win=tk.Toplevel(self); win.title('打开已有项目'); win.geometry('560x360'); win.transient(self)
-        frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
-        ttk.Label(frm,text='本机广告项目').pack(anchor='w')
+        frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True); ttk.Label(frm,text='本机广告项目').pack(anchor='w')
         box=tk.Listbox(frm,height=12); box.pack(fill='both',expand=True,pady=8)
         for p in files: box.insert('end',p.stem)
         def open_selected():
@@ -119,11 +117,11 @@ class App(tk.Tk):
             if not sel:return
             project=self.store.load(files[sel[0]].stem)
             if not project:return messagebox.showerror('打开失败','项目文件无法读取。')
-            self.project=project; self.url.set(''); self.level.set(project.level); self.form.set(project.form)
-            self.refresh_shots(); self.cost.set(f'项目预算 ¥3.00 · 已保存 {len(project.shots)} 个镜头'); self.detail.set(f'已恢复项目：{project.product_name} · {project.platform} · {project.form}')
-            win.destroy()
+            self.project=project; self.url.set(''); self.level.set(project.level); self.form.set(project.form); self.refresh_shots()
+            c=project.cost_estimate
+            self.cost.set(f"项目预估 ¥{c.get('总计',0):.2f} · 云端 ¥{c.get('云端',0):.2f} · 已保存 {len(project.shots)} 个镜头" if c else f'已保存 {len(project.shots)} 个镜头')
+            self.detail.set(f'已恢复项目：{project.product_name} · {project.platform} · {project.form}'); win.destroy()
         ttk.Button(frm,text='打开',command=open_selected).pack(anchor='e')
-
     def upload(self,kind):
         p=filedialog.askopenfilename(title=f'选择{kind}文件')
         if p:self.lib.add_file(p,Path(p).stem,kind); self.refresh_assets()
@@ -131,12 +129,10 @@ class App(tk.Tk):
         for x in self.assets.get_children(): self.assets.delete(x)
         for a in self.lib.all(): self.assets.insert('', 'end',text=a.name,values=(a.kind,a.source,a.path or ''))
     def final_render(self):
-        if not self.project:
-            return messagebox.showinfo('提示','先创建项目。')
+        if not self.project:return messagebox.showinfo('提示','先创建项目。')
         try:
-            out=self.store.build_final(self.project)
-            self.detail.set(f'最终成片已输出：{out}')
-            messagebox.showinfo('完成',f'最终广告已生成\\n{out}')
-        except Exception as e:
-            messagebox.showerror('暂不能成片',str(e))
-
+            out=self.store.build_final(self.project); self.detail.set(f'最终成片已输出：{out}'); messagebox.showinfo('完成',f'最终广告已生成\n{out}')
+        except Exception as e: messagebox.showerror('暂不能成片',str(e))
+    def save(self):
+        if not self.project:return messagebox.showinfo('提示','当前没有项目可保存。')
+        self.store.save(self.project); self.detail.set(f'项目已保存：{self.project.id}')
