@@ -1,0 +1,175 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, asdict, field
+import json
+from typing import Any, Protocol
+
+
+@dataclass
+class CreativeShot:
+    index: int
+    objective: str = ""
+    visual: str = ""
+    dialogue: str = ""
+    duration_seconds: int = 3
+    actor_requirements: list[str] = field(default_factory=list)
+    scene_requirements: list[str] = field(default_factory=list)
+    product_asset_requirements: list[str] = field(default_factory=list)
+    on_screen_text: list[str] = field(default_factory=list)
+    cta_role: str = ""
+    generation_prompt: str = ""
+
+
+@dataclass
+class CreativePlan:
+    product_summary: str
+    product_type: str
+    selling_points: list[str]
+    target_audience: list[str]
+    pain_points: list[str]
+    usage_scenes: list[str]
+    positioning: str
+    ad_level: str
+    video_form: str
+    duration_seconds: int
+    strategy: str
+    hook: str
+    script: str
+    shots: list[CreativeShot]
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
+class CreativeLLM(Protocol):
+    def create_plan(self, product: dict[str, Any], constraints: dict[str, Any]) -> dict[str, Any]:
+        ...
+
+
+class CreativePlanError(ValueError):
+    pass
+
+
+CREATIVE_SYSTEM_PROMPT = """你是电商广告创意总导演。
+你的任务不是机械改写商品资料，而是根据商品资料、平台、广告强度和用户约束，
+独立判断商品卖点、目标人群、痛点、竞争差异、广告策略、视频形式、剧本和分镜。
+
+重要规则：
+1. 商品资料可能不完整，不要编造商品不存在的规格、功效、认证、销量或价格。
+2. 对无法确认的事实，用“待确认”或降低表述强度。
+3. 广告表达必须避免明显违反中国广告法的绝对化、虚假、无法证明的承诺。
+4. 视频形式、广告强度、镜头数量都由你根据商品和目标决定，而不是由固定模板决定。
+5. 每个镜头必须能落地：说明画面、人物、场景、商品素材、台词/字幕和生成提示。
+6. 优先复用已有演员、场景、商品素材；只有缺少合适资产时才建议生成新资产。
+7. 输出必须是严格 JSON，不要输出 Markdown。"""
+
+JSON_SCHEMA = {
+    "product_summary": "string",
+    "product_type": "string",
+    "selling_points": ["string"],
+    "target_audience": ["string"],
+    "pain_points": ["string"],
+    "usage_scenes": ["string"],
+    "positioning": "string",
+    "ad_level": "纯种草|轻广告|标准广告|强转化|极强转化",
+    "video_form": "string",
+    "duration_seconds": "integer",
+    "strategy": "string",
+    "hook": "string",
+    "script": "string",
+    "shots": [{
+        "index": "integer",
+        "objective": "string",
+        "visual": "string",
+        "dialogue": "string",
+        "duration_seconds": "integer",
+        "actor_requirements": ["string"],
+        "scene_requirements": ["string"],
+        "product_asset_requirements": ["string"],
+        "on_screen_text": ["string"],
+        "cta_role": "string",
+        "generation_prompt": "string"
+    }]
+}
+
+
+def build_creative_prompt(product: dict[str, Any], constraints: dict[str, Any]) -> str:
+    payload = {
+        "product_material": product,
+        "constraints": constraints,
+        "required_output_schema": JSON_SCHEMA,
+    }
+    return CREATIVE_SYSTEM_PROMPT + "\n\n输入与约束：\n" + json.dumps(
+        payload, ensure_ascii=False, indent=2
+    )
+
+
+def _text_list(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [str(x).strip() for x in value if str(x).strip()]
+
+
+def validate_plan(raw: dict[str, Any]) -> CreativePlan:
+    if not isinstance(raw, dict):
+        raise CreativePlanError("LLM没有返回JSON对象")
+
+    required = [
+        "product_summary", "product_type", "selling_points",
+        "target_audience", "pain_points", "usage_scenes",
+        "positioning", "ad_level", "video_form", "duration_seconds",
+        "strategy", "hook", "script", "shots",
+    ]
+    missing = [key for key in required if key not in raw]
+    if missing:
+        raise CreativePlanError("创意计划缺少字段：" + "、".join(missing))
+
+    shots = raw["shots"]
+    if not isinstance(shots, list) or not shots:
+        raise CreativePlanError("创意计划没有有效分镜")
+
+    creative_shots = []
+    for i, shot in enumerate(shots, 1):
+        if not isinstance(shot, dict):
+            raise CreativePlanError(f"第{i}个分镜不是对象")
+        creative_shots.append(
+            CreativeShot(
+                index=int(shot.get("index", i)),
+                objective=str(shot.get("objective", "")),
+                visual=str(shot.get("visual", "")),
+                dialogue=str(shot.get("dialogue", "")),
+                duration_seconds=max(1, int(shot.get("duration_seconds", 3))),
+                actor_requirements=_text_list(shot.get("actor_requirements")),
+                scene_requirements=_text_list(shot.get("scene_requirements")),
+                product_asset_requirements=_text_list(shot.get("product_asset_requirements")),
+                on_screen_text=_text_list(shot.get("on_screen_text")),
+                cta_role=str(shot.get("cta_role", "")),
+                generation_prompt=str(shot.get("generation_prompt", "")),
+            )
+        )
+
+    return CreativePlan(
+        product_summary=str(raw["product_summary"]),
+        product_type=str(raw["product_type"]),
+        selling_points=_text_list(raw["selling_points"]),
+        target_audience=_text_list(raw["target_audience"]),
+        pain_points=_text_list(raw["pain_points"]),
+        usage_scenes=_text_list(raw["usage_scenes"]),
+        positioning=str(raw["positioning"]),
+        ad_level=str(raw["ad_level"]),
+        video_form=str(raw["video_form"]),
+        duration_seconds=max(1, int(raw["duration_seconds"])),
+        strategy=str(raw["strategy"]),
+        hook=str(raw["hook"]),
+        script=str(raw["script"]),
+        shots=creative_shots,
+    )
+
+
+class CreativeEngine:
+    def __init__(self, llm: CreativeLLM):
+        self.llm = llm
+
+    def plan(self, product: dict[str, Any], constraints: dict[str, Any] | None = None) -> CreativePlan:
+        raw = self.llm.create_plan(product, constraints or {})
+        return validate_plan(raw)
