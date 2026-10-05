@@ -1,19 +1,30 @@
+from pathlib import Path
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
-from pathlib import Path
 from .library import LocalLibrary
 from .engine import FORMS, new_project, mark_regenerate, estimate_cost
 from .gpu import detect_gpu
 from .production import ProductionStore
 from .product_parser import parse_product_url, save_product
+from .creative_engine import CreativeEngine
+
+
+class UnconfiguredCreativeLLM:
+    def create_plan(self, product, constraints):
+        raise RuntimeError(
+            "尚未配置创意大模型。请在设置中接入 GPT、Claude、Gemini、国内模型或本地模型后再生成广告策略。"
+        )
+
 
 ROOT=Path(__file__).resolve().parents[1]/'data'/'ad-studio'
 PROJECTS=ROOT/'projects'
 
+
 class App(tk.Tk):
     def __init__(self):
         super().__init__(); self.title('AI 商品广告工厂 · 本地版'); self.geometry('1180x760'); self.minsize(980,650)
-        self.lib=LocalLibrary(ROOT); self.lib.ensure_defaults(); self.store=ProductionStore(PROJECTS); self.project=None; self.ui(); self.refresh_assets(); self.refresh_gpu()
+        self.lib=LocalLibrary(ROOT); self.lib.ensure_defaults(); self.store=ProductionStore(PROJECTS); self.project=None; self.creative_engine=CreativeEngine(UnconfiguredCreativeLLM()); self.ui(); self.refresh_assets(); self.refresh_gpu()
+
     def ui(self):
         top=ttk.Frame(self,padding=16); top.pack(fill='x')
         ttk.Label(top,text='AI 商品广告工厂',font=('Microsoft YaHei UI',22,'bold')).pack(side='left')
@@ -21,8 +32,8 @@ class App(tk.Tk):
         setup=ttk.LabelFrame(self,text='① 商品与广告策略',padding=12); setup.pack(fill='x',padx=16,pady=8)
         ttk.Label(setup,text='商品链接').grid(row=0,column=0,sticky='w'); self.url=tk.StringVar(); ttk.Entry(setup,textvariable=self.url,width=72).grid(row=0,column=1,columnspan=3,sticky='ew',padx=8)
         ttk.Label(setup,text='广告强度').grid(row=1,column=0,sticky='w'); self.level=tk.IntVar(value=2); ttk.Combobox(setup,textvariable=self.level,values=[1,2,3,4,5],state='readonly',width=8).grid(row=1,column=1,sticky='w')
-        ttk.Label(setup,text='1纯种草  2轻广告  3标准广告  4强转化  5极强转化').grid(row=1,column=2,columnspan=2,sticky='w')
-        ttk.Label(setup,text='视频形式').grid(row=2,column=0,sticky='w'); self.form=tk.StringVar(value=FORMS[0]); ttk.Combobox(setup,textvariable=self.form,values=FORMS,state='readonly',width=22).grid(row=2,column=1,sticky='w')
+        ttk.Label(setup,text='留空/自动：交给AI判断；手动选择仅作为约束').grid(row=1,column=2,columnspan=2,sticky='w')
+        ttk.Label(setup,text='视频形式').grid(row=2,column=0,sticky='w'); self.form=tk.StringVar(value='AI自动选择'); ttk.Combobox(setup,textvariable=self.form,values=['AI自动选择']+FORMS,state='readonly',width=22).grid(row=2,column=1,sticky='w')
         ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8)
         main=ttk.Panedwindow(self,orient='horizontal'); main.pack(fill='both',expand=True,padx=16,pady=8)
         left=ttk.Frame(main,padding=8); right=ttk.Frame(main,padding=8); main.add(left,weight=3); main.add(right,weight=2)
@@ -39,13 +50,28 @@ class App(tk.Tk):
         self.detail=tk.StringVar(value='等待创建项目'); ttk.Label(right,textvariable=self.detail,justify='left',wraplength=470).pack(fill='x',pady=10); ttk.Button(right,text='编辑当前分镜',command=self.edit_shot).pack(anchor='w',pady=4)
         self.cost=tk.StringVar(value='成本：尚未计算'); ttk.Label(right,textvariable=self.cost,font=('Microsoft YaHei UI',12,'bold')).pack(anchor='w')
         ttk.Label(self,text='本地存储：本机磁盘  |  资产库：永久复用  |  云端生成：仅在需要时调用',relief='sunken',anchor='w',padding=8).pack(fill='x',side='bottom')
+
     def refresh_gpu(self):
         g=detect_gpu(); self.gpu_text.set(('🟢 '+g.get('name','NVIDIA')+' · '+g.get('mode','CPU')) if g.get('available') else '⚪ 未检测到 NVIDIA GPU · CPU模式')
+
     def _show_cost_breakdown(self,c):
         lines=[f"项目预估：¥{c['总计']:.2f}",f"本地4050/FFmpeg：¥{c['本地']:.2f}",f"云端任务：¥{c['云端']:.2f}"]
         for item in c.get('明细',[]):
             if item['数量']: lines.append(f"  {item['项目']}：{item['数量']} × ¥{item['单价']:.2f} = ¥{item['小计']:.2f}")
         self.cost.set(' | '.join(lines))
+
+    def _creative_constraints(self):
+        return {
+            'platform': self.project.platform if self.project else '自动识别',
+            'ad_level': self.level.get(),
+            'video_form': self.form.get(),
+            'allowed_video_forms': FORMS,
+            'reusable_actors': [a.__dict__ for a in self.lib.reusable('演员')],
+            'reusable_scenes': [a.__dict__ for a in self.lib.reusable('场景')],
+            'reusable_product_assets': [a.__dict__ for a in self.lib.reusable('产品图')],
+            'forbidden_terms_file': str(ROOT/'forbidden_terms.txt'),
+        }
+
     def create(self):
         url=self.url.get().strip()
         if not url:return messagebox.showinfo('提示','请先输入商品链接。')
@@ -54,22 +80,52 @@ class App(tk.Tk):
         if not info.fetched and info.error:
             if not messagebox.askyesno('商品解析未完成',f'当前无法直接读取商品页面。\n\n原因：{info.error}\n\n仍可创建项目，稍后可手动补充商品信息。是否继续？'):
                 return
-        self.detail.set(f'商品解析：{info.name} · {info.platform}\n{info.description[:180] or "未读取到商品描述"}')
-        planned_shots=6 if level>=3 else 5; c=estimate_cost(planned_shots); self._show_cost_breakdown(c)
-        detail='\n'.join([f"商品：{info.name}",f"平台：{info.platform}",'',f"开始项目前预计成本：¥{c['总计']:.2f}",f"本地4050/FFmpeg：¥{c['本地']:.2f}",f"云端任务：¥{c['云端']:.2f}"]+[f"{x['项目']}：{x['数量']} × ¥{x['单价']:.2f} = ¥{x['小计']:.2f}" for x in c['明细'] if x['数量']]+['',f"预算线：¥{c['预算']:.2f}",c['计价说明'],'','超过预算不会自动降质、换模型或减少镜头。是否现在开始？'])
-        if not messagebox.askyesno('项目预算确认',detail):
-            self.detail.set('已取消项目创建，尚未产生生成费用。'); return
-        self.project=new_project(url,level,form); self.project.cost_estimate=c; self.project.product_info=info.to_dict(); self.store.save(self.project); save_product(info,ROOT,self.project.id); self.refresh_shots()
-        self.detail.set(f'项目已开始：{info.name} → 商品解析 → 策略 → 分镜 → 单镜头生成 → 本地合成。')
+        self.detail.set(f'商品资料采集：{info.name} · {info.platform}\n来源：{info.source or "未完成"}\n{info.description[:180] or "未读取到商品描述"}')
+        self.project=new_project(url,level,form if form!='AI自动选择' else 'AI自动选择')
+        self.project.product_info=info.to_dict()
+        try:
+            constraints=self._creative_constraints()
+            plan=self.creative_engine.plan(info.to_dict(),constraints)
+        except Exception as e:
+            self.project=None
+            messagebox.showerror('创意引擎未配置',str(e))
+            return
+
+        self.project.form=plan.video_form
+        self.project.product_name=info.name
+        self.project.shots=[
+            __import__('ad_studio.models',fromlist=['Shot']).Shot(
+                id=f'shot-{x.index:02d}', index=x.index,
+                title=x.objective or f'镜头{x.index}',
+                visual=x.visual, script=x.dialogue,
+            ) for x in plan.shots
+        ]
+        c=estimate_cost(len(plan.shots)); self.project.cost_estimate=c; self._show_cost_breakdown(c)
+        detail='\n'.join([
+            f"商品：{info.name}",f"平台：{info.platform}",f"AI判断广告强度：{plan.ad_level}",
+            f"AI选择视频形式：{plan.video_form}",f"预计时长：{plan.duration_seconds}秒",
+            f"AI策略：{plan.strategy}",f"AI钩子：{plan.hook}",'',
+            f"开始项目前预计成本：¥{c['总计']:.2f}",f"本地4050/FFmpeg：¥{c['本地']:.2f}",f"云端任务：¥{c['云端']:.2f}",
+            *[f"{x['项目']}：{x['数量']} × ¥{x['单价']:.2f} = ¥{x['小计']:.2f}" for x in c['明细'] if x['数量']],
+            '',f"预算线：¥{c['预算']:.2f}",c['计价说明'],'','超过预算不会自动降质、换模型或减少镜头。是否现在开始？'
+        ])
+        if not messagebox.askyesno('AI创意与项目预算确认',detail):
+            self.project=None; self.detail.set('已取消项目创建，尚未产生生成费用。'); return
+        self.store.save(self.project); save_product(info,ROOT,self.project.id); self.refresh_shots()
+        self.detail.set(f'AI创意方案已确认：{info.name} → {plan.video_form} → {len(plan.shots)}镜头 → 等待生成。')
+
     def refresh_shots(self):
         for x in self.shots.get_children(): self.shots.delete(x)
         if self.project:
             for s in self.project.shots: self.shots.insert('', 'end',iid=s.id,text=f'{s.index:02d}  {s.title}',values=(f'v{s.version}',s.status,s.actor_id or '自动匹配',s.scene_id or '自动匹配'))
+
     def selected(self):
         sel=self.shots.selection(); return next((x for x in self.project.shots if x.id==sel[0]),None) if self.project and sel else None
+
     def show_shot(self,_=None):
         s=self.selected()
         if s:self.detail.set(f'镜头 {s.index}\n{s.title}\n\n画面：{s.visual}\n\n文案：{s.script}\n\n版本：v{s.version}  状态：{s.status}')
+
     def generate_shot(self):
         s=self.selected()
         if not s:return messagebox.showinfo('提示','先选择一个镜头。')
@@ -77,10 +133,12 @@ class App(tk.Tk):
             out=self.store.render_placeholder_shot(self.project,s); self.refresh_shots(); self.detail.set(f'镜头 {s.index} 已生成 v{s.version}。本地FFmpeg输出：{out}')
         except Exception as e:
             s.status='生成失败'; self.store.save(self.project); messagebox.showerror('镜头生成失败',str(e))
+
     def regen_shot(self):
         s=self.selected()
         if not s:return messagebox.showinfo('提示','先选择要重新生成的镜头。')
         old=s.version; mark_regenerate(self.project,self.project.shots.index(s)); self.store.save(self.project); self.refresh_shots(); self.detail.set(f'镜头 {s.index}：v{old} → v{s.version}。其他镜头版本保持不变。')
+
     def edit_shot(self):
         s=self.selected()
         if not s:return messagebox.showinfo('提示','先选择一个镜头。')
@@ -95,6 +153,7 @@ class App(tk.Tk):
         def apply():
             s.title=title.get().strip() or s.title; s.visual=visual.get('1.0','end').strip(); s.script=script.get('1.0','end').strip(); s.actor_id=actor_map.get(av.get()); s.scene_id=scene_map.get(sv.get()); s.status='需重生成'; s.video_path=None; s.version+=1; self.store.save(self.project); self.refresh_shots(); self.show_shot(); win.destroy()
         ttk.Button(frm,text='保存修改并生成新版本',command=apply).pack(anchor='e',pady=10)
+
     def load_project(self):
         files=sorted(PROJECTS.glob('project-*.json'), key=lambda p:p.stat().st_mtime, reverse=True)
         if not files:return messagebox.showinfo('提示','本地还没有已保存的广告项目。')
@@ -107,17 +166,21 @@ class App(tk.Tk):
             if not project:return messagebox.showerror('打开失败','项目文件无法读取。')
             self.project=project; self.url.set(''); self.level.set(project.level); self.form.set(project.form); self.refresh_shots(); c=project.cost_estimate; self.cost.set(f"项目预估 ¥{c.get('总计',0):.2f} · 云端 ¥{c.get('云端',0):.2f} · 已保存 {len(project.shots)} 个镜头" if c else f'已保存 {len(project.shots)} 个镜头'); self.detail.set(f'已恢复项目：{project.product_name} · {project.platform} · {project.form}'); win.destroy()
         ttk.Button(frm,text='打开',command=open_selected).pack(anchor='e')
+
     def upload(self,kind):
         p=filedialog.askopenfilename(title=f'选择{kind}文件')
         if p:self.lib.add_file(p,Path(p).stem,kind); self.refresh_assets()
+
     def refresh_assets(self):
         for x in self.assets.get_children(): self.assets.delete(x)
         for a in self.lib.all(): self.assets.insert('', 'end',text=a.name,values=(a.kind,a.source,a.path or ''))
+
     def final_render(self):
         if not self.project:return messagebox.showinfo('提示','先创建项目。')
         try:
             out=self.store.build_final(self.project); self.detail.set(f'最终成片已输出：{out}'); messagebox.showinfo('完成',f'最终广告已生成\n{out}')
         except Exception as e: messagebox.showerror('暂不能成片',str(e))
+
     def save(self):
         if not self.project:return messagebox.showinfo('提示','当前没有项目可保存。')
         self.store.save(self.project); self.detail.set(f'项目已保存：{self.project.id}')
