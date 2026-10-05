@@ -7,6 +7,7 @@ import { createSimulatedOpponents, simulateOpponentTurn, snapshotsFromOpponents,
 import { DecisionRecord, OutcomeRecord, LearningSignal, evaluateLearning } from './learning-memory';
 import { simulateNonlinearMarket } from './nonlinear-market';
 import { BehaviorObservation, BehaviorMode, updateBehaviorState } from './human-behavior-engine';
+import { detectBreakthrough } from './opponent-model';
 
 export interface StrategyContext {
   type?: string;
@@ -286,7 +287,7 @@ export function runAgentSimulation(config: AgentSimulationConfig): AgentSimulati
 
     recordOpponentMemory(opponents, action, round, evaluation, turns);
 
-    const breakthrough = selected?.breakthrough?.type ?? decision.candidates.find(c => c.risk.approved && c.breakthrough?.type && c.breakthrough.type !== 'NO_CLEAR_GAP')?.breakthrough?.type ?? 'NO_CLEAR_GAP';
+    const breakthrough = selected?.breakthrough?.type ?? decision.candidates.find(c => c.risk.approved && c.breakthrough?.type && c.breakthrough.type !== 'NO_CLEAR_GAP')?.breakthrough?.type ?? detectBreakthrough({ state, action: action as any, opponent: [] }).type;
     breakthroughCounts[breakthrough] = (breakthroughCounts[breakthrough] ?? 0) + 1;
     for (const turn of turns) opponentActionCounts[turn.action] = (opponentActionCounts[turn.action] ?? 0) + 1;
     out.push({
