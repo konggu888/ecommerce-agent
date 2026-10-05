@@ -36,6 +36,7 @@ export function selectAdaptiveRoute(
       const novelty = Math.max(0, 1 - counterPressure) * (sampleSize === 0 ? 0.35 : 0.15);
       const totalScore =
         c.score
+        + (c.breakthrough ? c.breakthrough.score * 0.12 : 0)
         - counterPressure * (0.45 + counterConfidence * 0.25)
         + novelty;
       return {
