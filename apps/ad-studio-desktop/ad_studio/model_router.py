@@ -112,11 +112,31 @@ class ModelRouter:
         self.save()
 
     def create_plan(self, product: dict[str, Any], constraints: dict[str, Any]) -> dict[str, Any]:
-        """Creative-plan entry point. Current route is the main creative model."""
-        profile = self.route("商品理解")
-        from .creative_engine import build_creative_prompt
-        prompt = build_creative_prompt(product, constraints)
-        return self.complete_json(profile, prompt)
+        """Run the creative pipeline through independently routed model stages."""
+        from .creative_engine import build_stage_prompt
+
+        analysis = self.complete_json(
+            self.route("商品理解"),
+            build_stage_prompt("analysis", product, constraints),
+        )
+        strategy_input = {"product_analysis": analysis, "constraints": constraints}
+        strategy = self.complete_json(
+            self.route("广告策略"),
+            build_stage_prompt("strategy", strategy_input, constraints),
+        )
+        script_input = {
+            "product_analysis": analysis,
+            "strategy": strategy,
+            "constraints": constraints,
+        }
+        script = self.complete_json(
+            self.route("剧本"),
+            build_stage_prompt("script", script_input, constraints),
+        )
+        merged = dict(analysis)
+        merged.update(strategy)
+        merged.update(script)
+        return merged
 
     def complete_json(self, profile: ModelProfile, prompt: str) -> dict[str, Any]:
         if not profile.api_key:
@@ -157,3 +177,45 @@ class ModelRouter:
             return json.loads(content)
         except Exception as exc:
             raise RuntimeError(f"模型「{profile.name}」返回的不是有效 JSON") from exc
+
+STAGE_SCHEMAS = {
+    "analysis": {
+        "product_summary": "string", "product_type": "string",
+        "selling_points": ["string"], "target_audience": ["string"],
+        "pain_points": ["string"], "usage_scenes": ["string"],
+        "positioning": "string"
+    },
+    "strategy": {
+        "ad_level": "纯种草|轻广告|标准广告|强转化|极强转化",
+        "video_form": "string", "duration_seconds": "integer",
+        "strategy": "string", "hook": "string"
+    },
+    "script": {
+        "script": "string",
+        "shots": [{
+            "index": "integer", "objective": "string", "visual": "string",
+            "dialogue": "string", "duration_seconds": "integer",
+            "actor_requirements": ["string"], "scene_requirements": ["string"],
+            "product_asset_requirements": ["string"], "on_screen_text": ["string"],
+            "cta_role": "string", "generation_prompt": "string"
+        }]
+    }
+}
+
+
+def build_stage_prompt(stage: str, data: dict[str, Any], constraints: dict[str, Any]) -> str:
+    instructions = {
+        "analysis": "只负责商品理解、卖点、人群、痛点、使用场景和定位，不写剧本。",
+        "strategy": "只负责广告策略、广告强度、视频形式、时长和开头钩子，不写完整分镜。",
+        "script": "根据前两阶段结果，负责完整剧本和可执行分镜。优先复用已有资产。",
+    }
+    schema = STAGE_SCHEMAS[stage]
+    return (
+        CREATIVE_SYSTEM_PROMPT
+        + f"\\n\\n当前阶段：{stage}\\n任务：{instructions[stage]}"
+        + "\\n\\n输入：\\n" + json.dumps(data, ensure_ascii=False, indent=2)
+        + "\\n\\n全局约束：\\n" + json.dumps(constraints, ensure_ascii=False, indent=2)
+        + "\\n\\n本阶段只输出以下JSON结构：\\n"
+        + json.dumps(schema, ensure_ascii=False, indent=2)
+    )
+
