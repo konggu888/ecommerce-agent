@@ -13,7 +13,7 @@ PROJECTS=ROOT/'projects'
 class App(tk.Tk):
     def __init__(self):
         super().__init__(); self.title('AI 商品广告工厂 · 本地版'); self.geometry('1180x760'); self.minsize(980,650)
-        self.lib=LocalLibrary(ROOT); self.store=ProductionStore(PROJECTS); self.project=None; self.ui(); self.refresh_assets(); self.refresh_gpu()
+        self.lib=LocalLibrary(ROOT); self.lib.ensure_defaults(); self.store=ProductionStore(PROJECTS); self.project=None; self.ui(); self.refresh_assets(); self.refresh_gpu()
     def ui(self):
         top=ttk.Frame(self,padding=16); top.pack(fill='x')
         ttk.Label(top,text='AI 商品广告工厂',font=('Microsoft YaHei UI',22,'bold')).pack(side='left')
@@ -24,6 +24,7 @@ class App(tk.Tk):
         ttk.Label(setup,text='1纯种草  2轻广告  3标准广告  4强转化  5极强转化').grid(row=1,column=2,columnspan=2,sticky='w')
         ttk.Label(setup,text='视频形式').grid(row=2,column=0,sticky='w'); self.form=tk.StringVar(value=FORMS[0]); ttk.Combobox(setup,textvariable=self.form,values=FORMS,state='readonly',width=22).grid(row=2,column=1,sticky='w')
         ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e')
+        ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8)
         main=ttk.Panedwindow(self,orient='horizontal'); main.pack(fill='both',expand=True,padx=16,pady=8)
         left=ttk.Frame(main,padding=8); right=ttk.Frame(main,padding=8); main.add(left,weight=3); main.add(right,weight=2)
         ttk.Label(left,text='② 分镜生产链',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
@@ -45,7 +46,12 @@ class App(tk.Tk):
         g=detect_gpu(); self.gpu_text.set(('🟢 '+g.get('name','NVIDIA')+' · '+g.get('mode','CPU')) if g.get('available') else '⚪ 未检测到 NVIDIA GPU · CPU模式')
     def create(self):
         self.project=new_project(self.url.get(),self.level.get(),self.form.get()); self.refresh_shots(); c=estimate(len(self.project.shots)); self.cost.set(f"预计成本 ¥{c['总计']:.2f} / 预算 ¥{c['预算']:.2f}"); self.detail.set('项目已创建：商品解析 → 策略 → 分镜 → 单镜头生成 → 本地合成。');
-        if c['超预算']: messagebox.showwarning('预算拦截','预计超过 ¥3，生产尚未开始。必须确认后才能继续。')
+        if c['超预算']:
+            self.project=None
+            self.refresh_shots()
+            self.detail.set('预算拦截：预计成本超过 ¥3，未开始生产。')
+            messagebox.showwarning('预算拦截','预计超过 ¥3，生产尚未开始。请调整方案后重新创建。')
+            return
     def refresh_shots(self):
         for x in self.shots.get_children(): self.shots.delete(x)
         if self.project:
@@ -90,6 +96,25 @@ class App(tk.Tk):
             s.actor_id=actor_map.get(av.get()); s.scene_id=scene_map.get(sv.get()); s.status='需重生成'; s.video_path=None; s.version+=1
             self.store.save(self.project); self.refresh_shots(); self.show_shot(); win.destroy()
         ttk.Button(frm,text='保存修改并生成新版本',command=apply).pack(anchor='e',pady=10)
+
+    def load_project(self):
+        files=sorted(PROJECTS.glob('project-*.json'), key=lambda p: p.stat().st_mtime, reverse=True)
+        if not files:
+            return messagebox.showinfo('提示','本地还没有已保存的广告项目。')
+        win=tk.Toplevel(self); win.title('打开已有项目'); win.geometry('560x360'); win.transient(self)
+        frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
+        ttk.Label(frm,text='本机广告项目').pack(anchor='w')
+        box=tk.Listbox(frm,height=12); box.pack(fill='both',expand=True,pady=8)
+        for p in files: box.insert('end',p.stem)
+        def open_selected():
+            sel=box.curselection()
+            if not sel:return
+            project=self.store.load(files[sel[0]].stem)
+            if not project:return messagebox.showerror('打开失败','项目文件无法读取。')
+            self.project=project; self.url.set(''); self.level.set(project.level); self.form.set(project.form)
+            self.refresh_shots(); self.cost.set(f'项目预算 ¥3.00 · 已保存 {len(project.shots)} 个镜头'); self.detail.set(f'已恢复项目：{project.product_name} · {project.platform} · {project.form}')
+            win.destroy()
+        ttk.Button(frm,text='打开',command=open_selected).pack(anchor='e')
 
     def upload(self,kind):
         p=filedialog.askopenfilename(title=f'选择{kind}文件')
