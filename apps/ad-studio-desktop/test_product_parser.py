@@ -1,6 +1,7 @@
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from ad_studio.product_parser import parse_product_url, save_product
 
@@ -12,7 +13,8 @@ class ProductParserTests(unittest.TestCase):
         self.assertIn("有效", info.error)
 
     def test_platform_detection_without_network(self):
-        info = parse_product_url("https://item.jd.com/123.html")
+        with patch("ad_studio.product_parser.urlopen", side_effect=OSError("network disabled")):
+            info = parse_product_url("https://item.jd.com/123.html")
         self.assertEqual(info.platform, "京东")
         self.assertFalse(info.fetched)
 
