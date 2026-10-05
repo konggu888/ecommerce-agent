@@ -1,0 +1,2 @@
+export type AssetStoragePolicy={provider:"local";persistent:true;reuseById:true;cloudDatabase:false;cloudAssetStorage:false};
+export const LOCAL_STORAGE_POLICY:AssetStoragePolicy={provider:"local",persistent:true,reuseById:true,cloudDatabase:false,cloudAssetStorage:false};
