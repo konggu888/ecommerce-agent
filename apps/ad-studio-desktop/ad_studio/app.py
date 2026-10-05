@@ -30,7 +30,8 @@ class App(tk.Tk):
         self.shots=ttk.Treeview(left,columns=('v','status','actor','scene'),show='tree headings',height=17)
         for c,t,w in [('v','版本',70),('status','状态',90),('actor','演员',150),('scene','场景',150)]: self.shots.heading(c,text=t); self.shots.column(c,width=w)
         self.shots.column('#0',width=300); self.shots.pack(fill='both',expand=True,pady=8); self.shots.bind('<<TreeviewSelect>>',self.show_shot)
-        bar=ttk.Frame(left); bar.pack(fill='x'); ttk.Button(bar,text='生成本镜头',command=self.generate_shot).pack(side='left'); ttk.Button(bar,text='重新生成本镜头',command=self.regen_shot).pack(side='left',padx=8); ttk.Button(bar,text='生成最终成片',command=self.final_render).pack(side='right',padx=8)\n        ttk.Button(bar,text='保存项目',command=self.save).pack(side='right')
+        bar=ttk.Frame(left); bar.pack(fill='x'); ttk.Button(bar,text='生成本镜头',command=self.generate_shot).pack(side='left'); ttk.Button(bar,text='重新生成本镜头',command=self.regen_shot).pack(side='left',padx=8); ttk.Button(bar,text='生成最终成片',command=self.final_render).pack(side='right',padx=8)
+        ttk.Button(bar,text='保存项目',command=self.save).pack(side='right')
         ttk.Label(right,text='③ 本地资产库',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
         self.assets=ttk.Treeview(right,columns=('kind','source','path'),show='tree headings',height=13)
         for c,t,w in [('kind','类型',80),('source','来源',90),('path','本地文件',300)]: self.assets.heading(c,text=t); self.assets.column(c,width=w)
@@ -56,7 +57,14 @@ class App(tk.Tk):
     def generate_shot(self):
         s=self.selected()
         if not s:return messagebox.showinfo('提示','先选择一个镜头。')
-        s.status='已生成'; out=self.store.render_path(self.project,s); self.store.mark_ready(self.project,s,out); self.refresh_shots(); self.detail.set(f'镜头 {s.index} 已生成 v{s.version}。输出槽位：{out}')
+        try:
+            out=self.store.render_placeholder_shot(self.project,s)
+            self.refresh_shots()
+            self.detail.set(f'镜头 {s.index} 已生成 v{s.version}。本地FFmpeg输出：{out}')
+        except Exception as e:
+            s.status='生成失败'
+            self.store.save(self.project)
+            messagebox.showerror('镜头生成失败',str(e))
     def regen_shot(self):
         s=self.selected()
         if not s:return messagebox.showinfo('提示','先选择要重新生成的镜头。')
@@ -67,7 +75,13 @@ class App(tk.Tk):
     def refresh_assets(self):
         for x in self.assets.get_children(): self.assets.delete(x)
         for a in self.lib.all(): self.assets.insert('', 'end',text=a.name,values=(a.kind,a.source,a.path or ''))
-    def final_render(self):\n        if not self.project:return messagebox.showinfo('提示','先创建项目。')\n        try:\n            out=self.store.build_final(self.project)\n            self.detail.set(f'最终成片已输出：{out}')\n            messagebox.showinfo('完成',f'最终广告已生成\\n{out}')\n        except Exception as e:\n            messagebox.showerror('暂不能成片',str(e))\n\n    def save(self):
+    def final_render(self):
+        if not self.project:return messagebox.showinfo('提示','先创建项目。')
+        try:\n            out=self.store.build_final(self.project)\n            self.detail.set(f'最终成片已输出：{out}')
+            messagebox.showinfo('完成',f'最终广告已生成\\n{out}')
+        except Exception as e:
+            messagebox.showerror('暂不能成片',str(e))
+\n    def save(self):
         if self.project:self.store.save(self.project); self.detail.set(f'项目已保存到本机：{PROJECTS/self.project.id}.json')
 
 if __name__=='__main__': App().mainloop()
