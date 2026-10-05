@@ -41,16 +41,19 @@ class CreativeEngineTests(unittest.TestCase):
         self.assertEqual(len(plan.shots), 1)
 
     def test_engine_uses_llm_output(self):
+        seen = {}
         class FakeLLM:
             def create_plan(self, product, constraints):
-                self.assertEqual(product["name"], "测试商品")
-                self.assertEqual(constraints["platform"], "抖音")
+                seen["product"] = product["name"]
+                seen["platform"] = constraints["platform"]
                 return sample_plan()
 
         plan = CreativeEngine(FakeLLM()).plan(
             {"name": "测试商品"},
             {"platform": "抖音"}
         )
+        self.assertEqual(seen["product"], "测试商品")
+        self.assertEqual(seen["platform"], "抖音")
         self.assertEqual(plan.selling_points, ["便携", "易使用"])
 
     def test_missing_fields_fail(self):
