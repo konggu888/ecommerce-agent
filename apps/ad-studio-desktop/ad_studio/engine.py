@@ -27,4 +27,4 @@ def mark_regenerate(project,index):
     return s
 
 def estimate_cost(shots):
-    cloud=max(1,min(3,(shots+1)//2)); return {'本地':0.0,'云端':round(cloud*0.72,2),'总计':round(cloud*0.72,2),'预算':3.0,'超预算':cloud*0.72>3}
+    cloud=max(1,shots); total=round(cloud*0.72,2); return {'本地':0.0,'云端':total,'总计':total,'预算':3.0,'超预算':total>3}
