@@ -3,7 +3,7 @@ from tkinter import ttk, filedialog, messagebox
 from pathlib import Path
 from .library import LocalLibrary
 from .engine import FORMS, new_project, mark_regenerate
-from .cost import estimate
+from .engine import estimate_cost
 from .gpu import detect_gpu
 from .production import ProductionStore
 
