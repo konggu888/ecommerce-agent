@@ -6,6 +6,8 @@ from pathlib import Path
 import json
 import re
 
+from .browser_skill import fetch_with_browser_skill
+
 
 @dataclass
 class ProductInfo:
@@ -17,6 +19,7 @@ class ProductInfo:
     images: list[str] = None
     fetched: bool = False
     error: str = ""
+    source: str = ""
 
     def __post_init__(self):
         if self.images is None:
@@ -70,7 +73,28 @@ def _platform(url: str) -> str:
     return "自动识别"
 
 
-def parse_product_url(url: str, timeout: int = 8) -> ProductInfo:
+def _clean(value: str, limit: int) -> str:
+    return re.sub(r"\s+", " ", value or "").strip()[:limit]
+
+
+def _from_html(info: ProductInfo, html: str) -> ProductInfo:
+    parser = _MetaParser()
+    parser.feed(html)
+    title = parser.meta.get("og:title") or parser.meta.get("twitter:title") or parser.title.strip()
+    desc = parser.meta.get("og:description") or parser.meta.get("description") or ""
+    image = parser.meta.get("og:image")
+    images = [image] if image else []
+    images.extend(parser.images[:19])
+    info.name = _clean(title, 200) or "待解析商品"
+    info.description = _clean(desc, 1000)
+    info.images = list(dict.fromkeys(images))
+    info.price = parser.meta.get("product:price:amount") or parser.meta.get("price") or ""
+    info.fetched = True
+    info.source = "direct_http"
+    return info
+
+
+def parse_product_url(url: str, timeout: int = 8, browser_fallback: bool = True) -> ProductInfo:
     url = (url or "").strip()
     if not url:
         return ProductInfo(url="", platform="自动识别", error="商品链接为空")
@@ -79,31 +103,36 @@ def parse_product_url(url: str, timeout: int = 8) -> ProductInfo:
         return ProductInfo(url=url, platform="自动识别", error="不是有效的 HTTP/HTTPS 商品链接")
 
     info = ProductInfo(url=url, platform=_platform(url))
+    direct_error = ""
     try:
         req = Request(url, headers={"User-Agent": "AdStudio/1.0 product-parser"})
         with urlopen(req, timeout=timeout) as response:
             raw = response.read(2_000_000)
             charset = response.headers.get_content_charset() or "utf-8"
-        html = raw.decode(charset, errors="replace")
-        parser = _MetaParser()
-        parser.feed(html)
-
-        title = parser.meta.get("og:title") or parser.meta.get("twitter:title") or parser.title.strip()
-        desc = parser.meta.get("og:description") or parser.meta.get("description") or ""
-        image = parser.meta.get("og:image")
-        images = [image] if image else []
-        images.extend(parser.images[:19])
-
-        info.name = re.sub(r"\\s+", " ", title).strip()[:200] or "待解析商品"
-        info.description = re.sub(r"\\s+", " ", desc).strip()[:1000]
-        info.images = list(dict.fromkeys(images))
-        price = parser.meta.get("product:price:amount") or parser.meta.get("price")
-        info.price = price or ""
-        info.fetched = True
-        return info
+        return _from_html(info, raw.decode(charset, errors="replace"))
     except Exception as exc:
-        info.error = str(exc)
+        direct_error = str(exc)
+
+    if browser_fallback:
+        try:
+            browser_result = fetch_with_browser_skill(url, timeout=max(timeout, 15))
+            if browser_result.get("ok"):
+                info.name = _clean(browser_result.get("name", ""), 200) or info.name
+                info.description = _clean(browser_result.get("description", ""), 1000)
+                info.price = str(browser_result.get("price", "") or "")
+                info.images = list(dict.fromkeys(browser_result.get("images", [])[:20]))
+                info.fetched = bool(info.name != "待解析商品" or info.description or info.price or info.images)
+                if info.fetched:
+                    info.source = "browser_skill"
+                    return info
+            browser_error = browser_result.get("error", "浏览器采集未读取到商品资料")
+        except Exception as exc:
+            browser_error = str(exc)
+        info.error = f"直接抓取失败：{direct_error}；浏览器Skill也未完成：{browser_error}"
         return info
+
+    info.error = direct_error
+    return info
 
 
 def save_product(info: ProductInfo, root: Path, project_id: str) -> Path:
