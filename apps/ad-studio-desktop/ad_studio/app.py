@@ -77,7 +77,8 @@ class App(tk.Tk):
         for a in self.lib.all(): self.assets.insert('', 'end',text=a.name,values=(a.kind,a.source,a.path or ''))
     def final_render(self):
         if not self.project:return messagebox.showinfo('提示','先创建项目。')
-        try:\n            out=self.store.build_final(self.project)\n            self.detail.set(f'最终成片已输出：{out}')
+        try:
+            out=self.store.build_final(self.project)\n            self.detail.set(f'最终成片已输出：{out}')
             messagebox.showinfo('完成',f'最终广告已生成\\n{out}')
         except Exception as e:
             messagebox.showerror('暂不能成片',str(e))
