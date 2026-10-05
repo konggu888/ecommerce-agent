@@ -33,7 +33,7 @@ export function selectAdaptiveRoute(
       const sampleSize = counter?.observations ?? 0;
       const counterPressure = counter?.pressure ?? 0;
       const counterConfidence = Math.min(1, sampleSize / 5);
-      const novelty = Math.max(0, 1 - counterPressure) * (sampleSize === 0 ? 0.35 : 0.15);
+      const novelty = Math.max(0, 1 - counterPressure) * (sampleSize === 0 ? 0.05 : 0.15);
       const totalScore =
         c.score
         + (c.breakthrough ? c.breakthrough.score * 0.12 : 0)
