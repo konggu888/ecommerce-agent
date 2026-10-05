@@ -38,6 +38,7 @@ class App(tk.Tk):
         self.assets.column('#0',width=180); self.assets.pack(fill='both',expand=True,pady=8)
         ab=ttk.Frame(right); ab.pack(fill='x'); ttk.Button(ab,text='＋上传演员',command=lambda:self.upload('演员')).pack(side='left'); ttk.Button(ab,text='＋上传场景',command=lambda:self.upload('场景')).pack(side='left',padx=5); ttk.Button(ab,text='＋上传产品素材',command=lambda:self.upload('产品图')).pack(side='left'); ttk.Button(ab,text='刷新资产库',command=self.refresh_assets).pack(side='right')
         self.detail=tk.StringVar(value='等待创建项目'); ttk.Label(right,textvariable=self.detail,justify='left',wraplength=470).pack(fill='x',pady=10)
+        ttk.Button(right,text='编辑当前分镜',command=self.edit_shot).pack(anchor='w',pady=4)
         self.cost=tk.StringVar(value='成本：尚未计算'); ttk.Label(right,textvariable=self.cost,font=('Microsoft YaHei UI',12,'bold')).pack(anchor='w')
         ttk.Label(self,text='本地存储：本机磁盘  |  资产库：永久复用  |  云端生成：仅在需要时调用',relief='sunken',anchor='w',padding=8).pack(fill='x',side='bottom')
     def refresh_gpu(self):
@@ -69,6 +70,27 @@ class App(tk.Tk):
         s=self.selected()
         if not s:return messagebox.showinfo('提示','先选择要重新生成的镜头。')
         old=s.version; mark_regenerate(self.project,self.project.shots.index(s)); self.refresh_shots(); self.detail.set(f'镜头 {s.index}：v{old} → v{s.version}。其他镜头版本保持不变。')
+    def edit_shot(self):
+        s=self.selected()
+        if not s:return messagebox.showinfo('提示','先选择一个镜头。')
+        win=tk.Toplevel(self); win.title(f'编辑镜头 {s.index}'); win.geometry('620x520'); win.transient(self)
+        frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
+        ttk.Label(frm,text='镜头标题').pack(anchor='w'); title=tk.StringVar(value=s.title); ttk.Entry(frm,textvariable=title).pack(fill='x',pady=4)
+        ttk.Label(frm,text='画面描述').pack(anchor='w'); visual=tk.Text(frm,height=7); visual.pack(fill='x',pady=4); visual.insert('1.0',s.visual)
+        ttk.Label(frm,text='口播/文案').pack(anchor='w'); script=tk.Text(frm,height=7); script.pack(fill='x',pady=4); script.insert('1.0',s.script)
+        actors=self.lib.reusable('演员'); scenes=self.lib.reusable('场景')
+        actor_names=['自动匹配']+[a.name for a in actors]; scene_names=['自动匹配']+[a.name for a in scenes]
+        actor_map={a.name:a.id for a in actors}; scene_map={a.name:a.id for a in scenes}
+        cur_actor=next((a.name for a in actors if a.id==s.actor_id),'自动匹配'); cur_scene=next((a.name for a in scenes if a.id==s.scene_id),'自动匹配')
+        av=tk.StringVar(value=cur_actor); sv=tk.StringVar(value=cur_scene)
+        ttk.Label(frm,text='演员').pack(anchor='w'); ttk.Combobox(frm,textvariable=av,values=actor_names,state='readonly').pack(fill='x',pady=4)
+        ttk.Label(frm,text='场景').pack(anchor='w'); ttk.Combobox(frm,textvariable=sv,values=scene_names,state='readonly').pack(fill='x',pady=4)
+        def apply():
+            s.title=title.get().strip() or s.title; s.visual=visual.get('1.0','end').strip(); s.script=script.get('1.0','end').strip()
+            s.actor_id=actor_map.get(av.get()); s.scene_id=scene_map.get(sv.get()); s.status='需重生成'; s.video_path=None; s.version+=1
+            self.store.save(self.project); self.refresh_shots(); self.show_shot(); win.destroy()
+        ttk.Button(frm,text='保存修改并生成新版本',command=apply).pack(anchor='e',pady=10)
+
     def upload(self,kind):
         p=filedialog.askopenfilename(title=f'选择{kind}文件')
         if p:self.lib.add_file(p,Path(p).stem,kind); self.refresh_assets()
