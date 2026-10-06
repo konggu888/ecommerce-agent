@@ -202,6 +202,20 @@ class ModelRouter:
             merged["duration_seconds"] = form.get("duration_seconds", 30)
         return merged
 
+    def test_connection(self, model_id: str) -> tuple[bool, str]:
+        profile = self.get(model_id)
+        if not profile.enabled:
+            return False, "模型已禁用"
+        if profile.provider == "openai_compatible" and not profile.api_key:
+            return False, "缺少 API Key"
+        if profile.provider not in {"openai_compatible", "local_openai"}:
+            return False, f"不支持的提供方式：{profile.provider}"
+        try:
+            result = self.complete_json(profile, '{"ping":"请只返回 {\"ok\":true}"}')
+            return bool(result.get("ok", True)), "连接成功"
+        except Exception as exc:
+            return False, str(exc)
+
     def complete_json(self, profile: ModelProfile, prompt: str) -> dict[str, Any]:
         if not profile.enabled:
             raise RuntimeError(f"模型「{profile.name}」已禁用。")
