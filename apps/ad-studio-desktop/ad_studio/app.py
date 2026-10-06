@@ -1,6 +1,8 @@
 from pathlib import Path
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
+import shutil
+import subprocess
 from .library import LocalLibrary
 from .engine import FORMS, new_project, mark_regenerate, estimate_cost
 from .gpu import detect_gpu
@@ -8,6 +10,8 @@ from .production import ProductionStore
 from .product_parser import parse_product_url, save_product
 from .creative_engine import CreativeEngine
 from .model_router import ModelRouter, ModelProfile, FUNCTIONS
+from .browser_skill import _find_agent_browser
+from .ffmpeg import available as ffmpeg_available, has_nvenc
 
 
 class UnconfiguredCreativeLLM:
@@ -38,7 +42,7 @@ class App(tk.Tk):
         ttk.Label(setup,text='广告强度').grid(row=1,column=0,sticky='w'); self.level=tk.IntVar(value=2); ttk.Combobox(setup,textvariable=self.level,values=[1,2,3,4,5],state='readonly',width=8).grid(row=1,column=1,sticky='w')
         ttk.Label(setup,text='留空/自动：交给AI判断；手动选择仅作为约束').grid(row=1,column=2,columnspan=2,sticky='w')
         ttk.Label(setup,text='视频形式').grid(row=2,column=0,sticky='w'); self.form=tk.StringVar(value='AI自动选择'); ttk.Combobox(setup,textvariable=self.form,values=['AI自动选择']+FORMS,state='readonly',width=22).grid(row=2,column=1,sticky='w')
-        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e')
+        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e')
         main=ttk.Panedwindow(self,orient='horizontal'); main.pack(fill='both',expand=True,padx=16,pady=8)
         left=ttk.Frame(main,padding=8); right=ttk.Frame(main,padding=8); main.add(left,weight=3); main.add(right,weight=2)
         ttk.Label(left,text='② 分镜生产链',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
@@ -55,6 +59,49 @@ class App(tk.Tk):
         self.cost=tk.StringVar(value='成本：尚未计算'); ttk.Label(right,textvariable=self.cost,font=('Microsoft YaHei UI',12,'bold')).pack(anchor='w')
         ttk.Label(self,text='本地存储：本机磁盘  |  资产库：永久复用  |  云端生成：仅在需要时调用',relief='sunken',anchor='w',padding=8).pack(fill='x',side='bottom')
 
+
+
+    def system_status(self):
+        """Show whether advertised capabilities are actually configured and usable."""
+        win=tk.Toplevel(self); win.title('系统状态 · 功能是否真正启用'); win.geometry('900x680'); win.transient(self)
+        frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
+        ttk.Label(frm,text='系统状态',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
+        ttk.Label(frm,text='这里显示的是本机实际检测结果，不是“代码里已经写了”就算启用。').pack(anchor='w',pady=(2,12))
+        tree=ttk.Treeview(frm,columns=('status','detail'),show='headings',height=22)
+        tree.heading('status',text='状态'); tree.heading('detail',text='检测结果 / 当前配置')
+        tree.column('status',width=100,anchor='center'); tree.column('detail',width=680)
+        tree.pack(fill='both',expand=True)
+        def add(group,name,ok,detail,warn=False):
+            state='🟢 已启用' if ok else ('🟡 已接入但未完整配置' if warn else '🔴 未启用')
+            tree.insert('', 'end', values=(state, f'{group}｜{name}：{detail}'))
+        gpu=detect_gpu()
+        add('本地硬件','NVIDIA GPU',gpu.get('available'),f"{gpu.get('name','未检测到')} · {gpu.get('vram_mb','?')}MB · {gpu.get('mode','CPU')}")
+        ff=ffmpeg_available(); nv=has_nvenc() if ff else False
+        add('本地后处理','FFmpeg',ff,'ffmpeg + ffprobe 已找到' if ff else '未找到 ffmpeg/ffprobe，请安装并加入 PATH')
+        add('本地后处理','NVENC 硬件编码',nv,'h264_nvenc 可用' if nv else '不可用，将退回 CPU 编码',warn=ff and not nv)
+        profiles=self.model_router.profiles(); enabled=[p for p in profiles if p.enabled]
+        keyed=[p for p in enabled if p.api_key or p.provider == 'local_openai']
+        default=self.model_router.get(self.model_router.data['default_model'])
+        add('AI创意引擎','模型池',bool(enabled),f'{len(enabled)} 个启用模型；默认：{default.name}')
+        add('AI创意引擎','模型调用凭据',bool(keyed),f'{len(keyed)} 个模型可实际调用' if keyed else '没有可实际调用的模型，请配置 API Key 或本地模型')
+        routed=sum(1 for fn in FUNCTIONS if self.model_router.route(fn).enabled)
+        add('AI创意引擎','9项功能独立路由',routed==len(FUNCTIONS),f'{routed}/{len(FUNCTIONS)} 个功能有启用模型')
+        for fn in FUNCTIONS:
+            p=self.model_router.route(fn); ready=p.enabled and (bool(p.api_key) or p.provider == 'local_openai')
+            add('模型路由',fn,ready,f'→ {p.name} / {p.model}',warn=p.enabled and not ready)
+        browser=_find_agent_browser()
+        add('商品采集','浏览器回退采集',bool(browser),browser or '未检测到 agent-browser；直接HTTP失败时无法使用浏览器回退')
+        forbidden=ROOT/'forbidden_terms.txt'
+        add('合规','禁止词库',forbidden.exists(),str(forbidden) if forbidden.exists() else '未创建 forbidden_terms.txt')
+        add('资产库','本地永久资产库',self.lib.root.exists(),f'{self.lib.root} · {len(self.lib.all())} 个资产')
+        add('生产链','镜头生成',False,'当前仍是 FFmpeg 占位镜头；真正的视频生成 Provider 尚未接入',warn=True)
+        add('生产链','最终成片拼接',ff,'本地 FFmpeg concat 可用' if ff else '等待 FFmpeg')
+        add('云端生成','人物/场景/关键视频镜头',False,'云端生成 Adapter 尚未接入，不会偷偷产生云端费用',warn=True)
+        add('云端生成','高质量配音',False,'语音 Provider 尚未接入',warn=True)
+        ttk.Label(frm,text='🟢 可直接使用   🟡 有框架但尚未完全接通   🔴 当前不可用',font=('Microsoft YaHei UI',10,'bold')).pack(anchor='w',pady=(10,4))
+        btn=ttk.Frame(frm); btn.pack(fill='x')
+        ttk.Button(btn,text='重新检测',command=lambda:(win.destroy(),self.system_status())).pack(side='right')
+        ttk.Button(btn,text='打开模型设置',command=self.model_settings).pack(side='right',padx=8)
 
     def model_settings(self):
         win=tk.Toplevel(self); win.title('AI 模型池与功能路由'); win.geometry('820x680'); win.transient(self)
