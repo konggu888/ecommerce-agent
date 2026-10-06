@@ -308,9 +308,15 @@ class App(tk.Tk):
         try:
             provider_path=ROOT/'video-provider.json'
             if not provider_path.exists(): raise RuntimeError('当前没有配置真实视频生成 Provider。系统不会用黑色视频冒充成片；请先配置视频 Provider。')
-            out=self.store.render_cloud_shot(self.project,s,provider_path); self.refresh_shots(); self.detail.set(f'镜头 {s.index} 已由云端 Provider 生成 v{s.version}：{out}')
+            s.status='生成中…'; self.store.save(self.project); self.refresh_shots()
+            self.detail.set(f'镜头 {s.index} 正在调用云端视频 Provider…')
+            self.update_idletasks()
+            out=self.store.render_cloud_shot(self.project,s,provider_path)
+            self.refresh_shots(); self.detail.set(f'镜头 {s.index} 已由云端 Provider 生成 v{s.version}：{out}')
         except Exception as e:
-            s.status='生成失败'; self.store.save(self.project); messagebox.showerror('镜头生成失败',str(e))
+            s.status='生成失败'; self.store.save(self.project); self.refresh_shots()
+            self.detail.set(f'镜头 {s.index} 生成失败：{e}')
+            messagebox.showerror('镜头生成失败',str(e))
 
     def regen_shot(self):
         s=self.selected()
