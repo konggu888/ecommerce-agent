@@ -12,6 +12,7 @@ from .creative_engine import CreativeEngine
 from .model_router import ModelRouter, ModelProfile, FUNCTIONS
 from .browser_skill import _find_agent_browser
 from .ffmpeg import available as ffmpeg_available, has_nvenc
+from .providers import load_video_provider
 
 
 class UnconfiguredCreativeLLM:
@@ -94,7 +95,10 @@ class App(tk.Tk):
         forbidden=ROOT/'forbidden_terms.txt'
         add('合规','禁止词库',forbidden.exists(),str(forbidden) if forbidden.exists() else '未创建 forbidden_terms.txt')
         add('资产库','本地永久资产库',self.lib.root.exists(),f'{self.lib.root} · {len(self.lib.all())} 个资产')
-        add('生产链','镜头生成',False,'当前仍是 FFmpeg 占位镜头；真正的视频生成 Provider 尚未接入',warn=True)
+        vp=load_video_provider(ROOT/'video-provider.json')
+        video_ready=not isinstance(vp, __import__('ad_studio.providers',fromlist=['UnconfiguredProvider']).UnconfiguredProvider)
+        add('生产链','镜头生成',video_ready,'REST 视频 Provider 已配置，可真实请求生成并下载镜头' if video_ready else '当前仍为未配置状态；生成按钮不会伪造云端成片',warn=not video_ready)
+        add('云端生成','视频 Provider',video_ready,'配置文件：'+str(ROOT/'video-provider.json') if video_ready else '未配置 video-provider.json',warn=not video_ready)
         add('生产链','最终成片拼接',ff,'本地 FFmpeg concat 可用' if ff else '等待 FFmpeg')
         add('云端生成','人物/场景/关键视频镜头',False,'云端生成 Adapter 尚未接入，不会偷偷产生云端费用',warn=True)
         add('云端生成','高质量配音',False,'语音 Provider 尚未接入',warn=True)
@@ -273,7 +277,9 @@ class App(tk.Tk):
         s=self.selected()
         if not s:return messagebox.showinfo('提示','先选择一个镜头。')
         try:
-            out=self.store.render_placeholder_shot(self.project,s); self.refresh_shots(); self.detail.set(f'镜头 {s.index} 已生成 v{s.version}。本地FFmpeg输出：{out}')
+            provider_path=ROOT/'video-provider.json'
+            if provider_path.exists(): out=self.store.render_cloud_shot(self.project,s,provider_path); self.refresh_shots(); self.detail.set(f'镜头 {s.index} 已由云端 Provider 生成 v{s.version}：{out}')
+            else: out=self.store.render_placeholder_shot(self.project,s); self.refresh_shots(); self.detail.set(f'镜头 {s.index} 已生成 v{s.version}（当前为本地占位镜头）。如需真实生成，请先配置视频 Provider。')
         except Exception as e:
             s.status='生成失败'; self.store.save(self.project); messagebox.showerror('镜头生成失败',str(e))
 
