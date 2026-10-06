@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import shutil
 import subprocess
+import json
 from .library import LocalLibrary
 from .engine import FORMS, new_project, mark_regenerate, estimate_cost
 from .gpu import detect_gpu
