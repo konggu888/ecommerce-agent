@@ -41,7 +41,8 @@ class ModelRouter:
     """Local multi-model pool + per-function routing.
 
     The application owns routing/configuration; the LLM owns creative decisions.
-    Providers can be OpenAI-compatible APIs, domestic gateways, or local servers.
+    Every creative function is routed independently, so changing one dropdown
+    changes the actual model call for that stage.
     """
 
     def __init__(self, config_path: Path):
@@ -112,40 +113,106 @@ class ModelRouter:
         self.save()
 
     def create_plan(self, product: dict[str, Any], constraints: dict[str, Any]) -> dict[str, Any]:
-        """Run the creative pipeline through independently routed model stages."""
-        from .creative_engine import build_stage_prompt
+        """Run all nine creative functions through their independently routed models."""
+        context: dict[str, Any] = {"product": product, "constraints": constraints}
 
-        analysis = self.complete_json(
-            self.route("商品理解"),
-            build_stage_prompt("analysis", product, constraints),
-        )
-        strategy_input = {"product_analysis": analysis, "constraints": constraints}
-        strategy = self.complete_json(
-            self.route("广告策略"),
-            build_stage_prompt("strategy", strategy_input, constraints),
-        )
-        script_input = {
-            "product_analysis": analysis,
-            "strategy": strategy,
-            "constraints": constraints,
-        }
-        script = self.complete_json(
-            self.route("剧本"),
-            build_stage_prompt("script", script_input, constraints),
-        )
-        merged = dict(analysis)
-        merged.update(strategy)
-        merged.update(script)
+        def run(function: str, stage: str, extra: dict[str, Any] | None = None) -> dict[str, Any]:
+            data = dict(context)
+            if extra:
+                data.update(extra)
+            result = self.complete_json(
+                self.route(function),
+                build_stage_prompt(stage, data, constraints),
+            )
+            context[stage] = result
+            return result
+
+        understanding = run("商品理解", "product_understanding")
+        selling = run("卖点提炼", "selling_points", {"product_understanding": understanding})
+        audience = run("人群与痛点", "audience_pain", {
+            "product_understanding": understanding,
+            "selling_points": selling,
+        })
+        strategy = run("广告策略", "ad_strategy", {
+            "product_understanding": understanding,
+            "selling_points": selling,
+            "audience_pain": audience,
+        })
+        intensity = run("广告强度判断", "ad_intensity", {
+            "product_understanding": understanding,
+            "selling_points": selling,
+            "audience_pain": audience,
+            "ad_strategy": strategy,
+        })
+        form = run("视频形式判断", "video_form", {
+            "product_understanding": understanding,
+            "audience_pain": audience,
+            "ad_strategy": strategy,
+            "ad_intensity": intensity,
+        })
+        script = run("剧本", "script", {
+            "product_understanding": understanding,
+            "selling_points": selling,
+            "audience_pain": audience,
+            "ad_strategy": strategy,
+            "ad_intensity": intensity,
+            "video_form": form,
+        })
+        storyboard = run("分镜", "storyboard", {
+            "product_understanding": understanding,
+            "selling_points": selling,
+            "audience_pain": audience,
+            "ad_strategy": strategy,
+            "ad_intensity": intensity,
+            "video_form": form,
+            "script": script,
+        })
+        assets = run("素材选择", "asset_selection", {
+            "product_understanding": understanding,
+            "selling_points": selling,
+            "audience_pain": audience,
+            "ad_strategy": strategy,
+            "ad_intensity": intensity,
+            "video_form": form,
+            "script": script,
+            "storyboard": storyboard,
+        })
+
+        merged: dict[str, Any] = {}
+        for result in (
+            understanding, selling, audience, strategy, intensity,
+            form, script, storyboard, assets,
+        ):
+            merged.update(result)
+
+        # Keep downstream CreativeEngine validation compatible while exposing
+        # the full nine-stage result for persistence and later asset matching.
+        merged["creative_stages"] = context
+        if "shots" not in merged and storyboard.get("shots"):
+            merged["shots"] = storyboard["shots"]
+        if "script" not in merged:
+            merged["script"] = script.get("script", "")
+        if "ad_level" not in merged:
+            merged["ad_level"] = intensity.get("ad_level", "标准广告")
+        if "video_form" not in merged:
+            merged["video_form"] = form.get("video_form", "")
+        if "duration_seconds" not in merged:
+            merged["duration_seconds"] = form.get("duration_seconds", 30)
         return merged
 
     def complete_json(self, profile: ModelProfile, prompt: str) -> dict[str, Any]:
-        if not profile.api_key:
+        if not profile.enabled:
+            raise RuntimeError(f"模型「{profile.name}」已禁用。")
+        if profile.provider not in {"openai_compatible", "local_openai"}:
+            raise RuntimeError(f"暂不支持的模型提供方式：{profile.provider}")
+
+        # Local OpenAI-compatible servers (Ollama/vLLM/LM Studio/etc.) normally
+        # do not require a cloud API key. Cloud OpenAI-compatible providers do.
+        if profile.provider == "openai_compatible" and not profile.api_key:
             raise RuntimeError(
                 f"模型「{profile.name}」尚未配置 API Key。请打开“模型设置”，"
-                "或使用本地兼容 OpenAI API 的模型服务。"
+                "或改用本地 OpenAI 兼容模型服务。"
             )
-        if profile.provider != "openai_compatible":
-            raise RuntimeError(f"暂不支持的模型提供方式：{profile.provider}")
 
         url = profile.base_url.rstrip("/") + "/chat/completions"
         payload = {
@@ -157,13 +224,13 @@ class ModelRouter:
             "temperature": 0.7,
             "response_format": {"type": "json_object"},
         }
+        headers = {"Content-Type": "application/json"}
+        if profile.api_key:
+            headers["Authorization"] = f"Bearer {profile.api_key}"
         request = urllib.request.Request(
             url,
             data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
-            headers={
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {profile.api_key}",
-            },
+            headers=headers,
             method="POST",
         )
         try:
@@ -178,20 +245,23 @@ class ModelRouter:
         except Exception as exc:
             raise RuntimeError(f"模型「{profile.name}」返回的不是有效 JSON") from exc
 
+
 STAGE_SCHEMAS = {
-    "analysis": {
+    "product_understanding": {
         "product_summary": "string", "product_type": "string",
-        "selling_points": ["string"], "target_audience": ["string"],
-        "pain_points": ["string"], "usage_scenes": ["string"],
-        "positioning": "string"
+        "positioning": "string", "usage_scenes": ["string"]
     },
-    "strategy": {
-        "ad_level": "纯种草|轻广告|标准广告|强转化|极强转化",
-        "video_form": "string", "duration_seconds": "integer",
-        "strategy": "string", "hook": "string"
+    "selling_points": {"selling_points": ["string"]},
+    "audience_pain": {
+        "target_audience": ["string"], "pain_points": ["string"]
     },
-    "script": {
-        "script": "string",
+    "ad_strategy": {"strategy": "string", "hook": "string"},
+    "ad_intensity": {
+        "ad_level": "纯种草|轻广告|标准广告|强转化|极强转化"
+    },
+    "video_form": {"video_form": "string", "duration_seconds": "integer"},
+    "script": {"script": "string"},
+    "storyboard": {
         "shots": [{
             "index": "integer", "objective": "string", "visual": "string",
             "dialogue": "string", "duration_seconds": "integer",
@@ -199,23 +269,34 @@ STAGE_SCHEMAS = {
             "product_asset_requirements": ["string"], "on_screen_text": ["string"],
             "cta_role": "string", "generation_prompt": "string"
         }]
-    }
+    },
+    "asset_selection": {
+        "asset_selection": [{
+            "shot_index": "integer", "asset_type": "actor|scene|product|other",
+            "requirements": ["string"], "preferred_asset_ids": ["string"]
+        }]
+    },
 }
 
 
 def build_stage_prompt(stage: str, data: dict[str, Any], constraints: dict[str, Any]) -> str:
     instructions = {
-        "analysis": "只负责商品理解、卖点、人群、痛点、使用场景和定位，不写剧本。",
-        "strategy": "只负责广告策略、广告强度、视频形式、时长和开头钩子，不写完整分镜。",
-        "script": "根据前两阶段结果，负责完整剧本和可执行分镜。优先复用已有资产。",
+        "product_understanding": "只负责理解商品资料、商品类型、定位和使用场景；不得发明资料中没有的规格、功效或价格。",
+        "selling_points": "只提炼真实可依据的核心卖点，并按广告价值排序；不确定的信息降低表述强度或标记待确认。",
+        "audience_pain": "判断最值得触达的人群及其真实痛点，不得凭空制造医学、效果或用户数据结论。",
+        "ad_strategy": "制定广告策略和开头钩子，明确为什么这样卖、先讲什么、如何建立转化路径。",
+        "ad_intensity": "根据商品、受众、平台、策略和约束判断广告强度，只选择五档之一。",
+        "video_form": "根据商品、受众、策略和广告强度决定最合适的视频形式及最终合理时长，不受固定模板限制。",
+        "script": "根据前置阶段结果写完整可拍/可生成的广告剧本；不要重复做商品分析。",
+        "storyboard": "把剧本拆成真正可执行的镜头；每镜头必须说明目标、画面、对白、时长、演员/场景/商品素材要求和生成提示。",
+        "asset_selection": "根据分镜逐镜判断需要哪些演员、场景、商品素材，并优先返回可复用的本地资产ID；不要凭空创造不存在的ID。",
     }
     schema = STAGE_SCHEMAS[stage]
     return (
         CREATIVE_SYSTEM_PROMPT
-        + f"\\n\\n当前阶段：{stage}\\n任务：{instructions[stage]}"
-        + "\\n\\n输入：\\n" + json.dumps(data, ensure_ascii=False, indent=2)
-        + "\\n\\n全局约束：\\n" + json.dumps(constraints, ensure_ascii=False, indent=2)
-        + "\\n\\n本阶段只输出以下JSON结构：\\n"
+        + f"\n\n当前阶段：{stage}\n任务：{instructions[stage]}"
+        + "\n\n输入：\n" + json.dumps(data, ensure_ascii=False, indent=2)
+        + "\n\n全局约束：\n" + json.dumps(constraints, ensure_ascii=False, indent=2)
+        + "\n\n本阶段只输出以下JSON结构：\n"
         + json.dumps(schema, ensure_ascii=False, indent=2)
     )
-
