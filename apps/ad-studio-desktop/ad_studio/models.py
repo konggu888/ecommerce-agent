@@ -43,6 +43,7 @@ class Project:
     shots: list[Shot]
     cost_estimate: dict = field(default_factory=dict)
     product_info: dict = field(default_factory=dict)
+    creative_plan: dict = field(default_factory=dict)
     created_at: str=field(default_factory=now)
     updated_at: str=field(default_factory=now)
     def save(self, root: Path):
