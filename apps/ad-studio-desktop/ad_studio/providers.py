@@ -42,6 +42,8 @@ class GenericVideoProvider:
     poll_interval: float = 3.0
     task_id_field: str = 'id'
     status_field: str = 'status'
+    cost_per_shot_rmb: float = 0.72
+    provider_name: str = 'Generic REST'
 
     def configured(self) -> bool:
         return bool(self.endpoint.strip() and self.api_key.strip())
@@ -151,5 +153,5 @@ def load_video_provider(path: Path) -> GenericVideoProvider | UnconfiguredProvid
     data = cfg.get('video_provider', cfg)
     if not isinstance(data, dict):
         return UnconfiguredProvider()
-    provider = GenericVideoProvider(endpoint=str(data.get('endpoint', '')), api_key=str(data.get('api_key', '')), model=str(data.get('model', '')), timeout=int(data.get('timeout', 300) or 300), headers=dict(data.get('headers', {}) or {}), status_endpoint=str(data.get('status_endpoint','')), poll_interval=float(data.get('poll_interval',3) or 3), task_id_field=str(data.get('task_id_field','id') or 'id'), status_field=str(data.get('status_field','status') or 'status'))
+    provider = GenericVideoProvider(endpoint=str(data.get('endpoint', '')), api_key=str(data.get('api_key', '')), model=str(data.get('model', '')), timeout=int(data.get('timeout', 300) or 300), headers=dict(data.get('headers', {}) or {}), status_endpoint=str(data.get('status_endpoint','')), poll_interval=float(data.get('poll_interval',3) or 3), task_id_field=str(data.get('task_id_field','id') or 'id'), status_field=str(data.get('status_field','status') or 'status'), cost_per_shot_rmb=float(data.get('cost_per_shot_rmb',0.72) or 0), provider_name=str(data.get('name','Generic REST') or 'Generic REST'))
     return provider if provider.configured() else UnconfiguredProvider()
