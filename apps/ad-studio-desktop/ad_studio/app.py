@@ -218,6 +218,10 @@ class App(tk.Tk):
         lines=[f"项目预估：¥{c['总计']:.2f}",f"本地4050/FFmpeg：¥{c['本地']:.2f}",f"云端任务：¥{c['云端']:.2f}"]
         for item in c.get('明细',[]):
             if item['数量']: lines.append(f"  {item['项目']}：{item['数量']} × ¥{item['单价']:.2f} = ¥{item['小计']:.2f}")
+        actual=round(sum(float(getattr(s,'actual_cost_rmb',0) or 0) for s in (self.project.shots if self.project else [])),4)
+        estimate=float(c.get('总计',0) or 0)
+        pending=max(0.0,estimate-actual)
+        lines += [f'已实际发生：¥{actual:.2f}',f'按当前计划尚未发生：¥{pending:.2f}']
         self.cost.set(' | '.join(lines))
 
     def _creative_constraints(self):
@@ -276,7 +280,9 @@ class App(tk.Tk):
                 visual=x.visual, script=x.dialogue,
             ) for x in plan.shots
         ]
-        c=estimate_cost(len(plan.shots)); self.project.cost_estimate=c; self._show_cost_breakdown(c)
+        vp=load_video_provider(ROOT/'video-provider.json')
+        rate=float(getattr(vp,'cost_per_shot_rmb',0.72)) if hasattr(vp,'cost_per_shot_rmb') else 0.72
+        c=estimate_cost(len(plan.shots), {'cloud_video_per_shot': rate}); self.project.cost_estimate=c; self._show_cost_breakdown(c)
         detail='\n'.join([
             f"商品：{info.name}",f"平台：{info.platform}",f"AI判断广告强度：{plan.ad_level}",
             f"AI选择视频形式：{plan.video_form}",f"预计时长：{plan.duration_seconds}秒",
