@@ -30,6 +30,8 @@ class Shot:
     status: str='待生成'
     version: int=1
     video_path: Optional[str]=None
+    actual_cost_rmb: float=0.0
+    provider: Optional[str]=None
 
 @dataclass
 class Project:
