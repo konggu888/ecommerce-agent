@@ -178,8 +178,8 @@ class App(tk.Tk):
         if cfg_path.exists():
             try:data=json.loads(cfg_path.read_text(encoding='utf-8')).get('video_provider',{})
             except Exception:data={}
-        vars={k:tk.StringVar(value=str(data.get(k,''))) for k in ('name','endpoint','model','api_key')}
-        for row,(label,key) in enumerate([('供应商名称','name'),('生成 Endpoint','endpoint'),('模型 ID','model'),('API Key','api_key')]):
+        vars={k:tk.StringVar(value=str(data.get(k,''))) for k in ('name','endpoint','model','api_key','status_endpoint','poll_interval')}
+        for row,(label,key) in enumerate([('供应商名称','name'),('生成 Endpoint','endpoint'),('模型 ID','model'),('API Key','api_key'),('任务查询 Endpoint','status_endpoint'),('轮询间隔秒','poll_interval')]):
             ttk.Label(frm,text=label,width=16).grid(row=row,column=0,sticky='w',pady=5)
             ttk.Entry(frm,textvariable=vars[key],show='*' if key=='api_key' else '').grid(row=row,column=1,sticky='ew',pady=5,padx=8)
         frm.columnconfigure(1,weight=1)
