@@ -7,6 +7,8 @@ import json
 import os
 import urllib.request
 
+from .creative_engine import CREATIVE_SYSTEM_PROMPT
+
 
 FUNCTIONS = [
     "商品理解",
