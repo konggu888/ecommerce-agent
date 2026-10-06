@@ -3,6 +3,7 @@ import json
 import datetime
 from .models import Project, Shot
 from .ffmpeg import make_clip, concat
+from .providers import GenerationRequest, load_video_provider
 
 class ProductionStore:
     def __init__(self, root: Path):
@@ -29,6 +30,14 @@ class ProductionStore:
 
     def mark_ready(self, project: Project, shot: Shot, output: Path):
         shot.video_path=str(output); shot.status='已生成'; self.save(project)
+
+    def render_cloud_shot(self, project: Project, shot: Shot, provider_path: Path):
+        out=self.render_path(project,shot)
+        provider=load_video_provider(provider_path)
+        prompt='\\n'.join([f'标题：{shot.title}',f'画面：{shot.visual}',f'文案：{shot.script}'])
+        result=provider.generate(GenerationRequest(prompt=prompt,output=out,duration=3,reference_assets=[x for x in [shot.actor_id,shot.scene_id] if x]))
+        self.mark_ready(project,shot,result)
+        return result
 
     def render_placeholder_shot(self, project: Project, shot: Shot):
         out=self.render_path(project,shot)
