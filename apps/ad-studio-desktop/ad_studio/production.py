@@ -35,7 +35,9 @@ class ProductionStore:
         out=self.render_path(project,shot)
         provider=load_video_provider(provider_path)
         prompt='\\n'.join([f'标题：{shot.title}',f'画面：{shot.visual}',f'文案：{shot.script}'])
+        shot.status='生成中…'; shot.provider=getattr(provider,'provider_name','Generic REST'); self.save(project)
         result=provider.generate(GenerationRequest(prompt=prompt,output=out,duration=3,reference_assets=[x for x in [shot.actor_id,shot.scene_id] if x]))
+        shot.actual_cost_rmb=round(float(getattr(provider,'cost_per_shot_rmb',0.0)),4)
         self.mark_ready(project,shot,result)
         return result
 
