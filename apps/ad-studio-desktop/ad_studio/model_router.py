@@ -127,11 +127,19 @@ class ModelRouter:
             data = dict(context)
             if extra:
                 data.update(extra)
-            result = self.complete_json(
-                self.route(function),
-                build_stage_prompt(stage, data, constraints),
-                function=function,
-            )
+            prompt = build_stage_prompt(stage, data, constraints)
+            try:
+                result = self.complete_json(
+                    self.route(function),
+                    prompt,
+                    function=function,
+                )
+            except TypeError as exc:
+                # Keep older test doubles/backward-compatible adapters working;
+                # the real router accepts the function label and records usage.
+                if "unexpected keyword argument 'function'" not in str(exc):
+                    raise
+                result = self.complete_json(self.route(function), prompt)
             context[stage] = result
             return result
 
