@@ -107,7 +107,7 @@ class App(tk.Tk):
         win=tk.Toplevel(self); win.title('AI 模型池与功能路由'); win.geometry('820x680'); win.transient(self)
         frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
         ttk.Label(frm,text='多模型池',font=('Microsoft YaHei UI',16,'bold')).pack(anchor='w')
-        ttk.Label(frm,text='默认 GPT；不同功能可以分别指定不同模型。API Key 只保存在本机。').pack(anchor='w',pady=(2,10))
+        ttk.Label(frm,text='默认 GPT；不同功能可以分别指定不同模型。API Key 和模型单价只保存在本机。').pack(anchor='w',pady=(2,10))
 
         profiles=self.model_router.profiles()
         selected=tk.StringVar(value=profiles[0].id if profiles else '')
@@ -116,8 +116,8 @@ class App(tk.Tk):
         model_box.pack(fill='x',pady=4)
 
         fields=ttk.Frame(frm); fields.pack(fill='x',pady=4)
-        name=tk.StringVar(); provider=tk.StringVar(value='openai_compatible'); base=tk.StringVar(); model=tk.StringVar(); key=tk.StringVar()
-        for row,label,var in [(0,'名称',name),(1,'提供方式',provider),(2,'Base URL',base),(3,'模型 ID',model),(4,'API Key',key)]:
+        name=tk.StringVar(); provider=tk.StringVar(value='openai_compatible'); base=tk.StringVar(); model=tk.StringVar(); key=tk.StringVar(); in_price=tk.StringVar(value='0'); out_price=tk.StringVar(value='0')
+        for row,label,var in [(0,'名称',name),(1,'提供方式',provider),(2,'Base URL',base),(3,'模型 ID',model),(4,'API Key',key),(5,'输入 ¥/1K',in_price),(6,'输出 ¥/1K',out_price)]:
             ttk.Label(fields,text=label,width=12).grid(row=row,column=0,sticky='w',pady=3)
             ttk.Entry(fields,textvariable=var,show='*' if label=='API Key' else '').grid(row=row,column=1,sticky='ew',padx=8,pady=3)
         fields.columnconfigure(1,weight=1)
@@ -125,14 +125,14 @@ class App(tk.Tk):
         def load_profile(_=None):
             try:p=self.model_router.get(selected.get())
             except Exception:return
-            name.set(p.name); provider.set(p.provider); base.set(p.base_url); model.set(p.model); key.set(p.api_key)
+            name.set(p.name); provider.set(p.provider); base.set(p.base_url); model.set(p.model); key.set(p.api_key); in_price.set(str(p.input_price_rmb_per_1k)); out_price.set(str(p.output_price_rmb_per_1k))
 
         def test_selected():
             ok,msg=self.model_router.test_connection(selected.get())
             messagebox.showinfo('模型连接测试', ('🟢 连接成功\\n' if ok else '🔴 连接失败\\n') + msg)
         def save_profile():
             mid=selected.get() or f'model-{len(self.model_router.profiles())+1}'
-            p=ModelProfile(mid,name.get().strip() or mid,provider.get().strip() or 'openai_compatible',base.get().strip(),model.get().strip(),key.get().strip())
+            p=ModelProfile(mid,name.get().strip() or mid,provider.get().strip() or 'openai_compatible',base.get().strip(),model.get().strip(),key.get().strip(),True,float(in_price.get() or 0),float(out_price.get() or 0))
             self.model_router.add_or_update(p); self.model_router.set_default(mid)
             selected.set(mid); model_box['values']=[x.id for x in self.model_router.profiles()]
             messagebox.showinfo('已保存','模型已加入本机模型池，并设为默认模型。')
