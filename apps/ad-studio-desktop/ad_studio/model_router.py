@@ -6,7 +6,9 @@ from typing import Any
 import json
 import os
 import urllib.request
+import time
 
+from .usage_ledger import UsageLedger
 from .creative_engine import CREATIVE_SYSTEM_PROMPT
 
 
@@ -32,6 +34,8 @@ class ModelProfile:
     model: str = "gpt-5.6"
     api_key: str = ""
     enabled: bool = True
+    input_price_rmb_per_1k: float = 0.0
+    output_price_rmb_per_1k: float = 0.0
 
     def public(self) -> dict[str, Any]:
         data = asdict(self)
@@ -51,6 +55,7 @@ class ModelRouter:
         self.config_path = config_path
         self.data = self._load()
         self._ensure_defaults()
+        self.ledger = UsageLedger(self.config_path.parent / "usage-ledger.json")
 
     def _load(self) -> dict[str, Any]:
         if not self.config_path.exists():
@@ -125,6 +130,7 @@ class ModelRouter:
             result = self.complete_json(
                 self.route(function),
                 build_stage_prompt(stage, data, constraints),
+                function=function,
             )
             context[stage] = result
             return result
@@ -202,6 +208,12 @@ class ModelRouter:
             merged["duration_seconds"] = form.get("duration_seconds", 30)
         return merged
 
+    def recent_usage(self, limit: int = 100) -> list[dict[str, Any]]:
+        return self.ledger.recent(limit)
+
+    def usage_summary(self) -> dict[str, Any]:
+        return self.ledger.summary()
+
     def test_connection(self, model_id: str) -> tuple[bool, str]:
         profile = self.get(model_id)
         if not profile.enabled:
@@ -211,12 +223,12 @@ class ModelRouter:
         if profile.provider not in {"openai_compatible", "local_openai"}:
             return False, f"不支持的提供方式：{profile.provider}"
         try:
-            result = self.complete_json(profile, '{"ping":"请只返回 {\"ok\":true}"}')
+            result = self.complete_json(profile, '{"ping":"请只返回 {\"ok\":true}"}', function="连接测试")
             return bool(result.get("ok", True)), "连接成功"
         except Exception as exc:
             return False, str(exc)
 
-    def complete_json(self, profile: ModelProfile, prompt: str) -> dict[str, Any]:
+    def complete_json(self, profile: ModelProfile, prompt: str, function: str = "未标记功能") -> dict[str, Any]:
         if not profile.enabled:
             raise RuntimeError(f"模型「{profile.name}」已禁用。")
         if profile.provider not in {"openai_compatible", "local_openai"}:
@@ -249,17 +261,47 @@ class ModelRouter:
             headers=headers,
             method="POST",
         )
+        started = time.perf_counter()
         try:
             with urllib.request.urlopen(request, timeout=120) as response:
                 body = json.loads(response.read().decode("utf-8"))
         except Exception as exc:
+            self.ledger.record(
+                function=function, model_id=profile.id, model_name=profile.name,
+                provider=profile.provider, model=profile.model, status="failed",
+                duration_ms=int((time.perf_counter() - started) * 1000), error=str(exc),
+            )
             raise RuntimeError(f"模型「{profile.name}」调用失败：{exc}") from exc
 
+        usage = body.get("usage") or {}
+        prompt_tokens = int(usage.get("prompt_tokens", usage.get("input_tokens", 0)) or 0)
+        completion_tokens = int(usage.get("completion_tokens", usage.get("output_tokens", 0)) or 0)
+        total_tokens = int(usage.get("total_tokens", prompt_tokens + completion_tokens) or 0)
+        estimated_cost = (
+            prompt_tokens / 1000 * float(profile.input_price_rmb_per_1k)
+            + completion_tokens / 1000 * float(profile.output_price_rmb_per_1k)
+        )
         try:
             content = body["choices"][0]["message"]["content"]
-            return json.loads(content)
+            result = json.loads(content)
         except Exception as exc:
+            self.ledger.record(
+                function=function, model_id=profile.id, model_name=profile.name,
+                provider=profile.provider, model=profile.model, status="failed",
+                prompt_tokens=prompt_tokens, completion_tokens=completion_tokens,
+                total_tokens=total_tokens, estimated_cost_rmb=estimated_cost,
+                duration_ms=int((time.perf_counter() - started) * 1000), error=str(exc),
+            )
             raise RuntimeError(f"模型「{profile.name}」返回的不是有效 JSON") from exc
+
+        self.ledger.record(
+            function=function, model_id=profile.id, model_name=profile.name,
+            provider=profile.provider, model=profile.model, status="success",
+            prompt_tokens=prompt_tokens, completion_tokens=completion_tokens,
+            total_tokens=total_tokens, estimated_cost_rmb=estimated_cost,
+            duration_ms=int((time.perf_counter() - started) * 1000),
+        )
+        return result
 
 
 STAGE_SCHEMAS = {
