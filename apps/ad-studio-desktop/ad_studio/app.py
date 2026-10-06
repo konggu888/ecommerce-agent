@@ -278,8 +278,8 @@ class App(tk.Tk):
         if not s:return messagebox.showinfo('提示','先选择一个镜头。')
         try:
             provider_path=ROOT/'video-provider.json'
-            if provider_path.exists(): out=self.store.render_cloud_shot(self.project,s,provider_path); self.refresh_shots(); self.detail.set(f'镜头 {s.index} 已由云端 Provider 生成 v{s.version}：{out}')
-            else: out=self.store.render_placeholder_shot(self.project,s); self.refresh_shots(); self.detail.set(f'镜头 {s.index} 已生成 v{s.version}（当前为本地占位镜头）。如需真实生成，请先配置视频 Provider。')
+            if not provider_path.exists(): raise RuntimeError('当前没有配置真实视频生成 Provider。系统不会用黑色视频冒充成片；请先配置视频 Provider。')
+            out=self.store.render_cloud_shot(self.project,s,provider_path); self.refresh_shots(); self.detail.set(f'镜头 {s.index} 已由云端 Provider 生成 v{s.version}：{out}')
         except Exception as e:
             s.status='生成失败'; self.store.save(self.project); messagebox.showerror('镜头生成失败',str(e))
 
