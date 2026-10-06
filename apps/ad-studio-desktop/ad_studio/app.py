@@ -43,7 +43,7 @@ class App(tk.Tk):
         ttk.Label(setup,text='广告强度').grid(row=1,column=0,sticky='w'); self.level=tk.IntVar(value=2); ttk.Combobox(setup,textvariable=self.level,values=[1,2,3,4,5],state='readonly',width=8).grid(row=1,column=1,sticky='w')
         ttk.Label(setup,text='留空/自动：交给AI判断；手动选择仅作为约束').grid(row=1,column=2,columnspan=2,sticky='w')
         ttk.Label(setup,text='视频形式').grid(row=2,column=0,sticky='w'); self.form=tk.StringVar(value='AI自动选择'); ttk.Combobox(setup,textvariable=self.form,values=['AI自动选择']+FORMS,state='readonly',width=22).grid(row=2,column=1,sticky='w')
-        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8)
+        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8)
         main=ttk.Panedwindow(self,orient='horizontal'); main.pack(fill='both',expand=True,padx=16,pady=8)
         left=ttk.Frame(main,padding=8); right=ttk.Frame(main,padding=8); main.add(left,weight=3); main.add(right,weight=2)
         ttk.Label(left,text='② 分镜生产链',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
@@ -166,6 +166,34 @@ class App(tk.Tk):
             win.destroy()
 
         ttk.Button(frm,text='保存全部功能路由',command=save_routes).pack(anchor='e',pady=10)
+
+    def video_provider_settings(self):
+        win=tk.Toplevel(self); win.title('云端视频生成 Provider'); win.geometry('760x520'); win.transient(self)
+        frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
+        ttk.Label(frm,text='云端视频生成',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
+        ttk.Label(frm,text='这里配置真实视频生成服务。不同供应商 API 不完全相同，目前采用通用 REST 适配器；没有配置就不会产生云端调用。',wraplength=700).pack(anchor='w',pady=(2,12))
+        cfg_path=ROOT/'video-provider.json'
+        data={}
+        if cfg_path.exists():
+            try:data=json.loads(cfg_path.read_text(encoding='utf-8')).get('video_provider',{})
+            except Exception:data={}
+        vars={k:tk.StringVar(value=str(data.get(k,''))) for k in ('name','endpoint','model','api_key')}
+        for row,(label,key) in enumerate([('供应商名称','name'),('生成 Endpoint','endpoint'),('模型 ID','model'),('API Key','api_key')]):
+            ttk.Label(frm,text=label,width=16).grid(row=row,column=0,sticky='w',pady=5)
+            ttk.Entry(frm,textvariable=vars[key],show='*' if key=='api_key' else '').grid(row=row,column=1,sticky='ew',pady=5,padx=8)
+        frm.columnconfigure(1,weight=1)
+        status=tk.StringVar(value='检测中…'); ttk.Label(frm,textvariable=status).grid(row=4,column=1,sticky='w',pady=8)
+        def save():
+            payload={'video_provider':{k:v.get().strip() for k,v in vars.items()}}
+            cfg_path.parent.mkdir(parents=True,exist_ok=True); cfg_path.write_text(json.dumps(payload,ensure_ascii=False,indent=2),encoding='utf-8')
+            status.set('🟢 已保存到本机：'+str(cfg_path)); self.detail.set('视频 Provider 配置已保存；请在系统状态中重新检测。')
+        def test():
+            endpoint=vars['endpoint'].get().strip(); key=vars['api_key'].get().strip()
+            if not endpoint or not key: status.set('🔴 Endpoint / API Key 未填写'); return
+            status.set('🟡 配置已填写。通用适配器将在首次真实生成时验证供应商响应格式。')
+        btn=ttk.Frame(frm); btn.grid(row=5,column=0,columnspan=2,sticky='e',pady=14)
+        ttk.Button(btn,text='检查配置',command=test).pack(side='left',padx=5); ttk.Button(btn,text='保存',command=save).pack(side='left',padx=5)
+        ttk.Label(frm,text='注意：保存配置 ≠ 已经验证供应商 API。只有真实生成成功后，系统才会显示镜头“已生成”。',wraplength=700).grid(row=6,column=0,columnspan=2,sticky='w',pady=12)
 
     def usage_view(self):
         win=tk.Toplevel(self); win.title('AI调用记录 · 本机成本账本'); win.geometry('1080x620'); win.transient(self)
