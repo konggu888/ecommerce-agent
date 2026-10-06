@@ -127,6 +127,9 @@ class App(tk.Tk):
             except Exception:return
             name.set(p.name); provider.set(p.provider); base.set(p.base_url); model.set(p.model); key.set(p.api_key)
 
+        def test_selected():
+            ok,msg=self.model_router.test_connection(selected.get())
+            messagebox.showinfo('模型连接测试', ('🟢 连接成功\\n' if ok else '🔴 连接失败\\n') + msg)
         def save_profile():
             mid=selected.get() or f'model-{len(self.model_router.profiles())+1}'
             p=ModelProfile(mid,name.get().strip() or mid,provider.get().strip() or 'openai_compatible',base.get().strip(),model.get().strip(),key.get().strip())
@@ -141,7 +144,7 @@ class App(tk.Tk):
 
         model_box.bind('<<ComboboxSelected>>',load_profile); load_profile()
         btn=ttk.Frame(frm); btn.pack(fill='x',pady=8)
-        ttk.Button(btn,text='＋新增模型',command=new_profile).pack(side='left'); ttk.Button(btn,text='保存模型并设为默认',command=save_profile).pack(side='left',padx=8)
+        ttk.Button(btn,text='＋新增模型',command=new_profile).pack(side='left'); ttk.Button(btn,text='保存模型并设为默认',command=save_profile).pack(side='left',padx=8); ttk.Button(btn,text='🔌 测试当前模型',command=test_selected).pack(side='left',padx=8)
 
         ttk.Label(frm,text='功能 → 模型',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w',pady=(14,6))
         route_frame=ttk.Frame(frm); route_frame.pack(fill='both',expand=True)
@@ -202,6 +205,22 @@ class App(tk.Tk):
 
         self.project.form=plan.video_form
         self.project.product_name=info.name
+        self.project.creative_plan = {
+            'product_summary': plan.product_summary,
+            'product_type': plan.product_type,
+            'selling_points': plan.selling_points,
+            'target_audience': plan.target_audience,
+            'pain_points': plan.pain_points,
+            'usage_scenes': plan.usage_scenes,
+            'positioning': plan.positioning,
+            'ad_level': plan.ad_level,
+            'video_form': plan.video_form,
+            'duration_seconds': plan.duration_seconds,
+            'strategy': plan.strategy,
+            'hook': plan.hook,
+            'script': plan.script,
+            'shots': [x.__dict__ for x in plan.shots],
+        }
         self.project.shots=[
             __import__('ad_studio.models',fromlist=['Shot']).Shot(
                 id=f'shot-{x.index:02d}', index=x.index,
