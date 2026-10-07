@@ -297,6 +297,14 @@ class App(tk.Tk):
         vp=load_video_provider(ROOT/'video-provider.json')
         rate=float(getattr(vp,'cost_per_shot_rmb',0.72)) if hasattr(vp,'cost_per_shot_rmb') else 0.72
         c=estimate_cost(len(plan.shots), {'cloud_video_per_shot': rate})
+        # 先按AI分镜需求估算本地缺失资产的云端生成费用。
+        asset_est=estimate_asset_generation(self.lib,ROOT,[x.__dict__ for x in plan.shots])
+        c['资产生成']=asset_est
+        asset_total=float(asset_est.get('总计',0.0))
+        if asset_total:
+            c['云端']=round(float(c.get('云端',0.0))+asset_total,2)
+            c['总计']=round(float(c.get('本地',0.0))+float(c['云端']),2)
+            c['明细'].append({'项目':'演员/场景/商品素材自动生成','数量':asset_est.get('数量',0),'单价':0.0,'小计':asset_total,'计费方式':'按缺失资产配置价格'})
         c['预算']=budget; c['超预算']=c['总计']>budget; self.project.cost_estimate=c; self._show_cost_breakdown(c)
         detail='\n'.join([
             f"商品：{info.name}",f"平台：{info.platform}",f"AI判断广告强度：{plan.ad_level}",
