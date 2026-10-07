@@ -216,6 +216,41 @@ class ModelRouter:
             merged["duration_seconds"] = form.get("duration_seconds", 30)
         return merged
 
+    def create_plans(self, product: dict[str, Any], constraints: dict[str, Any], count: int = 3) -> list[dict[str, Any]]:
+        """Create several deliberately different creative plans for the same product.
+
+        Each variant still runs through the same nine independently routed creative
+        stages. The LLM is told to avoid repeating the previous variant's strategy,
+        so this is not a fixed industry template and works across product categories.
+        """
+        count = max(1, min(5, int(count)))
+        plans = []
+        previous = []
+        diversity_prompts = [
+            "优先寻找最适合该商品的成熟电商广告打法，可以是对标翻新、卖点拆解、强场景展示等，但不要机械套模板。",
+            "必须与前一方案明显不同。优先考虑真实人物、生活剧情、UGC、体验、对话或场景冲突等真人感打法；如果商品不适合，则自行选择另一种完全不同的形式。",
+            "必须与前面方案明显不同。优先寻找更强记忆点、更原生平台感、更有节奏或创意表达的打法，例如音乐、说唱、反差、短剧、视觉实验等；如果商品不适合，则自行选择最有传播潜力的替代形式。",
+            "必须与前面所有方案明显不同，寻找尚未使用的广告机制，不得只是换几句文案。",
+            "必须与前面所有方案明显不同，寻找尚未使用的广告机制，不得只是换几句文案。",
+        ]
+        for i in range(count):
+            variant_constraints = dict(constraints)
+            variant_constraints["creative_variant_index"] = i + 1
+            variant_constraints["creative_variant_count"] = count
+            variant_constraints["creative_variant_instruction"] = diversity_prompts[i]
+            variant_constraints["previous_variant_summaries"] = previous[-4:]
+            raw = self.create_plan(product, variant_constraints)
+            raw["_variant_index"] = i + 1
+            raw["_variant_label"] = f"方案{i + 1}｜{raw.get('video_form', 'AI创意方案')}"
+            previous.append({
+                "index": i + 1,
+                "video_form": raw.get("video_form", ""),
+                "strategy": raw.get("strategy", ""),
+                "hook": raw.get("hook", ""),
+            })
+            plans.append(raw)
+        return plans
+
     def recent_usage(self, limit: int = 100) -> list[dict[str, Any]]:
         return self.ledger.recent(limit)
 
