@@ -33,7 +33,7 @@ class App(tk.Tk):
         self.lib=LocalLibrary(ROOT); self.lib.ensure_defaults(); self.store=ProductionStore(PROJECTS); self.project=None
         self.model_router=ModelRouter(ROOT/'model-config.json')
         self.creative_engine=CreativeEngine(self.model_router)
-        self.ui(); self.refresh_assets(); self.refresh_gpu()
+        self.ui(); self.aspect=tk.StringVar(value='9:16'); self.refresh_assets(); self.refresh_gpu()
 
     def ui(self):
         top=ttk.Frame(self,padding=16); top.pack(fill='x')
@@ -103,6 +103,8 @@ class App(tk.Tk):
         add('本地4050后处理','画幅适配 / 裁切 / 缩放',ff,'9:16 / 1:1 / 16:9 已接入 FFmpeg，本机执行' if ff else '等待 FFmpeg')
         add('本地4050后处理','硬件编码',nv,'后处理优先使用 h264_nvenc' if nv else 'NVENC 不可用时使用 CPU 编码',warn=ff and not nv)
         add('本地4050后处理','逐镜头版本化',True,'每个镜头独立保存 postprocessed/project/shot/v版本，换镜头不重做其他镜头')
+        add('本地成片加工','字幕生成',True,'使用本机字幕引擎生成 SRT，并可烧录到镜头')
+        add('本地成片加工','人声/BGM混音',ff,'人声保留、BGM自动压低；BGM从本地资产库读取' if ff else '等待 FFmpeg')
         add('生产链','最终成片拼接',ff,'本地 FFmpeg concat 可用' if ff else '等待 FFmpeg')
         add('云端生成','人物/场景/关键视频镜头',False,'云端生成 Adapter 尚未接入，不会偷偷产生云端费用',warn=True)
         add('云端生成','高质量配音',False,'语音 Provider 尚未接入',warn=True)
@@ -378,6 +380,31 @@ class App(tk.Tk):
         except Exception as e:
             s.status='后处理失败'; self.store.save(self.project); self.refresh_shots()
             messagebox.showerror('本地后处理失败',str(e))
+
+    def finish_selected(self):
+        s=self.selected()
+        if not s or not s.video_path:return messagebox.showinfo('提示','先选择一个已经生成的真实镜头。')
+        win=tk.Toplevel(self); win.title(f'镜头 {s.index} · 本地成片加工'); win.geometry('620x430'); win.transient(self)
+        frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
+        ttk.Label(frm,text='字幕',font=('Microsoft YaHei UI',13,'bold')).pack(anchor='w')
+        script=tk.Text(frm,height=7); script.pack(fill='both',expand=True,pady=6); script.insert('1.0',s.script)
+        bgms=self.lib.reusable('BGM'); names=['不添加BGM']+[a.name for a in bgms]; bm=tk.StringVar(value=names[0])
+        ttk.Label(frm,text='BGM').pack(anchor='w'); ttk.Combobox(frm,textvariable=bm,values=names,state='readonly').pack(fill='x',pady=5)
+        def run():
+            try:
+                from .subtitles import write_srt
+                from .postprocess import burn_subtitles, mix_audio
+                base=Path(s.video_path); folder=self.store.root/'postprocessed'/self.project.id/s.id
+                folder.mkdir(parents=True,exist_ok=True)
+                srt=write_srt(script.get('1.0','end').strip(),folder/f'v{s.version}.srt',duration=3)
+                subout=folder/f'v{s.version}-sub.mp4'; burn_subtitles(base,subout,srt)
+                chosen=next((a for a in bgms if a.name==bm.get()),None); final=subout
+                if chosen and chosen.path:
+                    audioout=folder/f'v{s.version}-audio.mp4'; mix_audio(subout,audioout,Path(chosen.path)); final=audioout
+                s.video_path=str(final); s.status='本地成片加工完成'; self.store.save(self.project); self.refresh_shots(); self.show_shot()
+                self.detail.set(f'镜头 {s.index} 已完成字幕/音频加工：{final}'); win.destroy()
+            except Exception as e: messagebox.showerror('本地成片加工失败',str(e))
+        ttk.Button(frm,text='执行：字幕 + BGM/人声处理',command=run).pack(anchor='e',pady=8)
 
     def final_render(self):
         if not self.project:return messagebox.showinfo('提示','先创建项目。')
