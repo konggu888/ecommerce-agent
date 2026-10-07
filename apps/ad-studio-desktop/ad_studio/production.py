@@ -75,7 +75,7 @@ class ProductionStore:
             raise RuntimeError('尚未配置云端资产生成器。')
         aid=shot.id + '-' + kind
         ext='.png'
-        out=self.root/'assets'/kind/aid+ext
+        out=self.library_root/'assets'/kind/(aid+ext)
         out.parent.mkdir(parents=True,exist_ok=True)
         shot.status=f'{kind}自动生成中…'
         self.save(project)
