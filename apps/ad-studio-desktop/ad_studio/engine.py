@@ -1,4 +1,5 @@
 from .models import Project, Shot, uid
+from .asset_generation import AssetGenerator
 import re
 
 FORMS=['真人口播','真人剧情','产品展示','真人+产品','生活场景','街头采访','情侣','夫妻','家庭','职场','开箱','测评','对比','教程','POV','UGC','直播间风格','电影感','短剧']
@@ -35,6 +36,21 @@ def mark_regenerate(project,index):
     s=project.shots[index]
     s.version+=1; s.status='需重生成'; s.video_path=None
     return s
+
+
+def estimate_asset_generation(library, root, creative_shots):
+    generator=AssetGenerator(root/'asset-generation.json',root)
+    rows=[]; total=0.0
+    for shot in creative_shots:
+        req=shot.get('asset_resolution',{}) or {}
+        for kind,key in (('演员','actor_tags'),('场景','scene_tags'),('商品素材','product_tags')):
+            tags=req.get(key,[]) or []
+            if not tags or not req.get('generation_if_missing',True): continue
+            if library.best_match(kind,tags): continue
+            price=generator.price(kind)
+            rows.append({'镜头':shot.get('index'),'类型':kind,'状态':'需要自动生成','单价':price})
+            total += price
+    return {'数量':len(rows),'总计':round(total,2),'明细':rows,'已配置':any(generator.configured(k) for k in ('演员','场景','商品素材'))}
 
 def estimate_cost(shots, rates=None):
     """Return a preflight estimate with an auditable line-item breakdown.
