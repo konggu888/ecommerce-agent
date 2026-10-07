@@ -102,6 +102,9 @@ class App(tk.Tk):
         add('云端生成','视频 Provider',video_ready,'配置文件：'+str(ROOT/'video-provider.json') if video_ready else '未配置 video-provider.json',warn=not video_ready)
         add('本地4050后处理','画幅适配 / 裁切 / 缩放',ff,'9:16 / 1:1 / 16:9 已接入 FFmpeg，本机执行' if ff else '等待 FFmpeg')
         add('本地4050后处理','硬件编码',nv,'后处理优先使用 h264_nvenc' if nv else 'NVENC 不可用时使用 CPU 编码',warn=ff and not nv)
+        add('本地4050后处理','AI自动构图/节奏/转场',True,'创意引擎为每镜头输出主体坐标、速度、转场，并由本地4050执行')
+        add('本地成片加工','AI字幕位置/样式',True,'分镜决定字幕安全区和样式，本地FFmpeg烧录')
+        add('本地成片加工','AI BGM强度',True,'分镜决定BGM强弱；有人声时保持低音量')
         add('本地4050后处理','逐镜头版本化',True,'每个镜头独立保存 postprocessed/project/shot/v版本，换镜头不重做其他镜头')
         add('本地成片加工','字幕生成',True,'使用本机字幕引擎生成 SRT，并可烧录到镜头')
         add('本地成片加工','人声/BGM混音',ff,'人声保留、BGM自动压低；BGM从本地资产库读取' if ff else '等待 FFmpeg')
@@ -311,7 +314,17 @@ class App(tk.Tk):
 
     def show_shot(self,_=None):
         s=self.selected()
-        if s:self.detail.set(f'镜头 {s.index}\n{s.title}\n\n画面：{s.visual}\n\n文案：{s.script}\n\n版本：v{s.version}  状态：{s.status}')
+        if s:
+            self.detail.set(
+                f'镜头 {s.index} · v{s.version} · {s.status}\n\n'
+                f'画面：{s.visual}\n\n文案：{s.script}\n\n'
+                f'AI构图：{getattr(s, "composition", "主体清晰居中")}  '
+                f'主体坐标：({getattr(s, "focus_x", 0.5):.2f},{getattr(s, "focus_y", 0.5):.2f})\n'
+                f'节奏：{getattr(s, "pacing", "标准")} · 速度：{getattr(s, "speed", 1.0):.2f}x · '
+                f'转场：{getattr(s, "transition", "硬切")}\n'
+                f'字幕：{getattr(s, "subtitle_position", "底部安全区")} / {getattr(s, "subtitle_style", "白字黑边")}\n'
+                f'BGM：{getattr(s, "bgm_intensity", "低")} · 音量 {getattr(s, "bgm_volume", 0.16):.2f}'
+            )
 
     def generate_shot(self):
         s=self.selected()
@@ -397,10 +410,11 @@ class App(tk.Tk):
                 base=Path(s.video_path); folder=self.store.root/'postprocessed'/self.project.id/s.id
                 folder.mkdir(parents=True,exist_ok=True)
                 srt=write_srt(script.get('1.0','end').strip(),folder/f'v{s.version}.srt',duration=3)
-                subout=folder/f'v{s.version}-sub.mp4'; burn_subtitles(base,subout,srt)
+                subout=folder/f'v{s.version}-sub.mp4'
+                burn_subtitles(base,subout,srt,getattr(s,'subtitle_position','底部安全区'),getattr(s,'subtitle_style','白字黑边'))
                 chosen=next((a for a in bgms if a.name==bm.get()),None); final=subout
-                if chosen and chosen.path:
-                    audioout=folder/f'v{s.version}-audio.mp4'; mix_audio(subout,audioout,Path(chosen.path)); final=audioout
+                if chosen and chosen.path and getattr(s,'bgm_intensity','低') != '无':
+                    audioout=folder/f'v{s.version}-audio.mp4'; mix_audio(subout,audioout,Path(chosen.path),getattr(s,'bgm_volume',0.16)); final=audioout
                 s.video_path=str(final); s.status='本地成片加工完成'; self.store.save(self.project); self.refresh_shots(); self.show_shot()
                 self.detail.set(f'镜头 {s.index} 已完成字幕/音频加工：{final}'); win.destroy()
             except Exception as e: messagebox.showerror('本地成片加工失败',str(e))
