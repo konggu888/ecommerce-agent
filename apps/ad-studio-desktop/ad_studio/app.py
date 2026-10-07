@@ -7,6 +7,7 @@ import json
 from .library import LocalLibrary
 from .engine import FORMS, new_project, mark_regenerate, estimate_cost, estimate_asset_generation
 from .gpu import detect_gpu
+from .hardware import detect_hardware, format_hardware
 from .production import ProductionStore
 from .product_parser import parse_product_url, save_product
 from .creative_engine import CreativeEngine, validate_plan
@@ -97,7 +98,7 @@ class App(tk.Tk):
         self.shots=ttk.Treeview(left,columns=('v','status','actor','scene'),show='tree headings',height=17)
         for c,t,w in [('v','版本',70),('status','状态',90),('actor','演员',150),('scene','场景',150)]: self.shots.heading(c,text=t); self.shots.column(c,width=w)
         self.shots.column('#0',width=300); self.shots.pack(fill='both',expand=True,pady=8); self.shots.bind('<<TreeviewSelect>>',self.show_shot)
-        bar=ttk.Frame(left); bar.pack(fill='x'); ttk.Button(bar,text='切换创意方案',command=self.switch_variant).pack(side='left'); ttk.Button(bar,text='生成本镜头',command=self.generate_shot).pack(side='left',padx=8); ttk.Button(bar,text='重新生成本镜头',command=self.regen_shot).pack(side='left',padx=8); ttk.Button(bar,text='▶ 本地4050后处理',command=self.postprocess_selected).pack(side='left',padx=8); ttk.Button(bar,text='生成最终成片',command=self.final_render).pack(side='right',padx=8); ttk.Button(bar,text='保存项目',command=self.save).pack(side='right')
+        bar=ttk.Frame(left); bar.pack(fill='x'); ttk.Button(bar,text='切换创意方案',command=self.switch_variant).pack(side='left'); ttk.Button(bar,text='生成本镜头',command=self.generate_shot).pack(side='left',padx=8); ttk.Button(bar,text='重新生成本镜头',command=self.regen_shot).pack(side='left',padx=8); ttk.Button(bar,text='▶ 本地硬件后处理',command=self.postprocess_selected).pack(side='left',padx=8); ttk.Button(bar,text='生成最终成片',command=self.final_render).pack(side='right',padx=8); ttk.Button(bar,text='保存项目',command=self.save).pack(side='right')
         ttk.Label(right,text='③ 本地资产库',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
         self.assets=ttk.Treeview(right,columns=('kind','source','path'),show='tree headings',height=13)
         for c,t,w in [('kind','类型',80),('source','来源',90),('path','本地文件',300)]: self.assets.heading(c,text=t); self.assets.column(c,width=w)
@@ -123,7 +124,7 @@ class App(tk.Tk):
             state='🟢 已启用' if ok else ('🟡 已接入但未完整配置' if warn else '🔴 未启用')
             tree.insert('', 'end', values=(state, f'{group}｜{name}：{detail}'))
         gpu=detect_gpu()
-        add('本地硬件','NVIDIA GPU',gpu.get('available'),f"{gpu.get('name','未检测到')} · {gpu.get('vram_mb','?')}MB · {gpu.get('mode','CPU')}")
+        profile=detect_hardware(); add('本地硬件','硬件能力',bool(profile.gpus) or profile.execution_mode == 'cloud_first',format_hardware(profile))
         ff=ffmpeg_available(); nv=has_nvenc() if ff else False
         add('本地后处理','FFmpeg',ff,'ffmpeg + ffprobe 已找到' if ff else '未找到 ffmpeg/ffprobe，请安装并加入 PATH')
         add('本地后处理','NVENC 硬件编码',nv,'h264_nvenc 可用' if nv else '不可用，将退回 CPU 编码',warn=ff and not nv)
@@ -146,12 +147,12 @@ class App(tk.Tk):
         video_ready=not isinstance(vp, __import__('ad_studio.providers',fromlist=['UnconfiguredProvider']).UnconfiguredProvider)
         add('生产链','镜头生成',video_ready,'REST 视频 Provider 已配置，可真实请求生成并下载镜头' if video_ready else '当前仍为未配置状态；生成按钮不会伪造云端成片',warn=not video_ready)
         add('云端生成','视频 Provider',video_ready,'配置文件：'+str(ROOT/'video-provider.json') if video_ready else '未配置 video-provider.json',warn=not video_ready)
-        add('本地4050后处理','画幅适配 / 裁切 / 缩放',ff,'9:16 / 1:1 / 16:9 已接入 FFmpeg，本机执行' if ff else '等待 FFmpeg')
-        add('本地4050后处理','硬件编码',nv,'后处理优先使用 h264_nvenc' if nv else 'NVENC 不可用时使用 CPU 编码',warn=ff and not nv)
-        add('本地4050后处理','AI自动构图/节奏/转场',True,'创意引擎为每镜头输出主体坐标、速度、转场，并由本地4050执行')
+        add('本地硬件后处理','画幅适配 / 裁切 / 缩放',ff,'9:16 / 1:1 / 16:9 已接入 FFmpeg，本机执行' if ff else '等待 FFmpeg')
+        add('本地硬件后处理','硬件编码',bool(ff and (nv or has_nvenc())),f'自动选择可用硬件编码器：{gpu.get("encoders",[])}' if ff and gpu.get('encoders') else '无可用硬件编码器，将使用 CPU 编码',warn=ff and not gpu.get('encoders'))
+        add('本地硬件后处理','AI自动构图/节奏/转场',True,'创意引擎为每镜头输出主体坐标、速度、转场，由本机按检测到的硬件能力执行')
         add('本地成片加工','AI字幕位置/样式',True,'分镜决定字幕安全区和样式，本地FFmpeg烧录')
         add('本地成片加工','AI BGM强度',True,'分镜决定BGM强弱；有人声时保持低音量')
-        add('本地4050后处理','逐镜头版本化',True,'每个镜头独立保存 postprocessed/project/shot/v版本，换镜头不重做其他镜头')
+        add('本地硬件后处理','逐镜头版本化',True,'每个镜头独立保存 postprocessed/project/shot/v版本，换镜头不重做其他镜头')
         add('本地成片加工','字幕生成',True,'使用本机字幕引擎生成 SRT，并可烧录到镜头')
         add('本地成片加工','人声/BGM混音',ff,'人声保留、BGM自动压低；BGM从本地资产库读取' if ff else '等待 FFmpeg')
         add('生产链','最终成片拼接',ff,'本地 FFmpeg concat 可用' if ff else '等待 FFmpeg')
