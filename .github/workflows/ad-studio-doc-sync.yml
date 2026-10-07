@@ -1,0 +1,33 @@
+name: ad-studio-doc-sync
+
+on:
+  pull_request:
+    paths:
+      - "apps/ad-studio-desktop/**"
+      - "AGENTS.md"
+      - "tools/check_ad_studio_docs.py"
+  push:
+    paths:
+      - "apps/ad-studio-desktop/**"
+      - "AGENTS.md"
+      - "tools/check_ad_studio_docs.py"
+
+jobs:
+  docs-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check documentation synchronization
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            python tools/check_ad_studio_docs.py --base "${{ github.event.pull_request.base.sha }}" --head "${{ github.sha }}"
+          else
+            if git rev-parse HEAD^ >/dev/null 2>&1; then
+              python tools/check_ad_studio_docs.py --base HEAD^ --head HEAD
+            else
+              echo "First commit; documentation sync check skipped."
+            fi
+          fi
