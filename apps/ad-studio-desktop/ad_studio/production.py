@@ -9,8 +9,9 @@ from .library import LocalLibrary
 from .asset_generation import AssetGenerator
 
 class ProductionStore:
-    def __init__(self, root: Path):
+    def __init__(self, root: Path, library_root: Path | None = None):
         self.root=root; self.root.mkdir(parents=True,exist_ok=True)
+        self.library_root=library_root or root
 
     def save(self, project: Project):
         project.updated_at=datetime.datetime.now().isoformat(timespec='seconds')
@@ -36,12 +37,12 @@ class ProductionStore:
 
     def resolve_assets(self, project: Project, shot: Shot):
         """本地优先；缺失时返回明确的生成需求。真正生成由对应生成器执行。"""
-        library=LocalLibrary(self.root)
+        library=LocalLibrary(self.library_root)
         resolution={}
         plan_shots=project.creative_plan.get("shots", []) if project.creative_plan else []
         ai=next((x for x in plan_shots if int(x.get("index", -1)) == shot.index), {})
         req=ai.get("asset_resolution", {}) or {}
-        generator=AssetGenerator(self.root/'asset-generation.json',self.root)
+        generator=AssetGenerator(self.library_root/'asset-generation.json',self.library_root)
         for kind, tags in (("演员", req.get("actor_tags", [])), ("场景", req.get("scene_tags", [])), ("商品素材", req.get("product_tags", []))):
             found=library.best_match(kind,tags)
             item={'asset':found.id if found else None,'source':'本地复用' if found else '待自动生成','generate_if_missing':bool(req.get('generation_if_missing', True))}
@@ -59,6 +60,8 @@ class ProductionStore:
             resolution[kind]=item
         if resolution['演员']['asset']: shot.actor_id=resolution['演员']['asset']
         if resolution['场景']['asset']: shot.scene_id=resolution['场景']['asset']
+        if resolution['商品素材']['asset']:
+            shot.product_asset_ids=[resolution['商品素材']['asset']]
         shot.asset_source='library' if all(x['asset'] for x in resolution.values()) else 'generate_missing'
         project.creative_plan.setdefault('asset_resolution', {})[shot.id]=resolution
         self.save(project)
@@ -66,7 +69,7 @@ class ProductionStore:
 
     def generate_missing_asset(self, project: Project, shot: Shot, kind: str, request_text: str, asset_provider_path: Path):
         """缺少本地素材时自动生成，并永久登记到本地库。"""
-        library=LocalLibrary(self.root)
+        library=LocalLibrary(self.library_root)
         provider=load_asset_provider(asset_provider_path)
         if isinstance(provider, type(load_asset_provider(Path('__missing__')))):
             raise RuntimeError('尚未配置云端资产生成器。')
