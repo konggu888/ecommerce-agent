@@ -155,3 +155,62 @@ def load_video_provider(path: Path) -> GenericVideoProvider | UnconfiguredProvid
         return UnconfiguredProvider()
     provider = GenericVideoProvider(endpoint=str(data.get('endpoint', '')), api_key=str(data.get('api_key', '')), model=str(data.get('model', '')), timeout=int(data.get('timeout', 300) or 300), headers=dict(data.get('headers', {}) or {}), status_endpoint=str(data.get('status_endpoint','')), poll_interval=float(data.get('poll_interval',3) or 3), task_id_field=str(data.get('task_id_field','id') or 'id'), status_field=str(data.get('status_field','status') or 'status'), cost_per_shot_rmb=float(data.get('cost_per_shot_rmb',0.72) or 0), provider_name=str(data.get('name','Generic REST') or 'Generic REST'))
     return provider if provider.configured() else UnconfiguredProvider()
+
+
+@dataclass
+class GenericAssetProvider:
+    """通用 REST 图片/人物/场景素材生成器；生成后由本地资产库永久保存。"""
+    endpoint: str
+    api_key: str = ''
+    model: str = ''
+    timeout: int = 180
+    provider_name: str = 'Generic Asset REST'
+    cost_per_asset_rmb: float = 0.0
+
+    def configured(self) -> bool:
+        return bool(self.endpoint.strip() and self.api_key.strip())
+
+    def generate_asset(self, request: GenerationRequest) -> Path:
+        if not self.configured():
+            raise RuntimeError('云端资产生成 Provider 尚未配置 endpoint/API Key。')
+        headers={'Content-Type':'application/json','Authorization':f'Bearer {self.api_key}'}
+        payload={'model':self.model,'prompt':request.prompt,'kind':'asset'}
+        req=urllib.request.Request(self.endpoint,data=json.dumps(payload,ensure_ascii=False).encode('utf-8'),headers=headers,method='POST')
+        try:
+            with urllib.request.urlopen(req,timeout=self.timeout) as response:
+                body=json.loads(response.read().decode('utf-8'))
+        except Exception as exc:
+            raise RuntimeError(f'资产生成请求失败：{exc}') from exc
+        data=body.get('data') if isinstance(body.get('data'),dict) else {}
+        url=body.get('image_url') or body.get('url') or data.get('image_url') or data.get('url')
+        if not isinstance(url,str) or not url.startswith(('http://','https://')):
+            raise RuntimeError('资产 Provider 已返回，但没有找到 image_url/url。')
+        request.output.parent.mkdir(parents=True,exist_ok=True)
+        try:
+            with urllib.request.urlopen(url,timeout=self.timeout) as response:
+                request.output.write_bytes(response.read())
+        except Exception as exc:
+            raise RuntimeError(f'资产文件下载失败：{exc}') from exc
+        if request.output.stat().st_size == 0:
+            raise RuntimeError('生成后的资产文件为空。')
+        return request.output
+
+def load_asset_provider(path: Path) -> GenericAssetProvider | UnconfiguredProvider:
+    if not path.exists():
+        return UnconfiguredProvider()
+    try:
+        cfg=json.loads(path.read_text(encoding='utf-8'))
+    except Exception:
+        return UnconfiguredProvider()
+    data=cfg.get('asset_provider',cfg)
+    if not isinstance(data,dict):
+        return UnconfiguredProvider()
+    provider=GenericAssetProvider(
+        endpoint=str(data.get('endpoint','')),
+        api_key=str(data.get('api_key','')),
+        model=str(data.get('model','')),
+        timeout=int(data.get('timeout',180) or 180),
+        provider_name=str(data.get('name','Generic Asset REST') or 'Generic Asset REST'),
+        cost_per_asset_rmb=float(data.get('cost_per_asset_rmb',0) or 0),
+    )
+    return provider if provider.configured() else UnconfiguredProvider()
