@@ -5,6 +5,7 @@ from .models import Project, Shot
 from .ffmpeg import make_clip, concat
 from .providers import GenerationRequest, load_video_provider
 from .postprocess import process_shot
+from .library import LocalLibrary
 
 class ProductionStore:
     def __init__(self, root: Path):
@@ -32,12 +33,30 @@ class ProductionStore:
     def mark_ready(self, project: Project, shot: Shot, output: Path):
         shot.video_path=str(output); shot.status='已生成'; self.save(project)
 
+    def resolve_assets(self, project: Project, shot: Shot):
+        """本地优先；缺失时返回明确的生成需求。真正生成由对应生成器执行。"""
+        library=LocalLibrary(self.root)
+        resolution={}
+        plan_shots=project.creative_plan.get("shots", []) if project.creative_plan else []
+        ai=next((x for x in plan_shots if int(x.get("index", -1)) == shot.index), {})
+        req=ai.get("asset_resolution", {}) or {}
+        for kind, tags in (("演员", req.get("actor_tags", [])), ("场景", req.get("scene_tags", [])), ("商品素材", req.get("product_tags", []))):
+            found=library.best_match(kind,tags)
+            resolution[kind]={"asset":found.id if found else None,"source":"本地素材库" if found else "待自动生成","generate_if_missing":bool(req.get("generation_if_missing", True))}
+        if resolution["演员"]["asset"]: shot.actor_id=resolution["演员"]["asset"]
+        if resolution["场景"]["asset"]: shot.scene_id=resolution["场景"]["asset"]
+        shot.asset_source="library" if all(x["asset"] for x in resolution.values()) else "generate_missing"
+        project.creative_plan.setdefault("asset_resolution", {})[shot.id]=resolution
+        self.save(project)
+        return resolution
+
     def render_cloud_shot(self, project: Project, shot: Shot, provider_path: Path):
         out=self.render_path(project,shot)
+        resolution=self.resolve_assets(project,shot)
         provider=load_video_provider(provider_path)
         prompt='\\n'.join([f'标题：{shot.title}',f'画面：{shot.visual}',f'文案：{shot.script}'])
         shot.status='生成中…'; shot.provider=getattr(provider,'provider_name','Generic REST'); self.save(project)
-        result=provider.generate(GenerationRequest(prompt=prompt,output=out,duration=3,reference_assets=[x for x in [shot.actor_id,shot.scene_id] if x]))
+        result=provider.generate(GenerationRequest(prompt=prompt,output=out,duration=3,reference_assets=[x for x in [shot.actor_id,shot.scene_id,*shot.product_asset_ids] if x]))
         shot.actual_cost_rmb=round(float(getattr(provider,'cost_per_shot_rmb',0.0)),4)
         self.mark_ready(project,shot,result)
         return result
