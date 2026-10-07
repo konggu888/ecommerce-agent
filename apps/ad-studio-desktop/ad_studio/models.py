@@ -32,6 +32,16 @@ class Shot:
     video_path: Optional[str]=None
     actual_cost_rmb: float=0.0
     provider: Optional[str]=None
+    composition: str='主体清晰居中'
+    focus_x: float=0.5
+    focus_y: float=0.5
+    subtitle_position: str='底部安全区'
+    subtitle_style: str='白字黑边'
+    pacing: str='标准'
+    speed: float=1.0
+    bgm_intensity: str='低'
+    bgm_volume: float=0.16
+    transition: str='硬切'
 
 @dataclass
 class Project:
