@@ -39,19 +39,31 @@ def mark_regenerate(project,index):
 
 
 def estimate_asset_generation(library, root, creative_shots):
+    """预估缺失资产费用；同一组需求跨多个镜头只计一次。绝不触发实际生成。"""
     generator=AssetGenerator(root/'asset-generation.json',root)
-    rows=[]; total=0.0
+    rows=[]; total=0.0; seen=set()
     for shot in creative_shots:
         req=shot.get('asset_resolution',{}) or {}
         for kind,key in (('演员','actor_tags'),('场景','scene_tags'),('商品素材','product_tags')):
-            tags=req.get(key,[]) or []
-            if not tags or not req.get('generation_if_missing',True): continue
-            if library.best_match(kind,tags): continue
-            price=generator.price(kind)
-            rows.append({'镜头':shot.get('index'),'类型':kind,'状态':'需要自动生成','单价':price})
+            tags=tuple(sorted({str(x).strip() for x in (req.get(key,[]) or []) if str(x).strip()}))
+            if not tags or not req.get('generation_if_missing',True):
+                continue
+            found=library.best_match(kind,list(tags))
+            if found:
+                continue
+            identity=(kind,tags)
+            if identity in seen:
+                continue
+            seen.add(identity)
+            price=float(generator.price(kind))
+            rows.append({'镜头':shot.get('index'),'类型':kind,'标签':list(tags),'状态':'需要自动生成','单价':price,'小计':round(price,2)})
             total += price
-    return {'数量':len(rows),'总计':round(total,2),'明细':rows,'已配置':any(generator.configured(k) for k in ('演员','场景','商品素材'))}
-
+    return {
+        '数量':len(rows),
+        '总计':round(total,2),
+        '明细':rows,
+        '已配置':any(generator.configured(k) for k in ('演员','场景','商品素材'))
+    }
 def estimate_cost(shots, rates=None):
     """Return a preflight estimate with an auditable line-item breakdown.
 
