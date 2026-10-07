@@ -25,15 +25,58 @@ class UnconfiguredCreativeLLM:
 
 ROOT=Path(__file__).resolve().parents[1]/'data'/'ad-studio'
 PROJECTS=ROOT/'projects'
+LIBRARY_CONFIG=ROOT/'library-location.json'
 
 
 class App(tk.Tk):
     def __init__(self):
         super().__init__(); self.title('AI 商品广告工厂 · 本地版'); self.geometry('1180x760'); self.minsize(980,650)
-        self.lib=LocalLibrary(ROOT); self.lib.ensure_defaults(); self.store=ProductionStore(PROJECTS, library_root=ROOT); self.project=None
+        self.library_root=self._load_library_root()
+        self.lib=LocalLibrary(self.library_root); self.lib.ensure_defaults(); self.store=ProductionStore(PROJECTS, library_root=self.library_root); self.project=None
         self.model_router=ModelRouter(ROOT/'model-config.json')
         self.creative_engine=CreativeEngine(self.model_router)
         self.ui(); self.aspect=tk.StringVar(value='9:16'); self.refresh_assets(); self.refresh_gpu()
+
+    def _load_library_root(self):
+        default=ROOT/'library'
+        if LIBRARY_CONFIG.exists():
+            try:
+                p=Path(json.loads(LIBRARY_CONFIG.read_text(encoding='utf-8')).get('path','')).expanduser()
+                if str(p): return p
+            except Exception:
+                pass
+        return default
+
+    def asset_library_settings(self):
+        win=tk.Toplevel(self); win.title('资产库硬盘位置'); win.geometry('760x280'); win.transient(self)
+        frm=ttk.Frame(win,padding=16); frm.pack(fill='both',expand=True)
+        ttk.Label(frm,text='本地资产库储存位置',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
+        ttk.Label(frm,text='演员、场景、商品素材、AI生成并入库的素材都会保存到这里。项目工程和成片仍保存在项目目录，两者分开。',wraplength=700).pack(anchor='w',pady=(4,12))
+        var=tk.StringVar(value=str(self.library_root))
+        row=ttk.Frame(frm); row.pack(fill='x')
+        ttk.Entry(row,textvariable=var).pack(side='left',fill='x',expand=True)
+        def choose():
+            p=filedialog.askdirectory(title='选择资产库硬盘文件夹')
+            if p: var.set(p)
+        ttk.Button(row,text='选择硬盘目录',command=choose).pack(side='left',padx=8)
+        status=tk.StringVar(value=f'当前资产数量：{len(self.lib.all())}')
+        ttk.Label(frm,textvariable=status).pack(anchor='w',pady=10)
+        def save_location():
+            p=Path(var.get().strip()).expanduser()
+            if not str(p): return messagebox.showerror('位置错误','请选择有效的硬盘目录。')
+            try:
+                p.mkdir(parents=True,exist_ok=True)
+                # 新目录先建立索引；已有旧库不会被偷偷删除。
+                LocalLibrary(p).ensure_defaults()
+                LIBRARY_CONFIG.parent.mkdir(parents=True,exist_ok=True)
+                LIBRARY_CONFIG.write_text(json.dumps({'path':str(p)},ensure_ascii=False,indent=2),encoding='utf-8')
+                self.library_root=p; self.lib=LocalLibrary(p); self.lib.ensure_defaults()
+                self.store.library_root=p; self.refresh_assets()
+                status.set(f'已切换：{p} · {len(self.lib.all())} 个资产')
+                messagebox.showinfo('已保存','资产库位置已切换。旧资产不会自动删除；如需搬迁，请先复制/移动原资产库。')
+            except Exception as e:
+                messagebox.showerror('保存失败',str(e))
+        ttk.Button(frm,text='保存并切换',command=save_location).pack(anchor='e',pady=8)
 
     def ui(self):
         top=ttk.Frame(self,padding=16); top.pack(fill='x')
@@ -96,7 +139,7 @@ class App(tk.Tk):
         add('商品采集','浏览器回退采集',bool(browser),browser or '未检测到 agent-browser；直接HTTP失败时无法使用浏览器回退')
         forbidden=ROOT/'forbidden_terms.txt'
         add('合规','禁止词库',forbidden.exists(),str(forbidden) if forbidden.exists() else '未创建 forbidden_terms.txt')
-        add('资产库','本地永久资产库',self.lib.root.exists(),f'{self.lib.root} · {len(self.lib.all())} 个资产')
+        add('资产库','本地永久资产库',self.lib.root.exists(),f'{self.lib.root} · {len(self.lib.all())} 个资产 · 独立资产库硬盘目录')
         vp=load_video_provider(ROOT/'video-provider.json')
         video_ready=not isinstance(vp, __import__('ad_studio.providers',fromlist=['UnconfiguredProvider']).UnconfiguredProvider)
         add('生产链','镜头生成',video_ready,'REST 视频 Provider 已配置，可真实请求生成并下载镜头' if video_ready else '当前仍为未配置状态；生成按钮不会伪造云端成片',warn=not video_ready)
