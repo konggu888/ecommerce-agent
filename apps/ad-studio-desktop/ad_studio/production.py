@@ -3,7 +3,7 @@ import json
 import datetime
 from .models import Project, Shot
 from .ffmpeg import make_clip, concat
-from .providers import GenerationRequest, load_video_provider
+from .providers import GenerationRequest, load_video_provider, load_asset_provider
 from .postprocess import process_shot
 from .library import LocalLibrary
 
@@ -49,6 +49,30 @@ class ProductionStore:
         project.creative_plan.setdefault("asset_resolution", {})[shot.id]=resolution
         self.save(project)
         return resolution
+
+    def generate_missing_asset(self, project: Project, shot: Shot, kind: str, request_text: str, asset_provider_path: Path):
+        """缺少本地素材时自动生成，并永久登记到本地库。"""
+        library=LocalLibrary(self.root)
+        provider=load_asset_provider(asset_provider_path)
+        if isinstance(provider, type(load_asset_provider(Path('__missing__')))):
+            raise RuntimeError('尚未配置云端资产生成器。')
+        aid=shot.id + '-' + kind
+        ext='.png'
+        out=self.root/'assets'/kind/aid+ext
+        out.parent.mkdir(parents=True,exist_ok=True)
+        shot.status=f'{kind}自动生成中…'
+        self.save(project)
+        prompt=f'电商广告可复用{kind}素材。镜头：{shot.title}。画面需求：{shot.visual}。素材要求：{request_text}。保持主体稳定、适合后续视频生成与本地剪辑。'
+        result=provider.generate_asset(GenerationRequest(prompt=prompt,output=out,reference_assets=[]))
+        item=library.register_generated(f'{kind}-{shot.index}',kind,result,tags=[request_text],request=prompt)
+        if kind=='演员': shot.actor_id=item.id
+        elif kind=='场景': shot.scene_id=item.id
+        elif kind=='商品素材': shot.product_asset_ids.append(item.id)
+        shot.asset_source='ai_generated'
+        shot.actual_cost_rmb=round(shot.actual_cost_rmb+float(getattr(provider,'cost_per_asset_rmb',0)),4)
+        shot.status=f'{kind}已生成并入库'
+        self.save(project)
+        return item
 
     def render_cloud_shot(self, project: Project, shot: Shot, provider_path: Path):
         out=self.render_path(project,shot)
