@@ -4,7 +4,8 @@ from .models import Asset, uid
 
 class LocalLibrary:
     def __init__(self,root:Path):
-        self.root=root; self.assets=root/'assets'; self.index=root/'library.json'
+        self.root=Path(root); self.assets=self.root/'assets'; self.index=self.root/'library.json'
+        self.root.mkdir(parents=True,exist_ok=True)
         self.assets.mkdir(parents=True,exist_ok=True)
         if not self.index.exists(): self.index.write_text('[]',encoding='utf-8')
     def all(self): return [Asset(**x) for x in json.loads(self.index.read_text(encoding='utf-8'))]
