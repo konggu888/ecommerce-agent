@@ -51,7 +51,7 @@ class App(tk.Tk):
         self.shots=ttk.Treeview(left,columns=('v','status','actor','scene'),show='tree headings',height=17)
         for c,t,w in [('v','版本',70),('status','状态',90),('actor','演员',150),('scene','场景',150)]: self.shots.heading(c,text=t); self.shots.column(c,width=w)
         self.shots.column('#0',width=300); self.shots.pack(fill='both',expand=True,pady=8); self.shots.bind('<<TreeviewSelect>>',self.show_shot)
-        bar=ttk.Frame(left); bar.pack(fill='x'); ttk.Button(bar,text='生成本镜头',command=self.generate_shot).pack(side='left'); ttk.Button(bar,text='重新生成本镜头',command=self.regen_shot).pack(side='left',padx=8); ttk.Button(bar,text='生成最终成片',command=self.final_render).pack(side='right',padx=8); ttk.Button(bar,text='保存项目',command=self.save).pack(side='right')
+        bar=ttk.Frame(left); bar.pack(fill='x'); ttk.Button(bar,text='生成本镜头',command=self.generate_shot).pack(side='left'); ttk.Button(bar,text='重新生成本镜头',command=self.regen_shot).pack(side='left',padx=8); ttk.Button(bar,text='▶ 本地4050后处理',command=self.postprocess_selected).pack(side='left',padx=8); ttk.Button(bar,text='生成最终成片',command=self.final_render).pack(side='right',padx=8); ttk.Button(bar,text='保存项目',command=self.save).pack(side='right')
         ttk.Label(right,text='③ 本地资产库',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
         self.assets=ttk.Treeview(right,columns=('kind','source','path'),show='tree headings',height=13)
         for c,t,w in [('kind','类型',80),('source','来源',90),('path','本地文件',300)]: self.assets.heading(c,text=t); self.assets.column(c,width=w)
@@ -100,6 +100,9 @@ class App(tk.Tk):
         video_ready=not isinstance(vp, __import__('ad_studio.providers',fromlist=['UnconfiguredProvider']).UnconfiguredProvider)
         add('生产链','镜头生成',video_ready,'REST 视频 Provider 已配置，可真实请求生成并下载镜头' if video_ready else '当前仍为未配置状态；生成按钮不会伪造云端成片',warn=not video_ready)
         add('云端生成','视频 Provider',video_ready,'配置文件：'+str(ROOT/'video-provider.json') if video_ready else '未配置 video-provider.json',warn=not video_ready)
+        add('本地4050后处理','画幅适配 / 裁切 / 缩放',ff,'9:16 / 1:1 / 16:9 已接入 FFmpeg，本机执行' if ff else '等待 FFmpeg')
+        add('本地4050后处理','硬件编码',nv,'后处理优先使用 h264_nvenc' if nv else 'NVENC 不可用时使用 CPU 编码',warn=ff and not nv)
+        add('本地4050后处理','逐镜头版本化',True,'每个镜头独立保存 postprocessed/project/shot/v版本，换镜头不重做其他镜头')
         add('生产链','最终成片拼接',ff,'本地 FFmpeg concat 可用' if ff else '等待 FFmpeg')
         add('云端生成','人物/场景/关键视频镜头',False,'云端生成 Adapter 尚未接入，不会偷偷产生云端费用',warn=True)
         add('云端生成','高质量配音',False,'语音 Provider 尚未接入',warn=True)
@@ -365,10 +368,21 @@ class App(tk.Tk):
         for x in self.assets.get_children(): self.assets.delete(x)
         for a in self.lib.all(): self.assets.insert('', 'end',text=a.name,values=(a.kind,a.source,a.path or ''))
 
+    def postprocess_selected(self):
+        s=self.selected()
+        if not s:return messagebox.showinfo('提示','先选择一个已经生成的真实镜头。')
+        try:
+            out=self.store.postprocess_shot(self.project,s,self.aspect.get())
+            self.refresh_shots(); self.show_shot()
+            self.detail.set(f'镜头 {s.index} 已完成本地4050后处理：{out}')
+        except Exception as e:
+            s.status='后处理失败'; self.store.save(self.project); self.refresh_shots()
+            messagebox.showerror('本地后处理失败',str(e))
+
     def final_render(self):
         if not self.project:return messagebox.showinfo('提示','先创建项目。')
         try:
-            out=self.store.build_final(self.project); self.detail.set(f'最终成片已输出：{out}'); messagebox.showinfo('完成',f'最终广告已生成\n{out}')
+            out=self.store.build_final(self.project,self.aspect.get()); self.detail.set(f'最终成片已输出：{out}'); messagebox.showinfo('完成',f'最终广告已生成\n{out}')
         except Exception as e: messagebox.showerror('暂不能成片',str(e))
 
     def save(self):
