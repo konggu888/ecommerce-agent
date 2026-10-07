@@ -16,7 +16,7 @@
 → 生产执行 production.py
 → 本地后处理 postprocess.py
 → FFmpeg ffmpeg.py
-→ GPU检测 gpu.py
+→ 硬件能力 hardware.py / GPU兼容入口 gpu.py
 → 成本账本 usage_ledger.py
 
 ## 2. 创建项目主链
@@ -33,7 +33,7 @@
 → ProductionStore
 → 资产解析
 → 镜头生成
-→ 本地4050/FFmpeg
+→ 本地硬件能力调度 / FFmpeg
 → 最终拼接
 
 预算确认是云端生成的闸门。确认前只能做采集、AI分析和估算，不应开始实际云端素材生成。
@@ -119,9 +119,23 @@ estimate_asset_generation 会对相同资产需求去重。
 
 禁止自动换模型、删镜头、降质量。
 
-## 8. 云端/本地边界
+## 8. 云端/本地边界与硬件自适应
 
-本地 RTX 4050：
+系统不得把任何具体显卡型号作为最低配置、架构边界或固定执行方案。
+
+hardware.py 动态检测 CPU、RAM、GPU厂商/型号/显存、CUDA/ROCm/Metal/CPU 后端、FFmpeg硬件编码器，并给出 local_first / hybrid / cloud_first 执行策略。
+
+原则：
+- 本地计算设备能高效完成的 → 本地执行。
+- 本地能力不足或缺少兼容运行时的 → 云端执行。
+- 两边都能完成时 → 根据能力、成本和稳定性选择。
+- 显卡型号只是检测结果，不是系统规则。
+
+gpu.py 仅保留兼容入口，不再包含4050专属逻辑。
+
+
+
+本地计算设备：
 - 资料处理
 - 创意编排
 - 素材匹配
@@ -162,7 +176,7 @@ postprocess.py 根据 Shot 参数执行：
 - subtitle
 - audio/BGM
 
-ffmpeg.py 负责实际FFmpeg命令执行，并优先使用NVENC。
+ffmpeg.py 根据实际硬件动态选择可用 H.264 硬件编码器（NVENC/AMF/QSV/VideoToolbox），无硬件编码器时使用 CPU 编码。
 
 ## 11. Provider 原则
 
@@ -198,11 +212,11 @@ asset_generation.py 是通用素材生成接口。
 | engine.py | 成本估算、资产去重 |
 | asset_generation.py | 真实Provider能力、价格、入库 |
 | providers.py | 云视频Provider、状态轮询、价格 |
-| postprocess.py | 4050/FFmpeg后处理 |
+| postprocess.py | 硬件能力、FFmpeg后处理 |
 | ffmpeg.py | 编码、NVENC、拼接 |
 | product_parser.py | 商品资料来源和回退 |
 | usage_ledger.py | 调用记录和成本 |
-| gpu.py | GPU/NVENC能力判断 |
+| hardware.py / gpu.py | 硬件能力检测与兼容接口 |
 
 ## 14. AI 修改后的必做闭环
 
@@ -232,4 +246,6 @@ asset_generation.py 是通用素材生成接口。
 # 更新记录
 
 ## 2026-10-08
+### 硬件能力自适应
+移除4050作为架构边界，新增通用硬件能力检测与动态执行策略；FFmpeg不再只依赖NVENC。
 建立系统级代码逻辑地图、AI接手规则和文档同步强制机制。
