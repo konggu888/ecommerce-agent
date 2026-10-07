@@ -328,10 +328,15 @@ class App(tk.Tk):
         }
 
     def _activate_plan(self, raw, info):
+        existing_variants=self.project.creative_plan.get('creative_variants',[]) if self.project else []
+        existing_count=self.project.creative_plan.get('variant_count',len(existing_variants)) if self.project else 1
         plan=validate_plan(raw)
         self.project.form=plan.video_form
         self.project.product_name=info.name
         data=self._plan_dict(plan)
+        if existing_variants:
+            data['creative_variants']=existing_variants
+            data['variant_count']=existing_count
         data['variant_index']=int(raw.get('_variant_index',1))
         data['variant_label']=raw.get('_variant_label',f"方案{data['variant_index']}｜{plan.video_form}")
         self.project.creative_plan=data
