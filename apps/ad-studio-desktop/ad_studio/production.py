@@ -55,7 +55,13 @@ class ProductionStore:
         out=self.root/'postprocessed'/project.id/shot.id/f'v{shot.version}-{aspect.replace(":", "x")}.mp4'
         shot.status='本地4050处理中…'
         self.save(project)
-        process_shot(src,out,aspect,speed)
+        plan_shots=project.creative_plan.get("shots", []) if project.creative_plan else []
+        ai=next((x for x in plan_shots if int(x.get("index", -1)) == shot.index), {})
+        focus_x=float(ai.get("focus_x", getattr(shot, "focus_x", 0.5)))
+        focus_y=float(ai.get("focus_y", getattr(shot, "focus_y", 0.5)))
+        ai_speed=float(ai.get("speed", getattr(shot, "speed", speed)))
+        transition=str(ai.get("transition", getattr(shot, "transition", "硬切")))
+        process_shot(src,out,aspect,ai_speed,focus_x,focus_y,transition)
         shot.video_path=str(out)
         shot.status='已后处理'
         self.save(project)
