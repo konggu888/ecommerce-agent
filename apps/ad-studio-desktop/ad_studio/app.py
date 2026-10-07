@@ -9,7 +9,7 @@ from .engine import FORMS, new_project, mark_regenerate, estimate_cost, estimate
 from .gpu import detect_gpu
 from .production import ProductionStore
 from .product_parser import parse_product_url, save_product
-from .creative_engine import CreativeEngine
+from .creative_engine import CreativeEngine, validate_plan
 from .model_router import ModelRouter, ModelProfile, FUNCTIONS
 from .browser_skill import _find_agent_browser
 from .ffmpeg import available as ffmpeg_available, has_nvenc
@@ -35,6 +35,7 @@ class App(tk.Tk):
         self.lib=LocalLibrary(self.library_root); self.lib.ensure_defaults(); self.store=ProductionStore(PROJECTS, library_root=self.library_root); self.project=None
         self.model_router=ModelRouter(ROOT/'model-config.json')
         self.creative_engine=CreativeEngine(self.model_router)
+        self.active_variant_index=1
         self.ui(); self.aspect=tk.StringVar(value='9:16'); self.refresh_assets(); self.refresh_gpu()
 
     def _load_library_root(self):
@@ -88,6 +89,7 @@ class App(tk.Tk):
         ttk.Label(setup,text='本次预算（¥）').grid(row=1,column=2,sticky='e'); self.budget=tk.StringVar(value='3'); ttk.Entry(setup,textvariable=self.budget,width=10).grid(row=1,column=3,sticky='w',padx=8)
         ttk.Label(setup,text='留空/自动：交给AI判断；手动选择仅作为约束').grid(row=1,column=2,columnspan=2,sticky='w')
         ttk.Label(setup,text='视频形式').grid(row=2,column=0,sticky='w'); self.form=tk.StringVar(value='AI自动选择'); ttk.Combobox(setup,textvariable=self.form,values=['AI自动选择']+FORMS,state='readonly',width=22).grid(row=2,column=1,sticky='w')
+        ttk.Label(setup,text='创意方案数').grid(row=3,column=0,sticky='w'); self.variant_count=tk.StringVar(value='3'); ttk.Combobox(setup,textvariable=self.variant_count,values=['1','3'],state='readonly',width=8).grid(row=3,column=1,sticky='w'); ttk.Label(setup,text='3 = 同一商品自动生成三种明显不同的广告打法').grid(row=3,column=2,columnspan=3,sticky='w')
         ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
         main=ttk.Panedwindow(self,orient='horizontal'); main.pack(fill='both',expand=True,padx=16,pady=8)
         left=ttk.Frame(main,padding=8); right=ttk.Frame(main,padding=8); main.add(left,weight=3); main.add(right,weight=2)
@@ -95,7 +97,7 @@ class App(tk.Tk):
         self.shots=ttk.Treeview(left,columns=('v','status','actor','scene'),show='tree headings',height=17)
         for c,t,w in [('v','版本',70),('status','状态',90),('actor','演员',150),('scene','场景',150)]: self.shots.heading(c,text=t); self.shots.column(c,width=w)
         self.shots.column('#0',width=300); self.shots.pack(fill='both',expand=True,pady=8); self.shots.bind('<<TreeviewSelect>>',self.show_shot)
-        bar=ttk.Frame(left); bar.pack(fill='x'); ttk.Button(bar,text='生成本镜头',command=self.generate_shot).pack(side='left'); ttk.Button(bar,text='重新生成本镜头',command=self.regen_shot).pack(side='left',padx=8); ttk.Button(bar,text='▶ 本地4050后处理',command=self.postprocess_selected).pack(side='left',padx=8); ttk.Button(bar,text='生成最终成片',command=self.final_render).pack(side='right',padx=8); ttk.Button(bar,text='保存项目',command=self.save).pack(side='right')
+        bar=ttk.Frame(left); bar.pack(fill='x'); ttk.Button(bar,text='切换创意方案',command=self.switch_variant).pack(side='left'); ttk.Button(bar,text='生成本镜头',command=self.generate_shot).pack(side='left',padx=8); ttk.Button(bar,text='重新生成本镜头',command=self.regen_shot).pack(side='left',padx=8); ttk.Button(bar,text='▶ 本地4050后处理',command=self.postprocess_selected).pack(side='left',padx=8); ttk.Button(bar,text='生成最终成片',command=self.final_render).pack(side='right',padx=8); ttk.Button(bar,text='保存项目',command=self.save).pack(side='right')
         ttk.Label(right,text='③ 本地资产库',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
         self.assets=ttk.Treeview(right,columns=('kind','source','path'),show='tree headings',height=13)
         for c,t,w in [('kind','类型',80),('source','来源',90),('path','本地文件',300)]: self.assets.heading(c,text=t); self.assets.column(c,width=w)
@@ -314,6 +316,61 @@ class App(tk.Tk):
             'forbidden_terms_file': str(ROOT/'forbidden_terms.txt'),
         }
 
+    def _plan_dict(self, plan):
+        return {
+            'product_summary': plan.product_summary, 'product_type': plan.product_type,
+            'selling_points': plan.selling_points, 'target_audience': plan.target_audience,
+            'pain_points': plan.pain_points, 'usage_scenes': plan.usage_scenes,
+            'positioning': plan.positioning, 'ad_level': plan.ad_level,
+            'video_form': plan.video_form, 'duration_seconds': plan.duration_seconds,
+            'strategy': plan.strategy, 'hook': plan.hook, 'script': plan.script,
+            'shots': [x.__dict__ for x in plan.shots],
+        }
+
+    def _activate_plan(self, raw, info):
+        plan=validate_plan(raw)
+        self.project.form=plan.video_form
+        self.project.product_name=info.name
+        data=self._plan_dict(plan)
+        data['variant_index']=int(raw.get('_variant_index',1))
+        data['variant_label']=raw.get('_variant_label',f"方案{data['variant_index']}｜{plan.video_form}")
+        self.project.creative_plan=data
+        self.project.shots=[
+            __import__('ad_studio.models',fromlist=['Shot']).Shot(
+                id=f'shot-{x.index:02d}', index=x.index,
+                title=x.objective or f'镜头{x.index}', visual=x.visual, script=x.dialogue,
+                composition=x.composition, focus_x=x.focus_x, focus_y=x.focus_y,
+                subtitle_position=x.subtitle_position, subtitle_style=x.subtitle_style,
+                pacing=x.pacing, speed=x.speed, bgm_intensity=x.bgm_intensity,
+                bgm_volume=x.bgm_volume, transition=x.transition,
+            ) for x in plan.shots
+        ]
+        self.active_variant_index=int(raw.get('_variant_index',1))
+        return plan
+
+    def switch_variant(self):
+        if not self.project:return messagebox.showinfo('提示','先创建或打开一个包含多个创意方案的项目。')
+        variants=self.project.creative_plan.get('creative_variants',[])
+        if len(variants)<=1:return messagebox.showinfo('提示','当前项目只有一个创意方案。创建项目时将“创意方案数”设为3即可生成多种打法。')
+        win=tk.Toplevel(self); win.title('切换创意方案'); win.geometry('760x430'); win.transient(self)
+        frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
+        ttk.Label(frm,text='同一商品的不同广告打法',font=('Microsoft YaHei UI',17,'bold')).pack(anchor='w')
+        box=tk.Listbox(frm,height=10); box.pack(fill='both',expand=True,pady=10)
+        for i,v in enumerate(variants,1):
+            box.insert('end',f"{i}. {v.get('_variant_label',v.get('video_form','AI方案'))}｜{v.get('strategy','')[:90]}")
+        box.selection_set(max(0,self.active_variant_index-1))
+        def apply():
+            sel=box.curselection()
+            if not sel:return
+            raw=variants[sel[0]]
+            info=__import__('ad_studio.product_parser',fromlist=['ProductInfo']).ProductInfo(**self.project.product_info)
+            self._activate_plan(raw,info)
+            self.project.cost_estimate={}
+            self.refresh_shots(); self.detail.set(f"已切换：{raw.get('_variant_label','方案')}。当前方案可单独生成/重新生成。")
+            self.cost.set('成本：已切换方案，重新确认当前方案成本后生成。')
+            self.store.save(self.project); win.destroy()
+        ttk.Button(frm,text='切换到选中方案',command=apply).pack(anchor='e')
+
     def create(self):
         url=self.url.get().strip()
         if not url:return messagebox.showinfo('提示','请先输入商品链接。')
@@ -321,8 +378,9 @@ class App(tk.Tk):
         try:
             budget=float(self.budget.get().strip())
             if budget<0: raise ValueError
+            variant_count=max(1,min(3,int(self.variant_count.get())))
         except ValueError:
-            return messagebox.showerror('预算格式错误','请输入有效的预算金额，例如 3、5、10、50。')
+            return messagebox.showerror('参数格式错误','请输入有效的预算和创意方案数。')
         info=parse_product_url(url)
         if not info.fetched and info.error:
             if not messagebox.askyesno('商品解析未完成',f'当前无法直接读取商品页面。\n\n原因：{info.error}\n\n仍可创建项目，稍后可手动补充商品信息。是否继续？'):
@@ -332,41 +390,21 @@ class App(tk.Tk):
         self.project.product_info=info.to_dict()
         try:
             constraints=self._creative_constraints()
-            plan=self.creative_engine.plan(info.to_dict(),constraints)
+            raw_plans=self.model_router.create_plans(info.to_dict(),constraints,variant_count) if variant_count>1 else [self.model_router.create_plan(info.to_dict(),constraints)]
+            for i,raw in enumerate(raw_plans,1):
+                raw['_variant_index']=int(raw.get('_variant_index',i))
+                raw['_variant_label']=raw.get('_variant_label',f"方案{i}｜{raw.get('video_form','AI创意方案')}")
+            plan=self._activate_plan(raw_plans[0],info)
+            self.project.creative_plan['creative_variants']=raw_plans
+            self.project.creative_plan['variant_count']=variant_count
         except Exception as e:
             self.project=None
             messagebox.showerror('创意引擎未配置',str(e))
             return
 
-        self.project.form=plan.video_form
-        self.project.product_name=info.name
-        self.project.creative_plan = {
-            'product_summary': plan.product_summary,
-            'product_type': plan.product_type,
-            'selling_points': plan.selling_points,
-            'target_audience': plan.target_audience,
-            'pain_points': plan.pain_points,
-            'usage_scenes': plan.usage_scenes,
-            'positioning': plan.positioning,
-            'ad_level': plan.ad_level,
-            'video_form': plan.video_form,
-            'duration_seconds': plan.duration_seconds,
-            'strategy': plan.strategy,
-            'hook': plan.hook,
-            'script': plan.script,
-            'shots': [x.__dict__ for x in plan.shots],
-        }
-        self.project.shots=[
-            __import__('ad_studio.models',fromlist=['Shot']).Shot(
-                id=f'shot-{x.index:02d}', index=x.index,
-                title=x.objective or f'镜头{x.index}',
-                visual=x.visual, script=x.dialogue,
-            ) for x in plan.shots
-        ]
         vp=load_video_provider(ROOT/'video-provider.json')
         rate=float(getattr(vp,'cost_per_shot_rmb',0.72)) if hasattr(vp,'cost_per_shot_rmb') else 0.72
         c=estimate_cost(len(plan.shots), {'cloud_video_per_shot': rate})
-        # 先按AI分镜需求估算本地缺失资产的云端生成费用。
         asset_est=estimate_asset_generation(self.lib,ROOT,[x.__dict__ for x in plan.shots])
         c['资产生成']=asset_est
         asset_total=float(asset_est.get('总计',0.0))
@@ -374,19 +412,20 @@ class App(tk.Tk):
             c['云端']=round(float(c.get('云端',0.0))+asset_total,2)
             c['总计']=round(float(c.get('本地',0.0))+float(c['云端']),2)
             c['明细'].append({'项目':'演员/场景/商品素材自动生成','数量':asset_est.get('数量',0),'单价':0.0,'小计':asset_total,'计费方式':'按缺失资产配置价格'})
-        c['预算']=budget; c['超预算']=c['总计']>budget; self.project.cost_estimate=c; self._show_cost_breakdown(c)
+        c['预算']=budget; c['超预算']=c['总计']>budget; c['创意方案数']=variant_count; self.project.cost_estimate=c; self._show_cost_breakdown(c)
         detail='\n'.join([
-            f"商品：{info.name}",f"平台：{info.platform}",f"AI判断广告强度：{plan.ad_level}",
-            f"AI选择视频形式：{plan.video_form}",f"预计时长：{plan.duration_seconds}秒",
-            f"AI策略：{plan.strategy}",f"AI钩子：{plan.hook}",'',
-            f"开始项目前预计成本：¥{c['总计']:.2f}",f"本地4050/FFmpeg：¥{c['本地']:.2f}",f"视频生成费用：¥{rate*len(plan.shots):.2f}",f"演员生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='演员'):.2f}",f"场景生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='场景'):.2f}",f"商品素材生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='商品素材'):.2f}",f"云端任务：¥{c['云端']:.2f}",
+            f"商品：{info.name}",f"本次生成创意方案：{variant_count} 个（当前先展示方案1）",f"AI判断广告强度：{plan.ad_level}",
+            f"AI选择视频形式：{plan.video_form}",f"预计时长：{plan.duration_seconds}秒",f"AI策略：{plan.strategy}",f"AI钩子：{plan.hook}",'',
+            f"当前方案开始前预计成本：¥{c['总计']:.2f}",f"本地4050/FFmpeg：¥{c['本地']:.2f}",f"视频生成费用：¥{rate*len(plan.shots):.2f}",f"演员生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='演员'):.2f}",f"场景生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='场景'):.2f}",f"商品素材生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='商品素材'):.2f}",f"云端任务：¥{c['云端']:.2f}",
             *[f"{x['项目']}：{x['数量']} × ¥{x['单价']:.2f} = ¥{x['小计']:.2f}" for x in c['明细'] if x['数量']],
-            '',f"本次预算：¥{c['预算']:.2f}",('⚠ 预计超过本次预算。' if c['超预算'] else '✓ 预计不超过本次预算。'),c['计价说明'],'','超过预算不会自动降质、换模型或减少镜头。是否现在开始？'
+            '',f"本次预算：¥{c['预算']:.2f}",('⚠ 预计超过本次预算。' if c['超预算'] else '✓ 预计不超过本次预算。'),c['计价说明'],
+            '说明：多个创意方案是同一商品的不同广告打法；云端视频/素材费用按当前选中的方案单独计算。','',
+            '超过预算不会自动降质、换模型或减少镜头。是否现在开始？'
         ])
         if not messagebox.askyesno('AI创意与项目预算确认',detail):
             self.project=None; self.detail.set('已取消项目创建，尚未产生生成费用。'); return
         self.store.save(self.project); save_product(info,ROOT,self.project.id); self.refresh_shots()
-        self.detail.set(f'AI创意方案已确认：{info.name} → {plan.video_form} → {len(plan.shots)}镜头 → 等待生成。')
+        self.detail.set(f"AI创意方案已确认：{info.name} → {plan.video_form} → {len(plan.shots)}镜头；共{variant_count}种方案，可用‘切换创意方案’查看。")
 
     def refresh_shots(self):
         for x in self.shots.get_children(): self.shots.delete(x)
