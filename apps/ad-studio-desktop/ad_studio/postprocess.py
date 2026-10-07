@@ -2,6 +2,8 @@ from pathlib import Path
 import shutil
 import subprocess
 
+from .ffmpeg import best_h264_encoder
+
 ASPECTS = {
     "9:16": (1080, 1920),
     "1:1": (1080, 1080),
@@ -32,7 +34,7 @@ def adapt_aspect(input_path: Path, output_path: Path, aspect: str = "9:16"):
     # 保持主体完整性的中心裁切；后续可由 AI 提供 crop_x/crop_y。
     focus_x = min(1.0, max(0.0, float(focus_x))); focus_y = min(1.0, max(0.0, float(focus_y)))
     vf = f"scale={width}:{height}:force_original_aspect_ratio=increase,crop={width}:{height}:x=(iw-{width})*{focus_x}:y=(ih-{height})*{focus_y}"
-    codec = "h264_nvenc" if has_nvenc() else "libx264"
+    codec = best_h264_encoder()
     _run([ffmpeg_path(), "-y", "-i", str(input_path), "-vf", vf, "-c:v", codec, "-preset", "p4" if codec == "h264_nvenc" else "medium", "-pix_fmt", "yuv420p", "-an", str(output_path)])
     return output_path
 
