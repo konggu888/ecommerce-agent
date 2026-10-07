@@ -30,12 +30,13 @@ def adapt_aspect(input_path: Path, output_path: Path, aspect: str = "9:16"):
     width, height = ASPECTS[aspect]
     output_path.parent.mkdir(parents=True, exist_ok=True)
     # 保持主体完整性的中心裁切；后续可由 AI 提供 crop_x/crop_y。
-    vf = f"scale={width}:{height}:force_original_aspect_ratio=increase,crop={width}:{height}"
+    focus_x = min(1.0, max(0.0, float(focus_x))); focus_y = min(1.0, max(0.0, float(focus_y)))
+    vf = f"scale={width}:{height}:force_original_aspect_ratio=increase,crop={width}:{height}:x=(iw-{width})*{focus_x}:y=(ih-{height})*{focus_y}"
     codec = "h264_nvenc" if has_nvenc() else "libx264"
     _run([ffmpeg_path(), "-y", "-i", str(input_path), "-vf", vf, "-c:v", codec, "-preset", "p4" if codec == "h264_nvenc" else "medium", "-pix_fmt", "yuv420p", "-an", str(output_path)])
     return output_path
 
-def process_shot(input_path: Path, output_path: Path, aspect: str = "9:16", speed: float = 1.0):
+def process_shot(input_path: Path, output_path: Path, aspect: str = "9:16", speed: float = 1.0, focus_x: float = 0.5, focus_y: float = 0.5, transition: str = "硬切"):
     if speed <= 0:
         raise ValueError("速度必须大于 0")
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -43,6 +44,8 @@ def process_shot(input_path: Path, output_path: Path, aspect: str = "9:16", spee
     vf = f"scale={width}:{height}:force_original_aspect_ratio=increase,crop={width}:{height}"
     if speed != 1.0:
         vf += f",setpts={1.0/speed}*PTS"
+    if transition == "淡入": vf += ",fade=t=in:st=0:d=0.25"
+    elif transition == "淡出": vf += ",fade=t=out:st=0:d=0.25"
     codec = "h264_nvenc" if has_nvenc() else "libx264"
     _run([ffmpeg_path(), "-y", "-i", str(input_path), "-vf", vf, "-c:v", codec, "-preset", "p4" if codec == "h264_nvenc" else "medium", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", str(output_path)])
     return output_path
@@ -59,13 +62,20 @@ def mix_audio(input_path: Path, output_path: Path, bgm_path: Path | None = None,
     ])
     return output_path
 
-def burn_subtitles(input_path: Path, output_path: Path, srt_path: Path):
+def burn_subtitles(input_path: Path, output_path: Path, srt_path: Path, position: str = "底部安全区", style: str = "白字黑边"):
     if not srt_path.exists():
         raise RuntimeError("字幕文件不存在")
     output_path.parent.mkdir(parents=True, exist_ok=True)
     subtitle = str(srt_path).replace("\\", "/").replace(":", "\\:")
     codec = "h264_nvenc" if has_nvenc() else "libx264"
-    _run([ffmpeg_path(), "-y", "-i", str(input_path), "-vf", f"subtitles='{subtitle}'", "-c:v", codec, "-pix_fmt", "yuv420p", "-c:a", "copy", str(output_path)])
+    if position == "不显示":
+        shutil.copy2(input_path, output_path); return output_path
+    alignment = {"底部安全区": 2, "中部安全区": 5, "顶部安全区": 8}.get(position, 2)
+    force_style = f"Alignment={alignment},MarginV=90,Outline=2,Shadow=0,FontSize=20"
+    if style == "黄字黑边": force_style += ",PrimaryColour=&H00FFFF&"
+    elif style == "简洁白字": force_style += ",Outline=0"
+    vf = f"subtitles='{subtitle}':force_style='{force_style}'"
+    _run([ffmpeg_path(), "-y", "-i", str(input_path), "-vf", vf, "-c:v", codec, "-pix_fmt", "yuv420p", "-c:a", "copy", str(output_path)])
     return output_path
 
 def probe_duration(input_path: Path):
