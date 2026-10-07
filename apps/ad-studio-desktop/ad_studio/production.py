@@ -4,6 +4,7 @@ import datetime
 from .models import Project, Shot
 from .ffmpeg import make_clip, concat
 from .providers import GenerationRequest, load_video_provider
+from .postprocess import process_shot
 
 class ProductionStore:
     def __init__(self, root: Path):
@@ -47,10 +48,23 @@ class ProductionStore:
         self.mark_ready(project,shot,out)
         return out
 
-    def build_final(self, project: Project):
+    def postprocess_shot(self, project: Project, shot: Shot, aspect: str = "9:16", speed: float = 1.0):
+        if not shot.video_path or not Path(shot.video_path).exists():
+            raise RuntimeError("当前镜头还没有真实成片，不能做本地后处理")
+        src=Path(shot.video_path)
+        out=self.root/'postprocessed'/project.id/shot.id/f'v{shot.version}-{aspect.replace(":", "x")}.mp4'
+        shot.status='本地4050处理中…'
+        self.save(project)
+        process_shot(src,out,aspect,speed)
+        shot.video_path=str(out)
+        shot.status='已后处理'
+        self.save(project)
+        return out
+
+    def build_final(self, project: Project, aspect: str = "9:16"):
         shots=self.current_shots(project)
         if len(shots)!=len(project.shots):
             raise RuntimeError(f'还有 {len(project.shots)-len(shots)} 个镜头没有成片，暂不能输出最终广告')
-        out=self.root/'final'/project.id/'final.mp4'
+        out=self.root/'final'/project.id/f'final-{aspect.replace(":", "x")}.mp4'
         concat([Path(s.video_path) for s in shots],out)
         return out
