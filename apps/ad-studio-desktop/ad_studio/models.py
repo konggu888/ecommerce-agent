@@ -32,6 +32,8 @@ class Shot:
     video_path: Optional[str]=None
     actual_cost_rmb: float=0.0
     provider: Optional[str]=None
+    generated_from_request: Optional[str]=None
+    asset_source: str='library'
     composition: str='主体清晰居中'
     focus_x: float=0.5
     focus_y: float=0.5
