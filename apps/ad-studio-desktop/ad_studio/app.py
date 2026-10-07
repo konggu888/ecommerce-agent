@@ -42,6 +42,7 @@ class App(tk.Tk):
         setup=ttk.LabelFrame(self,text='① 商品与广告策略',padding=12); setup.pack(fill='x',padx=16,pady=8)
         ttk.Label(setup,text='商品链接').grid(row=0,column=0,sticky='w'); self.url=tk.StringVar(); ttk.Entry(setup,textvariable=self.url,width=72).grid(row=0,column=1,columnspan=3,sticky='ew',padx=8)
         ttk.Label(setup,text='广告强度').grid(row=1,column=0,sticky='w'); self.level=tk.IntVar(value=2); ttk.Combobox(setup,textvariable=self.level,values=[1,2,3,4,5],state='readonly',width=8).grid(row=1,column=1,sticky='w')
+        ttk.Label(setup,text='本次预算（¥）').grid(row=1,column=2,sticky='e'); self.budget=tk.StringVar(value='3'); ttk.Entry(setup,textvariable=self.budget,width=10).grid(row=1,column=3,sticky='w',padx=8)
         ttk.Label(setup,text='留空/自动：交给AI判断；手动选择仅作为约束').grid(row=1,column=2,columnspan=2,sticky='w')
         ttk.Label(setup,text='视频形式').grid(row=2,column=0,sticky='w'); self.form=tk.StringVar(value='AI自动选择'); ttk.Combobox(setup,textvariable=self.form,values=['AI自动选择']+FORMS,state='readonly',width=22).grid(row=2,column=1,sticky='w')
         ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8)
@@ -248,6 +249,11 @@ class App(tk.Tk):
         url=self.url.get().strip()
         if not url:return messagebox.showinfo('提示','请先输入商品链接。')
         level=self.level.get(); form=self.form.get()
+        try:
+            budget=float(self.budget.get().strip())
+            if budget<0: raise ValueError
+        except ValueError:
+            return messagebox.showerror('预算格式错误','请输入有效的预算金额，例如 3、5、10、50。')
         info=parse_product_url(url)
         if not info.fetched and info.error:
             if not messagebox.askyesno('商品解析未完成',f'当前无法直接读取商品页面。\n\n原因：{info.error}\n\n仍可创建项目，稍后可手动补充商品信息。是否继续？'):
@@ -290,14 +296,15 @@ class App(tk.Tk):
         ]
         vp=load_video_provider(ROOT/'video-provider.json')
         rate=float(getattr(vp,'cost_per_shot_rmb',0.72)) if hasattr(vp,'cost_per_shot_rmb') else 0.72
-        c=estimate_cost(len(plan.shots), {'cloud_video_per_shot': rate}); self.project.cost_estimate=c; self._show_cost_breakdown(c)
+        c=estimate_cost(len(plan.shots), {'cloud_video_per_shot': rate})
+        c['预算']=budget; c['超预算']=c['总计']>budget; self.project.cost_estimate=c; self._show_cost_breakdown(c)
         detail='\n'.join([
             f"商品：{info.name}",f"平台：{info.platform}",f"AI判断广告强度：{plan.ad_level}",
             f"AI选择视频形式：{plan.video_form}",f"预计时长：{plan.duration_seconds}秒",
             f"AI策略：{plan.strategy}",f"AI钩子：{plan.hook}",'',
             f"开始项目前预计成本：¥{c['总计']:.2f}",f"本地4050/FFmpeg：¥{c['本地']:.2f}",f"云端任务：¥{c['云端']:.2f}",
             *[f"{x['项目']}：{x['数量']} × ¥{x['单价']:.2f} = ¥{x['小计']:.2f}" for x in c['明细'] if x['数量']],
-            '',f"预算线：¥{c['预算']:.2f}",c['计价说明'],'','超过预算不会自动降质、换模型或减少镜头。是否现在开始？'
+            '',f"本次预算：¥{c['预算']:.2f}",('⚠ 预计超过本次预算。' if c['超预算'] else '✓ 预计不超过本次预算。'),c['计价说明'],'','超过预算不会自动降质、换模型或减少镜头。是否现在开始？'
         ])
         if not messagebox.askyesno('AI创意与项目预算确认',detail):
             self.project=None; self.detail.set('已取消项目创建，尚未产生生成费用。'); return
