@@ -15,6 +15,7 @@ class CreativeShot:
     actor_requirements: list[str] = field(default_factory=list)
     scene_requirements: list[str] = field(default_factory=list)
     product_asset_requirements: list[str] = field(default_factory=list)
+    asset_resolution: dict = field(default_factory=dict)
     on_screen_text: list[str] = field(default_factory=list)
     cta_role: str = ""
     generation_prompt: str = ""
