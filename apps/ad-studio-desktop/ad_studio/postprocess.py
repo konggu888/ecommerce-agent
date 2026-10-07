@@ -31,8 +31,8 @@ def adapt_aspect(input_path: Path, output_path: Path, aspect: str = "9:16"):
         raise ValueError(f"不支持的画幅：{aspect}")
     width, height = ASPECTS[aspect]
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    # 保持主体完整性的中心裁切；后续可由 AI 提供 crop_x/crop_y。
-    focus_x = min(1.0, max(0.0, float(focus_x))); focus_y = min(1.0, max(0.0, float(focus_y)))
+    # 适配画幅；固定中心裁切由 process_shot 的 AI 焦点参数负责。
+    focus_x, focus_y = 0.5, 0.5
     vf = f"scale={width}:{height}:force_original_aspect_ratio=increase,crop={width}:{height}:x=(iw-{width})*{focus_x}:y=(ih-{height})*{focus_y}"
     codec = best_h264_encoder()
     _run([ffmpeg_path(), "-y", "-i", str(input_path), "-vf", vf, "-c:v", codec, "-preset", "p4" if codec == "h264_nvenc" else "medium", "-pix_fmt", "yuv420p", "-an", str(output_path)])
@@ -48,7 +48,7 @@ def process_shot(input_path: Path, output_path: Path, aspect: str = "9:16", spee
         vf += f",setpts={1.0/speed}*PTS"
     if transition == "淡入": vf += ",fade=t=in:st=0:d=0.25"
     elif transition == "淡出": vf += ",fade=t=out:st=0:d=0.25"
-    codec = "h264_nvenc" if has_nvenc() else "libx264"
+    codec = best_h264_encoder()
     _run([ffmpeg_path(), "-y", "-i", str(input_path), "-vf", vf, "-c:v", codec, "-preset", "p4" if codec == "h264_nvenc" else "medium", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", str(output_path)])
     return output_path
 
