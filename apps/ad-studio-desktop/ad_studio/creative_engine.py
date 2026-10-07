@@ -18,6 +18,16 @@ class CreativeShot:
     on_screen_text: list[str] = field(default_factory=list)
     cta_role: str = ""
     generation_prompt: str = ""
+    composition: str = "主体清晰居中"
+    focus_x: float = 0.5
+    focus_y: float = 0.5
+    subtitle_position: str = "底部安全区"
+    subtitle_style: str = "白字黑边"
+    pacing: str = "标准"
+    speed: float = 1.0
+    bgm_intensity: str = "低"
+    bgm_volume: float = 0.16
+    transition: str = "硬切"
 
 
 @dataclass
@@ -88,7 +98,17 @@ JSON_SCHEMA = {
         "product_asset_requirements": ["string"],
         "on_screen_text": ["string"],
         "cta_role": "string",
-        "generation_prompt": "string"
+        "generation_prompt": "string",
+        "composition": "string",
+        "focus_x": "number 0..1",
+        "focus_y": "number 0..1",
+        "subtitle_position": "顶部安全区|中部安全区|底部安全区|不显示",
+        "subtitle_style": "白字黑边|黄字黑边|简洁白字",
+        "pacing": "慢|标准|快|极快",
+        "speed": "number 0.75..1.5",
+        "bgm_intensity": "无|低|中|高",
+        "bgm_volume": "number 0..0.35",
+        "transition": "硬切|淡入|淡出"
     }]
 }
 
@@ -145,6 +165,16 @@ def validate_plan(raw: dict[str, Any]) -> CreativePlan:
                 on_screen_text=_text_list(shot.get("on_screen_text")),
                 cta_role=str(shot.get("cta_role", "")),
                 generation_prompt=str(shot.get("generation_prompt", "")),
+                composition=str(shot.get("composition", "主体清晰居中")),
+                focus_x=min(1.0, max(0.0, float(shot.get("focus_x", 0.5)))),
+                focus_y=min(1.0, max(0.0, float(shot.get("focus_y", 0.5)))),
+                subtitle_position=str(shot.get("subtitle_position", "底部安全区")),
+                subtitle_style=str(shot.get("subtitle_style", "白字黑边")),
+                pacing=str(shot.get("pacing", "标准")),
+                speed=min(1.5, max(0.75, float(shot.get("speed", 1.0)))),
+                bgm_intensity=str(shot.get("bgm_intensity", "低")),
+                bgm_volume=min(0.35, max(0.0, float(shot.get("bgm_volume", 0.16)))),
+                transition=str(shot.get("transition", "硬切")),
             )
         )
 
