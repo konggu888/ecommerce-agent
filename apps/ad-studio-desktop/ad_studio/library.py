@@ -30,4 +30,19 @@ class LocalLibrary:
     def add(self,name,kind,source='system',tags=None,path=None):
         item=Asset(uid(kind),name,kind,source,path,tags or []); self._write(self.all()+[item]); return item
     def reusable(self,kind,tags=None):
-        wanted=set(tags or []); return [a for a in self.all() if a.active and a.reusable and a.kind==kind and (not wanted or wanted.intersection(a.tags))]
+        wanted=set(tags or [])
+        return [a for a in self.all() if a.active and a.reusable and a.kind==kind and (not wanted or wanted.intersection(a.tags))]
+
+    def best_match(self, kind, tags=None):
+        """本地优先：按标签重合度选择最佳可复用素材。"""
+        wanted=set(tags or [])
+        candidates=[a for a in self.all() if a.active and a.reusable and a.kind==kind]
+        if not candidates: return None
+        if not wanted: return candidates[0]
+        ranked=sorted(candidates,key=lambda a: len(wanted.intersection(set(a.tags))),reverse=True)
+        return ranked[0] if wanted.intersection(set(ranked[0].tags)) else None
+
+    def register_generated(self, name, kind, path, tags=None, request=""):
+        """云端/AI生成后立即入本地永久资产库。"""
+        return self.add(name, kind, source="ai_generated", tags=tags or [], path=str(path))
+
