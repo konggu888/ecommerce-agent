@@ -6,6 +6,7 @@ from .ffmpeg import make_clip, concat
 from .providers import GenerationRequest, load_video_provider, load_asset_provider
 from .postprocess import process_shot
 from .library import LocalLibrary
+from .asset_generation import AssetGenerator
 
 class ProductionStore:
     def __init__(self, root: Path):
@@ -40,13 +41,26 @@ class ProductionStore:
         plan_shots=project.creative_plan.get("shots", []) if project.creative_plan else []
         ai=next((x for x in plan_shots if int(x.get("index", -1)) == shot.index), {})
         req=ai.get("asset_resolution", {}) or {}
+        generator=AssetGenerator(self.root/'asset-generation.json',self.root)
         for kind, tags in (("演员", req.get("actor_tags", [])), ("场景", req.get("scene_tags", [])), ("商品素材", req.get("product_tags", []))):
             found=library.best_match(kind,tags)
-            resolution[kind]={"asset":found.id if found else None,"source":"本地素材库" if found else "待自动生成","generate_if_missing":bool(req.get("generation_if_missing", True))}
-        if resolution["演员"]["asset"]: shot.actor_id=resolution["演员"]["asset"]
-        if resolution["场景"]["asset"]: shot.scene_id=resolution["场景"]["asset"]
-        shot.asset_source="library" if all(x["asset"] for x in resolution.values()) else "generate_missing"
-        project.creative_plan.setdefault("asset_resolution", {})[shot.id]=resolution
+            item={'asset':found.id if found else None,'source':'本地复用' if found else '待自动生成','generate_if_missing':bool(req.get('generation_if_missing', True))}
+            if not found and item['generate_if_missing']:
+                if generator.configured(kind):
+                    item['source']='自动生成中'
+                    try:
+                        result=generator.generate(kind,project.product_name+'-'+kind,shot.visual+'；需求：'+'、'.join(tags),tags,shot.id)
+                        library._write(library.all()+[result.asset])
+                        item.update({'asset':result.asset.id,'source':'已生成并入库','cost_rmb':result.cost_rmb})
+                    except Exception as exc:
+                        item.update({'source':'自动生成失败','error':str(exc)})
+                else:
+                    item['source']='未配置生成服务'
+            resolution[kind]=item
+        if resolution['演员']['asset']: shot.actor_id=resolution['演员']['asset']
+        if resolution['场景']['asset']: shot.scene_id=resolution['场景']['asset']
+        shot.asset_source='library' if all(x['asset'] for x in resolution.values()) else 'generate_missing'
+        project.creative_plan.setdefault('asset_resolution', {})[shot.id]=resolution
         self.save(project)
         return resolution
 
