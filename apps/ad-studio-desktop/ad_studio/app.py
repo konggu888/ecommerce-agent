@@ -5,7 +5,7 @@ import shutil
 import subprocess
 import json
 from .library import LocalLibrary
-from .engine import FORMS, new_project, mark_regenerate, estimate_cost
+from .engine import FORMS, new_project, mark_regenerate, estimate_cost, estimate_asset_generation
 from .gpu import detect_gpu
 from .production import ProductionStore
 from .product_parser import parse_product_url, save_product
@@ -30,7 +30,7 @@ PROJECTS=ROOT/'projects'
 class App(tk.Tk):
     def __init__(self):
         super().__init__(); self.title('AI 商品广告工厂 · 本地版'); self.geometry('1180x760'); self.minsize(980,650)
-        self.lib=LocalLibrary(ROOT); self.lib.ensure_defaults(); self.store=ProductionStore(PROJECTS); self.project=None
+        self.lib=LocalLibrary(ROOT); self.lib.ensure_defaults(); self.store=ProductionStore(PROJECTS, library_root=ROOT); self.project=None
         self.model_router=ModelRouter(ROOT/'model-config.json')
         self.creative_engine=CreativeEngine(self.model_router)
         self.ui(); self.aspect=tk.StringVar(value='9:16'); self.refresh_assets(); self.refresh_gpu()
@@ -336,7 +336,7 @@ class App(tk.Tk):
             f"商品：{info.name}",f"平台：{info.platform}",f"AI判断广告强度：{plan.ad_level}",
             f"AI选择视频形式：{plan.video_form}",f"预计时长：{plan.duration_seconds}秒",
             f"AI策略：{plan.strategy}",f"AI钩子：{plan.hook}",'',
-            f"开始项目前预计成本：¥{c['总计']:.2f}",f"本地4050/FFmpeg：¥{c['本地']:.2f}",f"云端任务：¥{c['云端']:.2f}",
+            f"开始项目前预计成本：¥{c['总计']:.2f}",f"本地4050/FFmpeg：¥{c['本地']:.2f}",f"视频生成费用：¥{rate*len(plan.shots):.2f}",f"演员生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='演员'):.2f}",f"场景生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='场景'):.2f}",f"商品素材生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='商品素材'):.2f}",f"云端任务：¥{c['云端']:.2f}",
             *[f"{x['项目']}：{x['数量']} × ¥{x['单价']:.2f} = ¥{x['小计']:.2f}" for x in c['明细'] if x['数量']],
             '',f"本次预算：¥{c['预算']:.2f}",('⚠ 预计超过本次预算。' if c['超预算'] else '✓ 预计不超过本次预算。'),c['计价说明'],'','超过预算不会自动降质、换模型或减少镜头。是否现在开始？'
         ])
