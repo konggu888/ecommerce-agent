@@ -7,6 +7,7 @@ from .providers import GenerationRequest, load_video_provider, load_asset_provid
 from .postprocess import process_shot
 from .library import LocalLibrary
 from .asset_generation import AssetGenerator
+from .hardware import detect_hardware
 
 class ProductionStore:
     def __init__(self, root: Path, library_root: Path | None = None):
