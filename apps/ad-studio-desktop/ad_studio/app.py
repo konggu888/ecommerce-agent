@@ -97,7 +97,7 @@ class App(tk.Tk):
         ttk.Label(setup,text='素材来源').grid(row=4,column=0,sticky='w'); self.footage_mode=tk.StringVar(value='AI生成视频'); ttk.Combobox(setup,textvariable=self.footage_mode,values=['AI生成视频','用户拍摄素材'],state='readonly',width=16).grid(row=4,column=1,sticky='w',pady=(4,2))
         self.footage_folder=tk.StringVar(value=''); ttk.Entry(setup,textvariable=self.footage_folder,width=36).grid(row=4,column=2,sticky='w',padx=4); ttk.Button(setup,text='选择素材文件夹',command=self.choose_footage_folder).grid(row=4,column=3,sticky='e')
         ttk.Label(setup,text='用户拍摄素材：输入链接后 AI 分析产品 → 指定文件夹放入你拍好的视频 → AI 思考剪辑方案 → 本地 FFmpeg 出片（不调用视频生成服务）',foreground='#666').grid(row=5,column=0,columnspan=5,sticky='w',pady=(2,0))
-        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
+        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='📹 实拍分析报告',command=self.footage_analysis_report).grid(row=2,column=5,sticky='e',padx=8); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
         main=ttk.Panedwindow(self,orient='horizontal'); main.pack(fill='both',expand=True,padx=16,pady=8)
         left=ttk.Frame(main,padding=8); right=ttk.Frame(main,padding=8); main.add(left,weight=3); main.add(right,weight=2)
         ttk.Label(left,text='② 分镜生产链',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
@@ -115,6 +115,40 @@ class App(tk.Tk):
         ttk.Label(self,text='本地存储：本机磁盘  |  资产库：永久复用  |  云端生成：仅在需要时调用',relief='sunken',anchor='w',padding=8).pack(fill='x',side='bottom')
 
 
+
+    def footage_analysis_report(self):
+        """显示当前项目的实拍视觉分析、废片归档和口播转写结果。"""
+        if not self.project:
+            return messagebox.showinfo('提示', '请先创建或打开一个项目。')
+        plan=self.project.creative_plan or {}
+        analysis=plan.get('footage_visual_analysis') or {}
+        clips=analysis.get('clips') if isinstance(analysis, dict) else []
+        clips=clips if isinstance(clips, list) else []
+        archive=plan.get('footage_archive') or {}
+        records=archive.get('records') if isinstance(archive, dict) else []
+        records=records if isinstance(records, list) else []
+        transcripts=plan.get('footage_transcripts') or []
+        win=tk.Toplevel(self); win.title('实拍素材分析报告'); win.geometry('1080x700'); win.transient(self)
+        frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
+        ttk.Label(frm,text='实拍素材分析报告',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
+        archived=sum(1 for x in records if x.get('archived'))
+        usable=sum(1 for x in clips if x.get('usable') is not False)
+        recommended=analysis.get('recommended_duration_seconds','未提供') if isinstance(analysis,dict) else '未提供'
+        summary=(f'视觉分析：{len(clips)} 个｜当前可用：{usable} 个｜已归档废片：{archived} 个｜'
+                 f'口播转写：{len(transcripts)} 个｜AI建议时长：{recommended} 秒')
+        ttk.Label(frm,text=summary).pack(anchor='w',pady=(4,10))
+        if isinstance(analysis,dict) and analysis.get('global_summary'):
+            ttk.Label(frm,text='AI总体判断：'+str(analysis['global_summary']),wraplength=1020,justify='left').pack(anchor='w',pady=(0,10))
+        tree=ttk.Treeview(frm,columns=('score','usable','reason','tags','ranges','speech'),show='headings')
+        heads=[('score','评分',70),('usable','是否可用',80),('reason','判断原因',300),('tags','画面标签',240),('ranges','推荐片段',180),('speech','口播质量',100)]
+        for col,title,width in heads:
+            tree.heading(col,text=title); tree.column(col,width=width,anchor='w')
+        tree.pack(fill='both',expand=True)
+        for item in clips:
+            ranges=item.get('best_ranges',[])
+            ranges_text='；'.join(f"{float(x.get('start',0)):.1f}-{float(x.get('start',0))+float(x.get('duration',0)):.1f}s" for x in ranges if isinstance(x,dict))
+            tree.insert('', 'end', values=(item.get('score','-'),'是' if item.get('usable') is not False else '否',str(item.get('reason','')), '、'.join(map(str,item.get('visual_tags',[]))),ranges_text,item.get('speech_quality','-')))
+        ttk.Button(frm,text='关闭',command=win.destroy).pack(anchor='e',pady=(10,0))
 
     def system_status(self):
         """Show whether advertised capabilities are actually configured and usable."""
@@ -444,7 +478,7 @@ class App(tk.Tk):
                     self.project.creative_plan['footage_visual_analysis']=analysis
                     # 视觉分析完成后，自动把明确不可用素材移入 05_废片库；只有成功移动的素材才从后续剪辑候选中剔除。
                     waste_root=folder.parent/'05_废片库'
-                    usable, waste_records=archive_analyzed_waste(usable, analysis, waste_root, self.project.id)
+                    usable, waste_records=archive_analyzed_waste(clips, analysis, waste_root, self.project.id)
                     self.project.creative_plan['footage_archive'] = {
                         'archive_root': str(waste_root/self.project.id),
                         'records': waste_records,

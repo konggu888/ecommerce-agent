@@ -21,6 +21,7 @@ from ad_studio.footage import (
     scan_footage,
     trim_clip,
     validate_footage_plan,
+    archive_analyzed_waste,
 )
 
 from ad_studio import footage as footage_module
@@ -90,6 +91,27 @@ class ScanFootageTests(unittest.TestCase):
         self.assertEqual(len(clips), 1)
         self.assertEqual(clips[0].duration, 0.0)
         self.assertIn("解析失败", clips[0].note)
+
+
+
+class ArchiveWasteTests(unittest.TestCase):
+    def test_archives_ai_rejected_and_unparsable_but_keeps_good(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp); src=root/'素材'; src.mkdir(); archive=root/'05_废片库'
+            bad=src/'bad.mp4'; bad.write_bytes(b'bad')
+            rejected=src/'reject.mp4'; rejected.write_bytes(b'reject')
+            good=src/'good.mp4'; good.write_bytes(b'good')
+            clips=[
+                FootageClip('bad.mp4',str(bad),0,0,0,0,'解析失败'),
+                FootageClip('reject.mp4',str(rejected),5,1080,1920,30),
+                FootageClip('good.mp4',str(good),5,1080,1920,30),
+            ]
+            analysis={'clips':[{'source':'reject.mp4','usable':False,'score':12,'reason':'严重遮挡','visual_tags':['blocked']}, {'source':'good.mp4','usable':True,'score':88}]}
+            kept,records=archive_analyzed_waste(clips,analysis,archive,'p1')
+            self.assertEqual([x.name for x in kept],['good.mp4'])
+            self.assertFalse(bad.exists()); self.assertFalse(rejected.exists()); self.assertTrue(good.exists())
+            self.assertEqual(sum(1 for x in records if x['archived']),2)
+            self.assertTrue((archive/'p1'/'archive-manifest.json').exists())
 
 
 class TrimClipTests(unittest.TestCase):

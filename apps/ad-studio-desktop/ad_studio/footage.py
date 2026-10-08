@@ -182,6 +182,8 @@ def archive_analyzed_waste(
     for clip in clips:
         item = analyzed.get(clip.name, {})
         unusable = clip.duration <= 0 or item.get('usable') is False
+        if clip.duration <= 0 and not item.get('reason'):
+            item = {**item, 'reason': clip.note or 'FFmpeg 无法解析该视频'}
         if not unusable:
             kept.append(clip)
             continue
