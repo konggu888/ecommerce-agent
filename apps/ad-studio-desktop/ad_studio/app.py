@@ -1327,6 +1327,8 @@ class App(tk.Tk):
         if not self.project: return messagebox.showinfo('提示','先创建项目。')
         variants=self.project.creative_plan.get('creative_variants',[])
         if len(variants)<=1: return messagebox.showinfo('提示','当前只有一个方案，请直接生成当前镜头。')
+        # 先锁定用户当前方案；预算预审会逐方案切换，不能把“最后一次预审方案”误当成原方案。
+        original_index=self.active_variant_index
         self._cache_active_variant()
         budget=float((self.project.cost_estimate or {}).get('预算',0) or 0)
         footage_mode=self.footage_mode.get().strip() if hasattr(self,'footage_mode') else ''
@@ -1348,7 +1350,7 @@ class App(tk.Tk):
             self._cache_active_variant()
         if budget>0 and estimated>budget:
             return messagebox.showwarning('预算闸门',f'本次一键生成预计还需约 ¥{estimated:.2f}，已超过项目预算 ¥{budget:.2f}。\n\n系统不会自动突破预算；请提高预算或减少待生成镜头后再执行。')
-        original=self.active_variant_index; info=__import__('ad_studio.product_parser',fromlist=['ProductInfo']).ProductInfo(**self.project.product_info)
+        original=original_index; info=__import__('ad_studio.product_parser',fromlist=['ProductInfo']).ProductInfo(**self.project.product_info)
         done=[]; failed=[]; outputs=[]
         try:
             for pos,raw0 in enumerate(variants,1):
