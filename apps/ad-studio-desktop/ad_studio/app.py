@@ -571,6 +571,8 @@ class App(tk.Tk):
             'task_type': self.project.creative_plan.get('task_type', self.task_type.get()) if self.project else self.task_type.get(),
             'task_validation': raw.get('task_validation', {}),
             'task_policy': raw.get('task_policy', TASK_TYPE_POLICIES.get(self.task_type.get(), {})),
+            'variant_test_axis': raw.get('variant_test_axis', {}),
+            'variant_set_audit': raw.get('variant_set_audit', {}),
         }
 
     def _activate_plan(self, raw, info):
