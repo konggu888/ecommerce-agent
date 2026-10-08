@@ -360,3 +360,5 @@ CI 的桌面 Python 语法检查发现 `ffmpeg.py` 的 concat 清单 `write_text
 - 2026-10-08：新增实拍重复镜头分组与最佳版本选择的数据规范、规范化逻辑及剪辑导演优先级规则。
 
 - 2026-10-08：`footage_analysis_report` 展示 `duplicate_group` 与 `best_take`，报告只读取已保存结果，不新增模型调用。
+
+- 2026-10-08：实拍素材池新增本地综合排名 `material_rank`/`selection_score`；基于 AI 原始评分、最佳版本、口播质量、画面标签和重复镜头惩罚排序，不覆盖原始 AI 评分，也不产生额外模型调用。
