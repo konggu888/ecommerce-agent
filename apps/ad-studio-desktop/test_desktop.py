@@ -1181,7 +1181,7 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertAlmostEqual(saved["ctr"], 0.1)
         provenance=project.creative_plan["variant_performance_provenance"]["1"]
         self.assertEqual(provenance["source_type"], "user_provided")
-        self.assertFalse(provenance["simulation"])
+        self.assertEqual(provenance["verification_status"], "unverified")
         self.assertIn("不验证真实性", provenance["statement"])
         self.assertNotIn("platform_api_response", saved)
 
