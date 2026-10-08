@@ -267,6 +267,20 @@ class App(tk.Tk):
         for x in tasks:
             tree.insert('', 'end', values=(x.get('task_id','-'),x.get('type','-'),x.get('priority','-'),x.get('need','-'),x.get('related_selling_point','-'),x.get('shoot_or_generate','-'),x.get('acceptance','-')))
         ttk.Label(frm,text='闭环下一步：完成这些任务后，把新增素材放回原素材文件夹，再执行“重新分析实拍素材”，系统会重新进入视觉分析→素材排名→覆盖审计→分镜复核。',wraplength=1050,justify='left').pack(anchor='w',pady=10)
+        def show_task(event=None):
+            sel=tree.selection()
+            if not sel:return
+            task=tasks[tree.index(sel[0])]
+            detail.delete('1.0','end')
+            detail.insert('1.0',
+                f"任务：{task.get('task_id','-')}｜优先级：{task.get('priority','-')}\n"
+                f"缺口：{task.get('need','-')}\n关联卖点：{task.get('related_selling_point','-') or '无'}\n"
+                f"为什么需要：{task.get('why','-')}\n判断依据：{task.get('reason','-')}\n\n"
+                f"📱 怎么拍/怎么补：\n{task.get('shoot_or_generate','-')}\n\n"
+                f"✅ 合格标准：\n{task.get('acceptance','-')}")
+        detail=tk.Text(frm,height=10); detail.pack(fill='x',pady=(6,8))
+        tree.bind('<<TreeviewSelect>>',show_task)
+        ttk.Label(frm,text='选中任务后，可以直接照着“怎么拍”和“合格标准”补素材；完成后放回原素材文件夹，再重新分析。',foreground='#666',wraplength=1050,justify='left').pack(anchor='w')
         ttk.Button(frm,text='关闭',command=win.destroy).pack(anchor='e')
  
     @ui_action
