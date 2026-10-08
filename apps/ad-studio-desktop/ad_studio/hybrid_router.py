@@ -56,7 +56,7 @@ def route_footage_gap_tasks(
     remaining = max(0.0, float(budget_remaining_rmb or 0.0))
     rate = max(0.0, float(cost_per_ai_shot_rmb or 0.0))
     output = []
-    counts = {"继续补拍": 0, "AI补镜头": 0, "需要人工确认": 0}
+    counts = {"继续补拍": 0, "AI补镜头": 0, "AI补辅助画面": 0, "需要人工确认": 0}
     for raw in tasks or []:
         if not isinstance(raw, dict):
             continue
@@ -75,7 +75,7 @@ def route_footage_gap_tasks(
             task["generation_mode"] = "仅辅助画面，不生成真人/真人声音"
             task["estimated_cost_rmb"] = round(rate, 4)
             task["resolution_reason"] = "真人口播不足时允许生成图片、视频或 B-roll 支撑口播，但禁止生成或冒充真人出镜、真人口播或真人声音。"
-            counts["AI补镜头"] += 1
+            counts["AI补辅助画面"] += 1
             remaining = max(0.0, remaining - rate)
         elif human:
             task["recommended_resolution"] = "需要人工确认"
