@@ -31,6 +31,75 @@ class ProductionStore:
         data['shots']=[Shot(**s) for s in data.get('shots',[])]
         return Project(**data)
 
+    def record_recovery_failure(self, project: Project, *, stage: str, error: str, next_action: str, retryable: bool = True):
+        """统一记录可恢复失败；不清除已有有效资产，保存下一步动作。"""
+        now = datetime.datetime.now().isoformat(timespec="seconds")
+        plan = project.creative_plan.setdefault("recovery", {})
+        history = plan.setdefault("history", [])
+        record = {
+            "stage": str(stage),
+            "error": str(error),
+            "retryable": bool(retryable),
+            "next_action": str(next_action),
+            "status": "待恢复" if retryable else "需处理",
+            "created_at": now,
+        }
+        history.append(record)
+        plan.update({"status": record["status"], "stage": record["stage"], "error": record["error"], "next_action": record["next_action"], "updated_at": now})
+        self.save(project)
+        return record
+
+    def recover_project(self, project: Project):
+        """恢复中断项目：清理未完成临时输出、校正失效媒体状态，并保留有效资产与历史。"""
+        creative_plan = project.creative_plan
+        recovery = creative_plan.setdefault("recovery", {})
+        removed_parts = 0
+        render_root = self.root / "renders" / project.id
+        if render_root.exists():
+            for part in render_root.rglob("*.part.mp4"):
+                part.unlink(missing_ok=True)
+                removed_parts += 1
+        missing_media = []
+        for shot in project.shots:
+            if shot.video_path and not Path(shot.video_path).exists():
+                missing_media.append(shot.id)
+                shot.video_path = None
+                shot.status = "待重新生成/重新选择素材"
+        invalid_outputs = []
+        records = list(creative_plan.get("final_output_history_records", []) or [])
+        manifests = creative_plan.get("final_output_manifests", {}) or {}
+        if isinstance(manifests, dict):
+            records.extend(manifests.values())
+        seen = set()
+        for item in records:
+            if not isinstance(item, dict):
+                continue
+            output_path = str(item.get("output_path") or "")
+            if output_path in seen:
+                continue
+            seen.add(output_path)
+            path = Path(output_path)
+            if item.get("delivery_status") == "可交付" and (not output_path or not path.exists() or path.stat().st_size <= 0):
+                item["delivery_status"] = "不可交付"
+                item["recovery_reason"] = "最终输出文件缺失或为空"
+                invalid_outputs.append(output_path)
+        now = datetime.datetime.now().isoformat(timespec="seconds")
+        recovery.update({
+            "status": "可继续",
+            "stage": "恢复完成",
+            "next_action": "从未完成阶段继续任务",
+            "last_recovery": {"removed_temp_files": removed_parts, "missing_media": missing_media, "invalid_outputs": invalid_outputs, "updated_at": now},
+            "updated_at": now,
+        })
+        self.save(project)
+        return recovery["last_recovery"]
+
+    def clear_recovery(self, project: Project):
+        plan = project.creative_plan.setdefault("recovery", {})
+        plan.update({"status": "正常", "stage": "", "error": "", "next_action": "继续当前任务", "updated_at": datetime.datetime.now().isoformat(timespec="seconds")})
+        self.save(project)
+        return plan
+
     def _variant_index(self, project: Project) -> int:
         """读取当前项目激活方案；所有物理媒体路径都必须带方案隔离。"""
         try:
