@@ -65,14 +65,23 @@ class ProductionStore:
                 shot.video_path = None
                 shot.status = "待重新生成/重新选择素材"
         invalid_outputs = []
-        for item in plan.get("final_output_history_records", []):
+        records = list(plan.get("final_output_history_records", []) or [])
+        manifests = plan.get("final_output_manifests", {}) or {}
+        if isinstance(manifests, dict):
+            records.extend(manifests.values())
+        seen = set()
+        for item in records:
             if not isinstance(item, dict):
                 continue
-            path = Path(str(item.get("output_path") or ""))
-            if item.get("delivery_status") == "可交付" and (not path.exists() or path.stat().st_size <= 0):
+            output_path = str(item.get("output_path") or "")
+            if output_path in seen:
+                continue
+            seen.add(output_path)
+            path = Path(output_path)
+            if item.get("delivery_status") == "可交付" and (not output_path or not path.exists() or path.stat().st_size <= 0):
                 item["delivery_status"] = "不可交付"
                 item["recovery_reason"] = "最终输出文件缺失或为空"
-                invalid_outputs.append(str(path))
+                invalid_outputs.append(output_path)
         now = datetime.datetime.now().isoformat(timespec="seconds")
         plan.update({
             "status": "可继续",
