@@ -505,3 +505,9 @@ def test_append_footage_reanalysis_history_keeps_previous_snapshot(tmp_path):
     assert p.exists()
     assert 'old' in p.read_text(encoding='utf-8')
     assert p.parent.name == 'footage-reanalysis-history'
+
+
+def test_history_report_method_does_not_require_ai(tmp_path):
+    from ad_studio.footage import append_footage_reanalysis_history
+    p = append_footage_reanalysis_history(tmp_path / 'project', {'footage_plan': [{'source': 'a.mp4'}]})
+    assert p.exists()

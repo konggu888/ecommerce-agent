@@ -97,7 +97,7 @@ class App(tk.Tk):
         ttk.Label(setup,text='素材来源').grid(row=4,column=0,sticky='w'); self.footage_mode=tk.StringVar(value='AI生成视频'); ttk.Combobox(setup,textvariable=self.footage_mode,values=['AI生成视频','用户拍摄素材'],state='readonly',width=16).grid(row=4,column=1,sticky='w',pady=(4,2))
         self.footage_folder=tk.StringVar(value=''); ttk.Entry(setup,textvariable=self.footage_folder,width=36).grid(row=4,column=2,sticky='w',padx=4); ttk.Button(setup,text='选择素材文件夹',command=self.choose_footage_folder).grid(row=4,column=3,sticky='e')
         ttk.Label(setup,text='用户拍摄素材：输入链接后 AI 分析产品 → 指定文件夹放入你拍好的视频 → AI 思考剪辑方案 → 本地 FFmpeg 出片（不调用视频生成服务）',foreground='#666').grid(row=5,column=0,columnspan=5,sticky='w',pady=(2,0))
-        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='📹 实拍分析报告',command=self.footage_analysis_report).grid(row=2,column=5,sticky='e',padx=8); ttk.Button(setup,text='📋 补素材任务',command=self.footage_gap_tasks_report).grid(row=2,column=6,sticky='e',padx=8); ttk.Button(setup,text='🔄 重新分析实拍素材',command=self.reanalyze_footage).grid(row=2,column=7,sticky='e',padx=8); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
+        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='📹 实拍分析报告',command=self.footage_analysis_report).grid(row=2,column=5,sticky='e',padx=8); ttk.Button(setup,text='📋 补素材任务',command=self.footage_gap_tasks_report).grid(row=2,column=6,sticky='e',padx=8); ttk.Button(setup,text='🔄 重新分析实拍素材',command=self.reanalyze_footage).grid(row=2,column=7,sticky='e',padx=8); ttk.Button(setup,text='🕘 分析历史',command=self.footage_reanalysis_history_report).grid(row=2,column=8,sticky='e',padx=8); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
         main=ttk.Panedwindow(self,orient='horizontal'); main.pack(fill='both',expand=True,padx=16,pady=8)
         left=ttk.Frame(main,padding=8); right=ttk.Frame(main,padding=8); main.add(left,weight=3); main.add(right,weight=2)
         ttk.Label(left,text='② 分镜生产链',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
@@ -275,6 +275,48 @@ class App(tk.Tk):
             )
         except Exception as e:
             messagebox.showerror('重新分析失败',str(e))
+
+    def footage_reanalysis_history_report(self):
+        """查看连续补拍/重新分析过程中保存的历史方案，不触发新的 AI 调用。"""
+        if not self.project:
+            return messagebox.showinfo('提示', '请先创建一个实拍素材项目。')
+        history = self.project.creative_plan.get('footage_reanalysis_history') or []
+        if not history:
+            return messagebox.showinfo('暂无历史', '当前项目还没有重新分析历史。首次重新分析不会产生历史快照，从第二次开始自动保存。')
+        win = tk.Toplevel(self); win.title('实拍重新分析历史'); win.geometry('980x680'); win.transient(self)
+        frm = ttk.Frame(win, padding=14); frm.pack(fill='both', expand=True)
+        ttk.Label(frm, text='实拍重新分析历史', font=('Microsoft YaHei UI', 18, 'bold')).pack(anchor='w')
+        ttk.Label(frm, text='这里只读取已经保存的历史快照，不会再次调用 AI。', foreground='#666').pack(anchor='w', pady=(2, 10))
+        tree = ttk.Treeview(frm, columns=('file','coverage','shots','gaps'), show='headings', height=18)
+        for c,t,w in [('file','历史快照',430),('coverage','覆盖率',100),('shots','镜头数',90),('gaps','缺口任务',100)]:
+            tree.heading(c,text=t); tree.column(c,width=w,anchor='w')
+        tree.pack(fill='both', expand=True)
+        details = tk.Text(frm, height=10, wrap='word'); details.pack(fill='x', pady=10)
+        entries=[]
+        for raw in history:
+            p=Path(str(raw)).expanduser()
+            if not p.exists(): continue
+            try:
+                data=json.loads(p.read_text(encoding='utf-8'))
+            except Exception as exc:
+                data={'_error': str(exc)}
+            coverage=(data.get('footage_coverage') or {})
+            gaps=(data.get('footage_gap_tasks') or {})
+            plan=data.get('footage_plan') or []
+            entries.append((p,data))
+            tree.insert('', 'end', values=(p.name, f"{coverage.get('coverage_score','-')}%", len(plan), gaps.get('task_count','-')))
+        def show_selected(_event=None):
+            sel=tree.selection()
+            if not sel: return
+            idx=tree.index(sel[0]); p,data=entries[idx]
+            details.delete('1.0','end')
+            details.insert('end', f'文件：{p}\n')
+            details.insert('end', f'覆盖率：{(data.get("footage_coverage") or {}).get("coverage_score","-")}%\n')
+            details.insert('end', f'缺口任务：{(data.get("footage_gap_tasks") or {}).get("task_count","-")}\n')
+            details.insert('end', f'历史镜头数：{len(data.get("footage_plan") or [])}\n\n')
+            details.insert('end', json.dumps(data.get('footage_selection_audit') or {}, ensure_ascii=False, indent=2)[:12000])
+        tree.bind('<<TreeviewSelect>>', show_selected)
+        ttk.Button(frm,text='关闭',command=win.destroy).pack(anchor='e')
 
     def system_status(self):
         """Show whether advertised capabilities are actually configured and usable."""

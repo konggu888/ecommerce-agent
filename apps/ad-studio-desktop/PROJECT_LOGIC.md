@@ -407,3 +407,7 @@ classify_footage_gaps 不再要求 missing_selling_points 必须同时存在于 
 
 ## 2026-10-08：重新分析历史版本
 新增 `append_footage_reanalysis_history`。每次重新分析覆盖当前结果前，先把上一轮视觉分析、覆盖审计、缺口任务、最终分镜方案单独写入项目历史目录；这样“补拍→重新分析”可以连续进行而不会丢失上一轮决策。
+
+
+## 2026-10-08：分析历史 UI
+新增 `footage_reanalysis_history_report`。它读取 `footage-reanalysis-history/` 中已保存的快照并展示覆盖率、缺口任务和历史镜头数，避免用户连续补拍后无法回看之前的决策；不新增模型调用。
