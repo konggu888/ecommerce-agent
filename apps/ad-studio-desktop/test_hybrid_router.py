@@ -98,7 +98,7 @@ class HybridVariantCacheTests(unittest.TestCase):
         self.assertEqual(restored[1].clip_source,'ai_generated')
 
     def test_variant_cache_without_saved_data_keeps_base_plan(self):
-        from ad_studio.app import _restore_variant_shot_cache
+        from ad_studio.models import restore_variant_shot_cache
         from ad_studio.models import Shot
         base=[Shot(id='shot-01',index=1,title='原镜头1',visual='画面1',script='文案1')]
         restored=restore_variant_shot_cache(base,[])

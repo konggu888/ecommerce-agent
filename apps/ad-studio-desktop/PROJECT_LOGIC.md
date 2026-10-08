@@ -517,3 +517,7 @@ test_hybrid_router.py 的 HybridVariantCacheTests 验证方案镜头缓存按稳
 
 ### 方案缓存恢复的数据层隔离
 restore_variant_shot_cache 位于 models.py，只处理 Shot 数据，不依赖 Tkinter。app.py 负责调用它。这样桌面 UI 与纯数据恢复逻辑分离，Linux CI 不安装 Tkinter 也能验证方案切换/缓存恢复。
+
+
+### 方案缓存测试隔离
+方案缓存恢复属于纯数据层逻辑，回归测试直接覆盖 models.py 的 restore_variant_shot_cache，不依赖桌面 UI 环境。

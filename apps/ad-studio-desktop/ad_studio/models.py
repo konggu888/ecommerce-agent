@@ -71,24 +71,3 @@ class Project:
     def save(self, root: Path):
         root.mkdir(parents=True, exist_ok=True)
         (root/f'{self.id}.json').write_text(json.dumps(asdict(self),ensure_ascii=False,indent=2),encoding='utf-8')
-
-
-def restore_variant_shot_cache(base_shots, saved_shots):
-    """恢复广告方案完整镜头缓存，保留人工纳入的额外镜头。"""
-    if not saved_shots:
-        return list(base_shots)
-    base_by_id = {str(getattr(shot, "id", "")): shot for shot in base_shots}
-    restored = []
-    for saved in saved_shots:
-        if not isinstance(saved, dict):
-            continue
-        shot_id = str(saved.get("id", ""))
-        if shot_id in base_by_id:
-            shot = base_by_id[shot_id]
-            for key, value in saved.items():
-                if key != "id" and hasattr(shot, key):
-                    setattr(shot, key, value)
-            restored.append(shot)
-        else:
-            restored.append(Shot(**saved))
-    return restored
