@@ -397,7 +397,7 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(data["variant_index"], 2)
             self.assertEqual(data["shot_indices"], [1, 2])
             self.assertTrue(data["media_check"]["valid"])
-            self.assertTrue(p.creative_plan["final_output_manifests"]["2"]["media_check"]["valid"])
+            self.assertTrue(p.creative_plan["final_output_manifests"]["2|9:16"]["media_check"]["valid"])
 
     def test_final_output_inspection_rejects_wrong_aspect(self):
         with tempfile.TemporaryDirectory() as td:
