@@ -92,6 +92,41 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertTrue(any(s.id == task["accepted_shot_id"] for s in restored.shots))
 
 
+    def test_variant_performance_metrics_are_calculated_and_persistable(self):
+        try:
+            from ad_studio.app import App
+        except ModuleNotFoundError as exc:
+            if exc.name != 'tkinter':
+                raise
+            import sys, types
+            fake_tk = types.ModuleType('tkinter')
+            fake_tk.Tk = object
+            fake_tk.ttk = types.ModuleType('tkinter.ttk')
+            fake_tk.filedialog = types.ModuleType('tkinter.filedialog')
+            fake_tk.messagebox = types.ModuleType('tkinter.messagebox')
+            sys.modules['tkinter'] = fake_tk
+            sys.modules['tkinter.ttk'] = fake_tk.ttk
+            sys.modules['tkinter.filedialog'] = fake_tk.filedialog
+            sys.modules['tkinter.messagebox'] = fake_tk.messagebox
+            from ad_studio.app import App
+        app = App.__new__(App)
+        metrics = app._variant_metrics({
+            'impressions': '10000',
+            'clicks': '500',
+            'conversions': '25',
+            'spend_rmb': '100',
+            'revenue_rmb': '400',
+        })
+        self.assertEqual(metrics['impressions'], 10000)
+        self.assertEqual(metrics['clicks'], 500)
+        self.assertEqual(metrics['conversions'], 25)
+        self.assertAlmostEqual(metrics['ctr'], 0.05)
+        self.assertAlmostEqual(metrics['cvr'], 0.05)
+        self.assertAlmostEqual(metrics['cpc_rmb'], 0.2)
+        self.assertAlmostEqual(metrics['cpa_rmb'], 4.0)
+        self.assertAlmostEqual(metrics['roas'], 4.0)
+        self.assertEqual(app._variant_metrics({})['ctr'], 0.0)
+
     def test_variant_state_survives_plan_switch(self):
         # 切换方案会重建当前 creative_plan；已生成的版本缓存/输出记录必须保留。
         try:
