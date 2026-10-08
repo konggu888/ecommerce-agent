@@ -440,3 +440,6 @@ validate_task_type_plan 在创意方案进入项目/成片前执行，防止 AI 
 - 2026-10-08 修复：A/B 多版本审计仅作为 ModelRouter 的辅助能力，不改变 `plan_footage()` 的类内作用域和原有实拍剪辑链。
 
 - 2026-10-08：`variant_shot_cache` 保存各方案镜头状态，`variant_outputs` 保存各方案成片路径；最终渲染支持 `variant_index` 独立命名。
+
+## 2026-10-08：投放版本矩阵
+`variant_matrix_report()` 提供投放前版本总览，将 `creative_variants`、`variant_set_audit`、`variant_outputs` 汇总展示。它是只读审计界面，不重新调用模型，也不宣称真实投放效果。

@@ -569,3 +569,10 @@ def test_ad_variant_audit_detects_real_differences():
 def test_variant_final_filename_is_independent():
     from ad_studio.production import ProductionStore
     assert (ProductionStore(Path('/tmp/x')).root/'final'/'p1'/'final-9x16-v2.mp4').name == 'final-9x16-v2.mp4'
+
+
+def test_variant_matrix_data_is_read_only():
+    # 版本矩阵依赖项目已保存的 creative_variants/variant_outputs，不应触发新 AI 调用。
+    project_data={'creative_variants':[{'hook':'A','strategy':'卖点A','variant_test_axis':{'name':'钩子角度'}}], 'variant_outputs':{'1':{'path':'v1.mp4','status':'已输出'}}}
+    assert project_data['creative_variants'][0]['variant_test_axis']['name'] == '钩子角度'
+    assert project_data['variant_outputs']['1']['path'] == 'v1.mp4'

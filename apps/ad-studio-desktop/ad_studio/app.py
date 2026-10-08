@@ -109,7 +109,7 @@ class App(tk.Tk):
         ttk.Label(setup,text='素材来源').grid(row=5,column=0,sticky='w'); self.footage_mode=tk.StringVar(value='AI生成视频'); ttk.Combobox(setup,textvariable=self.footage_mode,values=['AI生成视频','用户拍摄素材'],state='readonly',width=16).grid(row=4,column=1,sticky='w',pady=(4,2))
         self.footage_folder=tk.StringVar(value=''); ttk.Entry(setup,textvariable=self.footage_folder,width=36).grid(row=5,column=2,sticky='w',padx=4); ttk.Button(setup,text='选择素材文件夹',command=self.choose_footage_folder).grid(row=4,column=3,sticky='e')
         ttk.Label(setup,text='用户拍摄素材：输入链接后 AI 分析产品 → 指定文件夹放入你拍好的视频 → AI 思考剪辑方案 → 本地 FFmpeg 出片（不调用视频生成服务）',foreground='#666').grid(row=6,column=0,columnspan=5,sticky='w',pady=(2,0))
-        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='📹 实拍分析报告',command=self.footage_analysis_report).grid(row=2,column=5,sticky='e',padx=8); ttk.Button(setup,text='📋 补素材任务',command=self.footage_gap_tasks_report).grid(row=2,column=6,sticky='e',padx=8); ttk.Button(setup,text='🔄 重新分析实拍素材',command=self.reanalyze_footage).grid(row=2,column=7,sticky='e',padx=8); ttk.Button(setup,text='🕘 分析历史',command=self.footage_reanalysis_history_report).grid(row=2,column=8,sticky='e',padx=8); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
+        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='📹 实拍分析报告',command=self.footage_analysis_report).grid(row=2,column=5,sticky='e',padx=8); ttk.Button(setup,text='📋 补素材任务',command=self.footage_gap_tasks_report).grid(row=2,column=6,sticky='e',padx=8); ttk.Button(setup,text='🔄 重新分析实拍素材',command=self.reanalyze_footage).grid(row=2,column=7,sticky='e',padx=8); ttk.Button(setup,text='🕘 分析历史',command=self.footage_reanalysis_history_report).grid(row=2,column=8,sticky='e',padx=8); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='🧪 投放版本矩阵',command=self.variant_matrix_report).grid(row=2,column=9,sticky='e',padx=8); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
         main=ttk.Panedwindow(self,orient='horizontal'); main.pack(fill='both',expand=True,padx=16,pady=8)
         left=ttk.Frame(main,padding=8); right=ttk.Frame(main,padding=8); main.add(left,weight=3); main.add(right,weight=2)
         ttk.Label(left,text='② 分镜生产链',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
@@ -127,6 +127,44 @@ class App(tk.Tk):
         ttk.Label(self,text='本地存储：本机磁盘  |  资产库：永久复用  |  云端生成：仅在需要时调用',relief='sunken',anchor='w',padding=8).pack(fill='x',side='bottom')
 
 
+
+    @ui_action
+    def variant_matrix_report(self):
+        """展示广告投放多版本的测试轴、差异和独立成片；只读取项目已有数据。"""
+        if not self.project:
+            return messagebox.showinfo('提示','请先创建或打开一个项目。')
+        plan=self.project.creative_plan or {}
+        variants=plan.get('creative_variants') or []
+        audit=plan.get('variant_set_audit') or {}
+        outputs=plan.get('variant_outputs') or {}
+        win=tk.Toplevel(self); win.title('投放版本矩阵'); win.geometry('1180x680'); win.transient(self)
+        frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
+        ttk.Label(frm,text='广告投放版本矩阵',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
+        task=plan.get('task_type','未指定')
+        score=audit.get('diversity_score','未审计')
+        ttk.Label(frm,text=f'任务类型：{task}｜版本数：{len(variants)}｜版本差异度：{score}｜本窗口不调用新 AI',wraplength=1120).pack(anchor='w',pady=(4,10))
+        tree=ttk.Treeview(frm,columns=('version','axis','hook','selling','proof','cta','output','status'),show='headings')
+        heads=[('version','版本',70),('axis','测试轴',110),('hook','Hook/钩子',180),('selling','核心卖点',180),('proof','证明方式',160),('cta','CTA',150),('output','成片路径',230),('status','状态',80)]
+        for col,title,width in heads:
+            tree.heading(col,text=title); tree.column(col,width=width,anchor='w')
+        tree.pack(fill='both',expand=True)
+        for i,v in enumerate(variants,1):
+            axis=v.get('variant_test_axis') or {}
+            out=outputs.get(str(i),{}) if isinstance(outputs,dict) else {}
+            hook=v.get('hook','')
+            selling=v.get('strategy','') or (v.get('selling_points') or [''])[0]
+            proof=v.get('video_form','') or v.get('proof','')
+            cta=v.get('cta','') or v.get('script','')[-80:]
+            path=out.get('path','未生成')
+            status=out.get('status','未输出')
+            tree.insert('', 'end', values=(f'方案{i}',axis.get('name','未指定'),str(hook)[:80],str(selling)[:80],str(proof)[:70],str(cta)[:70],path,status))
+        detail=tk.Text(frm,height=8); detail.pack(fill='x',pady=(10,6))
+        detail.insert('1.0','版本差异审计：\n')
+        for pair in audit.get('pairs',[]):
+            detail.insert('end',f"方案{pair.get('a')} ↔ 方案{pair.get('b')}：{'、'.join(pair.get('different_fields',[])) or '无差异'}\n")
+        detail.config(state='disabled')
+        ttk.Label(frm,text='说明：这是投放前的创意版本矩阵，不代表真实投放数据；真实点击率、转化率等需要进入广告平台后再比较。',foreground='#666',wraplength=1120).pack(anchor='w')
+        ttk.Button(frm,text='关闭',command=win.destroy).pack(anchor='e',pady=(8,0))
 
     @ui_action
     def footage_analysis_report(self):
