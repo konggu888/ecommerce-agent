@@ -49,6 +49,52 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(result["duration_seconds"], 30)
             self.assertIn("creative_stages", result)
 
+    def test_footage_planner_uses_only_supplied_assets_and_respects_task_rules(self):
+        with tempfile.TemporaryDirectory() as td:
+            router = ModelRouter(Path(td) / "model-config.json")
+            profile = ModelProfile(id="test", name="测试模型", provider="local_openai")
+            router.resolve_route = lambda function: profile
+            captured = {}
+            def fake_complete(profile, prompt, function=None, **kwargs):
+                captured["prompt"] = prompt
+                return {
+                    "footage_plan": [{
+                        "source": "A.mp4",
+                        "start": 1,
+                        "duration": 4,
+                        "covered_selling_points": ["卖点A"],
+                        "reason": "开场先展示商品",
+                    }]
+                }
+            router.complete_json = fake_complete
+            clips = [{"name": "A.mp4", "duration": 10, "width": 1080, "height": 1920, "fps": 30}]
+            creative = {
+                "task_type": "电商短视频",
+                "selling_points": ["卖点A"],
+                "shots": [{"index": 1, "objective": "展示卖点A"}],
+                "task_policy": {"min_seconds": 30, "max_seconds": 60, "sequence": ["hook", "selling_point", "cta"]},
+            }
+            result = router.plan_footage(
+                {"name": "商品X", "selling_points": ["卖点A"]},
+                creative,
+                clips,
+                footage_analysis={"clips": [{"source": "A.mp4", "best_take": True, "material_rank": 1}]},
+                footage_coverage={"opening_candidate": "A.mp4", "covered": [{"selling_point": "卖点A", "source": "A.mp4"}]},
+            )
+            self.assertEqual(result[0]["source"], "A.mp4")
+            self.assertLessEqual(result[0]["start"] + result[0]["duration"], 10)
+            self.assertIn("只能使用 footage_clips 清单中列出的素材文件", captured["prompt"])
+            self.assertIn("task_type", captured["prompt"])
+            self.assertIn("卖点A", captured["prompt"])
+
+    def test_footage_planner_rejects_missing_plan_output(self):
+        with tempfile.TemporaryDirectory() as td:
+            router = ModelRouter(Path(td) / "model-config.json")
+            router.resolve_route = lambda function: ModelProfile(id="test", name="测试模型", provider="local_openai")
+            router.complete_json = lambda *args, **kwargs: {}
+            with self.assertRaisesRegex(RuntimeError, "没有返回有效的 footage_plan"):
+                router.plan_footage({"name": "商品X"}, {"task_type": "电商短视频"}, [{"name": "A.mp4", "duration": 10}], {})
+
     def test_product_library_round_trip_preserves_user_facts(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
