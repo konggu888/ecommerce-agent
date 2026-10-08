@@ -596,3 +596,8 @@ def test_batch_generation_budget_gate_counts_missing_shots():
 def test_footage_variants_keep_independent_plans():
     plans={'1':[{'source':'a.mp4','start':0,'duration':3}], '2':[{'source':'b.mp4','start':4,'duration':2}], '3':[{'source':'c.mp4','start':8,'duration':4}]}
     assert plans['1'] != plans['2'] and plans['2'] != plans['3']
+
+
+def test_analysis_report_exposes_reason_fields():
+    item={'source':'a.mp4','reason':'商品清晰且口播完整','visual_tags':['商品特写'],'best_ranges':[{'start':1,'duration':2}]}
+    assert item['reason'] and item['visual_tags'] and item['best_ranges']

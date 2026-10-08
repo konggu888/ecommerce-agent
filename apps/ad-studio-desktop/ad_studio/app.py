@@ -206,6 +206,18 @@ class App(tk.Tk):
             ranges=item.get('best_ranges',[])
             ranges_text='；'.join(f"{float(x.get('start',0)):.1f}-{float(x.get('start',0))+float(x.get('duration',0)):.1f}s" for x in ranges if isinstance(x,dict))
             tree.insert('', 'end', values=(item.get('source','-'),item.get('material_rank','-'),item.get('selection_score','-'),item.get('score','-'),'是' if item.get('usable') is not False else '否',item.get('duplicate_group') or '-', '是' if item.get('best_take') else '否',str(item.get('reason','')), '、'.join(map(str,item.get('visual_tags',[]))),ranges_text,item.get('speech_quality','-')))
+        def show_reason(event=None):
+            sel=tree.selection()
+            if not sel: return
+            vals=tree.item(sel[0],'values')
+            detail.delete('1.0','end')
+            detail.insert('1.0',
+                f"素材：{vals[0]}\n排名：{vals[1]}｜综合分：{vals[2]}｜AI评分：{vals[3]}\n"
+                f"可用：{vals[4]}｜重复组：{vals[5]}｜最佳Take：{vals[6]}\n"
+                f"AI判断：{vals[7]}\n画面标签：{vals[8]}\n推荐片段：{vals[9]}\n口播质量：{vals[10]}")
+        detail=tk.Text(frm,height=7); detail.pack(fill='x',pady=(8,4))
+        tree.bind('<<TreeviewSelect>>',show_reason)
+        ttk.Label(frm,text='选中素材后，下方会显示 AI 为什么保留/淘汰它，以及推荐使用哪一段。',foreground='#666').pack(anchor='w')
         ttk.Button(frm,text='关闭',command=win.destroy).pack(anchor='e',pady=(10,0))
 
     @ui_action

@@ -452,3 +452,6 @@ validate_task_type_plan 在创意方案进入项目/成片前执行，防止 AI 
 
 ## 2026-10-08：实拍素材多方案独立剪辑
 实拍模式的公共素材分析与创意方案解耦：视觉分析/废片归档/转写只执行一次，而 plan_footage() 按每个 creative_variants 分别执行。结果保存为 variant_footage_plans、variant_footage_coverage、variant_footage_selection_audits、variant_footage_gaps、variant_footage_gap_tasks。
+
+## 2026-10-08：实拍分析可解释性
+实拍分析报告现在提供素材级解释面板：用户选择素材后可直接看到 AI 判断原因、推荐片段、画面标签、重复组、最佳 Take 和口播质量。该界面只展示已保存分析，不产生新的 AI 调用。
