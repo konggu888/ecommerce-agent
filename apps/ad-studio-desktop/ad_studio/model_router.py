@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 import json
 import os
+import base64
 import urllib.request
 import time
 
@@ -37,6 +38,7 @@ class ModelProfile:
     enabled: bool = True
     input_price_rmb_per_1k: float = 0.0
     output_price_rmb_per_1k: float = 0.0
+    vision_enabled: bool = False
 
     def public(self) -> dict[str, Any]:
         data = asdict(self)
@@ -89,7 +91,9 @@ class ModelRouter:
         self.save()
 
     def profiles(self) -> list[ModelProfile]:
-        return [ModelProfile(**m) for m in self.data.get("models", [])]
+        fields = {f.name for f in __import__("dataclasses").fields(ModelProfile)}
+        return [ModelProfile(**{k: v for k, v in m.items() if k in fields})
+                for m in self.data.get("models", [])]
 
     def get(self, model_id: str) -> ModelProfile:
         for profile in self.profiles():
@@ -293,6 +297,58 @@ class ModelRouter:
     def recent_usage(self, limit: int = 100) -> list[dict[str, Any]]:
         return self.ledger.recent(limit)
 
+    def analyze_footage(
+        self,
+        product: dict[str, Any],
+        creative_plan: dict[str, Any],
+        footage_manifest: list[dict[str, Any]],
+        constraints: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """让视觉模型真正观察实拍关键帧，再输出逐素材分析。"""
+        profile = self.resolve_route("素材剪辑导演")
+        if not profile.vision_enabled:
+            raise RuntimeError(
+                f"当前“素材剪辑导演”模型「{profile.name}」未启用视觉分析。"
+                "请在模型设置中勾选“支持图片/视频帧分析”。"
+            )
+        public_manifest = [{
+            "name": x["name"], "duration": x["duration"],
+            "width": x["width"], "height": x["height"], "fps": x["fps"],
+            "keyframes": [{"label": f["label"], "time": f["time"]}
+                          for f in x.get("frames", [])],
+        } for x in footage_manifest]
+        images = [f["path"] for x in footage_manifest for f in x.get("frames", [])]
+        payload = {
+            "product": product,
+            "creative_plan": creative_plan,
+            "footage": public_manifest,
+            "constraints": constraints or {},
+            "required_output": {
+                "clips": [{
+                    "source": "素材文件名",
+                    "score": "0..100",
+                    "usable": "boolean",
+                    "reason": "string",
+                    "best_ranges": [{"start": "number", "duration": "number", "reason": "string"}],
+                    "visual_tags": ["product_visible|person|scene|detail|demo|talking|blocked|blur|shake|duplicate|other"],
+                    "selling_points": ["string"],
+                    "speech_quality": "none|clear|filler|unclear"
+                }],
+                "global_summary": "string",
+                "recommended_duration_seconds": "integer"
+            }
+        }
+        prompt = (
+            "你是实拍电商视频分析师。必须观察用户拍摄素材的关键帧，"
+            "把画面事实与商品资料、广告方案对应起来，不得只根据文件名猜测。"
+            "识别商品清晰度、人物、场景、演示、遮挡、抖动、重复、糊片、"
+            "可用片段、卖点对应关系和口播质量；没看到的内容标记 unknown。"
+            "只返回 JSON。\n\n" + json.dumps(payload, ensure_ascii=False, indent=2)
+        )
+        return self.complete_json(
+            profile, prompt, function="实拍素材视觉分析", image_paths=images
+        )
+
     def plan_footage(
         self,
         product: dict[str, Any],
@@ -367,7 +423,7 @@ class ModelRouter:
         except Exception as exc:
             return False, str(exc)
 
-    def complete_json(self, profile: ModelProfile, prompt: str, function: str = "未标记功能") -> dict[str, Any]:
+    def complete_json(self, profile: ModelProfile, prompt: str, function: str = "未标记功能", image_paths: list[str] | None = None) -> dict[str, Any]:
         if not profile.enabled:
             raise RuntimeError(f"模型「{profile.name}」已禁用。")
         if profile.provider not in {"openai_compatible", "local_openai"}:
@@ -382,11 +438,26 @@ class ModelRouter:
             )
 
         url = profile.base_url.rstrip("/") + "/chat/completions"
+        user_content: Any = prompt
+        if image_paths:
+            if not profile.vision_enabled:
+                raise RuntimeError(f"模型「{profile.name}」未启用视觉输入，不能分析视频关键帧。")
+            parts: list[dict[str, Any]] = [{"type": "text", "text": prompt}]
+            for image_path in image_paths[:32]:
+                p = Path(image_path)
+                if not p.exists():
+                    continue
+                raw = base64.b64encode(p.read_bytes()).decode("ascii")
+                parts.append({
+                    "type": "image_url",
+                    "image_url": {"url": f"data:image/jpeg;base64,{raw}", "detail": "low"},
+                })
+            user_content = parts
         payload = {
             "model": profile.model,
             "messages": [
                 {"role": "system", "content": "你是电商广告创意总监，只输出合法 JSON。"},
-                {"role": "user", "content": prompt},
+                {"role": "user", "content": user_content},
             ],
             "temperature": 0.7,
             "response_format": {"type": "json_object"},
