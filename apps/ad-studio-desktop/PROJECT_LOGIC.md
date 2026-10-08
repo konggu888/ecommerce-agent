@@ -431,8 +431,14 @@ validate_task_type_plan 在创意方案进入项目/成片前执行，防止 AI 
 ## 2026-10-08：三种任务成片政策
 `TASK_TYPE_POLICIES` 统一定义三种任务的时长边界和结构顺序，并写入 `creative_plan.task_policy`。它同时约束创意方案与实拍素材导演，避免 UI 选择与最终成片脱节。
 
+## 2026-10-08：投放前创意实验设计审计
+新增确定性函数 `audit_ad_variant_set()`。输入是已经生成的 `creative_variants` 和任务类型；对于“广告投放视频”的多版本，它把 Hook、strategy、selling_points、video_form、proof、cta 作为核心创意机制，把 script 单独视为表层表达。输出保存到 `creative_plan.variant_set_audit`，包括两两版本的机制差异、表层差异、测试质量、mechanism_score、test_design_score 和 design_status。该层不调用模型、不访问广告平台、不产生 CTR/CVR/CPA/ROAS，也不推断用户投放渠道。
+
 ## 2026-10-08：投放前创意分析与平台数据解耦
 多版本系统现在明确分成两个层次：第一层是投放前创意分析，只依据 creative_variants、variant_test_axis、variant_set_audit 等项目内数据判断“不同方案在验证什么”；第二层才是可选的真实投放结果层，读取用户主动回写的 variant_performance。系统不得从创意数据推断用户将投放哪个平台，也不得生成或假设真实 CTR/CVR/CPA/ROAS。没有真实平台数据时，只输出创意差异、测试轴质量和下一轮创意测试建议，不评选所谓“投放胜出方案”。
+
+## 2026-10-08：创意实验设计审计进入创建链
+创建多版本创意后立即执行本地确定性实验设计审计，并持久化到 `variant_set_audit`；“🧠 创意方案分析”读取并展示该结果。失败或低质量只影响实验提示，不会擅自修改用户的创意方案。
 
 ## 2026-10-08：广告投放多版本 A/B 审计
 广告投放视频的多方案现在按测试轴生成：Hook、核心卖点、证明方式、CTA。`audit_ad_variant_set()` 对方案的 Hook/策略/视频形式/脚本做确定性两两差异审计，结果写入 `variant_set_audit`，为后续投放实验提供版本矩阵基础，不增加额外 AI 调用。
