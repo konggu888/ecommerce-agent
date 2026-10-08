@@ -10,13 +10,11 @@ from .asset_generation import AssetGenerator, LocalAssetBackend
 from .hardware import detect_hardware
 from .capability import CapabilityRouter
 from .usage_ledger import UsageLedger
-from .usage_ledger import UsageLedger
 
 class ProductionStore:
     def __init__(self, root: Path, library_root: Path | None = None):
         self.root=root; self.root.mkdir(parents=True,exist_ok=True)
         self.library_root=library_root or root
-        self.ledger=UsageLedger(self.root.parent / "usage-ledger.json")
         self.ledger=UsageLedger(self.root/'usage-ledger.json')
 
     def save(self, project: Project):
@@ -78,14 +76,6 @@ class ProductionStore:
                         library._write(library.all()+[result.asset])
                         item.update({'asset':result.asset.id,'source':'已生成并入库','cost_rmb':result.cost_rmb})
                         self._record_actual_cost(project, shot=shot, category='asset', amount_rmb=result.cost_rmb, provider=result.provider, quantity=1, unit_cost_rmb=result.cost_rmb, function=f'{kind}素材生成')
-                        self.ledger.record_asset(
-                            project_id=project.id,
-                            shot_id=shot.id,
-                            asset_kind=kind,
-                            provider=result.provider,
-                            cost_rmb=result.cost_rmb,
-                        )
-                        self._sync_actual_cost(project)
                     except Exception as exc:
                         item.update({'source':'自动生成失败','error':str(exc)})
                 else:
@@ -208,13 +198,16 @@ class ProductionStore:
             result.replace(out)
             video_cost=round(float(getattr(provider,'cost_per_shot_rmb',0.0)),4)
             shot.actual_cost_rmb=round(float(shot.actual_cost_rmb or 0.0)+video_cost,4)
-            self.ledger.record_video(
-                project_id=project.id,
-                shot_id=shot.id,
+            self._record_actual_cost(
+                project,
+                shot=shot,
+                category="video",
+                amount_rmb=video_cost,
                 provider=getattr(provider,'provider_name','Generic REST'),
-                cost_rmb=video_cost,
+                quantity=1,
+                unit_cost_rmb=video_cost,
+                function="视频镜头生成",
             )
-            self._sync_actual_cost(project)
             self.mark_ready(project,shot,out)
             return out
         except Exception as exc:
