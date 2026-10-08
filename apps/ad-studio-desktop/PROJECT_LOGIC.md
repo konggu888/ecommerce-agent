@@ -492,3 +492,7 @@ validate_task_type_plan 在创意方案进入项目/成片前执行，防止 AI 
 3. 点击“通过并纳入当前分镜”后，系统创建真实 Shot，写入 video_path、clip_source=ai_generated、成本和来源，并记录 accepted_shot_id、accepted_variant_index。
 4. 只有已纳入的镜头才会进入 ProductionStore.build_final() 的当前分镜集合，因此最终成片不会包含未复核的 AI 补镜头。
 5. 商品真实性能、参数、真人口播等缺口仍由混合路由器要求补拍，不能通过 AI 补镜头入口伪造。
+
+
+## 2026-10-08：补镜头复核测试同步
+针对 AI 补镜头人工复核闸门增加回归测试，覆盖“生成后待复核”“通过后记录分镜关联”和“继续补拍任务不可伪装为 AI 补镜头”三项规则。
