@@ -158,6 +158,32 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertIn("2", app.project.creative_plan["variant_shot_cache"])
             self.assertIn("1", app.project.creative_plan["variant_footage_gap_tasks"])
 
+    def test_batch_generation_captures_original_variant_before_preflight(self):
+        # 回归：预算预审会切换方案，原始方案必须在预审前锁定。
+        import inspect
+        try:
+            from ad_studio.app import App
+        except ModuleNotFoundError as exc:
+            if exc.name != 'tkinter':
+                raise
+            import sys, types
+            fake_tk = types.ModuleType('tkinter')
+            fake_tk.Tk = object
+            fake_tk.ttk = types.ModuleType('tkinter.ttk')
+            fake_tk.filedialog = types.ModuleType('tkinter.filedialog')
+            fake_tk.messagebox = types.ModuleType('tkinter.messagebox')
+            sys.modules['tkinter'] = fake_tk
+            sys.modules['tkinter.ttk'] = fake_tk.ttk
+            sys.modules['tkinter.filedialog'] = fake_tk.filedialog
+            sys.modules['tkinter.messagebox'] = fake_tk.messagebox
+            from ad_studio.app import App
+        source = inspect.getsource(App.batch_generate_variants)
+        lock = source.index("original_index=self.active_variant_index")
+        preflight = source.index("for pos,raw0 in enumerate(variants,1):")
+        restore = source.index("original=original_index")
+        self.assertLess(lock, preflight)
+        self.assertLess(preflight, restore)
+
     def test_variant_runtime_state_isolated_for_hybrid_gap_tasks(self):
         # GitHub Linux runner不一定安装Tk；测试只需要App的无GUI状态方法。
         try:
