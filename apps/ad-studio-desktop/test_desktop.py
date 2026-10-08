@@ -797,3 +797,4 @@ class DesktopCoreTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+# A18/A19 independent revalidation trigger: execute the complete desktop regression on this exact code line.
