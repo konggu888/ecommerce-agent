@@ -173,3 +173,33 @@ class HybridExecutionTests(unittest.TestCase):
         self.assertEqual(result["failed"], 1)
         self.assertNotIn("generated_path", result["tasks"][0])
         self.assertFalse(result["tasks"][0]["accepted_into_storyboard"])
+
+class HumanSupportMaterialTests(unittest.TestCase):
+    def test_human_speech_gap_can_generate_non_human_support(self):
+        from ad_studio.hybrid_router import route_footage_gap_tasks
+        routed = route_footage_gap_tasks(
+            [{"task_id":"VOICE-1","need":"真人口播缺少配套画面","reason":"口播素材不足，需要辅助视频"}],
+            generation_connected=True, budget_remaining_rmb=2, cost_per_ai_shot_rmb=1,
+        )
+        task = routed["tasks"][0]
+        self.assertEqual(task["recommended_resolution"], "AI补辅助画面")
+        self.assertEqual(task["generation_mode"], "仅辅助画面，不生成真人/真人声音")
+        self.assertTrue(task["generation_allowed"])
+
+    def test_human_speech_without_provider_needs_manual_confirmation(self):
+        from ad_studio.hybrid_router import route_footage_gap_tasks
+        routed = route_footage_gap_tasks(
+            [{"task_id":"VOICE-2","need":"真人出镜口播本身","reason":"缺少真人说话素材"}],
+            generation_connected=False, budget_remaining_rmb=10, cost_per_ai_shot_rmb=1,
+        )
+        self.assertEqual(routed["tasks"][0]["recommended_resolution"], "需要人工确认")
+        self.assertFalse(routed["tasks"][0]["generation_allowed"])
+
+    def test_product_evidence_with_human_words_still_requires_real_material(self):
+        from ad_studio.hybrid_router import route_footage_gap_tasks
+        routed = route_footage_gap_tasks(
+            [{"task_id":"P-1","need":"真人讲解商品接口","reason":"需要真实操作证据"}],
+            generation_connected=True, budget_remaining_rmb=10, cost_per_ai_shot_rmb=1,
+        )
+        self.assertEqual(routed["tasks"][0]["recommended_resolution"], "继续补拍")
+
