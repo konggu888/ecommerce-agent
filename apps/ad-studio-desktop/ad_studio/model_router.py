@@ -645,6 +645,45 @@ def audit_storyboard_fact_consistency(product: dict[str, Any], variants: list[di
         "variants": results,
     }
 
+def audit_visual_fact_consistency(product: dict[str, Any], footage_analysis: dict[str, Any], variant_footage_plans: dict[str, Any] | None = None) -> dict[str, Any]:
+    """基于已经由视觉模型观察过的关键帧结果，检查实际采用素材的视觉事实风险。"""
+    analysis = rank_footage_analysis(footage_analysis or {})
+    clips = {str(x.get("source","")): x for x in analysis.get("clips", []) if isinstance(x, dict)}
+    plans = variant_footage_plans if isinstance(variant_footage_plans, dict) else {}
+    results=[]
+    for key, items in plans.items():
+        if not isinstance(items, list):
+            continue
+        used=[]
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            source=str(item.get("source",""))
+            clip=clips.get(source,{})
+            tags={str(x) for x in (clip.get("visual_tags") or [])}
+            risks=[]
+            if clip.get("usable") is False: risks.append("素材已被视觉分析判定为不可用")
+            if "blocked" in tags: risks.append("商品可能被遮挡")
+            if "blur" in tags: risks.append("画面可能模糊")
+            if "shake" in tags: risks.append("画面可能抖动")
+            covered=[str(x) for x in (clip.get("selling_points") or []) if str(x)]
+            used.append({
+                "source":source,
+                "visual_tags":sorted(tags),
+                "covered_selling_points":covered,
+                "risk_status":"需复核" if risks else "视觉分析通过初筛",
+                "risks":risks,
+                "reason":str(clip.get("reason","")),
+                "best_take":bool(clip.get("best_take")),
+            })
+        results.append({"variant_index":str(key),"shots":used})
+    return {
+        "enabled":bool(results),
+        "method":"基于关键帧视觉模型结果的实际素材事实复核",
+        "data_boundary":"模型已实际观察关键帧后，系统只把其视觉标签、可用性、卖点对应和遮挡/模糊/抖动结果映射到最终采用素材；没有被视觉模型观察到的内容不会被宣称已核验。",
+        "variants":results,
+    }
+
 
 def audit_ad_variant_set(plans: list[dict[str, Any]], task_type: str) -> dict[str, Any]:
     """不调用新模型，确定性检查广告方案是否形成真正可测试的创意差异。"""

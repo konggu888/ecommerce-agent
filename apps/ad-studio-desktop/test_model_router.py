@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from ad_studio.model_router import FUNCTIONS, ModelProfile, ModelRouter, audit_ad_variant_set, build_creative_test_plan, audit_creative_factual_consistency, audit_storyboard_fact_consistency
+from ad_studio.model_router import FUNCTIONS, ModelProfile, ModelRouter, audit_ad_variant_set, build_creative_test_plan, audit_creative_factual_consistency, audit_storyboard_fact_consistency, audit_visual_fact_consistency
 
 
 class FakeRouter(ModelRouter):
@@ -138,6 +138,15 @@ class CreativeVariantAuditTest(unittest.TestCase):
         self.assertEqual(shot["obscured"],"待视觉复核")
         self.assertEqual(shot["appearance_fidelity"],"待视觉复核")
         self.assertEqual(shot["function_fidelity"],"待视觉复核")
+
+    def test_visual_fact_audit_maps_real_footage_analysis_risks_to_variant_plan(self):
+        analysis={"clips":[{"source":"a.mp4","usable":True,"visual_tags":["product_visible","blocked"],"selling_points":["轻便"],"reason":"商品被手部部分遮挡"}]}
+        plans={"1":[{"source":"a.mp4","start":0,"duration":2}]}
+        audit=audit_visual_fact_consistency({"selling_points":["轻便"]},analysis,plans)
+        shot=audit["variants"][0]["shots"][0]
+        self.assertEqual(shot["risk_status"],"需复核")
+        self.assertIn("商品可能被遮挡",shot["risks"])
+        self.assertIn("轻便",shot["covered_selling_points"])
 
 if __name__ == "__main__":
     unittest.main()
