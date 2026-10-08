@@ -42,11 +42,19 @@ class UsageLedger:
         estimated_cost_rmb: float = 0.0,
         duration_ms: int = 0,
         error: str = "",
+        category: str = "model",
+        project_id: str = "",
+        shot_id: str = "",
+        asset_kind: str = "",
     ) -> dict[str, Any]:
         item = {
             "id": uuid.uuid4().hex[:12],
             "time": datetime.now().isoformat(timespec="seconds"),
             "function": function,
+            "category": category,
+            "project_id": project_id,
+            "shot_id": shot_id,
+            "asset_kind": asset_kind,
             "model_id": model_id,
             "model_name": model_name,
             "provider": provider,
@@ -63,6 +71,70 @@ class UsageLedger:
         rows.append(item)
         self.path.write_text(json.dumps(rows[-2000:], ensure_ascii=False, indent=2), encoding="utf-8")
         return item
+
+    def record_asset(
+        self,
+        *,
+        project_id: str,
+        shot_id: str = "",
+        asset_kind: str,
+        provider: str,
+        cost_rmb: float,
+        status: str = "success",
+        error: str = "",
+    ) -> dict[str, Any]:
+        return self.record(
+            function=f"{asset_kind}素材生成",
+            model_id="",
+            model_name=provider,
+            provider=provider,
+            model="",
+            status=status,
+            estimated_cost_rmb=cost_rmb,
+            category="asset",
+            project_id=project_id,
+            shot_id=shot_id,
+            asset_kind=asset_kind,
+            error=error,
+        )
+
+    def record_video(
+        self,
+        *,
+        project_id: str,
+        shot_id: str,
+        provider: str,
+        cost_rmb: float,
+        status: str = "success",
+        error: str = "",
+    ) -> dict[str, Any]:
+        return self.record(
+            function="视频镜头生成",
+            model_id="",
+            model_name=provider,
+            provider=provider,
+            model="",
+            status=status,
+            estimated_cost_rmb=cost_rmb,
+            category="video",
+            project_id=project_id,
+            shot_id=shot_id,
+            error=error,
+        )
+
+    def project_summary(self, project_id: str) -> dict[str, Any]:
+        rows = [x for x in self._load() if x.get("project_id") == project_id]
+        success = [x for x in rows if x.get("status") == "success"]
+        by_category: dict[str, float] = {}
+        for row in success:
+            key = str(row.get("category") or "other")
+            by_category[key] = by_category.get(key, 0.0) + float(row.get("estimated_cost_rmb", 0) or 0)
+        return {
+            "project_id": project_id,
+            "entries": len(rows),
+            "actual_cost_rmb": round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in success), 6),
+            "by_category": {k: round(v, 6) for k, v in by_category.items()},
+        }
 
     def recent(self, limit: int = 100) -> list[dict[str, Any]]:
         return self._load()[-max(1, int(limit)):][::-1]
