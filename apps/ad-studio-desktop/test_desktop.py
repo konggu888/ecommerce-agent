@@ -65,9 +65,9 @@ class DesktopCoreTests(unittest.TestCase):
         plan = build_creative_test_plan([base, mechanism], audit_ad_variant_set([base, mechanism], "广告投放视频"))
         self.assertEqual(plan["variants"][0]["result_status"], "待真实投放数据")
         self.assertIn("不猜测平台", plan["data_boundary"])
-        self.assertNotIn("CTR", str(plan["variants"]))
-        self.assertNotIn("CVR", str(plan["variants"]))
-        self.assertNotIn("ROAS", str(plan["variants"]))
+        metric_keys = {"ctr", "cvr", "cpc_rmb", "cpa_rmb", "roas"}
+        self.assertFalse(metric_keys.intersection(plan["variants"][0]))
+        self.assertFalse(metric_keys.intersection(plan["variants"][1]))
 
     def test_creative_variants_keep_independent_variant_state(self):
         from ad_studio.models import Project
