@@ -456,11 +456,11 @@
 
 ## A31 · 帮助文档
 
-- [ ] 功能变更同步HELP
-- [ ] PROJECT_LOGIC同步
-- [ ] 其他关键设计文档同步
-- [ ] 新AI接手项目可以理解当前状态
-- [ ] 不依赖本次聊天上下文才能理解项目
+- [x] 功能变更同步HELP
+- [x] PROJECT_LOGIC同步
+- [x] 其他关键设计文档同步
+- [x] 新AI接手项目可以理解当前状态
+- [x] 不依赖本次聊天上下文才能理解项目
 
 ## A32 · AI接手能力
 
@@ -714,3 +714,13 @@
 - 从当前 main 重新检查 A29 数据边界，发现既有 provenance 使用 `simulation=false` 表达来源语义不准确；已修正为 `verification_status=unverified`。
 - 重新验证：用户主动提供的数据才进入 `variant_performance`；来源明确为 `user_provided`；系统不写入平台 API 返回值；投放前测试计划不产生 CTR/CVR/CPC/CPA/ROAS 等平台结果。
 - 本次为独立重新验收，不复用上一轮 A29 的通过结论；以本分支 CI 与文档同步结果为准。
+
+
+## 2026-10-09 A31 验收记录
+- 阶段：A31 帮助文档
+- 检查范围：HELP、PROJECT_LOGIC、关键设计规则、AI 接手入口、验收计划、测试入口、安全边界。
+- 自动化测试：CI #820 全部通过；桌面核心测试、前端语法、Python 语法、Typecheck、Engine、Risk Controller 均通过。
+- 文档同步：doc-sync #391 通过。
+- 结果：通过。
+- 修复提交：A31 PR #13，合并提交 `0c6e2afcf772491acc7283206b0f5c56fc96d8df`。
+- 下一步：A32 AI 接手能力。
