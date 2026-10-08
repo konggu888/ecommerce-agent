@@ -316,3 +316,6 @@ CI 的桌面 Python 语法检查发现 `ffmpeg.py` 的 concat 清单 `write_text
 
 ## 2026-10-08：实际成本字段统一
 项目模型现在持久化 `actual_cost_rmb` 与 `actual_cost_summary`；ProductionStore 统一通过实际成本记录入口写入资产/视频费用，避免同一笔生成费用重复入账。
+
+## 8.2 实拍口播转写接口
+新增 `transcription.py`：先用 FFmpeg 从实拍视频提取单声道 16kHz WAV，再调用配置的 OpenAI-compatible transcription endpoint。优先解析 segment/word 时间戳；供应商不支持时间戳时仍保存文本，但不宣称已经具备逐词级裁剪。该模块只负责转写，废话删除和最终剪辑仍由素材剪辑导演决定。
