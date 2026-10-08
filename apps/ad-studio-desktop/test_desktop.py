@@ -69,6 +69,29 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(len(restored.shots), len(p.shots))
             self.assertEqual(restored.cost_estimate["总计"], 3.6)
 
+    def test_reviewed_hybrid_task_persists_into_project(self):
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td))
+            p = new_project("https://item.jd.com/123.html", 2, "真人口播")
+            task = {
+                "task_id": "GAP-PERSIST-1",
+                "generated_path": str(Path(td) / "support.mp4"),
+                "review_status": "已通过",
+                "estimated_cost_rmb": 0.72,
+                "provider": "测试Provider",
+                "target_shot_index": 2,
+            }
+            Path(task["generated_path"]).write_bytes(b"fake-video")
+            accepted = store.accept_hybrid_generated_task(p, task)
+            self.assertIsNotNone(accepted)
+            self.assertTrue(task["accepted_into_storyboard"])
+            self.assertEqual(len(p.shots), 6)
+            self.assertTrue(any(s.id == task["accepted_shot_id"] for s in p.shots))
+            restored = store.load(p.id)
+            self.assertEqual(len(restored.shots), 6)
+            self.assertTrue(any(s.id == task["accepted_shot_id"] for s in restored.shots))
+
+
 
 if __name__ == "__main__":
     unittest.main()
