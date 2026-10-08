@@ -267,7 +267,7 @@ class App(tk.Tk):
         tree.pack(fill='both',expand=True)
         for x in tasks:
             tree.insert('', 'end', values=(x.get('task_id','-'),x.get('status','待处理'),x.get('type','-'),x.get('priority','-'),x.get('need','-'),x.get('related_selling_point','-'),x.get('shoot_or_generate','-'),x.get('acceptance','-')))
-        ttk.Label(frm,text='闭环下一步：完成这些任务后，把新增素材放回原素材文件夹，再执行“重新分析实拍素材”，系统会重新进入视觉分析→素材排名→覆盖审计→分镜复核。',wraplength=1050,justify='left').pack(anchor='w',pady=10)
+        ttk.Label(frm,text='闭环下一步：完成这些任务后，把新增素材放回原素材文件夹，再执行“重新分析实拍素材”，系统会重新进入视觉分析→素材排名→覆盖审计→分镜复核，并自动比较新旧分镜。',wraplength=1050,justify='left').pack(anchor='w',pady=10)
         def show_task(event=None):
             sel=tree.selection()
             if not sel:return
@@ -282,6 +282,9 @@ class App(tk.Tk):
         detail=tk.Text(frm,height=10); detail.pack(fill='x',pady=(6,8))
         tree.bind('<<TreeviewSelect>>',show_task)
         ttk.Label(frm,text='选中任务后，可以直接照着“怎么拍”和“合格标准”补素材；完成后放回原素材文件夹，再重新分析。',foreground='#666',wraplength=1050,justify='left').pack(anchor='w')
+        change_audit=(self.project.creative_plan.get('footage_selection_audit') or {}).get('change_audit') or {}
+        if change_audit.get('changed'):
+            ttk.Label(frm,text=f"🎬 分镜已自动重规划：新增 {len(change_audit.get('added_shots',[]))} 个镜头｜移除 {len(change_audit.get('removed_shots',[]))} 个镜头｜新增覆盖卖点：{'、'.join(change_audit.get('newly_covered_selling_points',[])) or '无'}",foreground='#333',wraplength=1050,justify='left').pack(anchor='w',pady=(0,6))
         ttk.Button(frm,text='关闭',command=win.destroy).pack(anchor='e')
  
     @ui_action
