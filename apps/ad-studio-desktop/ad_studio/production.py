@@ -66,7 +66,7 @@ class ProductionStore:
                 shot.video_path = None
                 shot.status = "待重新生成/重新选择素材"
         invalid_outputs = []
-        records = list(plan.get("final_output_history_records", []) or [])
+        records = list(creative_plan.get("final_output_history_records", []) or [])
         manifests = creative_plan.get("final_output_manifests", {}) or {}
         if isinstance(manifests, dict):
             records.extend(manifests.values())
