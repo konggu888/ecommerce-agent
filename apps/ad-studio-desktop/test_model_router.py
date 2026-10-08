@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from ad_studio.model_router import FUNCTIONS, ModelProfile, ModelRouter, audit_ad_variant_set
+from ad_studio.model_router import FUNCTIONS, ModelProfile, ModelRouter, audit_ad_variant_set, build_creative_test_plan
 
 
 class FakeRouter(ModelRouter):
@@ -99,6 +99,19 @@ class CreativeVariantAuditTest(unittest.TestCase):
         audit = audit_ad_variant_set([{"hook": "A"}, {"hook": "B"}], "电商短视频")
         self.assertFalse(audit["enabled"])
         self.assertEqual(audit["test_design_score"], 0)
+
+
+    def test_creative_test_plan_is_prelaunch_only_and_exposes_real_observation_targets(self):
+        plans=[{"variant_test_axis":{"id":"hook","name":"钩子角度"},"hook":"先痛点","strategy":"痛点后解决","selling_points":["省时间"],"video_form":"演示","proof":"前后对比","cta":"了解更多"},{"variant_test_axis":{"id":"hook","name":"钩子角度"},"hook":"先结果","strategy":"痛点后解决","selling_points":["省时间"],"video_form":"演示","proof":"前后对比","cta":"了解更多"}]
+        tp=build_creative_test_plan(plans,audit_ad_variant_set(plans,"广告投放视频"))
+        self.assertTrue(tp["enabled"]); self.assertEqual(tp["variants"][0]["primary_test_axis"]["id"],"hook")
+        self.assertIn("验证",tp["variants"][0]["test_purpose"]); self.assertEqual(tp["variants"][0]["result_status"],"待真实投放数据")
+        self.assertNotIn("ctr",tp); self.assertNotIn("roas",tp); self.assertIn("真实反馈"," ".join(tp["variants"][0]["observation_targets"]))
+
+    def test_creative_test_plan_flags_multi_mechanism_contamination(self):
+        plans=[{"variant_test_axis":{"id":"hook","name":"钩子角度"},"hook":"A","strategy":"S1","selling_points":["P1"]},{"variant_test_axis":{"id":"hook","name":"钩子角度"},"hook":"B","strategy":"S2","selling_points":["P1"]}]
+        tp=build_creative_test_plan(plans,audit_ad_variant_set(plans,"广告投放视频"))
+        self.assertTrue(any("同时变化" in x for x in tp["next_round_recommendations"]))
 
 
 if __name__ == "__main__":

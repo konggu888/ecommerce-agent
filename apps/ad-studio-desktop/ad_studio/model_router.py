@@ -654,6 +654,36 @@ def audit_ad_variant_set(plans: list[dict[str, Any]], task_type: str) -> dict[st
     }
 
 
+def build_creative_test_plan(plans: list[dict[str, Any]], audit: dict[str, Any] | None = None) -> dict[str, Any]:
+    """把投放前创意差异转换成“测试目的→版本设计→观察结果”的确定性方案。"""
+    audit = audit if isinstance(audit, dict) else audit_ad_variant_set(plans, "广告投放视频")
+    def norm(value):
+        if isinstance(value, (list, tuple)): return "、".join(norm(x) for x in value if x)
+        if isinstance(value, dict): return "、".join(f"{k}:{norm(v)}" for k, v in value.items() if v)
+        return str(value or "").strip()
+    axis_names={"hook":"开场钩子","strategy":"核心广告策略","selling_points":"核心卖点","video_form":"视频形式","proof":"证明方式","cta":"行动引导"}
+    out=[]
+    for i,p in enumerate(plans,1):
+        axis=p.get("variant_test_axis") or {}
+        aid=str(axis.get("id") or "").strip() if isinstance(axis,dict) else ""
+        aname=str(axis.get("name") or "").strip() if isinstance(axis,dict) else ""
+        mechanism=axis_names.get(aid,aname or "未明确")
+        out.append({
+            "variant_index":i,
+            "test_purpose":f"验证“{mechanism}”变化是否值得继续扩大测试" if mechanism!="未明确" else "验证当前创意机制是否形成了可解释的差异",
+            "primary_test_axis":{"id":aid,"name":aname or mechanism,"instruction":str(axis.get("instruction") or "").strip() if isinstance(axis,dict) else ""},
+            "version_design":{k:norm(p.get(k)) for k in ("hook","strategy","selling_points","video_form","proof","cta")},
+            "observation_targets":["用户是否对该创意机制产生更强的真实反馈","用户反馈是否集中在本轮测试的核心机制，而不是其他同时变化的元素","下一轮是否值得继续扩大、缩小或替换该测试轴"],
+            "result_status":"待真实投放数据",
+        })
+    next_round=[]
+    pairs=audit.get("pairs",[]) if isinstance(audit,dict) else []
+    if any(len(p.get("mechanism_differences",[]))>1 for p in pairs): next_round.append("优先拆开同时变化的核心机制，让下一轮尽量一次只验证一个主要变量。")
+    if any(not p.get("mechanism_differences") and p.get("surface_differences") for p in pairs): next_round.append("存在只有表层表达变化的版本对照；下一轮应改变真正的创意机制，而不是只换文案或包装。")
+    if any(not p.get("mechanism_differences") and not p.get("surface_differences") for p in pairs): next_round.append("存在几乎没有结构差异的版本；下一轮应重新设计测试轴。")
+    if not next_round: next_round.append("当前版本已经形成明确的机制对照；下一轮优先沿真实结果最需要验证的机制继续做窄范围对照。")
+    return {"enabled":bool(audit.get("enabled")),"method":"投放前确定性创意测试方案：测试目的→版本设计→需要观察的真实结果","data_boundary":"不生成结果、不猜测平台、不产生CTR/CVR/CPA/ROAS等虚假数据","variants":out,"next_round_recommendations":next_round}
+
 
 STAGE_SCHEMAS = {
     "product_understanding": {
