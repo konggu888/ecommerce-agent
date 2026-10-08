@@ -629,3 +629,12 @@ def test_gap_completion_keeps_unresolved_task_missing():
     current={'coverage_score':50,'missing_selling_points':[],'missing_key_shots':[{'need':'商品特写'}],'selling_points':[]}
     out=audit_footage_gap_completion(previous,current)
     assert out['still_missing_count']==1 and out['tasks'][0]['status']=='仍缺失'
+
+
+def test_merge_gap_task_acceptance_keeps_completed_history():
+    from ad_studio.footage import merge_gap_task_acceptance
+    current={'tasks':[{'task_id':'GAP-002','need':'商品特写','related_selling_point':''}]}
+    audit={'tasks':[{'task_id':'GAP-001','need':'卖点：防水','related_selling_point':'防水','status':'已完成','completion_reason':'已找到新素材'}]}
+    out=merge_gap_task_acceptance(current,audit)
+    assert out['completed_task_history'][0]['status']=='已完成'
+    assert any(x.get('need')=='卖点：防水' for x in out['tasks'])
