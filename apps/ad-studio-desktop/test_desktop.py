@@ -1243,3 +1243,4 @@ class DesktopCoreTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+# A30 recovery regression: re-run CI after persisted-manifest recovery fix.
