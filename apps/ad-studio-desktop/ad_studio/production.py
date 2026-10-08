@@ -378,12 +378,35 @@ class ProductionStore:
             "output_path": str(output), "shot_count": len(shots),
             "shot_ids": [shot.id for shot in shots], "shot_indices": [shot.index for shot in shots],
             "safety_gate": safety_gate, "media_check": media_check,
+            "delivery_status": "可交付",
             "created_at": datetime.datetime.now().isoformat(timespec="seconds"),
         }
         manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
-        project.creative_plan.setdefault("final_output_manifests", {})[str(variant_index)] = manifest
+        key = f"{int(variant_index)}|{aspect}"
+        project.creative_plan.setdefault("final_output_manifests", {})[key] = manifest
         self.save(project)
         return manifest_path
+
+    def final_output_history(self, project: Project) -> list[dict[str, Any]]:
+        """返回本项目已经通过安全闸门和媒体质检的最终输出历史。"""
+        manifests = (project.creative_plan or {}).get("final_output_manifests", {})
+        rows = []
+        for key, item in manifests.items():
+            if not isinstance(item, dict):
+                continue
+            path = Path(str(item.get("output_path", "")))
+            rows.append({
+                "key": key,
+                "variant_index": item.get("variant_index"),
+                "aspect": item.get("aspect"),
+                "output_path": str(path),
+                "exists": path.exists(),
+                "delivery_status": item.get("delivery_status", "未知"),
+                "duration_seconds": (item.get("media_check") or {}).get("duration_seconds", 0),
+                "shot_count": item.get("shot_count", 0),
+                "created_at": item.get("created_at", ""),
+            })
+        return sorted(rows, key=lambda x: x.get("created_at", ""), reverse=True)
 
     def build_final(self, project: Project, aspect: str = "9:16", variant_index: int | None = None):
         gate=self.final_render_gate(project)

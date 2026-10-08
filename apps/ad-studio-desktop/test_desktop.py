@@ -431,5 +431,22 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertTrue(result["valid"])
             self.assertEqual(result["duration_seconds"], 5.2)
 
+    def test_final_output_history_is_separated_by_variant_and_aspect(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            p = new_project("https://item.jd.com/123.html", 2, "真人口播")
+            a = root / "a.mp4"
+            b = root / "b.mp4"
+            a.write_bytes(b"a")
+            b.write_bytes(b"b")
+            media = {"valid": True, "duration_seconds": 5.0}
+            gate = {"allowed": True}
+            store.write_final_output_manifest(p, a, "9:16", 1, p.shots[:1], gate, media)
+            store.write_final_output_manifest(p, b, "16:9", 2, p.shots[:1], gate, media)
+            rows = store.final_output_history(p)
+            self.assertEqual({x["key"] for x in rows}, {"1|9:16", "2|16:9"})
+            self.assertTrue(all(x["delivery_status"] == "可交付" for x in rows))
+
 if __name__ == "__main__":
     unittest.main()
