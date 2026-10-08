@@ -1,6 +1,8 @@
 from pathlib import Path
 from typing import Any
 import json
+import shutil
+import subprocess
 import datetime
 from .models import Project, Shot, accept_hybrid_generated_shot
 from .ffmpeg import make_clip, concat
@@ -326,6 +328,63 @@ class ProductionStore:
         reasons.extend([f"镜头{s.index}：AI生成镜头尚未通过人工复核" for s in project.shots if getattr(s,'clip_source','ai_generated')=='ai_generated' and getattr(s,'storyboard_review','不需要')=='待复核'])
         return {'allowed': not reasons, 'reasons': reasons, 'checked': bool(fact or visual), 'message': '最终成片安全闸门通过' if not reasons else '最终成片被安全闸门拦截'}
 
+    def inspect_final_output(self, output: Path, aspect: str) -> dict[str, Any]:
+        """对已经输出的最终视频做机器可验证的交付检查。"""
+        output = Path(output)
+        result = {"valid": False, "path": str(output), "size_bytes": output.stat().st_size if output.exists() else 0,
+                  "duration_seconds": 0.0, "width": 0, "height": 0, "aspect": aspect,
+                  "video_stream": False, "reason": ""}
+        if not output.exists() or result["size_bytes"] <= 0:
+            result["reason"] = "最终视频文件不存在或为空"
+            return result
+        if not shutil.which("ffprobe"):
+            result["reason"] = "未找到 ffprobe，无法完成最终视频机器质检"
+            return result
+        try:
+            probe = subprocess.run(
+                ["ffprobe", "-v", "error", "-print_format", "json",
+                 "-show_entries", "format=duration:stream=codec_type,width,height", str(output)],
+                check=True, capture_output=True, text=True,
+            )
+            data = json.loads(probe.stdout or "{}")
+            video = next((x for x in data.get("streams", []) if x.get("codec_type") == "video"), None)
+            if not video:
+                result["reason"] = "最终文件没有可识别的视频流"
+                return result
+            result["video_stream"] = True
+            result["width"] = int(video.get("width") or 0)
+            result["height"] = int(video.get("height") or 0)
+            result["duration_seconds"] = round(float((data.get("format") or {}).get("duration") or 0), 3)
+            expected_w, expected_h = {"9:16": (9, 16), "16:9": (16, 9), "1:1": (1, 1)}.get(aspect, (0, 0))
+            if not result["width"] or not result["height"] or result["duration_seconds"] <= 0:
+                result["reason"] = "视频流尺寸或时长无效"
+                return result
+            if expected_w and abs((result["width"] / result["height"]) - (expected_w / expected_h)) > 0.03:
+                result["reason"] = f"输出画幅与要求 {aspect} 不一致"
+                return result
+            result["valid"] = True
+            result["reason"] = "最终视频机器质检通过"
+            return result
+        except Exception as exc:
+            result["reason"] = f"ffprobe质检失败：{exc}"
+            return result
+
+    def write_final_output_manifest(self, project: Project, output: Path, aspect: str, variant_index: int,
+                                    shots: list[Shot], safety_gate: dict[str, Any], media_check: dict[str, Any]) -> Path:
+        """保存最终交付清单，记录实际输出版本、镜头组成和机器质检结果。"""
+        manifest_path = Path(output).with_suffix(".json")
+        manifest = {
+            "project_id": project.id, "variant_index": int(variant_index), "aspect": aspect,
+            "output_path": str(output), "shot_count": len(shots),
+            "shot_ids": [shot.id for shot in shots], "shot_indices": [shot.index for shot in shots],
+            "safety_gate": safety_gate, "media_check": media_check,
+            "created_at": datetime.datetime.now().isoformat(timespec="seconds"),
+        }
+        manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
+        project.creative_plan.setdefault("final_output_manifests", {})[str(variant_index)] = manifest
+        self.save(project)
+        return manifest_path
+
     def build_final(self, project: Project, aspect: str = "9:16", variant_index: int | None = None):
         gate=self.final_render_gate(project)
         if not gate['allowed']:
@@ -336,4 +395,13 @@ class ProductionStore:
         suffix=f'-v{int(variant_index)}' if variant_index else ''
         out=self.root/'final'/project.id/f'final-{aspect.replace(":", "x")}{suffix}.mp4'
         concat([Path(s.video_path) for s in shots],out)
+        media_check=self.inspect_final_output(out, aspect)
+        if not media_check["valid"]:
+            if out.exists():
+                out.unlink()
+            raise RuntimeError("最终成片机器质检未通过：" + str(media_check["reason"]))
+        self.write_final_output_manifest(
+            project, out, aspect, int(variant_index or self._variant_index(project)),
+            shots, gate, media_check,
+        )
         return out

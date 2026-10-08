@@ -380,5 +380,56 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual([x["index"] for x in inputs], [1, 2, 3, 4, 5])
 
 
+    def test_final_output_manifest_records_quality_and_version(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            p = new_project("https://item.jd.com/123.html", 2, "真人口播")
+            output = root / "final.mp4"
+            output.write_bytes(b"video")
+            shots = p.shots[:2]
+            media = {"valid": True, "path": str(output), "size_bytes": 5, "duration_seconds": 6.0,
+                     "width": 1080, "height": 1920, "aspect": "9:16", "video_stream": True,
+                     "reason": "最终视频机器质检通过"}
+            gate = {"allowed": True, "reasons": [], "checked": True, "message": "最终成片安全闸门通过"}
+            manifest_path = store.write_final_output_manifest(p, output, "9:16", 2, shots, gate, media)
+            data = __import__("json").loads(manifest_path.read_text(encoding="utf-8"))
+            self.assertEqual(data["variant_index"], 2)
+            self.assertEqual(data["shot_indices"], [1, 2])
+            self.assertTrue(data["media_check"]["valid"])
+            self.assertTrue(p.creative_plan["final_output_manifests"]["2"]["media_check"]["valid"])
+
+    def test_final_output_inspection_rejects_wrong_aspect(self):
+        with tempfile.TemporaryDirectory() as td:
+            from unittest.mock import patch
+            root = Path(td)
+            store = ProductionStore(root)
+            output = root / "final.mp4"
+            output.write_bytes(b"video")
+            fake_probe = '{"streams":[{"codec_type":"video","width":1920,"height":1080}],"format":{"duration":"5.2"}}'
+            completed = type("Completed", (), {"stdout": fake_probe})()
+            with patch("ad_studio.production.shutil.which", return_value="/usr/bin/ffprobe"), patch(
+                "ad_studio.production.subprocess.run", return_value=completed
+            ):
+                result = store.inspect_final_output(output, "9:16")
+            self.assertFalse(result["valid"])
+            self.assertIn("画幅", result["reason"])
+
+    def test_final_output_inspection_accepts_valid_media(self):
+        with tempfile.TemporaryDirectory() as td:
+            from unittest.mock import patch
+            root = Path(td)
+            store = ProductionStore(root)
+            output = root / "final.mp4"
+            output.write_bytes(b"video")
+            fake_probe = '{"streams":[{"codec_type":"video","width":1080,"height":1920}],"format":{"duration":"5.2"}}'
+            completed = type("Completed", (), {"stdout": fake_probe})()
+            with patch("ad_studio.production.shutil.which", return_value="/usr/bin/ffprobe"), patch(
+                "ad_studio.production.subprocess.run", return_value=completed
+            ):
+                result = store.inspect_final_output(output, "9:16")
+            self.assertTrue(result["valid"])
+            self.assertEqual(result["duration_seconds"], 5.2)
+
 if __name__ == "__main__":
     unittest.main()
