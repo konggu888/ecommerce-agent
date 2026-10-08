@@ -408,6 +408,8 @@ class ModelRouter:
                 "hook": creative_plan.get("hook", ""),
                 "script": creative_plan.get("script", ""),
                 "shots": creative_plan.get("shots", []),
+                "task_type": creative_plan.get("task_type", ""),
+                "task_rules": creative_plan.get("task_rules", {}),
             },
             "footage_clips": footage_clips,
             "footage_analysis": footage_analysis or {},
@@ -431,7 +433,10 @@ class ModelRouter:
             "9. material_rank 越小代表整个素材池越值得优先使用；先考虑高排名素材，再根据镜头目标和卖点覆盖做最终取舍，不要机械按排名剪辑。\n"
             "10. footage_coverage 是最终覆盖审计：开场优先使用 opening_candidate；每个 covered=true 的重要卖点至少覆盖一次；唯一能覆盖重要卖点的低排名素材可以优先于纯排名更高但重复的信息。缺失项只能记录，禁止编造不存在的画面。\n"
             "11. 广告表达避免违反广告法的绝对化、虚假、无法证明的承诺。\n"
-            "12. 输出必须是严格 JSON，不要输出 Markdown。"
+            "12. 输出必须是严格 JSON，不要输出 Markdown。\n"
+             "13. 必须严格服从 task_type。电商短视频：开场快速进入商品/痛点，卖点优先，节奏紧凑，结尾保留明确转化信息；商品主图视频：商品本体、细节、功能演示和购买决策信息优先，不用剧情性镜头替代商品证据；广告投放视频：优先强钩子、单一核心卖点、清晰 CTA，并保证不同创意方案之间具有可测试的差异。\n"
+             "14. task_type 不同，镜头排序、素材取舍和时长都必须不同；不要因为素材排名高就违反任务目标。AI 可在 30-60 秒范围内按信息密度决定最终时长，但商品主图视频应避免无意义延长，广告投放视频应优先保证前几秒钩子。\n"
+             "15. 如果任务要求的关键画面在实拍素材中缺失，只能在 footage_coverage/footage_gaps 中标记缺口，禁止虚构；商品证据缺失优先标记待补拍。"
         )
         prompt = (
             system
