@@ -49,6 +49,37 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(result["duration_seconds"], 30)
             self.assertIn("creative_stages", result)
 
+    def test_creative_variant_audit_distinguishes_mechanism_from_surface_changes(self):
+        from ad_studio.model_router import audit_ad_variant_set, build_creative_test_plan
+        base = {
+            "hook": "问题开场", "strategy": "痛点策略", "selling_points": ["卖点A"],
+            "video_form": "真人口播", "proof": "实拍证明", "cta": "立即了解",
+            "script": "版本文案",
+        }
+        surface = dict(base, script="换一种说法")
+        mechanism = dict(base, hook="结果开场")
+        audit = audit_ad_variant_set([base, surface, mechanism], "广告投放视频")
+        self.assertTrue(audit["enabled"])
+        self.assertEqual(audit["pairs"][0]["test_quality"], "仅表层差异")
+        self.assertIn("hook", audit["pairs"][1]["mechanism_differences"])
+        plan = build_creative_test_plan([base, mechanism], audit_ad_variant_set([base, mechanism], "广告投放视频"))
+        self.assertEqual(plan["variants"][0]["result_status"], "待真实投放数据")
+        self.assertIn("不猜测平台", plan["data_boundary"])
+        self.assertNotIn("CTR", str(plan))
+
+    def test_creative_variants_keep_independent_variant_state(self):
+        from ad_studio.models import Project
+        p = Project(id="p1", name="测试", task_type="广告投放视频")
+        p.creative_plan = {
+            "creative_variants": [{"variant_index": 1, "hook": "A"}, {"variant_index": 2, "hook": "B"}],
+            "variant_count": 2,
+            "variant_1": {"status": "ready"},
+            "variant_2": {"status": "review"},
+        }
+        self.assertEqual(len(p.creative_plan["creative_variants"]), 2)
+        self.assertEqual(p.creative_plan["variant_1"]["status"], "ready")
+        self.assertEqual(p.creative_plan["variant_2"]["status"], "review")
+
     def test_three_task_types_have_distinct_deterministic_policies(self):
         from ad_studio.creative_engine import apply_task_type_policy, validate_task_type_plan
         base = {
