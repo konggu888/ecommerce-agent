@@ -10,11 +10,13 @@ from .asset_generation import AssetGenerator, LocalAssetBackend
 from .hardware import detect_hardware
 from .capability import CapabilityRouter
 from .usage_ledger import UsageLedger
+from .usage_ledger import UsageLedger
 
 class ProductionStore:
     def __init__(self, root: Path, library_root: Path | None = None):
         self.root=root; self.root.mkdir(parents=True,exist_ok=True)
         self.library_root=library_root or root
+        self.ledger=UsageLedger(self.root.parent / "usage-ledger.json")
         self.ledger=UsageLedger(self.root/'usage-ledger.json')
 
     def save(self, project: Project):
@@ -42,6 +44,18 @@ class ProductionStore:
         project.cost_estimate["actual"] = summary
         project.cost_estimate["actual_cost_rmb"] = summary["actual_cost_rmb"]
 
+    def _record_actual_cost(self, project: Project, *, shot: Shot | None, category: str, amount_rmb: float, provider: str, quantity: float = 1.0, unit_cost_rmb: float = 0.0, function: str = "生成任务"):
+        amount = round(float(amount_rmb or 0), 6)
+        self.ledger.record(
+            function=function, model_id="", model_name="", provider=provider, model="",
+            status="success", estimated_cost_rmb=amount,
+            project_id=project.id, shot_id=shot.id if shot else "",
+            category=category, quantity=quantity, unit_cost_rmb=unit_cost_rmb,
+        )
+        project.actual_cost_rmb = round(float(project.actual_cost_rmb or 0) + amount, 6)
+        project.actual_cost_summary = self.ledger.project_summary(project.id)
+        self.save(project)
+
     def mark_ready(self, project: Project, shot: Shot, output: Path):
         shot.video_path=str(output); shot.status='已生成'; self.save(project)
 
@@ -63,6 +77,7 @@ class ProductionStore:
                         result=generator.generate(kind,project.product_name+'-'+kind,shot.visual+'；需求：'+'、'.join(tags),tags,shot.id)
                         library._write(library.all()+[result.asset])
                         item.update({'asset':result.asset.id,'source':'已生成并入库','cost_rmb':result.cost_rmb})
+                        self._record_actual_cost(project, shot=shot, category='asset', amount_rmb=result.cost_rmb, provider=result.provider, quantity=1, unit_cost_rmb=result.cost_rmb, function=f'{kind}素材生成')
                         self.ledger.record_asset(
                             project_id=project.id,
                             shot_id=shot.id,
