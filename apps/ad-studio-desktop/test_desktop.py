@@ -918,5 +918,88 @@ class DesktopCoreTests(unittest.TestCase):
             final_dir = root / "final" / p.id
             self.assertFalse(final_dir.exists() and any(final_dir.iterdir()))
 
+
+    def test_a25_media_qc_rejects_missing_empty_and_no_video_stream(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            result = store.inspect_final_output(root / "missing.mp4", "9:16")
+            self.assertFalse(result["valid"])
+            self.assertIn("不存在或为空", result["reason"])
+
+            empty = root / "empty.mp4"
+            empty.write_bytes(b"")
+            result = store.inspect_final_output(empty, "9:16")
+            self.assertFalse(result["valid"])
+
+            invalid = root / "no-video.mp4"
+            invalid.write_bytes(b"not-video")
+            completed = type("Completed", (), {"stdout": '{"streams":[{"codec_type":"audio"}],"format":{"duration":"5.2"}}'})()
+            with patch("ad_studio.production.shutil.which", return_value="/usr/bin/ffprobe"), patch(
+                "ad_studio.production.subprocess.run", return_value=completed
+            ):
+                result = store.inspect_final_output(invalid, "9:16")
+            self.assertFalse(result["valid"])
+            self.assertIn("视频流", result["reason"])
+
+    def test_a25_media_qc_rejects_zero_duration_and_invalid_dimensions(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            for probe in (
+                '{"streams":[{"codec_type":"video","width":1080,"height":1920}],"format":{"duration":"0"}}',
+                '{"streams":[{"codec_type":"video","width":0,"height":1920}],"format":{"duration":"5.2"}}',
+            ):
+                output = root / "bad.mp4"
+                output.write_bytes(b"video")
+                completed = type("Completed", (), {"stdout": probe})()
+                with patch("ad_studio.production.shutil.which", return_value="/usr/bin/ffprobe"), patch(
+                    "ad_studio.production.subprocess.run", return_value=completed
+                ):
+                    result = store.inspect_final_output(output, "9:16")
+                self.assertFalse(result["valid"])
+                self.assertIn("尺寸或时长无效", result["reason"])
+
+    def test_a25_media_qc_failure_never_marks_manifest_deliverable(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            p = new_project("https://item.jd.com/123.html", 2, "真人口播")
+            output = root / "failed.mp4"
+            output.write_bytes(b"broken")
+            manifest = store.write_final_output_manifest(
+                p, output, "9:16", 1, p.shots[:1], {"allowed": True},
+                {"valid": False, "reason": "视频流无效", "duration_seconds": 0},
+            )
+            import json
+            data = json.loads(manifest.read_text(encoding="utf-8"))
+            self.assertEqual(data["delivery_status"], "不可交付")
+
+    def test_a25_build_final_deletes_invalid_output_and_writes_no_manifest(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            p = new_project("https://item.jd.com/123.html", 2, "真人口播")
+            for shot in p.shots:
+                path = root / f"{shot.id}.mp4"
+                path.write_bytes(b"video")
+                shot.video_path = str(path)
+            completed = type("Completed", (), {"stdout": '{"streams":[{"codec_type":"video","width":1920,"height":1080}],"format":{"duration":"5.2"}}'})()
+            with patch("ad_studio.production.concat") as concat, patch(
+                "ad_studio.production.shutil.which", return_value="/usr/bin/ffprobe"
+            ), patch("ad_studio.production.subprocess.run", return_value=completed):
+                def fake_concat(inputs, output):
+                    Path(output).parent.mkdir(parents=True, exist_ok=True)
+                    Path(output).write_bytes(b"invalid-output")
+                concat.side_effect = fake_concat
+                with self.assertRaises(RuntimeError) as cm:
+                    store.build_final(p, "9:16", 1)
+            self.assertIn("机器质检未通过", str(cm.exception))
+            self.assertFalse((root / "final" / p.id / "final-9x16-v1.mp4").exists())
+            self.assertFalse((p.creative_plan or {}).get("final_output_manifests"))
+
 if __name__ == "__main__":
     unittest.main()
