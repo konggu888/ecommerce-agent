@@ -260,6 +260,44 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(len(restored.shots), len(p.shots))
             self.assertEqual(restored.cost_estimate["总计"], 3.6)
 
+    def test_hybrid_gap_router_blocks_product_evidence_and_respects_budget(self):
+        from ad_studio.hybrid_router import route_footage_gap_tasks
+        result = route_footage_gap_tasks([
+            {"task_id": "product-1", "need": "商品细节特写"},
+            {"task_id": "generic-1", "need": "通用氛围辅助画面"},
+        ], generation_connected=True, budget_remaining_rmb=1.0, cost_per_ai_shot_rmb=0.8)
+        self.assertEqual(result["tasks"][0]["recommended_resolution"], "继续补拍")
+        self.assertFalse(result["tasks"][0]["generation_allowed"])
+        self.assertEqual(result["tasks"][1]["recommended_resolution"], "AI补镜头")
+        self.assertAlmostEqual(result["budget_remaining_rmb"], 0.2)
+
+    def test_hybrid_generation_failure_is_not_marked_success(self):
+        from ad_studio.hybrid_router import execute_ai_gap_generation
+        def fail(_task):
+            raise RuntimeError("provider failed")
+        result = execute_ai_gap_generation([
+            {"task_id": "gap-1", "need": "通用辅助画面",
+             "recommended_resolution": "AI补镜头", "generation_allowed": True}
+        ], generator=fail, budget_remaining_rmb=1.0, cost_per_ai_shot_rmb=0.5)
+        task = result["tasks"][0]
+        self.assertEqual(result["failed"], 1)
+        self.assertEqual(task["status"], "AI补镜头生成失败")
+        self.assertFalse(task.get("accepted_into_storyboard", False))
+
+    def test_hybrid_generated_shot_requires_human_review_before_acceptance(self):
+        from ad_studio.models import Shot, accept_hybrid_generated_shot
+        shots = [Shot(id="shot-01", index=1, title="原镜头", visual="商品", script="")]
+        task = {
+            "task_id": "gap-1", "generated_path": "/tmp/gap.mp4",
+            "review_status": "待复核", "need": "通用辅助画面",
+        }
+        with self.assertRaises(ValueError):
+            accept_hybrid_generated_shot(task, shots)
+        task["review_status"] = "已通过"
+        updated = accept_hybrid_generated_shot(task, shots)
+        self.assertEqual(updated[-1].storyboard_review, "已通过")
+        self.assertTrue(task["accepted_into_storyboard"])
+
     def test_reviewed_hybrid_task_persists_into_project(self):
         with tempfile.TemporaryDirectory() as td:
             store = ProductionStore(Path(td))
