@@ -449,3 +449,6 @@ validate_task_type_plan 在创意方案进入项目/成片前执行，防止 AI 
 
 ## 2026-10-08：一键生成全部广告版本
 `batch_generate_variants()` 是多版本真正的一键执行入口。它先做确定性的剩余镜头成本估算和预算闸门，再逐方案生成缺失镜头并分别最终渲染。已经存在的真实镜头不重复生成；失败镜头保留失败状态；每个版本继续使用独立 `variant_shot_cache` 与 `variant_outputs`。
+
+## 2026-10-08：实拍素材多方案独立剪辑
+实拍模式的公共素材分析与创意方案解耦：视觉分析/废片归档/转写只执行一次，而 plan_footage() 按每个 creative_variants 分别执行。结果保存为 variant_footage_plans、variant_footage_coverage、variant_footage_selection_audits、variant_footage_gaps、variant_footage_gap_tasks。

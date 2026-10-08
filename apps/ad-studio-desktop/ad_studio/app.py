@@ -759,24 +759,48 @@ class App(tk.Tk):
                                 speech_transcripts.append({'source':clip.name,'error':str(speech_error)})
                     self.project.creative_plan['footage_transcripts']=speech_transcripts
                     from .footage import validate_footage_plan, audit_footage_coverage, audit_final_footage_plan
-                    coverage=audit_footage_coverage(analysis, self.project.creative_plan)
-                    self.project.creative_plan['footage_coverage']=coverage
-                    gaps=classify_footage_gaps(coverage, self.project.creative_plan, generation_connected=False)
-                    self.project.creative_plan['footage_gaps']=gaps
-                    gap_tasks=build_footage_gap_tasks(coverage, gaps, self.project.creative_plan)
-                    self.project.creative_plan['footage_gap_tasks']=gap_tasks
-                    raw_footage_plan=self.model_router.plan_footage(
-                        info.to_dict(), self.project.creative_plan,
-                        [c.to_public() for c in usable], constraints,
-                        footage_analysis=analysis,
-                        footage_coverage=coverage,
-                    )
-                    plan_items,warnings=validate_footage_plan(raw_footage_plan,usable)
-                    final_audit=audit_final_footage_plan(plan_items, analysis, coverage)
-                    self.project.creative_plan['footage_selection_audit']=final_audit
-                    plan_items=final_audit['plan']
-                    self._apply_footage_plan(plan_items)
-                    self.project.creative_plan['footage_plan']=plan_items
+                    # 公共视觉分析/废片归档/转写只做一次；每个创意方案独立规划自己的实拍剪辑。
+                    variant_footage_plans={}
+                    variant_footage_audits={}
+                    variant_footage_coverage={}
+                    variant_footage_gaps={}
+                    variant_footage_tasks={}
+                    for variant_pos, variant_raw in enumerate(raw_plans, 1):
+                        self._activate_plan(variant_raw, info)
+                        variant_plan_dict=dict(self.project.creative_plan)
+                        coverage_v=audit_footage_coverage(analysis, variant_plan_dict)
+                        gaps_v=classify_footage_gaps(coverage_v, variant_plan_dict, generation_connected=False)
+                        tasks_v=build_footage_gap_tasks(coverage_v, gaps_v, variant_plan_dict)
+                        raw_footage_plan=self.model_router.plan_footage(
+                            info.to_dict(), variant_plan_dict,
+                            [c.to_public() for c in usable], constraints,
+                            footage_analysis=analysis,
+                            footage_coverage=coverage_v,
+                        )
+                        plan_items,warnings_v=validate_footage_plan(raw_footage_plan,usable)
+                        final_audit=audit_final_footage_plan(plan_items, analysis, coverage_v)
+                        idx=int(variant_raw.get('_variant_index',variant_pos))
+                        variant_footage_plans[str(idx)]=final_audit['plan']
+                        variant_footage_audits[str(idx)]=final_audit
+                        variant_footage_coverage[str(idx)]=coverage_v
+                        variant_footage_gaps[str(idx)]=gaps_v
+                        variant_footage_tasks[str(idx)]=tasks_v
+                    self.project.creative_plan['variant_footage_plans']=variant_footage_plans
+                    self.project.creative_plan['variant_footage_selection_audits']=variant_footage_audits
+                    self.project.creative_plan['variant_footage_coverage']=variant_footage_coverage
+                    self.project.creative_plan['variant_footage_gaps']=variant_footage_gaps
+                    self.project.creative_plan['variant_footage_gap_tasks']=variant_footage_tasks
+                    first_raw=raw_plans[0]
+                    self._activate_plan(first_raw, info)
+                    first_idx=int(first_raw.get('_variant_index',1))
+                    first_plan=variant_footage_plans.get(str(first_idx), [])
+                    self._apply_footage_plan(first_plan)
+                    self.project.creative_plan['footage_coverage']=variant_footage_coverage.get(str(first_idx),{})
+                    self.project.creative_plan['footage_gaps']=variant_footage_gaps.get(str(first_idx),{})
+                    self.project.creative_plan['footage_gap_tasks']=variant_footage_tasks.get(str(first_idx),{})
+                    self.project.creative_plan['footage_selection_audit']=variant_footage_audits.get(str(first_idx),{})
+                    self.project.creative_plan['footage_plan']=first_plan
+                    warnings=[]
                 except Exception as fe:
                     self.project=None
                     messagebox.showerror('素材剪辑规划失败',str(fe))

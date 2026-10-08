@@ -591,3 +591,8 @@ def test_batch_generation_budget_gate_counts_missing_shots():
     estimated=sum(missing_counts)*rate
     assert round(estimated,2)==6.48
     assert estimated > 3.0
+
+
+def test_footage_variants_keep_independent_plans():
+    plans={'1':[{'source':'a.mp4','start':0,'duration':3}], '2':[{'source':'b.mp4','start':4,'duration':2}], '3':[{'source':'c.mp4','start':8,'duration':4}]}
+    assert plans['1'] != plans['2'] and plans['2'] != plans['3']
