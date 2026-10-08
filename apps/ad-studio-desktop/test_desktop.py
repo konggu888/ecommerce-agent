@@ -795,5 +795,87 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertIn("00:00:01,000 --> ", body)
             self.assertIn("这是一个非常重要的", body)
 
+
+    def test_a20_final_delivery_safety_gate_blocks_unverified_risks(self):
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td))
+            p = new_project("https://item.jd.com/123.html", 2, "真人口播")
+            p.creative_plan["creative_fact_audit"] = {"variants": [{"variant_index": 1, "unsupported_selling_points": ["未经资料支持的功效"], "forbidden_term_hits": ["全网最低"], "absolute_or_high_risk_claims": ["绝对有效"]}]}
+            p.creative_plan["visual_fact_audit"] = {"variants": [{"variant_index": 1, "shots": [{"source": "clip.mp4", "risks": ["商品可能被遮挡"]}]}]}
+            p.shots[0].clip_source = "ai_generated"
+            p.shots[0].storyboard_review = "待复核"
+            result = store.final_render_gate(p)
+            self.assertFalse(result["allowed"])
+            self.assertGreaterEqual(len(result["reasons"]), 4)
+            self.assertTrue(any("未经资料支持的功效" in x for x in result["reasons"]))
+            self.assertTrue(any("全网最低" in x for x in result["reasons"]))
+            self.assertTrue(any("商品可能被遮挡" in x for x in result["reasons"]))
+            self.assertTrue(any("尚未通过人工复核" in x for x in result["reasons"]))
+
+    def test_a21_final_delivery_media_qc_and_variant_aspect_history_are_independent(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            p = new_project("https://item.jd.com/123.html", 2, "真人口播")
+            gate = {"allowed": True, "reasons": [], "checked": True}
+            for variant, aspect, name in ((1, "9:16", "a.mp4"), (2, "16:9", "b.mp4")):
+                output = root / name
+                output.write_bytes(b"video")
+                media = {"valid": True, "path": str(output), "size_bytes": 5, "duration_seconds": 5.0, "width": 1080 if aspect == "9:16" else 1920, "height": 1920 if aspect == "9:16" else 1080, "aspect": aspect, "video_stream": True, "reason": "最终视频机器质检通过"}
+                store.write_final_output_manifest(p, output, aspect, variant, p.shots[:1], gate, media)
+            rows = store.final_output_history(p)
+            self.assertEqual({x["key"] for x in rows}, {"1|9:16", "2|16:9"})
+            self.assertEqual(len({x["output_path"] for x in rows}), 2)
+            self.assertTrue(all(x["delivery_status"] == "可交付" for x in rows))
+
+    def test_a22_final_delivery_recheck_routes_each_failure_without_regeneration(self):
+        try:
+            from ad_studio.app import App
+        except ModuleNotFoundError as exc:
+            if exc.name != "tkinter":
+                raise
+            import sys, types
+            fake_tk = types.ModuleType("tkinter")
+            fake_tk.Tk = object
+            fake_tk.ttk = types.ModuleType("tkinter.ttk")
+            fake_tk.filedialog = types.ModuleType("tkinter.filedialog")
+            fake_tk.messagebox = types.ModuleType("tkinter.messagebox")
+            sys.modules["tkinter"] = fake_tk
+            sys.modules["tkinter.ttk"] = fake_tk.ttk
+            sys.modules["tkinter.filedialog"] = fake_tk.filedialog
+            sys.modules["tkinter.messagebox"] = fake_tk.messagebox
+            from ad_studio.app import App
+        app = App.__new__(App)
+        routes = app._final_delivery_repair_routes({"reasons": ["方案1：商品资料未支持的卖点：功效A", "镜头3：AI生成镜头尚未通过人工复核", "方案1·clip.mp4：商品可能被遮挡"]}, {"valid": False, "reason": "输出画幅与要求 9:16 不一致"})
+        mapping = {x["issue"]: x["route"] for x in routes}
+        self.assertEqual(mapping["方案1：商品资料未支持的卖点：功效A"], "创意事实检查")
+        self.assertEqual(mapping["镜头3：AI生成镜头尚未通过人工复核"], "AI补镜头复核")
+        self.assertEqual(mapping["方案1·clip.mp4：商品可能被遮挡"], "成片视觉复核")
+        self.assertEqual(mapping["输出画幅与要求 9:16 不一致"], "最终成片输出")
+
+    def test_a23_hybrid_review_to_final_render_is_closed_loop(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            p = new_project("https://item.jd.com/123.html", 2, "真人口播")
+            task = {"task_id": "A23-GAP-1", "generated_path": str(root / "support.mp4"), "review_status": "待复核", "target_shot_index": 2}
+            Path(task["generated_path"]).write_bytes(b"fake-video")
+            with self.assertRaises(ValueError):
+                store.accept_hybrid_generated_task(p, task)
+            self.assertFalse(task.get("accepted_into_storyboard", False))
+            task["review_status"] = "已通过"
+            accepted = store.accept_hybrid_generated_task(p, task)
+            self.assertIsNotNone(accepted)
+            self.assertTrue(task["accepted_into_storyboard"])
+            self.assertTrue(any(s.id == task["accepted_shot_id"] and s.storyboard_review == "已通过" for s in p.shots))
+            for shot in p.shots:
+                if shot.video_path:
+                    continue
+                path = root / f"{shot.id}.mp4"
+                path.write_bytes(b"video")
+                shot.video_path = str(path)
+            inputs = store.final_render_inputs(p)
+            self.assertTrue(any(x["shot_id"] == task["accepted_shot_id"] for x in inputs))
+
 if __name__ == "__main__":
     unittest.main()
