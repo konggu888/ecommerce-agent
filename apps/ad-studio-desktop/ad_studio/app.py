@@ -138,7 +138,7 @@ class App(tk.Tk):
         ttk.Label(setup,text='素材来源').grid(row=5,column=0,sticky='w'); self.footage_mode=tk.StringVar(value='AI生成视频'); ttk.Combobox(setup,textvariable=self.footage_mode,values=['AI生成视频','用户拍摄素材'],state='readonly',width=16).grid(row=4,column=1,sticky='w',pady=(4,2))
         self.footage_folder=tk.StringVar(value=''); ttk.Entry(setup,textvariable=self.footage_folder,width=36).grid(row=5,column=2,sticky='w',padx=4); ttk.Button(setup,text='选择素材文件夹',command=self.choose_footage_folder).grid(row=4,column=3,sticky='e')
         ttk.Label(setup,text='用户拍摄素材：输入链接后 AI 分析产品 → 指定文件夹放入你拍好的视频 → AI 思考剪辑方案 → 本地 FFmpeg 出片（不调用视频生成服务）',foreground='#666').grid(row=6,column=0,columnspan=5,sticky='w',pady=(2,0))
-        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='📹 实拍分析报告',command=self.footage_analysis_report).grid(row=2,column=5,sticky='e',padx=8); ttk.Button(setup,text='📋 补素材任务',command=self.footage_gap_tasks_report).grid(row=2,column=6,sticky='e',padx=8); ttk.Button(setup,text='🤖 执行AI补镜头',command=self.generate_hybrid_gap_shots).grid(row=2,column=10,sticky='e',padx=8); ttk.Button(setup,text='🔍 AI补镜头复核',command=self.review_hybrid_gap_shots).grid(row=2,column=11,sticky='e',padx=8); ttk.Button(setup,text='🔄 重新分析实拍素材',command=self.reanalyze_footage).grid(row=2,column=7,sticky='e',padx=8); ttk.Button(setup,text='🕘 分析历史',command=self.footage_reanalysis_history_report).grid(row=2,column=8,sticky='e',padx=8); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='🧪 投放版本矩阵',command=self.variant_matrix_report).grid(row=2,column=9,sticky='e',padx=8); ttk.Button(setup,text='📥 回写投放数据',command=self.variant_performance_entry).grid(row=2,column=12,sticky='e',padx=8); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
+        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='📹 实拍分析报告',command=self.footage_analysis_report).grid(row=2,column=5,sticky='e',padx=8); ttk.Button(setup,text='📋 补素材任务',command=self.footage_gap_tasks_report).grid(row=2,column=6,sticky='e',padx=8); ttk.Button(setup,text='🤖 执行AI补镜头',command=self.generate_hybrid_gap_shots).grid(row=2,column=10,sticky='e',padx=8); ttk.Button(setup,text='🔍 AI补镜头复核',command=self.review_hybrid_gap_shots).grid(row=2,column=11,sticky='e',padx=8); ttk.Button(setup,text='🔄 重新分析实拍素材',command=self.reanalyze_footage).grid(row=2,column=7,sticky='e',padx=8); ttk.Button(setup,text='🕘 分析历史',command=self.footage_reanalysis_history_report).grid(row=2,column=8,sticky='e',padx=8); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='🧪 创意版本矩阵',command=self.variant_matrix_report).grid(row=2,column=9,sticky='e',padx=8); ttk.Button(setup,text='🧠 创意方案分析',command=self.creative_variant_analysis_report).grid(row=2,column=12,sticky='e',padx=8); ttk.Button(setup,text='📥 真实投放数据（可选）',command=self.variant_performance_entry).grid(row=2,column=13,sticky='e',padx=8); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
         main=ttk.Panedwindow(self,orient='horizontal'); main.pack(fill='both',expand=True,padx=16,pady=8)
         left=ttk.Frame(main,padding=8); right=ttk.Frame(main,padding=8); main.add(left,weight=3); main.add(right,weight=2)
         ttk.Label(left,text='② 分镜生产链',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
@@ -197,6 +197,110 @@ class App(tk.Tk):
         detail.config(state='disabled')
         ttk.Label(frm,text='说明：这是投放前的创意版本矩阵，不代表真实投放数据；真实点击率、转化率等需要进入广告平台后再比较。',foreground='#666',wraplength=1120).pack(anchor='w')
         ttk.Button(frm,text='关闭',command=win.destroy).pack(anchor='e',pady=(8,0))
+
+    @ui_action
+    def creative_variant_analysis_report(self):
+        """投放前分析多版本创意差异；不假设渠道、不生成平台数据、不自动选择投放平台。"""
+        if not self.project:
+            return messagebox.showinfo('提示','请先创建或打开一个项目。')
+        plan=self.project.creative_plan or {}
+        variants=plan.get('creative_variants') or []
+        if not variants:
+            return messagebox.showinfo('提示','当前项目还没有多版本创意。')
+
+        def text_value(value):
+            if isinstance(value, list):
+                return '、'.join(str(x) for x in value if x)
+            if isinstance(value, dict):
+                return '、'.join(f'{k}:{v}' for k,v in value.items() if v)
+            return str(value or '').strip()
+
+        fields=[
+            ('variant_test_axis','测试轴'),
+            ('hook','Hook/开场'),
+            ('strategy','核心策略'),
+            ('selling_points','核心卖点'),
+            ('video_form','视频形式'),
+            ('proof','证明方式'),
+            ('cta','行动引导'),
+            ('target_audience','目标人群'),
+            ('pain_points','用户痛点'),
+        ]
+        rows=[]
+        for i,v in enumerate(variants,1):
+            row={'方案':f'方案{i}'}
+            axis=v.get('variant_test_axis') or {}
+            for key,label in fields:
+                value=axis.get('name') if key=='variant_test_axis' and isinstance(axis,dict) else v.get(key,'')
+                if key=='proof' and not value:
+                    value=v.get('video_form','')
+                if key=='cta' and not value:
+                    value=v.get('script','')[-100:]
+                if key=='selling_points' and not value:
+                    value=v.get('selling_point','')
+                row[label]=text_value(value)
+            rows.append(row)
+
+        pair_lines=[]
+        for a in range(len(rows)):
+            for b in range(a+1,len(rows)):
+                diffs=[label for _,label in fields if rows[a][label] != rows[b][label] and (rows[a][label] or rows[b][label])]
+                pair_lines.append(f"{rows[a]['方案']} ↔ {rows[b]['方案']}：{'、'.join(diffs) if diffs else '没有识别到明显差异'}")
+
+        # 只根据创意本身生成可解释结论；没有真实投放数据时绝不宣称“胜出”。
+        axis_values=[r['测试轴'] for r in rows if r['测试轴']]
+        unique_axes=list(dict.fromkeys(axis_values))
+        data_note='当前没有使用任何广告平台数据。下面的判断只回答“创意有什么不同、下一轮应该继续测试什么”。'
+        if len(unique_axes) == 1 and len(rows) > 1:
+            data_note += ' 多个方案的测试轴相同，建议下一轮先拉开测试轴，否则很难判断哪一种创意逻辑更有效。'
+        elif len(unique_axes) > 1:
+            data_note += f' 当前识别到 {len(unique_axes)} 种不同测试轴。'
+
+        performance=plan.get('variant_performance') or {}
+        performance_note='尚未回写真实投放数据，因此不评选投放胜出方案。'
+        if isinstance(performance,dict) and any(isinstance(x,dict) and x for x in performance.values()):
+            performance_note='检测到已回写的真实投放数据；这些数据仅作为附加参考，不改变本报告的投放前创意判断。'
+
+        win=tk.Toplevel(self); win.title('创意方案分析'); win.geometry('1180x760'); win.transient(self)
+        frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
+        ttk.Label(frm,text='多版本创意分析（投放前）',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
+        ttk.Label(frm,text=data_note,wraplength=1120,foreground='#555').pack(anchor='w',pady=(4,4))
+        ttk.Label(frm,text=performance_note,wraplength=1120,foreground='#555').pack(anchor='w',pady=(0,10))
+
+        tree=ttk.Treeview(frm,columns=('version','axis','hook','strategy','selling','proof','cta','audience'),show='headings')
+        heads=[
+            ('version','方案',70),('axis','测试轴',120),('hook','Hook/开场',180),
+            ('strategy','核心策略',170),('selling','核心卖点',180),('proof','证明方式',150),
+            ('cta','行动引导',150),('audience','目标人群',150)
+        ]
+        for col,title,width in heads:
+            tree.heading(col,text=title); tree.column(col,width=width,anchor='w')
+        tree.pack(fill='both',expand=True)
+        for r in rows:
+            tree.insert('', 'end', values=tuple(r[x] for x in ['方案','测试轴','Hook/开场','核心策略','核心卖点','证明方式','行动引导','目标人群']))
+
+        detail=tk.Text(frm,height=10)
+        detail.pack(fill='x',pady=(10,6))
+        detail.insert('1.0','【方案之间的结构差异】\n')
+        detail.insert('end','\n'.join(pair_lines) or '没有可比较的方案。')
+        detail.insert('end','\n\n【下一轮创意测试建议】\n')
+        suggestions=[]
+        if len(rows)>=2:
+            suggestions.append('保留当前表现形式中真正不同的创意轴，不要只改字幕、颜色或镜头顺序来制造“假差异”。')
+        missing_axis=sum(1 for r in rows if not r['测试轴'])
+        if missing_axis:
+            suggestions.append(f'有 {missing_axis} 个方案没有明确测试轴；下一轮应给每个方案写清楚“这版到底在验证什么”。')
+        if any(not r['证明方式'] for r in rows):
+            suggestions.append('至少保留一版强化产品证据/使用证明的创意，用来验证“说出来”与“证明出来”的差别。')
+        if any(not r['Hook/开场'] for r in rows):
+            suggestions.append('补齐开场钩子差异：下一轮应明确每版前几秒要让用户停下来的不同理由。')
+        if not suggestions:
+            suggestions.append('当前结构化差异已经比较完整；下一轮优先围绕现有测试轴继续做更强、更极端的对照，而不是随机改元素。')
+        detail.insert('end','\n'.join(f'• {x}' for x in suggestions))
+        detail.config(state='disabled')
+
+        ttk.Label(frm,text='重要：本报告不会猜测你要投抖音、淘宝、拼多多、小红书或京东，也不会凭空生成点击率、转化率、ROI 等数据。真正投放后，只有你提供对应平台的真实数据，系统才进入投放结果分析。',wraplength=1120,foreground='#666').pack(anchor='w',pady=(2,8))
+        ttk.Button(frm,text='关闭',command=win.destroy).pack(anchor='e')
 
     def _variant_metrics(self, raw):
         """根据人工/平台回写的原始投放数据计算统一指标；不自动调用广告平台。"""
