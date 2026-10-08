@@ -1,7 +1,7 @@
 from pathlib import Path
 import json
 import datetime
-from .models import Project, Shot
+from .models import Project, Shot, accept_hybrid_generated_shot
 from .ffmpeg import make_clip, concat
 from .providers import GenerationRequest, load_video_provider, load_asset_provider
 from .postprocess import process_shot
@@ -56,6 +56,15 @@ class ProductionStore:
 
     def mark_ready(self, project: Project, shot: Shot, output: Path):
         shot.video_path=str(output); shot.status='已生成'; self.save(project)
+
+    def accept_hybrid_generated_task(self, project: Project, task: dict):
+        """人工明确通过后，把混合生成素材纳入项目分镜并持久化。"""
+        if not isinstance(task, dict):
+            raise ValueError("缺口任务必须是字典")
+        shots = accept_hybrid_generated_shot(task, project.shots)
+        project.shots = shots
+        self.save(project)
+        return next((shot for shot in shots if str(shot.id) == str(task.get("accepted_shot_id"))), None)
 
     def resolve_assets(self, project: Project, shot: Shot):
         """本地优先；缺失时返回明确的生成需求。真正生成由对应生成器执行。"""
