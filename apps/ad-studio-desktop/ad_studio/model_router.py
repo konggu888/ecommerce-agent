@@ -10,7 +10,7 @@ import urllib.request
 import time
 
 from .usage_ledger import UsageLedger
-from .footage import normalize_footage_analysis, rank_footage_analysis
+from .footage import normalize_footage_analysis, rank_footage_analysis, audit_footage_coverage
 from .creative_engine import CREATIVE_SYSTEM_PROMPT
 
 
@@ -387,6 +387,7 @@ class ModelRouter:
         footage_clips: list[dict[str, Any]],
         constraints: dict[str, Any] | None = None,
         footage_analysis: dict[str, Any] | None = None,
+        footage_coverage: dict[str, Any] | None = None,
     ) -> list[dict[str, Any]]:
         """素材剪辑导演：基于产品理解、创意方案与用户拍摄素材，规划剪辑方案。
 
@@ -410,6 +411,7 @@ class ModelRouter:
             },
             "footage_clips": footage_clips,
             "footage_analysis": footage_analysis or {},
+            "footage_coverage": footage_coverage or {},
             "footage_transcripts": creative_plan.get("footage_transcripts", []),
             "constraints": constraints or {},
             "required_output_schema": STAGE_SCHEMAS["footage_director"],
@@ -427,9 +429,9 @@ class ModelRouter:
             "6. 不能为了删废话破坏一句话的完整语义；时间戳不够精确时，只在 segment 边界做安全裁剪。\n"
             "7. 每个镜头给出画面说明、口播/文案、字幕位置、构图、节奏、转场，供本地执行。\n"            "8. footage_analysis 中如果多个素材属于同一 duplicate_group，优先使用 best_take=true、take_rank 更高的版本；除非低排名版本包含主版本没有的独特有效片段，否则不要重复使用同组低排名素材。\n"
             "9. material_rank 越小代表整个素材池越值得优先使用；先考虑高排名素材，再根据镜头目标和卖点覆盖做最终取舍，不要机械按排名剪辑。\n"
-
-            "9. 广告表达避免违反广告法的绝对化、虚假、无法证明的承诺。\n"
-            "11. 输出必须是严格 JSON，不要输出 Markdown。"
+            "10. footage_coverage 是最终覆盖审计：开场优先使用 opening_candidate；每个 covered=true 的重要卖点至少覆盖一次；唯一能覆盖重要卖点的低排名素材可以优先于纯排名更高但重复的信息。缺失项只能记录，禁止编造不存在的画面。\n"
+            "11. 广告表达避免违反广告法的绝对化、虚假、无法证明的承诺。\n"
+            "12. 输出必须是严格 JSON，不要输出 Markdown。"
         )
         prompt = (
             system

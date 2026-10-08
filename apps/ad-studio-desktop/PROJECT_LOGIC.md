@@ -362,3 +362,7 @@ CI 的桌面 Python 语法检查发现 `ffmpeg.py` 的 concat 清单 `write_text
 - 2026-10-08：`footage_analysis_report` 展示 `duplicate_group` 与 `best_take`，报告只读取已保存结果，不新增模型调用。
 
 - 2026-10-08：实拍素材池新增本地综合排名 `material_rank`/`selection_score`；基于 AI 原始评分、最佳版本、口播质量、画面标签和重复镜头惩罚排序，不覆盖原始 AI 评分，也不产生额外模型调用。
+
+
+## 2026-10-08：实拍素材排名后的覆盖审计
+新增 audit_footage_coverage。在素材池统一排名后，本地确定性检查卖点覆盖、开场候选和关键镜头缺口，并把结果保存到 creative_plan["footage_coverage"]。该步骤不调用模型；最终剪辑导演同时收到 footage_analysis 与 footage_coverage，因此“排名最高”不再机械等于“最终一定使用”，唯一能覆盖重要卖点的素材可以获得优先权。缺失的真人/场景、特写、演示、口播等镜头标记为待补拍，系统禁止编造不存在的实拍画面。

@@ -134,11 +134,18 @@ class App(tk.Tk):
         archived=sum(1 for x in records if x.get('archived'))
         usable=sum(1 for x in clips if x.get('usable') is not False)
         recommended=analysis.get('recommended_duration_seconds','未提供') if isinstance(analysis,dict) else '未提供'
+        coverage=plan.get('footage_coverage') or {}
         summary=(f'视觉分析：{len(clips)} 个｜当前可用：{usable} 个｜已归档废片：{archived} 个｜'
-                 f'口播转写：{len(transcripts)} 个｜AI建议时长：{recommended} 秒')
+                 f'口播转写：{len(transcripts)} 个｜AI建议时长：{recommended} 秒｜'
+                 f'卖点覆盖：{coverage.get("coverage_score", "未审计")}%｜开场候选：{coverage.get("opening_candidate") or "未找到"}')
         ttk.Label(frm,text=summary).pack(anchor='w',pady=(4,10))
         if isinstance(analysis,dict) and analysis.get('global_summary'):
             ttk.Label(frm,text='AI总体判断：'+str(analysis['global_summary']),wraplength=1020,justify='left').pack(anchor='w',pady=(0,10))
+        missing=coverage.get('missing_key_shots', []) if isinstance(coverage,dict) else []
+        missing_points=coverage.get('missing_selling_points', []) if isinstance(coverage,dict) else []
+        gap_text='；'.join(str(x.get('need','')) for x in missing if isinstance(x,dict)) or '无'
+        point_text='、'.join(map(str,missing_points)) or '无'
+        ttk.Label(frm,text=f'覆盖审计：缺失关键镜头={gap_text}｜缺失卖点={point_text}',wraplength=1020,justify='left').pack(anchor='w',pady=(0,8))
         tree=ttk.Treeview(frm,columns=('source','rank','sel','score','usable','duplicate','take','reason','tags','ranges','speech'),show='headings')
         heads=[('source','素材',140),('rank','素材排名',70),('sel','综合分',70),('score','AI评分',60),('usable','是否可用',70),('duplicate','重复组',100),('take','最佳版本',80),('reason','判断原因',230),('tags','画面标签',180),('ranges','推荐片段',150),('speech','口播质量',90)]
         for col,title,width in heads:
@@ -496,12 +503,15 @@ class App(tk.Tk):
                             except Exception as speech_error:
                                 speech_transcripts.append({'source':clip.name,'error':str(speech_error)})
                     self.project.creative_plan['footage_transcripts']=speech_transcripts
+                    from .footage import validate_footage_plan, audit_footage_coverage
+                    coverage=audit_footage_coverage(analysis, self.project.creative_plan)
+                    self.project.creative_plan['footage_coverage']=coverage
                     raw_footage_plan=self.model_router.plan_footage(
                         info.to_dict(), self.project.creative_plan,
                         [c.to_public() for c in usable], constraints,
                         footage_analysis=analysis,
+                        footage_coverage=coverage,
                     )
-                    from .footage import validate_footage_plan, FootageError
                     plan_items,warnings=validate_footage_plan(raw_footage_plan,usable)
                     self._apply_footage_plan(plan_items)
                     self.project.creative_plan['footage_plan']=plan_items
@@ -525,6 +535,7 @@ class App(tk.Tk):
                 f"商品：{info.name}",f"素材文件夹：{folder}",f"扫描到可用素材：{len(usable)} 个（跳过无法解析 {len(clips)-len(usable)} 个）",
                 '素材清单：',clips_note,'',
                 f"视觉分析：已观察 {len(analysis.get('clips', [])) if isinstance(analysis, dict) else 0} 个素材；自动归档废片：{sum(1 for x in self.project.creative_plan.get('footage_archive', {}).get('records', []) if x.get('archived'))} 个；口播转写：{len(speech_transcripts)} 个素材。",
+                f"卖点覆盖率：{coverage.get('coverage_score', 100):.1f}%｜开场候选：{coverage.get('opening_candidate') or '未找到'}｜缺失关键镜头：{'、'.join(x.get('need','') for x in coverage.get('missing_key_shots', [])) or '无'}",
                 f"本次生成创意方案：{variant_count} 个（当前先展示方案1）",f"AI选择视频形式：{plan.video_form}",f"AI策略：{plan.strategy}",'',
                 'AI 剪辑方案：',*[f"  镜头{x['index']:02d}｜{x['source']}｜{x['start']:.1f}s 起｜{x['duration']:.1f}s｜{x.get('objective','')}" for x in plan_items],
                 *(f'⚠ {warnings_note}' if warnings_note else ''),'',

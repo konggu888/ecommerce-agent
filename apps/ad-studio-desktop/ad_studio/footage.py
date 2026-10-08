@@ -238,6 +238,60 @@ def rank_footage_analysis(analysis: dict | None) -> dict:
     return result
 
 
+
+def audit_footage_coverage(analysis: dict | None, creative_plan: dict | None = None) -> dict:
+    """本地确定性检查卖点覆盖、开场候选和关键镜头缺口，不产生新的 AI 调用。"""
+    analysis = rank_footage_analysis(analysis)
+    creative_plan = creative_plan or {}
+    clips = [x for x in analysis.get("clips", []) if isinstance(x, dict) and x.get("usable") is not False]
+    clips.sort(key=lambda x: (int(x.get("material_rank", 999999) or 999999), str(x.get("source", ""))))
+    def clean(v):
+        return re.sub(r"[\\u3000\\s，。、“”‘’：；！？、（）()【】\\[\\]{}<>《》/\\\\|·_\\-]+", "", str(v or "").strip().lower())
+    def match(point, item):
+        p = clean(point)
+        hay = clean(" ".join(str(x) for x in (item.get("selling_points") or []) + (item.get("visual_tags") or [])))
+        if not p or not hay:
+            return False
+        if p in hay or hay in p:
+            return True
+        return any(p[i:j] in hay for i in range(len(p)) for j in (i + 2, min(len(p), i + 4)) if j > i and j - i >= 2)
+    points = creative_plan.get("selling_points") or []
+    if isinstance(points, dict): points = list(points.values())
+    if not isinstance(points, list): points = [points]
+    normalized = []
+    for point in points:
+        if isinstance(point, dict): point = point.get("name") or point.get("title") or point.get("point") or ""
+        point = str(point).strip()
+        if point and point not in normalized: normalized.append(point)
+    if not normalized:
+        for item in clips:
+            for point in item.get("selling_points") or []:
+                point = str(point).strip()
+                if point and point not in normalized: normalized.append(point)
+    coverage = []
+    for point in normalized:
+        matches = [x for x in clips if match(point, x)]
+        matches.sort(key=lambda x: (not bool(x.get("best_take")), int(x.get("material_rank", 999999) or 999999), -float(x.get("selection_score", 0) or 0)))
+        best = matches[0] if matches else None
+        coverage.append({"name": point, "covered": bool(matches), "sources": [str(x.get("source", "")) for x in matches[:5]], "best_source": str(best.get("source", "")) if best else ""})
+    candidates = []
+    for item in clips:
+        tags = {str(x).lower() for x in item.get("visual_tags") or []}
+        score = float(item.get("selection_score", 0) or 0) + (8 if tags & {"product_visible", "demo", "detail", "person", "scene"} else 0) - (20 if tags & {"blur", "shake", "blocked"} else 0) + (4 if item.get("best_take") else 0)
+        candidates.append((score, -int(item.get("material_rank", 999999) or 999999), item))
+    candidates.sort(key=lambda x: (-x[0], x[1], str(x[2].get("source", ""))))
+    opening = candidates[0][2] if candidates else None
+    shots = creative_plan.get("shots") or []
+    if not isinstance(shots, list): shots = []
+    required = [("商品特写", ("特写", "细节", "detail", "近景")), ("商品演示", ("演示", "使用", "操作", "demo")), ("真人/场景", ("真人", "人物", "场景", "生活", "出镜", "person", "scene")), ("口播", ("口播", "说话", "讲解", "talking"))]
+    missing = []
+    for label, keys in required:
+        requested = any(any(k.lower() in str(x.get("objective", x.get("visual", ""))).lower() for k in keys) for x in shots if isinstance(x, dict))
+        found = any(any(k.lower() in " ".join(map(str, x.get("visual_tags") or [])).lower() for k in keys) for x in clips)
+        if requested and not found: missing.append({"need": label, "reason": "创意分镜需要该类镜头，但当前可用实拍素材没有对应证据", "action": "待补拍"})
+    covered = sum(1 for x in coverage if x["covered"])
+    return {"coverage_score": round(100.0 * covered / len(coverage), 1) if coverage else 100.0, "opening_candidate": str(opening.get("source", "")) if opening else "", "selling_points": coverage, "missing_key_shots": missing, "missing_selling_points": [x["name"] for x in coverage if not x["covered"]], "candidate_sources": [str(x.get("source", "")) for x in clips[:10]], "method": "本地确定性覆盖审计"}
+
 def archive_analyzed_waste(
     clips: list[FootageClip],
     analysis: dict,
