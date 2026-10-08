@@ -638,3 +638,14 @@ def test_merge_gap_task_acceptance_keeps_completed_history():
     out=merge_gap_task_acceptance(current,audit)
     assert out['completed_task_history'][0]['status']=='已完成'
     assert any(x.get('need')=='卖点：防水' for x in out['tasks'])
+
+
+def test_footage_plan_change_audit_detects_new_and_removed_shots():
+    from ad_studio.footage import audit_footage_plan_change
+    old=[{'source':'old.mp4','ranges':[[0,3]],'covered_selling_points':['防水']}]
+    new=[{'source':'new.mp4','ranges':[[1,4]],'covered_selling_points':['防水','轻便']}]
+    out=audit_footage_plan_change(old,new)
+    assert out['changed'] is True
+    assert out['added_sources']==['new.mp4']
+    assert out['removed_sources']==['old.mp4']
+    assert out['newly_covered_selling_points']==['轻便']
