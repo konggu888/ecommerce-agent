@@ -1241,6 +1241,25 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(resumed["status"], "正常")
 
 
+    def test_a31_handoff_docs_contain_project_map_progress_acceptance_tests_and_safety_boundaries(self):
+        root = Path(__file__).resolve().parents[2]
+        agents = (root / "AGENTS.md").read_text(encoding="utf-8")
+        logic = (root / "apps" / "ad-studio-desktop" / "PROJECT_LOGIC.md").read_text(encoding="utf-8")
+        help_doc = (root / "apps" / "ad-studio-desktop" / "HELP.md").read_text(encoding="utf-8")
+        plan = (root / "docs" / "AD_STUDIO_ACCEPTANCE_PLAN.md").read_text(encoding="utf-8")
+        self.assertIn("AI 商品广告工厂", help_doc)
+        self.assertIn("LLM 负责思考和决策", agents)
+        self.assertIn("## 验收入口与 AI 接手地图", logic)
+        self.assertIn("A0 → A1 → A2", plan)
+        self.assertIn("A30 · 失败恢复", plan)
+        self.assertIn("A31 · 帮助文档", plan)
+        self.assertIn("python tools/check_ad_studio_docs.py", agents)
+        for phrase in ("输入是什么", "谁负责决策", "谁负责执行", "状态保存在哪里", "失败时怎么办", "哪些部分是真接通"):
+            self.assertIn(phrase, agents)
+        self.assertIn("当前已知限制", help_doc)
+        self.assertIn("测试", logic)
+
+
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.
