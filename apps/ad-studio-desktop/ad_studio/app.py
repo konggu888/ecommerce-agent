@@ -139,15 +139,15 @@ class App(tk.Tk):
         ttk.Label(frm,text=summary).pack(anchor='w',pady=(4,10))
         if isinstance(analysis,dict) and analysis.get('global_summary'):
             ttk.Label(frm,text='AI总体判断：'+str(analysis['global_summary']),wraplength=1020,justify='left').pack(anchor='w',pady=(0,10))
-        tree=ttk.Treeview(frm,columns=('score','usable','reason','tags','ranges','speech'),show='headings')
-        heads=[('score','评分',70),('usable','是否可用',80),('reason','判断原因',300),('tags','画面标签',240),('ranges','推荐片段',180),('speech','口播质量',100)]
+        tree=ttk.Treeview(frm,columns=('source','score','usable','duplicate','take','reason','tags','ranges','speech'),show='headings')
+        heads=[('source','素材',150),('score','评分',60),('usable','是否可用',70),('duplicate','重复组',110),('take','最佳版本',90),('reason','判断原因',260),('tags','画面标签',200),('ranges','推荐片段',160),('speech','口播质量',90)]
         for col,title,width in heads:
             tree.heading(col,text=title); tree.column(col,width=width,anchor='w')
         tree.pack(fill='both',expand=True)
         for item in clips:
             ranges=item.get('best_ranges',[])
             ranges_text='；'.join(f"{float(x.get('start',0)):.1f}-{float(x.get('start',0))+float(x.get('duration',0)):.1f}s" for x in ranges if isinstance(x,dict))
-            tree.insert('', 'end', values=(item.get('score','-'),'是' if item.get('usable') is not False else '否',str(item.get('reason','')), '、'.join(map(str,item.get('visual_tags',[]))),ranges_text,item.get('speech_quality','-')))
+            tree.insert('', 'end', values=(item.get('source','-'),item.get('score','-'),'是' if item.get('usable') is not False else '否',item.get('duplicate_group') or '-', '是' if item.get('best_take') else '否',str(item.get('reason','')), '、'.join(map(str,item.get('visual_tags',[]))),ranges_text,item.get('speech_quality','-')))
         ttk.Button(frm,text='关闭',command=win.destroy).pack(anchor='e',pady=(10,0))
 
     def system_status(self):
