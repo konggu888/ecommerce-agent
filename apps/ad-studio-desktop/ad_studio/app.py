@@ -8,6 +8,7 @@ from .library import LocalLibrary
 from .engine import FORMS, new_project, mark_regenerate, estimate_cost, estimate_asset_generation
 from .gpu import detect_gpu
 from .hardware import detect_hardware, format_hardware
+from .capability import CapabilityRouter
 from .production import ProductionStore
 from .product_parser import parse_product_url, save_product
 from .creative_engine import CreativeEngine, validate_plan
@@ -91,6 +92,9 @@ class App(tk.Tk):
         ttk.Label(setup,text='留空/自动：交给AI判断；手动选择仅作为约束').grid(row=1,column=2,columnspan=2,sticky='w')
         ttk.Label(setup,text='视频形式').grid(row=2,column=0,sticky='w'); self.form=tk.StringVar(value='AI自动选择'); ttk.Combobox(setup,textvariable=self.form,values=['AI自动选择']+FORMS,state='readonly',width=22).grid(row=2,column=1,sticky='w')
         ttk.Label(setup,text='创意方案数').grid(row=3,column=0,sticky='w'); self.variant_count=tk.StringVar(value='3'); ttk.Combobox(setup,textvariable=self.variant_count,values=['1','3'],state='readonly',width=8).grid(row=3,column=1,sticky='w'); ttk.Label(setup,text='3 = 同一商品自动生成三种明显不同的广告打法').grid(row=3,column=2,columnspan=3,sticky='w')
+        ttk.Label(setup,text='素材来源').grid(row=4,column=0,sticky='w'); self.footage_mode=tk.StringVar(value='AI生成视频'); ttk.Combobox(setup,textvariable=self.footage_mode,values=['AI生成视频','用户拍摄素材'],state='readonly',width=16).grid(row=4,column=1,sticky='w',pady=(4,2))
+        self.footage_folder=tk.StringVar(value=''); ttk.Entry(setup,textvariable=self.footage_folder,width=36).grid(row=4,column=2,sticky='w',padx=4); ttk.Button(setup,text='选择素材文件夹',command=self.choose_footage_folder).grid(row=4,column=3,sticky='e')
+        ttk.Label(setup,text='用户拍摄素材：输入链接后 AI 分析产品 → 指定文件夹放入你拍好的视频 → AI 思考剪辑方案 → 本地 FFmpeg 出片（不调用视频生成服务）',foreground='#666').grid(row=5,column=0,columnspan=5,sticky='w',pady=(2,0))
         ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
         main=ttk.Panedwindow(self,orient='horizontal'); main.pack(fill='both',expand=True,padx=16,pady=8)
         left=ttk.Frame(main,padding=8); right=ttk.Frame(main,padding=8); main.add(left,weight=3); main.add(right,weight=2)
@@ -125,6 +129,11 @@ class App(tk.Tk):
             tree.insert('', 'end', values=(state, f'{group}｜{name}：{detail}'))
         gpu=detect_gpu()
         profile=detect_hardware(); add('本地硬件','硬件能力',bool(profile.gpus) or profile.execution_mode == 'cloud_first',format_hardware(profile))
+        cap=CapabilityRouter(ROOT, profile)
+        def mode_label(d): return {'local':'本地','cloud':'云端','unavailable':'不可用'}.get(d.target,d.target)
+        llm=cap.decide_llm(); add('本地/云端能力调度','创意大模型',True,f"当前：{mode_label(llm)}｜{llm.reason}")
+        asset=cap.decide_asset(); add('本地/云端能力调度','素材生成',True,f"当前：{mode_label(asset)}｜{asset.reason}")
+        video=cap.decide_video(); add('本地/云端能力调度','视频生成',True,f"当前：{mode_label(video)}｜{video.reason}")
         ff=ffmpeg_available(); nv=has_nvenc() if ff else False
         add('本地后处理','FFmpeg',ff,'ffmpeg + ffprobe 已找到' if ff else '未找到 ffmpeg/ffprobe，请安装并加入 PATH')
         add('本地后处理','NVENC 硬件编码',nv,'h264_nvenc 可用' if nv else '不可用，将退回 CPU 编码',warn=ff and not nv)
@@ -156,6 +165,8 @@ class App(tk.Tk):
         add('本地成片加工','字幕生成',True,'使用本机字幕引擎生成 SRT，并可烧录到镜头')
         add('本地成片加工','人声/BGM混音',ff,'人声保留、BGM自动压低；BGM从本地资产库读取' if ff else '等待 FFmpeg')
         add('生产链','最终成片拼接',ff,'本地 FFmpeg concat 可用' if ff else '等待 FFmpeg')
+        add('用户素材剪辑','素材扫描',ff,'指定文件夹内视频用 ffprobe 探测时长/分辨率，自动过滤不可解析文件' if ff else '等待 FFmpeg')
+        add('用户素材剪辑','素材裁剪出片',ff,'AI 素材剪辑导演规划镜头 → 本地 FFmpeg 按起止秒裁剪拼接（不调用视频生成）' if ff else '等待 FFmpeg')
         add('云端生成','人物/场景/关键视频镜头',False,'云端生成 Adapter 尚未接入，不会偷偷产生云端费用',warn=True)
         add('云端生成','高质量配音',False,'语音 Provider 尚未接入',warn=True)
         ttk.Label(frm,text='🟢 可直接使用   🟡 有框架但尚未完全接通   🔴 当前不可用',font=('Microsoft YaHei UI',10,'bold')).pack(anchor='w',pady=(10,4))
@@ -189,7 +200,7 @@ class App(tk.Tk):
 
         def test_selected():
             ok,msg=self.model_router.test_connection(selected.get())
-            messagebox.showinfo('模型连接测试', ('🟢 连接成功\\n' if ok else '🔴 连接失败\\n') + msg)
+            messagebox.showinfo('模型连接测试', ('🟢 连接成功\n' if ok else '🔴 连接失败\n') + msg)
         def save_profile():
             mid=selected.get() or f'model-{len(self.model_router.profiles())+1}'
             p=ModelProfile(mid,name.get().strip() or mid,provider.get().strip() or 'openai_compatible',base.get().strip(),model.get().strip(),key.get().strip(),True,float(in_price.get() or 0),float(out_price.get() or 0))
@@ -296,7 +307,7 @@ class App(tk.Tk):
         g=detect_gpu(); self.gpu_text.set(('🟢 '+g.get('name','NVIDIA')+' · '+g.get('mode','CPU')) if g.get('available') else '⚪ 未检测到 NVIDIA GPU · CPU模式')
 
     def _show_cost_breakdown(self,c):
-        lines=[f"项目预估：¥{c['总计']:.2f}",f"本地4050/FFmpeg：¥{c['本地']:.2f}",f"云端任务：¥{c['云端']:.2f}"]
+        lines=[f"项目预估：¥{c['总计']:.2f}",f"本地处理/FFmpeg：¥{c['本地']:.2f}",f"云端任务：¥{c['云端']:.2f}"]
         for item in c.get('明细',[]):
             if item['数量']: lines.append(f"  {item['项目']}：{item['数量']} × ¥{item['单价']:.2f} = ¥{item['小计']:.2f}")
         actual=round(sum(float(getattr(s,'actual_cost_rmb',0) or 0) for s in (self.project.shots if self.project else [])),4)
@@ -388,6 +399,20 @@ class App(tk.Tk):
         except ValueError:
             return messagebox.showerror('参数格式错误','请输入有效的预算和创意方案数。')
         info=parse_product_url(url)
+        footage_mode=self.footage_mode.get().strip()
+        clips=None; usable=[]; folder=None
+        if footage_mode=='用户拍摄素材':
+            folder=Path(self.footage_folder.get().strip()).expanduser()
+            if not folder.exists() or not folder.is_dir():
+                return messagebox.showerror('素材文件夹无效','请先选择存放拍摄素材的文件夹（点击“选择素材文件夹”）。')
+            from .footage import scan_footage, FootageError
+            try:
+                clips=scan_footage(folder)
+            except FootageError as exc:
+                return messagebox.showerror('素材扫描失败',str(exc))
+            usable=[c for c in clips if c.duration>0]
+            if not usable:
+                return messagebox.showerror('没有可用素材',f'文件夹中没有可解析的视频素材。\n已跳过无法解析的文件：{len(clips)} 个。')
         if not info.fetched and info.error:
             if not messagebox.askyesno('商品解析未完成',f'当前无法直接读取商品页面。\n\n原因：{info.error}\n\n仍可创建项目，稍后可手动补充商品信息。是否继续？'):
                 return
@@ -403,35 +428,67 @@ class App(tk.Tk):
             plan=self._activate_plan(raw_plans[0],info)
             self.project.creative_plan['creative_variants']=raw_plans
             self.project.creative_plan['variant_count']=variant_count
+            if footage_mode=='用户拍摄素材':
+                self.project.footage_folder=str(folder)
+                try:
+                    raw_footage_plan=self.model_router.plan_footage(info.to_dict(),self.project.creative_plan,[c.to_public() for c in usable],constraints)
+                    from .footage import validate_footage_plan, FootageError
+                    plan_items,warnings=validate_footage_plan(raw_footage_plan,usable)
+                    self._apply_footage_plan(plan_items)
+                    self.project.creative_plan['footage_plan']=plan_items
+                except Exception as fe:
+                    self.project=None
+                    messagebox.showerror('素材剪辑规划失败',str(fe))
+                    return
         except Exception as e:
             self.project=None
             messagebox.showerror('创意引擎未配置',str(e))
             return
 
-        vp=load_video_provider(ROOT/'video-provider.json')
-        rate=float(getattr(vp,'cost_per_shot_rmb',0.72)) if hasattr(vp,'cost_per_shot_rmb') else 0.72
-        c=estimate_cost(len(plan.shots), {'cloud_video_per_shot': rate})
-        asset_est=estimate_asset_generation(self.lib,ROOT,[x.__dict__ for x in plan.shots])
-        c['资产生成']=asset_est
-        asset_total=float(asset_est.get('总计',0.0))
-        if asset_total:
-            c['云端']=round(float(c.get('云端',0.0))+asset_total,2)
-            c['总计']=round(float(c.get('本地',0.0))+float(c['云端']),2)
-            c['明细'].append({'项目':'演员/场景/商品素材自动生成','数量':asset_est.get('数量',0),'单价':0.0,'小计':asset_total,'计费方式':'按缺失资产配置价格'})
-        c['预算']=budget; c['超预算']=c['总计']>budget; c['创意方案数']=variant_count; self.project.cost_estimate=c; self._show_cost_breakdown(c)
-        detail='\n'.join([
-            f"商品：{info.name}",f"本次生成创意方案：{variant_count} 个（当前先展示方案1）",f"AI判断广告强度：{plan.ad_level}",
-            f"AI选择视频形式：{plan.video_form}",f"预计时长：{plan.duration_seconds}秒",f"AI策略：{plan.strategy}",f"AI钩子：{plan.hook}",'',
-            f"当前方案开始前预计成本：¥{c['总计']:.2f}",f"本地4050/FFmpeg：¥{c['本地']:.2f}",f"视频生成费用：¥{rate*len(plan.shots):.2f}",f"演员生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='演员'):.2f}",f"场景生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='场景'):.2f}",f"商品素材生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='商品素材'):.2f}",f"云端任务：¥{c['云端']:.2f}",
-            *[f"{x['项目']}：{x['数量']} × ¥{x['单价']:.2f} = ¥{x['小计']:.2f}" for x in c['明细'] if x['数量']],
-            '',f"本次预算：¥{c['预算']:.2f}",('⚠ 预计超过本次预算。' if c['超预算'] else '✓ 预计不超过本次预算。'),c['计价说明'],
-            '说明：多个创意方案是同一商品的不同广告打法；云端视频/素材费用按当前选中的方案单独计算。','',
-            '超过预算不会自动降质、换模型或减少镜头。是否现在开始？'
-        ])
+        if footage_mode=='用户拍摄素材':
+            c={'本地':0.0,'云端':0.0,'总计':0.0,'预算':budget,'超预算':False,'创意方案数':variant_count,
+               '明细':[{'项目':'用户素材本地剪辑','数量':len(plan.shots),'单价':0.0,'小计':0.0,'计费方式':'本地FFmpeg裁剪'}],
+               '计价说明':'素材剪辑模式：只使用你放入指定文件夹的拍摄素材，不调用视频/素材生成服务；费用仅包含 AI 分析与本地处理（当前配置均为 ¥0）。'}
+            self.project.cost_estimate=c; self._show_cost_breakdown(c)
+            clips_note='\n'.join(f"  {x.name}：{x.duration:.1f}s · {x.width}x{x.height}" for x in usable)
+            warnings_note=('（已自动截断越界时长：' + '；'.join(warnings) + '）') if warnings else ''
+            detail='\n'.join([
+                f"商品：{info.name}",f"素材文件夹：{folder}",f"扫描到可用素材：{len(usable)} 个（跳过无法解析 {len(clips)-len(usable)} 个）",
+                '素材清单：',clips_note,'',
+                f"本次生成创意方案：{variant_count} 个（当前先展示方案1）",f"AI选择视频形式：{plan.video_form}",f"AI策略：{plan.strategy}",'',
+                'AI 剪辑方案：',*[f"  镜头{x['index']:02d}｜{x['source']}｜{x['start']:.1f}s 起｜{x['duration']:.1f}s｜{x.get('objective','')}" for x in plan_items],
+                *(f'⚠ {warnings_note}' if warnings_note else ''),'',
+                '素材剪辑模式预计费用：¥0（本地 FFmpeg 裁剪，无视频生成费）',f"本次预算：¥{budget:.2f}",c['计价说明'],'',
+                '素材剪辑不会调用视频生成服务；是否现在创建？'
+            ])
+        else:
+            vp=load_video_provider(ROOT/'video-provider.json')
+            rate=float(getattr(vp,'cost_per_shot_rmb',0.72)) if hasattr(vp,'cost_per_shot_rmb') else 0.72
+            c=estimate_cost(len(plan.shots), {'cloud_video_per_shot': rate})
+            asset_est=estimate_asset_generation(self.lib,ROOT,[x.__dict__ for x in plan.shots])
+            c['资产生成']=asset_est
+            asset_total=float(asset_est.get('总计',0.0))
+            if asset_total:
+                c['云端']=round(float(c.get('云端',0.0))+asset_total,2)
+                c['总计']=round(float(c.get('本地',0.0))+float(c['云端']),2)
+                c['明细'].append({'项目':'演员/场景/商品素材自动生成','数量':asset_est.get('数量',0),'单价':0.0,'小计':asset_total,'计费方式':'按缺失资产配置价格'})
+            c['预算']=budget; c['超预算']=c['总计']>budget; c['创意方案数']=variant_count; self.project.cost_estimate=c; self._show_cost_breakdown(c)
+            detail='\n'.join([
+                f"商品：{info.name}",f"本次生成创意方案：{variant_count} 个（当前先展示方案1）",f"AI判断广告强度：{plan.ad_level}",
+                f"AI选择视频形式：{plan.video_form}",f"预计时长：{plan.duration_seconds}秒",f"AI策略：{plan.strategy}",f"AI钩子：{plan.hook}",'',
+                f"当前方案开始前预计成本：¥{c['总计']:.2f}",f"本地处理/FFmpeg：¥{c['本地']:.2f}",f"视频生成费用：¥{rate*len(plan.shots):.2f}",f"演员生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='演员'):.2f}",f"场景生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='场景'):.2f}",f"商品素材生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='商品素材'):.2f}",f"云端任务：¥{c['云端']:.2f}",
+                *[f"{x['项目']}：{x['数量']} × ¥{x['单价']:.2f} = ¥{x['小计']:.2f}" for x in c['明细'] if x['数量']],
+                '',f"本次预算：¥{c['预算']:.2f}",('⚠ 预计超过本次预算。' if c['超预算'] else '✓ 预计不超过本次预算。'),c['计价说明'],
+                '说明：多个创意方案是同一商品的不同广告打法；云端视频/素材费用按当前选中的方案单独计算。','',
+                '超过预算不会自动降质、换模型或减少镜头。是否现在开始？'
+            ])
         if not messagebox.askyesno('AI创意与项目预算确认',detail):
             self.project=None; self.detail.set('已取消项目创建，尚未产生生成费用。'); return
         self.store.save(self.project); save_product(info,ROOT,self.project.id); self.refresh_shots()
-        self.detail.set(f"AI创意方案已确认：{info.name} → {plan.video_form} → {len(plan.shots)}镜头；共{variant_count}种方案，可用‘切换创意方案’查看。")
+        if footage_mode=='用户拍摄素材':
+            self.detail.set(f"素材剪辑方案已确认：{info.name} → {len(plan.shots)}镜头。素材文件夹：{folder}。可逐个「生成本镜头」裁剪，或直接「生成最终成片」。")
+        else:
+            self.detail.set(f"AI创意方案已确认：{info.name} → {plan.video_form} → {len(plan.shots)}镜头；共{variant_count}种方案，可用‘切换创意方案’查看。")
 
     def refresh_shots(self):
         for x in self.shots.get_children(): self.shots.delete(x)
@@ -444,8 +501,12 @@ class App(tk.Tk):
     def show_shot(self,_=None):
         s=self.selected()
         if s:
+            head=f'镜头 {s.index} · v{s.version} · {s.status}\n'
+            if getattr(s,'clip_source','ai_generated')=='filmed':
+                src=Path(s.source_file).name if s.source_file else '(未指定素材)'
+                head+=f'素材来源：用户拍摄素材 ｜ {src} ｜ {s.source_start:.1f}s 起 ｜ 时长 {s.source_duration:.1f}s（本地裁剪）\n'
             self.detail.set(
-                f'镜头 {s.index} · v{s.version} · {s.status}\n\n'
+                head+'\n'
                 f'画面：{s.visual}\n\n文案：{s.script}\n\n'
                 f'AI构图：{getattr(s, "composition", "主体清晰居中")}  '
                 f'主体坐标：({getattr(s, "focus_x", 0.5):.2f},{getattr(s, "focus_y", 0.5):.2f})\n'
@@ -459,13 +520,19 @@ class App(tk.Tk):
         s=self.selected()
         if not s:return messagebox.showinfo('提示','先选择一个镜头。')
         try:
-            provider_path=ROOT/'video-provider.json'
-            if not provider_path.exists(): raise RuntimeError('当前没有配置真实视频生成 Provider。系统不会用黑色视频冒充成片；请先配置视频 Provider。')
             s.status='生成中…'; self.store.save(self.project); self.refresh_shots()
-            self.detail.set(f'镜头 {s.index} 正在调用云端视频 Provider…')
             self.update_idletasks()
-            out=self.store.render_cloud_shot(self.project,s,provider_path)
-            self.refresh_shots(); self.detail.set(f'镜头 {s.index} 已由云端 Provider 生成 v{s.version}：{out}')
+            if getattr(s,'clip_source','ai_generated')=='filmed':
+                src=Path(s.source_file).name if s.source_file else '(未指定素材)'
+                self.detail.set(f'镜头 {s.index} 正在从拍摄素材裁剪…（{src}，{s.source_start:.1f}s 起，{s.source_duration:.1f}s）')
+                out=self.store.render_footage_shot(self.project,s)
+                self.refresh_shots(); self.detail.set(f'镜头 {s.index} 已从拍摄素材裁剪 v{s.version}：{out}')
+            else:
+                decision=CapabilityRouter(ROOT).decide_video()
+                mode={'local':'本地','cloud':'云端','unavailable':'不可用'}.get(decision.target,decision.target)
+                self.detail.set(f'镜头 {s.index} 正在{mode}生成…')
+                out=self.store.render_shot(self.project,s,config_root=ROOT)
+                self.refresh_shots(); self.detail.set(f'镜头 {s.index} 已由{mode}生成 v{s.version}：{out}')
         except Exception as e:
             s.status='生成失败'; self.store.save(self.project); self.refresh_shots()
             self.detail.set(f'镜头 {s.index} 生成失败：{e}')
@@ -508,6 +575,37 @@ class App(tk.Tk):
         p=filedialog.askopenfilename(title=f'选择{kind}文件')
         if p:self.lib.add_file(p,Path(p).stem,kind); self.refresh_assets()
 
+    def choose_footage_folder(self):
+        p=filedialog.askdirectory(title='选择拍摄素材文件夹（放入你拍好的视频）')
+        if p: self.footage_folder.set(p)
+
+    def _apply_footage_plan(self, items):
+        """把素材剪辑导演的方案落到项目镜头上：每个镜头指定素材文件+起止时间。"""
+        by_index={int(x['index']):x for x in items}
+        for s in self.project.shots:
+            item=by_index.get(s.index)
+            if not item: continue
+            s.clip_source='filmed'
+            folder=self.project.footage_folder or self.footage_folder.get()
+            s.source_file=str(Path(folder)/item['source'])
+            s.source_start=item['start']
+            s.source_duration=item['duration']
+            s.title=item.get('objective') or s.title
+            s.visual=item.get('visual') or s.visual
+            s.script=item.get('script') or s.script
+            s.composition=item.get('composition', s.composition)
+            s.focus_x=item.get('focus_x', s.focus_x)
+            s.focus_y=item.get('focus_y', s.focus_y)
+            s.subtitle_position=item.get('subtitle_position', s.subtitle_position)
+            s.subtitle_style=item.get('subtitle_style', s.subtitle_style)
+            s.pacing=item.get('pacing', s.pacing)
+            s.speed=item.get('speed', s.speed)
+            s.bgm_intensity=item.get('bgm_intensity', s.bgm_intensity)
+            s.bgm_volume=item.get('bgm_volume', s.bgm_volume)
+            s.transition=item.get('transition', s.transition)
+            s.status='待剪辑'
+            s.video_path=None
+
     def refresh_assets(self):
         for x in self.assets.get_children(): self.assets.delete(x)
         for a in self.lib.all(): self.assets.insert('', 'end',text=a.name,values=(a.kind,a.source,a.path or ''))
@@ -518,7 +616,7 @@ class App(tk.Tk):
         try:
             out=self.store.postprocess_shot(self.project,s,self.aspect.get())
             self.refresh_shots(); self.show_shot()
-            self.detail.set(f'镜头 {s.index} 已完成本地4050后处理：{out}')
+            self.detail.set(f'镜头 {s.index} 已完成本地后处理：{out}')
         except Exception as e:
             s.status='后处理失败'; self.store.save(self.project); self.refresh_shots()
             messagebox.showerror('本地后处理失败',str(e))
