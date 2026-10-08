@@ -143,6 +143,10 @@ class ProductionStore:
         if temp.exists():
             temp.unlink()
         resolution=self.resolve_assets(project,shot)
+        library=LocalLibrary(self.library_root)
+        asset_ids=[x for x in [shot.actor_id,shot.scene_id,*shot.product_asset_ids] if x]
+        asset_map={a.id:a for a in library.all()}
+        asset_paths=[asset_map[x].path for x in asset_ids if x in asset_map and asset_map[x].path and Path(asset_map[x].path).exists()]
         prompt='\n'.join([f'标题：{shot.title}',f'画面：{shot.visual}',f'文案：{shot.script}'])
         previous_path=shot.video_path
         shot.status='生成中…'
@@ -154,7 +158,8 @@ class ProductionStore:
                 prompt=prompt,
                 output=temp,
                 duration=3,
-                reference_assets=[x for x in [shot.actor_id,shot.scene_id,*shot.product_asset_ids] if x],
+                reference_assets=asset_ids,
+                reference_asset_paths=asset_paths,
             ))
             result=Path(result)
             if not result.exists() or result.stat().st_size == 0:

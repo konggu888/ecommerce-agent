@@ -4,6 +4,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Protocol, Any
 import json
+import base64
+import mimetypes
 import urllib.request
 import urllib.error
 import time
@@ -14,6 +16,7 @@ class GenerationRequest:
     output: Path
     duration: float = 3
     reference_assets: list[str] = field(default_factory=list)
+    reference_asset_paths: list[str] = field(default_factory=list)
 
 class ImageGenerator(Protocol):
     def generate(self, request: GenerationRequest) -> Path: ...
@@ -45,6 +48,7 @@ class GenericVideoProvider:
     cost_per_shot_rmb: float = 0.72
     provider_name: str = 'Generic REST'
     require_key: bool = True
+    embed_reference_assets: bool = False
 
     def configured(self) -> bool:
         if not self.endpoint.strip():
@@ -124,6 +128,19 @@ class GenericVideoProvider:
         payload = {'model': self.model, 'prompt': request.prompt, 'duration': request.duration}
         if request.reference_assets:
             payload['reference_assets'] = request.reference_assets
+        if request.reference_asset_paths:
+            # 本地 Provider 可以直接读取路径；云端 Provider 可选择把图片内嵌成 data URI。
+            payload['reference_asset_paths'] = request.reference_asset_paths
+            if self.embed_reference_assets:
+                refs = []
+                for raw_path in request.reference_asset_paths:
+                    path = Path(raw_path)
+                    if not path.exists() or not path.is_file():
+                        continue
+                    mime = mimetypes.guess_type(path.name)[0] or 'application/octet-stream'
+                    refs.append('data:' + mime + ';base64,' + base64.b64encode(path.read_bytes()).decode('ascii'))
+                if refs:
+                    payload['reference_images'] = refs
         body = self._request(payload)
         try:
             url = self._find_url(body)
@@ -156,7 +173,7 @@ def load_video_provider(path: Path) -> GenericVideoProvider | UnconfiguredProvid
     data = cfg.get('video_provider', cfg)
     if not isinstance(data, dict):
         return UnconfiguredProvider()
-    provider = GenericVideoProvider(endpoint=str(data.get('endpoint', '')), api_key=str(data.get('api_key', '')), model=str(data.get('model', '')), timeout=int(data.get('timeout', 300) or 300), headers=dict(data.get('headers', {}) or {}), status_endpoint=str(data.get('status_endpoint','')), poll_interval=float(data.get('poll_interval',3) or 3), task_id_field=str(data.get('task_id_field','id') or 'id'), status_field=str(data.get('status_field','status') or 'status'), cost_per_shot_rmb=float(data.get('cost_per_shot_rmb',0.72) or 0), provider_name=str(data.get('name','Generic REST') or 'Generic REST'))
+    provider = GenericVideoProvider(endpoint=str(data.get('endpoint', '')), api_key=str(data.get('api_key', '')), model=str(data.get('model', '')), timeout=int(data.get('timeout', 300) or 300), headers=dict(data.get('headers', {}) or {}), status_endpoint=str(data.get('status_endpoint','')), poll_interval=float(data.get('poll_interval',3) or 3), task_id_field=str(data.get('task_id_field','id') or 'id'), status_field=str(data.get('status_field','status') or 'status'), cost_per_shot_rmb=float(data.get('cost_per_shot_rmb',0.72) or 0), provider_name=str(data.get('name','Generic REST') or 'Generic REST'), embed_reference_assets=bool(data.get('embed_reference_assets', False)))
     return provider if provider.configured() else UnconfiguredProvider()
 
 
