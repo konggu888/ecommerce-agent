@@ -746,3 +746,7 @@ variant_performance 只接受用户主动回写的原始投放数据并计算统
 
 ## A29 数据边界补充
 `variant_performance_provenance` 用 `source_type=user_provided` 表示数据由用户主动回写，用 `verification_status=unverified` 明确系统未验证真实性。不得把未核验的用户数据解释成平台 API 已验证事实。
+
+
+## A30 失败恢复逻辑
+`ProductionStore.record_recovery_failure()` 统一持久化失败状态与下一步动作；`recover_project()` 是幂等恢复入口，不删除有效资产，只清理未完成临时文件、校正失效媒体和交付记录，并把项目恢复到“可继续”状态；`clear_recovery()` 用于成功修复后的状态复位。
