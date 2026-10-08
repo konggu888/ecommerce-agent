@@ -12,7 +12,7 @@ from .capability import CapabilityRouter
 from .production import ProductionStore
 from .product_parser import parse_product_url, save_product
 from .creative_engine import CreativeEngine, validate_plan, validate_task_type_plan, TASK_TYPE_POLICIES
-from .model_router import ModelRouter, ModelProfile, FUNCTIONS, audit_ad_variant_set, build_creative_test_plan
+from .model_router import ModelRouter, ModelProfile, FUNCTIONS, audit_ad_variant_set, build_creative_test_plan, audit_creative_factual_consistency
 from .browser_skill import _find_agent_browser
 from .ffmpeg import available as ffmpeg_available, has_nvenc
 from .providers import load_video_provider
@@ -138,7 +138,7 @@ class App(tk.Tk):
         ttk.Label(setup,text='素材来源').grid(row=5,column=0,sticky='w'); self.footage_mode=tk.StringVar(value='AI生成视频'); ttk.Combobox(setup,textvariable=self.footage_mode,values=['AI生成视频','用户拍摄素材'],state='readonly',width=16).grid(row=4,column=1,sticky='w',pady=(4,2))
         self.footage_folder=tk.StringVar(value=''); ttk.Entry(setup,textvariable=self.footage_folder,width=36).grid(row=5,column=2,sticky='w',padx=4); ttk.Button(setup,text='选择素材文件夹',command=self.choose_footage_folder).grid(row=4,column=3,sticky='e')
         ttk.Label(setup,text='用户拍摄素材：输入链接后 AI 分析产品 → 指定文件夹放入你拍好的视频 → AI 思考剪辑方案 → 本地 FFmpeg 出片（不调用视频生成服务）',foreground='#666').grid(row=6,column=0,columnspan=5,sticky='w',pady=(2,0))
-        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='📹 实拍分析报告',command=self.footage_analysis_report).grid(row=2,column=5,sticky='e',padx=8); ttk.Button(setup,text='📋 补素材任务',command=self.footage_gap_tasks_report).grid(row=2,column=6,sticky='e',padx=8); ttk.Button(setup,text='🤖 执行AI补镜头',command=self.generate_hybrid_gap_shots).grid(row=2,column=10,sticky='e',padx=8); ttk.Button(setup,text='🔍 AI补镜头复核',command=self.review_hybrid_gap_shots).grid(row=2,column=11,sticky='e',padx=8); ttk.Button(setup,text='🔄 重新分析实拍素材',command=self.reanalyze_footage).grid(row=2,column=7,sticky='e',padx=8); ttk.Button(setup,text='🕘 分析历史',command=self.footage_reanalysis_history_report).grid(row=2,column=8,sticky='e',padx=8); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='🧪 创意版本矩阵',command=self.variant_matrix_report).grid(row=2,column=9,sticky='e',padx=8); ttk.Button(setup,text='🧠 创意方案分析',command=self.creative_variant_analysis_report).grid(row=2,column=12,sticky='e',padx=8); ttk.Button(setup,text='🧪 创意测试方案',command=self.creative_test_plan_report).grid(row=2,column=14,sticky='e',padx=8); ttk.Button(setup,text='📥 真实投放数据（可选）',command=self.variant_performance_entry).grid(row=2,column=13,sticky='e',padx=8); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
+        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='📹 实拍分析报告',command=self.footage_analysis_report).grid(row=2,column=5,sticky='e',padx=8); ttk.Button(setup,text='📋 补素材任务',command=self.footage_gap_tasks_report).grid(row=2,column=6,sticky='e',padx=8); ttk.Button(setup,text='🤖 执行AI补镜头',command=self.generate_hybrid_gap_shots).grid(row=2,column=10,sticky='e',padx=8); ttk.Button(setup,text='🔍 AI补镜头复核',command=self.review_hybrid_gap_shots).grid(row=2,column=11,sticky='e',padx=8); ttk.Button(setup,text='🔄 重新分析实拍素材',command=self.reanalyze_footage).grid(row=2,column=7,sticky='e',padx=8); ttk.Button(setup,text='🕘 分析历史',command=self.footage_reanalysis_history_report).grid(row=2,column=8,sticky='e',padx=8); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='🧪 创意版本矩阵',command=self.variant_matrix_report).grid(row=2,column=9,sticky='e',padx=8); ttk.Button(setup,text='🧠 创意方案分析',command=self.creative_variant_analysis_report).grid(row=2,column=12,sticky='e',padx=8); ttk.Button(setup,text='🧪 创意测试方案',command=self.creative_test_plan_report).grid(row=2,column=14,sticky='e',padx=8); ttk.Button(setup,text='🛡 创意事实检查',command=self.creative_fact_check_report).grid(row=2,column=15,sticky='e',padx=8); ttk.Button(setup,text='📥 真实投放数据（可选）',command=self.variant_performance_entry).grid(row=2,column=13,sticky='e',padx=8); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
         main=ttk.Panedwindow(self,orient='horizontal'); main.pack(fill='both',expand=True,padx=16,pady=8)
         left=ttk.Frame(main,padding=8); right=ttk.Frame(main,padding=8); main.add(left,weight=3); main.add(right,weight=2)
         ttk.Label(left,text='② 分镜生产链',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
@@ -337,6 +337,35 @@ class App(tk.Tk):
         detail.insert('end','\n数据边界：'+str(test_plan.get('data_boundary','')))
         detail.config(state='disabled')
         ttk.Button(frm,text='关闭',command=win.destroy).pack(anchor='e',pady=(8,0))
+
+    @ui_action
+    def creative_fact_check_report(self):
+        if not self.project:
+            return messagebox.showinfo('提示','请先创建或打开一个项目。')
+        plan=self.project.creative_plan or {}
+        variants=plan.get('creative_variants') or []
+        if not variants:
+            return messagebox.showinfo('提示','当前项目还没有多版本创意。')
+        raw_forbidden=plan.get('forbidden_terms') or plan.get('forbidden_words') or []
+        if isinstance(raw_forbidden,str): raw_forbidden=[x.strip() for x in raw_forbidden.replace('，',',').split(',') if x.strip()]
+        audit=audit_creative_factual_consistency(self.project.product_info or {},variants,raw_forbidden)
+        plan['creative_fact_audit']=audit
+        self.store.save(self.project)
+        win=tk.Toplevel(self); win.title('创意事实与质量检查'); win.geometry('1180x720'); win.transient(self)
+        frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
+        ttk.Label(frm,text='创意事实与质量检查（投放前）',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
+        ttk.Label(frm,text='只检查已有商品资料和用户维护的禁用词；没有证据的内容不会被AI当成事实。画面/字幕一致性标记为待复核。',foreground='#555',wraplength=1120).pack(anchor='w',pady=(4,10))
+        tree=tk.Text(frm,height=28); tree.pack(fill='both',expand=True)
+        for x in audit['variants']:
+            tree.insert('end',f"方案{x['variant_index']}｜{x['product_fact_status']}\n")
+            tree.insert('end',f"  未被商品资料支持的卖点：{'、'.join(x['unsupported_selling_points']) or '无'}\n")
+            tree.insert('end',f"  禁用词命中：{'、'.join(x['forbidden_term_hits']) or '无'}\n")
+            tree.insert('end',f"  高风险绝对化表达：{'、'.join(x['absolute_or_high_risk_claims']) or '无'}\n")
+            tree.insert('end',f"  商品主体是否被遮挡：{x['product_subject_obscured']}\n")
+            tree.insert('end',f"  画面与商品事实：{x['visual_fact_match']}\n")
+            tree.insert('end',f"  字幕与商品事实：{x['subtitle_product_consistency']}\n\n")
+        tree.config(state='disabled')
+        ttk.Button(frm,text='关闭',command=win.destroy).pack(anchor='e',pady=8)
 
     def _variant_metrics(self, raw):
         """根据人工/平台回写的原始投放数据计算统一指标；不自动调用广告平台。"""

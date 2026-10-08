@@ -574,6 +574,41 @@ AD_VARIANT_AXES = [
     {"id": "proof", "name": "证明方式", "instruction": "改变证明方式：实拍演示、对比、体验、场景证据等。"},
     {"id": "cta", "name": "转化动作", "instruction": "改变结尾行动机制和转化理由。"},
 ]
+def audit_creative_factual_consistency(product: dict[str, Any], variants: list[dict[str, Any]], forbidden_terms: list[str] | None = None) -> dict[str, Any]:
+    """投放前事实/质量审计：只基于用户提供的商品资料和创意字段，不推断未提供的商品事实。"""
+    product = product if isinstance(product, dict) else {}
+    forbidden_terms = [str(x).strip() for x in (forbidden_terms or []) if str(x).strip()]
+    def norm(v):
+        if isinstance(v,(list,tuple)): return " ".join(norm(x) for x in v)
+        if isinstance(v,dict): return " ".join(f"{k} {norm(x)}" for k,x in v.items())
+        return str(v or "").strip()
+    source_text = norm(product)
+    allowed_points = [norm(x) for x in product.get("selling_points",[]) if norm(x)] if isinstance(product.get("selling_points",[]),list) else []
+    findings=[]
+    for i,v in enumerate(variants,1):
+        text = norm(v)
+        unsupported=[p for p in [norm(x) for x in v.get("selling_points",[])] if p and allowed_points and p not in allowed_points]
+        banned=[term for term in forbidden_terms if term and term in text]
+        absolute=[w for w in ("第一","唯一","顶级","最好","绝对","百分百","100%","全网最低","国家级","永久") if w in text]
+        missing_source=not bool(source_text)
+        findings.append({
+            "variant_index":i,
+            "product_fact_status":"缺少商品资料，无法完成事实核验" if missing_source else ("待人工核验" if unsupported else "资料范围内未发现明显冲突"),
+            "unsupported_selling_points":unsupported,
+            "forbidden_term_hits":banned,
+            "absolute_or_high_risk_claims":absolute,
+            "product_subject_obscured":"待画面复核",
+            "visual_fact_match":"待成片/分镜画面复核",
+            "subtitle_product_consistency":"待字幕与商品资料复核",
+        })
+    return {
+        "enabled":bool(variants),
+        "method":"投放前商品事实与创意质量确定性审计",
+        "data_boundary":"只依据已提供商品资料、创意字段和用户维护的禁用词；未知事实标记为待核验，不自行补全。",
+        "summary":{"variants":len(findings),"variants_with_risk":sum(bool(x["unsupported_selling_points"] or x["forbidden_term_hits"] or x["absolute_or_high_risk_claims"]) for x in findings)},
+        "variants":findings,
+    }
+
 
 
 def audit_ad_variant_set(plans: list[dict[str, Any]], task_type: str) -> dict[str, Any]:

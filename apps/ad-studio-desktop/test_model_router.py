@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from ad_studio.model_router import FUNCTIONS, ModelProfile, ModelRouter, audit_ad_variant_set, build_creative_test_plan
+from ad_studio.model_router import FUNCTIONS, ModelProfile, ModelRouter, audit_ad_variant_set, build_creative_test_plan, audit_creative_factual_consistency
 
 
 class FakeRouter(ModelRouter):
@@ -112,6 +112,20 @@ class CreativeVariantAuditTest(unittest.TestCase):
         plans=[{"variant_test_axis":{"id":"hook","name":"钩子角度"},"hook":"A","strategy":"S1","selling_points":["P1"]},{"variant_test_axis":{"id":"hook","name":"钩子角度"},"hook":"B","strategy":"S2","selling_points":["P1"]}]
         tp=build_creative_test_plan(plans,audit_ad_variant_set(plans,"广告投放视频"))
         self.assertTrue(any("同时变化" in x for x in tp["next_round_recommendations"]))
+
+
+    def test_creative_fact_audit_flags_unsupported_claims_forbidden_terms_and_absolute_words(self):
+        product={"product_name":"测试商品","selling_points":["轻便","易收纳"]}
+        variants=[{"selling_points":["轻便","全网第一"],"script":"这是全网第一，内部测试禁词"}]
+        audit=audit_creative_factual_consistency(product,variants,["禁词"])
+        item=audit["variants"][0]
+        self.assertIn("全网第一",item["unsupported_selling_points"])
+        self.assertIn("禁词",item["forbidden_term_hits"])
+        self.assertIn("第一",item["absolute_or_high_risk_claims"])
+
+    def test_creative_fact_audit_does_not_invent_missing_product_facts(self):
+        audit=audit_creative_factual_consistency({},[{"selling_points":["神奇功能"]}],[])
+        self.assertEqual(audit["variants"][0]["product_fact_status"],"缺少商品资料，无法完成事实核验")
 
 
 if __name__ == "__main__":
