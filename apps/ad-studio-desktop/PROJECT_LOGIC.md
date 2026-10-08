@@ -276,3 +276,7 @@ CI 的桌面 Python 语法检查发现 `ffmpeg.py` 的 concat 清单 `write_text
 
 ## 2026-10-08：镜头参考素材传递
 镜头生成请求现在同时解析演员、场景、商品素材的稳定 asset_id 与本地真实文件路径。Provider 可按自身协议使用这些引用；通用视频 Provider 支持通过 `embed_reference_assets=true` 将本地图片以内嵌 data URI 发送给支持该格式的云端接口。未声明支持参考图的第三方 Provider 仍需专用适配器，不能假定所有平台都会读取这些字段。
+
+
+## 2026-10-08：实际成本字段统一
+项目模型现在持久化 `actual_cost_rmb` 与 `actual_cost_summary`；ProductionStore 统一通过实际成本记录入口写入资产/视频费用，避免同一笔生成费用重复入账。
