@@ -70,11 +70,6 @@ class UsageLedger:
             "estimated_cost_rmb": round(float(estimated_cost_rmb or 0), 6),
             "duration_ms": int(duration_ms or 0),
             "error": error,
-            "project_id": project_id,
-            "shot_id": shot_id,
-            "category": category,
-            "quantity": float(quantity or 0),
-            "unit_cost_rmb": round(float(unit_cost_rmb or 0), 6),
         }
         rows = self._load()
         rows.append(item)
@@ -91,11 +86,6 @@ class UsageLedger:
         cost_rmb: float,
         status: str = "success",
         error: str = "",
-        project_id: str = "",
-        shot_id: str = "",
-        category: str = "model",
-        quantity: float = 1.0,
-        unit_cost_rmb: float = 0.0,
     ) -> dict[str, Any]:
         return self.record(
             function=f"{asset_kind}素材生成",
@@ -109,6 +99,8 @@ class UsageLedger:
             project_id=project_id,
             shot_id=shot_id,
             asset_kind=asset_kind,
+            quantity=1,
+            unit_cost_rmb=cost_rmb,
             error=error,
         )
 
@@ -133,6 +125,8 @@ class UsageLedger:
             category="video",
             project_id=project_id,
             shot_id=shot_id,
+            quantity=1,
+            unit_cost_rmb=cost_rmb,
             error=error,
         )
 
