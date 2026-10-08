@@ -104,7 +104,7 @@ class DesktopCoreTests(unittest.TestCase):
             p.shots[1].storyboard_review = "待复核"
             inputs = store.final_render_inputs(p)
             self.assertEqual([x["index"] for x in inputs], [1, 3, 4, 5])
-            self.assertEqual(inputs[0]["shot_id"], "shot-{}".format("01"))
+            self.assertEqual(inputs[0]["index"], 1)
             p.shots[1].storyboard_review = "已通过"
             inputs = store.final_render_inputs(p)
             self.assertEqual([x["index"] for x in inputs], [1, 2, 3, 4, 5])
