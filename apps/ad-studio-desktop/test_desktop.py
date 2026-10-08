@@ -95,6 +95,42 @@ class DesktopCoreTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "没有返回有效的 footage_plan"):
                 router.plan_footage({"name": "商品X"}, {"task_type": "电商短视频"}, [{"name": "A.mp4", "duration": 10}], {})
 
+    def test_footage_plan_enforces_speech_filler_cleanup_and_timestamp_ranges(self):
+        with tempfile.TemporaryDirectory() as td:
+            router = ModelRouter(Path(td) / "model-config.json")
+            router.resolve_route = lambda function: ModelProfile(id="test", name="测试模型", provider="local_openai")
+            captured = {}
+            def fake_complete(profile, prompt, function=None, **kwargs):
+                captured["prompt"] = prompt
+                return {"footage_plan": [{
+                    "source": "talk.mp4", "start": 2, "duration": 4,
+                    "ranges": [{"start": 2, "end": 6}],
+                    "reason": "保留核心卖点口播"
+                }]}
+            router.complete_json = fake_complete
+            creative = {
+                "task_type": "电商短视频",
+                "selling_points": ["卖点A"],
+                "footage_transcripts": [{
+                    "source": "talk.mp4",
+                    "segments": [
+                        {"start": 0, "end": 2, "text": "大家好今天呢先跟大家聊一下"},
+                        {"start": 2, "end": 6, "text": "这个商品的核心卖点A是用户确认的事实"},
+                    ],
+                }],
+            }
+            result = router.plan_footage(
+                {"name": "商品X", "selling_points": ["卖点A"]},
+                creative,
+                [{"name": "talk.mp4", "duration": 10, "width": 1080, "height": 1920, "fps": 30}],
+                footage_analysis={"clips": [{"source": "talk.mp4", "best_take": True}]},
+                footage_coverage={},
+            )
+            self.assertEqual(result[0]["source"], "talk.mp4")
+            self.assertIn("寒暄、重复、口头禅、停顿", captured["prompt"])
+            self.assertIn("ranges 使用素材原始时间轴", captured["prompt"])
+            self.assertIn("不能为了删废话破坏一句话的完整语义", captured["prompt"])
+
     def test_product_library_round_trip_preserves_user_facts(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
