@@ -791,7 +791,7 @@ def build_creative_test_plan(plans: list[dict[str, Any]], audit: dict[str, Any] 
     if any(not p.get("mechanism_differences") and p.get("surface_differences") for p in pairs): next_round.append("存在只有表层表达变化的版本对照；下一轮应改变真正的创意机制，而不是只换文案或包装。")
     if any(not p.get("mechanism_differences") and not p.get("surface_differences") for p in pairs): next_round.append("存在几乎没有结构差异的版本；下一轮应重新设计测试轴。")
     if not next_round: next_round.append("当前版本已经形成明确的机制对照；下一轮优先沿真实结果最需要验证的机制继续做窄范围对照。")
-    return {"enabled":bool(audit.get("enabled")),"method":"投放前确定性创意测试方案：测试目的→版本设计→需要观察的真实结果","data_boundary":"不生成结果、不猜测平台、不产生CTR/CVR/CPA/ROAS等虚假数据","variants":out,"next_round_recommendations":next_round}
+    return {"enabled":bool(audit.get("enabled")),"method":"投放前确定性创意测试方案：测试目的→版本设计→需要观察的真实结果","data_boundary":"不生成结果、不猜测平台、不产生平台转化指标等虚假数据","variants":out,"next_round_recommendations":next_round}
 
 
 STAGE_SCHEMAS = {
