@@ -18,7 +18,7 @@ from .ffmpeg import available as ffmpeg_available, has_nvenc
 from .providers import load_video_provider
 from .footage import build_visual_manifest, footage_analysis_public, archive_analyzed_waste, classify_footage_gaps, build_footage_gap_tasks
 from .transcription import extract_audio
-from .ui_contract import verify_ui_action_contract, UIContractError
+from .ui_contract import verify_ui_action_contract, UIContractError, ui_action
 
 
 class UnconfiguredCreativeLLM:
@@ -62,6 +62,7 @@ class App(tk.Tk):
             messagebox.showerror('UI 操作入口检查失败', f'代码可能已经实现，但界面入口存在缺失或失配。\\n\\n{exc}\\n\\n必须先修复 UI，再执行本次操作。')
             return False
 
+    @ui_action
     def asset_library_settings(self):
         win=tk.Toplevel(self); win.title('资产库硬盘位置'); win.geometry('760x280'); win.transient(self)
         frm=ttk.Frame(win,padding=16); frm.pack(fill='both',expand=True)
@@ -126,6 +127,7 @@ class App(tk.Tk):
 
 
 
+    @ui_action
     def footage_analysis_report(self):
         """显示当前项目的实拍视觉分析、废片归档和口播转写结果。"""
         if not self.project:
@@ -167,6 +169,7 @@ class App(tk.Tk):
             tree.insert('', 'end', values=(item.get('source','-'),item.get('material_rank','-'),item.get('selection_score','-'),item.get('score','-'),'是' if item.get('usable') is not False else '否',item.get('duplicate_group') or '-', '是' if item.get('best_take') else '否',str(item.get('reason','')), '、'.join(map(str,item.get('visual_tags',[]))),ranges_text,item.get('speech_quality','-')))
         ttk.Button(frm,text='关闭',command=win.destroy).pack(anchor='e',pady=(10,0))
 
+    @ui_action
     def footage_gap_tasks_report(self):
         """显示已确定的补拍/补素材任务；不产生新的 AI 调用。"""
         if not self.project:
@@ -186,6 +189,7 @@ class App(tk.Tk):
         ttk.Label(frm,text='闭环下一步：完成这些任务后，把新增素材放回原素材文件夹，再执行“重新分析实拍素材”，系统会重新进入视觉分析→素材排名→覆盖审计→分镜复核。',wraplength=1050,justify='left').pack(anchor='w',pady=10)
         ttk.Button(frm,text='关闭',command=win.destroy).pack(anchor='e')
  
+    @ui_action
     def reanalyze_footage(self):
         if not self._ui_execution_gate(): return
         """用户补充素材后，重新进入视觉分析→排名→覆盖审计→分镜复核闭环。"""
@@ -287,6 +291,7 @@ class App(tk.Tk):
         except Exception as e:
             messagebox.showerror('重新分析失败',str(e))
 
+    @ui_action
     def footage_reanalysis_history_report(self):
         """查看连续补拍/重新分析过程中保存的历史方案，不触发新的 AI 调用。"""
         if not self.project:
@@ -329,6 +334,7 @@ class App(tk.Tk):
         tree.bind('<<TreeviewSelect>>', show_selected)
         ttk.Button(frm,text='关闭',command=win.destroy).pack(anchor='e')
 
+    @ui_action
     def system_status(self):
         """Show whether advertised capabilities are actually configured and usable."""
         win=tk.Toplevel(self); win.title('系统状态 · 功能是否真正启用'); win.geometry('900x680'); win.transient(self)
@@ -389,6 +395,7 @@ class App(tk.Tk):
         ttk.Button(btn,text='重新检测',command=lambda:(win.destroy(),self.system_status())).pack(side='right')
         ttk.Button(btn,text='打开模型设置',command=self.model_settings).pack(side='right',padx=8)
 
+    @ui_action
     def model_settings(self):
         win=tk.Toplevel(self); win.title('AI 模型池与功能路由'); win.geometry('820x680'); win.transient(self)
         frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
@@ -451,6 +458,7 @@ class App(tk.Tk):
 
         ttk.Button(frm,text='保存全部功能路由',command=save_routes).pack(anchor='e',pady=10)
 
+    @ui_action
     def video_provider_settings(self):
         win=tk.Toplevel(self); win.title('云端视频生成 Provider'); win.geometry('760x520'); win.transient(self)
         frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
@@ -467,7 +475,8 @@ class App(tk.Tk):
             ttk.Entry(frm,textvariable=vars[key],show='*' if key=='api_key' else '').grid(row=row,column=1,sticky='ew',pady=5,padx=8)
         frm.columnconfigure(1,weight=1)
         status=tk.StringVar(value='检测中…'); ttk.Label(frm,textvariable=status).grid(row=4,column=1,sticky='w',pady=8)
-        def save():
+        @ui_action
+    def save():
             payload={'video_provider':{k:v.get().strip() for k,v in vars.items()}}
             cfg_path.parent.mkdir(parents=True,exist_ok=True); cfg_path.write_text(json.dumps(payload,ensure_ascii=False,indent=2),encoding='utf-8')
             status.set('🟢 已保存到本机：'+str(cfg_path)); self.detail.set('视频 Provider 配置已保存；请在系统状态中重新检测。')
@@ -479,6 +488,7 @@ class App(tk.Tk):
         ttk.Button(btn,text='检查配置',command=test).pack(side='left',padx=5); ttk.Button(btn,text='保存',command=save).pack(side='left',padx=5)
         ttk.Label(frm,text='注意：保存配置 ≠ 已经验证供应商 API。只有真实生成成功后，系统才会显示镜头“已生成”。',wraplength=700).grid(row=6,column=0,columnspan=2,sticky='w',pady=12)
 
+    @ui_action
     def asset_generation_settings(self):
         win=tk.Toplevel(self); win.title('自动素材生成设置'); win.geometry('760x560'); win.transient(self)
         frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
@@ -505,6 +515,7 @@ class App(tk.Tk):
         ttk.Button(frm,text='保存',command=save).pack(anchor='e',pady=12)
         ttk.Label(frm,text='注意：配置保存后并不代表供应商 API 已验证；首次实际生成时才会验证返回格式。',wraplength=700).pack(anchor='w')
 
+    @ui_action
     def usage_view(self):
         win=tk.Toplevel(self); win.title('AI调用记录 · 本机成本账本'); win.geometry('1080x620'); win.transient(self)
         frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
@@ -582,6 +593,7 @@ class App(tk.Tk):
         self.active_variant_index=int(raw.get('_variant_index',1))
         return plan
 
+    @ui_action
     def switch_variant(self):
         if not self.project:return messagebox.showinfo('提示','先创建或打开一个包含多个创意方案的项目。')
         variants=self.project.creative_plan.get('creative_variants',[])
@@ -605,6 +617,7 @@ class App(tk.Tk):
             self.store.save(self.project); win.destroy()
         ttk.Button(frm,text='切换到选中方案',command=apply).pack(anchor='e')
 
+    @ui_action
     def create(self):
         if not self._ui_execution_gate(): return
         url=self.url.get().strip()
@@ -778,6 +791,7 @@ class App(tk.Tk):
                 f'BGM：{getattr(s, "bgm_intensity", "低")} · 音量 {getattr(s, "bgm_volume", 0.16):.2f}'
             )
 
+    @ui_action
     def generate_shot(self):
         if not self._ui_execution_gate(): return
         s=self.selected()
@@ -801,12 +815,14 @@ class App(tk.Tk):
             self.detail.set(f'镜头 {s.index} 生成失败：{e}')
             messagebox.showerror('镜头生成失败',str(e))
 
+    @ui_action
     def regen_shot(self):
         if not self._ui_execution_gate(): return
         s=self.selected()
         if not s:return messagebox.showinfo('提示','先选择要重新生成的镜头。')
         old=s.version; mark_regenerate(self.project,self.project.shots.index(s)); self.store.save(self.project); self.refresh_shots(); self.detail.set(f'镜头 {s.index}：v{old} → v{s.version}。其他镜头版本保持不变。')
 
+    @ui_action
     def edit_shot(self):
         s=self.selected()
         if not s:return messagebox.showinfo('提示','先选择一个镜头。')
@@ -822,6 +838,7 @@ class App(tk.Tk):
             s.title=title.get().strip() or s.title; s.visual=visual.get('1.0','end').strip(); s.script=script.get('1.0','end').strip(); s.actor_id=actor_map.get(av.get()); s.scene_id=scene_map.get(sv.get()); s.status='需重生成'; s.video_path=None; s.version+=1; self.store.save(self.project); self.refresh_shots(); self.show_shot(); win.destroy()
         ttk.Button(frm,text='保存修改并生成新版本',command=apply).pack(anchor='e',pady=10)
 
+    @ui_action
     def load_project(self):
         files=sorted(PROJECTS.glob('project-*.json'), key=lambda p:p.stat().st_mtime, reverse=True)
         if not files:return messagebox.showinfo('提示','本地还没有已保存的广告项目。')
@@ -835,10 +852,12 @@ class App(tk.Tk):
             self.project=project; self.model_router.set_project_context(project.id); self.url.set(''); self.level.set(project.level); self.form.set(project.form); self.refresh_shots(); c=project.cost_estimate; self.cost.set(f"项目预估 ¥{c.get('总计',0):.2f} · 云端 ¥{c.get('云端',0):.2f} · 已保存 {len(project.shots)} 个镜头" if c else f'已保存 {len(project.shots)} 个镜头'); self.detail.set(f'已恢复项目：{project.product_name} · {project.platform} · {project.form}'); win.destroy()
         ttk.Button(frm,text='打开',command=open_selected).pack(anchor='e')
 
+    @ui_action
     def upload(self,kind):
         p=filedialog.askopenfilename(title=f'选择{kind}文件')
         if p:self.lib.add_file(p,Path(p).stem,kind); self.refresh_assets()
 
+    @ui_action
     def choose_footage_folder(self):
         p=filedialog.askdirectory(title='选择拍摄素材文件夹（放入你拍好的视频）')
         if p: self.footage_folder.set(p)
@@ -875,6 +894,7 @@ class App(tk.Tk):
         for x in self.assets.get_children(): self.assets.delete(x)
         for a in self.lib.all(): self.assets.insert('', 'end',text=a.name,values=(a.kind,a.source,a.path or ''))
 
+    @ui_action
     def postprocess_selected(self):
         s=self.selected()
         if not s:return messagebox.showinfo('提示','先选择一个已经生成的真实镜头。')
@@ -886,6 +906,7 @@ class App(tk.Tk):
             s.status='后处理失败'; self.store.save(self.project); self.refresh_shots()
             messagebox.showerror('本地后处理失败',str(e))
 
+    @ui_action
     def finish_selected(self):
         s=self.selected()
         if not s or not s.video_path:return messagebox.showinfo('提示','先选择一个已经生成的真实镜头。')
@@ -912,6 +933,7 @@ class App(tk.Tk):
             except Exception as e: messagebox.showerror('本地成片加工失败',str(e))
         ttk.Button(frm,text='执行：字幕 + BGM/人声处理',command=run).pack(anchor='e',pady=8)
 
+    @ui_action
     def final_render(self):
         if not self._ui_execution_gate(): return
         if not self.project:return messagebox.showinfo('提示','先创建项目。')
