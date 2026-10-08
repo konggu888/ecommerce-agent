@@ -10,7 +10,7 @@ import urllib.request
 import time
 
 from .usage_ledger import UsageLedger
-from .footage import normalize_footage_analysis
+from .footage import normalize_footage_analysis, rank_footage_analysis
 from .creative_engine import CREATIVE_SYSTEM_PROMPT
 
 
@@ -360,7 +360,9 @@ class ModelRouter:
                     "duplicate_confidence": "0..1；判断重复镜头的置信度",
                     "take_rank": "integer；同组镜头的推荐优先级，1为最佳",
                     "best_take": "boolean；是否为该重复组最值得保留的版本",
-                    "keep_reason": "string；为什么这一版比同组其他版本更值得保留"
+                    "keep_reason": "string；为什么这一版比同组其他版本更值得保留",
+                    "selection_score": "number；本地综合素材优先级分数，仅用于排序",
+                    "material_rank": "integer；整个可用素材池的优先级，1为最高"
                 }],
                 "global_summary": "string",
                 "recommended_duration_seconds": "integer"
@@ -374,7 +376,7 @@ class ModelRouter:
             "必须把重复拍摄的同类镜头放入 duplicate_group，并在同组内比较清晰度、构图、商品展示完整度、动作完成度、口播质量和广告价值，给出 take_rank、best_take、duplicate_confidence 与 keep_reason。没有重复镜头时 duplicate_group 为空。"
             "只返回 JSON。\n\n" + json.dumps(payload, ensure_ascii=False, indent=2)
         )
-        return normalize_footage_analysis(self.complete_json(
+        return rank_footage_analysis(self.complete_json(
             profile, prompt, function="实拍素材视觉分析", image_paths=images
         ))
 
@@ -424,9 +426,10 @@ class ModelRouter:
             "5. ranges 使用素材原始时间轴的 [start,end]，多个区间按时间顺序排列；没有废话时使用单个区间。\n"
             "6. 不能为了删废话破坏一句话的完整语义；时间戳不够精确时，只在 segment 边界做安全裁剪。\n"
             "7. 每个镜头给出画面说明、口播/文案、字幕位置、构图、节奏、转场，供本地执行。\n"            "8. footage_analysis 中如果多个素材属于同一 duplicate_group，优先使用 best_take=true、take_rank 更高的版本；除非低排名版本包含主版本没有的独特有效片段，否则不要重复使用同组低排名素材。\n"
+            "9. material_rank 越小代表整个素材池越值得优先使用；先考虑高排名素材，再根据镜头目标和卖点覆盖做最终取舍，不要机械按排名剪辑。\n"
 
             "9. 广告表达避免违反广告法的绝对化、虚假、无法证明的承诺。\n"
-            "10. 输出必须是严格 JSON，不要输出 Markdown。"
+            "11. 输出必须是严格 JSON，不要输出 Markdown。"
         )
         prompt = (
             system
@@ -594,7 +597,7 @@ STAGE_SCHEMAS = {
             "bgm_intensity": "string", "bgm_volume": "number 0..0.35",
             "transition": "string",
             "ranges": "[[start,end],...]；如需删除口播废话/重复段，必须使用多个保留区间",
-            "duplicate_group": "string；重复镜头组名", "duplicate_confidence": "0..1", "take_rank": "integer；1为最佳", "best_take": "boolean", "keep_reason": "string"
+            "duplicate_group": "string；重复镜头组名", "duplicate_confidence": "0..1", "take_rank": "integer；1为最佳", "best_take": "boolean", "keep_reason": "string", "selection_score": "number", "material_rank": "integer"
         }]
     },
 }
