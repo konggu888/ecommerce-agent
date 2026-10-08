@@ -9,6 +9,41 @@ from ad_studio.production import ProductionStore
 
 class DesktopCoreTests(unittest.TestCase):
 
+    def test_product_library_round_trip_preserves_user_facts(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            info = ProductInfo(
+                url="https://item.jd.com/999.html",
+                platform="京东",
+                name="商品X",
+                selling_points=["卖点A", "卖点B"],
+                specs={"容量": "500ml", "材质": "不锈钢"},
+                forbidden_terms=["第一", "全网最低"],
+            )
+            save_product_library(info, root)
+            restored = load_product_library(info.url, root)
+            self.assertIsNotNone(restored)
+            self.assertEqual(restored.selling_points, ["卖点A", "卖点B"])
+            self.assertEqual(restored.specs["容量"], "500ml")
+            self.assertIn("全网最低", restored.forbidden_terms)
+
+    def test_product_library_merge_does_not_invent_missing_facts(self):
+        base = ProductInfo(url="https://item.jd.com/1000.html", platform="京东", name="商品Y")
+        saved = ProductInfo(
+            url=base.url,
+            platform="京东",
+            name="商品Y",
+            selling_points=["用户确认卖点"],
+            specs={"规格": "已确认"},
+            forbidden_terms=["绝对"],
+        )
+        merged = merge_product_library(base, saved)
+        self.assertEqual(merged.selling_points, ["用户确认卖点"])
+        self.assertEqual(merged.specs, {"规格": "已确认"})
+        self.assertEqual(merged.forbidden_terms, ["绝对"])
+        self.assertEqual(merged.description, "")
+        self.assertEqual(merged.images, [])
+
     def test_project_lifecycle_isolated_between_projects(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
