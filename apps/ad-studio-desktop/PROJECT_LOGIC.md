@@ -738,3 +738,7 @@ A25 将最终输出机器质检固定为交付前硬门槛：ProductionStore.ins
 
 ## 2026-10-09：项目数据持久化边界
 ProductionStore.save() 将 Project 序列化到项目自身 JSON，ProductionStore.load() 按同一项目 ID 恢复 Project 与 Shot。版本状态、素材状态、人工审核状态和 final_output_history_records 都属于项目数据的一部分，不能跨项目共享。
+
+
+## 2026-10-09：真实数据与模拟数据边界
+variant_performance 只接受用户主动回写的原始投放数据并计算统一指标，同时保存 variant_performance_provenance。该 provenance 只表达“用户提供、系统不验证真实性”，不是平台 API 验证结果。投放前创意测试对象保持“待真实投放数据”，不会注入 CTR/CVR/CPC/CPA/ROAS 等平台结果。
