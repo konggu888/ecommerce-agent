@@ -475,8 +475,7 @@ class App(tk.Tk):
             ttk.Entry(frm,textvariable=vars[key],show='*' if key=='api_key' else '').grid(row=row,column=1,sticky='ew',pady=5,padx=8)
         frm.columnconfigure(1,weight=1)
         status=tk.StringVar(value='检测中…'); ttk.Label(frm,textvariable=status).grid(row=4,column=1,sticky='w',pady=8)
-        @ui_action
-    def save():
+        def save():
             payload={'video_provider':{k:v.get().strip() for k,v in vars.items()}}
             cfg_path.parent.mkdir(parents=True,exist_ok=True); cfg_path.write_text(json.dumps(payload,ensure_ascii=False,indent=2),encoding='utf-8')
             status.set('🟢 已保存到本机：'+str(cfg_path)); self.detail.set('视频 Provider 配置已保存；请在系统状态中重新检测。')
