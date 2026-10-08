@@ -44,9 +44,12 @@ class GenericVideoProvider:
     status_field: str = 'status'
     cost_per_shot_rmb: float = 0.72
     provider_name: str = 'Generic REST'
+    require_key: bool = True
 
     def configured(self) -> bool:
-        return bool(self.endpoint.strip() and self.api_key.strip())
+        if not self.endpoint.strip():
+            return False
+        return bool(self.api_key.strip()) if self.require_key else True
 
     def _request(self, payload: dict[str, Any]) -> dict[str, Any]:
         headers = {'Content-Type': 'application/json', **self.headers}
