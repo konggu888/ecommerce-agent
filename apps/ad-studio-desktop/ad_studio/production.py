@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Any
 import json
 import datetime
 from .models import Project, Shot, accept_hybrid_generated_shot
