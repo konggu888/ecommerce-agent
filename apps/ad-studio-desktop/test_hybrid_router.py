@@ -51,14 +51,16 @@ def test_generic_gap_needs_manual_when_budget_insufficient():
     assert result["tasks"][0]["recommended_resolution"] == "需要人工确认"
 
 
-def test_human_speech_gap_stays_real():
+def test_human_speech_gap_can_use_support_visuals():
     result = route_footage_gap_tasks(
-        [{"task_id": "GAP-005", "need": "真人口播", "reason": "缺少讲解素材"}],
+        [{"task_id": "GAP-005", "need": "真人口播缺少配套画面", "reason": "缺少辅助视频"}],
         generation_connected=True,
         budget_remaining_rmb=10,
         cost_per_ai_shot_rmb=1,
     )
-    assert result["tasks"][0]["recommended_resolution"] == "继续补拍"
+    task = result["tasks"][0]
+    assert task["recommended_resolution"] == "AI补辅助画面"
+    assert task["generation_mode"] == "仅辅助画面，不生成真人/真人声音"
 
 
 class HybridReviewModelTests(unittest.TestCase):
