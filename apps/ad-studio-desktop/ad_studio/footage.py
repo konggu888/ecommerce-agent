@@ -314,9 +314,17 @@ def classify_footage_gaps(coverage: dict | None, creative_plan: dict | None = No
             action = "待补素材"; why = "缺口不适合凭空编造；当前没有已接通的生成链，因此先标记为待补素材。"
         gaps.append({"need": need, "reason": reason, "action": action, "why": why})
     missing_points = []
-    for name in coverage.get("missing_selling_points", []) or []:
-        if name in points:
-            missing_points.append({"name": name, "action": "待补拍", "why": "该卖点没有可验证的实拍证据，不能在成片中虚构展示。"})
+    for raw_name in coverage.get("missing_selling_points", []) or []:
+        name = str(raw_name).strip()
+        if not name:
+            continue
+        # 覆盖审计可能只返回缺失卖点名称，不一定同时带 selling_points 详情；
+        # 缺失本身就是待补拍任务，不应因为详情映射不存在而被静默丢弃。
+        missing_points.append({
+            "name": name,
+            "action": "待补拍",
+            "why": "该卖点没有可验证的实拍证据，不能在成片中虚构展示。",
+        })
     return {"gap_count": len(gaps) + len(missing_points), "key_shot_gaps": gaps, "selling_point_gaps": missing_points, "generation_connected": bool(generation_connected), "method": "实拍素材缺口确定性分类"}
 
 def audit_final_footage_plan(

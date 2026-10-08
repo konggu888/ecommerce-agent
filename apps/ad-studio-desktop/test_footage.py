@@ -154,6 +154,12 @@ class NormalizeFootageAnalysisTests(unittest.TestCase):
         self.assertEqual(result["key_shot_gaps"][0]["action"],"待补拍")
         self.assertEqual(result["selling_point_gaps"][0]["action"],"待补拍")
 
+    def test_classify_footage_gaps_keeps_raw_missing_selling_points(self):
+        coverage={"missing_selling_points":["防水","静音"]}
+        result=classify_footage_gaps(coverage, {}, generation_connected=False)
+        self.assertEqual([x["name"] for x in result["selling_point_gaps"]], ["防水","静音"])
+        self.assertEqual(result["gap_count"], 2)
+
     def test_final_plan_audit_marks_uncovered_selling_point(self):
         analysis={"clips":[
             {"source":"a.mp4","material_rank":1,"selection_score":100,"duplicate_group":"g1","best_take":True},
