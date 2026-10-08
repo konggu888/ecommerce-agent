@@ -552,3 +552,6 @@ restore_variant_shot_cache 位于 models.py。它以原始镜头稳定 ID 恢复
 
 ## 2026-10-08：最终渲染测试契约修复
 最终渲染回归测试改为按稳定的 Shot.index 检查消费顺序，不再硬编码运行时动态 shot ID。该测试同时验证 storyboard_review=待复核 的混合镜头被排除，以及审核通过后恢复进入最终消费队列。
+
+## 2026-10-08：多版本混合补镜头状态隔离
+变体运行态不再只有 variant_shot_cache。切换方案前会同时缓存当前方案的 footage_gap_tasks 与 hybrid_reviewed_shots；激活方案后按 variant_index 恢复，并同步恢复对应的实拍 plan/coverage/gaps/audit。这样 AI 补镜头的“已生成→待复核→已通过”状态与具体创意方案绑定，避免 A/B/C 方案之间串素材或串审核状态。
