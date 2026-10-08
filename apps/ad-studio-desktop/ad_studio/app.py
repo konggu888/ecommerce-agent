@@ -16,6 +16,7 @@ from .model_router import ModelRouter, ModelProfile, FUNCTIONS
 from .browser_skill import _find_agent_browser
 from .ffmpeg import available as ffmpeg_available, has_nvenc
 from .providers import load_video_provider
+from .footage import build_visual_manifest, footage_analysis_public
 
 
 class UnconfiguredCreativeLLM:
@@ -187,23 +188,24 @@ class App(tk.Tk):
         model_box.pack(fill='x',pady=4)
 
         fields=ttk.Frame(frm); fields.pack(fill='x',pady=4)
-        name=tk.StringVar(); provider=tk.StringVar(value='openai_compatible'); base=tk.StringVar(); model=tk.StringVar(); key=tk.StringVar(); in_price=tk.StringVar(value='0'); out_price=tk.StringVar(value='0')
+        name=tk.StringVar(); provider=tk.StringVar(value='openai_compatible'); base=tk.StringVar(); model=tk.StringVar(); key=tk.StringVar(); in_price=tk.StringVar(value='0'); out_price=tk.StringVar(value='0'); vision=tk.BooleanVar(value=False)
         for row,label,var in [(0,'名称',name),(1,'提供方式',provider),(2,'Base URL',base),(3,'模型 ID',model),(4,'API Key',key),(5,'输入 ¥/1K',in_price),(6,'输出 ¥/1K',out_price)]:
             ttk.Label(fields,text=label,width=12).grid(row=row,column=0,sticky='w',pady=3)
             ttk.Entry(fields,textvariable=var,show='*' if label=='API Key' else '').grid(row=row,column=1,sticky='ew',padx=8,pady=3)
         fields.columnconfigure(1,weight=1)
+        ttk.Checkbutton(fields,text='支持图片/视频帧分析（实拍素材视觉分析必需）',variable=vision).grid(row=7,column=1,sticky='w',padx=8,pady=5)
 
         def load_profile(_=None):
             try:p=self.model_router.get(selected.get())
             except Exception:return
-            name.set(p.name); provider.set(p.provider); base.set(p.base_url); model.set(p.model); key.set(p.api_key); in_price.set(str(p.input_price_rmb_per_1k)); out_price.set(str(p.output_price_rmb_per_1k))
+            name.set(p.name); provider.set(p.provider); base.set(p.base_url); model.set(p.model); key.set(p.api_key); in_price.set(str(p.input_price_rmb_per_1k)); out_price.set(str(p.output_price_rmb_per_1k)); vision.set(bool(getattr(p,'vision_enabled',False)))
 
         def test_selected():
             ok,msg=self.model_router.test_connection(selected.get())
             messagebox.showinfo('模型连接测试', ('🟢 连接成功\n' if ok else '🔴 连接失败\n') + msg)
         def save_profile():
             mid=selected.get() or f'model-{len(self.model_router.profiles())+1}'
-            p=ModelProfile(mid,name.get().strip() or mid,provider.get().strip() or 'openai_compatible',base.get().strip(),model.get().strip(),key.get().strip(),True,float(in_price.get() or 0),float(out_price.get() or 0))
+            p=ModelProfile(mid,name.get().strip() or mid,provider.get().strip() or 'openai_compatible',base.get().strip(),model.get().strip(),key.get().strip(),True,float(in_price.get() or 0),float(out_price.get() or 0),vision.get())
             self.model_router.add_or_update(p); self.model_router.set_default(mid)
             selected.set(mid); model_box['values']=[x.id for x in self.model_router.profiles()]
             messagebox.showinfo('已保存','模型已加入本机模型池，并设为默认模型。')
@@ -432,7 +434,17 @@ class App(tk.Tk):
             if footage_mode=='用户拍摄素材':
                 self.project.footage_folder=str(folder)
                 try:
-                    raw_footage_plan=self.model_router.plan_footage(info.to_dict(),self.project.creative_plan,[c.to_public() for c in usable],constraints)
+                    analysis_dir=PROJECTS/self.project.id/'footage-analysis'
+                    manifest=build_visual_manifest(usable,analysis_dir,max_frames_per_clip=4)
+                    analysis=self.model_router.analyze_footage(
+                        info.to_dict(), self.project.creative_plan, manifest, constraints
+                    )
+                    self.project.creative_plan['footage_visual_analysis']=analysis
+                    raw_footage_plan=self.model_router.plan_footage(
+                        info.to_dict(), self.project.creative_plan,
+                        [c.to_public() for c in usable], constraints,
+                        footage_analysis=analysis,
+                    )
                     from .footage import validate_footage_plan, FootageError
                     plan_items,warnings=validate_footage_plan(raw_footage_plan,usable)
                     self._apply_footage_plan(plan_items)
