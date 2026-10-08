@@ -259,7 +259,7 @@ class App(tk.Tk):
         win=tk.Toplevel(self); win.title('补素材任务清单'); win.geometry('1120x680'); win.transient(self)
         frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
         ttk.Label(frm,text='补素材任务清单',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
-        ttk.Label(frm,text=f"当前缺口任务：{len(tasks)} 个｜来源覆盖率：{tasks_data.get('source_coverage_score','未审计')}%｜不会在这里自动拍摄或生成").pack(anchor='w',pady=(4,10))
+        completion=tasks_data.get('completion_audit') or {}\n        ttk.Label(frm,text=f"当前缺口任务：{len(tasks)} 个｜来源覆盖率：{tasks_data.get('source_coverage_score','未审计')}%｜本轮验收：完成 {completion.get('completed_count',0)}｜仍缺失 {completion.get('still_missing_count',0)}｜待复核 {completion.get('review_count',0)}｜不会在这里自动拍摄或生成").pack(anchor='w',pady=(4,10))
         tree=ttk.Treeview(frm,columns=('id','type','priority','need','point','action','acceptance'),show='headings')
         for c,t,w in [('id','任务',80),('type','处理方式',80),('priority','优先级',70),('need','缺口',180),('point','关联卖点',120),('action','怎么补',280),('acceptance','验收标准',300)]:
             tree.heading(c,text=t); tree.column(c,width=w,anchor='w')
@@ -298,7 +298,7 @@ class App(tk.Tk):
             '将重新扫描当前文件夹中的视频，并重新执行视觉分析、废片归档、口播转写（如已配置）、素材排名、卖点覆盖审计和剪辑方案复核。是否继续？'):
             return
         try:
-            from .footage import scan_footage, FootageError, validate_footage_plan, audit_footage_coverage, audit_final_footage_plan
+            from .footage import scan_footage, FootageError, validate_footage_plan, audit_footage_coverage, audit_final_footage_plan, audit_footage_gap_completion
             clips=scan_footage(folder)
             usable=[c for c in clips if c.duration>0]
             if not usable:
@@ -308,6 +308,7 @@ class App(tk.Tk):
             analysis_dir=PROJECTS/self.project.id/'footage-analysis'
             manifest=build_visual_manifest(usable,analysis_dir,max_frames_per_clip=4)
             # 先留档上一轮状态，再覆盖本轮分析字段；失败时用户仍可追溯历史方案。
+            previous_variant_gap_tasks = self.project.creative_plan.get('variant_footage_gap_tasks') or {}
             previous_snapshot = {
                 'footage_visual_analysis': self.project.creative_plan.get('footage_visual_analysis'),
                 'footage_coverage': self.project.creative_plan.get('footage_coverage'),
@@ -826,6 +827,9 @@ class App(tk.Tk):
                         coverage_v=audit_footage_coverage(analysis, variant_plan_dict)
                         gaps_v=classify_footage_gaps(coverage_v, variant_plan_dict, generation_connected=False)
                         tasks_v=build_footage_gap_tasks(coverage_v, gaps_v, variant_plan_dict)
+                        previous_tasks_v=previous_variant_gap_tasks.get(str(int(variant_raw.get('_variant_index',variant_pos))), {}) if isinstance(previous_variant_gap_tasks, dict) else {}
+                        completion_v=audit_footage_gap_completion(previous_tasks_v, coverage_v) if previous_tasks_v else {'task_count':0,'completed_count':0,'still_missing_count':0,'review_count':0,'tasks':[],'coverage_score':coverage_v.get('coverage_score',100.0),'method':'首次分析，无上一轮任务可验收'}
+                        tasks_v['completion_audit']=completion_v
                         raw_footage_plan=self.model_router.plan_footage(
                             info.to_dict(), variant_plan_dict,
                             [c.to_public() for c in usable], constraints,
