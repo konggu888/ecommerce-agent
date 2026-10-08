@@ -218,6 +218,35 @@ class App(tk.Tk):
         detail=tk.Text(frm,height=7); detail.pack(fill='x',pady=(8,4))
         tree.bind('<<TreeviewSelect>>',show_reason)
         ttk.Label(frm,text='选中素材后，下方会显示 AI 为什么保留/淘汰它，以及推荐使用哪一段。',foreground='#666').pack(anchor='w')
+        def show_timeline():
+            plans=plan.get('variant_footage_plans') or {}
+            if not plans and plan.get('footage_plan'):
+                plans={str(plan.get('variant_index',1)): plan.get('footage_plan')}
+            if not plans:
+                return messagebox.showinfo('暂无剪辑方案','当前项目还没有保存实拍剪辑方案。')
+            tw=tk.Toplevel(win); tw.title('实拍剪辑决策时间线'); tw.geometry('1180x680'); tw.transient(win)
+            tf=ttk.Frame(tw,padding=14); tf.pack(fill='both',expand=True)
+            ttk.Label(tf,text='实拍剪辑决策时间线',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
+            ttk.Label(tf,text='这里展示 AI 最终决定“用哪条素材、哪一段、为什么这样排”的已保存结果，不会重新调用 AI。',foreground='#666').pack(anchor='w',pady=(3,8))
+            vb=tk.StringVar(value=sorted(plans.keys(),key=lambda x:int(x))[0])
+            selector=ttk.Combobox(tf,textvariable=vb,state='readonly',values=[f"{k}｜{(plan.get('creative_variants') or [{}])[int(k)-1].get('_variant_label','方案'+k) if int(k)-1 < len(plan.get('creative_variants') or []) else '方案'+k}" for k in sorted(plans,key=lambda x:int(x))],width=40)
+            selector.pack(anchor='w',pady=(0,8))
+            tree2=ttk.Treeview(tf,columns=('seq','source','ranges','duration','objective','visual','reason'),show='headings')
+            for c,t,w in [('seq','镜头','55'),('source','素材','150'),('ranges','使用片段','150'),('duration','时长','70'),('objective','镜头目的','180'),('visual','画面/构图','250'),('reason','决策依据','250')]: tree2.heading(c,text=t); tree2.column(c,width=w,anchor='w')
+            tree2.pack(fill='both',expand=True)
+            detail2=tk.Text(tf,height=6); detail2.pack(fill='x',pady=(8,0))
+            def fill_timeline(*_):
+                tree2.delete(*tree2.get_children()); detail2.delete('1.0','end')
+                key=vb.get().split('｜',1)[0]; items=plans.get(key,[]) if isinstance(plans.get(key),list) else []
+                for i,item in enumerate(items,1):
+                    ranges=item.get('ranges') or [[item.get('start',0),item.get('start',0)+item.get('duration',0)]]
+                    rt='；'.join(f"{float(a):.1f}-{float(b):.1f}s" for a,b in ranges)
+                    tree2.insert('', 'end', values=(i,item.get('source','-'),rt,f"{float(item.get('duration',0)):.1f}s",item.get('objective','-'),item.get('visual','-'),item.get('reason','-')))
+                if items:
+                    detail2.insert('1.0','说明：每个镜头的“使用片段”可能由多段范围组成，用于删除口播废话、停顿和重复内容；顺序就是最终剪辑顺序。')
+            selector.bind('<<ComboboxSelected>>',fill_timeline); fill_timeline()
+            ttk.Button(tf,text='关闭',command=tw.destroy).pack(anchor='e',pady=(8,0))
+        ttk.Button(frm,text='🎬 查看实拍剪辑决策时间线',command=show_timeline).pack(anchor='e',pady=(4,0))
         ttk.Button(frm,text='关闭',command=win.destroy).pack(anchor='e',pady=(10,0))
 
     @ui_action
