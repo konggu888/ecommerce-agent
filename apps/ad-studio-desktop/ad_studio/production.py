@@ -51,7 +51,8 @@ class ProductionStore:
 
     def recover_project(self, project: Project):
         """恢复中断项目：清理未完成临时输出、校正失效媒体状态，并保留有效资产与历史。"""
-        plan = project.creative_plan.setdefault("recovery", {})
+        creative_plan = project.creative_plan
+        recovery = creative_plan.setdefault("recovery", {})
         removed_parts = 0
         render_root = self.root / "renders" / project.id
         if render_root.exists():
@@ -66,7 +67,7 @@ class ProductionStore:
                 shot.status = "待重新生成/重新选择素材"
         invalid_outputs = []
         records = list(plan.get("final_output_history_records", []) or [])
-        manifests = plan.get("final_output_manifests", {}) or {}
+        manifests = creative_plan.get("final_output_manifests", {}) or {}
         if isinstance(manifests, dict):
             records.extend(manifests.values())
         seen = set()
@@ -83,7 +84,7 @@ class ProductionStore:
                 item["recovery_reason"] = "最终输出文件缺失或为空"
                 invalid_outputs.append(output_path)
         now = datetime.datetime.now().isoformat(timespec="seconds")
-        plan.update({
+        recovery.update({
             "status": "可继续",
             "stage": "恢复完成",
             "next_action": "从未完成阶段继续任务",
@@ -91,7 +92,7 @@ class ProductionStore:
             "updated_at": now,
         })
         self.save(project)
-        return plan["last_recovery"]
+        return recovery["last_recovery"]
 
     def clear_recovery(self, project: Project):
         plan = project.creative_plan.setdefault("recovery", {})
