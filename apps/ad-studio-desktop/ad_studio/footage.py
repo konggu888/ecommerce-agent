@@ -464,6 +464,38 @@ def audit_footage_gap_completion(previous_tasks: dict | None, coverage: dict | N
         "method": "新旧覆盖审计差异验收（确定性）",
     }
 
+
+def merge_gap_task_acceptance(current_tasks: dict | None, completion_audit: dict | None) -> dict:
+    """把上一轮验收结果合并回当前任务清单，保留已完成任务的历史记录。"""
+    current_tasks = dict(current_tasks or {})
+    completion_audit = completion_audit or {}
+    current = [dict(x) for x in current_tasks.get("tasks", []) if isinstance(x, dict)]
+    previous = [dict(x) for x in completion_audit.get("tasks", []) if isinstance(x, dict)]
+    def key(x):
+        return (str(x.get("related_selling_point", "")).strip(),
+                str(x.get("need", "")).strip())
+    prev_map = {key(x): x for x in previous if key(x) != ("", "")}
+    merged = []
+    used = set()
+    for task in current:
+        k = key(task)
+        old = prev_map.get(k)
+        item = dict(task)
+        if old:
+            item["status"] = old.get("status", item.get("status", "待处理"))
+            item["completion_reason"] = old.get("completion_reason", "")
+            used.add(k)
+        merged.append(item)
+    for old in previous:
+        k = key(old)
+        if old.get("status") == "已完成" and k not in used:
+            merged.append(old)
+    out = dict(current_tasks)
+    out["tasks"] = merged
+    out["completion_audit"] = completion_audit
+    out["completed_task_history"] = [x for x in previous if x.get("status") == "已完成"]
+    return out
+
 def audit_final_footage_plan(
     plan: list[dict] | None,
     analysis: dict | None,
