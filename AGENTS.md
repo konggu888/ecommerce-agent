@@ -16,8 +16,9 @@
 ## 1. AI 接手项目时必须先读
 
 按以下顺序理解项目：
-1. 本文件 AGENTS.md
-2. apps/ad-studio-desktop/PROJECT_LOGIC.md
+1. docs/AD_STUDIO_AI_HANDOFF.md（无聊天历史的最短入口）
+2. 本文件 AGENTS.md
+3. apps/ad-studio-desktop/PROJECT_LOGIC.md
 3. apps/ad-studio-desktop/HELP.md
 4. 目标代码文件及其依赖
 5. 测试文件
@@ -99,6 +100,10 @@ GitHub Actions 也会执行相同检查；代码改了而两个文档没有同�
 
 因此，AI 每次收到“继续”“推进”“按你的来”等指令时，第一动作必须是：检查最新状态 → 判断是否存在失败 → 有失败先修失败 → 再继续。
 
+
+### A32 AI 接手入口
+- 无历史 AI 应先阅读 docs/AD_STUDIO_AI_HANDOFF.md，再按其中固定顺序核对长期文档、测试入口、当前验收进度和安全边界。
+- A32 验收必须由可独立执行的自动化测试证明，不得只凭文档存在或口头说明判定通过。
 
 ### Variant shot cache invariant
 - 每个创意方案必须独立保存完整 shots 快照。
