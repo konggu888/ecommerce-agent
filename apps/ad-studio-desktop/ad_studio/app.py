@@ -533,7 +533,7 @@ class App(tk.Tk):
                 mode={'local':'本地','cloud':'云端','unavailable':'不可用'}.get(decision.target,decision.target)
                 self.detail.set(f'镜头 {s.index} 正在{mode}生成…')
                 out=self.store.render_shot(self.project,s,config_root=ROOT)
-                self.refresh_shots(); self.detail.set(f'镜头 {s.index} 已由{mode}生成 v{s.version}：{out}')
+                self.refresh_shots(); self.cost.set(f'项目实际成本 ¥{self.project.actual_cost_rmb:.4f} · 预估 ¥{self.project.cost_estimate.get("总计",0):.2f}'); self.detail.set(f'镜头 {s.index} 已由{mode}生成 v{s.version}：{out} · 项目实际累计 ¥{self.project.actual_cost_rmb:.4f}')
         except Exception as e:
             s.status='生成失败'; self.store.save(self.project); self.refresh_shots()
             self.detail.set(f'镜头 {s.index} 生成失败：{e}')
