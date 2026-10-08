@@ -92,6 +92,62 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertTrue(any(s.id == task["accepted_shot_id"] for s in restored.shots))
 
 
+    def test_variant_runtime_state_isolated_for_hybrid_gap_tasks(self):
+        from ad_studio.app import App
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td))
+            p = new_project("https://item.jd.com/123.html", 2, "真人口播")
+            p.creative_plan = {
+                "variant_footage_gap_tasks": {},
+                "variant_hybrid_reviewed_shots": {},
+            }
+            app = App.__new__(App)
+            app.project = p
+            app.active_variant_index = 1
+            p.creative_plan["footage_gap_tasks"] = {
+                "tasks": [{
+                    "task_id": "A-GAP-1",
+                    "variant_index": 1,
+                    "recommended_resolution": "AI补镜头",
+                    "generated_path": "/tmp/a.mp4",
+                    "review_status": "已通过",
+                }]
+            }
+            p.creative_plan["hybrid_reviewed_shots"] = [{"task_id": "A-GAP-1", "variant_index": 1}]
+            app._cache_active_variant()
+
+            app.active_variant_index = 2
+            p.creative_plan["footage_gap_tasks"] = {"tasks": [{
+                "task_id": "B-GAP-1",
+                "variant_index": 2,
+                "recommended_resolution": "AI补镜头",
+            }]}
+            p.creative_plan["hybrid_reviewed_shots"] = [{"task_id": "B-GAP-1", "variant_index": 2}]
+            app._cache_active_variant()
+
+            # 模拟切换回方案1：必须恢复 A，不能看到 B。
+            app.active_variant_index = 1
+            app._restore_active_variant_runtime()
+            self.assertEqual(
+                [x["task_id"] for x in p.creative_plan["footage_gap_tasks"]["tasks"]],
+                ["A-GAP-1"],
+            )
+            self.assertEqual(
+                [x["task_id"] for x in p.creative_plan["hybrid_reviewed_shots"]],
+                ["A-GAP-1"],
+            )
+
+            app.active_variant_index = 2
+            app._restore_active_variant_runtime()
+            self.assertEqual(
+                [x["task_id"] for x in p.creative_plan["footage_gap_tasks"]["tasks"]],
+                ["B-GAP-1"],
+            )
+            self.assertEqual(
+                [x["task_id"] for x in p.creative_plan["hybrid_reviewed_shots"]],
+                ["B-GAP-1"],
+            )
+
     def test_final_render_inputs_are_ordered_and_pending_hybrid_is_excluded(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
