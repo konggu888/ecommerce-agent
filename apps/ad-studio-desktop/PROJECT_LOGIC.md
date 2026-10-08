@@ -186,7 +186,10 @@ gpu.py 仅保留兼容入口，不再包含4050专属逻辑。
 - 剪辑计划引用清单外文件则校验失败。
 
 
-## 8.1.1 实拍废片自动归档
+## 8.1.1 实拍重复镜头与最佳版本选择
+视觉模型在观察关键帧时同时完成重复拍摄识别。输出 `duplicate_group`、`duplicate_confidence`、`take_rank`、`best_take`、`keep_reason`；`normalize_footage_analysis` 在本地规范字段并在模型未明确指定最佳版本时按同组优先级/评分选出最佳版本。`plan_footage` 将该结果作为硬约束之一，优先选择最佳版本。重复素材不会自动删除，只有 AI 明确 `usable=false` 或扫描阶段无法解析的素材才进入废片归档。
+
+## 8.1.2 实拍废片自动归档
 实拍项目 UI 新增 `footage_analysis_report`，直接读取项目持久化的 `footage_visual_analysis`、`footage_archive` 和 `footage_transcripts`，不重新调用模型；因此查看报告不会产生新的 AI 调用费用。
 
 视觉分析完成后，`footage.py.archive_analyzed_waste`执行安全归档：
@@ -351,3 +354,7 @@ CI 的桌面 Python 语法检查发现 `ffmpeg.py` 的 concat 清单 `write_text
 素材剪辑导演读取 creative_plan.footage_transcripts。当需要删除口播废话/重复表达时，输出镜头 ranges=[[start,end],...]，这些区间使用原始素材时间轴。validate_footage_plan 会排序、合并重叠区间并限制在素材时长内；最终有效时长为各保留区间之和。models.Shot.source_ranges 持久化这些区间；ProductionStore.render_footage_shot 会分别裁剪每段并调用本地 concat 拼接，因此废话不会进入该镜头成片。
 
 - 2026-10-08：口播转写上传层统一使用显式 CRLF multipart 边界，避免换行转换造成 Python 语法错误。
+
+
+## 更新记录
+- 2026-10-08：新增实拍重复镜头分组与最佳版本选择的数据规范、规范化逻辑及剪辑导演优先级规则。
