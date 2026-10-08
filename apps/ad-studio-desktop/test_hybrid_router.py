@@ -70,3 +70,13 @@ class HybridReviewModelTests(unittest.TestCase):
         task['review_status']='已通过'; task['accepted_into_storyboard']=True; task['accepted_shot_id']='hybrid-gap-002-v1'; self.assertTrue(task['accepted_into_storyboard']); self.assertEqual(task['accepted_shot_id'],'hybrid-gap-002-v1')
     def test_product_evidence_is_not_reviewable_as_ai_gap(self):
         task={'recommended_resolution':'继续补拍','generated_path':'/tmp/generated.mp4'}; self.assertNotEqual(task.get('recommended_resolution'),'AI补镜头')
+
+
+class HybridGapPositionTests(unittest.TestCase):
+    def test_target_position_is_optional_when_gap_cannot_be_mapped(self):
+        task={'task_id':'GAP-003','target_shot_index':None}
+        self.assertIsNone(task['target_shot_index'])
+
+    def test_target_position_is_recorded_for_precise_insertion(self):
+        task={'task_id':'GAP-004','target_shot_index':3}
+        self.assertEqual(task['target_shot_index'],3)

@@ -500,3 +500,7 @@ validate_task_type_plan 在创意方案进入项目/成片前执行，防止 AI 
 
 ## 18. AI补镜头与多版本隔离
 AI补镜头缺口任务必须记录 `variant_index`。人工复核只读取当前 `active_variant_index` 对应任务，避免 A/B/C 版本之间发生生成素材串用。通过复核后建立 `accepted_variant_index` 与 `accepted_shot_id` 链接，并缓存当前版本分镜。当前通过镜头先追加到当前分镜末尾；如果后续需要精确补位，可增加 `target_shot_index` 并在验收时插入指定位置。
+
+
+## 19. AI补镜头精确补位
+缺口任务在生成任务清单阶段尝试把 `target_shot_index` 映射到原创意分镜。映射采用确定性文本匹配，无法稳定匹配则保留为空。人工复核通过后，有目标位置就插入该位置并顺延后续镜头；没有目标位置才追加到末尾。

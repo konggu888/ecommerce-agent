@@ -409,6 +409,35 @@ def build_footage_gap_tasks(
     for i, task in enumerate(tasks, 1):
         task["task_id"] = f"GAP-{i:03d}"
 
+    def infer_target_shot(task: dict) -> tuple[int | None, str]:
+        """根据缺口需求把任务映射到原分镜位置，优先精确补位而非盲目追加。"""
+        shots = plan.get("shots") or []
+        if not isinstance(shots, list):
+            return None, "原创意方案没有可映射的分镜位置"
+        terms = [str(task.get("need", "")).strip().lower(), str(task.get("related_selling_point", "")).strip().lower()]
+        terms = [re.sub(r"[^0-9a-zA-Z\u4e00-\u9fff]", "", x) for x in terms if x]
+        if not terms:
+            return None, "缺口没有可用于定位的需求文本"
+        best = None; best_score = 0
+        for pos, shot in enumerate(shots, 1):
+            if not isinstance(shot, dict): continue
+            text = re.sub(r"[^0-9a-zA-Z\u4e00-\u9fff]", "", " ".join(str(shot.get(k, "")) for k in ("objective","visual","description","selling_point","script")).lower())
+            score = sum(100 + min(len(term), 20) for term in terms if term and term in text)
+            if score > best_score:
+                best_score = score; best = (pos, shot)
+        if not best:
+            return None, "未能从原分镜文本稳定定位补位位置"
+        pos, shot = best
+        try: target = int(shot.get("index", pos))
+        except (TypeError, ValueError): target = pos
+        return target, f"匹配原分镜第{pos}个位置：{shot.get('objective') or shot.get('visual') or shot.get('description') or '未命名镜头'}"
+
+    # 给每个任务记录建议补位位置；无法稳定匹配时保持 None，由人工复核后追加。
+    for task in tasks:
+        target, target_reason = infer_target_shot(task)
+        task["target_shot_index"] = target
+        task["target_position_reason"] = target_reason
+
     return {
         "task_count": len(tasks),
         "tasks": tasks,

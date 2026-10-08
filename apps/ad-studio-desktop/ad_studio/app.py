@@ -534,11 +534,19 @@ class App(tk.Tk):
             if task.get('accepted_into_storyboard'): return messagebox.showinfo('已纳入','该 AI 补镜头已经在当前分镜中。')
             p=Path(str(task.get('generated_path','')))
             if not p.exists() or p.stat().st_size<=0: return messagebox.showerror('不能纳入','生成文件不存在或为空，不能进入分镜。')
-            # 当前先追加到当前方案分镜末尾；任务已保留 variant_index，后续可扩展 target_shot_index 精确补位。
+            # 有确定目标位置就插入缺口位置；无法稳定定位时才追加到末尾，避免算法猜错位置。
+            target_index=task.get('target_shot_index')
+            try: target_index=int(target_index) if target_index is not None else None
+            except (TypeError,ValueError): target_index=None
+            if target_index is not None:
+                insert_at=next((i for i,s in enumerate(self.project.shots) if int(getattr(s,'index',0) or 0)>=target_index),len(self.project.shots))
+            else:
+                insert_at=len(self.project.shots)
             max_index=max([int(getattr(s,'index',0)) for s in self.project.shots] or [0])
             Shot=__import__('ad_studio.models',fromlist=['Shot']).Shot
-            shot=Shot(id=f"hybrid-{task.get('task_id','gap').lower().replace('_','-')}-v{self.active_variant_index}",index=max_index+1,title=f"AI补镜头｜{task.get('need','辅助画面')}",visual=str(task.get('need') or '补充通用辅助画面'),script=str(task.get('related_selling_point') or ''),status='已复核并纳入分镜',video_path=str(p),clip_source='ai_generated',provider=str(task.get('generation_provider') or 'AI视频生成'),generated_from_request=f"实拍缺口任务 {task.get('task_id')}：{task.get('reason','')}",actual_cost_rmb=round(float(task.get('generation_cost_rmb',0) or 0),4))
-            self.project.shots.append(shot); task['review_status']='已通过'; task['reviewed_at']=__import__('datetime').datetime.now().isoformat(timespec='seconds'); task['accepted_into_storyboard']=True; task['accepted_shot_id']=shot.id; task['accepted_variant_index']=self.active_variant_index; task['status']='AI补镜头已生成并通过人工复核'
+            shot=Shot(id=f"hybrid-{task.get('task_id','gap').lower().replace('_','-')}-v{self.active_variant_index}",index=(target_index if target_index is not None else max_index+1),title=f"AI补镜头｜{task.get('need','辅助画面')}",visual=str(task.get('need') or '补充通用辅助画面'),script=str(task.get('related_selling_point') or ''),status='已复核并纳入分镜',video_path=str(p),clip_source='ai_generated',provider=str(task.get('generation_provider') or 'AI视频生成'),generated_from_request=f"实拍缺口任务 {task.get('task_id')}：{task.get('reason','')}",actual_cost_rmb=round(float(task.get('generation_cost_rmb',0) or 0),4))
+            for existing in self.project.shots[insert_at:]: existing.index=int(getattr(existing,'index',0) or 0)+1
+            self.project.shots.insert(insert_at,shot); task['accepted_position']=insert_at+1; task['review_status']='已通过'; task['reviewed_at']=__import__('datetime').datetime.now().isoformat(timespec='seconds'); task['accepted_into_storyboard']=True; task['accepted_shot_id']=shot.id; task['accepted_variant_index']=self.active_variant_index; task['status']='AI补镜头已生成并通过人工复核'
             plan.setdefault('hybrid_reviewed_shots',[]).append({'task_id':task.get('task_id'),'shot_id':shot.id,'variant_index':self.active_variant_index,'path':str(p),'review_status':'已通过','accepted_at':task['reviewed_at']})
             self._cache_active_variant(); self.store.save(self.project); self.refresh_shots(); self.detail.set(f"AI补镜头 {task.get('task_id')} 已通过人工复核并纳入方案{self.active_variant_index}当前分镜。"); refresh_row(task)
             messagebox.showinfo('已纳入当前分镜',f"{task.get('task_id')} 已作为镜头 {shot.index} 纳入当前方案。现在可以继续后处理或生成最终成片。")
