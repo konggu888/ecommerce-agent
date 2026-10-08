@@ -1191,5 +1191,55 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertFalse(any(k in plan for k in ("ctr","cvr","cpc_rmb","cpa_rmb","roas")))
         self.assertIn("不产生平台转化指标", plan["data_boundary"])
 
+
+    def test_a30_recovery_records_failures_without_losing_project_state(self):
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td))
+            project = new_project("https://item.jd.com/123.html", 2, "电商短视频")
+            shot = project.shots[0]
+            shot.status = "生成中…"
+            store.save(project)
+            record = store.record_recovery_failure(project, stage="AI调用", error="provider timeout", next_action="检查模型配置后重试", retryable=True)
+            self.assertEqual(record["status"], "待恢复")
+            self.assertEqual(project.creative_plan["recovery"]["next_action"], "检查模型配置后重试")
+            restored = store.load(project.id)
+            self.assertEqual(restored.shots[0].status, "生成中…")
+            self.assertEqual(restored.creative_plan["recovery"]["stage"], "AI调用")
+
+    def test_a30_recovery_cleans_interrupted_assets_and_marks_corrupt_outputs(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            missing = root / "missing-source.mp4"
+            shot.video_path = str(missing)
+            shot.status = "已生成"
+            render_dir = root / "renders" / project.id / "variant-1" / shot.id
+            render_dir.mkdir(parents=True)
+            (render_dir / "v1.part.mp4").write_bytes(b"partial")
+            corrupt = root / "final.mp4"
+            history = {"output_path": str(corrupt), "delivery_status": "可交付"}
+            project.creative_plan["final_output_history_records"] = [history]
+            store.save(project)
+            result = store.recover_project(project)
+            self.assertEqual(result["removed_temp_files"], 1)
+            self.assertEqual(result["missing_media"], [shot.id])
+            self.assertEqual(result["invalid_outputs"], [str(corrupt)])
+            self.assertEqual(shot.status, "待重新生成/重新选择素材")
+            self.assertEqual(history["delivery_status"], "不可交付")
+            self.assertEqual(project.creative_plan["recovery"]["status"], "可继续")
+
+    def test_a30_budget_and_non_retryable_failures_have_explicit_next_actions(self):
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td))
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            budget = store.record_recovery_failure(project, stage="预算不足", error="剩余预算不足以执行AI补镜头", next_action="补充预算或改用本地/实拍方案", retryable=False)
+            self.assertEqual(budget["status"], "需处理")
+            self.assertIn("补充预算", budget["next_action"])
+            resumed = store.clear_recovery(project)
+            self.assertEqual(resumed["status"], "正常")
+
+
 if __name__ == "__main__":
     unittest.main()
