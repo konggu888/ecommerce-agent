@@ -13,6 +13,7 @@ from pathlib import Path
 import json
 import subprocess
 import re
+import shutil
 
 from .ffmpeg import which, best_h264_encoder
 
@@ -150,6 +151,67 @@ def footage_analysis_public(manifest: list[dict]) -> list[dict]:
         'width': x['width'], 'height': x['height'], 'fps': x['fps'],
         'keyframes': [{'label': f['label'], 'time': f['time']} for f in x.get('frames', [])],
     } for x in manifest]
+
+def archive_analyzed_waste(
+    clips: list[FootageClip],
+    analysis: dict,
+    archive_root: Path,
+    project_id: str,
+) -> tuple[list[FootageClip], list[dict]]:
+    """根据视觉分析自动归档明确不可用的实拍素材；保留可用素材继续进入剪辑导演。
+
+    只处理模型明确给出 usable=false 的素材，以及扫描阶段本身无法解析的视频。
+    不删除源文件；采用移动方式进入 05_废片库，并写入归档清单，避免重复归档。
+    """
+    archive_dir = Path(archive_root) / project_id
+    archive_dir.mkdir(parents=True, exist_ok=True)
+    analyzed = {str(x.get('source', '')).strip(): x for x in (analysis or {}).get('clips', []) if isinstance(x, dict)}
+    records: list[dict] = []
+    kept: list[FootageClip] = []
+
+    def unique_target(source: Path) -> Path:
+        target = archive_dir / source.name
+        if not target.exists():
+            return target
+        for n in range(2, 10000):
+            candidate = archive_dir / f'{source.stem}__{n}{source.suffix}'
+            if not candidate.exists():
+                return candidate
+        raise FootageError(f'废片归档目标无法生成唯一文件名：{source.name}')
+
+    for clip in clips:
+        item = analyzed.get(clip.name, {})
+        unusable = clip.duration <= 0 or item.get('usable') is False
+        if not unusable:
+            kept.append(clip)
+            continue
+        source = Path(clip.path)
+        reason = str(item.get('reason') or clip.note or 'AI判定素材不可用')
+        record = {
+            'source': clip.name,
+            'original_path': str(source),
+            'reason': reason,
+            'score': item.get('score'),
+            'visual_tags': item.get('visual_tags', []),
+            'archived': False,
+        }
+        if source.exists() and source.is_file():
+            target = unique_target(source)
+            try:
+                shutil.move(str(source), str(target))
+                record['archive_path'] = str(target)
+                record['archived'] = True
+            except OSError as exc:
+                record['error'] = str(exc)
+                kept.append(clip)
+        else:
+            record['error'] = '源文件不存在，未移动'
+        records.append(record)
+
+    manifest = archive_dir / 'archive-manifest.json'
+    manifest.write_text(json.dumps(records, ensure_ascii=False, indent=2), encoding='utf-8')
+    return kept, records
+
 
 def trim_clip(src: Path, out: Path, start: float = 0.0, duration: float | None = None) -> Path:
     """按起始秒与时长从素材中裁剪出一段镜头（重编码保证精确切割）。

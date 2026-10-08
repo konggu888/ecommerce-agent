@@ -16,7 +16,7 @@ from .model_router import ModelRouter, ModelProfile, FUNCTIONS
 from .browser_skill import _find_agent_browser
 from .ffmpeg import available as ffmpeg_available, has_nvenc
 from .providers import load_video_provider
-from .footage import build_visual_manifest, footage_analysis_public
+from .footage import build_visual_manifest, footage_analysis_public, archive_analyzed_waste
 from .transcription import extract_audio
 
 
@@ -442,6 +442,15 @@ class App(tk.Tk):
                         info.to_dict(), self.project.creative_plan, manifest, constraints
                     )
                     self.project.creative_plan['footage_visual_analysis']=analysis
+                    # 视觉分析完成后，自动把明确不可用素材移入 05_废片库；只有成功移动的素材才从后续剪辑候选中剔除。
+                    waste_root=folder.parent/'05_废片库'
+                    usable, waste_records=archive_analyzed_waste(usable, analysis, waste_root, self.project.id)
+                    self.project.creative_plan['footage_archive'] = {
+                        'archive_root': str(waste_root/self.project.id),
+                        'records': waste_records,
+                    }
+                    if not usable:
+                        raise RuntimeError('AI视觉分析后没有剩余可用实拍素材；不可用素材已归档到 05_废片库。')
                     speech_transcripts=[]
                     speech_profile=self.model_router.route('口播转写')
                     if speech_profile.enabled and (speech_profile.api_key or speech_profile.provider == 'local_openai') and speech_profile.transcription_enabled:
@@ -481,7 +490,7 @@ class App(tk.Tk):
             detail='\n'.join([
                 f"商品：{info.name}",f"素材文件夹：{folder}",f"扫描到可用素材：{len(usable)} 个（跳过无法解析 {len(clips)-len(usable)} 个）",
                 '素材清单：',clips_note,'',
-                f"视觉分析：已观察 {len(analysis.get('clips', [])) if isinstance(analysis, dict) else 0} 个素材；口播转写：{len(speech_transcripts)} 个素材。",
+                f"视觉分析：已观察 {len(analysis.get('clips', [])) if isinstance(analysis, dict) else 0} 个素材；自动归档废片：{sum(1 for x in self.project.creative_plan.get('footage_archive', {}).get('records', []) if x.get('archived'))} 个；口播转写：{len(speech_transcripts)} 个素材。",
                 f"本次生成创意方案：{variant_count} 个（当前先展示方案1）",f"AI选择视频形式：{plan.video_form}",f"AI策略：{plan.strategy}",'',
                 'AI 剪辑方案：',*[f"  镜头{x['index']:02d}｜{x['source']}｜{x['start']:.1f}s 起｜{x['duration']:.1f}s｜{x.get('objective','')}" for x in plan_items],
                 *(f'⚠ {warnings_note}' if warnings_note else ''),'',
