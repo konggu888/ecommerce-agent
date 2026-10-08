@@ -511,3 +511,13 @@ def test_history_report_method_does_not_require_ai(tmp_path):
     from ad_studio.footage import append_footage_reanalysis_history
     p = append_footage_reanalysis_history(tmp_path / 'project', {'footage_plan': [{'source': 'a.mp4'}]})
     assert p.exists()
+
+
+def test_ui_action_contract_binds_critical_actions():
+    from pathlib import Path
+    from ad_studio.ui_contract import verify_ui_action_contract
+    app_file = Path(__file__).parent / 'ad_studio' / 'app.py'
+    result = verify_ui_action_contract(app_file)
+    assert result['ok'] is True
+    assert 'reanalyze_footage' in result['required_actions']
+    assert 'footage_reanalysis_history_report' in result['required_actions']
