@@ -13,6 +13,12 @@ class UIContractError(RuntimeError):
     pass
 
 
+def ui_action(func):
+    """标记一个用户可执行功能；被标记的方法必须拥有真实 UI 入口。"""
+    setattr(func, "__ui_action__", True)
+    return func
+
+
 def _button_commands(app_source: str) -> set[str]:
     tree = ast.parse(app_source)
     commands: set[str] = set()
@@ -44,14 +50,14 @@ def verify_ui_action_contract(app_file: Path, required_actions: tuple[str, ...] 
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
     }
     commands = _button_commands(source)
-    required = required_actions or (
-        "create", "load_project", "save", "generate_shot", "regen_shot",
-        "postprocess_selected", "final_render", "model_settings",
-        "system_status", "usage_view", "video_provider_settings",
-        "asset_generation_settings", "footage_analysis_report",
-        "footage_gap_tasks_report", "reanalyze_footage",
-        "footage_reanalysis_history_report",
-    )
+    if required_actions is not None:
+        required = tuple(required_actions)
+    else:
+        required = tuple(sorted(
+            node.name for node in ast.walk(tree)
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+            and any(isinstance(d, ast.Name) and d.id == "ui_action" for d in node.decorator_list)
+        ))
     missing_methods = sorted(set(required) - methods)
     unbound = sorted(set(required) - commands)
     if missing_methods or unbound:
