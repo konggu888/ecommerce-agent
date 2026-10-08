@@ -1156,5 +1156,40 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertTrue((root / f"{ar.id}.json").exists())
             self.assertTrue((root / f"{br.id}.json").exists())
 
+    def test_a29_real_data_boundary_requires_explicit_user_provenance_and_keeps_simulation_separate(self):
+        try:
+            from ad_studio.app import App
+        except ModuleNotFoundError as exc:
+            if exc.name != "tkinter":
+                raise
+            import sys, types
+            fake_tk = types.ModuleType("tkinter")
+            fake_tk.Tk = object
+            fake_tk.ttk = types.ModuleType("tkinter.ttk")
+            fake_tk.filedialog = types.ModuleType("tkinter.filedialog")
+            fake_tk.messagebox = types.ModuleType("tkinter.messagebox")
+            sys.modules["tkinter"] = fake_tk
+            sys.modules["tkinter.ttk"] = fake_tk.ttk
+            sys.modules["tkinter.filedialog"] = fake_tk.filedialog
+            sys.modules["tkinter.messagebox"] = fake_tk.messagebox
+            from ad_studio.app import App
+        app=App.__new__(App)
+        project=new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+        payload=app._variant_metrics({"impressions":1000,"clicks":100,"conversions":5,"spend_rmb":200,"revenue_rmb":800})
+        saved=app._record_variant_performance(project, 1, payload)
+        self.assertEqual(saved["impressions"], 1000)
+        self.assertAlmostEqual(saved["ctr"], 0.1)
+        provenance=project.creative_plan["variant_performance_provenance"]["1"]
+        self.assertEqual(provenance["source_type"], "user_provided")
+        self.assertFalse(provenance["simulation"])
+        self.assertIn("不验证真实性", provenance["statement"])
+        self.assertNotIn("platform_api_response", saved)
+
+        from ad_studio.model_router import build_creative_test_plan
+        plan=build_creative_test_plan([{"variant_test_axis":{"id":"hook","name":"开场钩子"}},{"variant_test_axis":{"id":"strategy","name":"核心策略"}}])
+        self.assertEqual(plan["result_status"] if "result_status" in plan else "待真实投放数据", "待真实投放数据")
+        self.assertFalse(any(k in plan for k in ("ctr","cvr","cpc_rmb","cpa_rmb","roas")))
+        self.assertIn("不产生平台转化指标", plan["data_boundary"])
+
 if __name__ == "__main__":
     unittest.main()
