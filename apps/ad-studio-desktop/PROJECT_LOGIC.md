@@ -382,3 +382,7 @@ classify_footage_gaps 不再要求 missing_selling_points 必须同时存在于 
 
 ## 2026-10-08：实拍缺口任务编排
 新增 build_footage_gap_tasks：把 footage_coverage + footage_gaps 转成稳定的 GAP-001...任务清单。任务明确“待补拍/待补素材/待生成”、优先级、关联卖点、执行要求和验收标准；只负责编排，不执行拍摄或生成。项目保存到 creative_plan["footage_gap_tasks"]，UI 可直接查看。完成任务后应把新增素材放回原文件夹，再进入下一阶段的重新扫描闭环。
+
+
+## 2026-10-08：实拍闭环重分析
+新增 reanalyze_footage：在已有实拍项目上复用商品信息与创意约束，对当前素材文件夹重新执行完整素材处理链，并更新 footage_visual_analysis、footage_coverage、footage_gaps、footage_gap_tasks、footage_plan、footage_selection_audit 等项目状态。新增素材因此能够真正重新进入素材池，而不是只生成一份静态补拍清单。

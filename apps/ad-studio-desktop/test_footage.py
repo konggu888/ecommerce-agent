@@ -486,3 +486,7 @@ class RenderFootageShotTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+## 2026-10-08：实拍素材重新分析闭环
+重新分析沿用现有 deterministic coverage/gap/task/audit 链路，不新增虚假生成能力声明。新增素材重新进入视觉分析后，旧的缺口任务会由最新覆盖结果重新计算。

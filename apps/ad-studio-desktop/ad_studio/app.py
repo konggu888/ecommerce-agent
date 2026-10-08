@@ -97,7 +97,7 @@ class App(tk.Tk):
         ttk.Label(setup,text='素材来源').grid(row=4,column=0,sticky='w'); self.footage_mode=tk.StringVar(value='AI生成视频'); ttk.Combobox(setup,textvariable=self.footage_mode,values=['AI生成视频','用户拍摄素材'],state='readonly',width=16).grid(row=4,column=1,sticky='w',pady=(4,2))
         self.footage_folder=tk.StringVar(value=''); ttk.Entry(setup,textvariable=self.footage_folder,width=36).grid(row=4,column=2,sticky='w',padx=4); ttk.Button(setup,text='选择素材文件夹',command=self.choose_footage_folder).grid(row=4,column=3,sticky='e')
         ttk.Label(setup,text='用户拍摄素材：输入链接后 AI 分析产品 → 指定文件夹放入你拍好的视频 → AI 思考剪辑方案 → 本地 FFmpeg 出片（不调用视频生成服务）',foreground='#666').grid(row=5,column=0,columnspan=5,sticky='w',pady=(2,0))
-        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='📹 实拍分析报告',command=self.footage_analysis_report).grid(row=2,column=5,sticky='e',padx=8); ttk.Button(setup,text='📋 补素材任务',command=self.footage_gap_tasks_report).grid(row=2,column=6,sticky='e',padx=8); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
+        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='📹 实拍分析报告',command=self.footage_analysis_report).grid(row=2,column=5,sticky='e',padx=8); ttk.Button(setup,text='📋 补素材任务',command=self.footage_gap_tasks_report).grid(row=2,column=6,sticky='e',padx=8); ttk.Button(setup,text='🔄 重新分析实拍素材',command=self.reanalyze_footage).grid(row=2,column=7,sticky='e',padx=8); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
         main=ttk.Panedwindow(self,orient='horizontal'); main.pack(fill='both',expand=True,padx=16,pady=8)
         left=ttk.Frame(main,padding=8); right=ttk.Frame(main,padding=8); main.add(left,weight=3); main.add(right,weight=2)
         ttk.Label(left,text='② 分镜生产链',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
@@ -176,6 +176,89 @@ class App(tk.Tk):
         ttk.Label(frm,text='闭环下一步：完成这些任务后，把新增素材放回原素材文件夹，再执行“重新分析实拍素材”，系统会重新进入视觉分析→素材排名→覆盖审计→分镜复核。',wraplength=1050,justify='left').pack(anchor='w',pady=10)
         ttk.Button(frm,text='关闭',command=win.destroy).pack(anchor='e')
  
+    def reanalyze_footage(self):
+        """用户补充素材后，重新进入视觉分析→排名→覆盖审计→分镜复核闭环。"""
+        if not self.project:
+            return messagebox.showinfo('提示', '请先创建一个实拍素材项目。')
+        if self.footage_mode.get().strip() != '用户拍摄素材':
+            return messagebox.showinfo('提示', '请先把“素材来源”切换为“用户拍摄素材”。')
+        folder=Path(self.project.footage_folder or self.footage_folder.get().strip()).expanduser()
+        if not folder.exists() or not folder.is_dir():
+            return messagebox.showerror('素材文件夹无效','当前项目的实拍素材文件夹不存在，请重新选择。')
+        if not messagebox.askyesno('重新分析实拍素材',
+            '将重新扫描当前文件夹中的视频，并重新执行视觉分析、废片归档、口播转写（如已配置）、素材排名、卖点覆盖审计和剪辑方案复核。是否继续？'):
+            return
+        try:
+            from .footage import scan_footage, FootageError, validate_footage_plan, audit_footage_coverage, audit_final_footage_plan
+            clips=scan_footage(folder)
+            usable=[c for c in clips if c.duration>0]
+            if not usable:
+                return messagebox.showerror('没有可分析素材','当前文件夹中没有可解析的视频素材。')
+            info=self.project.product_info or {}
+            constraints=self._creative_constraints()
+            analysis_dir=PROJECTS/self.project.id/'footage-analysis'
+            manifest=build_visual_manifest(usable,analysis_dir,max_frames_per_clip=4)
+            analysis=self.model_router.analyze_footage(info,self.project.creative_plan,manifest,constraints)
+            self.project.creative_plan['footage_visual_analysis']=analysis
+
+            waste_root=folder.parent/'05_废片库'
+            usable,waste_records=archive_analyzed_waste(clips,analysis,waste_root,self.project.id)
+            self.project.creative_plan['footage_archive']={
+                'archive_root':str(waste_root/self.project.id),
+                'records':waste_records,
+            }
+            if not usable:
+                raise RuntimeError('重新分析后没有剩余可用实拍素材；明确不可用素材已归档到 05_废片库。')
+
+            speech_transcripts=[]
+            speech_profile=self.model_router.route('口播转写')
+            if speech_profile.enabled and (speech_profile.api_key or speech_profile.provider == 'local_openai') and speech_profile.transcription_enabled:
+                transcript_dir=PROJECTS/self.project.id/'transcripts'
+                for clip in usable:
+                    try:
+                        audio_path=extract_audio(Path(clip.path),transcript_dir/(Path(clip.path).stem+'.wav'))
+                        speech_transcripts.append({'source':clip.name,'transcript':self.model_router.transcribe_footage_audio(audio_path,speech_profile)})
+                    except Exception as speech_error:
+                        speech_transcripts.append({'source':clip.name,'error':str(speech_error)})
+            self.project.creative_plan['footage_transcripts']=speech_transcripts
+
+            coverage=audit_footage_coverage(analysis,self.project.creative_plan)
+            self.project.creative_plan['footage_coverage']=coverage
+            gaps=classify_footage_gaps(coverage,self.project.creative_plan,generation_connected=False)
+            self.project.creative_plan['footage_gaps']=gaps
+            gap_tasks=build_footage_gap_tasks(coverage,gaps,self.project.creative_plan)
+            self.project.creative_plan['footage_gap_tasks']=gap_tasks
+
+            raw_plan=self.model_router.plan_footage(
+                info,self.project.creative_plan,[c.to_public() for c in usable],constraints,
+                footage_analysis=analysis,footage_coverage=coverage,
+            )
+            plan_items,warnings=validate_footage_plan(raw_plan,usable)
+            final_audit=audit_final_footage_plan(plan_items,analysis,coverage)
+            self.project.creative_plan['footage_selection_audit']=final_audit
+            self._apply_footage_plan(final_audit['plan'])
+            self.project.creative_plan['footage_plan']=final_audit['plan']
+            self.project.footage_folder=str(folder)
+            self.store.save(self.project)
+
+            self.detail.set(
+                f'实拍素材已重新分析：{len(usable)} 个可用素材｜'
+                f'覆盖率 {coverage.get("coverage_score",100):.1f}%｜'
+                f'缺口任务 {gap_tasks.get("task_count",0)} 个｜'
+                f'最终方案 {len(final_audit.get("plan",[]))} 个镜头'
+            )
+            messagebox.showinfo(
+                '重新分析完成',
+                f'已重新进入完整闭环。\n\n'
+                f'可用素材：{len(usable)} 个\n'
+                f'卖点覆盖率：{coverage.get("coverage_score",100):.1f}%\n'
+                f'缺口任务：{gap_tasks.get("task_count",0)} 个\n'
+                f'最终镜头：{len(final_audit.get("plan",[]))} 个\n\n'
+                '新增素材已经重新进入素材池；如果仍有缺口，可继续补拍后再次点击本按钮。'
+            )
+        except Exception as e:
+            messagebox.showerror('重新分析失败',str(e))
+
     def system_status(self):
         """Show whether advertised capabilities are actually configured and usable."""
         win=tk.Toplevel(self); win.title('系统状态 · 功能是否真正启用'); win.geometry('900x680'); win.transient(self)

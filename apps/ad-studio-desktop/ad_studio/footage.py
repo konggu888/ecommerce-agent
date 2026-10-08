@@ -670,3 +670,7 @@ def validate_footage_plan(raw_plan: list[dict], clips: list[FootageClip]) -> tup
         }
         items.append(item)
     return items, warnings
+
+
+## 2026-10-08：实拍素材重新分析闭环
+新增桌面端重新分析入口后，补拍/补素材文件放回原素材文件夹即可再次进入同一素材池流程：重新扫描 → 视觉分析 → 废片归档 → 口播转写（如已配置）→ 素材排名 → 卖点/关键镜头覆盖审计 → 缺口任务更新 → AI重新规划 → 最终分镜确定性复核。不会虚构已经生成的素材。
