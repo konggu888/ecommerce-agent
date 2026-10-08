@@ -599,7 +599,28 @@ class App(tk.Tk):
             ) for x in plan.shots
         ]
         self.active_variant_index=int(raw.get('_variant_index',1))
+        cache=self.project.creative_plan.get('variant_shot_cache', {}) if self.project else {}
+        saved=cache.get(str(self.active_variant_index), [])
+        if saved:
+            by_index={int(x.get('index', -1)): x for x in saved}
+            for shot in self.project.shots:
+                old=by_index.get(shot.index)
+                if old:
+                    for key,value in old.items():
+                        if key != 'id' and hasattr(shot,key):
+                            setattr(shot,key,value)
         return plan
+
+    @ui_action
+    def _cache_active_variant(self):
+        if not self.project:return
+        cache=self.project.creative_plan.setdefault('variant_shot_cache', {})
+        cache[str(self.active_variant_index)]=[dict(s.__dict__) for s in self.project.shots]
+
+    def _record_variant_output(self, path):
+        if not self.project:return
+        outputs=self.project.creative_plan.setdefault('variant_outputs', {})
+        outputs[str(self.active_variant_index)]={'variant_index':self.active_variant_index,'variant_label':self.project.creative_plan.get('variant_label',f'方案{self.active_variant_index}'),'path':str(path),'status':'已输出'}
 
     @ui_action
     def switch_variant(self):
@@ -616,6 +637,7 @@ class App(tk.Tk):
         def apply():
             sel=box.curselection()
             if not sel:return
+            self._cache_active_variant()
             raw=variants[sel[0]]
             info=__import__('ad_studio.product_parser',fromlist=['ProductInfo']).ProductInfo(**self.project.product_info)
             self._activate_plan(raw,info)
@@ -947,7 +969,12 @@ class App(tk.Tk):
         if not self._ui_execution_gate(): return
         if not self.project:return messagebox.showinfo('提示','先创建项目。')
         try:
-            out=self.store.build_final(self.project,self.aspect.get()); self.detail.set(f'最终成片已输出：{out}'); messagebox.showinfo('完成',f'最终广告已生成\n{out}')
+            out=self.store.build_final(self.project,self.aspect.get(),variant_index=self.active_variant_index)
+            self._record_variant_output(out)
+            self._cache_active_variant()
+            self.store.save(self.project)
+            self.detail.set(f'方案{self.active_variant_index} 最终成片已独立输出：{out}')
+            messagebox.showinfo('完成',f'方案{self.active_variant_index} 最终广告已生成\n{out}')
         except Exception as e: messagebox.showerror('暂不能成片',str(e))
 
     def save(self):

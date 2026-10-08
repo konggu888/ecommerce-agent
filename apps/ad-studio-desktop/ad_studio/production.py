@@ -277,10 +277,11 @@ class ProductionStore:
         self.save(project)
         return out
 
-    def build_final(self, project: Project, aspect: str = "9:16"):
+    def build_final(self, project: Project, aspect: str = "9:16", variant_index: int | None = None):
         shots=self.current_shots(project)
         if len(shots)!=len(project.shots):
             raise RuntimeError(f'还有 {len(project.shots)-len(shots)} 个镜头没有成片，暂不能输出最终广告')
-        out=self.root/'final'/project.id/f'final-{aspect.replace(":", "x")}.mp4'
+        suffix=f'-v{int(variant_index)}' if variant_index else ''
+        out=self.root/'final'/project.id/f'final-{aspect.replace(":", "x")}{suffix}.mp4'
         concat([Path(s.video_path) for s in shots],out)
         return out

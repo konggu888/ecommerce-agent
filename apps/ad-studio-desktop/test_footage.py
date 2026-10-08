@@ -564,3 +564,8 @@ def test_ad_variant_audit_detects_real_differences():
     out=audit_ad_variant_set(plans,'广告投放视频')
     assert out['enabled'] is True
     assert out['diversity_score'] == 100
+
+
+def test_variant_final_filename_is_independent():
+    from ad_studio.production import ProductionStore
+    assert (ProductionStore(Path('/tmp/x')).root/'final'/'p1'/'final-9x16-v2.mp4').name == 'final-9x16-v2.mp4'
