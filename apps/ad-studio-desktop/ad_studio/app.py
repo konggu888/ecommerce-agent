@@ -260,12 +260,12 @@ class App(tk.Tk):
         frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
         ttk.Label(frm,text='补素材任务清单',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
         completion=tasks_data.get('completion_audit') or {}\n        ttk.Label(frm,text=f"当前缺口任务：{len(tasks)} 个｜来源覆盖率：{tasks_data.get('source_coverage_score','未审计')}%｜本轮验收：完成 {completion.get('completed_count',0)}｜仍缺失 {completion.get('still_missing_count',0)}｜待复核 {completion.get('review_count',0)}｜不会在这里自动拍摄或生成").pack(anchor='w',pady=(4,10))
-        tree=ttk.Treeview(frm,columns=('id','type','priority','need','point','action','acceptance'),show='headings')
-        for c,t,w in [('id','任务',80),('type','处理方式',80),('priority','优先级',70),('need','缺口',180),('point','关联卖点',120),('action','怎么补',280),('acceptance','验收标准',300)]:
+        tree=ttk.Treeview(frm,columns=('id','status','type','priority','need','point','action','acceptance'),show='headings')
+        for c,t,w in [('id','任务',80),('status','状态',80),('type','处理方式',80),('priority','优先级',70),('need','缺口',180),('point','关联卖点',120),('action','怎么补',280),('acceptance','验收标准',300)]:
             tree.heading(c,text=t); tree.column(c,width=w,anchor='w')
         tree.pack(fill='both',expand=True)
         for x in tasks:
-            tree.insert('', 'end', values=(x.get('task_id','-'),x.get('type','-'),x.get('priority','-'),x.get('need','-'),x.get('related_selling_point','-'),x.get('shoot_or_generate','-'),x.get('acceptance','-')))
+            tree.insert('', 'end', values=(x.get('task_id','-'),x.get('status','待处理'),x.get('type','-'),x.get('priority','-'),x.get('need','-'),x.get('related_selling_point','-'),x.get('shoot_or_generate','-'),x.get('acceptance','-')))
         ttk.Label(frm,text='闭环下一步：完成这些任务后，把新增素材放回原素材文件夹，再执行“重新分析实拍素材”，系统会重新进入视觉分析→素材排名→覆盖审计→分镜复核。',wraplength=1050,justify='left').pack(anchor='w',pady=10)
         def show_task(event=None):
             sel=tree.selection()
