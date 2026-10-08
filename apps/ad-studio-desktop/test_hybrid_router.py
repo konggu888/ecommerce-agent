@@ -86,7 +86,7 @@ class HybridVariantCacheTests(unittest.TestCase):
     def test_variant_cache_restores_inserted_extra_shot_by_stable_id(self):
         from ad_studio.app import _restore_variant_shot_cache
         from ad_studio.models import Shot
-        base=[Shot(id='shot-01',index=1,title='原镜头1'), Shot(id='shot-02',index=2,title='原镜头2')]
+        base=[Shot(id='shot-01',index=1,title='原镜头1',visual='画面1',script='文案1'), Shot(id='shot-02',index=2,title='原镜头2',visual='画面2',script='文案2')]
         saved=[
             {'id':'shot-01','index':1,'title':'原镜头1','status':'已生成'},
             {'id':'hybrid-gap-001-v1','index':2,'title':'AI补镜头','status':'已复核并纳入分镜','video_path':'/tmp/generated.mp4','clip_source':'ai_generated'},
@@ -100,6 +100,6 @@ class HybridVariantCacheTests(unittest.TestCase):
     def test_variant_cache_without_saved_data_keeps_base_plan(self):
         from ad_studio.app import _restore_variant_shot_cache
         from ad_studio.models import Shot
-        base=[Shot(id='shot-01',index=1,title='原镜头1')]
+        base=[Shot(id='shot-01',index=1,title='原镜头1',visual='画面1',script='文案1')]
         restored=_restore_variant_shot_cache(base,[])
         self.assertEqual([s.id for s in restored],['shot-01'])
