@@ -6,8 +6,9 @@ from .ffmpeg import make_clip, concat
 from .providers import GenerationRequest, load_video_provider, load_asset_provider
 from .postprocess import process_shot
 from .library import LocalLibrary
-from .asset_generation import AssetGenerator
+from .asset_generation import AssetGenerator, LocalAssetBackend
 from .hardware import detect_hardware
+from .capability import CapabilityRouter
 
 class ProductionStore:
     def __init__(self, root: Path, library_root: Path | None = None):
@@ -71,9 +72,7 @@ class ProductionStore:
     def generate_missing_asset(self, project: Project, shot: Shot, kind: str, request_text: str, asset_provider_path: Path):
         """缺少本地素材时自动生成，并永久登记到本地库。"""
         library=LocalLibrary(self.library_root)
-        provider=load_asset_provider(asset_provider_path)
-        if isinstance(provider, type(load_asset_provider(Path('__missing__')))):
-            raise RuntimeError('尚未配置云端资产生成器。')
+        decision = CapabilityRouter(self.root.parent).decide_asset(kind)
         aid=shot.id + '-' + kind
         ext='.png'
         out=self.library_root/'assets'/kind/(aid+ext)
@@ -81,27 +80,89 @@ class ProductionStore:
         shot.status=f'{kind}自动生成中…'
         self.save(project)
         prompt=f'电商广告可复用{kind}素材。镜头：{shot.title}。画面需求：{shot.visual}。素材要求：{request_text}。保持主体稳定、适合后续视频生成与本地剪辑。'
-        result=provider.generate_asset(GenerationRequest(prompt=prompt,output=out,reference_assets=[]))
+        if decision.target == 'local':
+            result = LocalAssetBackend(decision.endpoint).generate_asset(prompt, out)
+            provider_name = '本地图像服务'
+            cost = 0.0
+        else:
+            provider=load_asset_provider(asset_provider_path)
+            if isinstance(provider, type(load_asset_provider(Path('__missing__')))):
+                raise RuntimeError('尚未配置云端资产生成器，且本地素材服务不可用。')
+            result=provider.generate_asset(GenerationRequest(prompt=prompt,output=out,reference_assets=[]))
+            provider_name = getattr(provider, 'provider_name', '云端资产生成器')
+            cost = float(getattr(provider, 'cost_per_asset_rmb', 0.0))
         item=library.register_generated(f'{kind}-{shot.index}',kind,result,tags=[request_text],request=prompt)
         if kind=='演员': shot.actor_id=item.id
         elif kind=='场景': shot.scene_id=item.id
         elif kind=='商品素材': shot.product_asset_ids.append(item.id)
         shot.asset_source='ai_generated'
-        shot.actual_cost_rmb=round(shot.actual_cost_rmb+float(getattr(provider,'cost_per_asset_rmb',0)),4)
+        shot.actual_cost_rmb=round(shot.actual_cost_rmb+cost,4)
+        shot.provider = provider_name
         shot.status=f'{kind}已生成并入库'
         self.save(project)
         return item
 
+    def render_shot(self, project: Project, shot: Shot, provider_path: Path | None = None, config_root: Path | None = None):
+        """本地/云端视频生成统一入口。
+
+        clip_source == 'filmed' 时走用户拍摄素材剪辑（本地 FFmpeg 裁剪），
+        不调用视频生成服务；否则按能力调度决策：
+        本地视频服务可达且硬件不要求云端优先 → 本地；
+        否则云端视频 Provider 已配置 → 云端；
+        否则明确报错，不伪装成片。
+        """
+        if shot.clip_source == 'filmed':
+            return self.render_footage_shot(project, shot)
+        decision = CapabilityRouter(config_root or self.root.parent).decide_video()
+        if decision.target == 'local':
+            from .providers import GenericVideoProvider
+            provider = GenericVideoProvider(
+                endpoint=decision.endpoint,
+                api_key='',
+                cost_per_shot_rmb=0.0,
+                provider_name='本地视频服务',
+                require_key=False,
+            )
+            return self._render_with_provider(project, shot, provider)
+        if decision.target == 'cloud':
+            provider = load_video_provider(provider_path or (config_root or self.root.parent)/'video-provider.json')
+            if isinstance(provider, type(load_video_provider(Path('__missing__')))):
+                raise RuntimeError('尚未配置云端视频 Provider，且本地视频服务不可用。')
+            return self._render_with_provider(project, shot, provider)
+        raise RuntimeError(f'镜头生成不可用：{decision.reason}')
+
     def render_cloud_shot(self, project: Project, shot: Shot, provider_path: Path):
+        provider=load_video_provider(provider_path)
+        return self._render_with_provider(project, shot, provider)
+
+    def _render_with_provider(self, project: Project, shot: Shot, provider):
         out=self.render_path(project,shot)
         resolution=self.resolve_assets(project,shot)
-        provider=load_video_provider(provider_path)
-        prompt='\\n'.join([f'标题：{shot.title}',f'画面：{shot.visual}',f'文案：{shot.script}'])
+        provider=provider
+        prompt='\n'.join([f'标题：{shot.title}',f'画面：{shot.visual}',f'文案：{shot.script}'])
         shot.status='生成中…'; shot.provider=getattr(provider,'provider_name','Generic REST'); self.save(project)
         result=provider.generate(GenerationRequest(prompt=prompt,output=out,duration=3,reference_assets=[x for x in [shot.actor_id,shot.scene_id,*shot.product_asset_ids] if x]))
         shot.actual_cost_rmb=round(float(getattr(provider,'cost_per_shot_rmb',0.0)),4)
         self.mark_ready(project,shot,result)
         return result
+
+    def render_footage_shot(self, project: Project, shot: Shot):
+        """从用户拍摄素材中裁剪出本镜头（本地 FFmpeg，不调用生成服务）。"""
+        from .footage import trim_clip, FootageError
+        if not shot.source_file or not Path(shot.source_file).exists():
+            raise FootageError(f'素材文件不存在：{shot.source_file}。请检查素材文件夹。')
+        out = self.render_path(project, shot)
+        shot.status = '素材裁剪中…'
+        shot.provider = '本地素材剪辑'
+        self.save(project)
+        try:
+            trim_clip(Path(shot.source_file), out, float(shot.source_start or 0.0), shot.source_duration)
+        except Exception as exc:
+            shot.status = '素材裁剪失败'
+            self.save(project)
+            raise
+        self.mark_ready(project, shot, out)
+        return out
 
     def render_placeholder_shot(self, project: Project, shot: Shot):
         out=self.render_path(project,shot)
@@ -114,7 +175,8 @@ class ProductionStore:
             raise RuntimeError("当前镜头还没有真实成片，不能做本地后处理")
         src=Path(shot.video_path)
         out=self.root/'postprocessed'/project.id/shot.id/f'v{shot.version}-{aspect.replace(":", "x")}.mp4'
-        shot.status='本地4050处理中…'
+        profile = detect_hardware()
+        shot.status=f'本地后处理中（策略：{profile.execution_mode}）'
         self.save(project)
         plan_shots=project.creative_plan.get("shots", []) if project.creative_plan else []
         ai=next((x for x in plan_shots if int(x.get("index", -1)) == shot.index), {})
