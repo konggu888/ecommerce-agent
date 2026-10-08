@@ -614,3 +614,18 @@ def test_gap_task_contains_shoot_guidance_and_acceptance():
     out=build_footage_gap_tasks({'coverage_score':50},{'key_shot_gaps':[{'need':'商品特写','action':'待补拍','reason':'缺少清晰特写','why':'无法证明细节'}]},{})
     task=out['tasks'][0]
     assert task['shoot_or_generate'] and task['acceptance'] and task['why']
+
+
+def test_gap_completion_marks_previous_task_completed_when_gap_disappears():
+    from ad_studio.footage import audit_footage_gap_completion
+    previous={'tasks':[{'task_id':'GAP-001','need':'卖点：防水','related_selling_point':'防水'}]}
+    current={'coverage_score':100,'missing_selling_points':[],'missing_key_shots':[],'selling_points':[{'name':'防水','covered':True}]}
+    out=audit_footage_gap_completion(previous,current)
+    assert out['completed_count']==1 and out['tasks'][0]['status']=='已完成'
+
+def test_gap_completion_keeps_unresolved_task_missing():
+    from ad_studio.footage import audit_footage_gap_completion
+    previous={'tasks':[{'task_id':'GAP-001','need':'商品特写'}]}
+    current={'coverage_score':50,'missing_selling_points':[],'missing_key_shots':[{'need':'商品特写'}],'selling_points':[]}
+    out=audit_footage_gap_completion(previous,current)
+    assert out['still_missing_count']==1 and out['tasks'][0]['status']=='仍缺失'
