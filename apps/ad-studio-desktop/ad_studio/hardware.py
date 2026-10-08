@@ -105,7 +105,7 @@ def _detect_encoders() -> list[str]:
         return []
     out = _run([ffmpeg, "-hide_banner", "-encoders"], timeout=10)
     known = ["h264_nvenc", "hevc_nvenc", "av1_nvenc", "h264_amf", "hevc_amf", "h264_qsv", "hevc_qsv", "av1_qsv", "h264_videotoolbox", "hevc_videotoolbox"]
-    return [x for x in known if re.search(r"\\b" + re.escape(x) + r"\\b", out)]
+    return [x for x in known if re.search(r"\b" + re.escape(x) + r"\b", out)]
 
 
 def _local_ai_level(gpus: list[GPUDevice], accelerator: str) -> str:
