@@ -379,24 +379,34 @@ class ProductionStore:
             "shot_ids": [shot.id for shot in shots], "shot_indices": [shot.index for shot in shots],
             "safety_gate": safety_gate, "media_check": media_check,
             "delivery_status": "可交付" if bool(media_check.get("valid")) else "不可交付",
-            "created_at": datetime.datetime.now().isoformat(timespec="seconds"),
+            "created_at": datetime.datetime.now().isoformat(timespec="microseconds"),
         }
         manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
         key = f"{int(variant_index)}|{aspect}"
+        manifest["history_key"] = key
+        manifest["revision_id"] = f"{key}|{manifest['created_at']}"
         project.creative_plan.setdefault("final_output_manifests", {})[key] = manifest
+        project.creative_plan.setdefault("final_output_history_records", []).append(manifest.copy())
         self.save(project)
         return manifest_path
 
     def final_output_history(self, project: Project) -> list[dict[str, Any]]:
         """返回本项目已经通过安全闸门和媒体质检的最终输出历史。"""
-        manifests = (project.creative_plan or {}).get("final_output_manifests", {})
+        plan = project.creative_plan or {}
+        history_records = plan.get("final_output_history_records") or []
+        if history_records:
+            items = [(str(item.get("history_key") or f"{item.get('variant_index','?')}|{item.get('aspect','?')}"), item) for item in history_records if isinstance(item, dict)]
+        else:
+            manifests = plan.get("final_output_manifests", {})
+            items = [(key, item) for key, item in manifests.items()]
         rows = []
-        for key, item in manifests.items():
+        for key, item in items:
             if not isinstance(item, dict):
                 continue
             path = Path(str(item.get("output_path", "")))
             rows.append({
                 "key": key,
+                "revision_id": item.get("revision_id", ""),
                 "variant_index": item.get("variant_index"),
                 "aspect": item.get("aspect"),
                 "output_path": str(path),
