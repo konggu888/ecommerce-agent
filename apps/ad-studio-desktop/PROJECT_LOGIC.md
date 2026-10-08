@@ -727,3 +727,6 @@ A20-A23 将上一阶段已经存在的最终交付能力收束成一条可验收
 
 ## 2026-10-09：A25 媒体质量检查与交付状态边界
 A25 将最终输出机器质检固定为交付前硬门槛：ProductionStore.inspect_final_output() 检查文件存在/非空、视频流、时长、宽高和目标画幅；build_final() 在质检失败时删除无效输出并不写最终交付清单。write_final_output_manifest() 同时按 media_check.valid 决定“可交付/不可交付”，即使被直接调用也不能把失败质检记录成可交付。机器质检只验证媒体容器与基础参数，不替代真实视频内容、听感、Windows UI 或人工视觉验收。
+
+## 2026-10-09：成片版本历史持久化
+最终输出使用两层记录：final_output_manifests 以 variant_index|aspect 保留当前最新输出；final_output_history_records 追加保存每一次实际交付质检结果，并为每条记录生成唯一 revision_id。这样同一方案+画幅重复生成不会抹掉历史，同时不同方案和画幅保持独立。历史记录不包含虚构投放指标。

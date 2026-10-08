@@ -1001,5 +1001,31 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertFalse((root / "final" / p.id / "final-9x16-v1.mp4").exists())
             self.assertFalse((p.creative_plan or {}).get("final_output_manifests"))
 
+
+    def test_a26_final_output_history_keeps_revisions_independent(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            p = new_project("https://item.jd.com/123.html", 2, "真人口播")
+            gate = {"allowed": True, "reasons": [], "checked": True}
+            media = {"valid": True, "duration_seconds": 5.0, "width": 1080, "height": 1920}
+            outputs = []
+            for idx, (variant, aspect) in enumerate(((1, "9:16"), (1, "9:16"), (2, "16:9")), 1):
+                output = root / f"final-{idx}.mp4"
+                output.write_bytes(b"video")
+                outputs.append(output)
+                store.write_final_output_manifest(p, output, aspect, variant, p.shots[:idx], gate, media)
+            rows = store.final_output_history(p)
+            self.assertEqual(len(rows), 3)
+            self.assertEqual([x["key"] for x in rows].count("1|9:16"), 2)
+            self.assertEqual(len({x["revision_id"] for x in rows}), 3)
+            self.assertEqual({x["variant_index"] for x in rows}, {1, 2})
+            self.assertEqual({x["aspect"] for x in rows}, {"9:16", "16:9"})
+            self.assertEqual({x["shot_count"] for x in rows}, {1, 2, 3})
+            self.assertTrue(all(x["delivery_status"] == "可交付" for x in rows))
+            # 当前方案+画幅索引仍保留最新记录，供交付中心定位当前输出。
+            latest = p.creative_plan["final_output_manifests"]["1|9:16"]
+            self.assertEqual(latest["output_path"], str(outputs[1]))
+
 if __name__ == "__main__":
     unittest.main()
