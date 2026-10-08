@@ -418,6 +418,52 @@ def build_footage_gap_tasks(
         "next_step": "完成补拍/补素材后重新扫描素材文件夹并进入视觉分析、排名、覆盖审计和最终分镜复核。",
     }
 
+
+def audit_footage_gap_completion(previous_tasks: dict | None, coverage: dict | None) -> dict:
+    """根据新一轮确定性覆盖审计，验收上一轮补素材任务；不调用 AI。"""
+    previous_tasks = previous_tasks or {}
+    coverage = coverage or {}
+    tasks = [dict(x) for x in previous_tasks.get("tasks", []) if isinstance(x, dict)]
+    missing_shots = {str(x.get("need", "")).strip() for x in coverage.get("missing_key_shots", []) if isinstance(x, dict)}
+    missing_points = {str(x).strip() for x in coverage.get("missing_selling_points", []) if str(x).strip()}
+    point_names = {str(x.get("name", "")).strip() for x in coverage.get("selling_points", []) if isinstance(x, dict)}
+    results = []
+    completed = partial = pending = 0
+    for task in tasks:
+        need = str(task.get("need", "")).strip()
+        point = str(task.get("related_selling_point", "")).strip()
+        target_point = point or (need[3:].strip() if need.startswith("卖点：") else "")
+        if target_point:
+            is_missing = target_point in missing_points
+            known = target_point in point_names or target_point in missing_points
+        else:
+            is_missing = need in missing_shots
+            known = bool(need)
+        item = dict(task)
+        if known and not is_missing:
+            item["status"] = "已完成"
+            item["completion_reason"] = "新一轮覆盖审计已找到可用素材覆盖该任务。"
+            item["completion_coverage_score"] = coverage.get("coverage_score", 0)
+            completed += 1
+        elif known and is_missing:
+            item["status"] = "仍缺失"
+            item["completion_reason"] = "新一轮分析后该缺口仍未被可用素材覆盖。"
+            pending += 1
+        else:
+            item["status"] = "待复核"
+            item["completion_reason"] = "新一轮分析无法稳定映射到上一轮任务，需人工确认。"
+            partial += 1
+        results.append(item)
+    return {
+        "task_count": len(results),
+        "completed_count": completed,
+        "still_missing_count": pending,
+        "review_count": partial,
+        "tasks": results,
+        "coverage_score": coverage.get("coverage_score", 100.0),
+        "method": "新旧覆盖审计差异验收（确定性）",
+    }
+
 def audit_final_footage_plan(
     plan: list[dict] | None,
     analysis: dict | None,
