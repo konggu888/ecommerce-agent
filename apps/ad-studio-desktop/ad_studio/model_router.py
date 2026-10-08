@@ -577,22 +577,81 @@ AD_VARIANT_AXES = [
 
 
 def audit_ad_variant_set(plans: list[dict[str, Any]], task_type: str) -> dict[str, Any]:
-    """不调用新模型，确定性检查广告方案是否形成可测试差异。"""
+    """不调用新模型，确定性检查广告方案是否形成真正可测试的创意差异。"""
     if task_type != "广告投放视频" or len(plans) <= 1:
-        return {"enabled": False, "variant_count": len(plans), "diversity_score": 0, "method": "非广告多版本不启用A/B审计"}
-    keys = ["hook", "strategy", "video_form", "script"]
-    signatures = ["|".join(str(p.get(k, "")).strip() for k in keys) for p in plans]
+        return {
+            "enabled": False, "variant_count": len(plans), "diversity_score": 0,
+            "test_design_score": 0, "method": "非广告多版本不启用A/B审计",
+        }
+
+    def norm(value):
+        if isinstance(value, (list, tuple)):
+            return "｜".join(norm(x) for x in value if x)
+        if isinstance(value, dict):
+            return "｜".join(f"{k}:{norm(v)}" for k, v in sorted(value.items()) if v)
+        return str(value or "").strip()
+
+    # 这些字段代表创意机制，而不是投放平台。它们用于判断“到底改了什么”。
+    mechanism_keys = ["hook", "strategy", "selling_points", "video_form", "proof", "cta"]
+    surface_keys = ["script"]
+    signatures = ["|".join(norm(p.get(k, "")) for k in mechanism_keys + surface_keys) for p in plans]
     unique = len(set(signatures))
     pair_count = max(1, len(plans) * (len(plans) - 1) // 2)
     diff_count = 0
+    mechanism_diff_count = 0
     pairs = []
     for i in range(len(plans)):
         for j in range(i + 1, len(plans)):
-            diffs = [k for k in keys if str(plans[i].get(k, "")).strip() != str(plans[j].get(k, "")).strip()]
-            if diffs: diff_count += 1
-            pairs.append({"a": i + 1, "b": j + 1, "different_fields": diffs})
-    score = round(100 * diff_count / pair_count)
-    return {"enabled": True, "variant_count": len(plans), "unique_signatures": unique, "diversity_score": score, "pairs": pairs, "method": "Hook/策略/视频形式/脚本字段确定性差异审计"}
+            mechanism_diffs = [k for k in mechanism_keys if norm(plans[i].get(k, "")) != norm(plans[j].get(k, ""))]
+            surface_diffs = [k for k in surface_keys if norm(plans[i].get(k, "")) != norm(plans[j].get(k, ""))]
+            if mechanism_diffs or surface_diffs:
+                diff_count += 1
+            if mechanism_diffs:
+                mechanism_diff_count += 1
+            if not mechanism_diffs and surface_diffs:
+                quality = "仅表层差异"
+            elif len(mechanism_diffs) == 1:
+                quality = "单一机制差异（适合做明确对照）"
+            elif len(mechanism_diffs) >= 2:
+                quality = "多机制差异（结果归因会更困难）"
+            else:
+                quality = "没有明显差异"
+            pairs.append({
+                "a": i + 1, "b": j + 1,
+                "different_fields": mechanism_diffs + surface_diffs,
+                "mechanism_differences": mechanism_diffs,
+                "surface_differences": surface_diffs,
+                "test_quality": quality,
+            })
+
+    diversity_score = round(100 * diff_count / pair_count)
+    mechanism_score = round(100 * mechanism_diff_count / pair_count)
+    single_axis_pairs = sum(1 for p in pairs if len(p["mechanism_differences"]) == 1)
+    no_mechanism_pairs = sum(1 for p in pairs if not p["mechanism_differences"])
+    if mechanism_score == 100 and single_axis_pairs == pair_count:
+        design_status = "强：每组对照都只有一个核心机制变化"
+        test_design_score = 100
+    elif mechanism_score == 100:
+        design_status = "可测：每组都有核心机制差异，但部分同时改变多个机制"
+        test_design_score = 75
+    elif no_mechanism_pairs:
+        design_status = "需调整：存在没有核心机制差异的版本对照"
+        test_design_score = max(0, mechanism_score - 20)
+    else:
+        design_status = "可测但不够干净：部分版本对照只改变表层或多个机制"
+        test_design_score = max(0, mechanism_score - 10)
+
+    return {
+        "enabled": True,
+        "variant_count": len(plans),
+        "unique_signatures": unique,
+        "diversity_score": diversity_score,
+        "mechanism_score": mechanism_score,
+        "test_design_score": test_design_score,
+        "design_status": design_status,
+        "pairs": pairs,
+        "method": "核心机制字段与表层字段分离的确定性创意实验设计审计",
+    }
 
 
 
