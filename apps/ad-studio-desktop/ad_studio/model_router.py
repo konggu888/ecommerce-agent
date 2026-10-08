@@ -86,6 +86,9 @@ class ModelRouter:
                 vision_enabled=True,
             )))
         self.data.setdefault("default_model", "gpt-default")
+        for m in models:
+            if m.get("id") == "gpt-default" and "vision_enabled" not in m:
+                m["vision_enabled"] = True
         routes = self.data.setdefault("routes", {})
         for function in FUNCTIONS:
             routes.setdefault(function, self.data["default_model"])
