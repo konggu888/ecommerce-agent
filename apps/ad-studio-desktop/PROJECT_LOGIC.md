@@ -483,3 +483,12 @@ validate_task_type_plan 在创意方案进入项目/成片前执行，防止 AI 
 
 ## 2026-10-08：UI入口修复
 修复“补素材任务 / AI补镜头”按钮布局调用，确保 Tkinter 网格布局分别执行，避免链式 grid 返回值导致界面初始化异常。
+
+
+## 2026-10-08：AI补镜头 → 人工复核 → 当前分镜
+混合生产链新增人工复核闸门：
+1. generate_hybrid_gap_shots() 只负责真实生成获准的通用 AI 补镜头，并保存 generated_path，不自动进入 project.shots。
+2. review_hybrid_gap_shots() 展示已生成且文件真实存在的任务，支持打开视频、拒绝或明确通过。
+3. 点击“通过并纳入当前分镜”后，系统创建真实 Shot，写入 video_path、clip_source=ai_generated、成本和来源，并记录 accepted_shot_id、accepted_variant_index。
+4. 只有已纳入的镜头才会进入 ProductionStore.build_final() 的当前分镜集合，因此最终成片不会包含未复核的 AI 补镜头。
+5. 商品真实性能、参数、真人口播等缺口仍由混合路由器要求补拍，不能通过 AI 补镜头入口伪造。

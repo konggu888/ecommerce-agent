@@ -110,7 +110,7 @@ class App(tk.Tk):
         ttk.Label(setup,text='素材来源').grid(row=5,column=0,sticky='w'); self.footage_mode=tk.StringVar(value='AI生成视频'); ttk.Combobox(setup,textvariable=self.footage_mode,values=['AI生成视频','用户拍摄素材'],state='readonly',width=16).grid(row=4,column=1,sticky='w',pady=(4,2))
         self.footage_folder=tk.StringVar(value=''); ttk.Entry(setup,textvariable=self.footage_folder,width=36).grid(row=5,column=2,sticky='w',padx=4); ttk.Button(setup,text='选择素材文件夹',command=self.choose_footage_folder).grid(row=4,column=3,sticky='e')
         ttk.Label(setup,text='用户拍摄素材：输入链接后 AI 分析产品 → 指定文件夹放入你拍好的视频 → AI 思考剪辑方案 → 本地 FFmpeg 出片（不调用视频生成服务）',foreground='#666').grid(row=6,column=0,columnspan=5,sticky='w',pady=(2,0))
-        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='📹 实拍分析报告',command=self.footage_analysis_report).grid(row=2,column=5,sticky='e',padx=8); ttk.Button(setup,text='📋 补素材任务',command=self.footage_gap_tasks_report).grid(row=2,column=6,sticky='e',padx=8); ttk.Button(setup,text='🤖 执行AI补镜头',command=self.generate_hybrid_gap_shots).grid(row=2,column=10,sticky='e',padx=8); ttk.Button(setup,text='🔄 重新分析实拍素材',command=self.reanalyze_footage).grid(row=2,column=7,sticky='e',padx=8); ttk.Button(setup,text='🕘 分析历史',command=self.footage_reanalysis_history_report).grid(row=2,column=8,sticky='e',padx=8); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='🧪 投放版本矩阵',command=self.variant_matrix_report).grid(row=2,column=9,sticky='e',padx=8); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
+        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='📹 实拍分析报告',command=self.footage_analysis_report).grid(row=2,column=5,sticky='e',padx=8); ttk.Button(setup,text='📋 补素材任务',command=self.footage_gap_tasks_report).grid(row=2,column=6,sticky='e',padx=8); ttk.Button(setup,text='🤖 执行AI补镜头',command=self.generate_hybrid_gap_shots).grid(row=2,column=10,sticky='e',padx=8); ttk.Button(setup,text='🔍 AI补镜头复核',command=self.review_hybrid_gap_shots).grid(row=2,column=11,sticky='e',padx=8); ttk.Button(setup,text='🔄 重新分析实拍素材',command=self.reanalyze_footage).grid(row=2,column=7,sticky='e',padx=8); ttk.Button(setup,text='🕘 分析历史',command=self.footage_reanalysis_history_report).grid(row=2,column=8,sticky='e',padx=8); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='🧪 投放版本矩阵',command=self.variant_matrix_report).grid(row=2,column=9,sticky='e',padx=8); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
         main=ttk.Panedwindow(self,orient='horizontal'); main.pack(fill='both',expand=True,padx=16,pady=8)
         left=ttk.Frame(main,padding=8); right=ttk.Frame(main,padding=8); main.add(left,weight=3); main.add(right,weight=2)
         ttk.Label(left,text='② 分镜生产链',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
@@ -478,6 +478,69 @@ class App(tk.Tk):
         if results: msg+='\n\n'+'\n'.join(results[:8])
         if failures: msg+='\n\n失败明细：\n'+'\n'.join(failures[:8])
         messagebox.showinfo('AI补镜头结果',msg)
+
+    @ui_action
+    def review_hybrid_gap_shots(self):
+        """人工复核已经真实生成的 AI 补镜头；只有明确通过后才进入当前方案分镜。"""
+        if not self._ui_execution_gate(): return
+        if not self.project: return messagebox.showinfo('提示','请先创建或打开一个项目。')
+        plan=self.project.creative_plan or {}; task_box=plan.get('footage_gap_tasks') or {}
+        tasks=task_box.get('tasks') if isinstance(task_box,dict) else []
+        tasks=[x for x in tasks if isinstance(x,dict) and x.get('recommended_resolution')=='AI补镜头']
+        generated=[x for x in tasks if x.get('generated_path') and Path(str(x.get('generated_path'))).exists()]
+        if not generated: return messagebox.showinfo('暂无待复核素材','当前没有已经真实生成、可供人工复核的 AI 补镜头。')
+        win=tk.Toplevel(self); win.title('AI补镜头人工复核'); win.geometry('1120x650'); win.transient(self)
+        frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
+        ttk.Label(frm,text='AI补镜头人工复核',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
+        ttk.Label(frm,text='只有明确点击“通过并纳入当前分镜”的镜头才会进入最终成片；拒绝的镜头不会参与成片。AI补镜头不得替代商品真实性能、参数或真人口播证据。',wraplength=1050,foreground='#555').pack(anchor='w',pady=(3,10))
+        tree=ttk.Treeview(frm,columns=('task','need','status','review','path'),show='headings',height=14)
+        for c,t,w in [('task','任务',90),('need','补什么',260),('status','生成状态',130),('review','人工复核',130),('path','生成文件',390)]: tree.heading(c,text=t); tree.column(c,width=w,anchor='w')
+        tree.pack(fill='both',expand=True); details=tk.Text(frm,height=8,wrap='word'); details.pack(fill='x',pady=8)
+        def row_values(task):
+            review='已通过并纳入分镜' if task.get('accepted_into_storyboard') else (task.get('review_status') or '待复核')
+            return (task.get('task_id','-'),task.get('need','-'),task.get('status','-'),review,str(task.get('generated_path','-')))
+        for task in generated: tree.insert('', 'end', iid=str(task.get('task_id')), values=row_values(task))
+        def selected_task():
+            sel=tree.selection(); return next((x for x in generated if str(x.get('task_id'))==str(sel[0])),None) if sel else None
+        def show_detail(_=None):
+            task=selected_task();
+            if not task:return
+            details.delete('1.0','end'); details.insert('end',f"任务：{task.get('task_id')}\n需求：{task.get('need','')}\n为什么需要：{task.get('why') or task.get('reason','')}\n验收标准：{task.get('acceptance','')}\n文件：{task.get('generated_path','')}\n当前复核：{task.get('review_status','待复核')}\n")
+        tree.bind('<<TreeviewSelect>>',show_detail)
+        def refresh_row(task):
+            iid=str(task.get('task_id'));
+            if tree.exists(iid): tree.item(iid,values=row_values(task))
+            show_detail()
+        def open_video():
+            task=selected_task();
+            if not task:return
+            p=Path(str(task.get('generated_path','')))
+            if not p.exists():return messagebox.showerror('文件不存在',str(p))
+            try:
+                import os
+                if hasattr(os,'startfile'): os.startfile(str(p))
+                else: subprocess.Popen(['xdg-open',str(p)])
+            except Exception as exc: messagebox.showerror('无法打开视频',str(exc))
+        def reject():
+            task=selected_task();
+            if not task:return
+            if task.get('accepted_into_storyboard'): return messagebox.showwarning('不能拒绝','该镜头已经纳入当前分镜；如需移除，请在分镜中删除/重新规划。')
+            task['review_status']='已拒绝'; task['reviewed_at']=__import__('datetime').datetime.now().isoformat(timespec='seconds'); task['accepted_into_storyboard']=False
+            self.store.save(self.project); refresh_row(task)
+        def accept():
+            task=selected_task();
+            if not task:return
+            if task.get('accepted_into_storyboard'): return messagebox.showinfo('已纳入','该 AI 补镜头已经在当前分镜中。')
+            p=Path(str(task.get('generated_path','')))
+            if not p.exists() or p.stat().st_size<=0: return messagebox.showerror('不能纳入','生成文件不存在或为空，不能进入分镜。')
+            max_index=max([int(getattr(s,'index',0)) for s in self.project.shots] or [0])
+            Shot=__import__('ad_studio.models',fromlist=['Shot']).Shot
+            shot=Shot(id=f"hybrid-{task.get('task_id','gap').lower().replace('_','-')}-v{self.active_variant_index}",index=max_index+1,title=f"AI补镜头｜{task.get('need','辅助画面')}",visual=str(task.get('need') or '补充通用辅助画面'),script=str(task.get('related_selling_point') or ''),status='已复核并纳入分镜',video_path=str(p),clip_source='ai_generated',provider=str(task.get('generation_provider') or 'AI视频生成'),generated_from_request=f"实拍缺口任务 {task.get('task_id')}：{task.get('reason','')}",actual_cost_rmb=round(float(task.get('generation_cost_rmb',0) or 0),4))
+            self.project.shots.append(shot); task['review_status']='已通过'; task['reviewed_at']=__import__('datetime').datetime.now().isoformat(timespec='seconds'); task['accepted_into_storyboard']=True; task['accepted_shot_id']=shot.id; task['accepted_variant_index']=self.active_variant_index; task['status']='AI补镜头已生成并通过人工复核'
+            plan.setdefault('hybrid_reviewed_shots',[]).append({'task_id':task.get('task_id'),'shot_id':shot.id,'variant_index':self.active_variant_index,'path':str(p),'review_status':'已通过','accepted_at':task['reviewed_at']})
+            self._cache_active_variant(); self.store.save(self.project); self.refresh_shots(); self.detail.set(f"AI补镜头 {task.get('task_id')} 已通过人工复核并纳入方案{self.active_variant_index}当前分镜。"); refresh_row(task)
+            messagebox.showinfo('已纳入当前分镜',f"{task.get('task_id')} 已作为镜头 {shot.index} 纳入当前方案。现在可以继续后处理或生成最终成片。")
+        btn=ttk.Frame(frm); btn.pack(fill='x',pady=(2,0)); ttk.Button(btn,text='▶ 打开视频',command=open_video).pack(side='left'); ttk.Button(btn,text='❌ 拒绝',command=reject).pack(side='left',padx=6); ttk.Button(btn,text='✅ 通过并纳入当前分镜',command=accept).pack(side='left',padx=6); ttk.Button(btn,text='关闭',command=win.destroy).pack(side='right')
 
     @ui_action
     def footage_reanalysis_history_report(self):

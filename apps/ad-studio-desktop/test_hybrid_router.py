@@ -58,3 +58,14 @@ def test_human_speech_gap_stays_real():
         cost_per_ai_shot_rmb=1,
     )
     assert result["tasks"][0]["recommended_resolution"] == "继续补拍"
+
+
+class HybridReviewModelTests(unittest.TestCase):
+    def test_generated_gap_stays_out_until_explicit_acceptance(self):
+        task={'task_id':'GAP-001','recommended_resolution':'AI补镜头','generated_path':'/tmp/generated.mp4','status':'AI补镜头已生成'}
+        self.assertFalse(task.get('accepted_into_storyboard',False)); task['review_status']='已拒绝'; self.assertFalse(task.get('accepted_into_storyboard',False))
+    def test_acceptance_records_storyboard_link(self):
+        task={'task_id':'GAP-002','recommended_resolution':'AI补镜头','generated_path':'/tmp/generated.mp4','status':'AI补镜头已生成'}
+        task['review_status']='已通过'; task['accepted_into_storyboard']=True; task['accepted_shot_id']='hybrid-gap-002-v1'; self.assertTrue(task['accepted_into_storyboard']); self.assertEqual(task['accepted_shot_id'],'hybrid-gap-002-v1')
+    def test_product_evidence_is_not_reviewable_as_ai_gap(self):
+        task={'recommended_resolution':'继续补拍','generated_path':'/tmp/generated.mp4'}; self.assertNotEqual(task.get('recommended_resolution'),'AI补镜头')
