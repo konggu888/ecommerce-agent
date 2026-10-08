@@ -601,3 +601,9 @@ def test_footage_variants_keep_independent_plans():
 def test_analysis_report_exposes_reason_fields():
     item={'source':'a.mp4','reason':'商品清晰且口播完整','visual_tags':['商品特写'],'best_ranges':[{'start':1,'duration':2}]}
     assert item['reason'] and item['visual_tags'] and item['best_ranges']
+
+
+def test_footage_timeline_preserves_multiple_ranges():
+    plan=[{'source':'demo.mp4','start':1.0,'duration':3.0,'ranges':[[1.0,2.0],[2.5,4.5]]}]
+    assert plan[0]['ranges'] == [[1.0,2.0],[2.5,4.5]]
+    assert sum(b-a for a,b in plan[0]['ranges']) == 3.0
