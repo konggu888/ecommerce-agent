@@ -89,7 +89,7 @@ class HybridVariantCacheTests(unittest.TestCase):
         base=[Shot(id='shot-01',index=1,title='原镜头1',visual='画面1',script='文案1'), Shot(id='shot-02',index=2,title='原镜头2',visual='画面2',script='文案2')]
         saved=[
             {'id':'shot-01','index':1,'title':'原镜头1','status':'已生成'},
-            {'id':'hybrid-gap-001-v1','index':2,'title':'AI补镜头','status':'已复核并纳入分镜','video_path':'/tmp/generated.mp4','clip_source':'ai_generated'},
+            {'id':'hybrid-gap-001-v1','index':2,'title':'AI补镜头','visual':'辅助画面','script':'','status':'已复核并纳入分镜','video_path':'/tmp/generated.mp4','clip_source':'ai_generated'},
             {'id':'shot-02','index':3,'title':'原镜头2','status':'已生成'},
         ]
         restored=_restore_variant_shot_cache(base,saved)
