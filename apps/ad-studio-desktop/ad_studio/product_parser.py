@@ -3,6 +3,7 @@ from html.parser import HTMLParser
 from urllib.request import Request, urlopen
 from urllib.parse import urlparse
 from pathlib import Path
+import hashlib
 import json
 import re
 
@@ -20,10 +21,19 @@ class ProductInfo:
     fetched: bool = False
     error: str = ""
     source: str = ""
+    selling_points: list[str] = None
+    specs: dict = None
+    forbidden_terms: list[str] = None
 
     def __post_init__(self):
         if self.images is None:
             self.images = []
+        if self.selling_points is None:
+            self.selling_points = []
+        if self.specs is None:
+            self.specs = {}
+        if self.forbidden_terms is None:
+            self.forbidden_terms = []
 
     def to_dict(self):
         return asdict(self)
@@ -140,3 +150,40 @@ def save_product(info: ProductInfo, root: Path, project_id: str) -> Path:
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(info.to_dict(), ensure_ascii=False, indent=2), encoding="utf-8")
     return target
+
+
+
+def _product_library_key(url: str) -> str:
+    return hashlib.sha256((url or '').strip().encode('utf-8')).hexdigest()[:20]
+
+
+def save_product_library(info: ProductInfo, root: Path) -> Path:
+    target = Path(root) / 'product-library' / f'{_product_library_key(info.url)}.json'
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(json.dumps(info.to_dict(), ensure_ascii=False, indent=2), encoding='utf-8')
+    return target
+
+
+def load_product_library(url: str, root: Path) -> ProductInfo | None:
+    target = Path(root) / 'product-library' / f'{_product_library_key(url)}.json'
+    if not target.exists():
+        return None
+    try:
+        return ProductInfo(**json.loads(target.read_text(encoding='utf-8')))
+    except (OSError, TypeError, ValueError, json.JSONDecodeError):
+        return None
+
+
+def merge_product_library(base: ProductInfo, saved: ProductInfo | None) -> ProductInfo:
+    if not saved:
+        return base
+    base.selling_points = list(saved.selling_points or [])
+    base.specs = dict(saved.specs or {})
+    base.forbidden_terms = list(saved.forbidden_terms or [])
+    if saved.name and saved.name != '待解析商品' and base.name == '待解析商品':
+        base.name = saved.name
+    if saved.description and not base.description:
+        base.description = saved.description
+    if saved.images and not base.images:
+        base.images = list(saved.images)
+    return base
