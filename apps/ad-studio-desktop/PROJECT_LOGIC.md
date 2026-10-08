@@ -395,3 +395,7 @@ classify_footage_gaps 不再要求 missing_selling_points 必须同时存在于 
 - completed + success = 当前检查通过。
 - completed + failure = 必须先处理失败。
 - 修复后的新提交必须重新等待/检查新的 CI，不能沿用上一提交结果。
+
+
+## 2026-10-08：重新分析闭环提交检查
+重新分析闭环的测试文件已清除误写的说明文本；本次文档同步与测试修复保持同一提交，确保代码、测试、HELP.md、PROJECT_LOGIC.md 的原子变更契约继续成立。后续推进必须重新检查最新 HEAD 的 CI，不复用旧提交结果。
