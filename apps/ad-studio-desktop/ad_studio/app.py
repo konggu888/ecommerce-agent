@@ -11,7 +11,7 @@ from .hardware import detect_hardware, format_hardware
 from .capability import CapabilityRouter
 from .production import ProductionStore
 from .product_parser import parse_product_url, save_product
-from .creative_engine import CreativeEngine, validate_plan, validate_task_type_plan
+from .creative_engine import CreativeEngine, validate_plan, validate_task_type_plan, TASK_TYPE_POLICIES
 from .model_router import ModelRouter, ModelProfile, FUNCTIONS
 from .browser_skill import _find_agent_browser
 from .ffmpeg import available as ffmpeg_available, has_nvenc
@@ -551,6 +551,7 @@ class App(tk.Tk):
             'video_form': self.form.get(),
             'task_type': self.task_type.get(),
             'task_rules': {'电商短视频':'突出卖点、节奏与转化；允许AI决定合理时长。','商品主图视频':'优先展示商品本体、核心细节和购买决策信息；避免无关剧情。','广告投放视频':'以投放转化和可测试性为核心；优先强钩子、清晰卖点、CTA与可区分版本。'}[self.task_type.get()],
+            'task_policy': TASK_TYPE_POLICIES[self.task_type.get()],
             'allowed_video_forms': FORMS,
             'reusable_actors': [a.__dict__ for a in self.lib.reusable('演员')],
             'reusable_scenes': [a.__dict__ for a in self.lib.reusable('场景')],
@@ -569,6 +570,7 @@ class App(tk.Tk):
             'shots': [x.__dict__ for x in plan.shots],
             'task_type': self.project.creative_plan.get('task_type', self.task_type.get()) if self.project else self.task_type.get(),
             'task_validation': raw.get('task_validation', {}),
+            'task_policy': raw.get('task_policy', TASK_TYPE_POLICIES.get(self.task_type.get(), {})),
         }
 
     def _activate_plan(self, raw, info):

@@ -197,6 +197,30 @@ def validate_plan(raw: dict[str, Any]) -> CreativePlan:
     )
 
 
+TASK_TYPE_POLICIES = {
+    "电商短视频": {"min_seconds": 20, "max_seconds": 60, "required": ["hook"], "sequence": ["hook", "pain_point", "selling_points", "proof", "cta"]},
+    "商品主图视频": {"min_seconds": 8, "max_seconds": 30, "required": ["product"], "sequence": ["product", "detail", "function", "usage", "cta"]},
+    "广告投放视频": {"min_seconds": 15, "max_seconds": 45, "required": ["hook", "cta"], "sequence": ["hook", "core_selling_point", "proof", "objection", "cta"]},
+}
+
+
+def apply_task_type_policy(raw: dict[str, Any], constraints: dict[str, Any] | None = None) -> dict[str, Any]:
+    """把三种任务的成片结构变成确定性可检查规则。"""
+    constraints = constraints or {}
+    task_type = str(constraints.get("task_type", "电商短视频")).strip() or "电商短视频"
+    policy = TASK_TYPE_POLICIES.get(task_type)
+    if not policy:
+        raise CreativePlanError(f"不支持的任务类型：{task_type}")
+    raw["task_policy"] = policy
+    duration = max(1, int(raw.get("duration_seconds", 1)))
+    raw["duration_seconds"] = min(policy["max_seconds"], max(policy["min_seconds"], duration))
+    shots = raw.get("shots", [])
+    if task_type == "商品主图视频" and isinstance(shots, list) and len(shots) > 8:
+        raw["shots"] = shots[:8]
+    raw["task_type"] = task_type
+    return raw
+
+
 def validate_task_type_plan(raw: dict[str, Any], constraints: dict[str, Any] | None = None) -> dict[str, Any]:
     """确定性检查本次任务是否真正反映在创意方案结构中。"""
     constraints = constraints or {}
@@ -213,7 +237,7 @@ def validate_task_type_plan(raw: dict[str, Any], constraints: dict[str, Any] | N
         raise CreativePlanError("商品主图视频缺少商品本体/细节/功能展示结构，不能进入成片")
     if task_type == "电商短视频" and not str(raw.get("hook", "")).strip():
         raise CreativePlanError("电商短视频缺少开场钩子，不能进入成片")
-    raw["task_type"] = task_type
+    raw = apply_task_type_policy(raw, constraints)
     raw["task_validation"] = {"ok": True, "task_type": task_type, "method": "确定性任务结构检查"}
     return raw
 

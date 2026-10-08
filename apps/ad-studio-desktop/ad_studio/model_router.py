@@ -410,6 +410,7 @@ class ModelRouter:
                 "shots": creative_plan.get("shots", []),
                 "task_type": creative_plan.get("task_type", ""),
                 "task_rules": creative_plan.get("task_rules", {}),
+                "task_policy": creative_plan.get("task_policy", {}),
             },
             "footage_clips": footage_clips,
             "footage_analysis": footage_analysis or {},
@@ -436,7 +437,8 @@ class ModelRouter:
             "12. 输出必须是严格 JSON，不要输出 Markdown。\n"
              "13. 必须严格服从 task_type。电商短视频：开场快速进入商品/痛点，卖点优先，节奏紧凑，结尾保留明确转化信息；商品主图视频：商品本体、细节、功能演示和购买决策信息优先，不用剧情性镜头替代商品证据；广告投放视频：优先强钩子、单一核心卖点、清晰 CTA，并保证不同创意方案之间具有可测试的差异。\n"
              "14. task_type 不同，镜头排序、素材取舍和时长都必须不同；不要因为素材排名高就违反任务目标。AI 可在 30-60 秒范围内按信息密度决定最终时长，但商品主图视频应避免无意义延长，广告投放视频应优先保证前几秒钩子。\n"
-             "15. 如果任务要求的关键画面在实拍素材中缺失，只能在 footage_coverage/footage_gaps 中标记缺口，禁止虚构；商品证据缺失优先标记待补拍。"
+             "15. 如果任务要求的关键画面在实拍素材中缺失，只能在 footage_coverage/footage_gaps 中标记缺口，禁止虚构；商品证据缺失优先标记待补拍。\n"
+             "16. 必须遵守 task_policy 的 min_seconds/max_seconds/sequence；sequence 是镜头结构优先级，不要求素材恰好一一对应，但最终剪辑必须尽量覆盖。"
         )
         prompt = (
             system

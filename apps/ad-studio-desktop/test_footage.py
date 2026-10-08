@@ -543,3 +543,12 @@ def test_task_type_plan_validator_enforces_structure():
         pass
     else:
         raise AssertionError('电商短视频缺少 Hook 时必须阻止继续')
+
+
+def test_task_type_policy_applies_duration_and_structure():
+    from ad_studio.creative_engine import apply_task_type_policy
+    raw={'duration_seconds': 100, 'shots': [{'objective': str(i)} for i in range(12)]}
+    out=apply_task_type_policy(raw, {'task_type': '商品主图视频'})
+    assert out['duration_seconds'] == 30
+    assert len(out['shots']) == 8
+    assert out['task_policy']['sequence'][0] == 'product'
