@@ -173,7 +173,7 @@ class App(tk.Tk):
         task=plan.get('task_type','未指定')
         score=audit.get('diversity_score','未审计')
         ttk.Label(frm,text=f'任务类型：{task}｜版本数：{len(variants)}｜版本差异度：{score}｜本窗口不调用新 AI',wraplength=1120).pack(anchor='w',pady=(4,10))
-        tree=ttk.Treeview(frm,columns=('version','axis','hook','selling','proof','cta','output','status'),show='headings')
+        tree=ttk.Treeview(frm,columns=('version','axis','hook','selling','proof','cta','output','status','metrics'),show='headings')
         heads=[('version','版本',70),('axis','测试轴',110),('hook','Hook/钩子',180),('selling','核心卖点',180),('proof','证明方式',160),('cta','CTA',150),('output','成片路径',210),('status','状态',80),('metrics','投放数据',220)]
         for col,title,width in heads:
             tree.heading(col,text=title); tree.column(col,width=width,anchor='w')
