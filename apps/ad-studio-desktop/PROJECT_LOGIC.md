@@ -411,3 +411,7 @@ classify_footage_gaps 不再要求 missing_selling_points 必须同时存在于 
 
 ## 2026-10-08：分析历史 UI
 新增 `footage_reanalysis_history_report`。它读取 `footage-reanalysis-history/` 中已保存的快照并展示覆盖率、缺口任务和历史镜头数，避免用户连续补拍后无法回看之前的决策；不新增模型调用。
+
+
+## 2026-10-08：全桌面项目 UI 操作契约
+UI 硬闸门升级为全项目规则：不再只检查少数固定功能。所有用户可执行功能必须使用 `@ui_action` 注册；`ui_contract.py` 从 AST 自动收集这些注册动作，并要求每个动作拥有真实 Tkinter Button command 入口。这样新增功能如果只写后端、不接 UI，会在自动检查阶段失败。该结构检查仍不能替代运行桌面端后的视觉验收，因此 AI 仍需检查实际界面、按钮状态、操作路径和结果展示。
