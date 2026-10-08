@@ -561,3 +561,6 @@ restore_variant_shot_cache 位于 models.py。它以原始镜头稳定 ID 恢复
 
 ## 2026-10-08：多版本成片文件物理隔离
 版本隔离不仅存在于内存分镜缓存，也落到磁盘路径：ProductionStore 根据 creative_plan.variant_index 计算当前方案，render_path 与 postprocess_shot 均将 variant-N 纳入目录。这样 A/B 方案即使使用相同基础 shot ID，也不会覆盖彼此的视频文件；版本输出路径、镜头路径和后处理路径形成一致的物理隔离链。
+
+## 2026-10-08：恢复生产链后的版本隔离校验
+生产层从完整基线恢复后再次确认：render_path、postprocess_shot 都通过当前 creative_plan.variant_index 计算 variant-N 目录；因此版本隔离不会依赖某一次局部修改，完整生产链仍保持 A/B 文件物理隔离。
