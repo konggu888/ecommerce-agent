@@ -13,7 +13,6 @@ from pathlib import Path
 import json
 import subprocess
 import re
-import base64
 
 from .ffmpeg import which, best_h264_encoder
 
