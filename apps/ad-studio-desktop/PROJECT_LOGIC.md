@@ -430,3 +430,6 @@ validate_task_type_plan 在创意方案进入项目/成片前执行，防止 AI 
 
 ## 2026-10-08：三种任务成片政策
 `TASK_TYPE_POLICIES` 统一定义三种任务的时长边界和结构顺序，并写入 `creative_plan.task_policy`。它同时约束创意方案与实拍素材导演，避免 UI 选择与最终成片脱节。
+
+## 2026-10-08：广告投放多版本 A/B 审计
+广告投放视频的多方案现在按测试轴生成：Hook、核心卖点、证明方式、CTA。`audit_ad_variant_set()` 对方案的 Hook/策略/视频形式/脚本做确定性两两差异审计，结果写入 `variant_set_audit`，为后续投放实验提供版本矩阵基础，不增加额外 AI 调用。

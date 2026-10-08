@@ -287,7 +287,9 @@ class ModelRouter:
             variant_constraints = dict(constraints)
             variant_constraints["creative_variant_index"] = i + 1
             variant_constraints["creative_variant_count"] = count
-            variant_constraints["creative_variant_instruction"] = diversity_prompts[i]
+            axis = AD_VARIANT_AXES[i % len(AD_VARIANT_AXES)]
+            variant_constraints["creative_variant_axis"] = axis
+            variant_constraints["creative_variant_instruction"] = diversity_prompts[i] + " 当前测试轴：" + axis["name"] + "；" + axis["instruction"]
             variant_constraints["previous_variant_summaries"] = previous[-4:]
             raw = self.create_plan(product, variant_constraints)
             raw["_variant_index"] = i + 1
@@ -300,6 +302,34 @@ class ModelRouter:
             })
             plans.append(raw)
         return plans
+
+
+
+AD_VARIANT_AXES = [
+    {"id": "hook", "name": "钩子角度", "instruction": "改变前3秒的注意力机制，不只是换同义词。"},
+    {"id": "selling_point", "name": "核心卖点", "instruction": "选择不同的第一核心卖点或卖点组合。"},
+    {"id": "proof", "name": "证明方式", "instruction": "改变证明方式：实拍演示、对比、体验、场景证据等。"},
+    {"id": "cta", "name": "转化动作", "instruction": "改变结尾行动机制和转化理由。"},
+]
+
+
+def audit_ad_variant_set(plans: list[dict[str, Any]], task_type: str) -> dict[str, Any]:
+    """不调用新模型，确定性检查广告方案是否形成可测试差异。"""
+    if task_type != "广告投放视频" or len(plans) <= 1:
+        return {"enabled": False, "variant_count": len(plans), "diversity_score": 0, "method": "非广告多版本不启用A/B审计"}
+    keys = ["hook", "strategy", "video_form", "script"]
+    signatures = ["|".join(str(p.get(k, "")).strip() for k in keys) for p in plans]
+    unique = len(set(signatures))
+    pair_count = max(1, len(plans) * (len(plans) - 1) // 2)
+    diff_count = 0
+    pairs = []
+    for i in range(len(plans)):
+        for j in range(i + 1, len(plans)):
+            diffs = [k for k in keys if str(plans[i].get(k, "")).strip() != str(plans[j].get(k, "")).strip()]
+            if diffs: diff_count += 1
+            pairs.append({"a": i + 1, "b": j + 1, "different_fields": diffs})
+    score = round(100 * diff_count / pair_count)
+    return {"enabled": True, "variant_count": len(plans), "unique_signatures": unique, "diversity_score": score, "pairs": pairs, "method": "Hook/策略/视频形式/脚本字段确定性差异审计"}
 
     def recent_usage(self, limit: int = 100) -> list[dict[str, Any]]:
         return self.ledger.recent(limit)

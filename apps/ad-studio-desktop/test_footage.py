@@ -552,3 +552,15 @@ def test_task_type_policy_applies_duration_and_structure():
     assert out['duration_seconds'] == 30
     assert len(out['shots']) == 8
     assert out['task_policy']['sequence'][0] == 'product'
+
+
+def test_ad_variant_audit_detects_real_differences():
+    from ad_studio.model_router import audit_ad_variant_set
+    plans=[
+        {'hook':'痛点A','strategy':'卖点A','video_form':'UGC','script':'购买'},
+        {'hook':'场景B','strategy':'卖点B','video_form':'对比','script':'下单'},
+        {'hook':'反差C','strategy':'卖点C','video_form':'演示','script':'立即购买'},
+    ]
+    out=audit_ad_variant_set(plans,'广告投放视频')
+    assert out['enabled'] is True
+    assert out['diversity_score'] == 100
