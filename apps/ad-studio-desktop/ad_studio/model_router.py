@@ -413,9 +413,12 @@ class ModelRouter:
             "禁止编造素材、禁止引用清单外的文件。\n"
             "2. start 是素材内起始秒，duration 是本镜头时长；start + duration 不能超过该素材总时长。\n"
             "3. 同一段素材可以按不同时间段使用多次，但要保证每个镜头内容合理、节奏顺畅。\n"
-            "4. 每个镜头给出画面说明、口播/文案、字幕位置、构图、节奏、转场，供本地执行。\n"
-            "5. 广告表达避免违反广告法的绝对化、虚假、无法证明的承诺。\n"
-            "6. 输出必须是严格 JSON，不要输出 Markdown。"
+            "4. 如果转写结果中出现寒暄、重复、口头禅、停顿或与卖点无关的废话，必须删除；用 ranges 指定多个保留区间，只保留有价值的表达。\n"
+            "5. ranges 使用素材原始时间轴的 [start,end]，多个区间按时间顺序排列；没有废话时使用单个区间。\n"
+            "6. 不能为了删废话破坏一句话的完整语义；时间戳不够精确时，只在 segment 边界做安全裁剪。\n"
+            "7. 每个镜头给出画面说明、口播/文案、字幕位置、构图、节奏、转场，供本地执行。\n"
+            "8. 广告表达避免违反广告法的绝对化、虚假、无法证明的承诺。\n"
+            "9. 输出必须是严格 JSON，不要输出 Markdown。"
         )
         prompt = (
             system
@@ -581,7 +584,8 @@ STAGE_SCHEMAS = {
             "subtitle_position": "string", "subtitle_style": "string",
             "pacing": "string", "speed": "number 0.75..1.5",
             "bgm_intensity": "string", "bgm_volume": "number 0..0.35",
-            "transition": "string"
+            "transition": "string",
+            "ranges": "[[start,end],...]；如需删除口播废话/重复段，必须使用多个保留区间"
         }]
     },
 }

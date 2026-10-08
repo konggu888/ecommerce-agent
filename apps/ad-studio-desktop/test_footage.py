@@ -199,6 +199,14 @@ class ValidateFootagePlanTests(unittest.TestCase):
         items, _ = validate_footage_plan(raw, sample_clips())
         self.assertGreater(items[0]["duration"], 0)
 
+    def test_ranges_skip_filler_and_compute_total_duration(self):
+        raw = [{"index": 1, "source": "a.mp4", "start": 0, "duration": 9,
+                "ranges": [[0.5, 2.0], [5.0, 6.5], [6.4, 7.0]]}]
+        items, warnings = validate_footage_plan(raw, sample_clips())
+        self.assertEqual(items[0]["ranges"], [[0.5, 2.0], [5.0, 7.0]])
+        self.assertAlmostEqual(items[0]["duration"], 3.5)
+        self.assertEqual(warnings, [])
+
     def test_clamps_visual_params(self):
         raw = [{"index": 1, "source": "a.mp4", "start": 0, "duration": 2,
                 "focus_x": 2.0, "focus_y": -1.0, "speed": 9.9, "bgm_volume": 1.0}]

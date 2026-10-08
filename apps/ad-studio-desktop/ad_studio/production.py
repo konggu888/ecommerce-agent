@@ -231,7 +231,19 @@ class ProductionStore:
         shot.provider = '本地素材剪辑'
         self.save(project)
         try:
-            trim_clip(Path(shot.source_file), out, float(shot.source_start or 0.0), shot.source_duration)
+            ranges = getattr(shot, 'source_ranges', None) or []
+            if len(ranges) <= 1:
+                trim_clip(Path(shot.source_file), out, float(shot.source_start or 0.0), shot.source_duration)
+            else:
+                parts = []
+                for idx, pair in enumerate(ranges, 1):
+                    part = out.with_name(f'{out.stem}.part{idx:02d}.mp4')
+                    trim_clip(Path(shot.source_file), part, float(pair[0]), float(pair[1]) - float(pair[0]))
+                    parts.append(part)
+                concat(parts, out)
+                for part in parts:
+                    if part.exists():
+                        part.unlink()
         except Exception as exc:
             shot.status = '素材裁剪失败'
             self.save(project)

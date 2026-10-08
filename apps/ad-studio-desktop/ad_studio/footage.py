@@ -205,7 +205,8 @@ FOOTAGE_SCHEMA = {
         "speed": "number 0.75..1.5",
         "bgm_intensity": "无|低|中|高",
         "bgm_volume": "number 0..0.35",
-        "transition": "硬切|淡入|淡出"
+        "transition": "硬切|淡入|淡出",
+        "ranges": "可选，多段保留区间 [[start,end],...]；用于删除口播废话/重复段"
     }]
 }
 
@@ -244,11 +245,39 @@ def validate_footage_plan(raw_plan: list[dict], clips: list[FootageClip]) -> tup
         if duration > remain:
             warnings.append(f'镜头{index}时长 {duration:.1f}s 超出素材剩余 {remain:.1f}s，已截断到素材末尾')
             duration = remain
+        raw_ranges = shot.get('ranges') or []
+        ranges = []
+        if raw_ranges:
+            if not isinstance(raw_ranges, list):
+                raise FootageError(f'镜头{index}的 ranges 必须是数组')
+            for pair in raw_ranges:
+                if not isinstance(pair, (list, tuple)) or len(pair) != 2:
+                    raise FootageError(f'镜头{index}的 ranges 必须使用 [start,end] 结构')
+                a = max(0.0, float(pair[0]))
+                b = min(clip.duration, float(pair[1]))
+                if b <= a:
+                    continue
+                ranges.append([round(a, 3), round(b, 3)])
+            ranges.sort(key=lambda x: x[0])
+            merged = []
+            for a, b in ranges:
+                if merged and a <= merged[-1][1] + 0.02:
+                    merged[-1][1] = max(merged[-1][1], b)
+                else:
+                    merged.append([a, b])
+            ranges = merged
+            if not ranges:
+                raise FootageError(f'镜头{index}的 ranges 没有有效区间')
+            start = ranges[0][0]
+            duration = round(sum(b - a for a, b in ranges), 3)
+        else:
+            ranges = [[round(start, 3), round(start + duration, 3)]]
         item = {
             'index': index,
             'source': source,
             'start': round(start, 3),
             'duration': round(duration, 3),
+            'ranges': ranges,
             'objective': str(shot.get('objective', '')),
             'visual': str(shot.get('visual', '')),
             'script': str(shot.get('script', '')),

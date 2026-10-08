@@ -48,6 +48,7 @@ class Shot:
     source_file: Optional[str]=None
     source_start: float=0.0
     source_duration: float=0.0
+    source_ranges: list[list[float]] = field(default_factory=list)
 
 @dataclass
 class Project:

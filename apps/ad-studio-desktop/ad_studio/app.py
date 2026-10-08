@@ -481,6 +481,7 @@ class App(tk.Tk):
             detail='\n'.join([
                 f"商品：{info.name}",f"素材文件夹：{folder}",f"扫描到可用素材：{len(usable)} 个（跳过无法解析 {len(clips)-len(usable)} 个）",
                 '素材清单：',clips_note,'',
+                f"视觉分析：已观察 {len(analysis.get('clips', [])) if isinstance(analysis, dict) else 0} 个素材；口播转写：{len(speech_transcripts)} 个素材。",
                 f"本次生成创意方案：{variant_count} 个（当前先展示方案1）",f"AI选择视频形式：{plan.video_form}",f"AI策略：{plan.strategy}",'',
                 'AI 剪辑方案：',*[f"  镜头{x['index']:02d}｜{x['source']}｜{x['start']:.1f}s 起｜{x['duration']:.1f}s｜{x.get('objective','')}" for x in plan_items],
                 *(f'⚠ {warnings_note}' if warnings_note else ''),'',
@@ -616,6 +617,7 @@ class App(tk.Tk):
             s.source_file=str(Path(folder)/item['source'])
             s.source_start=item['start']
             s.source_duration=item['duration']
+            s.source_ranges=item.get('ranges', [[item['start'], item['start'] + item['duration']]])
             s.title=item.get('objective') or s.title
             s.visual=item.get('visual') or s.visual
             s.script=item.get('script') or s.script
