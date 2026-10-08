@@ -521,3 +521,11 @@ def test_ui_action_contract_binds_critical_actions():
     assert result['ok'] is True
     assert 'reanalyze_footage' in result['required_actions']
     assert 'footage_reanalysis_history_report' in result['required_actions']
+
+
+def test_ui_contract_covers_all_registered_user_actions():
+    from pathlib import Path
+    from ad_studio.ui_contract import verify_ui_action_contract
+    result = verify_ui_action_contract(Path(__file__).parent / 'ad_studio' / 'app.py')
+    assert result['ok'] is True
+    assert result['required_actions']
