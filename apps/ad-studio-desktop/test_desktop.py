@@ -667,5 +667,34 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual({x["key"] for x in rows}, {"1|9:16", "2|16:9"})
             self.assertTrue(all(x["delivery_status"] == "可交付" for x in rows))
 
+    def test_audio_mixing_preserves_voice_and_lowers_bgm(self):
+        from unittest.mock import patch
+        from ad_studio.audio import mix_voice_bgm
+        with tempfile.TemporaryDirectory() as td:
+            out = Path(td) / "mix.m4a"
+            with patch("ad_studio.audio.shutil.which", return_value="/usr/bin/ffmpeg"), patch(
+                "ad_studio.audio.subprocess.run"
+            ) as run:
+                mix_voice_bgm(Path(td) / "voice.wav", Path(td) / "bgm.mp3", out)
+            args = run.call_args.args[0]
+            joined = " ".join(args)
+            self.assertIn("afftdn", joined)
+            self.assertIn("volume=0.12", joined)
+            self.assertIn("amix=inputs=2:duration=first", joined)
+
+    def test_subtitles_use_real_timestamps_and_segment_long_speech(self):
+        from ad_studio.subtitles import segment_subtitles, write_srt_segments
+        segments = [{"start": 1.0, "end": 5.0, "text": "这是一个非常重要的商品卖点说明文字需要按可读长度分段"}]
+        rows = segment_subtitles(segments, max_chars=10)
+        self.assertGreater(len(rows), 1)
+        self.assertAlmostEqual(rows[0]["start"], 1.0)
+        self.assertAlmostEqual(rows[-1]["end"], 5.0)
+        with tempfile.TemporaryDirectory() as td:
+            out = Path(td) / "speech.srt"
+            write_srt_segments(segments, out, max_chars=10)
+            body = out.read_text(encoding="utf-8")
+            self.assertIn("00:00:01,000 --> ", body)
+            self.assertIn("这是一个非常重要的", body)
+
 if __name__ == "__main__":
     unittest.main()
