@@ -607,3 +607,10 @@ def test_footage_timeline_preserves_multiple_ranges():
     plan=[{'source':'demo.mp4','start':1.0,'duration':3.0,'ranges':[[1.0,2.0],[2.5,4.5]]}]
     assert plan[0]['ranges'] == [[1.0,2.0],[2.5,4.5]]
     assert sum(b-a for a,b in plan[0]['ranges']) == 3.0
+
+
+def test_gap_task_contains_shoot_guidance_and_acceptance():
+    from ad_studio.footage import build_footage_gap_tasks
+    out=build_footage_gap_tasks({'coverage_score':50},{'key_shot_gaps':[{'need':'商品特写','action':'待补拍','reason':'缺少清晰特写','why':'无法证明细节'}]},{})
+    task=out['tasks'][0]
+    assert task['shoot_or_generate'] and task['acceptance'] and task['why']
