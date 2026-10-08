@@ -546,7 +546,7 @@ class App(tk.Tk):
         provenance[str(int(variant_index))]={
             'source_type':'user_provided',
             'statement':'用户提供的平台数据；系统不验证真实性',
-            'simulation':False,
+            'verification_status':'unverified',
             'updated_at':payload['updated_at'],
         }
         return payload
