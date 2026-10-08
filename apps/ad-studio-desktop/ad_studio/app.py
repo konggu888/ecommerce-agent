@@ -10,7 +10,7 @@ from .gpu import detect_gpu
 from .hardware import detect_hardware, format_hardware
 from .capability import CapabilityRouter
 from .production import ProductionStore
-from .product_parser import parse_product_url, save_product
+from .product_parser import parse_product_url, save_product, save_product_library, load_product_library, merge_product_library, ProductInfo
 from .creative_engine import CreativeEngine, validate_plan, validate_task_type_plan, TASK_TYPE_POLICIES
 from .model_router import ModelRouter, ModelProfile, FUNCTIONS, audit_ad_variant_set, build_creative_test_plan, audit_creative_factual_consistency, audit_storyboard_fact_consistency, audit_visual_fact_consistency
 from .browser_skill import _find_agent_browser
@@ -138,7 +138,7 @@ class App(tk.Tk):
         ttk.Label(setup,text='素材来源').grid(row=5,column=0,sticky='w'); self.footage_mode=tk.StringVar(value='AI生成视频'); ttk.Combobox(setup,textvariable=self.footage_mode,values=['AI生成视频','用户拍摄素材'],state='readonly',width=16).grid(row=4,column=1,sticky='w',pady=(4,2))
         self.footage_folder=tk.StringVar(value=''); ttk.Entry(setup,textvariable=self.footage_folder,width=36).grid(row=5,column=2,sticky='w',padx=4); ttk.Button(setup,text='选择素材文件夹',command=self.choose_footage_folder).grid(row=4,column=3,sticky='e')
         ttk.Label(setup,text='用户拍摄素材：输入链接后 AI 分析产品 → 指定文件夹放入你拍好的视频 → AI 思考剪辑方案 → 本地 FFmpeg 出片（不调用视频生成服务）',foreground='#666').grid(row=6,column=0,columnspan=5,sticky='w',pady=(2,0))
-        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='📹 实拍分析报告',command=self.footage_analysis_report).grid(row=2,column=5,sticky='e',padx=8); ttk.Button(setup,text='📋 补素材任务',command=self.footage_gap_tasks_report).grid(row=2,column=6,sticky='e',padx=8); ttk.Button(setup,text='🤖 执行AI补镜头',command=self.generate_hybrid_gap_shots).grid(row=2,column=10,sticky='e',padx=8); ttk.Button(setup,text='🔍 AI补镜头复核',command=self.review_hybrid_gap_shots).grid(row=2,column=11,sticky='e',padx=8); ttk.Button(setup,text='🔄 重新分析实拍素材',command=self.reanalyze_footage).grid(row=2,column=7,sticky='e',padx=8); ttk.Button(setup,text='🕘 分析历史',command=self.footage_reanalysis_history_report).grid(row=2,column=8,sticky='e',padx=8); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='🧪 创意版本矩阵',command=self.variant_matrix_report).grid(row=2,column=9,sticky='e',padx=8); ttk.Button(setup,text='🧠 创意方案分析',command=self.creative_variant_analysis_report).grid(row=2,column=12,sticky='e',padx=8); ttk.Button(setup,text='🧪 创意测试方案',command=self.creative_test_plan_report).grid(row=2,column=14,sticky='e',padx=8); ttk.Button(setup,text='🛡 创意事实检查',command=self.creative_fact_check_report).grid(row=2,column=15,sticky='e',padx=8); ttk.Button(setup,text='🎬 分镜事实复核',command=self.storyboard_fact_check_report).grid(row=2,column=16,sticky='e',padx=8); ttk.Button(setup,text='🎥 成片视觉复核',command=self.visual_fact_check_report).grid(row=2,column=17,sticky='e',padx=8); ttk.Button(setup,text='📥 真实投放数据（可选）',command=self.variant_performance_entry).grid(row=2,column=13,sticky='e',padx=8); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
+        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='📹 实拍分析报告',command=self.footage_analysis_report).grid(row=2,column=5,sticky='e',padx=8); ttk.Button(setup,text='📋 补素材任务',command=self.footage_gap_tasks_report).grid(row=2,column=6,sticky='e',padx=8); ttk.Button(setup,text='🤖 执行AI补镜头',command=self.generate_hybrid_gap_shots).grid(row=2,column=10,sticky='e',padx=8); ttk.Button(setup,text='🔍 AI补镜头复核',command=self.review_hybrid_gap_shots).grid(row=2,column=11,sticky='e',padx=8); ttk.Button(setup,text='🔄 重新分析实拍素材',command=self.reanalyze_footage).grid(row=2,column=7,sticky='e',padx=8); ttk.Button(setup,text='🕘 分析历史',command=self.footage_reanalysis_history_report).grid(row=2,column=8,sticky='e',padx=8); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='📚 商品资料库',command=self.product_library_settings).grid(row=0,column=5,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='🧪 创意版本矩阵',command=self.variant_matrix_report).grid(row=2,column=9,sticky='e',padx=8); ttk.Button(setup,text='🧠 创意方案分析',command=self.creative_variant_analysis_report).grid(row=2,column=12,sticky='e',padx=8); ttk.Button(setup,text='🧪 创意测试方案',command=self.creative_test_plan_report).grid(row=2,column=14,sticky='e',padx=8); ttk.Button(setup,text='🛡 创意事实检查',command=self.creative_fact_check_report).grid(row=2,column=15,sticky='e',padx=8); ttk.Button(setup,text='🎬 分镜事实复核',command=self.storyboard_fact_check_report).grid(row=2,column=16,sticky='e',padx=8); ttk.Button(setup,text='🎥 成片视觉复核',command=self.visual_fact_check_report).grid(row=2,column=17,sticky='e',padx=8); ttk.Button(setup,text='📥 真实投放数据（可选）',command=self.variant_performance_entry).grid(row=2,column=13,sticky='e',padx=8); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
         main=ttk.Panedwindow(self,orient='horizontal'); main.pack(fill='both',expand=True,padx=16,pady=8)
         left=ttk.Frame(main,padding=8); right=ttk.Frame(main,padding=8); main.add(left,weight=3); main.add(right,weight=2)
         ttk.Label(left,text='② 分镜生产链',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
@@ -1372,6 +1372,8 @@ class App(tk.Tk):
         except ValueError:
             return messagebox.showerror('参数格式错误','请输入有效的预算和创意方案数。')
         info=parse_product_url(url)
+        saved_product=load_product_library(url, ROOT)
+        info=merge_product_library(info, saved_product)
         footage_mode=self.footage_mode.get().strip()
         clips=None; usable=[]; folder=None
         if footage_mode=='用户拍摄素材':
@@ -1538,7 +1540,7 @@ class App(tk.Tk):
             ])
         if not messagebox.askyesno('AI创意与项目预算确认',detail):
             self.project=None; self.detail.set('已取消项目创建，尚未产生生成费用。'); return
-        self.store.save(self.project); save_product(info,ROOT,self.project.id); self.refresh_shots()
+        self.store.save(self.project); save_product(info,ROOT,self.project.id); save_product_library(info,ROOT); self.refresh_shots()
         if footage_mode=='用户拍摄素材':
             self.detail.set(f"素材剪辑方案已确认：{info.name} → {len(plan.shots)}镜头。素材文件夹：{folder}。可逐个「生成本镜头」裁剪，或直接「生成最终成片」。")
         else:
@@ -1631,6 +1633,65 @@ class App(tk.Tk):
             self.project=project; self.model_router.set_project_context(project.id); self.active_variant_index=int((project.creative_plan or {}).get('variant_index',1) or 1); self.url.set(''); self.level.set(project.level); self.form.set(project.form); self.refresh_shots(); c=project.cost_estimate; self.cost.set(f"项目预估 ¥{c.get('总计',0):.2f} · 云端 ¥{c.get('云端',0):.2f} · 已保存 {len(project.shots)} 个镜头" if c else f'已保存 {len(project.shots)} 个镜头'); self.detail.set(f'已恢复项目：{project.product_name} · {project.platform} · {project.form}'); win.destroy()
         ttk.Button(frm,text='打开',command=open_selected).pack(anchor='e')
 
+    @ui_action
+    def product_library_settings(self):
+        """商品资料库：维护卖点、规格、禁用词，并按商品链接持久化。"""
+        folder=ROOT/'product-library'
+        folder.mkdir(parents=True,exist_ok=True)
+        files=sorted(folder.glob('*.json'), key=lambda p:p.stat().st_mtime, reverse=True)
+        win=tk.Toplevel(self); win.title('商品资料库'); win.geometry('980x680'); win.transient(self)
+        frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
+        ttk.Label(frm,text='商品资料库',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
+        ttk.Label(frm,text='这里维护的是用户确认过的商品事实：卖点、规格、禁用词。创建项目时会按商品链接自动引用，不会让 AI 自行补写商品事实。',wraplength=920,foreground='#555').pack(anchor='w',pady=(3,10))
+        left=ttk.Frame(frm); left.pack(side='left',fill='y',padx=(0,12))
+        right=ttk.Frame(frm); right.pack(side='left',fill='both',expand=True)
+        box=tk.Listbox(left,width=38,height=24); box.pack(fill='y',expand=True)
+        records=[]
+        for p in files:
+            try:
+                raw=json.loads(p.read_text(encoding='utf-8')); records.append(raw)
+                box.insert('end',f"{raw.get('name','未命名商品')}｜{raw.get('platform','自动识别')}")
+            except Exception:
+                continue
+        fields={}
+        for row,(label,key) in enumerate([('商品名称','name'),('商品链接','url')]):
+            ttk.Label(right,text=label).grid(row=row,column=0,sticky='w',pady=4)
+            v=tk.StringVar(); ttk.Entry(right,textvariable=v).grid(row=row,column=1,sticky='ew',pady=4); fields[key]=v
+        ttk.Label(right,text='核心卖点（每行一个）').grid(row=2,column=0,sticky='nw',pady=4)
+        selling=tk.Text(right,height=8); selling.grid(row=2,column=1,sticky='ew',pady=4)
+        ttk.Label(right,text='规格/参数（JSON）').grid(row=3,column=0,sticky='nw',pady=4)
+        specs=tk.Text(right,height=8); specs.grid(row=3,column=1,sticky='ew',pady=4)
+        ttk.Label(right,text='禁用词（每行一个）').grid(row=4,column=0,sticky='nw',pady=4)
+        forbidden=tk.Text(right,height=8); forbidden.grid(row=4,column=1,sticky='ew',pady=4)
+        right.columnconfigure(1,weight=1)
+        def load_selected(_=None):
+            sel=box.curselection()
+            if not sel:return
+            raw=records[sel[0]]
+            fields['name'].set(str(raw.get('name',''))); fields['url'].set(str(raw.get('url','')))
+            selling.delete('1.0','end'); selling.insert('1.0','\n'.join(map(str,raw.get('selling_points') or [])))
+            specs.delete('1.0','end'); specs.insert('1.0',json.dumps(raw.get('specs') or {},ensure_ascii=False,indent=2))
+            forbidden.delete('1.0','end'); forbidden.insert('1.0','\n'.join(map(str,raw.get('forbidden_terms') or [])))
+        def save_current():
+            url=fields['url'].get().strip()
+            if not url:return messagebox.showerror('保存失败','商品链接不能为空。')
+            try:
+                saved=load_product_library(url,ROOT) or ProductInfo(url=url,platform='自动识别')
+                saved.name=fields['name'].get().strip() or saved.name
+                saved.selling_points=[x.strip() for x in selling.get('1.0','end').splitlines() if x.strip()]
+                saved.specs=json.loads(specs.get('1.0','end').strip() or '{}')
+                saved.forbidden_terms=[x.strip() for x in forbidden.get('1.0','end').splitlines() if x.strip()]
+                path=save_product_library(saved,ROOT)
+                messagebox.showinfo('已保存',f'商品资料已保存到商品资料库。\n{path}')
+                win.destroy()
+                self.product_library_settings()
+            except json.JSONDecodeError as exc:
+                messagebox.showerror('规格 JSON 错误',f'规格/参数必须是合法 JSON：{exc}')
+        ttk.Button(right,text='保存当前商品资料',command=save_current).grid(row=5,column=1,sticky='e',pady=10)
+        box.bind('<<ListboxSelect>>',load_selected)
+        if records: box.selection_set(0); load_selected()
+        ttk.Button(right,text='关闭',command=win.destroy).grid(row=6,column=1,sticky='e')
+    
     @ui_action
     def upload(self,kind):
         p=filedialog.askopenfilename(title=f'选择{kind}文件')
