@@ -13,7 +13,7 @@ from typing import Iterable
 _PRODUCT_EVIDENCE_TERMS = (
     "商品", "产品", "特写", "细节", "演示", "操作", "使用", "开箱",
     "材质", "接口", "结构", "功能", "外观", "包装", "规格", "参数",
-    "实物", "证明", "真人", "口播", "说话", "讲解",
+    "实物", "证明",
 )
 
 _HUMAN_REALITY_TERMS = (
@@ -63,23 +63,31 @@ def route_footage_gap_tasks(
         task = dict(raw)
         evidence = is_product_evidence_gap(task)
         human = is_human_reality_gap(task)
-        if evidence or human:
+        if evidence:
             task["recommended_resolution"] = "继续补拍"
             task["generation_allowed"] = False
             task["estimated_cost_rmb"] = 0.0
-            task["resolution_reason"] = (
-                "该缺口涉及商品事实、真实外观/功能/操作或真人表达，"
-                "必须保留真实证据，不能用 AI 生成画面冒充。"
-            )
+            task["resolution_reason"] = "商品事实、真实外观、功能或操作等证据必须保留真实素材，不能用 AI 冒充。"
             counts["继续补拍"] += 1
+        elif human and generation_connected and (rate <= 0.0 or remaining >= rate):
+            task["recommended_resolution"] = "AI补辅助画面"
+            task["generation_allowed"] = True
+            task["generation_mode"] = "仅辅助画面，不生成真人/真人声音"
+            task["estimated_cost_rmb"] = round(rate, 4)
+            task["resolution_reason"] = "真人口播不足时允许生成图片、视频或 B-roll 支撑口播，但禁止生成或冒充真人出镜、真人口播或真人声音。"
+            counts["AI补镜头"] += 1
+            remaining = max(0.0, remaining - rate)
+        elif human:
+            task["recommended_resolution"] = "需要人工确认"
+            task["generation_allowed"] = False
+            task["estimated_cost_rmb"] = 0.0
+            task["resolution_reason"] = "真人口播本身不能由 AI 冒充；当前无法自动生成辅助画面时，需要人工确认补拍或其他素材。"
+            counts["需要人工确认"] += 1
         elif generation_connected and (rate <= 0.0 or remaining >= rate):
             task["recommended_resolution"] = "AI补镜头"
             task["generation_allowed"] = True
             task["estimated_cost_rmb"] = round(rate, 4)
-            task["resolution_reason"] = (
-                "属于通用辅助画面；视频生成 Provider 已配置且当前预算允许，"
-                "可以进入 AI 补镜头生产。"
-            )
+            task["resolution_reason"] = "属于通用辅助画面；视频生成 Provider 已配置且当前预算允许，可以进入 AI 补镜头生产。"
             counts["AI补镜头"] += 1
             remaining = max(0.0, remaining - rate)
         else:
@@ -130,13 +138,13 @@ def execute_ai_gap_generation(
         if not isinstance(raw, dict):
             continue
         task = dict(raw)
-        if is_product_evidence_gap(task) or is_human_reality_gap(task):
+        if is_product_evidence_gap(task):
             task["generation_allowed"] = False
-            task["status"] = "已拦截：真实证据必须补拍"
+            task["status"] = "已拦截：真实商品证据必须保留真实素材"
             blocked += 1
             output.append(task)
             continue
-        if task.get("recommended_resolution") != "AI补镜头" or not task.get("generation_allowed"):
+        if task.get("recommended_resolution") not in {"AI补镜头", "AI补辅助画面"} or not task.get("generation_allowed"):
             task["status"] = task.get("status") or "未进入AI生成"
             output.append(task)
             continue
@@ -155,7 +163,7 @@ def execute_ai_gap_generation(
             if not generated_path:
                 raise RuntimeError("生成器未返回视频文件路径")
             task["generated_path"] = str(generated_path)
-            task["status"] = "AI补镜头已生成，待人工复核"
+            task["status"] = ("AI辅助画面已生成，待人工复核" if task.get("generation_mode") else "AI补镜头已生成，待人工复核")
             task["review_status"] = "待复核"
             task["accepted_into_storyboard"] = False
             task["estimated_cost_rmb"] = rate
