@@ -564,3 +564,6 @@ restore_variant_shot_cache 位于 models.py。它以原始镜头稳定 ID 恢复
 
 ## 2026-10-08：恢复生产链后的版本隔离校验
 生产层从完整基线恢复后再次确认：render_path、postprocess_shot 都通过当前 creative_plan.variant_index 计算 variant-N 目录；因此版本隔离不会依赖某一次局部修改，完整生产链仍保持 A/B 文件物理隔离。
+
+## 2026-10-08：方案切换不丢失已生成版本
+方案切换现在保留所有以 variant_ 开头的持久化状态。当前方案仍重新装载自己的 shot cache 和运行态，因此形成“切换重建当前方案 + 保留全部方案历史”的机制，避免生成结果、最终路径和审核状态因切换而丢失。
