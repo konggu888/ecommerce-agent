@@ -107,6 +107,8 @@ def execute_configured_video_gap_generation(
             "provider": "本地视频服务未配置 REST 端点",
         }
 
+    if decision.target == "local":
+        provider.require_key = False
     rate = max(0.0, float(provider.cost_per_shot_rmb or 0.0))
     ledger = ledger or UsageLedger(root / "usage-ledger.json")
 
