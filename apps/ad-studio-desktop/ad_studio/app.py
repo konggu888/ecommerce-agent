@@ -17,6 +17,7 @@ from .browser_skill import _find_agent_browser
 from .ffmpeg import available as ffmpeg_available, has_nvenc
 from .providers import load_video_provider
 from .footage import build_visual_manifest, footage_analysis_public, archive_analyzed_waste, classify_footage_gaps, build_footage_gap_tasks
+from .hybrid_router import route_footage_gap_tasks
 from .transcription import extract_audio
 from .ui_contract import verify_ui_action_contract, UIContractError, ui_action
 
@@ -260,13 +261,15 @@ class App(tk.Tk):
         frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
         ttk.Label(frm,text='补素材任务清单',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
         completion=tasks_data.get('completion_audit') or {}
-        ttk.Label(frm,text=f"当前缺口任务：{len(tasks)} 个｜来源覆盖率：{tasks_data.get('source_coverage_score','未审计')}%｜本轮验收：完成 {completion.get('completed_count',0)}｜仍缺失 {completion.get('still_missing_count',0)}｜待复核 {completion.get('review_count',0)}｜不会在这里自动拍摄或生成").pack(anchor='w',pady=(4,10))
-        tree=ttk.Treeview(frm,columns=('id','status','type','priority','need','point','action','acceptance'),show='headings')
-        for c,t,w in [('id','任务',80),('status','状态',80),('type','处理方式',80),('priority','优先级',70),('need','缺口',180),('point','关联卖点',120),('action','怎么补',280),('acceptance','验收标准',300)]:
+        hybrid_summary=tasks_data.get('hybrid_resolution') or {}
+        counts=hybrid_summary.get('counts') or {}
+        ttk.Label(frm,text=f"当前缺口任务：{len(tasks)} 个｜来源覆盖率：{tasks_data.get('source_coverage_score','未审计')}%｜本轮验收：完成 {completion.get('completed_count',0)}｜仍缺失 {completion.get('still_missing_count',0)}｜待复核 {completion.get('review_count',0)}｜下一步：补拍 {counts.get('继续补拍',0)}｜AI补镜头 {counts.get('AI补镜头',0)}｜人工确认 {counts.get('需要人工确认',0)}").pack(anchor='w',pady=(4,10))
+        tree=ttk.Treeview(frm,columns=('id','status','type','priority','need','point','resolution','action','acceptance'),show='headings')
+        for c,t,w in [('id','任务',80),('status','状态',80),('type','处理方式',80),('priority','优先级',70),('need','缺口',180),('point','关联卖点',120),('resolution','下一步',110),('action','怎么补',260),('acceptance','验收标准',300)]:
             tree.heading(c,text=t); tree.column(c,width=w,anchor='w')
         tree.pack(fill='both',expand=True)
         for x in tasks:
-            tree.insert('', 'end', values=(x.get('task_id','-'),x.get('status','待处理'),x.get('type','-'),x.get('priority','-'),x.get('need','-'),x.get('related_selling_point','-'),x.get('shoot_or_generate','-'),x.get('acceptance','-')))
+            tree.insert('', 'end', values=(x.get('task_id','-'),x.get('status','待处理'),x.get('type','-'),x.get('priority','-'),x.get('need','-'),x.get('related_selling_point','-'),x.get('recommended_resolution','-'),x.get('shoot_or_generate','-'),x.get('acceptance','-')))
         ttk.Label(frm,text='闭环下一步：完成这些任务后，把新增素材放回原素材文件夹，再执行“重新分析实拍素材”，系统会重新进入视觉分析→素材排名→覆盖审计→分镜复核，并自动比较新旧分镜。',wraplength=1050,justify='left').pack(anchor='w',pady=10)
         def show_task(event=None):
             sel=tree.selection()
@@ -277,7 +280,7 @@ class App(tk.Tk):
                 f"任务：{task.get('task_id','-')}｜优先级：{task.get('priority','-')}\n"
                 f"缺口：{task.get('need','-')}\n关联卖点：{task.get('related_selling_point','-') or '无'}\n"
                 f"为什么需要：{task.get('why','-')}\n判断依据：{task.get('reason','-')}\n\n"
-                f"📱 怎么拍/怎么补：\n{task.get('shoot_or_generate','-')}\n\n"
+                f"➡️ 下一步：{task.get('recommended_resolution','-')}\n{task.get('resolution_reason','-')}\n\n📱 怎么拍/怎么补：\n{task.get('shoot_or_generate','-')}\n\n"
                 f"✅ 合格标准：\n{task.get('acceptance','-')}")
         detail=tk.Text(frm,height=10); detail.pack(fill='x',pady=(6,8))
         tree.bind('<<TreeviewSelect>>',show_task)
@@ -359,6 +362,31 @@ class App(tk.Tk):
             gaps=classify_footage_gaps(coverage,self.project.creative_plan,generation_connected=False)
             self.project.creative_plan['footage_gaps']=gaps
             gap_tasks=build_footage_gap_tasks(coverage,gaps,self.project.creative_plan)
+            try:
+                video_provider=load_video_provider(ROOT/'video-provider.json')
+                generation_connected=bool(video_provider.configured())
+                generation_rate=float(getattr(video_provider,'cost_per_shot_rmb',0.0) or 0.0)
+            except Exception:
+                generation_connected=False
+                generation_rate=0.0
+            budget_total=float((self.project.cost_estimate or {}).get('预算',0) or 0)
+            actual_cost=float(getattr(self.project,'actual_cost_rmb',0.0) or 0.0)
+            budget_remaining=max(0.0,budget_total-actual_cost) if budget_total > 0 else 0.0
+            hybrid=route_footage_gap_tasks(
+                gap_tasks.get('tasks',[]),
+                generation_connected=generation_connected,
+                budget_remaining_rmb=budget_remaining,
+                cost_per_ai_shot_rmb=generation_rate,
+            )
+            gap_tasks['hybrid_resolution']=hybrid
+            self.project.creative_plan['footage_hybrid_resolution']=hybrid
+            # 任务清单保留原有“待补拍/待补素材/待生成”语义，同时附加下一步执行建议。
+            resolved_by_id={str(x.get('task_id')):x for x in hybrid.get('tasks',[]) if isinstance(x,dict)}
+            for task in gap_tasks.get('tasks',[]):
+                decision=resolved_by_id.get(str(task.get('task_id')), {})
+                for key in ('recommended_resolution','generation_allowed','estimated_cost_rmb','resolution_reason'):
+                    if key in decision:
+                        task[key]=decision[key]
             self.project.creative_plan['footage_gap_tasks']=gap_tasks
 
             raw_plan=self.model_router.plan_footage(
