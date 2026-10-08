@@ -877,5 +877,46 @@ class DesktopCoreTests(unittest.TestCase):
             inputs = store.final_render_inputs(p)
             self.assertTrue(any(x["shot_id"] == task["accepted_shot_id"] for x in inputs))
 
+
+    def test_a24_final_safety_gate_blocks_all_explicit_risk_classes(self):
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td))
+            p = new_project("https://item.jd.com/123.html", 2, "真人口播")
+            p.creative_plan["creative_fact_audit"] = {
+                "variants": [{
+                    "variant_index": 1,
+                    "unsupported_selling_points": ["未经资料支持的功效"],
+                    "forbidden_term_hits": ["全网最低"],
+                    "absolute_or_high_risk_claims": ["绝对有效"],
+                }]
+            }
+            p.creative_plan["visual_fact_audit"] = {
+                "variants": [{"variant_index": 1, "shots": [{"source": "clip.mp4", "risks": ["商品被遮挡"]}]}]
+            }
+            p.shots[0].clip_source = "ai_generated"
+            p.shots[0].storyboard_review = "待复核"
+            gate = store.final_render_gate(p)
+            self.assertFalse(gate["allowed"])
+            self.assertTrue(gate["checked"])
+            self.assertGreaterEqual(len(gate["reasons"]), 4)
+            self.assertTrue(any("商品资料未支持的卖点" in x for x in gate["reasons"]))
+            self.assertTrue(any("命中用户禁用词" in x for x in gate["reasons"]))
+            self.assertTrue(any("高风险绝对化表达" in x for x in gate["reasons"]))
+            self.assertTrue(any("商品被遮挡" in x for x in gate["reasons"]))
+            self.assertTrue(any("AI生成镜头尚未通过人工复核" in x for x in gate["reasons"]))
+
+    def test_a24_build_final_cannot_write_output_when_safety_gate_blocks(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            p = new_project("https://item.jd.com/123.html", 2, "真人口播")
+            p.creative_plan["creative_fact_audit"] = {
+                "variants": [{"variant_index": 1, "unsupported_selling_points": ["未证实卖点"]}]
+            }
+            with self.assertRaises(RuntimeError):
+                store.build_final(p, "9:16", 1)
+            final_dir = root / "final" / p.id
+            self.assertFalse(final_dir.exists() and any(final_dir.iterdir()))
+
 if __name__ == "__main__":
     unittest.main()
