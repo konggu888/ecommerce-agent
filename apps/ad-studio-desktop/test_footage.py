@@ -22,6 +22,7 @@ from ad_studio.footage import (
     trim_clip,
     validate_footage_plan,
     archive_analyzed_waste,
+    normalize_footage_analysis,
 )
 
 from ad_studio import footage as footage_module
@@ -92,6 +93,30 @@ class ScanFootageTests(unittest.TestCase):
         self.assertEqual(clips[0].duration, 0.0)
         self.assertIn("解析失败", clips[0].note)
 
+
+
+class NormalizeFootageAnalysisTests(unittest.TestCase):
+    def test_marks_best_take_in_duplicate_group(self):
+        raw = {"clips": [
+            {"source": "a.mp4", "score": 72, "duplicate_group": "展示正面", "take_rank": 2},
+            {"source": "b.mp4", "score": 91, "duplicate_group": "展示正面", "take_rank": 1},
+        ]}
+        result = normalize_footage_analysis(raw)
+        self.assertTrue(result["clips"][1]["best_take"])
+        self.assertFalse(result["clips"][0]["best_take"])
+
+    def test_explicit_best_take_is_preserved(self):
+        raw = {"clips": [
+            {"source": "a.mp4", "score": 99, "duplicate_group": "开箱", "best_take": False},
+            {"source": "b.mp4", "score": 60, "duplicate_group": "开箱", "best_take": True},
+        ]}
+        result = normalize_footage_analysis(raw)
+        self.assertTrue(result["clips"][1]["best_take"])
+        self.assertFalse(result["clips"][0]["best_take"])
+
+    def test_normalizes_duplicate_confidence(self):
+        result = normalize_footage_analysis({"clips": [{"source": "a.mp4", "duplicate_confidence": 8}]})
+        self.assertEqual(result["clips"][0]["duplicate_confidence"], 1.0)
 
 
 class ArchiveWasteTests(unittest.TestCase):
