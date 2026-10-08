@@ -60,6 +60,8 @@ class Project:
     scene_id: Optional[str]
     shots: list[Shot]
     cost_estimate: dict = field(default_factory=dict)
+    actual_cost_rmb: float = 0.0
+    actual_cost_summary: dict = field(default_factory=dict)
     product_info: dict = field(default_factory=dict)
     creative_plan: dict = field(default_factory=dict)
     footage_folder: Optional[str]=None
