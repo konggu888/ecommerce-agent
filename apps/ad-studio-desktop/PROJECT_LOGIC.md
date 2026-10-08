@@ -415,3 +415,6 @@ classify_footage_gaps 不再要求 missing_selling_points 必须同时存在于 
 
 ## 2026-10-08：全桌面项目 UI 操作契约
 UI 硬闸门升级为全项目规则：不再只检查少数固定功能。所有用户可执行功能必须使用 `@ui_action` 注册；`ui_contract.py` 从 AST 自动收集这些注册动作，并要求每个动作拥有真实 Tkinter Button command 入口。这样新增功能如果只写后端、不接 UI，会在自动检查阶段失败。该结构检查仍不能替代运行桌面端后的视觉验收，因此 AI 仍需检查实际界面、按钮状态、操作路径和结果展示。
+
+## 2026-10-08：UI 操作契约支持 lambda 参数适配
+`ui_contract.py` 的 AST 检查现在会继续解析 Tkinter Button 的 `command=lambda: self.xxx(...)`，把 lambda 内真正调用的用户操作纳入按钮绑定集合。这样全项目 `@ui_action` 硬闸门既能拦截后端孤立功能，也不会误伤合法的参数适配按钮。
