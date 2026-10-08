@@ -305,3 +305,6 @@ ProductionStore.postprocess_shot 会读取当前硬件能力画像，并在状�
 
 ## 2026-10-08：口播结果进入剪辑导演
 素材剪辑导演现在会同时收到视觉分析与 `footage_transcripts`，因此后续可以依据实际口播内容和时间段选择/删除表达，而不是只看画面。
+
+## 2026-10-08：修复转写 multipart 构造
+修复口播转写请求的 multipart 换行构造，确保桌面端 Python 编译检查通过。

@@ -325,3 +325,6 @@ CI 的桌面 Python 语法检查发现 `ffmpeg.py` 的 concat 清单 `write_text
 
 ## 8.4 视觉 + 口播联合决策
 `plan_footage` 的输入同时包含 `footage_visual_analysis` 与 `footage_transcripts`。视觉模型负责画面事实，转写模型负责语言事实，素材剪辑导演负责最终镜头选择、顺序和口播取舍。
+
+## 2026-10-08：转写接口语法修复
+修复 `transcription.py` 的 multipart 请求字符串构造，避免换行被写入 f-string 导致语法错误。

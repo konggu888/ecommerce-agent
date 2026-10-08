@@ -65,11 +65,13 @@ def transcribe_openai_compatible(
     body = bytearray()
 
     def field(name: str, value: str) -> None:
-        body.extend((f"--{boundary}
-Content-Disposition: form-data; name=\"{name}\"
-
-{value}
-").encode())
+        body.extend(
+            (
+                f"--{boundary}\r\n"
+                f"Content-Disposition: form-data; name=\"{name}\"\r\n\r\n"
+                f"{value}\r\n"
+            ).encode()
+        )
 
     field("model", model)
     field("response_format", "verbose_json")
