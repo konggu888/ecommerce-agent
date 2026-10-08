@@ -103,11 +103,12 @@ class App(tk.Tk):
         ttk.Label(setup,text='广告强度').grid(row=1,column=0,sticky='w'); self.level=tk.IntVar(value=2); ttk.Combobox(setup,textvariable=self.level,values=[1,2,3,4,5],state='readonly',width=8).grid(row=1,column=1,sticky='w')
         ttk.Label(setup,text='本次预算（¥）').grid(row=1,column=2,sticky='e'); self.budget=tk.StringVar(value='3'); ttk.Entry(setup,textvariable=self.budget,width=10).grid(row=1,column=3,sticky='w',padx=8)
         ttk.Label(setup,text='留空/自动：交给AI判断；手动选择仅作为约束').grid(row=1,column=2,columnspan=2,sticky='w')
-        ttk.Label(setup,text='视频形式').grid(row=2,column=0,sticky='w'); self.form=tk.StringVar(value='AI自动选择'); ttk.Combobox(setup,textvariable=self.form,values=['AI自动选择']+FORMS,state='readonly',width=22).grid(row=2,column=1,sticky='w')
-        ttk.Label(setup,text='创意方案数').grid(row=3,column=0,sticky='w'); self.variant_count=tk.StringVar(value='3'); ttk.Combobox(setup,textvariable=self.variant_count,values=['1','3'],state='readonly',width=8).grid(row=3,column=1,sticky='w'); ttk.Label(setup,text='3 = 同一商品自动生成三种明显不同的广告打法').grid(row=3,column=2,columnspan=3,sticky='w')
-        ttk.Label(setup,text='素材来源').grid(row=4,column=0,sticky='w'); self.footage_mode=tk.StringVar(value='AI生成视频'); ttk.Combobox(setup,textvariable=self.footage_mode,values=['AI生成视频','用户拍摄素材'],state='readonly',width=16).grid(row=4,column=1,sticky='w',pady=(4,2))
-        self.footage_folder=tk.StringVar(value=''); ttk.Entry(setup,textvariable=self.footage_folder,width=36).grid(row=4,column=2,sticky='w',padx=4); ttk.Button(setup,text='选择素材文件夹',command=self.choose_footage_folder).grid(row=4,column=3,sticky='e')
-        ttk.Label(setup,text='用户拍摄素材：输入链接后 AI 分析产品 → 指定文件夹放入你拍好的视频 → AI 思考剪辑方案 → 本地 FFmpeg 出片（不调用视频生成服务）',foreground='#666').grid(row=5,column=0,columnspan=5,sticky='w',pady=(2,0))
+        ttk.Label(setup,text='本次任务').grid(row=2,column=0,sticky='w'); self.task_type=tk.StringVar(value='电商短视频'); ttk.Combobox(setup,textvariable=self.task_type,values=['电商短视频','商品主图视频','广告投放视频'],state='readonly',width=18).grid(row=2,column=1,sticky='w'); ttk.Label(setup,text='每次只能选择一种任务').grid(row=2,column=2,columnspan=2,sticky='w')
+        ttk.Label(setup,text='视频形式').grid(row=3,column=0,sticky='w'); self.form=tk.StringVar(value='AI自动选择'); ttk.Combobox(setup,textvariable=self.form,values=['AI自动选择']+FORMS,state='readonly',width=22).grid(row=2,column=1,sticky='w')
+        ttk.Label(setup,text='创意方案数').grid(row=4,column=0,sticky='w'); self.variant_count=tk.StringVar(value='3'); ttk.Combobox(setup,textvariable=self.variant_count,values=['1','3'],state='readonly',width=8).grid(row=3,column=1,sticky='w'); ttk.Label(setup,text='3 = 同一商品自动生成三种明显不同的广告打法').grid(row=3,column=2,columnspan=3,sticky='w')
+        ttk.Label(setup,text='素材来源').grid(row=5,column=0,sticky='w'); self.footage_mode=tk.StringVar(value='AI生成视频'); ttk.Combobox(setup,textvariable=self.footage_mode,values=['AI生成视频','用户拍摄素材'],state='readonly',width=16).grid(row=4,column=1,sticky='w',pady=(4,2))
+        self.footage_folder=tk.StringVar(value=''); ttk.Entry(setup,textvariable=self.footage_folder,width=36).grid(row=5,column=2,sticky='w',padx=4); ttk.Button(setup,text='选择素材文件夹',command=self.choose_footage_folder).grid(row=4,column=3,sticky='e')
+        ttk.Label(setup,text='用户拍摄素材：输入链接后 AI 分析产品 → 指定文件夹放入你拍好的视频 → AI 思考剪辑方案 → 本地 FFmpeg 出片（不调用视频生成服务）',foreground='#666').grid(row=6,column=0,columnspan=5,sticky='w',pady=(2,0))
         ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='📹 实拍分析报告',command=self.footage_analysis_report).grid(row=2,column=5,sticky='e',padx=8); ttk.Button(setup,text='📋 补素材任务',command=self.footage_gap_tasks_report).grid(row=2,column=6,sticky='e',padx=8); ttk.Button(setup,text='🔄 重新分析实拍素材',command=self.reanalyze_footage).grid(row=2,column=7,sticky='e',padx=8); ttk.Button(setup,text='🕘 分析历史',command=self.footage_reanalysis_history_report).grid(row=2,column=8,sticky='e',padx=8); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
         main=ttk.Panedwindow(self,orient='horizontal'); main.pack(fill='both',expand=True,padx=16,pady=8)
         left=ttk.Frame(main,padding=8); right=ttk.Frame(main,padding=8); main.add(left,weight=3); main.add(right,weight=2)
@@ -548,6 +549,8 @@ class App(tk.Tk):
             'platform': self.project.platform if self.project else '自动识别',
             'ad_level': self.level.get(),
             'video_form': self.form.get(),
+            'task_type': self.task_type.get(),
+            'task_rules': {'电商短视频':'突出卖点、节奏与转化；允许AI决定合理时长。','商品主图视频':'优先展示商品本体、核心细节和购买决策信息；避免无关剧情。','广告投放视频':'以投放转化和可测试性为核心；优先强钩子、清晰卖点、CTA与可区分版本。'}[self.task_type.get()],
             'allowed_video_forms': FORMS,
             'reusable_actors': [a.__dict__ for a in self.lib.reusable('演员')],
             'reusable_scenes': [a.__dict__ for a in self.lib.reusable('场景')],
@@ -621,7 +624,7 @@ class App(tk.Tk):
         if not self._ui_execution_gate(): return
         url=self.url.get().strip()
         if not url:return messagebox.showinfo('提示','请先输入商品链接。')
-        level=self.level.get(); form=self.form.get()
+        level=self.level.get(); form=self.form.get(); task_type=self.task_type.get()
         try:
             budget=float(self.budget.get().strip())
             if budget<0: raise ValueError
@@ -650,6 +653,7 @@ class App(tk.Tk):
         self.project=new_project(url,level,form if form!='AI自动选择' else 'AI自动选择')
         self.model_router.set_project_context(self.project.id)
         self.project.product_info=info.to_dict()
+        self.project.creative_plan['task_type']=task_type
         try:
             constraints=self._creative_constraints()
             raw_plans=self.model_router.create_plans(info.to_dict(),constraints,variant_count) if variant_count>1 else [self.model_router.create_plan(info.to_dict(),constraints)]
@@ -724,7 +728,7 @@ class App(tk.Tk):
             clips_note='\n'.join(f"  {x.name}：{x.duration:.1f}s · {x.width}x{x.height}" for x in usable)
             warnings_note=('（已自动截断越界时长：' + '；'.join(warnings) + '）') if warnings else ''
             detail='\n'.join([
-                f"商品：{info.name}",f"素材文件夹：{folder}",f"扫描到可用素材：{len(usable)} 个（跳过无法解析 {len(clips)-len(usable)} 个）",
+                f"任务类型：{task_type}",f"商品：{info.name}",f"素材文件夹：{folder}",f"扫描到可用素材：{len(usable)} 个（跳过无法解析 {len(clips)-len(usable)} 个）",
                 '素材清单：',clips_note,'',
                 f"视觉分析：已观察 {len(analysis.get('clips', [])) if isinstance(analysis, dict) else 0} 个素材；自动归档废片：{sum(1 for x in self.project.creative_plan.get('footage_archive', {}).get('records', []) if x.get('archived'))} 个；口播转写：{len(speech_transcripts)} 个素材。",
                 f"卖点覆盖率：{coverage.get('coverage_score', 100):.1f}%｜开场候选：{coverage.get('opening_candidate') or '未找到'}｜缺失关键镜头：{'、'.join(x.get('need','') for x in coverage.get('missing_key_shots', [])) or '无'}",
@@ -748,7 +752,7 @@ class App(tk.Tk):
                 c['明细'].append({'项目':'演员/场景/商品素材自动生成','数量':asset_est.get('数量',0),'单价':0.0,'小计':asset_total,'计费方式':'按缺失资产配置价格'})
             c['预算']=budget; c['超预算']=c['总计']>budget; c['创意方案数']=variant_count; self.project.cost_estimate=c; self._show_cost_breakdown(c)
             detail='\n'.join([
-                f"商品：{info.name}",f"本次生成创意方案：{variant_count} 个（当前先展示方案1）",f"AI判断广告强度：{plan.ad_level}",
+                f"任务类型：{task_type}",f"商品：{info.name}",f"本次生成创意方案：{variant_count} 个（当前先展示方案1）",f"AI判断广告强度：{plan.ad_level}",
                 f"AI选择视频形式：{plan.video_form}",f"预计时长：{plan.duration_seconds}秒",f"AI策略：{plan.strategy}",f"AI钩子：{plan.hook}",'',
                 f"当前方案开始前预计成本：¥{c['总计']:.2f}",f"本地处理/FFmpeg：¥{c['本地']:.2f}",f"视频生成费用：¥{rate*len(plan.shots):.2f}",f"演员生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='演员'):.2f}",f"场景生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='场景'):.2f}",f"商品素材生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='商品素材'):.2f}",f"云端任务：¥{c['云端']:.2f}",
                 *[f"{x['项目']}：{x['数量']} × ¥{x['单价']:.2f} = ¥{x['小计']:.2f}" for x in c['明细'] if x['数量']],
