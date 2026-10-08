@@ -1027,5 +1027,62 @@ class DesktopCoreTests(unittest.TestCase):
             latest = p.creative_plan["final_output_manifests"]["1|9:16"]
             self.assertEqual(latest["output_path"], str(outputs[1]))
 
+
+    def test_a27_delivery_recheck_reports_blocker_then_recovers_without_regeneration(self):
+        try:
+            from ad_studio.app import App
+        except ModuleNotFoundError as exc:
+            if exc.name != "tkinter":
+                raise
+            import sys, types
+            fake_tk = types.ModuleType("tkinter")
+            fake_tk.Tk = object
+            fake_tk.ttk = types.ModuleType("tkinter.ttk")
+            fake_tk.filedialog = types.ModuleType("tkinter.filedialog")
+            fake_tk.messagebox = types.ModuleType("tkinter.messagebox")
+            sys.modules["tkinter"] = fake_tk
+            sys.modules["tkinter.ttk"] = fake_tk.ttk
+            sys.modules["tkinter.filedialog"] = fake_tk.filedialog
+            sys.modules["tkinter.messagebox"] = fake_tk.messagebox
+            from ad_studio.app import App
+        from types import SimpleNamespace
+        from unittest.mock import patch
+
+        app = App.__new__(App)
+        project = new_project("https://item.jd.com/123.html", 2, "真人口播")
+        project.creative_plan["creative_fact_audit"] = {
+            "variants": [{"variant_index": 1, "unsupported_selling_points": ["未证实卖点"]}]
+        }
+        output = Path(tempfile.gettempdir()) / "a27-delivery.mp4"
+        output.write_bytes(b"video")
+        media = {"valid": True, "duration_seconds": 5.0, "width": 1080, "height": 1920, "reason": "最终视频机器质检通过"}
+        history = [{"key": "1|9:16", "revision_id": "r1", "variant_index": 1, "aspect": "9:16",
+                    "output_path": str(output), "exists": True, "delivery_status": "可交付",
+                    "duration_seconds": 5.0, "shot_count": 5, "created_at": "2026-10-09T04:00:00.000000"}]
+        class FakeStore:
+            def save(self, _project): pass
+            def final_output_history(self, _project): return history
+            def inspect_final_output(self, _output, _aspect): return media
+            def final_render_gate(self, _project):
+                if _project.creative_plan.get("creative_fact_audit"):
+                    return {"allowed": False, "reasons": ["方案1：商品资料未支持的卖点：未证实卖点"]}
+                return {"allowed": True, "reasons": []}
+        app.project = project
+        app.store = FakeStore()
+        app.active_variant_index = 1
+        app.aspect = SimpleNamespace(get=lambda: "9:16")
+
+        blocked = app._run_final_delivery_recheck()
+        self.assertFalse(blocked["delivery_ready"])
+        self.assertEqual(blocked["repair_routes"][0]["route"], "创意事实检查")
+        self.assertEqual(blocked["output_path"], str(output))
+
+        # 修复事实后重新检查：只复用现有输出，不重新生成。
+        project.creative_plan["creative_fact_audit"] = {}
+        recovered = app._run_final_delivery_recheck()
+        self.assertTrue(recovered["delivery_ready"])
+        self.assertTrue(recovered["media_check"]["valid"])
+        self.assertEqual(recovered["repair_routes"], [])
+
 if __name__ == "__main__":
     unittest.main()
