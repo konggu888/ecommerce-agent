@@ -135,7 +135,16 @@ class DesktopCoreTests(unittest.TestCase):
                 "_variant_index": 2,
                 "_variant_label": "方案2｜B",
                 "video_form": "AI自动选择",
-                "shots": [],
+                "duration_seconds": 30,
+                "hook": "快速抓住注意力",
+                "strategy": "方案B策略",
+                "script": "展示卖点并引导购买",
+                "shots": [{
+                    "index": 1,
+                    "objective": "开场",
+                    "visual": "商品快速展示",
+                    "dialogue": "立即了解商品"
+                }],
             }, type("Info", (), {"name": "测试商品"})())
             self.assertEqual(app.project.creative_plan["variant_outputs"]["1"]["path"], "/tmp/a-final.mp4")
             self.assertIn("2", app.project.creative_plan["variant_shot_cache"])
