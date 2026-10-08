@@ -5,6 +5,7 @@ from pathlib import Path
 from ad_studio.engine import detect_platform, estimate_cost, new_project, mark_regenerate
 from ad_studio.library import LocalLibrary
 from ad_studio.production import ProductionStore
+from ad_studio.product_parser import ProductInfo, save_product_library, load_product_library, merge_product_library
 
 
 class DesktopCoreTests(unittest.TestCase):
