@@ -18,6 +18,7 @@ from .ffmpeg import available as ffmpeg_available, has_nvenc
 from .providers import load_video_provider
 from .footage import build_visual_manifest, footage_analysis_public, archive_analyzed_waste, classify_footage_gaps, build_footage_gap_tasks
 from .transcription import extract_audio
+from .ui_contract import verify_ui_action_contract, UIContractError
 
 
 class UnconfiguredCreativeLLM:
@@ -51,6 +52,15 @@ class App(tk.Tk):
             except Exception:
                 pass
         return default
+
+    def _ui_execution_gate(self):
+        """AI/出片关键操作前的 UI 硬闸门：后端存在不等于用户可操作。"""
+        try:
+            verify_ui_action_contract(Path(__file__))
+            return True
+        except (OSError, SyntaxError, UIContractError) as exc:
+            messagebox.showerror('UI 操作入口检查失败', f'代码可能已经实现，但界面入口存在缺失或失配。\\n\\n{exc}\\n\\n必须先修复 UI，再执行本次操作。')
+            return False
 
     def asset_library_settings(self):
         win=tk.Toplevel(self); win.title('资产库硬盘位置'); win.geometry('760x280'); win.transient(self)
@@ -177,6 +187,7 @@ class App(tk.Tk):
         ttk.Button(frm,text='关闭',command=win.destroy).pack(anchor='e')
  
     def reanalyze_footage(self):
+        if not self._ui_execution_gate(): return
         """用户补充素材后，重新进入视觉分析→排名→覆盖审计→分镜复核闭环。"""
         if not self.project:
             return messagebox.showinfo('提示', '请先创建一个实拍素材项目。')
@@ -595,6 +606,7 @@ class App(tk.Tk):
         ttk.Button(frm,text='切换到选中方案',command=apply).pack(anchor='e')
 
     def create(self):
+        if not self._ui_execution_gate(): return
         url=self.url.get().strip()
         if not url:return messagebox.showinfo('提示','请先输入商品链接。')
         level=self.level.get(); form=self.form.get()
@@ -767,6 +779,7 @@ class App(tk.Tk):
             )
 
     def generate_shot(self):
+        if not self._ui_execution_gate(): return
         s=self.selected()
         if not s:return messagebox.showinfo('提示','先选择一个镜头。')
         try:
@@ -789,6 +802,7 @@ class App(tk.Tk):
             messagebox.showerror('镜头生成失败',str(e))
 
     def regen_shot(self):
+        if not self._ui_execution_gate(): return
         s=self.selected()
         if not s:return messagebox.showinfo('提示','先选择要重新生成的镜头。')
         old=s.version; mark_regenerate(self.project,self.project.shots.index(s)); self.store.save(self.project); self.refresh_shots(); self.detail.set(f'镜头 {s.index}：v{old} → v{s.version}。其他镜头版本保持不变。')
@@ -899,6 +913,7 @@ class App(tk.Tk):
         ttk.Button(frm,text='执行：字幕 + BGM/人声处理',command=run).pack(anchor='e',pady=8)
 
     def final_render(self):
+        if not self._ui_execution_gate(): return
         if not self.project:return messagebox.showinfo('提示','先创建项目。')
         try:
             out=self.store.build_final(self.project,self.aspect.get()); self.detail.set(f'最终成片已输出：{out}'); messagebox.showinfo('完成',f'最终广告已生成\n{out}')
