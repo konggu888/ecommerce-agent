@@ -9,11 +9,13 @@ from .library import LocalLibrary
 from .asset_generation import AssetGenerator, LocalAssetBackend
 from .hardware import detect_hardware
 from .capability import CapabilityRouter
+from .usage_ledger import UsageLedger
 
 class ProductionStore:
     def __init__(self, root: Path, library_root: Path | None = None):
         self.root=root; self.root.mkdir(parents=True,exist_ok=True)
         self.library_root=library_root or root
+        self.ledger=UsageLedger(self.root/'usage-ledger.json')
 
     def save(self, project: Project):
         project.updated_at=datetime.datetime.now().isoformat(timespec='seconds')
@@ -33,6 +35,12 @@ class ProductionStore:
 
     def current_shots(self, project: Project):
         return [s for s in sorted(project.shots,key=lambda x:x.index) if s.video_path and Path(s.video_path).exists()]
+
+    def _sync_actual_cost(self, project: Project):
+        summary = self.ledger.project_summary(project.id)
+        project.cost_estimate.setdefault("actual", {})
+        project.cost_estimate["actual"] = summary
+        project.cost_estimate["actual_cost_rmb"] = summary["actual_cost_rmb"]
 
     def mark_ready(self, project: Project, shot: Shot, output: Path):
         shot.video_path=str(output); shot.status='已生成'; self.save(project)
@@ -55,6 +63,14 @@ class ProductionStore:
                         result=generator.generate(kind,project.product_name+'-'+kind,shot.visual+'；需求：'+'、'.join(tags),tags,shot.id)
                         library._write(library.all()+[result.asset])
                         item.update({'asset':result.asset.id,'source':'已生成并入库','cost_rmb':result.cost_rmb})
+                        self.ledger.record_asset(
+                            project_id=project.id,
+                            shot_id=shot.id,
+                            asset_kind=kind,
+                            provider=result.provider,
+                            cost_rmb=result.cost_rmb,
+                        )
+                        self._sync_actual_cost(project)
                     except Exception as exc:
                         item.update({'source':'自动生成失败','error':str(exc)})
                 else:
@@ -97,6 +113,14 @@ class ProductionStore:
         elif kind=='商品素材': shot.product_asset_ids.append(item.id)
         shot.asset_source='ai_generated'
         shot.actual_cost_rmb=round(shot.actual_cost_rmb+cost,4)
+        self.ledger.record_asset(
+            project_id=project.id,
+            shot_id=shot.id,
+            asset_kind=kind,
+            provider=provider_name,
+            cost_rmb=cost,
+        )
+        self._sync_actual_cost(project)
         shot.provider = provider_name
         shot.status=f'{kind}已生成并入库'
         self.save(project)
@@ -167,7 +191,15 @@ class ProductionStore:
             if out.exists():
                 out.unlink()
             result.replace(out)
-            shot.actual_cost_rmb=round(float(getattr(provider,'cost_per_shot_rmb',0.0)),4)
+            video_cost=round(float(getattr(provider,'cost_per_shot_rmb',0.0)),4)
+            shot.actual_cost_rmb=round(float(shot.actual_cost_rmb or 0.0)+video_cost,4)
+            self.ledger.record_video(
+                project_id=project.id,
+                shot_id=shot.id,
+                provider=getattr(provider,'provider_name','Generic REST'),
+                cost_rmb=video_cost,
+            )
+            self._sync_actual_cost(project)
             self.mark_ready(project,shot,out)
             return out
         except Exception as exc:
