@@ -64,6 +64,8 @@ class Project:
     actual_cost_summary: dict = field(default_factory=dict)
     product_info: dict = field(default_factory=dict)
     creative_plan: dict = field(default_factory=dict)
+    actual_cost_rmb: float = 0.0
+    actual_cost_summary: dict = field(default_factory=dict)
     footage_folder: Optional[str]=None
     created_at: str=field(default_factory=now)
     updated_at: str=field(default_factory=now)
