@@ -92,6 +92,55 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertTrue(any(s.id == task["accepted_shot_id"] for s in restored.shots))
 
 
+    def test_variant_state_survives_plan_switch(self):
+        # 切换方案会重建当前 creative_plan；已生成的版本缓存/输出记录必须保留。
+        try:
+            from ad_studio.app import App
+        except ModuleNotFoundError as exc:
+            if exc.name != 'tkinter':
+                raise
+            import sys, types
+            fake_tk = types.ModuleType('tkinter')
+            fake_tk.Tk = object
+            fake_tk.ttk = types.ModuleType('tkinter.ttk')
+            fake_tk.filedialog = types.ModuleType('tkinter.filedialog')
+            fake_tk.messagebox = types.ModuleType('tkinter.messagebox')
+            sys.modules['tkinter'] = fake_tk
+            sys.modules['tkinter.ttk'] = fake_tk.ttk
+            sys.modules['tkinter.filedialog'] = fake_tk.filedialog
+            sys.modules['tkinter.messagebox'] = fake_tk.messagebox
+            from ad_studio.app import App
+        with tempfile.TemporaryDirectory() as td:
+            app = App.__new__(App)
+            app.project = new_project("https://item.jd.com/123.html", 2, "真人口播")
+            app.project.creative_plan = {
+                "creative_variants": [
+                    {"_variant_index": 1, "video_form": "方案A"},
+                    {"_variant_index": 2, "video_form": "方案B"},
+                ],
+                "variant_count": 2,
+                "variant_shot_cache": {
+                    "1": [{"id": "shot-01", "index": 1, "title": "A镜头", "visual": "A", "script": "A"}],
+                    "2": [{"id": "shot-01", "index": 1, "title": "B镜头", "visual": "B", "script": "B"}],
+                },
+                "variant_outputs": {"1": {"path": "/tmp/a-final.mp4", "status": "已输出"}},
+                "variant_footage_gap_tasks": {"1": {"tasks": [{"task_id": "A"}]}},
+            }
+            app.active_variant_index = 1
+            app.level = type("V", (), {"get": lambda self: 2})()
+            app.form = type("V", (), {"get": lambda self: "AI自动选择"})()
+            app.task_type = type("V", (), {"get": lambda self: "电商短视频"})()
+            app.lib = type("L", (), {"reusable": lambda self, kind: []})()
+            app._activate_plan({
+                "_variant_index": 2,
+                "_variant_label": "方案2｜B",
+                "video_form": "AI自动选择",
+                "shots": [],
+            }, type("Info", (), {"name": "测试商品"})())
+            self.assertEqual(app.project.creative_plan["variant_outputs"]["1"]["path"], "/tmp/a-final.mp4")
+            self.assertIn("2", app.project.creative_plan["variant_shot_cache"])
+            self.assertIn("1", app.project.creative_plan["variant_footage_gap_tasks"])
+
     def test_variant_runtime_state_isolated_for_hybrid_gap_tasks(self):
         # GitHub Linux runner不一定安装Tk；测试只需要App的无GUI状态方法。
         try:
