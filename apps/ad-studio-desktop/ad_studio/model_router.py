@@ -354,7 +354,12 @@ class ModelRouter:
                     "best_ranges": [{"start": "number", "duration": "number", "reason": "string"}],
                     "visual_tags": ["product_visible|person|scene|detail|demo|talking|blocked|blur|shake|duplicate|other"],
                     "selling_points": ["string"],
-                    "speech_quality": "none|clear|filler|unclear"
+                    "speech_quality": "none|clear|filler|unclear",
+                    "duplicate_group": "string；同一拍摄动作/卖点的重复镜头使用相同分组名，无重复则为空字符串",
+                    "duplicate_confidence": "0..1；判断重复镜头的置信度",
+                    "take_rank": "integer；同组镜头的推荐优先级，1为最佳",
+                    "best_take": "boolean；是否为该重复组最值得保留的版本",
+                    "keep_reason": "string；为什么这一版比同组其他版本更值得保留"
                 }],
                 "global_summary": "string",
                 "recommended_duration_seconds": "integer"
@@ -365,11 +370,12 @@ class ModelRouter:
             "把画面事实与商品资料、广告方案对应起来，不得只根据文件名猜测。"
             "识别商品清晰度、人物、场景、演示、遮挡、抖动、重复、糊片、"
             "可用片段、卖点对应关系和口播质量；没看到的内容标记 unknown。"
+            "必须把重复拍摄的同类镜头放入 duplicate_group，并在同组内比较清晰度、构图、商品展示完整度、动作完成度、口播质量和广告价值，给出 take_rank、best_take、duplicate_confidence 与 keep_reason。没有重复镜头时 duplicate_group 为空。"
             "只返回 JSON。\n\n" + json.dumps(payload, ensure_ascii=False, indent=2)
         )
-        return self.complete_json(
+        return normalize_footage_analysis(self.complete_json(
             profile, prompt, function="实拍素材视觉分析", image_paths=images
-        )
+        ))
 
     def plan_footage(
         self,
@@ -416,9 +422,10 @@ class ModelRouter:
             "4. 如果转写结果中出现寒暄、重复、口头禅、停顿或与卖点无关的废话，必须删除；用 ranges 指定多个保留区间，只保留有价值的表达。\n"
             "5. ranges 使用素材原始时间轴的 [start,end]，多个区间按时间顺序排列；没有废话时使用单个区间。\n"
             "6. 不能为了删废话破坏一句话的完整语义；时间戳不够精确时，只在 segment 边界做安全裁剪。\n"
-            "7. 每个镜头给出画面说明、口播/文案、字幕位置、构图、节奏、转场，供本地执行。\n"
-            "8. 广告表达避免违反广告法的绝对化、虚假、无法证明的承诺。\n"
-            "9. 输出必须是严格 JSON，不要输出 Markdown。"
+            "7. 每个镜头给出画面说明、口播/文案、字幕位置、构图、节奏、转场，供本地执行。\n"            "8. footage_analysis 中如果多个素材属于同一 duplicate_group，优先使用 best_take=true、take_rank 更高的版本；除非低排名版本包含主版本没有的独特有效片段，否则不要重复使用同组低排名素材。\n"
+
+            "9. 广告表达避免违反广告法的绝对化、虚假、无法证明的承诺。\n"
+            "10. 输出必须是严格 JSON，不要输出 Markdown。"
         )
         prompt = (
             system
@@ -585,7 +592,8 @@ STAGE_SCHEMAS = {
             "pacing": "string", "speed": "number 0.75..1.5",
             "bgm_intensity": "string", "bgm_volume": "number 0..0.35",
             "transition": "string",
-            "ranges": "[[start,end],...]；如需删除口播废话/重复段，必须使用多个保留区间"
+            "ranges": "[[start,end],...]；如需删除口播废话/重复段，必须使用多个保留区间",
+            "duplicate_group": "string；重复镜头组名", "duplicate_confidence": "0..1", "take_rank": "integer；1为最佳", "best_take": "boolean", "keep_reason": "string"
         }]
     },
 }
