@@ -93,7 +93,24 @@ class DesktopCoreTests(unittest.TestCase):
 
 
     def test_variant_runtime_state_isolated_for_hybrid_gap_tasks(self):
-        from ad_studio.app import App
+        # GitHub Linux runner不一定安装Tk；测试只需要App的无GUI状态方法。
+        try:
+            from ad_studio.app import App
+        except ModuleNotFoundError as exc:
+            if exc.name != 'tkinter':
+                raise
+            import sys
+            import types
+            fake_tk = types.ModuleType('tkinter')
+            fake_tk.Tk = object
+            fake_tk.ttk = types.ModuleType('tkinter.ttk')
+            fake_tk.filedialog = types.ModuleType('tkinter.filedialog')
+            fake_tk.messagebox = types.ModuleType('tkinter.messagebox')
+            sys.modules['tkinter'] = fake_tk
+            sys.modules['tkinter.ttk'] = fake_tk.ttk
+            sys.modules['tkinter.filedialog'] = fake_tk.filedialog
+            sys.modules['tkinter.messagebox'] = fake_tk.messagebox
+            from ad_studio.app import App
         with tempfile.TemporaryDirectory() as td:
             store = ProductionStore(Path(td))
             p = new_project("https://item.jd.com/123.html", 2, "真人口播")
