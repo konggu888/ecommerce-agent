@@ -496,6 +496,34 @@ def merge_gap_task_acceptance(current_tasks: dict | None, completion_audit: dict
     out["completed_task_history"] = [x for x in previous if x.get("status") == "已完成"]
     return out
 
+
+def audit_footage_plan_change(previous_plan: list[dict] | None, new_plan: list[dict] | None) -> dict:
+    """比较补拍前后的实拍剪辑方案，明确新增、移除、替换与卖点变化。"""
+    old = [dict(x) for x in (previous_plan or []) if isinstance(x, dict)]
+    new = [dict(x) for x in (new_plan or []) if isinstance(x, dict)]
+    def sig(x):
+        return (str(x.get("source", "")).strip(), tuple(tuple(r) for r in (x.get("ranges") or [])))
+    old_s = [sig(x) for x in old]
+    new_s = [sig(x) for x in new]
+    old_sources = {x[0] for x in old_s if x[0]}
+    new_sources = {x[0] for x in new_s if x[0]}
+    added = [x for x in new if sig(x) not in old_s]
+    removed = [x for x in old if sig(x) not in new_s]
+    old_points = {p for x in old for p in (x.get("covered_selling_points") or [])}
+    new_points = {p for x in new for p in (x.get("covered_selling_points") or [])}
+    return {
+        "changed": bool(added or removed or old_points != new_points),
+        "old_shot_count": len(old),
+        "new_shot_count": len(new),
+        "added_shots": added,
+        "removed_shots": removed,
+        "added_sources": sorted(new_sources - old_sources),
+        "removed_sources": sorted(old_sources - new_sources),
+        "newly_covered_selling_points": sorted(new_points - old_points),
+        "no_longer_covered_selling_points": sorted(old_points - new_points),
+        "method": "补素材前后分镜确定性差异审计",
+    }
+
 def audit_final_footage_plan(
     plan: list[dict] | None,
     analysis: dict | None,
