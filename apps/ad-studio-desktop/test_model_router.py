@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from ad_studio.model_router import FUNCTIONS, ModelProfile, ModelRouter
+from ad_studio.model_router import FUNCTIONS, ModelProfile, ModelRouter, audit_ad_variant_set
 
 
 class FakeRouter(ModelRouter):
@@ -68,6 +68,37 @@ class ModelRouterRoutingTest(unittest.TestCase):
             self.assertEqual(plan["video_form"], "真人+产品")
             self.assertEqual(len(plan["shots"]), 1)
             self.assertIn("creative_stages", plan)
+
+
+class CreativeVariantAuditTest(unittest.TestCase):
+    def test_non_platform_creative_audit_requires_single_mechanism_for_clean_test(self):
+        plans = [
+            {"hook": "先痛点", "strategy": "痛点后解决", "selling_points": ["省时间"], "video_form": "演示", "proof": "前后对比", "cta": "了解更多", "script": "A"},
+            {"hook": "先结果", "strategy": "结果后解释", "selling_points": ["省时间"], "video_form": "演示", "proof": "前后对比", "cta": "了解更多", "script": "B"},
+            {"hook": "先结果", "strategy": "结果后解释", "selling_points": ["省钱"], "video_form": "演示", "proof": "前后对比", "cta": "了解更多", "script": "C"},
+        ]
+        audit = audit_ad_variant_set(plans, "广告投放视频")
+        self.assertTrue(audit["enabled"])
+        self.assertEqual(audit["mechanism_score"], 100)
+        self.assertEqual(audit["test_design_score"], 75)
+        self.assertIn("核心机制字段", audit["method"])
+
+    def test_creative_audit_does_not_invent_platform_or_performance_data(self):
+        plans = [
+            {"hook": "A", "strategy": "A", "script": "同一商品"},
+            {"hook": "A", "strategy": "A", "script": "另一版"},
+        ]
+        audit = audit_ad_variant_set(plans, "广告投放视频")
+        self.assertEqual(audit["mechanism_score"], 0)
+        self.assertEqual(audit["test_design_score"], 0)
+        self.assertNotIn("platform", audit)
+        self.assertNotIn("ctr", audit)
+        self.assertNotIn("roas", audit)
+
+    def test_non_ad_task_does_not_enable_ab_audit(self):
+        audit = audit_ad_variant_set([{"hook": "A"}, {"hook": "B"}], "电商短视频")
+        self.assertFalse(audit["enabled"])
+        self.assertEqual(audit["test_design_score"], 0)
 
 
 if __name__ == "__main__":
