@@ -436,3 +436,5 @@ validate_task_type_plan 在创意方案进入项目/成片前执行，防止 AI 
 
 ## 2026-10-08：版本实验信息持久化
 每个创意方案保存 `variant_test_axis`；方案集合的 `variant_set_audit` 也随项目保存，因此切换方案、单独生成镜头或重新打开项目时不会丢失 A/B 实验上下文。
+
+- 2026-10-08 修复：A/B 多版本审计仅作为 ModelRouter 的辅助能力，不改变 `plan_footage()` 的类内作用域和原有实拍剪辑链。
