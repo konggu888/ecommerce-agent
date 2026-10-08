@@ -197,10 +197,31 @@ def validate_plan(raw: dict[str, Any]) -> CreativePlan:
     )
 
 
+def validate_task_type_plan(raw: dict[str, Any], constraints: dict[str, Any] | None = None) -> dict[str, Any]:
+    """确定性检查本次任务是否真正反映在创意方案结构中。"""
+    constraints = constraints or {}
+    task_type = str(constraints.get("task_type", "电商短视频")).strip() or "电商短视频"
+    if task_type not in {"电商短视频", "商品主图视频", "广告投放视频"}:
+        raise CreativePlanError(f"不支持的任务类型：{task_type}")
+    shots = raw.get("shots") if isinstance(raw, dict) else None
+    if not isinstance(shots, list) or not shots:
+        raise CreativePlanError("任务类型检查失败：没有分镜")
+    texts = " ".join(str(raw.get(k, "")) for k in ("strategy", "hook", "script")) + " " + " ".join(str(s.get(k, "")) for s in shots if isinstance(s, dict) for k in ("objective", "visual", "dialogue", "on_screen_text", "cta_role"))
+    if task_type == "广告投放视频" and not any(x in texts for x in ("CTA", "行动", "购买", "下单", "立即", "点击", "咨询", "转化")):
+        raise CreativePlanError("广告投放视频缺少明确转化/CTA结构，不能进入成片")
+    if task_type == "商品主图视频" and sum(1 for x in ("商品", "产品", "细节", "展示", "特写", "功能", "材质", "接口", "外观", "参数", "使用") if x in texts) < 2:
+        raise CreativePlanError("商品主图视频缺少商品本体/细节/功能展示结构，不能进入成片")
+    if task_type == "电商短视频" and not str(raw.get("hook", "")).strip():
+        raise CreativePlanError("电商短视频缺少开场钩子，不能进入成片")
+    raw["task_type"] = task_type
+    raw["task_validation"] = {"ok": True, "task_type": task_type, "method": "确定性任务结构检查"}
+    return raw
+
+
 class CreativeEngine:
     def __init__(self, llm: CreativeLLM):
         self.llm = llm
 
     def plan(self, product: dict[str, Any], constraints: dict[str, Any] | None = None) -> CreativePlan:
         raw = self.llm.create_plan(product, constraints or {})
-        return validate_plan(raw)
+        return validate_plan(validate_task_type_plan(raw, constraints))

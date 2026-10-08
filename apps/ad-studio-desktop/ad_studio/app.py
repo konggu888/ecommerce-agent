@@ -11,7 +11,7 @@ from .hardware import detect_hardware, format_hardware
 from .capability import CapabilityRouter
 from .production import ProductionStore
 from .product_parser import parse_product_url, save_product
-from .creative_engine import CreativeEngine, validate_plan
+from .creative_engine import CreativeEngine, validate_plan, validate_task_type_plan
 from .model_router import ModelRouter, ModelProfile, FUNCTIONS
 from .browser_skill import _find_agent_browser
 from .ffmpeg import available as ffmpeg_available, has_nvenc
@@ -567,12 +567,14 @@ class App(tk.Tk):
             'video_form': plan.video_form, 'duration_seconds': plan.duration_seconds,
             'strategy': plan.strategy, 'hook': plan.hook, 'script': plan.script,
             'shots': [x.__dict__ for x in plan.shots],
+            'task_type': self.project.creative_plan.get('task_type', self.task_type.get()) if self.project else self.task_type.get(),
+            'task_validation': raw.get('task_validation', {}),
         }
 
     def _activate_plan(self, raw, info):
         existing_variants=self.project.creative_plan.get('creative_variants',[]) if self.project else []
         existing_count=self.project.creative_plan.get('variant_count',len(existing_variants)) if self.project else 1
-        plan=validate_plan(raw)
+        plan=validate_plan(validate_task_type_plan(raw, self._creative_constraints()))
         self.project.form=plan.video_form
         self.project.product_name=info.name
         data=self._plan_dict(plan)

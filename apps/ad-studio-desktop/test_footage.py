@@ -529,3 +529,17 @@ def test_ui_contract_covers_all_registered_user_actions():
     result = verify_ui_action_contract(Path(__file__).parent / 'ad_studio' / 'app.py')
     assert result['ok'] is True
     assert result['required_actions']
+
+
+def test_task_type_plan_validator_enforces_structure():
+    from ad_studio.creative_engine import CreativePlanError, validate_task_type_plan
+    base = {'hook': '3秒看懂核心卖点', 'strategy': '转化', 'script': '立即购买', 'shots': [{'objective': '商品特写', 'visual': '商品细节展示', 'dialogue': '立即购买', 'cta_role': 'CTA'}]}
+    assert validate_task_type_plan(dict(base), {'task_type': '广告投放视频'})['task_type'] == '广告投放视频'
+    assert validate_task_type_plan(dict(base), {'task_type': '商品主图视频'})['task_type'] == '商品主图视频'
+    bad = dict(base); bad['hook'] = ''
+    try:
+        validate_task_type_plan(bad, {'task_type': '电商短视频'})
+    except CreativePlanError:
+        pass
+    else:
+        raise AssertionError('电商短视频缺少 Hook 时必须阻止继续')
