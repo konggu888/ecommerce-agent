@@ -308,7 +308,27 @@ class ProductionStore:
         self.save(project)
         return out
 
+    def final_render_gate(self, project: Project) -> dict[str, Any]:
+        """最终成片安全闸门：发现明确事实/视觉风险时阻止输出。"""
+        plan = project.creative_plan or {}
+        reasons = []
+        fact = plan.get('creative_fact_audit') or {}
+        for item in fact.get('variants', []) if isinstance(fact, dict) else []:
+            for field, label in (("unsupported_selling_points", "商品资料未支持的卖点"),("forbidden_term_hits", "命中用户禁用词"),("absolute_or_high_risk_claims", "高风险绝对化表达")):
+                values = item.get(field) or []
+                if values: reasons.append(f"方案{item.get('variant_index','?')}：{label}：{'、'.join(map(str, values))}")
+        visual = plan.get('visual_fact_audit') or {}
+        for variant in visual.get('variants', []) if isinstance(visual, dict) else []:
+            for shot in variant.get('shots', []) if isinstance(variant, dict) else []:
+                risks = shot.get('risks') or []
+                if risks: reasons.append(f"方案{variant.get('variant_index','?')}·{shot.get('source','未知素材')}：{'；'.join(map(str, risks))}")
+        reasons.extend([f"镜头{s.index}：AI生成镜头尚未通过人工复核" for s in project.shots if getattr(s,'clip_source','ai_generated')=='ai_generated' and getattr(s,'storyboard_review','不需要')=='待复核'])
+        return {'allowed': not reasons, 'reasons': reasons, 'checked': bool(fact or visual), 'message': '最终成片安全闸门通过' if not reasons else '最终成片被安全闸门拦截'}
+
     def build_final(self, project: Project, aspect: str = "9:16", variant_index: int | None = None):
+        gate=self.final_render_gate(project)
+        if not gate['allowed']:
+            raise RuntimeError(gate['message'] + ":\n" + "\n".join(f"- {x}" for x in gate['reasons']))
         shots=self.current_shots(project)
         if len(shots)!=len(project.shots):
             raise RuntimeError(f'还有 {len(project.shots)-len(shots)} 个镜头没有成片，暂不能输出最终广告')
