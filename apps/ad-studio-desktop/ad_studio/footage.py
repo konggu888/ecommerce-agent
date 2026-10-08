@@ -193,6 +193,51 @@ def normalize_footage_analysis(analysis: dict | None) -> dict:
     return result
 
 
+def rank_footage_analysis(analysis: dict | None) -> dict:
+    """把 AI 视觉判断汇总成稳定的素材池优先级，不替代 AI 原始评分。"""
+    result = normalize_footage_analysis(analysis)
+    clips = result.get("clips", [])
+    candidates = []
+    for item in clips:
+        if not isinstance(item, dict) or item.get("usable") is False:
+            continue
+        try:
+            base = max(0.0, min(100.0, float(item.get("score", 0) or 0)))
+        except (TypeError, ValueError):
+            base = 0.0
+        score = base
+        tags = {str(x).lower() for x in item.get("visual_tags", []) if x is not None}
+        speech = str(item.get("speech_quality", "")).lower()
+        if item.get("best_take"):
+            score += 6.0
+        elif item.get("duplicate_group") and float(item.get("duplicate_confidence", 0) or 0) >= 0.7:
+            score -= 8.0
+        if speech == "clear":
+            score += 4.0
+        elif speech in {"filler", "unclear"}:
+            score -= 4.0
+        if tags & {"blur", "shake"}:
+            score -= 8.0
+        if tags & {"product_visible", "detail", "demo"}:
+            score += 3.0
+        item["selection_score"] = round(max(0.0, min(110.0, score)), 2)
+        candidates.append(item)
+    candidates.sort(key=lambda x: (-float(x.get("selection_score", 0)), str(x.get("source", ""))))
+    for rank, item in enumerate(candidates, 1):
+        item["material_rank"] = rank
+    for item in clips:
+        if item not in candidates:
+            item["material_rank"] = 0
+            item["selection_score"] = None
+    result["clips"] = clips
+    result["ranking"] = {
+        "method": "AI评分 + 最佳版本 + 口播质量 + 画面标签 + 重复镜头惩罚",
+        "candidate_count": len(candidates),
+        "top_sources": [str(x.get("source", "")) for x in candidates[:10]],
+    }
+    return result
+
+
 def archive_analyzed_waste(
     clips: list[FootageClip],
     analysis: dict,
