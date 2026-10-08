@@ -486,7 +486,8 @@ class App(tk.Tk):
         if not self.project: return messagebox.showinfo('提示','请先创建或打开一个项目。')
         plan=self.project.creative_plan or {}; task_box=plan.get('footage_gap_tasks') or {}
         tasks=task_box.get('tasks') if isinstance(task_box,dict) else []
-        tasks=[x for x in tasks if isinstance(x,dict) and x.get('recommended_resolution')=='AI补镜头']
+        # 只复核当前激活版本，禁止跨版本把 AI 补镜头带入当前分镜。
+        tasks=[x for x in tasks if isinstance(x,dict) and x.get('recommended_resolution')=='AI补镜头' and int(x.get('variant_index',self.active_variant_index) or self.active_variant_index)==self.active_variant_index]
         generated=[x for x in tasks if x.get('generated_path') and Path(str(x.get('generated_path'))).exists()]
         if not generated: return messagebox.showinfo('暂无待复核素材','当前没有已经真实生成、可供人工复核的 AI 补镜头。')
         win=tk.Toplevel(self); win.title('AI补镜头人工复核'); win.geometry('1120x650'); win.transient(self)
@@ -533,6 +534,7 @@ class App(tk.Tk):
             if task.get('accepted_into_storyboard'): return messagebox.showinfo('已纳入','该 AI 补镜头已经在当前分镜中。')
             p=Path(str(task.get('generated_path','')))
             if not p.exists() or p.stat().st_size<=0: return messagebox.showerror('不能纳入','生成文件不存在或为空，不能进入分镜。')
+            # 当前先追加到当前方案分镜末尾；任务已保留 variant_index，后续可扩展 target_shot_index 精确补位。
             max_index=max([int(getattr(s,'index',0)) for s in self.project.shots] or [0])
             Shot=__import__('ad_studio.models',fromlist=['Shot']).Shot
             shot=Shot(id=f"hybrid-{task.get('task_id','gap').lower().replace('_','-')}-v{self.active_variant_index}",index=max_index+1,title=f"AI补镜头｜{task.get('need','辅助画面')}",visual=str(task.get('need') or '补充通用辅助画面'),script=str(task.get('related_selling_point') or ''),status='已复核并纳入分镜',video_path=str(p),clip_source='ai_generated',provider=str(task.get('generation_provider') or 'AI视频生成'),generated_from_request=f"实拍缺口任务 {task.get('task_id')}：{task.get('reason','')}",actual_cost_rmb=round(float(task.get('generation_cost_rmb',0) or 0),4))
@@ -983,6 +985,11 @@ class App(tk.Tk):
                         coverage_v=audit_footage_coverage(analysis, variant_plan_dict)
                         gaps_v=classify_footage_gaps(coverage_v, variant_plan_dict, generation_connected=False)
                         tasks_v=build_footage_gap_tasks(coverage_v, gaps_v, variant_plan_dict)
+                        # 缺口任务绑定所属创意方案，避免切换 A/B/C 版本后误复核另一版本的 AI 补镜头。
+                        variant_idx=int(variant_raw.get('_variant_index',variant_pos))
+                        for task in tasks_v:
+                            if isinstance(task,dict):
+                                task['variant_index']=variant_idx
                         previous_tasks_v=previous_variant_gap_tasks.get(str(int(variant_raw.get('_variant_index',variant_pos))), {}) if isinstance(previous_variant_gap_tasks, dict) else {}
                         completion_v=audit_footage_gap_completion(previous_tasks_v, coverage_v) if previous_tasks_v else {'task_count':0,'completed_count':0,'still_missing_count':0,'review_count':0,'tasks':[],'coverage_score':coverage_v.get('coverage_score',100.0),'method':'首次分析，无上一轮任务可验收'}
                         tasks_v=merge_gap_task_acceptance(tasks_v, completion_v)
