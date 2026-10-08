@@ -155,6 +155,36 @@ gpu.py 仅保留兼容入口，不再包含4050专属逻辑。
 
 不要假设浏览器或Vercel可以直接知道用户本机GPU。
 
+## 8.1 用户实拍视频视觉分析链
+
+输入：
+**商品 ProductInfo + CreativePlan + 用户视频文件夹**。
+
+处理：
+1. `footage.py.scan_footage` 用 ffprobe 获取视频技术元数据。
+2. `build_visual_manifest` 为每个可解析视频均匀抽取低分辨率关键帧。
+3. `ModelRouter.analyze_footage` 将关键帧作为图片输入交给“素材剪辑导演”路由模型。
+4. 视觉模型输出逐素材评分、可用性、最佳时间段、画面标签、卖点对应、口播质量和总体建议。
+5. `plan_footage` 把视觉分析与商品/创意方案合并，生成严格受素材清单约束的剪辑计划。
+6. `validate_footage_plan` 校验 source、start、duration，越界时截断，清单外素材直接失败。
+7. `ProductionStore.render_footage_shot` 只调用本地 FFmpeg 裁剪，不调用视频生成 Provider。
+
+状态保存：
+- 关键帧：项目目录 `projects/<project-id>/footage-analysis/`。
+- 视觉分析：`Project.creative_plan["footage_visual_analysis"]`。
+- 最终剪辑计划：`Project.creative_plan["footage_plan"]`。
+- 每个镜头继续使用 `Shot.clip_source="filmed"`、`source_file`、`source_start`、`source_duration`。
+
+本地/云端边界：
+- 视频文件先在本机抽帧。
+- 只有用户明确配置且启用视觉输入的模型，关键帧才会作为模型输入发送。
+- 裁剪、画幅、字幕、BGM和最终拼接仍由本机执行。
+
+失败策略：
+- 没有视觉能力的素材剪辑导演模型会明确报错，不会把“文件名+时长分析”冒充为已经看过视频。
+- FFmpeg抽帧失败则素材分析停止。
+- 剪辑计划引用清单外文件则校验失败。
+
 ## 9. 镜头版本
 
 单镜头独立生成：
@@ -248,6 +278,9 @@ asset_generation.py 是通用素材生成接口。
 - 未把stub说成已接通
 
 # 更新记录
+
+## 2026-10-08：实拍视频视觉分析链
+新增本地关键帧抽取、视觉模型输入、逐素材视觉分析结果持久化，并让素材剪辑导演使用该分析结果规划起止时间；视觉能力未配置时明确失败，不降级冒充“看过视频”。
 
 ## 2026-10-08：实际成本账本闭环
 模型、演员/场景/商品素材、视频镜头三类实际调用现在都可以按项目ID归集到同一本本地 usage ledger；项目保存累计实际成本与分类汇总。镜头成本不再被视频费用覆盖资产生成费用，v2重生成会新增历史账目而不是覆盖旧账。
