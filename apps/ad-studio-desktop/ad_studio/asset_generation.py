@@ -28,7 +28,7 @@ class LocalAssetBackend:
         self.cost_per_asset_rmb = 0.0
 
     def generate_asset(self, prompt: str, output: Path, width: int = 1024, height: int = 1024, steps: int = 24) -> Path:
-        url = self.endpoint + "/sdapi/v1/txt2img"
+        url = self.endpoint if self.endpoint.endswith("/sdapi/v1/txt2img") else self.endpoint + "/sdapi/v1/txt2img"
         payload = {"prompt": prompt, "steps": steps, "width": width, "height": height}
         req = urllib.request.Request(
             url,

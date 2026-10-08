@@ -253,3 +253,7 @@ asset_generation.py 是通用素材生成接口。
 
 ## 2026-10-08：硬件能力进入生产后处理
 ProductionStore.postprocess_shot 会读取当前硬件能力画像，并在状态中记录本地执行策略；实际编码由 FFmpeg 的动态编码器选择器决定，不再固定使用 RTX 4050/NVENC。
+
+
+## 2026-10-08：生成执行链修正
+CapabilityRouter 已实际接入 LLM、素材生成、视频生成入口；本地素材生成兼容 SD WebUI 完整 endpoint 与基础 endpoint，避免重复拼接 `/sdapi/v1/txt2img`。系统状态中的素材调度明确指定资产类型，独立模型路由显示与实际 FUNCTIONS 数量一致。

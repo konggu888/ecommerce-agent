@@ -132,7 +132,7 @@ class App(tk.Tk):
         cap=CapabilityRouter(ROOT, profile)
         def mode_label(d): return {'local':'本地','cloud':'云端','unavailable':'不可用'}.get(d.target,d.target)
         llm=cap.decide_llm(); add('本地/云端能力调度','创意大模型',True,f"当前：{mode_label(llm)}｜{llm.reason}")
-        asset=cap.decide_asset(); add('本地/云端能力调度','素材生成',True,f"当前：{mode_label(asset)}｜{asset.reason}")
+        asset=cap.decide_asset('演员'); add('本地/云端能力调度','素材生成',True,f"当前：{mode_label(asset)}｜{asset.reason}")
         video=cap.decide_video(); add('本地/云端能力调度','视频生成',True,f"当前：{mode_label(video)}｜{video.reason}")
         ff=ffmpeg_available(); nv=has_nvenc() if ff else False
         add('本地后处理','FFmpeg',ff,'ffmpeg + ffprobe 已找到' if ff else '未找到 ffmpeg/ffprobe，请安装并加入 PATH')
@@ -143,7 +143,7 @@ class App(tk.Tk):
         add('AI创意引擎','模型池',bool(enabled),f'{len(enabled)} 个启用模型；默认：{default.name}')
         add('AI创意引擎','模型调用凭据',bool(keyed),f'{len(keyed)} 个模型可实际调用' if keyed else '没有可实际调用的模型，请配置 API Key 或本地模型')
         routed=sum(1 for fn in FUNCTIONS if self.model_router.route(fn).enabled)
-        add('AI创意引擎','9项功能独立路由',routed==len(FUNCTIONS),f'{routed}/{len(FUNCTIONS)} 个功能有启用模型')
+        add('AI创意引擎','10项功能独立路由',routed==len(FUNCTIONS),f'{routed}/{len(FUNCTIONS)} 个功能有启用模型')
         for fn in FUNCTIONS:
             p=self.model_router.route(fn); ready=p.enabled and (bool(p.api_key) or p.provider == 'local_openai')
             add('模型路由',fn,ready,f'→ {p.name} / {p.model}',warn=p.enabled and not ready)
