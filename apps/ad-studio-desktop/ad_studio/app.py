@@ -535,6 +535,22 @@ class App(tk.Tk):
         }
 
     @ui_action
+    def _record_variant_performance(self, project, variant_index, payload):
+        """只写入用户明确提供的投放原始数据；系统不连接平台、不验证真实性。"""
+        import datetime
+        metrics=project.creative_plan.setdefault('variant_performance', {})
+        provenance=project.creative_plan.setdefault('variant_performance_provenance', {})
+        payload=dict(payload or {})
+        payload['updated_at']=datetime.datetime.now().isoformat(timespec='seconds')
+        metrics[str(int(variant_index))]=payload
+        provenance[str(int(variant_index))]={
+            'source_type':'user_provided',
+            'statement':'用户提供的平台数据；系统不验证真实性',
+            'simulation':False,
+            'updated_at':payload['updated_at'],
+        }
+        return payload
+
     def variant_performance_entry(self):
         """人工回写真实投放结果；只记录数据，不自动投放、不伪造平台数据。"""
         if not self.project:
@@ -565,10 +581,7 @@ class App(tk.Tk):
                 payload=self._variant_metrics({k:vars[k].get() for k in ('impressions','clicks','conversions','spend_rmb','revenue_rmb')})
             except (TypeError,ValueError) as exc:
                 return messagebox.showerror('数据格式错误',f'请填写有效的数字：{exc}')
-            metrics=self.project.creative_plan.setdefault('variant_performance',{})
-            import datetime
-            payload['updated_at']=datetime.datetime.now().isoformat(timespec='seconds')
-            metrics[str(idx)]=payload
+            payload=self._record_variant_performance(self.project, idx, payload)
             self.store.save(self.project)
             result.set(f"方案{idx}｜CTR {payload['ctr']*100:.2f}%｜CVR {payload['cvr']*100:.2f}%｜CPC ¥{payload['cpc_rmb']:.2f}｜CPA ¥{payload['cpa_rmb']:.2f}｜ROAS {payload['roas']:.2f}")
             messagebox.showinfo('已保存','投放数据已写入当前项目的版本矩阵。')
