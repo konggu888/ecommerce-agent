@@ -23,6 +23,7 @@ from ad_studio.footage import (
     validate_footage_plan,
     archive_analyzed_waste,
     normalize_footage_analysis,
+    rank_footage_analysis,
 )
 
 from ad_studio import footage as footage_module
@@ -96,6 +97,19 @@ class ScanFootageTests(unittest.TestCase):
 
 
 class NormalizeFootageAnalysisTests(unittest.TestCase):
+    def test_ranks_usable_materials_and_penalizes_duplicate(self):
+        raw = {"clips": [
+            {"source": "repeat.mp4", "score": 95, "usable": True, "duplicate_group": "正面", "duplicate_confidence": 0.9, "best_take": False, "speech_quality": "filler", "visual_tags": ["product_visible"]},
+            {"source": "best.mp4", "score": 88, "usable": True, "duplicate_group": "正面", "duplicate_confidence": 0.9, "best_take": True, "speech_quality": "clear", "visual_tags": ["product_visible", "detail"]},
+            {"source": "bad.mp4", "score": 99, "usable": False},
+        ]}
+        result = rank_footage_analysis(raw)
+        self.assertEqual(result["clips"][1]["material_rank"], 1)
+        self.assertEqual(result["clips"][0]["material_rank"], 2)
+        self.assertEqual(result["clips"][2]["material_rank"], 0)
+        self.assertGreater(result["clips"][1]["selection_score"], result["clips"][0]["selection_score"])
+
+
     def test_marks_best_take_in_duplicate_group(self):
         raw = {"clips": [
             {"source": "a.mp4", "score": 72, "duplicate_group": "展示正面", "take_rank": 2},
