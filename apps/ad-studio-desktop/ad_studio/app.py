@@ -138,7 +138,7 @@ class App(tk.Tk):
         ttk.Label(setup,text='素材来源').grid(row=5,column=0,sticky='w'); self.footage_mode=tk.StringVar(value='AI生成视频'); ttk.Combobox(setup,textvariable=self.footage_mode,values=['AI生成视频','用户拍摄素材'],state='readonly',width=16).grid(row=4,column=1,sticky='w',pady=(4,2))
         self.footage_folder=tk.StringVar(value=''); ttk.Entry(setup,textvariable=self.footage_folder,width=36).grid(row=5,column=2,sticky='w',padx=4); ttk.Button(setup,text='选择素材文件夹',command=self.choose_footage_folder).grid(row=4,column=3,sticky='e')
         ttk.Label(setup,text='用户拍摄素材：输入链接后 AI 分析产品 → 指定文件夹放入你拍好的视频 → AI 思考剪辑方案 → 本地 FFmpeg 出片（不调用视频生成服务）',foreground='#666').grid(row=6,column=0,columnspan=5,sticky='w',pady=(2,0))
-        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='📹 实拍分析报告',command=self.footage_analysis_report).grid(row=2,column=5,sticky='e',padx=8); ttk.Button(setup,text='📋 补素材任务',command=self.footage_gap_tasks_report).grid(row=2,column=6,sticky='e',padx=8); ttk.Button(setup,text='🤖 执行AI补镜头',command=self.generate_hybrid_gap_shots).grid(row=2,column=10,sticky='e',padx=8); ttk.Button(setup,text='🔍 AI补镜头复核',command=self.review_hybrid_gap_shots).grid(row=2,column=11,sticky='e',padx=8); ttk.Button(setup,text='🔄 重新分析实拍素材',command=self.reanalyze_footage).grid(row=2,column=7,sticky='e',padx=8); ttk.Button(setup,text='🕘 分析历史',command=self.footage_reanalysis_history_report).grid(row=2,column=8,sticky='e',padx=8); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='🧪 投放版本矩阵',command=self.variant_matrix_report).grid(row=2,column=9,sticky='e',padx=8); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
+        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='📹 实拍分析报告',command=self.footage_analysis_report).grid(row=2,column=5,sticky='e',padx=8); ttk.Button(setup,text='📋 补素材任务',command=self.footage_gap_tasks_report).grid(row=2,column=6,sticky='e',padx=8); ttk.Button(setup,text='🤖 执行AI补镜头',command=self.generate_hybrid_gap_shots).grid(row=2,column=10,sticky='e',padx=8); ttk.Button(setup,text='🔍 AI补镜头复核',command=self.review_hybrid_gap_shots).grid(row=2,column=11,sticky='e',padx=8); ttk.Button(setup,text='🔄 重新分析实拍素材',command=self.reanalyze_footage).grid(row=2,column=7,sticky='e',padx=8); ttk.Button(setup,text='🕘 分析历史',command=self.footage_reanalysis_history_report).grid(row=2,column=8,sticky='e',padx=8); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='🧪 投放版本矩阵',command=self.variant_matrix_report).grid(row=2,column=9,sticky='e',padx=8); ttk.Button(setup,text='📥 回写投放数据',command=self.variant_performance_entry).grid(row=2,column=12,sticky='e',padx=8); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
         main=ttk.Panedwindow(self,orient='horizontal'); main.pack(fill='both',expand=True,padx=16,pady=8)
         left=ttk.Frame(main,padding=8); right=ttk.Frame(main,padding=8); main.add(left,weight=3); main.add(right,weight=2)
         ttk.Label(left,text='② 分镜生产链',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
@@ -166,6 +166,7 @@ class App(tk.Tk):
         variants=plan.get('creative_variants') or []
         audit=plan.get('variant_set_audit') or {}
         outputs=plan.get('variant_outputs') or {}
+        performance=plan.get('variant_performance') or {}
         win=tk.Toplevel(self); win.title('投放版本矩阵'); win.geometry('1180x680'); win.transient(self)
         frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
         ttk.Label(frm,text='广告投放版本矩阵',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
@@ -173,7 +174,7 @@ class App(tk.Tk):
         score=audit.get('diversity_score','未审计')
         ttk.Label(frm,text=f'任务类型：{task}｜版本数：{len(variants)}｜版本差异度：{score}｜本窗口不调用新 AI',wraplength=1120).pack(anchor='w',pady=(4,10))
         tree=ttk.Treeview(frm,columns=('version','axis','hook','selling','proof','cta','output','status'),show='headings')
-        heads=[('version','版本',70),('axis','测试轴',110),('hook','Hook/钩子',180),('selling','核心卖点',180),('proof','证明方式',160),('cta','CTA',150),('output','成片路径',230),('status','状态',80)]
+        heads=[('version','版本',70),('axis','测试轴',110),('hook','Hook/钩子',180),('selling','核心卖点',180),('proof','证明方式',160),('cta','CTA',150),('output','成片路径',210),('status','状态',80),('metrics','投放数据',220)]
         for col,title,width in heads:
             tree.heading(col,text=title); tree.column(col,width=width,anchor='w')
         tree.pack(fill='both',expand=True)
@@ -186,7 +187,9 @@ class App(tk.Tk):
             cta=v.get('cta','') or v.get('script','')[-80:]
             path=out.get('path','未生成')
             status=out.get('status','未输出')
-            tree.insert('', 'end', values=(f'方案{i}',axis.get('name','未指定'),str(hook)[:80],str(selling)[:80],str(proof)[:70],str(cta)[:70],path,status))
+            m=performance.get(str(i),{}) if isinstance(performance,dict) else {}
+            metrics_text=(f"CTR {float(m.get('ctr',0))*100:.2f}%｜CVR {float(m.get('cvr',0))*100:.2f}%｜ROAS {float(m.get('roas',0)):.2f}" if m else '未回写')
+            tree.insert('', 'end', values=(f'方案{i}',axis.get('name','未指定'),str(hook)[:80],str(selling)[:80],str(proof)[:70],str(cta)[:70],path,status,metrics_text))
         detail=tk.Text(frm,height=8); detail.pack(fill='x',pady=(10,6))
         detail.insert('1.0','版本差异审计：\n')
         for pair in audit.get('pairs',[]):
@@ -194,6 +197,77 @@ class App(tk.Tk):
         detail.config(state='disabled')
         ttk.Label(frm,text='说明：这是投放前的创意版本矩阵，不代表真实投放数据；真实点击率、转化率等需要进入广告平台后再比较。',foreground='#666',wraplength=1120).pack(anchor='w')
         ttk.Button(frm,text='关闭',command=win.destroy).pack(anchor='e',pady=(8,0))
+
+    def _variant_metrics(self, raw):
+        """根据人工/平台回写的原始投放数据计算统一指标；不自动调用广告平台。"""
+        raw = raw if isinstance(raw, dict) else {}
+        impressions = max(0, int(raw.get('impressions', 0) or 0))
+        clicks = max(0, int(raw.get('clicks', 0) or 0))
+        conversions = max(0, int(raw.get('conversions', 0) or 0))
+        spend = max(0.0, float(raw.get('spend_rmb', 0) or 0))
+        revenue = max(0.0, float(raw.get('revenue_rmb', 0) or 0))
+        ctr = clicks / impressions if impressions else 0.0
+        cvr = conversions / clicks if clicks else 0.0
+        cpc = spend / clicks if clicks else 0.0
+        cpa = spend / conversions if conversions else 0.0
+        roas = revenue / spend if spend else 0.0
+        return {
+            'impressions': impressions, 'clicks': clicks, 'conversions': conversions,
+            'spend_rmb': round(spend, 4), 'revenue_rmb': round(revenue, 4),
+            'ctr': round(ctr, 6), 'cvr': round(cvr, 6),
+            'cpc_rmb': round(cpc, 4), 'cpa_rmb': round(cpa, 4), 'roas': round(roas, 6),
+        }
+
+    @ui_action
+    def variant_performance_entry(self):
+        """人工回写真实投放结果；只记录数据，不自动投放、不伪造平台数据。"""
+        if not self.project:
+            return messagebox.showinfo('提示','请先创建或打开一个项目。')
+        variants=self.project.creative_plan.get('creative_variants') or []
+        if not variants:
+            return messagebox.showinfo('提示','当前项目没有多版本创意。')
+        win=tk.Toplevel(self); win.title('回写投放数据'); win.geometry('720x560'); win.transient(self)
+        frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
+        ttk.Label(frm,text='回写真实投放数据',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
+        ttk.Label(frm,text='这里只记录你从广告平台获得的数据，不会自动创建广告、修改广告账户或虚构结果。保存后会自动计算 CTR / CVR / CPC / CPA / ROAS。',wraplength=680,foreground='#555').pack(anchor='w',pady=(3,12))
+        labels=[('版本','variant'),('曝光量','impressions'),('点击量','clicks'),('转化量','conversions'),('消耗（¥）','spend_rmb'),('成交金额（¥）','revenue_rmb')]
+        vars={}
+        for row,(label,key) in enumerate(labels):
+            ttk.Label(frm,text=label,width=16).grid(row=row,column=0,sticky='w',pady=6)
+            if key=='variant':
+                v=tk.StringVar(value=f'方案{self.active_variant_index}')
+                box=ttk.Combobox(frm,textvariable=v,values=[f"方案{i}" for i in range(1,len(variants)+1)],state='readonly')
+                box.grid(row=row,column=1,sticky='ew',padx=8,pady=6); vars[key]=v
+            else:
+                v=tk.StringVar(value='0'); ttk.Entry(frm,textvariable=v).grid(row=row,column=1,sticky='ew',padx=8,pady=6); vars[key]=v
+        frm.columnconfigure(1,weight=1)
+        result=tk.StringVar(value='尚未计算')
+        ttk.Label(frm,textvariable=result,wraplength=680).grid(row=7,column=0,columnspan=2,sticky='w',pady=10)
+        def save_metrics():
+            try:
+                idx=int(vars['variant'].get().replace('方案',''))
+                payload=self._variant_metrics({k:vars[k].get() for k in ('impressions','clicks','conversions','spend_rmb','revenue_rmb')})
+            except (TypeError,ValueError) as exc:
+                return messagebox.showerror('数据格式错误',f'请填写有效的数字：{exc}')
+            metrics=self.project.creative_plan.setdefault('variant_performance',{})
+            import datetime
+            payload['updated_at']=datetime.datetime.now().isoformat(timespec='seconds')
+            metrics[str(idx)]=payload
+            self.store.save(self.project)
+            result.set(f"方案{idx}｜CTR {payload['ctr']*100:.2f}%｜CVR {payload['cvr']*100:.2f}%｜CPC ¥{payload['cpc_rmb']:.2f}｜CPA ¥{payload['cpa_rmb']:.2f}｜ROAS {payload['roas']:.2f}")
+            messagebox.showinfo('已保存','投放数据已写入当前项目的版本矩阵。')
+        def load_selected(_=None):
+            try: idx=int(vars['variant'].get().replace('方案',''))
+            except ValueError: return
+            old=(self.project.creative_plan.get('variant_performance') or {}).get(str(idx),{})
+            for key in ('impressions','clicks','conversions','spend_rmb','revenue_rmb'):
+                vars[key].set(str(old.get(key,0)))
+            if old:
+                result.set(f"方案{idx}｜CTR {float(old.get('ctr',0))*100:.2f}%｜CVR {float(old.get('cvr',0))*100:.2f}%｜CPC ¥{float(old.get('cpc_rmb',0)):.2f}｜CPA ¥{float(old.get('cpa_rmb',0)):.2f}｜ROAS {float(old.get('roas',0)):.2f}")
+        ttk.Button(frm,text='读取当前版本数据',command=load_selected).grid(row=8,column=0,sticky='w',pady=8)
+        ttk.Button(frm,text='保存并计算',command=save_metrics).grid(row=8,column=1,sticky='e',pady=8)
+        vars['variant'].trace_add('write',lambda *_: load_selected())
+        load_selected()
 
     @ui_action
     def footage_analysis_report(self):
