@@ -83,6 +83,7 @@ class ModelRouter:
                 id="gpt-default",
                 name="GPT（默认）",
                 model=os.getenv("AD_STUDIO_GPT_MODEL", "gpt-5.6"),
+                vision_enabled=True,
             )))
         self.data.setdefault("default_model", "gpt-default")
         routes = self.data.setdefault("routes", {})
@@ -355,6 +356,7 @@ class ModelRouter:
         creative_plan: dict[str, Any],
         footage_clips: list[dict[str, Any]],
         constraints: dict[str, Any] | None = None,
+        footage_analysis: dict[str, Any] | None = None,
     ) -> list[dict[str, Any]]:
         """素材剪辑导演：基于产品理解、创意方案与用户拍摄素材，规划剪辑方案。
 
@@ -377,6 +379,7 @@ class ModelRouter:
                 "shots": creative_plan.get("shots", []),
             },
             "footage_clips": footage_clips,
+            "footage_analysis": footage_analysis or {},
             "constraints": constraints or {},
             "required_output_schema": STAGE_SCHEMAS["footage_director"],
         }
