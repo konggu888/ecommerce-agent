@@ -319,3 +319,6 @@ CI 的桌面 Python 语法检查发现 `ffmpeg.py` 的 concat 清单 `write_text
 
 ## 8.2 实拍口播转写接口
 新增 `transcription.py`：先用 FFmpeg 从实拍视频提取单声道 16kHz WAV，再调用配置的 OpenAI-compatible transcription endpoint。优先解析 segment/word 时间戳；供应商不支持时间戳时仍保存文本，但不宣称已经具备逐词级裁剪。该模块只负责转写，废话删除和最终剪辑仍由素材剪辑导演决定。
+
+## 8.3 口播转写进入实拍剪辑链
+用户拍摄素材创建时，若“口播转写”路由已启用且模型支持转写，逐个视频提取音频并调用 `/audio/transcriptions`。结果写入 `footage_transcripts`，并随 creative_plan 提供给素材剪辑导演；失败只记录错误，不伪造文本。

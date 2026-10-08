@@ -24,6 +24,7 @@ FUNCTIONS = [
     "分镜",
     "素材选择",
     "素材剪辑导演",
+    "口播转写",
 ]
 
 
@@ -39,6 +40,7 @@ class ModelProfile:
     input_price_rmb_per_1k: float = 0.0
     output_price_rmb_per_1k: float = 0.0
     vision_enabled: bool = False
+    transcription_enabled: bool = False
 
     def public(self) -> dict[str, Any]:
         data = asdict(self)
@@ -300,6 +302,22 @@ class ModelRouter:
 
     def recent_usage(self, limit: int = 100) -> list[dict[str, Any]]:
         return self.ledger.recent(limit)
+
+    def transcribe_footage_audio(
+        self, audio_path: Path, profile: ModelProfile | None = None
+    ) -> dict[str, Any]:
+        """调用独立的口播转写模型，并保留可用时间戳。"""
+        from .transcription import transcribe_openai_compatible
+        profile = profile or self.resolve_route("口播转写")
+        if not profile.transcription_enabled:
+            raise RuntimeError(f"当前“口播转写”模型「{profile.name}」未启用语音转写。")
+        if not profile.api_key and profile.provider != "local_openai":
+            raise RuntimeError(f"口播转写模型「{profile.name}」没有可用凭据。")
+        endpoint = profile.base_url.rstrip("/") + "/audio/transcriptions"
+        result = transcribe_openai_compatible(audio_path, endpoint, profile.api_key, profile.model)
+        return {"text": result.text, "segments": [
+            {"start": x.start, "end": x.end, "text": x.text} for x in result.segments
+        ]}
 
     def analyze_footage(
         self,

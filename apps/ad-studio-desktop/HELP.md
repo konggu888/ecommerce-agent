@@ -299,3 +299,6 @@ ProductionStore.postprocess_shot 会读取当前硬件能力画像，并在状�
 
 ## 2026-10-08：实拍口播转写准备
 增加统一的本地音频抽取与 OpenAI-compatible 转写接口基础，后续实拍剪辑可把口播文本和时间段交给剪辑导演。接口失败会明确提示，不会伪造转写结果。
+
+## 2026-10-08：实拍口播自动转写
+实拍素材项目现在可配置独立“口播转写”模型。系统先用 FFmpeg 提取 16kHz 单声道音频，再调用兼容 `/audio/transcriptions` 的接口；文本和时间戳保存到 `creative_plan.footage_transcripts`，供后续剪辑导演处理口播。
