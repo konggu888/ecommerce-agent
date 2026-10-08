@@ -486,3 +486,14 @@ class RenderFootageShotTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_archive_analyzed_waste_protects_currently_referenced_source(tmp_path):
+    source = tmp_path / 'keep.mp4'
+    source.write_bytes(b'video')
+    clip = FootageClip(name='keep.mp4', path=str(source), duration=3.0, width=720, height=1280, fps=30.0)
+    kept, records = archive_analyzed_waste([clip], {'clips': [{'source': 'keep.mp4', 'usable': False, 'reason': '画面抖动'}]}, tmp_path / '05_废片库', 'project-1', protected_paths={str(source)})
+    assert kept == [clip]
+    assert source.exists()
+    assert records[0]['protected'] is True
+    assert records[0]['archived'] is False

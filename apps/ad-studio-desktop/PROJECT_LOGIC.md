@@ -399,3 +399,7 @@ classify_footage_gaps 不再要求 missing_selling_points 必须同时存在于 
 
 ## 2026-10-08：重新分析闭环提交检查
 重新分析闭环的测试文件已清除误写的说明文本；本次文档同步与测试修复保持同一提交，确保代码、测试、HELP.md、PROJECT_LOGIC.md 的原子变更契约继续成立。后续推进必须重新检查最新 HEAD 的 CI，不复用旧提交结果。
+
+
+## 2026-10-08：重新分析的引用保护
+`reanalyze_footage` 在废片归档前收集当前项目 Shot 与 `footage_plan` 已引用的 `source_file`，传给 `archive_analyzed_waste(..., protected_paths=...)`。归档器对受保护素材只记录不可用判断，不移动源文件，从而保证重新分析不会破坏当前成片/分镜依赖。新增回归测试固定该行为。

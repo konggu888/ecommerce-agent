@@ -202,7 +202,11 @@ class App(tk.Tk):
             self.project.creative_plan['footage_visual_analysis']=analysis
 
             waste_root=folder.parent/'05_废片库'
-            usable,waste_records=archive_analyzed_waste(clips,analysis,waste_root,self.project.id)
+            protected_paths = {s.source_file for s in (self.project.shots or []) if getattr(s, 'source_file', None)}
+            for item in (self.project.creative_plan.get('footage_plan') or []):
+                if isinstance(item, dict) and item.get('source'):
+                    protected_paths.add(str(item['source']))
+            usable,waste_records=archive_analyzed_waste(clips,analysis,waste_root,self.project.id,protected_paths=protected_paths)
             self.project.creative_plan['footage_archive']={
                 'archive_root':str(waste_root/self.project.id),
                 'records':waste_records,

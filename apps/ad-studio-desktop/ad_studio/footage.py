@@ -469,6 +469,7 @@ def archive_analyzed_waste(
     analysis: dict,
     archive_root: Path,
     project_id: str,
+    protected_paths: set[str] | None = None,
 ) -> tuple[list[FootageClip], list[dict]]:
     """根据视觉分析自动归档明确不可用的实拍素材；保留可用素材继续进入剪辑导演。
 
@@ -477,6 +478,7 @@ def archive_analyzed_waste(
     """
     archive_dir = Path(archive_root) / project_id
     archive_dir.mkdir(parents=True, exist_ok=True)
+    protected = {str(Path(p).expanduser().resolve()) for p in (protected_paths or set())}
     analyzed = {str(x.get('source', '')).strip(): x for x in (analysis or {}).get('clips', []) if isinstance(x, dict)}
     records: list[dict] = []
     kept: list[FootageClip] = []
@@ -496,10 +498,24 @@ def archive_analyzed_waste(
         unusable = clip.duration <= 0 or item.get('usable') is False
         if clip.duration <= 0 and not item.get('reason'):
             item = {**item, 'reason': clip.note or 'FFmpeg 无法解析该视频'}
+        source = Path(clip.path)
+        source_resolved = str(source.expanduser().resolve())
+        if source_resolved in protected:
+            kept.append(clip)
+            records.append({
+                'source': clip.name,
+                'original_path': str(source),
+                'reason': str(item.get('reason') or clip.note or 'AI判定素材不可用'),
+                'score': item.get('score'),
+                'visual_tags': item.get('visual_tags', []),
+                'archived': False,
+                'protected': True,
+                'protected_reason': '当前项目已有成片/分镜正在引用该素材，重新分析不得自动移动源文件',
+            })
+            continue
         if not unusable:
             kept.append(clip)
             continue
-        source = Path(clip.path)
         reason = str(item.get('reason') or clip.note or 'AI判定素材不可用')
         record = {
             'source': clip.name,
