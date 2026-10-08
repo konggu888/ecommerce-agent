@@ -92,6 +92,23 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertTrue(any(s.id == task["accepted_shot_id"] for s in restored.shots))
 
 
+    def test_final_render_inputs_are_ordered_and_pending_hybrid_is_excluded(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            p = new_project("https://item.jd.com/123.html", 2, "真人口播")
+            for shot in p.shots:
+                path = root / f"{shot.id}.mp4"
+                path.write_bytes(b"video")
+                shot.video_path = str(path)
+            p.shots[1].storyboard_review = "待复核"
+            inputs = store.final_render_inputs(p)
+            self.assertEqual([x["index"] for x in inputs], [1, 3, 4, 5, 6])
+            self.assertEqual(inputs[0]["shot_id"], "shot-{}".format("01"))
+            p.shots[1].storyboard_review = "已通过"
+            inputs = store.final_render_inputs(p)
+            self.assertEqual([x["index"] for x in inputs], [1, 2, 3, 4, 5, 6])
+
 
 if __name__ == "__main__":
     unittest.main()
