@@ -44,6 +44,10 @@ class Shot:
     bgm_intensity: str='低'
     bgm_volume: float=0.16
     transition: str='硬切'
+    clip_source: str='ai_generated'
+    source_file: Optional[str]=None
+    source_start: float=0.0
+    source_duration: float=0.0
 
 @dataclass
 class Project:
@@ -58,6 +62,7 @@ class Project:
     cost_estimate: dict = field(default_factory=dict)
     product_info: dict = field(default_factory=dict)
     creative_plan: dict = field(default_factory=dict)
+    footage_folder: Optional[str]=None
     created_at: str=field(default_factory=now)
     updated_at: str=field(default_factory=now)
     def save(self, root: Path):
