@@ -22,6 +22,7 @@ class DesktopCoreTests(unittest.TestCase):
     def test_ai_create_plan_runs_full_understanding_to_asset_pipeline(self):
         with tempfile.TemporaryDirectory() as td:
             router = ModelRouter(Path(td) / "model-config.json")
+            product = {"name": "商品X", "selling_points": ["用户确认卖点"], "specs": {"容量": "500ml"}}
             router.resolve_route = lambda function: ModelProfile(id="test", name="测试模型", provider="local_openai")
             calls = []
             def fake_complete(profile, prompt, function=None, **kwargs):
