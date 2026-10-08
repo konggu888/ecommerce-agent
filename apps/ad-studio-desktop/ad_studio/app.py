@@ -116,7 +116,7 @@ class App(tk.Tk):
         self.shots=ttk.Treeview(left,columns=('v','status','actor','scene'),show='tree headings',height=17)
         for c,t,w in [('v','版本',70),('status','状态',90),('actor','演员',150),('scene','场景',150)]: self.shots.heading(c,text=t); self.shots.column(c,width=w)
         self.shots.column('#0',width=300); self.shots.pack(fill='both',expand=True,pady=8); self.shots.bind('<<TreeviewSelect>>',self.show_shot)
-        bar=ttk.Frame(left); bar.pack(fill='x'); ttk.Button(bar,text='切换创意方案',command=self.switch_variant).pack(side='left'); ttk.Button(bar,text='生成本镜头',command=self.generate_shot).pack(side='left',padx=8); ttk.Button(bar,text='重新生成本镜头',command=self.regen_shot).pack(side='left',padx=8); ttk.Button(bar,text='▶ 本地硬件后处理',command=self.postprocess_selected).pack(side='left',padx=8); ttk.Button(bar,text='生成最终成片',command=self.final_render).pack(side='right',padx=8); ttk.Button(bar,text='批量输出已完成版本',command=self.batch_final_render).pack(side='right',padx=8); ttk.Button(bar,text='保存项目',command=self.save).pack(side='right')
+        bar=ttk.Frame(left); bar.pack(fill='x'); ttk.Button(bar,text='切换创意方案',command=self.switch_variant).pack(side='left'); ttk.Button(bar,text='生成本镜头',command=self.generate_shot).pack(side='left',padx=8); ttk.Button(bar,text='重新生成本镜头',command=self.regen_shot).pack(side='left',padx=8); ttk.Button(bar,text='▶ 本地硬件后处理',command=self.postprocess_selected).pack(side='left',padx=8); ttk.Button(bar,text='生成最终成片',command=self.final_render).pack(side='right',padx=8); ttk.Button(bar,text='批量输出已完成版本',command=self.batch_final_render).pack(side='right',padx=8); ttk.Button(bar,text='⚡ 一键生成全部版本',command=self.batch_generate_variants).pack(side='right',padx=8); ttk.Button(bar,text='保存项目',command=self.save).pack(side='right')
         ttk.Label(right,text='③ 本地资产库',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
         self.assets=ttk.Treeview(right,columns=('kind','source','path'),show='tree headings',height=13)
         for c,t,w in [('kind','类型',80),('source','来源',90),('path','本地文件',300)]: self.assets.heading(c,text=t); self.assets.column(c,width=w)
@@ -1001,6 +1001,71 @@ class App(tk.Tk):
                 self.detail.set(f'镜头 {s.index} 已完成字幕/音频加工：{final}'); win.destroy()
             except Exception as e: messagebox.showerror('本地成片加工失败',str(e))
         ttk.Button(frm,text='执行：字幕 + BGM/人声处理',command=run).pack(anchor='e',pady=8)
+
+    @ui_action
+    def batch_generate_variants(self):
+        """一次生成全部广告版本：预算先审计，逐版本独立生成并最终出片。"""
+        if not self._ui_execution_gate(): return
+        if not self.project: return messagebox.showinfo('提示','先创建项目。')
+        variants=self.project.creative_plan.get('creative_variants',[])
+        if len(variants)<=1: return messagebox.showinfo('提示','当前只有一个方案，请直接生成当前镜头。')
+        self._cache_active_variant()
+        budget=float((self.project.cost_estimate or {}).get('预算',0) or 0)
+        footage_mode=self.footage_mode.get().strip() if hasattr(self,'footage_mode') else ''
+        try:
+            from .providers import load_video_provider
+            vp=load_video_provider(ROOT/'video-provider.json')
+            rate=float(getattr(vp,'cost_per_shot_rmb',0.72))
+        except Exception:
+            rate=0.72
+        missing_counts=[]; estimated=0.0
+        for pos,raw0 in enumerate(variants,1):
+            raw=dict(raw0); raw['_variant_index']=int(raw.get('_variant_index',pos)); raw['_variant_label']=raw.get('_variant_label',f'方案{raw["_variant_index"]}')
+            # 用当前项目规则恢复方案，仅用于确定镜头数量；不调用 AI。
+            info=__import__('ad_studio.product_parser',fromlist=['ProductInfo']).ProductInfo(**self.project.product_info)
+            self._activate_plan(raw,info)
+            missing=sum(1 for s in self.project.shots if not s.video_path or not Path(s.video_path).exists())
+            missing_counts.append(missing)
+            if footage_mode!='用户拍摄素材': estimated += missing*rate
+            self._cache_active_variant()
+        if budget>0 and estimated>budget:
+            return messagebox.showwarning('预算闸门',f'本次一键生成预计还需约 ¥{estimated:.2f}，已超过项目预算 ¥{budget:.2f}。\n\n系统不会自动突破预算；请提高预算或减少待生成镜头后再执行。')
+        original=self.active_variant_index; info=__import__('ad_studio.product_parser',fromlist=['ProductInfo']).ProductInfo(**self.project.product_info)
+        done=[]; failed=[]; outputs=[]
+        try:
+            for pos,raw0 in enumerate(variants,1):
+                raw=dict(raw0); raw['_variant_index']=int(raw.get('_variant_index',pos)); raw['_variant_label']=raw.get('_variant_label',f'方案{raw["_variant_index"]}')
+                self._activate_plan(raw,info)
+                for shot in self.project.shots:
+                    if shot.video_path and Path(shot.video_path).exists():
+                        continue
+                    try:
+                        shot.status='生成中…'; self.store.save(self.project); self.refresh_shots(); self.update_idletasks()
+                        if shot.clip_source=='filmed':
+                            self.store.render_footage_shot(self.project,shot)
+                        else:
+                            self.store.render_shot(self.project,shot,config_root=ROOT)
+                        done.append(f'方案{self.active_variant_index}-镜头{shot.index}')
+                    except Exception as exc:
+                        failed.append(f'方案{self.active_variant_index}-镜头{shot.index}：{exc}')
+                        shot.status='生成失败'
+                        self.store.save(self.project)
+                self._cache_active_variant()
+                missing=[s for s in self.project.shots if not s.video_path or not Path(s.video_path).exists()]
+                if not missing:
+                    out=self.store.build_final(self.project,self.aspect.get(),variant_index=self.active_variant_index)
+                    self._record_variant_output(out); outputs.append(f'方案{self.active_variant_index}：{out}')
+            target=next((dict(v) for v in variants if int(v.get('_variant_index',0))==original),None)
+            if target:
+                target['_variant_index']=original; target['_variant_label']=target.get('_variant_label',f'方案{original}')
+                self._activate_plan(target,info)
+            self.store.save(self.project); self.refresh_shots(); self.show_shot()
+            msg=f'生成镜头：{len(done)} 个\n最终成片：{len(outputs)} 个\n失败镜头：{len(failed)} 个'
+            if failed: msg+='\n\n失败明细：\n'+'\n'.join(failed[:8])
+            self.detail.set(msg.replace('\n','｜'))
+            messagebox.showinfo('一键生成完成',msg)
+        except Exception as exc:
+            messagebox.showerror('一键生成失败',str(exc))
 
     @ui_action
     def batch_final_render(self):

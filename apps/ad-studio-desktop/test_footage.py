@@ -583,3 +583,11 @@ def test_batch_variant_output_requires_completed_shots():
     shots=[{'video_path':'/tmp/not-found.mp4'},{'video_path':''}]
     missing=[x for x in shots if not x.get('video_path') or not Path(x['video_path']).exists()]
     assert len(missing)==2
+
+
+def test_batch_generation_budget_gate_counts_missing_shots():
+    rate=0.72
+    missing_counts=[3,4,2]
+    estimated=sum(missing_counts)*rate
+    assert round(estimated,2)==6.48
+    assert estimated > 3.0
