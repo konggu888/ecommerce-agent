@@ -10,6 +10,7 @@ import urllib.request
 import time
 
 from .usage_ledger import UsageLedger
+from .footage import normalize_footage_analysis
 from .creative_engine import CREATIVE_SYSTEM_PROMPT
 
 
