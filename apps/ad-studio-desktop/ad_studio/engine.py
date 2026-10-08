@@ -84,11 +84,11 @@ def estimate_cost(shots, rates=None):
          '小计':0.0,'计费方式':'按镜头'},
         {'项目':'其他云端任务','数量':0,'单价':round(float(r['cloud_other']),4),
          '小计':0.0,'计费方式':'按实际调用'},
-        {'项目':'本地4050处理/FFmpeg','数量':1,'单价':round(float(r['local_processing']),4),
+        {'项目':'本地处理/FFmpeg','数量':1,'单价':round(float(r['local_processing']),4),
          '小计':round(float(r['local_processing']),2),'计费方式':'本地'},
     ]
     cloud=round(sum(x['小计'] for x in items if x['项目']!='本地4050处理/FFmpeg'),2)
-    local=round(next(x['小计'] for x in items if x['项目']=='本地4050处理/FFmpeg'),2)
+    local=round(next(x['小计'] for x in items if x['项目']=='本地处理/FFmpeg'),2)
     total=round(local+cloud,2)
     return {
         '本地':local,'云端':cloud,'总计':total,'预算':3.0,'超预算':total>3,
