@@ -386,3 +386,12 @@ classify_footage_gaps 不再要求 missing_selling_points 必须同时存在于 
 
 ## 2026-10-08：实拍闭环重分析
 新增 reanalyze_footage：在已有实拍项目上复用商品信息与创意约束，对当前素材文件夹重新执行完整素材处理链，并更新 footage_visual_analysis、footage_coverage、footage_gaps、footage_gap_tasks、footage_plan、footage_selection_audit 等项目状态。新增素材因此能够真正重新进入素材池，而不是只生成一份静态补拍清单。
+
+## 17. AI 强制推进前检查闸门
+“继续推进”不是无条件执行。任何 AI/Codex 准备修改代码前，必须先读取当前最新提交的 CI 状态，并在 CI 失败时读取失败 job/log，定位具体错误后优先修复。随后核对 AGENTS.md、PROJECT_LOGIC.md、HELP.md、目标代码和测试；完成本地可执行检查与文档同步检查后，才允许继续增加功能。
+
+状态判断必须针对当前 HEAD：
+- queued / in_progress = 未完成，不能说通过。
+- completed + success = 当前检查通过。
+- completed + failure = 必须先处理失败。
+- 修复后的新提交必须重新等待/检查新的 CI，不能沿用上一提交结果。
