@@ -529,3 +529,6 @@ AI生成的缺口素材即使 Provider 返回成功，也只标记为“待复�
 
 ## 2026-10-08：多版本隔离测试兼容无GUI CI
 版本隔离回归测试只验证无GUI的项目状态恢复逻辑；Linux CI 没有 Tkinter 时使用最小测试替身，不要求测试环境安装桌面组件。桌面程序本身仍按 Windows Tkinter 环境运行。
+
+## 2026-10-08：多版本成片文件物理隔离
+方案 A/B/C 不再共用同一个镜头渲染目录。镜头生成文件现在保存到 project/renders/variant-N/shot-ID/，本地后处理保存到 project/postprocessed/variant-N/shot-ID/；因此同一个基础镜头在不同广告方案重新生成时不会互相覆盖。最终成片仍使用 final-...-vN.mp4 独立文件。
