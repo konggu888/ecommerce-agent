@@ -34,7 +34,20 @@ class ProductionStore:
         return folder/f'v{shot.version}.mp4'
 
     def current_shots(self, project: Project):
-        return [s for s in sorted(project.shots,key=lambda x:x.index) if s.video_path and Path(s.video_path).exists()]
+        """返回可进入最终成片的镜头，严格按分镜序号排序并执行审核闸门。"""
+        shots = []
+        for shot in sorted(project.shots, key=lambda x: x.index):
+            if not shot.video_path or not Path(shot.video_path).exists():
+                continue
+            if getattr(shot, "clip_source", "ai_generated") == "ai_generated" and getattr(shot, "storyboard_review", "不需要") == "待复核":
+                continue
+            shots.append(shot)
+        return shots
+
+    def final_render_inputs(self, project: Project):
+        """返回最终拼接实际消费的镜头路径，便于 UI/测试审计顺序。"""
+        shots = self.current_shots(project)
+        return [{"index": shot.index, "shot_id": shot.id, "path": str(shot.video_path)} for shot in shots]
 
     def _sync_actual_cost(self, project: Project):
         summary = self.ledger.project_summary(project.id)
