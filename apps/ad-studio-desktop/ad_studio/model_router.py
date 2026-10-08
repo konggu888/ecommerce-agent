@@ -22,6 +22,7 @@ FUNCTIONS = [
     "剧本",
     "分镜",
     "素材选择",
+    "素材剪辑导演",
 ]
 
 
@@ -56,6 +57,7 @@ class ModelRouter:
         self.data = self._load()
         self._ensure_defaults()
         self.ledger = UsageLedger(self.config_path.parent / "usage-ledger.json")
+        self._hardware = None
 
     def _load(self) -> dict[str, Any]:
         if not self.config_path.exists():
@@ -99,6 +101,43 @@ class ModelRouter:
         model_id = self.data.get("routes", {}).get(function) or self.data["default_model"]
         return self.get(model_id)
 
+    def _usable(self, profile: ModelProfile) -> bool:
+        return profile.enabled and (profile.provider == "local_openai" or bool(profile.api_key))
+
+    def _first_local_model(self) -> ModelProfile | None:
+        for p in self.profiles():
+            if p.enabled and p.provider == "local_openai":
+                return p
+        return None
+
+    def resolve_route(self, function: str) -> ModelProfile:
+        """按硬件能力与模型池自动决定该功能实际调用的模型。
+
+        决策优先级：
+        1. 显式路由的模型可调用（本地 OpenAI 兼容服务或已配 API Key）→ 用它；
+        2. 硬件要求云端优先且云端模型有凭据 → 用云端模型；
+        3. 本地模型池有可用的本地模型 → 用本地模型（电脑有能力就用）；
+        4. 否则回退显式路由，调用时给出明确配置错误。
+        """
+        profile = self.route(function)
+        if self._usable(profile):
+            return profile
+        if self._hardware is None:
+            try:
+                from .hardware import detect_hardware
+                self._hardware = detect_hardware()
+            except Exception:
+                self._hardware = None
+        mode = getattr(self._hardware, "execution_mode", "") if self._hardware else ""
+        if mode == "cloud_first":
+            for p in self.profiles():
+                if p.enabled and p.provider != "local_openai" and p.api_key:
+                    return p
+        local = self._first_local_model()
+        if local:
+            return local
+        return profile
+
     def set_route(self, function: str, model_id: str) -> None:
         self.get(model_id)
         self.data.setdefault("routes", {})[function] = model_id
@@ -130,7 +169,7 @@ class ModelRouter:
             prompt = build_stage_prompt(stage, data, constraints)
             try:
                 result = self.complete_json(
-                    self.route(function),
+                    self.resolve_route(function),
                     prompt,
                     function=function,
                 )
@@ -139,7 +178,7 @@ class ModelRouter:
                 # the real router accepts the function label and records usage.
                 if "unexpected keyword argument 'function'" not in str(exc):
                     raise
-                result = self.complete_json(self.route(function), prompt)
+                result = self.complete_json(self.resolve_route(function), prompt)
             context[stage] = result
             return result
 
@@ -253,6 +292,63 @@ class ModelRouter:
 
     def recent_usage(self, limit: int = 100) -> list[dict[str, Any]]:
         return self.ledger.recent(limit)
+
+    def plan_footage(
+        self,
+        product: dict[str, Any],
+        creative_plan: dict[str, Any],
+        footage_clips: list[dict[str, Any]],
+        constraints: dict[str, Any] | None = None,
+    ) -> list[dict[str, Any]]:
+        """素材剪辑导演：基于产品理解、创意方案与用户拍摄素材，规划剪辑方案。
+
+        输入是产品资料、AI 创意方案（卖点/分镜/文案）和素材清单（只有文件名、
+        时长、分辨率、帧率，不含本地绝对路径）。输出是 footage_plan 列表，
+        每个镜头引用素材文件名并给出起始秒/时长/文案/构图等，供本地FFmpeg裁剪。
+        规则：只能使用给定素材，不得编造素材文件或引用清单外的内容。
+        """
+        payload = {
+            "product": product,
+            "creative_plan": {
+                "product_summary": creative_plan.get("product_summary", ""),
+                "product_type": creative_plan.get("product_type", ""),
+                "selling_points": creative_plan.get("selling_points", []),
+                "target_audience": creative_plan.get("target_audience", []),
+                "pain_points": creative_plan.get("pain_points", []),
+                "strategy": creative_plan.get("strategy", ""),
+                "hook": creative_plan.get("hook", ""),
+                "script": creative_plan.get("script", ""),
+                "shots": creative_plan.get("shots", []),
+            },
+            "footage_clips": footage_clips,
+            "constraints": constraints or {},
+            "required_output_schema": STAGE_SCHEMAS["footage_director"],
+        }
+        system = (
+            "你是电商广告剪辑导演。用户已经把拍摄好的视频素材放进指定文件夹，"
+            "你需要基于产品分析与创意方案，从这些素材中挑选片段组成一支广告成片。\n"
+            "重要规则：\n"
+            "1. 只能使用 footage_clips 清单中列出的素材文件，source 字段必须精确匹配文件名；"
+            "禁止编造素材、禁止引用清单外的文件。\n"
+            "2. start 是素材内起始秒，duration 是本镜头时长；start + duration 不能超过该素材总时长。\n"
+            "3. 同一段素材可以按不同时间段使用多次，但要保证每个镜头内容合理、节奏顺畅。\n"
+            "4. 每个镜头给出画面说明、口播/文案、字幕位置、构图、节奏、转场，供本地执行。\n"
+            "5. 广告表达避免违反广告法的绝对化、虚假、无法证明的承诺。\n"
+            "6. 输出必须是严格 JSON，不要输出 Markdown。"
+        )
+        prompt = (
+            system
+            + "\n\n输入：\n" + json.dumps(payload, ensure_ascii=False, indent=2)
+        )
+        result = self.complete_json(
+            self.resolve_route("素材剪辑导演"),
+            prompt,
+            function="素材剪辑导演",
+        )
+        plan = result.get("footage_plan")
+        if not isinstance(plan, list) or not plan:
+            raise RuntimeError("素材剪辑导演没有返回有效的 footage_plan")
+        return plan
 
     def usage_summary(self) -> dict[str, Any]:
         return self.ledger.summary()
@@ -375,6 +471,18 @@ STAGE_SCHEMAS = {
         "asset_selection": [{
             "shot_index": "integer", "asset_type": "actor|scene|product|other",
             "requirements": ["string"], "preferred_asset_ids": ["string"]
+        }]
+    },
+    "footage_director": {
+        "footage_plan": [{
+            "index": "integer", "source": "string 素材文件名（必须是清单里的文件名）",
+            "start": "number 素材内起始秒", "duration": "number 镜头时长秒",
+            "objective": "string", "visual": "string", "script": "string",
+            "composition": "string", "focus_x": "number 0..1", "focus_y": "number 0..1",
+            "subtitle_position": "string", "subtitle_style": "string",
+            "pacing": "string", "speed": "number 0.75..1.5",
+            "bgm_intensity": "string", "bgm_volume": "number 0..0.35",
+            "transition": "string"
         }]
     },
 }
