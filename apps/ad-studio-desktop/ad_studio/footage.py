@@ -13,6 +13,7 @@ from pathlib import Path
 import json
 import subprocess
 import re
+import base64
 
 from .ffmpeg import which, best_h264_encoder
 
@@ -99,6 +100,57 @@ def scan_footage(folder: Path) -> list[FootageClip]:
         ))
     return clips
 
+
+
+def extract_keyframes(path: Path, output_dir: Path, count: int = 4) -> list[dict]:
+    """从实拍视频提取少量低分辨率关键帧，供支持视觉输入的模型分析。"""
+    path = Path(path)
+    output_dir = Path(output_dir)
+    if not path.exists():
+        raise FootageError(f'素材文件不存在：{path}')
+    if not which('ffmpeg'):
+        raise FootageError('未找到 ffmpeg，请安装 FFmpeg 并加入 PATH')
+    count = max(1, min(8, int(count)))
+    info = probe_clip(path)
+    duration = max(0.1, float(info.get('duration', 0.0)))
+    times = [0.0] if count == 1 else [duration * i / (count - 1) for i in range(count)]
+    output_dir.mkdir(parents=True, exist_ok=True)
+    frames = []
+    for i, ts in enumerate(times):
+        out = output_dir / f'{path.stem}-{i+1:02d}.jpg'
+        cmd = ['ffmpeg', '-y', '-ss', f'{ts:.3f}', '-i', str(path),
+               '-frames:v', '1', '-vf', 'scale=640:-2', '-q:v', '5', str(out)]
+        try:
+            subprocess.run(cmd, check=True, capture_output=True, text=True, timeout=60)
+        except subprocess.CalledProcessError as exc:
+            raise FootageError(f'抽取关键帧失败：{path.name}：{exc.stderr[-300:]}') from exc
+        frames.append({'path': str(out), 'time': round(ts, 3), 'label': f'{path.name}@{ts:.1f}s'})
+    return frames
+
+
+def build_visual_manifest(clips: list[FootageClip], output_dir: Path,
+                          max_frames_per_clip: int = 4) -> list[dict]:
+    """为每个可解析素材建立视觉分析清单。"""
+    manifest = []
+    for clip in clips:
+        if clip.duration <= 0:
+            continue
+        frames = extract_keyframes(Path(clip.path), Path(output_dir) / clip.name, max_frames_per_clip)
+        manifest.append({
+            'name': clip.name, 'duration': round(clip.duration, 2),
+            'width': clip.width, 'height': clip.height, 'fps': round(clip.fps, 2),
+            'frames': frames,
+        })
+    return manifest
+
+
+def footage_analysis_public(manifest: list[dict]) -> list[dict]:
+    """仅返回可放入模型提示词的视觉清单，不暴露本地绝对路径。"""
+    return [{
+        'name': x['name'], 'duration': x['duration'],
+        'width': x['width'], 'height': x['height'], 'fps': x['fps'],
+        'keyframes': [{'label': f['label'], 'time': f['time']} for f in x.get('frames', [])],
+    } for x in manifest]
 
 def trim_clip(src: Path, out: Path, start: float = 0.0, duration: float | None = None) -> Path:
     """按起始秒与时长从素材中裁剪出一段镜头（重编码保证精确切割）。
