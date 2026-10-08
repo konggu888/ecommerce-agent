@@ -1,3 +1,4 @@
+import unittest
 """实拍缺口混合路由回归测试。"""
 from ad_studio.hybrid_router import route_footage_gap_tasks
 
