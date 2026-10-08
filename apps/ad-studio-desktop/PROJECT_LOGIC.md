@@ -558,3 +558,6 @@ restore_variant_shot_cache 位于 models.py。它以原始镜头稳定 ID 恢复
 
 ## 2026-10-08：多版本隔离测试兼容无GUI CI
 新增的 A/B 混合补镜头状态隔离测试不依赖实际 Tk 窗口。CI 在无 Tkinter 的 Linux 环境下使用最小模块替身，只验证 App 的纯状态缓存/恢复方法，避免把桌面运行时依赖误当成业务逻辑依赖。
+
+## 2026-10-08：多版本成片文件物理隔离
+版本隔离不仅存在于内存分镜缓存，也落到磁盘路径：ProductionStore 根据 creative_plan.variant_index 计算当前方案，render_path 与 postprocess_shot 均将 variant-N 纳入目录。这样 A/B 方案即使使用相同基础 shot ID，也不会覆盖彼此的视频文件；版本输出路径、镜头路径和后处理路径形成一致的物理隔离链。
