@@ -555,3 +555,6 @@ restore_variant_shot_cache 位于 models.py。它以原始镜头稳定 ID 恢复
 
 ## 2026-10-08：多版本混合补镜头状态隔离
 变体运行态不再只有 variant_shot_cache。切换方案前会同时缓存当前方案的 footage_gap_tasks 与 hybrid_reviewed_shots；激活方案后按 variant_index 恢复，并同步恢复对应的实拍 plan/coverage/gaps/audit。这样 AI 补镜头的“已生成→待复核→已通过”状态与具体创意方案绑定，避免 A/B/C 方案之间串素材或串审核状态。
+
+## 2026-10-08：多版本隔离测试兼容无GUI CI
+新增的 A/B 混合补镜头状态隔离测试不依赖实际 Tk 窗口。CI 在无 Tkinter 的 Linux 环境下使用最小模块替身，只验证 App 的纯状态缓存/恢复方法，避免把桌面运行时依赖误当成业务逻辑依赖。
