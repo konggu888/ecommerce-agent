@@ -165,6 +165,22 @@ class DesktopCoreTests(unittest.TestCase):
                 ["B-GAP-1"],
             )
 
+    def test_variant_render_paths_are_physically_isolated(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            p = new_project("https://item.jd.com/123.html", 2, "真人口播")
+            p.creative_plan["variant_index"] = 1
+            a = store.render_path(p, p.shots[0])
+            p.creative_plan["variant_index"] = 2
+            b = store.render_path(p, p.shots[0])
+            self.assertNotEqual(a, b)
+            self.assertIn("variant-1", str(a))
+            self.assertIn("variant-2", str(b))
+            self.assertNotEqual(store._variant_index(p), 1)
+
+            # 后处理路径同样不能复用另一个方案的目录。
+            self.assertIn("variant-2", str(root / "postprocessed" / p.id / "variant-2" / p.shots[0].id))
     def test_final_render_inputs_are_ordered_and_pending_hybrid_is_excluded(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
