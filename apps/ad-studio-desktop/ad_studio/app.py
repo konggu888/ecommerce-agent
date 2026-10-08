@@ -862,10 +862,8 @@ class App(tk.Tk):
         }
 
     def _activate_plan(self, raw, info):
-        previous_plan=self.project.creative_plan if self.project else {}
-        existing_variants=previous_plan.get('creative_variants',[]) if self.project else []
-        existing_count=previous_plan.get('variant_count',len(existing_variants)) if self.project else 1
-        preserved_variant_state={key: value for key, value in previous_plan.items() if key.startswith('variant_')}
+        existing_variants=self.project.creative_plan.get('creative_variants',[]) if self.project else []
+        existing_count=self.project.creative_plan.get('variant_count',len(existing_variants)) if self.project else 1
         plan=validate_plan(validate_task_type_plan(raw, self._creative_constraints()))
         self.project.form=plan.video_form
         self.project.product_name=info.name
@@ -873,7 +871,6 @@ class App(tk.Tk):
         if existing_variants:
             data['creative_variants']=existing_variants
             data['variant_count']=existing_count
-        data.update(preserved_variant_state)
         data['variant_index']=int(raw.get('_variant_index',1))
         data['variant_label']=raw.get('_variant_label',f"方案{data['variant_index']}｜{plan.video_form}")
         self.project.creative_plan=data
@@ -1399,3 +1396,44 @@ class App(tk.Tk):
         info=type('ProjectInfo',(),{'name':self.project.product_name or '商品'})()
         done=[]; skipped=[]
         try:
+            for pos,raw0 in enumerate(variants,1):
+                raw=dict(raw0)
+                raw['_variant_index']=int(raw.get('_variant_index',pos))
+                raw['_variant_label']=raw.get('_variant_label',f'方案{raw["_variant_index"]}')
+                self._activate_plan(raw,info)
+                missing=[s.title for s in self.project.shots if not s.video_path or not Path(s.video_path).exists()]
+                if missing:
+                    skipped.append(f'方案{self.active_variant_index}：缺少 {len(missing)} 个已生成镜头')
+                    continue
+                out=self.store.build_final(self.project,self.aspect.get(),variant_index=self.active_variant_index)
+                self._record_variant_output(out)
+                self._cache_active_variant()
+                done.append(f'方案{self.active_variant_index}：{out}')
+            target=next((dict(v) for v in variants if int(v.get('_variant_index',0))==original_index),None)
+            if target:
+                target['_variant_index']=original_index
+                target['_variant_label']=target.get('_variant_label',f'方案{original_index}')
+                self._activate_plan(target,info)
+            self.store.save(self.project); self.refresh_shots(); self.show_shot()
+            summary='已输出：\n'+'\n'.join(done or ['无'])+'\n\n未输出：\n'+'\n'.join(skipped or ['无'])
+            self.detail.set(f'批量版本输出完成：成功 {len(done)} 个，跳过 {len(skipped)} 个')
+            messagebox.showinfo('批量输出结果',summary)
+        except Exception as e:
+            messagebox.showerror('批量输出失败',str(e))
+
+    @ui_action
+    def final_render(self):
+        if not self._ui_execution_gate(): return
+        if not self.project:return messagebox.showinfo('提示','先创建项目。')
+        try:
+            out=self.store.build_final(self.project,self.aspect.get(),variant_index=self.active_variant_index)
+            self._record_variant_output(out)
+            self._cache_active_variant()
+            self.store.save(self.project)
+            self.detail.set(f'方案{self.active_variant_index} 最终成片已独立输出：{out}')
+            messagebox.showinfo('完成',f'方案{self.active_variant_index} 最终广告已生成\n{out}')
+        except Exception as e: messagebox.showerror('暂不能成片',str(e))
+
+    def save(self):
+        if not self.project:return messagebox.showinfo('提示','当前没有项目可保存。')
+        self.store.save(self.project); self.detail.set(f'项目已保存：{self.project.id}')
