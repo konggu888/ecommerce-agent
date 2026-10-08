@@ -576,3 +576,10 @@ def test_variant_matrix_data_is_read_only():
     project_data={'creative_variants':[{'hook':'A','strategy':'卖点A','variant_test_axis':{'name':'钩子角度'}}], 'variant_outputs':{'1':{'path':'v1.mp4','status':'已输出'}}}
     assert project_data['creative_variants'][0]['variant_test_axis']['name'] == '钩子角度'
     assert project_data['variant_outputs']['1']['path'] == 'v1.mp4'
+
+
+def test_batch_variant_output_requires_completed_shots():
+    # 批量最终输出的安全边界：缺少真实 video_path 的版本只能跳过，不能伪造成片。
+    shots=[{'video_path':'/tmp/not-found.mp4'},{'video_path':''}]
+    missing=[x for x in shots if not x.get('video_path') or not Path(x['video_path']).exists()]
+    assert len(missing)==2

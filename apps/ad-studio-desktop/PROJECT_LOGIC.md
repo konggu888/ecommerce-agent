@@ -443,3 +443,6 @@ validate_task_type_plan 在创意方案进入项目/成片前执行，防止 AI 
 
 ## 2026-10-08：投放版本矩阵
 `variant_matrix_report()` 提供投放前版本总览，将 `creative_variants`、`variant_set_audit`、`variant_outputs` 汇总展示。它是只读审计界面，不重新调用模型，也不宣称真实投放效果。
+
+## 2026-10-08：批量输出已完成版本
+`batch_final_render()` 在版本矩阵之后提供安全的批量出片：逐方案恢复独立镜头状态，仅对所有镜头文件真实存在的版本执行最终渲染；缺失镜头的版本跳过并报告。该动作不触发新 AI 生成，避免未经预算确认产生额外成本。
