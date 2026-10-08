@@ -497,3 +497,11 @@ def test_archive_analyzed_waste_protects_currently_referenced_source(tmp_path):
     assert source.exists()
     assert records[0]['protected'] is True
     assert records[0]['archived'] is False
+
+
+def test_append_footage_reanalysis_history_keeps_previous_snapshot(tmp_path):
+    from ad_studio.footage import append_footage_reanalysis_history
+    p = append_footage_reanalysis_history(tmp_path / 'project', {'coverage': 72, 'plan': ['old']})
+    assert p.exists()
+    assert 'old' in p.read_text(encoding='utf-8')
+    assert p.parent.name == 'footage-reanalysis-history'

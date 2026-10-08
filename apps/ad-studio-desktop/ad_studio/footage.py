@@ -14,6 +14,7 @@ import json
 import subprocess
 import re
 import shutil
+import time
 
 from .ffmpeg import which, best_h264_encoder
 
@@ -463,6 +464,19 @@ def audit_final_footage_plan(
         "plan": items,
         "method": "最终分镜确定性复核：开场 + 卖点覆盖 + 素材排名 + 重复镜头",
     }
+
+def append_footage_reanalysis_history(project_dir: Path, snapshot: dict) -> Path:
+    """把每次重新分析的结果单独留档，避免覆盖后丢失上一轮判断。"""
+    root = Path(project_dir) / 'footage-reanalysis-history'
+    root.mkdir(parents=True, exist_ok=True)
+    stamp = time.strftime('%Y%m%d-%H%M%S')
+    target = root / f'{stamp}.json'
+    n = 2
+    while target.exists():
+        target = root / f'{stamp}-{n}.json'; n += 1
+    target.write_text(json.dumps(snapshot, ensure_ascii=False, indent=2), encoding='utf-8')
+    return target
+
 
 def archive_analyzed_waste(
     clips: list[FootageClip],

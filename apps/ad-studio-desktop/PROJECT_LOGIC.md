@@ -403,3 +403,7 @@ classify_footage_gaps 不再要求 missing_selling_points 必须同时存在于 
 
 ## 2026-10-08：重新分析的引用保护
 `reanalyze_footage` 在废片归档前收集当前项目 Shot 与 `footage_plan` 已引用的 `source_file`，传给 `archive_analyzed_waste(..., protected_paths=...)`。归档器对受保护素材只记录不可用判断，不移动源文件，从而保证重新分析不会破坏当前成片/分镜依赖。新增回归测试固定该行为。
+
+
+## 2026-10-08：重新分析历史版本
+新增 `append_footage_reanalysis_history`。每次重新分析覆盖当前结果前，先把上一轮视觉分析、覆盖审计、缺口任务、最终分镜方案单独写入项目历史目录；这样“补拍→重新分析”可以连续进行而不会丢失上一轮决策。

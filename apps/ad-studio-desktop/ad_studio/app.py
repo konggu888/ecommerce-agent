@@ -198,6 +198,19 @@ class App(tk.Tk):
             constraints=self._creative_constraints()
             analysis_dir=PROJECTS/self.project.id/'footage-analysis'
             manifest=build_visual_manifest(usable,analysis_dir,max_frames_per_clip=4)
+            # 先留档上一轮状态，再覆盖本轮分析字段；失败时用户仍可追溯历史方案。
+            previous_snapshot = {
+                'footage_visual_analysis': self.project.creative_plan.get('footage_visual_analysis'),
+                'footage_coverage': self.project.creative_plan.get('footage_coverage'),
+                'footage_gaps': self.project.creative_plan.get('footage_gaps'),
+                'footage_gap_tasks': self.project.creative_plan.get('footage_gap_tasks'),
+                'footage_selection_audit': self.project.creative_plan.get('footage_selection_audit'),
+                'footage_plan': self.project.creative_plan.get('footage_plan'),
+            }
+            if any(v is not None for v in previous_snapshot.values()):
+                from .footage import append_footage_reanalysis_history
+                history_path = append_footage_reanalysis_history(PROJECTS/self.project.id, previous_snapshot)
+                self.project.creative_plan.setdefault('footage_reanalysis_history', []).append(str(history_path))
             analysis=self.model_router.analyze_footage(info,self.project.creative_plan,manifest,constraints)
             self.project.creative_plan['footage_visual_analysis']=analysis
 
