@@ -378,7 +378,7 @@ class ProductionStore:
             "output_path": str(output), "shot_count": len(shots),
             "shot_ids": [shot.id for shot in shots], "shot_indices": [shot.index for shot in shots],
             "safety_gate": safety_gate, "media_check": media_check,
-            "delivery_status": "可交付",
+            "delivery_status": "可交付" if bool(media_check.get("valid")) else "不可交付",
             "created_at": datetime.datetime.now().isoformat(timespec="seconds"),
         }
         manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
