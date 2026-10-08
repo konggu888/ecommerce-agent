@@ -49,6 +49,7 @@ class Shot:
     source_start: float=0.0
     source_duration: float=0.0
     source_ranges: list[list[float]] = field(default_factory=list)
+    storyboard_review: str='不需要'
 
 @dataclass
 class Project:
@@ -142,6 +143,7 @@ def accept_hybrid_generated_shot(task: dict, shots: list[Shot], *, accepted_shot
         clip_source="ai_generated",
         asset_source="ai_generated",
         source_file=path,
+        storyboard_review="已通过",
     )
     shots.insert(position, extra)
     for idx, shot in enumerate(shots, start=1):
