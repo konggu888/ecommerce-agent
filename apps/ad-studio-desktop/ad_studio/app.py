@@ -566,10 +566,7 @@ class App(tk.Tk):
             target_index=task.get('target_shot_index')
             try: target_index=int(target_index) if target_index is not None else None
             except (TypeError,ValueError): target_index=None
-            if target_index is not None:
-                insert_at=next((i for i,s in enumerate(self.project.shots) if int(getattr(s,'index',0) or 0)>=target_index),len(self.project.shots))
-            else:
-                insert_at=len(self.project.shots)
+            insert_at=find_variant_insert_position(self.project.shots,target_index)
             max_index=max([int(getattr(s,'index',0)) for s in self.project.shots] or [0])
             Shot=__import__('ad_studio.models',fromlist=['Shot']).Shot
             shot=Shot(id=f"hybrid-{task.get('task_id','gap').lower().replace('_','-')}-v{self.active_variant_index}",index=(target_index if target_index is not None else max_index+1),title=f"AI补镜头｜{task.get('need','辅助画面')}",visual=str(task.get('need') or '补充通用辅助画面'),script=str(task.get('related_selling_point') or ''),status='已复核并纳入分镜',video_path=str(p),clip_source='ai_generated',provider=str(task.get('generation_provider') or 'AI视频生成'),generated_from_request=f"实拍缺口任务 {task.get('task_id')}：{task.get('reason','')}",actual_cost_rmb=round(float(task.get('generation_cost_rmb',0) or 0),4))

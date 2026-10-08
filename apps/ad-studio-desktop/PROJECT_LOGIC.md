@@ -525,3 +525,7 @@ restore_variant_shot_cache 位于 models.py，只处理 Shot 数据，不依赖 
 
 ### 方案缓存恢复数据层
 restore_variant_shot_cache 位于 models.py。它以原始镜头稳定 ID 恢复基础镜头，以保存顺序保留额外镜头，并由 app.py 的方案激活流程调用。该函数不依赖 Tkinter，因此可以在 Linux CI 中直接测试。
+
+
+### 多次补位的稳定锚点
+补镜头任务记录的是原始分镜目标 index。真正插入时通过原始镜头稳定 ID（shot-01、shot-02……）寻找当前锚点；这样前一个补镜头造成 index 顺延后，后续任务仍能插入到各自原始镜头之前。找不到稳定锚点时才回退到当前 index 顺序匹配。

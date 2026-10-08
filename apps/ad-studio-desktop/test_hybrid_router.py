@@ -103,3 +103,17 @@ class HybridVariantCacheTests(unittest.TestCase):
         base=[Shot(id='shot-01',index=1,title='原镜头1',visual='画面1',script='文案1')]
         restored=restore_variant_shot_cache(base,[])
         self.assertEqual([s.id for s in restored],['shot-01'])
+
+
+class HybridGapInsertionOrderTests(unittest.TestCase):
+    def test_multiple_insertions_use_stable_original_anchor(self):
+        from ad_studio.models import Shot, find_variant_insert_position
+        shots=[Shot(id='shot-01',index=1,title='1',visual='','script='), Shot(id='shot-02',index=2,title='2',visual='','script='), Shot(id='shot-03',index=3,title='3',visual='','script=')]
+        first=find_variant_insert_position(shots,2)
+        self.assertEqual(first,1)
+        extra=Shot(id='hybrid-gap-a-v1',index=2,title='补镜头A',visual='','script=' )
+        for s in shots[first:]: s.index+=1
+        shots.insert(first,extra)
+        second=find_variant_insert_position(shots,3)
+        self.assertEqual(second,3)
+        self.assertEqual(shots[second].id,'shot-03')

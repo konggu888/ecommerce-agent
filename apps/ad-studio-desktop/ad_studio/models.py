@@ -92,3 +92,18 @@ def restore_variant_shot_cache(base_shots, saved_shots):
         else:
             restored.append(Shot(**saved))
     return restored
+
+
+def find_variant_insert_position(shots, target_shot_index):
+    """按原始镜头稳定 ID 查找插入位置，避免多次插入导致 index 漂移。"""
+    if target_shot_index is None:
+        return len(shots)
+    try:
+        target = int(target_shot_index)
+    except (TypeError, ValueError):
+        return len(shots)
+    stable_id = f"shot-{target:02d}"
+    for pos, shot in enumerate(shots):
+        if str(getattr(shot, "id", "")) == stable_id:
+            return pos
+    return next((pos for pos, shot in enumerate(shots) if int(getattr(shot, "index", 0) or 0) >= target), len(shots))
