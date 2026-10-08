@@ -293,6 +293,32 @@ def audit_footage_coverage(analysis: dict | None, creative_plan: dict | None = N
     return {"coverage_score": round(100.0 * covered / len(coverage), 1) if coverage else 100.0, "opening_candidate": str(opening.get("source", "")) if opening else "", "selling_points": coverage, "missing_key_shots": missing, "missing_selling_points": [x["name"] for x in coverage if not x["covered"]], "candidate_sources": [str(x.get("source", "")) for x in clips[:10]], "method": "本地确定性覆盖审计"}
 
 
+
+def classify_footage_gaps(coverage: dict | None, creative_plan: dict | None = None, *, generation_connected: bool = False) -> dict:
+    """把实拍素材缺口分类为补拍/待生成/待补素材，不伪称生成已经接通。"""
+    coverage = coverage or {}
+    plan = creative_plan or {}
+    points = {str(x.get("name", "")): x for x in coverage.get("selling_points", []) if isinstance(x, dict)}
+    gaps = []
+    for item in coverage.get("missing_key_shots", []) or []:
+        if not isinstance(item, dict): continue
+        need = str(item.get("need", "")).strip()
+        reason = str(item.get("reason", "")).strip()
+        text = f"{need} {reason}".lower()
+        physical = any(k in text for k in ("实拍", "商品", "演示", "细节", "开箱", "操作", "使用", "材质", "接口", "功能"))
+        if physical:
+            action = "待补拍"; why = "缺少商品事实或实际操作证据，优先补拍，避免生成画面冒充真实商品表现。"
+        elif generation_connected:
+            action = "待生成"; why = "当前缺口属于可由已接通生成链补足的通用画面。"
+        else:
+            action = "待补素材"; why = "缺口不适合凭空编造；当前没有已接通的生成链，因此先标记为待补素材。"
+        gaps.append({"need": need, "reason": reason, "action": action, "why": why})
+    missing_points = []
+    for name in coverage.get("missing_selling_points", []) or []:
+        if name in points:
+            missing_points.append({"name": name, "action": "待补拍", "why": "该卖点没有可验证的实拍证据，不能在成片中虚构展示。"})
+    return {"gap_count": len(gaps) + len(missing_points), "key_shot_gaps": gaps, "selling_point_gaps": missing_points, "generation_connected": bool(generation_connected), "method": "实拍素材缺口确定性分类"}
+
 def audit_final_footage_plan(
     plan: list[dict] | None,
     analysis: dict | None,

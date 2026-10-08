@@ -16,7 +16,7 @@ from .model_router import ModelRouter, ModelProfile, FUNCTIONS
 from .browser_skill import _find_agent_browser
 from .ffmpeg import available as ffmpeg_available, has_nvenc
 from .providers import load_video_provider
-from .footage import build_visual_manifest, footage_analysis_public, archive_analyzed_waste
+from .footage import build_visual_manifest, footage_analysis_public, archive_analyzed_waste, classify_footage_gaps
 from .transcription import extract_audio
 
 
@@ -506,6 +506,8 @@ class App(tk.Tk):
                     from .footage import validate_footage_plan, audit_footage_coverage, audit_final_footage_plan
                     coverage=audit_footage_coverage(analysis, self.project.creative_plan)
                     self.project.creative_plan['footage_coverage']=coverage
+                    gaps=classify_footage_gaps(coverage, self.project.creative_plan, generation_connected=False)
+                    self.project.creative_plan['footage_gaps']=gaps
                     raw_footage_plan=self.model_router.plan_footage(
                         info.to_dict(), self.project.creative_plan,
                         [c.to_public() for c in usable], constraints,
@@ -539,6 +541,7 @@ class App(tk.Tk):
                 '素材清单：',clips_note,'',
                 f"视觉分析：已观察 {len(analysis.get('clips', [])) if isinstance(analysis, dict) else 0} 个素材；自动归档废片：{sum(1 for x in self.project.creative_plan.get('footage_archive', {}).get('records', []) if x.get('archived'))} 个；口播转写：{len(speech_transcripts)} 个素材。",
                 f"卖点覆盖率：{coverage.get('coverage_score', 100):.1f}%｜开场候选：{coverage.get('opening_candidate') or '未找到'}｜缺失关键镜头：{'、'.join(x.get('need','') for x in coverage.get('missing_key_shots', [])) or '无'}",
+                f"素材缺口处理：{'；'.join(x.get('need','')+'→'+x.get('action','') for x in gaps.get('key_shot_gaps', [])) or '无'}｜缺失卖点：{'、'.join(x.get('name','') for x in gaps.get('selling_point_gaps', [])) or '无'}",
                 f"本次生成创意方案：{variant_count} 个（当前先展示方案1）",f"AI选择视频形式：{plan.video_form}",f"AI策略：{plan.strategy}",'',
                 'AI 剪辑方案：',*[f"  镜头{x['index']:02d}｜{x['source']}｜{x['start']:.1f}s 起｜{x['duration']:.1f}s｜{x.get('objective','')}" for x in plan_items],
                 *(f'⚠ {warnings_note}' if warnings_note else ''),'',

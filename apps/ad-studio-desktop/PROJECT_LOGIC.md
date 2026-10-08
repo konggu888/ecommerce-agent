@@ -370,3 +370,7 @@ CI 的桌面 Python 语法检查发现 `ffmpeg.py` 的 concat 清单 `write_text
 
 ## 2026-10-08：最终实拍分镜复核链
 `audit_final_footage_plan` 在 `validate_footage_plan` 之后运行。它读取最终分镜与素材排名/覆盖审计，把每个 Shot 与素材池信息重新关联，记录 sequence_index、material_rank、selection_score、duplicate_group、best_take、covered_selling_points，并检查 opening_candidate 是否实际使用、哪些重要卖点最终没有进入分镜、哪些重复拍摄组被多次使用。结果保存为 `creative_plan["footage_selection_audit"]`，不产生额外模型调用；它是最终生产前的确定性质量闸门，而不是另一个 AI 决策模型。`
+
+
+## 2026-10-08：实拍缺口分类
+新增 classify_footage_gaps。它读取 footage_coverage 的关键镜头/卖点缺口，根据缺口是否涉及商品事实、细节、操作、演示等内容确定“待补拍”；只有明确传入已接通的生成能力时才允许标记“待生成”，否则使用“待补素材”。当前实拍模式调用时明确 generation_connected=False，因此不会伪称视频生成已接通。结果写入 creative_plan["footage_gaps"] 并展示在创建项目摘要中。

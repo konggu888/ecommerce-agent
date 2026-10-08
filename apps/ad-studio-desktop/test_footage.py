@@ -26,6 +26,7 @@ from ad_studio.footage import (
     rank_footage_analysis,
     audit_footage_coverage,
     audit_final_footage_plan,
+    classify_footage_gaps,
 )
 
 from ad_studio import footage as footage_module
@@ -145,6 +146,13 @@ class NormalizeFootageAnalysisTests(unittest.TestCase):
         self.assertEqual(points["续航"]["best_source"], "rank2.mp4")
         self.assertEqual(result["coverage_score"], 100.0)
 
+
+
+    def test_classify_footage_gaps_prefers_reshoot_for_product_evidence(self):
+        coverage={"missing_key_shots":[{"need":"商品细节特写","reason":"没有可验证的商品细节"}],"missing_selling_points":["防水"]}
+        result=classify_footage_gaps(coverage, {}, generation_connected=False)
+        self.assertEqual(result["key_shot_gaps"][0]["action"],"待补拍")
+        self.assertEqual(result["selling_point_gaps"][0]["action"],"待补拍")
 
     def test_final_plan_audit_marks_uncovered_selling_point(self):
         analysis={"clips":[
