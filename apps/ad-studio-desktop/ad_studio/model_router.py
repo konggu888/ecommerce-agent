@@ -409,6 +409,7 @@ class ModelRouter:
                 function=function, model_id=profile.id, model_name=profile.name,
                 provider=profile.provider, model=profile.model, status="failed",
                 duration_ms=int((time.perf_counter() - started) * 1000), error=str(exc),
+                project_id=self.current_project_id, category="model",
             )
             raise RuntimeError(f"模型「{profile.name}」调用失败：{exc}") from exc
 
@@ -430,6 +431,7 @@ class ModelRouter:
                 prompt_tokens=prompt_tokens, completion_tokens=completion_tokens,
                 total_tokens=total_tokens, estimated_cost_rmb=estimated_cost,
                 duration_ms=int((time.perf_counter() - started) * 1000), error=str(exc),
+                project_id=self.current_project_id, category="model",
             )
             raise RuntimeError(f"模型「{profile.name}」返回的不是有效 JSON") from exc
 
@@ -439,6 +441,7 @@ class ModelRouter:
             prompt_tokens=prompt_tokens, completion_tokens=completion_tokens,
             total_tokens=total_tokens, estimated_cost_rmb=estimated_cost,
             duration_ms=int((time.perf_counter() - started) * 1000),
+            project_id=self.current_project_id, category="model",
         )
         return result
 
