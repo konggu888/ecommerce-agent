@@ -6,9 +6,46 @@ from ad_studio.engine import detect_platform, estimate_cost, new_project, mark_r
 from ad_studio.library import LocalLibrary
 from ad_studio.production import ProductionStore
 from ad_studio.product_parser import ProductInfo, save_product_library, load_product_library, merge_product_library
+from ad_studio.model_router import ModelRouter, ModelProfile, build_stage_prompt
 
 
 class DesktopCoreTests(unittest.TestCase):
+
+    def test_ai_stage_prompts_preserve_product_fact_boundary(self):
+        product = {"name": "商品X", "selling_points": ["用户确认卖点"], "specs": {"容量": "500ml"}}
+        prompt = build_stage_prompt("product_understanding", {"product": product}, {})
+        self.assertIn("不得发明资料中没有的规格、功效或价格", prompt)
+        self.assertIn("用户确认卖点", prompt)
+        selling_prompt = build_stage_prompt("selling_points", {"product": product}, {})
+        self.assertIn("只提炼真实可依据的核心卖点", selling_prompt)
+
+    def test_ai_create_plan_runs_full_understanding_to_asset_pipeline(self):
+        with tempfile.TemporaryDirectory() as td:
+            router = ModelRouter(Path(td) / "model-config.json")
+            calls = []
+            def fake_complete(profile, prompt, function=None, **kwargs):
+                calls.append(function or "")
+                stage = next((s for s in ("product_understanding","selling_points","audience_pain","ad_strategy","ad_intensity","video_form","script","storyboard","asset_selection") if f"当前阶段：{s}" in prompt), "")
+                outputs = {
+                    "product_understanding": {"product_summary":"商品X","product_type":"日用品","positioning":"用户确认定位","usage_scenes":["家庭"]},
+                    "selling_points": {"selling_points":["用户确认卖点"]},
+                    "audience_pain": {"target_audience":["目标用户"],"pain_points":["真实痛点"]},
+                    "ad_strategy": {"strategy":"场景证明","hook":"开场展示","proof":"实拍证明","cta":"了解商品"},
+                    "ad_intensity": {"ad_level":"标准广告"},
+                    "video_form": {"video_form":"真人实拍","duration_seconds":30},
+                    "script": {"script":"围绕用户确认卖点"},
+                    "storyboard": {"shots":[{"index":1,"objective":"展示卖点","visual":"展示商品","dialogue":"","duration_seconds":5}]},
+                    "asset_selection": {"asset_selection":[{"shot_index":1,"asset_type":"product","requirements":["商品"]}]},
+                }
+                return outputs[stage]
+            router.complete_json = fake_complete
+            result = router.create_plan(product, {})
+            self.assertEqual(len(calls), 9)
+            self.assertEqual(calls[0], "商品理解")
+            self.assertEqual(calls[-1], "素材选择")
+            self.assertEqual(result["selling_points"], ["用户确认卖点"])
+            self.assertEqual(result["duration_seconds"], 30)
+            self.assertIn("creative_stages", result)
 
     def test_product_library_round_trip_preserves_user_facts(self):
         with tempfile.TemporaryDirectory() as td:
