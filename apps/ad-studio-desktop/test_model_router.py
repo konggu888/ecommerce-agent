@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from ad_studio.model_router import FUNCTIONS, ModelProfile, ModelRouter, audit_ad_variant_set, build_creative_test_plan, audit_creative_factual_consistency
+from ad_studio.model_router import FUNCTIONS, ModelProfile, ModelRouter, audit_ad_variant_set, build_creative_test_plan, audit_creative_factual_consistency, audit_storyboard_fact_consistency
 
 
 class FakeRouter(ModelRouter):
@@ -127,6 +127,17 @@ class CreativeVariantAuditTest(unittest.TestCase):
         audit=audit_creative_factual_consistency({},[{"selling_points":["神奇功能"]}],[])
         self.assertEqual(audit["variants"][0]["product_fact_status"],"缺少商品资料，无法完成事实核验")
 
+
+    def test_storyboard_fact_audit_marks_visual_claims_as_review_and_matches_supported_facts(self):
+        product={"selling_points":["轻便","易收纳"]}
+        variants=[{"shots":[{"description":"展示轻便结构","product_focus":"商品主体","subtitle":"轻便"}]}]
+        audit=audit_storyboard_fact_consistency(product,variants)
+        shot=audit["variants"][0]["shots"][0]
+        self.assertIn("轻便",shot["covered_facts"])
+        self.assertEqual(shot["fact_status"],"有商品资料对应")
+        self.assertEqual(shot["obscured"],"待视觉复核")
+        self.assertEqual(shot["appearance_fidelity"],"待视觉复核")
+        self.assertEqual(shot["function_fidelity"],"待视觉复核")
 
 if __name__ == "__main__":
     unittest.main()

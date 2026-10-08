@@ -611,6 +611,41 @@ def audit_creative_factual_consistency(product: dict[str, Any], variants: list[d
 
 
 
+def audit_storyboard_fact_consistency(product: dict[str, Any], variants: list[dict[str, Any]]) -> dict[str, Any]:
+    """投放前分镜/商品事实审计；视觉属性没有真实视觉证据时必须待复核。"""
+    product = product if isinstance(product, dict) else {}
+    facts = product.get("selling_points", []) if isinstance(product.get("selling_points", []), list) else []
+    fact_text = " ".join(str(x) for x in facts)
+    results = []
+    for i, variant in enumerate(variants, 1):
+        shots = variant.get("shots", []) if isinstance(variant, dict) else []
+        if not isinstance(shots, list):
+            shots = []
+        shot_results = []
+        for n, shot in enumerate(shots, 1):
+            if not isinstance(shot, dict):
+                shot = {"description": str(shot)}
+            desc = " ".join(str(shot.get(k, "")) for k in ("description", "visual", "action", "product_focus", "subtitle", "voiceover"))
+            related = [str(x) for x in facts if str(x) and str(x) in desc]
+            shot_results.append({
+                "shot_index": n,
+                "product_focus": shot.get("product_focus") or "待视觉复核",
+                "covered_facts": related,
+                "fact_status": "有商品资料对应" if related else ("待复核" if fact_text else "缺少商品资料"),
+                "obscured": "待视觉复核",
+                "appearance_fidelity": "待视觉复核",
+                "function_fidelity": "待视觉复核",
+                "subtitle_visual_consistency": "待复核",
+            })
+        results.append({"variant_index": i, "shots": shot_results, "shot_count": len(shot_results)})
+    return {
+        "enabled": bool(variants),
+        "method": "投放前分镜与商品事实确定性审计",
+        "data_boundary": "文字层只做已提供商品资料的对应检查；商品外观、遮挡、功能演示和字幕画面一致性必须由实际分镜/成片视觉复核确认。",
+        "variants": results,
+    }
+
+
 def audit_ad_variant_set(plans: list[dict[str, Any]], task_type: str) -> dict[str, Any]:
     """不调用新模型，确定性检查广告方案是否形成真正可测试的创意差异。"""
     if task_type != "广告投放视频" or len(plans) <= 1:
