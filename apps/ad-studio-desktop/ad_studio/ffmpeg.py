@@ -54,6 +54,6 @@ def concat(clips:list[Path],output:Path):
     if not clips: raise ValueError('没有可拼接的镜头')
     if not which('ffmpeg'): raise RuntimeError('未找到 FFmpeg，请安装 FFmpeg 并加入 PATH')
     output.parent.mkdir(parents=True,exist_ok=True); manifest=output.with_suffix('.txt')
-    manifest.write_text('\n'.join("file '"+str(p.resolve()).replace("'","'\\''")+"'") for p in clips),encoding='utf-8')
+    manifest.write_text('\n'.join("file '"+str(p.resolve()).replace("'","'\\''")+"'" for p in clips),encoding='utf-8')
     subprocess.run(['ffmpeg','-y','-f','concat','-safe','0','-i',str(manifest),'-c','copy',str(output)],check=True,capture_output=True,text=True)
     return output

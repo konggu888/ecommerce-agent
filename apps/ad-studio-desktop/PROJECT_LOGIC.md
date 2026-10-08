@@ -257,3 +257,7 @@ ProductionStore.postprocess_shot 会读取当前硬件能力画像，并在状�
 
 ## 2026-10-08：生成执行链修正
 CapabilityRouter 已实际接入 LLM、素材生成、视频生成入口；本地素材生成兼容 SD WebUI 完整 endpoint 与基础 endpoint，避免重复拼接 `/sdapi/v1/txt2img`。系统状态中的素材调度明确指定资产类型，独立模型路由显示与实际 FUNCTIONS 数量一致。
+
+
+## 2026-10-08：CI 修复
+CI 的桌面 Python 语法检查发现 `ffmpeg.py` 的 concat 清单 `write_text` 括号错误，已修复为先完成 `join` 再传入 `encoding` 参数；功能逻辑不变。

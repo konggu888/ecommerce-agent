@@ -255,3 +255,7 @@ ProductionStore.postprocess_shot 会读取当前硬件能力画像，并在状�
 
 ## 2026-10-08：本地素材生成执行链修正
 本地素材生成现在兼容填写 `http://127.0.0.1:7860` 或完整的 `/sdapi/v1/txt2img` endpoint，不会重复拼接路径；系统状态同时按“演员”类型检测素材生成能力。创意模型独立路由数量显示与实际功能列表保持一致。
+
+
+## 2026-10-08：CI 修复
+修复 FFmpeg concat 清单写入的 Python 语法错误，避免桌面 CI 在 `compileall` 阶段失败。
