@@ -49,6 +49,34 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(result["duration_seconds"], 30)
             self.assertIn("creative_stages", result)
 
+    def test_three_task_types_have_distinct_deterministic_policies(self):
+        from ad_studio.creative_engine import apply_task_type_policy, validate_task_type_plan
+        base = {
+            "duration_seconds": 60,
+            "strategy": "策略",
+            "hook": "开场钩子",
+            "script": "购买下单转化",
+            "shots": [
+                {"objective": "商品", "visual": "商品细节功能展示", "dialogue": "购买下单"},
+                {"objective": "detail", "visual": "产品特写"},
+            ],
+        }
+        policies = {}
+        for task_type in ("电商短视频", "商品主图视频", "广告投放视频"):
+            raw = dict(base)
+            raw["shots"] = [dict(x) for x in base["shots"]]
+            result = apply_task_type_policy(raw, {"task_type": task_type})
+            policies[task_type] = result["task_policy"]
+            self.assertEqual(result["task_type"], task_type)
+            self.assertGreaterEqual(result["duration_seconds"], result["task_policy"]["min_seconds"])
+            self.assertLessEqual(result["duration_seconds"], result["task_policy"]["max_seconds"])
+        self.assertNotEqual(policies["电商短视频"]["sequence"], policies["商品主图视频"]["sequence"])
+        self.assertNotEqual(policies["商品主图视频"]["sequence"], policies["广告投放视频"]["sequence"])
+        self.assertTrue(validate_task_type_plan(
+            apply_task_type_policy(dict(base), {"task_type": "广告投放视频"}),
+            {"task_type": "广告投放视频"}
+        ))
+
     def test_footage_planner_uses_only_supplied_assets_and_respects_task_rules(self):
         with tempfile.TemporaryDirectory() as td:
             router = ModelRouter(Path(td) / "model-config.json")
