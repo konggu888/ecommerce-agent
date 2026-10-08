@@ -1084,5 +1084,77 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertTrue(recovered["media_check"]["valid"])
         self.assertEqual(recovered["repair_routes"], [])
 
+
+    def test_a28_project_persistence_restores_versions_material_status_review_and_output_history(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            p = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            p.product_info = {
+                "name": "商品X",
+                "selling_points": ["用户确认卖点"],
+                "specs": {"容量": "500ml"},
+                "forbidden_terms": ["全网最低"],
+            }
+            p.creative_plan.update({
+                "variant_index": 2,
+                "variant_count": 2,
+                "variant_1": {"status": "已完成"},
+                "variant_2": {"status": "审核中"},
+                "variant_shot_cache": {"2": [{"id": p.shots[0].id, "index": 1, "title": "首镜头", "visual": "商品", "script": "卖点"}]},
+            })
+            p.shots[0].version = 3
+            p.shots[0].status = "已生成"
+            p.shots[0].video_path = str(root / "shot-v3.mp4")
+            p.shots[0].storyboard_review = "已通过"
+            p.shots[0].clip_source = "filmed"
+            p.shots[0].source_file = str(root / "raw.mp4")
+            p.shots[0].source_ranges = [[1.2, 3.4]]
+            output = root / "final-v2.mp4"
+            output.write_bytes(b"video")
+            store.write_final_output_manifest(
+                p, output, "9:16", 2, p.shots[:1],
+                {"allowed": True, "reasons": [], "checked": True},
+                {"valid": True, "duration_seconds": 4.5, "width": 1080, "height": 1920},
+            )
+            store.save(p)
+
+            restored = store.load(p.id)
+            self.assertIsNotNone(restored)
+            self.assertEqual(restored.product_info["specs"]["容量"], "500ml")
+            self.assertEqual(restored.creative_plan["variant_index"], 2)
+            self.assertEqual(restored.creative_plan["variant_2"]["status"], "审核中")
+            self.assertEqual(restored.shots[0].version, 3)
+            self.assertEqual(restored.shots[0].storyboard_review, "已通过")
+            self.assertEqual(restored.shots[0].clip_source, "filmed")
+            self.assertEqual(restored.shots[0].source_ranges, [[1.2, 3.4]])
+            history = store.final_output_history(restored)
+            self.assertEqual(len(history), 1)
+            self.assertEqual(history[0]["key"], "2|9:16")
+            self.assertEqual(history[0]["duration_seconds"], 4.5)
+            self.assertEqual(history[0]["shot_count"], 1)
+
+    def test_a28_two_projects_do_not_share_persistent_state(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            a = new_project("https://item.jd.com/a.html", 1, "电商短视频")
+            b = new_project("https://item.jd.com/b.html", 1, "商品主图视频")
+            a.creative_plan["variant_index"] = 1
+            a.product_info["name"] = "商品A"
+            b.creative_plan["variant_index"] = 2
+            b.product_info["name"] = "商品B"
+            store.save(a)
+            store.save(b)
+            ar = store.load(a.id)
+            br = store.load(b.id)
+            self.assertEqual(ar.product_info["name"], "商品A")
+            self.assertEqual(br.product_info["name"], "商品B")
+            self.assertEqual(ar.creative_plan["variant_index"], 1)
+            self.assertEqual(br.creative_plan["variant_index"], 2)
+            self.assertNotEqual(ar.id, br.id)
+            self.assertTrue((root / f"{ar.id}.json").exists())
+            self.assertTrue((root / f"{br.id}.json").exists())
+
 if __name__ == "__main__":
     unittest.main()
