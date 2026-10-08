@@ -513,3 +513,7 @@ AI补镜头缺口任务必须记录 `variant_index`。人工复核只读取当�
 
 ### 回归测试
 test_hybrid_router.py 的 HybridVariantCacheTests 验证方案镜头缓存按稳定 shot ID 恢复，并保留插入后的额外 AI 补镜头；无缓存时保持原始方案分镜不变。
+
+
+### 方案缓存恢复的数据层隔离
+restore_variant_shot_cache 位于 models.py，只处理 Shot 数据，不依赖 Tkinter。app.py 负责调用它。这样桌面 UI 与纯数据恢复逻辑分离，Linux CI 不安装 Tkinter 也能验证方案切换/缓存恢复。
