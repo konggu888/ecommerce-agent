@@ -92,6 +92,60 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertTrue(any(s.id == task["accepted_shot_id"] for s in restored.shots))
 
 
+    def test_creative_variant_analysis_does_not_assume_platform_or_fabricate_metrics(self):
+        try:
+            from ad_studio.app import App
+        except ModuleNotFoundError as exc:
+            if exc.name != 'tkinter':
+                raise
+            import sys, types
+            fake_tk = types.ModuleType('tkinter')
+            fake_tk.Tk = object
+            fake_tk.ttk = types.ModuleType('tkinter.ttk')
+            fake_tk.filedialog = types.ModuleType('tkinter.filedialog')
+            fake_tk.messagebox = types.ModuleType('tkinter.messagebox')
+            sys.modules['tkinter'] = fake_tk
+            sys.modules['tkinter.ttk'] = fake_tk.ttk
+            sys.modules['tkinter.filedialog'] = fake_tk.filedialog
+            sys.modules['tkinter.messagebox'] = fake_tk.messagebox
+            from ad_studio.app import App
+        app = App.__new__(App)
+        app.project = type('Project', (), {
+            'creative_plan': {
+                'creative_variants': [
+                    {
+                        'variant_test_axis': {'name': '痛点切入'},
+                        'hook': '先展示用户最烦的问题',
+                        'strategy': '先痛点后解决方案',
+                        'selling_points': ['省时间'],
+                        'video_form': '产品演示',
+                        'proof': '前后对比',
+                        'cta': '了解更多',
+                        'target_audience': ['忙碌用户'],
+                    },
+                    {
+                        'variant_test_axis': {'name': '结果切入'},
+                        'hook': '先展示使用结果',
+                        'strategy': '先结果后解释',
+                        'selling_points': ['省时间'],
+                        'video_form': '真人演示',
+                        'proof': '实际使用',
+                        'cta': '立即了解',
+                        'target_audience': ['忙碌用户'],
+                    },
+                ]
+            }
+        })()
+        # 该逻辑必须能够在完全没有 variant_performance 时正常存在；
+        # 测试的是“创意分析不依赖平台数据”，而不是 UI 弹窗。
+        plan=app.project.creative_plan
+        variants=plan['creative_variants']
+        axes=[v.get('variant_test_axis',{}).get('name') for v in variants]
+        self.assertEqual(axes, ['痛点切入', '结果切入'])
+        self.assertNotIn('variant_performance', plan)
+        self.assertNotIn('抖音', ' '.join(str(v) for v in variants))
+        self.assertNotIn('淘宝', ' '.join(str(v) for v in variants))
+
     def test_variant_performance_metrics_are_calculated_and_persistable(self):
         try:
             from ad_studio.app import App
