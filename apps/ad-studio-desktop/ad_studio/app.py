@@ -20,6 +20,34 @@ from .footage import build_visual_manifest, footage_analysis_public, archive_ana
 from .hybrid_router import route_footage_gap_tasks
 from .transcription import extract_audio
 from .ui_contract import verify_ui_action_contract, UIContractError, ui_action
+from .models import Shot
+
+
+def _restore_variant_shot_cache(base_shots, saved_shots):
+    """恢复某个广告方案的完整镜头列表，保留人工纳入的额外镜头。
+
+    原始分镜镜头使用稳定 id（如 shot-01）；AI 补镜头等额外镜头可能
+    插入后改变 index，因此不能只按 index 恢复，否则切换方案后会丢失
+    已通过人工复核的补镜头。
+    """
+    if not saved_shots:
+        return list(base_shots)
+    base_by_id = {str(getattr(shot, "id", "")): shot for shot in base_shots}
+    restored = []
+    for saved in saved_shots:
+        if not isinstance(saved, dict):
+            continue
+        shot_id = str(saved.get("id", ""))
+        if shot_id in base_by_id:
+            shot = base_by_id[shot_id]
+            for key, value in saved.items():
+                if key != "id" and hasattr(shot, key):
+                    setattr(shot, key, value)
+            restored.append(shot)
+        else:
+            # 非原始分镜镜头（例如已通过复核的 AI 补镜头）完整保留。
+            restored.append(Shot(**saved))
+    return restored
 
 
 class UnconfiguredCreativeLLM:
@@ -849,7 +877,7 @@ class App(tk.Tk):
         data['variant_label']=raw.get('_variant_label',f"方案{data['variant_index']}｜{plan.video_form}")
         self.project.creative_plan=data
         self.project.shots=[
-            __import__('ad_studio.models',fromlist=['Shot']).Shot(
+            Shot(
                 id=f'shot-{x.index:02d}', index=x.index,
                 title=x.objective or f'镜头{x.index}', visual=x.visual, script=x.dialogue,
                 composition=x.composition, focus_x=x.focus_x, focus_y=x.focus_y,
@@ -861,14 +889,7 @@ class App(tk.Tk):
         self.active_variant_index=int(raw.get('_variant_index',1))
         cache=self.project.creative_plan.get('variant_shot_cache', {}) if self.project else {}
         saved=cache.get(str(self.active_variant_index), [])
-        if saved:
-            by_index={int(x.get('index', -1)): x for x in saved}
-            for shot in self.project.shots:
-                old=by_index.get(shot.index)
-                if old:
-                    for key,value in old.items():
-                        if key != 'id' and hasattr(shot,key):
-                            setattr(shot,key,value)
+        self.project.shots=_restore_variant_shot_cache(self.project.shots, saved)
         return plan
 
     @ui_action
@@ -1174,7 +1195,7 @@ class App(tk.Tk):
             if not sel:return
             project=self.store.load(files[sel[0]].stem)
             if not project:return messagebox.showerror('打开失败','项目文件无法读取。')
-            self.project=project; self.model_router.set_project_context(project.id); self.url.set(''); self.level.set(project.level); self.form.set(project.form); self.refresh_shots(); c=project.cost_estimate; self.cost.set(f"项目预估 ¥{c.get('总计',0):.2f} · 云端 ¥{c.get('云端',0):.2f} · 已保存 {len(project.shots)} 个镜头" if c else f'已保存 {len(project.shots)} 个镜头'); self.detail.set(f'已恢复项目：{project.product_name} · {project.platform} · {project.form}'); win.destroy()
+            self.project=project; self.model_router.set_project_context(project.id); self.active_variant_index=int((project.creative_plan or {}).get('variant_index',1) or 1); self.url.set(''); self.level.set(project.level); self.form.set(project.form); self.refresh_shots(); c=project.cost_estimate; self.cost.set(f"项目预估 ¥{c.get('总计',0):.2f} · 云端 ¥{c.get('云端',0):.2f} · 已保存 {len(project.shots)} 个镜头" if c else f'已保存 {len(project.shots)} 个镜头'); self.detail.set(f'已恢复项目：{project.product_name} · {project.platform} · {project.form}'); win.destroy()
         ttk.Button(frm,text='打开',command=open_selected).pack(anchor='e')
 
     @ui_action

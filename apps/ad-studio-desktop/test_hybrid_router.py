@@ -80,3 +80,26 @@ class HybridGapPositionTests(unittest.TestCase):
     def test_target_position_is_recorded_for_precise_insertion(self):
         task={'task_id':'GAP-004','target_shot_index':3}
         self.assertEqual(task['target_shot_index'],3)
+
+
+class HybridVariantCacheTests(unittest.TestCase):
+    def test_variant_cache_restores_inserted_extra_shot_by_stable_id(self):
+        from ad_studio.app import _restore_variant_shot_cache
+        from ad_studio.models import Shot
+        base=[Shot(id='shot-01',index=1,title='原镜头1'), Shot(id='shot-02',index=2,title='原镜头2')]
+        saved=[
+            {'id':'shot-01','index':1,'title':'原镜头1','status':'已生成'},
+            {'id':'hybrid-gap-001-v1','index':2,'title':'AI补镜头','status':'已复核并纳入分镜','video_path':'/tmp/generated.mp4','clip_source':'ai_generated'},
+            {'id':'shot-02','index':3,'title':'原镜头2','status':'已生成'},
+        ]
+        restored=_restore_variant_shot_cache(base,saved)
+        self.assertEqual([s.id for s in restored],['shot-01','hybrid-gap-001-v1','shot-02'])
+        self.assertEqual([s.index for s in restored],[1,2,3])
+        self.assertEqual(restored[1].clip_source,'ai_generated')
+
+    def test_variant_cache_without_saved_data_keeps_base_plan(self):
+        from ad_studio.app import _restore_variant_shot_cache
+        from ad_studio.models import Shot
+        base=[Shot(id='shot-01',index=1,title='原镜头1')]
+        restored=_restore_variant_shot_cache(base,[])
+        self.assertEqual([s.id for s in restored],['shot-01'])
