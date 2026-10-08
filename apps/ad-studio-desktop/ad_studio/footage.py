@@ -152,6 +152,47 @@ def footage_analysis_public(manifest: list[dict]) -> list[dict]:
         'keyframes': [{'label': f['label'], 'time': f['time']} for f in x.get('frames', [])],
     } for x in manifest]
 
+def normalize_footage_analysis(analysis: dict | None) -> dict:
+    """规范化视觉分析中的重复镜头分组与最佳版本信息。"""
+    if not isinstance(analysis, dict):
+        return {"clips": [], "global_summary": "", "recommended_duration_seconds": 0}
+    result = dict(analysis)
+    clips = result.get("clips")
+    if not isinstance(clips, list):
+        result["clips"] = []
+        return result
+    normalized = []
+    for item in clips:
+        if not isinstance(item, dict):
+            continue
+        x = dict(item)
+        x["duplicate_group"] = str(x.get("duplicate_group") or "").strip()
+        try:
+            x["duplicate_confidence"] = max(0.0, min(1.0, float(x.get("duplicate_confidence", 0) or 0)))
+        except (TypeError, ValueError):
+            x["duplicate_confidence"] = 0.0
+        try:
+            x["take_rank"] = max(0, int(x.get("take_rank", 0) or 0))
+        except (TypeError, ValueError):
+            x["take_rank"] = 0
+        x["best_take"] = bool(x.get("best_take", False))
+        normalized.append(x)
+    groups = {}
+    for x in normalized:
+        if x["duplicate_group"]:
+            groups.setdefault(x["duplicate_group"], []).append(x)
+    for group_items in groups.values():
+        if not any(x["best_take"] for x in group_items):
+            ranked = [x for x in group_items if x["take_rank"] > 0]
+            best = min(ranked, key=lambda x: x["take_rank"]) if ranked else max(group_items, key=lambda x: float(x.get("score", 0) or 0))
+            best["best_take"] = True
+        for x in group_items:
+            if x["best_take"] and x["take_rank"] <= 0:
+                x["take_rank"] = 1
+    result["clips"] = normalized
+    return result
+
+
 def archive_analyzed_waste(
     clips: list[FootageClip],
     analysis: dict,
