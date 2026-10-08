@@ -137,14 +137,42 @@ class ProductionStore:
 
     def _render_with_provider(self, project: Project, shot: Shot, provider):
         out=self.render_path(project,shot)
+        # 先写临时文件，只有 Provider 完整成功后才替换正式版本。
+        # 这样重新生成 v2 失败时，v1 仍保持可用，不会污染当前镜头。
+        temp=out.with_suffix('.part.mp4')
+        if temp.exists():
+            temp.unlink()
         resolution=self.resolve_assets(project,shot)
-        provider=provider
         prompt='\n'.join([f'标题：{shot.title}',f'画面：{shot.visual}',f'文案：{shot.script}'])
-        shot.status='生成中…'; shot.provider=getattr(provider,'provider_name','Generic REST'); self.save(project)
-        result=provider.generate(GenerationRequest(prompt=prompt,output=out,duration=3,reference_assets=[x for x in [shot.actor_id,shot.scene_id,*shot.product_asset_ids] if x]))
-        shot.actual_cost_rmb=round(float(getattr(provider,'cost_per_shot_rmb',0.0)),4)
-        self.mark_ready(project,shot,result)
-        return result
+        previous_path=shot.video_path
+        shot.status='生成中…'
+        shot.provider=getattr(provider,'provider_name','Generic REST')
+        shot.generated_from_request=prompt
+        self.save(project)
+        try:
+            result=provider.generate(GenerationRequest(
+                prompt=prompt,
+                output=temp,
+                duration=3,
+                reference_assets=[x for x in [shot.actor_id,shot.scene_id,*shot.product_asset_ids] if x],
+            ))
+            result=Path(result)
+            if not result.exists() or result.stat().st_size == 0:
+                raise RuntimeError('视频 Provider 返回成功，但生成文件不存在或为空。')
+            if out.exists():
+                out.unlink()
+            result.replace(out)
+            shot.actual_cost_rmb=round(float(getattr(provider,'cost_per_shot_rmb',0.0)),4)
+            self.mark_ready(project,shot,out)
+            return out
+        except Exception as exc:
+            if temp.exists():
+                temp.unlink()
+            shot.video_path=previous_path
+            shot.status='生成失败（已保留上一版本）' if previous_path else '生成失败'
+            shot.provider=getattr(provider,'provider_name',shot.provider)
+            self.save(project)
+            raise RuntimeError(f'镜头 {shot.index} v{shot.version} 生成失败：{exc}') from exc
 
     def render_footage_shot(self, project: Project, shot: Shot):
         """从用户拍摄素材中裁剪出本镜头（本地 FFmpeg，不调用生成服务）。"""
