@@ -702,3 +702,9 @@
 - 修复：真实投放数据写入增加独立 provenance 记录，明确 source_type=user_provided，并明确“用户提供，系统不验证真实性”；创意测试方案继续只产生待真实投放数据的测试设计，不写入平台指标。
 - 自动化回归：验证用户提供数据才进入 variant_performance；系统不写入 platform_api_response 等伪造外部来源字段；投放前创意测试方案不包含 CTR/CVR/CPC/CPA/ROAS。
 - 数据边界：provenance 是来源声明，不代表系统已向广告平台核验真实性；系统不主动访问广告平台。
+
+
+### 2026-10-09 A29 独立重新验收
+- 从当前 main 重新检查 A29 数据边界，发现既有 provenance 使用 `simulation=false` 表达来源语义不准确；已修正为 `verification_status=unverified`。
+- 重新验证：用户主动提供的数据才进入 `variant_performance`；来源明确为 `user_provided`；系统不写入平台 API 返回值；投放前测试计划不产生 CTR/CVR/CPC/CPA/ROAS 等平台结果。
+- 本次为独立重新验收，不复用上一轮 A29 的通过结论；以本分支 CI 与文档同步结果为准。
