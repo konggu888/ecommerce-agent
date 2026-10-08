@@ -79,15 +79,13 @@ def transcribe_openai_compatible(
     raw = audio.read_bytes()
     body.extend(
         (
-            f"--{boundary}" + "\r\n"
-            f"Content-Disposition: form-data; name=\"file\"; filename=\"{audio.name}\"" + "\r\n"
-            "Content-Type: audio/wav" + "\r\n\r\n"
+            f"--{boundary}\r\n"
+            f"Content-Disposition: form-data; name=\"file\"; filename=\"{audio.name}\"\r\n"
+            "Content-Type: audio/wav\r\n\r\n"
         ).encode()
     )
-        body.extend(raw)
-    body.extend(f"
---{boundary}--
-".encode())
+    body.extend(raw)
+    body.extend(f"\r\n--{boundary}--\r\n".encode())
 
     req = urllib.request.Request(
         endpoint,

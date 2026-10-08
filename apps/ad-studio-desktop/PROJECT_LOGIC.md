@@ -331,3 +331,5 @@ CI 的桌面 Python 语法检查发现 `ffmpeg.py` 的 concat 清单 `write_text
 
 ## 8.5 实拍口播废话删除与多段镜头执行
 素材剪辑导演读取 creative_plan.footage_transcripts。当需要删除口播废话/重复表达时，输出镜头 ranges=[[start,end],...]，这些区间使用原始素材时间轴。validate_footage_plan 会排序、合并重叠区间并限制在素材时长内；最终有效时长为各保留区间之和。models.Shot.source_ranges 持久化这些区间；ProductionStore.render_footage_shot 会分别裁剪每段并调用本地 concat 拼接，因此废话不会进入该镜头成片。
+
+- 2026-10-08：口播转写上传层统一使用显式 CRLF multipart 边界，避免换行转换造成 Python 语法错误。
