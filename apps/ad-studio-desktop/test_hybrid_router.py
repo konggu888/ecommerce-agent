@@ -205,3 +205,39 @@ class HumanSupportMaterialTests(unittest.TestCase):
         )
         self.assertEqual(routed["tasks"][0]["recommended_resolution"], "继续补拍")
 
+
+
+class HybridAcceptanceGateTests(unittest.TestCase):
+    def test_only_reviewed_generated_gap_can_enter_storyboard(self):
+        from ad_studio.models import Shot, accept_hybrid_generated_shot
+        shots = [Shot(id="shot-01", index=1, title="原镜头", visual="原画面", script="")]
+        task = {
+            "task_id": "GAP-ACCEPT-1",
+            "generated_path": "/tmp/generated.mp4",
+            "review_status": "待复核",
+            "estimated_cost_rmb": 1,
+        }
+        with self.assertRaises(ValueError):
+            accept_hybrid_generated_shot(task, shots)
+        self.assertEqual([s.id for s in shots], ["shot-01"])
+
+    def test_reviewed_gap_is_inserted_once_and_reindexed(self):
+        from ad_studio.models import Shot, accept_hybrid_generated_shot
+        shots = [
+            Shot(id="shot-01", index=1, title="1", visual="", script=""),
+            Shot(id="shot-02", index=2, title="2", visual="", script=""),
+        ]
+        task = {
+            "task_id": "GAP-ACCEPT-2",
+            "generated_path": "/tmp/generated.mp4",
+            "review_status": "已通过",
+            "estimated_cost_rmb": 1,
+            "target_shot_index": 2,
+            "provider": "测试Provider",
+        }
+        accept_hybrid_generated_shot(task, shots)
+        self.assertEqual([s.id for s in shots], ["shot-01", "hybrid-GAP-ACCEPT-2-v1", "shot-02"])
+        self.assertEqual([s.index for s in shots], [1, 2, 3])
+        self.assertTrue(task["accepted_into_storyboard"])
+        accept_hybrid_generated_shot(task, shots)
+        self.assertEqual([s.id for s in shots], ["shot-01", "hybrid-GAP-ACCEPT-2-v1", "shot-02"])
