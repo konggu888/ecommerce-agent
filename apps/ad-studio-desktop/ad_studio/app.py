@@ -299,7 +299,7 @@ class App(tk.Tk):
             '将重新扫描当前文件夹中的视频，并重新执行视觉分析、废片归档、口播转写（如已配置）、素材排名、卖点覆盖审计和剪辑方案复核。是否继续？'):
             return
         try:
-            from .footage import scan_footage, FootageError, validate_footage_plan, audit_footage_coverage, audit_final_footage_plan, audit_footage_gap_completion, merge_gap_task_acceptance
+            from .footage import scan_footage, FootageError, validate_footage_plan, audit_footage_coverage, audit_final_footage_plan, audit_footage_gap_completion, merge_gap_task_acceptance, audit_footage_plan_change
             clips=scan_footage(folder)
             usable=[c for c in clips if c.duration>0]
             if not usable:
@@ -310,6 +310,7 @@ class App(tk.Tk):
             manifest=build_visual_manifest(usable,analysis_dir,max_frames_per_clip=4)
             # 先留档上一轮状态，再覆盖本轮分析字段；失败时用户仍可追溯历史方案。
             previous_variant_gap_tasks = self.project.creative_plan.get('variant_footage_gap_tasks') or {}
+            previous_variant_plans = self.project.creative_plan.get('variant_footage_plans') or {}
             previous_snapshot = {
                 'footage_visual_analysis': self.project.creative_plan.get('footage_visual_analysis'),
                 'footage_coverage': self.project.creative_plan.get('footage_coverage'),
@@ -841,6 +842,8 @@ class App(tk.Tk):
                         final_audit=audit_final_footage_plan(plan_items, analysis, coverage_v)
                         idx=int(variant_raw.get('_variant_index',variant_pos))
                         variant_footage_plans[str(idx)]=final_audit['plan']
+                        old_plan=previous_variant_plans.get(str(idx), []) if isinstance(previous_variant_plans, dict) else []
+                        final_audit['change_audit']=audit_footage_plan_change(old_plan, final_audit['plan'])
                         variant_footage_audits[str(idx)]=final_audit
                         variant_footage_coverage[str(idx)]=coverage_v
                         variant_footage_gaps[str(idx)]=gaps_v
