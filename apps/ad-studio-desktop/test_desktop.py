@@ -8,6 +8,40 @@ from ad_studio.production import ProductionStore
 
 
 class DesktopCoreTests(unittest.TestCase):
+
+    def test_project_lifecycle_isolated_between_projects(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            a = new_project("https://item.jd.com/111.html", 1, "AI自动选择")
+            b = new_project("https://item.jd.com/222.html", 3, "产品展示")
+            a.product_info = {"name": "商品A", "description": "A"}
+            b.product_info = {"name": "商品B", "description": "B"}
+            a.creative_plan = {"task_type": "电商短视频", "variant_index": 1}
+            b.creative_plan = {"task_type": "商品主图视频", "variant_index": 1}
+            store.save(a)
+            store.save(b)
+            restored_a = store.load(a.id)
+            restored_b = store.load(b.id)
+            self.assertNotEqual(restored_a.id, restored_b.id)
+            self.assertEqual(restored_a.product_info["name"], "商品A")
+            self.assertEqual(restored_b.product_info["name"], "商品B")
+            self.assertEqual(restored_a.creative_plan["task_type"], "电商短视频")
+            self.assertEqual(restored_b.creative_plan["task_type"], "商品主图视频")
+            self.assertNotEqual((root / f"{a.id}.json").read_text(encoding="utf-8"),
+                                (root / f"{b.id}.json").read_text(encoding="utf-8"))
+
+    def test_task_type_is_persisted_and_not_replaced_by_platform(self):
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td))
+            p = new_project("https://item.jd.com/333.html", 2, "AI自动选择")
+            p.creative_plan = {"task_type": "广告投放视频", "variant_count": 3}
+            store.save(p)
+            restored = store.load(p.id)
+            self.assertEqual(restored.platform, "京东")
+            self.assertEqual(restored.creative_plan["task_type"], "广告投放视频")
+            self.assertEqual(restored.creative_plan["variant_count"], 3)
+
     def test_platform_detection(self):
         self.assertEqual(detect_platform("https://item.jd.com/123.html"), "京东")
         self.assertEqual(detect_platform("https://detail.tmall.com/item.htm?id=123"), "淘宝")
