@@ -117,3 +117,59 @@ class HybridGapInsertionOrderTests(unittest.TestCase):
         second=find_variant_insert_position(shots,3)
         self.assertEqual(second,3)
         self.assertEqual(shots[second].id,'shot-03')
+
+
+class HybridExecutionTests(unittest.TestCase):
+    def test_execution_calls_generator_only_for_approved_tasks(self):
+        from ad_studio.hybrid_router import execute_ai_gap_generation
+        calls = []
+        result = execute_ai_gap_generation(
+            [{"task_id":"G1","recommended_resolution":"AI补镜头","generation_allowed":True}],
+            generator=lambda task: calls.append(task["task_id"]) or "/tmp/g1.mp4",
+            budget_remaining_rmb=2,
+            cost_per_ai_shot_rmb=1,
+        )
+        self.assertEqual(calls, ["G1"])
+        self.assertEqual(result["generated"], 1)
+        self.assertEqual(result["tasks"][0]["review_status"], "待复核")
+        self.assertFalse(result["tasks"][0]["accepted_into_storyboard"])
+
+    def test_execution_rechecks_budget_before_each_generation(self):
+        from ad_studio.hybrid_router import execute_ai_gap_generation
+        calls = []
+        result = execute_ai_gap_generation(
+            [
+                {"task_id":"G1","recommended_resolution":"AI补镜头","generation_allowed":True},
+                {"task_id":"G2","recommended_resolution":"AI补镜头","generation_allowed":True},
+            ],
+            generator=lambda task: calls.append(task["task_id"]) or "/tmp/x.mp4",
+            budget_remaining_rmb=1,
+            cost_per_ai_shot_rmb=1,
+        )
+        self.assertEqual(calls, ["G1"])
+        self.assertEqual(result["generated"], 1)
+        self.assertEqual(result["blocked"], 1)
+
+    def test_execution_never_generates_product_evidence(self):
+        from ad_studio.hybrid_router import execute_ai_gap_generation
+        calls = []
+        result = execute_ai_gap_generation(
+            [{"task_id":"G3","need":"商品特写","recommended_resolution":"AI补镜头","generation_allowed":True}],
+            generator=lambda task: calls.append(task["task_id"]) or "/tmp/x.mp4",
+            budget_remaining_rmb=10,
+            cost_per_ai_shot_rmb=1,
+        )
+        self.assertEqual(calls, [])
+        self.assertEqual(result["blocked"], 1)
+
+    def test_failed_generation_is_not_marked_generated(self):
+        from ad_studio.hybrid_router import execute_ai_gap_generation
+        result = execute_ai_gap_generation(
+            [{"task_id":"G4","recommended_resolution":"AI补镜头","generation_allowed":True}],
+            generator=lambda task: (_ for _ in ()).throw(RuntimeError("provider down")),
+            budget_remaining_rmb=10,
+            cost_per_ai_shot_rmb=1,
+        )
+        self.assertEqual(result["failed"], 1)
+        self.assertNotIn("generated_path", result["tasks"][0])
+        self.assertFalse(result["tasks"][0]["accepted_into_storyboard"])

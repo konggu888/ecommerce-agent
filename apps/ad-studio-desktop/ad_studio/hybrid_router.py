@@ -105,3 +105,79 @@ def route_footage_gap_tasks(
         "estimated_additional_cost_rmb": estimated,
         "method": "实拍缺口混合路由：商品/真人证据优先补拍，通用画面按 Provider + 预算进入 AI 补镜头",
     }
+
+
+def execute_ai_gap_generation(
+    tasks: Iterable[dict] | None,
+    *,
+    generator,
+    budget_remaining_rmb: float = 0.0,
+    cost_per_ai_shot_rmb: float = 0.0,
+) -> dict:
+    """在混合路由结果之后执行获准的 AI 补镜头，并再次做预算闸门。
+
+    generator(task) 必须真正完成视频生成并返回生成文件路径；失败时不会把缺口标记为已生成。
+    商品/真人证据任务即使被误传进来也会被强制拦截。
+    """
+    remaining = max(0.0, float(budget_remaining_rmb or 0.0))
+    rate = max(0.0, float(cost_per_ai_shot_rmb or 0.0))
+    output = []
+    generated = 0
+    failed = 0
+    blocked = 0
+
+    for raw in tasks or []:
+        if not isinstance(raw, dict):
+            continue
+        task = dict(raw)
+        if is_product_evidence_gap(task) or is_human_reality_gap(task):
+            task["generation_allowed"] = False
+            task["status"] = "已拦截：真实证据必须补拍"
+            blocked += 1
+            output.append(task)
+            continue
+        if task.get("recommended_resolution") != "AI补镜头" or not task.get("generation_allowed"):
+            task["status"] = task.get("status") or "未进入AI生成"
+            output.append(task)
+            continue
+        if rate > 0 and remaining < rate:
+            task["generation_allowed"] = False
+            task["status"] = "已拦截：预算不足"
+            task["resolution_reason"] = (
+                f"执行前预算复核失败：剩余 ¥{remaining:.2f}，"
+                f"本镜头预计 ¥{rate:.2f}。"
+            )
+            blocked += 1
+            output.append(task)
+            continue
+        try:
+            generated_path = generator(task)
+            if not generated_path:
+                raise RuntimeError("生成器未返回视频文件路径")
+            task["generated_path"] = str(generated_path)
+            task["status"] = "AI补镜头已生成，待人工复核"
+            task["review_status"] = "待复核"
+            task["accepted_into_storyboard"] = False
+            task["estimated_cost_rmb"] = rate
+            if rate > 0:
+                remaining = max(0.0, remaining - rate)
+            generated += 1
+        except Exception as exc:
+            task["status"] = "AI补镜头生成失败"
+            task["generation_error"] = str(exc)
+            task["accepted_into_storyboard"] = False
+            failed += 1
+        output.append(task)
+
+    return {
+        "task_count": len(output),
+        "tasks": output,
+        "generated": generated,
+        "failed": failed,
+        "blocked": blocked,
+        "budget_remaining_rmb": round(remaining, 4),
+        "estimated_additional_cost_rmb": round(
+            generated * rate, 4
+        ),
+        "method": "执行前二次预算闸门 + 真实证据拦截 + 生成后人工复核",
+    }
