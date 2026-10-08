@@ -1,8 +1,8 @@
 """实拍素材缺口的补拍 / AI补镜头决策。
 
 本模块只负责确定性路由，不直接生成视频、不调用 Provider。
-商品事实、商品外观、真实操作、真人口播等证据缺口默认必须补拍；
-通用辅助画面在真实视频 Provider 已配置且预算足够时才允许进入 AI 补镜头。
+商品事实、商品外观、真实操作等证据缺口必须保留真实素材；真人口播缺少配套画面时，可以生成非真人辅助图片、视频或 B-roll。
+通用辅助画面在真实 Provider 已配置且预算足够时才允许进入 AI 生成。
 """
 
 from __future__ import annotations
@@ -46,10 +46,10 @@ def route_footage_gap_tasks(
     budget_remaining_rmb: float = 0.0,
     cost_per_ai_shot_rmb: float = 0.0,
 ) -> dict:
-    """为每个缺口给出下一步：继续补拍、AI补镜头或人工确认。
+    """为每个缺口给出下一步：继续补拍、AI补镜头、AI补辅助画面或人工确认。
 
     规则：
-    1. 商品/真人事实证据永远不允许 AI 补镜头冒充。
+    1. 商品事实、真实外观、功能和操作证据永远不允许 AI 冒充；真人本人/声音也永远不由 AI 冒充。
     2. 通用视觉缺口只有真实视频 Provider 已配置且预算足够时才允许 AI。
     3. Provider 未配置或预算不足时，不假装能生成，转为需要人工补素材。
     """
@@ -111,7 +111,7 @@ def route_footage_gap_tasks(
         "generation_connected": bool(generation_connected),
         "budget_remaining_rmb": round(remaining, 4),
         "estimated_additional_cost_rmb": estimated,
-        "method": "实拍缺口混合路由：商品/真人证据优先补拍，通用画面按 Provider + 预算进入 AI 补镜头",
+        "method": "实拍缺口混合路由：真实证据优先补拍，口播辅助画面和通用画面按 Provider + 预算进入 AI 生成",
     }
 
 
