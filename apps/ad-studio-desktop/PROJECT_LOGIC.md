@@ -378,3 +378,7 @@ CI 的桌面 Python 语法检查发现 `ffmpeg.py` 的 concat 清单 `write_text
 
 ## 2026-10-08：实拍缺口分类输入兼容修复
 classify_footage_gaps 不再要求 missing_selling_points 必须同时存在于 footage_coverage.selling_points 详情映射；覆盖审计直接返回的缺失卖点名称现在也会进入 selling_point_gaps，保持缺口数量与实际缺口一致，并通过回归测试固定该数据契约。
+
+
+## 2026-10-08：实拍缺口任务编排
+新增 build_footage_gap_tasks：把 footage_coverage + footage_gaps 转成稳定的 GAP-001...任务清单。任务明确“待补拍/待补素材/待生成”、优先级、关联卖点、执行要求和验收标准；只负责编排，不执行拍摄或生成。项目保存到 creative_plan["footage_gap_tasks"]，UI 可直接查看。完成任务后应把新增素材放回原文件夹，再进入下一阶段的重新扫描闭环。

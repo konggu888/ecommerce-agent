@@ -16,7 +16,7 @@ from .model_router import ModelRouter, ModelProfile, FUNCTIONS
 from .browser_skill import _find_agent_browser
 from .ffmpeg import available as ffmpeg_available, has_nvenc
 from .providers import load_video_provider
-from .footage import build_visual_manifest, footage_analysis_public, archive_analyzed_waste, classify_footage_gaps
+from .footage import build_visual_manifest, footage_analysis_public, archive_analyzed_waste, classify_footage_gaps, build_footage_gap_tasks
 from .transcription import extract_audio
 
 
@@ -97,7 +97,7 @@ class App(tk.Tk):
         ttk.Label(setup,text='素材来源').grid(row=4,column=0,sticky='w'); self.footage_mode=tk.StringVar(value='AI生成视频'); ttk.Combobox(setup,textvariable=self.footage_mode,values=['AI生成视频','用户拍摄素材'],state='readonly',width=16).grid(row=4,column=1,sticky='w',pady=(4,2))
         self.footage_folder=tk.StringVar(value=''); ttk.Entry(setup,textvariable=self.footage_folder,width=36).grid(row=4,column=2,sticky='w',padx=4); ttk.Button(setup,text='选择素材文件夹',command=self.choose_footage_folder).grid(row=4,column=3,sticky='e')
         ttk.Label(setup,text='用户拍摄素材：输入链接后 AI 分析产品 → 指定文件夹放入你拍好的视频 → AI 思考剪辑方案 → 本地 FFmpeg 出片（不调用视频生成服务）',foreground='#666').grid(row=5,column=0,columnspan=5,sticky='w',pady=(2,0))
-        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='📹 实拍分析报告',command=self.footage_analysis_report).grid(row=2,column=5,sticky='e',padx=8); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
+        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='📹 实拍分析报告',command=self.footage_analysis_report).grid(row=2,column=5,sticky='e',padx=8); ttk.Button(setup,text='📋 补素材任务',command=self.footage_gap_tasks_report).grid(row=2,column=6,sticky='e',padx=8); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
         main=ttk.Panedwindow(self,orient='horizontal'); main.pack(fill='both',expand=True,padx=16,pady=8)
         left=ttk.Frame(main,padding=8); right=ttk.Frame(main,padding=8); main.add(left,weight=3); main.add(right,weight=2)
         ttk.Label(left,text='② 分镜生产链',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
@@ -157,6 +157,25 @@ class App(tk.Tk):
             tree.insert('', 'end', values=(item.get('source','-'),item.get('material_rank','-'),item.get('selection_score','-'),item.get('score','-'),'是' if item.get('usable') is not False else '否',item.get('duplicate_group') or '-', '是' if item.get('best_take') else '否',str(item.get('reason','')), '、'.join(map(str,item.get('visual_tags',[]))),ranges_text,item.get('speech_quality','-')))
         ttk.Button(frm,text='关闭',command=win.destroy).pack(anchor='e',pady=(10,0))
 
+    def footage_gap_tasks_report(self):
+        """显示已确定的补拍/补素材任务；不产生新的 AI 调用。"""
+        if not self.project:
+            return messagebox.showinfo('提示', '请先创建或打开一个项目。')
+        tasks_data=self.project.creative_plan.get('footage_gap_tasks') or {}
+        tasks=tasks_data.get('tasks', []) if isinstance(tasks_data, dict) else []
+        win=tk.Toplevel(self); win.title('补素材任务清单'); win.geometry('1120x680'); win.transient(self)
+        frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
+        ttk.Label(frm,text='补素材任务清单',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
+        ttk.Label(frm,text=f"当前缺口任务：{len(tasks)} 个｜来源覆盖率：{tasks_data.get('source_coverage_score','未审计')}%｜不会在这里自动拍摄或生成").pack(anchor='w',pady=(4,10))
+        tree=ttk.Treeview(frm,columns=('id','type','priority','need','point','action','acceptance'),show='headings')
+        for c,t,w in [('id','任务',80),('type','处理方式',80),('priority','优先级',70),('need','缺口',180),('point','关联卖点',120),('action','怎么补',280),('acceptance','验收标准',300)]:
+            tree.heading(c,text=t); tree.column(c,width=w,anchor='w')
+        tree.pack(fill='both',expand=True)
+        for x in tasks:
+            tree.insert('', 'end', values=(x.get('task_id','-'),x.get('type','-'),x.get('priority','-'),x.get('need','-'),x.get('related_selling_point','-'),x.get('shoot_or_generate','-'),x.get('acceptance','-')))
+        ttk.Label(frm,text='闭环下一步：完成这些任务后，把新增素材放回原素材文件夹，再执行“重新分析实拍素材”，系统会重新进入视觉分析→素材排名→覆盖审计→分镜复核。',wraplength=1050,justify='left').pack(anchor='w',pady=10)
+        ttk.Button(frm,text='关闭',command=win.destroy).pack(anchor='e')
+ 
     def system_status(self):
         """Show whether advertised capabilities are actually configured and usable."""
         win=tk.Toplevel(self); win.title('系统状态 · 功能是否真正启用'); win.geometry('900x680'); win.transient(self)
@@ -508,6 +527,8 @@ class App(tk.Tk):
                     self.project.creative_plan['footage_coverage']=coverage
                     gaps=classify_footage_gaps(coverage, self.project.creative_plan, generation_connected=False)
                     self.project.creative_plan['footage_gaps']=gaps
+                    gap_tasks=build_footage_gap_tasks(coverage, gaps, self.project.creative_plan)
+                    self.project.creative_plan['footage_gap_tasks']=gap_tasks
                     raw_footage_plan=self.model_router.plan_footage(
                         info.to_dict(), self.project.creative_plan,
                         [c.to_public() for c in usable], constraints,

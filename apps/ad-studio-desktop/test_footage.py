@@ -27,6 +27,7 @@ from ad_studio.footage import (
     audit_footage_coverage,
     audit_final_footage_plan,
     classify_footage_gaps,
+    build_footage_gap_tasks,
 )
 
 from ad_studio import footage as footage_module
@@ -153,6 +154,29 @@ class NormalizeFootageAnalysisTests(unittest.TestCase):
         result=classify_footage_gaps(coverage, {}, generation_connected=False)
         self.assertEqual(result["key_shot_gaps"][0]["action"],"待补拍")
         self.assertEqual(result["selling_point_gaps"][0]["action"],"待补拍")
+
+    def test_build_footage_gap_tasks_creates_actionable_reshoot_tasks(self):
+        coverage={"coverage_score":50}
+        gaps={
+            "generation_connected":False,
+            "key_shot_gaps":[{"need":"商品细节","reason":"缺少细节证据","action":"待补拍","why":"需要真实商品证据"}],
+            "selling_point_gaps":[{"name":"防水","why":"没有实拍证据","action":"待补拍"}],
+        }
+        result=build_footage_gap_tasks(coverage,gaps,{})
+        self.assertEqual(result["task_count"],2)
+        self.assertEqual(result["tasks"][0]["type"],"待补拍")
+        self.assertIn("商品细节",result["tasks"][0]["need"])
+        self.assertIn("防水",result["tasks"][1]["related_selling_point"])
+        self.assertTrue(result["tasks"][0]["acceptance"])
+
+    def test_build_footage_gap_tasks_supports_generation_only_when_flagged(self):
+        coverage={"coverage_score":80}
+        gaps={
+            "generation_connected":True,
+            "key_shot_gaps":[{"need":"氛围镜头","reason":"缺少辅助画面","action":"待生成","why":"生成链已接通"}],
+        }
+        result=build_footage_gap_tasks(coverage,gaps,{})
+        self.assertEqual(result["tasks"][0]["type"],"待生成")
 
     def test_classify_footage_gaps_keeps_raw_missing_selling_points(self):
         coverage={"missing_selling_points":["防水","静音"]}

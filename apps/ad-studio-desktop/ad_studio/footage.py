@@ -327,6 +327,96 @@ def classify_footage_gaps(coverage: dict | None, creative_plan: dict | None = No
         })
     return {"gap_count": len(gaps) + len(missing_points), "key_shot_gaps": gaps, "selling_point_gaps": missing_points, "generation_connected": bool(generation_connected), "method": "实拍素材缺口确定性分类"}
 
+def build_footage_gap_tasks(
+    coverage: dict | None,
+    gaps: dict | None,
+    creative_plan: dict | None = None,
+) -> dict:
+    """把素材缺口转成可执行的补拍/补素材任务，不执行拍摄或生成。"""
+    coverage = coverage or {}
+    gaps = gaps or {}
+    plan = creative_plan or {}
+    tasks = []
+    counter = 1
+
+    def add_task(action, need, reason, why, related_point="", priority="高",
+                 framing="", acceptance=""):
+        nonlocal counter
+        need = str(need).strip()
+        if not need:
+            return
+        tasks.append({
+            "task_id": f"GAP-{counter:03d}",
+            "type": action,
+            "priority": priority,
+            "need": need,
+            "related_selling_point": related_point,
+            "reason": str(reason).strip(),
+            "why": str(why).strip(),
+            "shoot_or_generate": framing or "补充能够直接证明该需求的素材。",
+            "acceptance": acceptance or "素材清晰、主体可辨、能直接验证该需求，并可用于后续剪辑。",
+            "status": "待处理",
+        })
+        counter += 1
+
+    for item in gaps.get("key_shot_gaps", []) or []:
+        if not isinstance(item, dict):
+            continue
+        need = str(item.get("need", "")).strip()
+        action = str(item.get("action", "待补素材")).strip() or "待补素材"
+        reason = str(item.get("reason", "")).strip()
+        why = str(item.get("why", "")).strip()
+        physical = action == "待补拍"
+        if physical:
+            framing = f"围绕“{need}”补拍真实商品证据：先完整展示主体，再完成对应动作/细节，避免遮挡并保留连续过程。"
+            acceptance = f"至少有一段稳定、清晰的实拍能够直接证明“{need}”，商品主体完整可见，关键动作或细节不能被遮挡。"
+        elif action == "待生成":
+            framing = f"按“{need}”生成通用辅助画面；不得把虚构画面当作商品真实性能或事实证据。"
+            acceptance = f"生成结果明确服务于“{need}”，且不会冒充真实商品实拍证据。"
+        else:
+            framing = f"补充能覆盖“{need}”的合法素材；优先使用真实商品/真实场景素材。"
+            acceptance = f"新增素材能够直接覆盖“{need}”，并满足商品事实可验证要求。"
+        add_task(action, need, reason, why, priority="高", framing=framing, acceptance=acceptance)
+
+    for item in gaps.get("selling_point_gaps", []) or []:
+        if not isinstance(item, dict):
+            continue
+        name = str(item.get("name", "")).strip()
+        if not name:
+            continue
+        add_task(
+            "待补拍",
+            f"卖点：{name}",
+            "当前素材池没有可验证的实拍素材覆盖该卖点。",
+            str(item.get("why", "")).strip() or "重要卖点缺少真实证据。",
+            related_point=name,
+            priority="最高",
+            framing=f"专门补拍“{name}”的证明镜头：商品完整露出，并把能证明该卖点的动作、结构或细节拍清楚。",
+            acceptance=f"至少一段实拍可直接证明“{name}”，不能只靠字幕或口播声称；画面需清晰稳定。",
+        )
+
+    # 防止同一缺口同时以关键镜头和卖点任务重复出现。
+    unique = []
+    seen = set()
+    for task in tasks:
+        key = (task["type"], task["need"], task["related_selling_point"])
+        if key in seen:
+            continue
+        seen.add(key)
+        unique.append(task)
+    tasks = unique
+    for i, task in enumerate(tasks, 1):
+        task["task_id"] = f"GAP-{i:03d}"
+
+    return {
+        "task_count": len(tasks),
+        "tasks": tasks,
+        "source_coverage_score": coverage.get("coverage_score", 100.0),
+        "generation_connected": bool(gaps.get("generation_connected", False)),
+        "method": "实拍素材缺口转可执行任务清单",
+        "next_step": "完成补拍/补素材后重新扫描素材文件夹并进入视觉分析、排名、覆盖审计和最终分镜复核。",
+    }
+
 def audit_final_footage_plan(
     plan: list[dict] | None,
     analysis: dict | None,
