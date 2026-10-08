@@ -118,14 +118,16 @@ class ProductionStore:
         elif kind=='商品素材': shot.product_asset_ids.append(item.id)
         shot.asset_source='ai_generated'
         shot.actual_cost_rmb=round(shot.actual_cost_rmb+cost,4)
-        self.ledger.record_asset(
-            project_id=project.id,
-            shot_id=shot.id,
-            asset_kind=kind,
+        self._record_actual_cost(
+            project,
+            shot=shot,
+            category="asset",
+            amount_rmb=cost,
             provider=provider_name,
-            cost_rmb=cost,
+            quantity=1,
+            unit_cost_rmb=cost,
+            function=f"{kind}素材生成",
         )
-        self._sync_actual_cost(project)
         shot.provider = provider_name
         shot.status=f'{kind}已生成并入库'
         self.save(project)
