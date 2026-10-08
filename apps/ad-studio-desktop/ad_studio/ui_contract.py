@@ -33,6 +33,15 @@ def _button_commands(app_source: str) -> set[str]:
                 elif isinstance(value, ast.Attribute):
                     commands.add(value.attr)
                 elif isinstance(value, ast.Lambda):
+                    # lambda 只是参数适配层；真正的用户操作可能是 self.upload(...)。
+                    # 解析 lambda 体内的调用目标，避免把真实按钮误判为未绑定。
+                    for inner in ast.walk(value.body):
+                        if isinstance(inner, ast.Call):
+                            target = inner.func
+                            if isinstance(target, ast.Name):
+                                commands.add(target.id)
+                            elif isinstance(target, ast.Attribute):
+                                commands.add(target.attr)
                     commands.add("<lambda>")
     return commands
 
