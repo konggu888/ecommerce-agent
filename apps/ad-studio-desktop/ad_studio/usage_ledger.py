@@ -66,6 +66,11 @@ class UsageLedger:
             "estimated_cost_rmb": round(float(estimated_cost_rmb or 0), 6),
             "duration_ms": int(duration_ms or 0),
             "error": error,
+            "project_id": project_id,
+            "shot_id": shot_id,
+            "category": category,
+            "quantity": float(quantity or 0),
+            "unit_cost_rmb": round(float(unit_cost_rmb or 0), 6),
         }
         rows = self._load()
         rows.append(item)
@@ -82,6 +87,11 @@ class UsageLedger:
         cost_rmb: float,
         status: str = "success",
         error: str = "",
+        project_id: str = "",
+        shot_id: str = "",
+        category: str = "model",
+        quantity: float = 1.0,
+        unit_cost_rmb: float = 0.0,
     ) -> dict[str, Any]:
         return self.record(
             function=f"{asset_kind}素材生成",
@@ -138,6 +148,19 @@ class UsageLedger:
 
     def recent(self, limit: int = 100) -> list[dict[str, Any]]:
         return self._load()[-max(1, int(limit)):][::-1]
+
+    def project_summary(self, project_id: str) -> dict[str, Any]:
+        rows = [x for x in self._load() if x.get("project_id") == project_id]
+        success = [x for x in rows if x.get("status") == "success"]
+        return {
+            "project_id": project_id,
+            "entries": len(rows),
+            "success": len(success),
+            "failed": len(rows) - len(success),
+            "tokens": sum(int(x.get("total_tokens", 0) or 0) for x in rows),
+            "actual_cost_rmb": round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in success), 6),
+            "by_category": {category: round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in success if x.get("category") == category), 6) for category in sorted({x.get("category", "model") for x in success})},
+        }
 
     def summary(self) -> dict[str, Any]:
         rows = self._load()
