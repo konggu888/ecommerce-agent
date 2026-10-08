@@ -299,7 +299,7 @@ class App(tk.Tk):
             '将重新扫描当前文件夹中的视频，并重新执行视觉分析、废片归档、口播转写（如已配置）、素材排名、卖点覆盖审计和剪辑方案复核。是否继续？'):
             return
         try:
-            from .footage import scan_footage, FootageError, validate_footage_plan, audit_footage_coverage, audit_final_footage_plan, audit_footage_gap_completion
+            from .footage import scan_footage, FootageError, validate_footage_plan, audit_footage_coverage, audit_final_footage_plan, audit_footage_gap_completion, merge_gap_task_acceptance
             clips=scan_footage(folder)
             usable=[c for c in clips if c.duration>0]
             if not usable:
@@ -830,7 +830,7 @@ class App(tk.Tk):
                         tasks_v=build_footage_gap_tasks(coverage_v, gaps_v, variant_plan_dict)
                         previous_tasks_v=previous_variant_gap_tasks.get(str(int(variant_raw.get('_variant_index',variant_pos))), {}) if isinstance(previous_variant_gap_tasks, dict) else {}
                         completion_v=audit_footage_gap_completion(previous_tasks_v, coverage_v) if previous_tasks_v else {'task_count':0,'completed_count':0,'still_missing_count':0,'review_count':0,'tasks':[],'coverage_score':coverage_v.get('coverage_score',100.0),'method':'首次分析，无上一轮任务可验收'}
-                        tasks_v['completion_audit']=completion_v
+                        tasks_v=merge_gap_task_acceptance(tasks_v, completion_v)
                         raw_footage_plan=self.model_router.plan_footage(
                             info.to_dict(), variant_plan_dict,
                             [c.to_public() for c in usable], constraints,
