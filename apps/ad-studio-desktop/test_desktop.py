@@ -431,6 +431,34 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertTrue(result["valid"])
             self.assertEqual(result["duration_seconds"], 5.2)
 
+    def test_final_delivery_repair_routes_point_back_to_correct_stage(self):
+        try:
+            from ad_studio.app import App
+        except ModuleNotFoundError as exc:
+            if exc.name != 'tkinter':
+                raise
+            import sys, types
+            fake_tk = types.ModuleType('tkinter')
+            fake_tk.Tk = object
+            fake_tk.ttk = types.ModuleType('tkinter.ttk')
+            fake_tk.filedialog = types.ModuleType('tkinter.filedialog')
+            fake_tk.messagebox = types.ModuleType('tkinter.messagebox')
+            sys.modules['tkinter'] = fake_tk
+            sys.modules['tkinter.ttk'] = fake_tk.ttk
+            sys.modules['tkinter.filedialog'] = fake_tk.filedialog
+            sys.modules['tkinter.messagebox'] = fake_tk.messagebox
+            from ad_studio.app import App
+        app=App.__new__(App)
+        routes=app._final_delivery_repair_routes(
+            {'reasons':['方案1：商品资料未支持的卖点：功效A','镜头3：AI生成镜头尚未通过人工复核','方案1·clip.mp4：商品可能被遮挡']},
+            {'valid':False,'reason':'输出画幅与要求 9:16 不一致'},
+        )
+        mapping={x['issue']:x['route'] for x in routes}
+        self.assertEqual(mapping['方案1：商品资料未支持的卖点：功效A'],'创意事实检查')
+        self.assertEqual(mapping['镜头3：AI生成镜头尚未通过人工复核'],'AI补镜头复核')
+        self.assertEqual(mapping['方案1·clip.mp4：商品可能被遮挡'],'成片视觉复核')
+        self.assertEqual(mapping['输出画幅与要求 9:16 不一致'],'最终成片输出')
+
     def test_final_output_history_is_separated_by_variant_and_aspect(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)

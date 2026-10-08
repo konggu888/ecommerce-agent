@@ -145,7 +145,7 @@ class App(tk.Tk):
         self.shots=ttk.Treeview(left,columns=('v','status','actor','scene'),show='tree headings',height=17)
         for c,t,w in [('v','版本',70),('status','状态',90),('actor','演员',150),('scene','场景',150)]: self.shots.heading(c,text=t); self.shots.column(c,width=w)
         self.shots.column('#0',width=300); self.shots.pack(fill='both',expand=True,pady=8); self.shots.bind('<<TreeviewSelect>>',self.show_shot)
-        bar=ttk.Frame(left); bar.pack(fill='x'); ttk.Button(bar,text='切换创意方案',command=self.switch_variant).pack(side='left'); ttk.Button(bar,text='生成本镜头',command=self.generate_shot).pack(side='left',padx=8); ttk.Button(bar,text='重新生成本镜头',command=self.regen_shot).pack(side='left',padx=8); ttk.Button(bar,text='▶ 本地硬件后处理',command=self.postprocess_selected).pack(side='left',padx=8); ttk.Button(bar,text='生成最终成片',command=self.final_render).pack(side='right',padx=8); ttk.Button(bar,text='批量输出已完成版本',command=self.batch_final_render).pack(side='right',padx=8); ttk.Button(bar,text='⚡ 一键生成全部版本',command=self.batch_generate_variants).pack(side='right',padx=8); ttk.Button(bar,text='保存项目',command=self.save).pack(side='right')
+        bar=ttk.Frame(left); bar.pack(fill='x'); ttk.Button(bar,text='切换创意方案',command=self.switch_variant).pack(side='left'); ttk.Button(bar,text='生成本镜头',command=self.generate_shot).pack(side='left',padx=8); ttk.Button(bar,text='重新生成本镜头',command=self.regen_shot).pack(side='left',padx=8); ttk.Button(bar,text='▶ 本地硬件后处理',command=self.postprocess_selected).pack(side='left',padx=8); ttk.Button(bar,text='生成最终成片',command=self.final_render).pack(side='right',padx=8); ttk.Button(bar,text='📦 成片交付中心',command=self.final_delivery_center).pack(side='right',padx=8); ttk.Button(bar,text='批量输出已完成版本',command=self.batch_final_render).pack(side='right',padx=8); ttk.Button(bar,text='⚡ 一键生成全部版本',command=self.batch_generate_variants).pack(side='right',padx=8); ttk.Button(bar,text='保存项目',command=self.save).pack(side='right')
         ttk.Label(right,text='③ 本地资产库',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
         self.assets=ttk.Treeview(right,columns=('kind','source','path'),show='tree headings',height=13)
         for c,t,w in [('kind','类型',80),('source','来源',90),('path','本地文件',300)]: self.assets.heading(c,text=t); self.assets.column(c,width=w)
@@ -156,6 +156,105 @@ class App(tk.Tk):
         ttk.Label(self,text='本地存储：本机磁盘  |  资产库：永久复用  |  云端生成：仅在需要时调用',relief='sunken',anchor='w',padding=8).pack(fill='x',side='bottom')
 
 
+
+    def _final_delivery_repair_routes(self, gate, media_check):
+        """把最终交付问题映射回真正产生问题的环节，不自动掩盖风险。"""
+        routes=[]
+        for reason in gate.get('reasons', []) if isinstance(gate, dict) else []:
+            text=str(reason)
+            if any(x in text for x in ('商品资料未支持的卖点','命中用户禁用词','高风险绝对化表达')):
+                routes.append({'issue':text,'route':'创意事实检查','action':'修改创意方案或商品资料/禁用词后重新检查'})
+            elif 'AI生成镜头尚未通过人工复核' in text:
+                routes.append({'issue':text,'route':'AI补镜头复核','action':'通过或拒绝该AI补镜头；通过后重新检查'})
+            elif any(x in text for x in ('商品可能被遮挡','画面可能模糊','画面可能抖动','素材已被视觉分析判定为不可用')):
+                routes.append({'issue':text,'route':'成片视觉复核','action':'返回实际素材/分镜调整，修复后重新检查'})
+            else:
+                routes.append({'issue':text,'route':'分镜生产链','action':'检查对应镜头并重新生成/裁剪'})
+        if isinstance(media_check,dict) and not media_check.get('valid',False):
+            reason=str(media_check.get('reason') or '媒体质检未通过')
+            routes.append({'issue':reason,'route':'最终成片输出','action':'修复输出文件、画幅或镜头后重新检查'})
+        unique=[]; seen=set()
+        for item in routes:
+            key=(item['issue'],item['route'])
+            if key not in seen:
+                seen.add(key); unique.append(item)
+        return unique
+
+    def _run_final_delivery_recheck(self):
+        """只重新执行已有资料的确定性检查，不重新生成素材、不调用广告平台。"""
+        if not self.project:
+            return None
+        plan=self.project.creative_plan or {}
+        variants=plan.get('creative_variants') or []
+        if variants:
+            raw_forbidden=plan.get('forbidden_terms') or plan.get('forbidden_words') or []
+            if isinstance(raw_forbidden,str):
+                raw_forbidden=[x.strip() for x in raw_forbidden.replace('，',',').split(',') if x.strip()]
+            plan['creative_fact_audit']=audit_creative_factual_consistency(self.project.product_info or {},variants,raw_forbidden)
+            plan['storyboard_fact_audit']=audit_storyboard_fact_consistency(self.project.product_info or {},variants)
+        visual=plan.get('footage_visual_analysis') or {}
+        variant_plans=plan.get('variant_footage_plans') or {}
+        if visual:
+            plan['visual_fact_audit']=audit_visual_fact_consistency(self.project.product_info or {},visual,variant_plans)
+        self.store.save(self.project)
+        gate=self.store.final_render_gate(self.project)
+        variant=max(1,int(self.active_variant_index or 1))
+        aspect=self.aspect.get() if hasattr(self,'aspect') else '9:16'
+        history=self.store.final_output_history(self.project)
+        key=f'{variant}|{aspect}'
+        row=next((x for x in history if x.get('key')==key),None)
+        output=Path(row['output_path']) if row and row.get('output_path') else self.store.root/'final'/self.project.id/f'final-{aspect.replace(":", "x")}-v{variant}.mp4'
+        media=self.store.inspect_final_output(output,aspect)
+        routes=self._final_delivery_repair_routes(gate,media)
+        return {'gate':gate,'media_check':media,'repair_routes':routes,'output_path':str(output),'variant_index':variant,'aspect':aspect,'delivery_ready':bool(gate.get('allowed')) and bool(media.get('valid'))}
+
+    @ui_action
+    def final_delivery_center(self):
+        """最终成片交付中心：历史、总检查、问题回退和一键重新检查。"""
+        if not self.project:
+            return messagebox.showinfo('提示','请先创建或打开一个项目。')
+        result=self._run_final_delivery_recheck()
+        win=tk.Toplevel(self); win.title('最终成片交付中心'); win.geometry('1220x780'); win.transient(self)
+        frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
+        ttk.Label(frm,text='最终成片交付中心',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
+        status=tk.StringVar()
+        ttk.Label(frm,textvariable=status,font=('Microsoft YaHei UI',13,'bold')).pack(anchor='w',pady=(4,8))
+        tree=ttk.Treeview(frm,columns=('key','status','aspect','duration','shots','exists','path'),show='headings',height=8)
+        for c,t,w in [('key','方案·画幅',100),('status','交付状态',90),('aspect','画幅',80),('duration','时长',80),('shots','镜头数',80),('exists','文件',70),('path','成片路径',620)]:
+            tree.heading(c,text=t); tree.column(c,width=w,anchor='w')
+        tree.pack(fill='x',pady=(0,8))
+        issues=tk.Text(frm,height=16); issues.pack(fill='both',expand=True,pady=(4,8))
+        def render(result):
+            status.set('🟢 可以交付' if result['delivery_ready'] else '🔴 暂不能交付')
+            for item in tree.get_children(): tree.delete(item)
+            for row in self.store.final_output_history(self.project):
+                tree.insert('', 'end', values=(row['key'],row['delivery_status'],row['aspect'],f"{row['duration_seconds']}s",row['shot_count'],'存在' if row['exists'] else '缺失',row['output_path']))
+            issues.config(state='normal'); issues.delete('1.0','end')
+            issues.insert('end',f"当前检查：方案{result['variant_index']}｜{result['aspect']}\n")
+            issues.insert('end',f"安全闸门：{'通过' if result['gate']['allowed'] else '拦截'}\n")
+            issues.insert('end',f"媒体质检：{'通过' if result['media_check']['valid'] else '失败'}｜{result['media_check'].get('reason','')}\n")
+            issues.insert('end',f"成片路径：{result['output_path']}\n\n")
+            routes=result.get('repair_routes') or []
+            if routes:
+                issues.insert('end','【问题 → 正确修复环节】\n')
+                for i,r in enumerate(routes,1):
+                    issues.insert('end',f"{i}. {r['issue']}\n   → {r['route']}：{r['action']}\n")
+            else:
+                issues.insert('end','【问题 → 正确修复环节】\n当前没有发现需要修复的问题。\n')
+            issues.insert('end','\n【数据边界】\n本中心只重新检查项目已有资料、已有视觉分析和实际输出文件；不会生成投放数据，不会猜测投放平台，也不会自动生成新的素材。')
+            issues.config(state='disabled')
+        render(result)
+        bar=ttk.Frame(frm); bar.pack(fill='x')
+        def recheck():
+            latest=self._run_final_delivery_recheck()
+            if latest:
+                render(latest)
+                self.detail.set('最终交付检查已重新执行：'+('可以交付' if latest['delivery_ready'] else '存在需要修复的问题'))
+        ttk.Button(bar,text='🔄 一键重新检查',command=recheck).pack(side='left')
+        ttk.Button(bar,text='🛡 返回创意事实检查',command=self.creative_fact_check_report).pack(side='left',padx=6)
+        ttk.Button(bar,text='🎥 返回成片视觉复核',command=self.visual_fact_check_report).pack(side='left',padx=6)
+        ttk.Button(bar,text='🔍 返回AI补镜头复核',command=self.review_hybrid_gap_shots).pack(side='left',padx=6)
+        ttk.Button(bar,text='关闭',command=win.destroy).pack(side='right')
 
     @ui_action
     def variant_matrix_report(self):
