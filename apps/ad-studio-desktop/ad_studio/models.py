@@ -107,3 +107,45 @@ def find_variant_insert_position(shots, target_shot_index):
         if str(getattr(shot, "id", "")) == stable_id:
             return pos
     return next((pos for pos, shot in enumerate(shots) if int(getattr(shot, "index", 0) or 0) >= target), len(shots))
+
+
+def accept_hybrid_generated_shot(task: dict, shots: list[Shot], *, accepted_shot_id: str | None = None):
+    """人工明确通过后，才把已生成缺口作为额外镜头插入当前分镜。"""
+    if not isinstance(task, dict):
+        raise ValueError("缺口任务必须是字典")
+    if task.get("review_status") not in {"已通过", "通过"}:
+        raise ValueError("只有人工复核通过的素材才能纳入分镜")
+    path = str(task.get("generated_path") or "").strip()
+    if not path:
+        raise ValueError("缺口任务没有生成文件")
+    if task.get("accepted_into_storyboard"):
+        return shots
+    target_index = task.get("target_shot_index")
+    position = find_variant_insert_position(shots, target_index)
+    shot_id = accepted_shot_id or f"hybrid-{str(task.get('task_id') or 'gap')}-v1"
+    # 避免同一任务重复插入。
+    if any(str(getattr(s, "id", "")) == shot_id for s in shots):
+        task["accepted_into_storyboard"] = True
+        task["accepted_shot_id"] = shot_id
+        return shots
+    base_index = int(target_index) if target_index is not None else (position + 1)
+    extra = Shot(
+        id=shot_id,
+        index=base_index,
+        title=str(task.get("title") or "AI辅助画面"),
+        visual=str(task.get("visual") or task.get("need") or "辅助画面"),
+        script=str(task.get("script") or ""),
+        status="已复核并纳入分镜",
+        video_path=path,
+        provider=task.get("provider"),
+        actual_cost_rmb=float(task.get("estimated_cost_rmb") or 0),
+        clip_source="ai_generated",
+        asset_source="ai_generated",
+        source_file=path,
+    )
+    shots.insert(position, extra)
+    for idx, shot in enumerate(shots, start=1):
+        shot.index = idx
+    task["accepted_into_storyboard"] = True
+    task["accepted_shot_id"] = shot_id
+    return shots
