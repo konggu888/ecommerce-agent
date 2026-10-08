@@ -292,6 +292,54 @@ def audit_footage_coverage(analysis: dict | None, creative_plan: dict | None = N
     covered = sum(1 for x in coverage if x["covered"])
     return {"coverage_score": round(100.0 * covered / len(coverage), 1) if coverage else 100.0, "opening_candidate": str(opening.get("source", "")) if opening else "", "selling_points": coverage, "missing_key_shots": missing, "missing_selling_points": [x["name"] for x in coverage if not x["covered"]], "candidate_sources": [str(x.get("source", "")) for x in clips[:10]], "method": "本地确定性覆盖审计"}
 
+
+def audit_final_footage_plan(
+    plan: list[dict] | None,
+    analysis: dict | None,
+    coverage: dict | None = None,
+) -> dict:
+    """对最终素材分镜做确定性复核，并给每个镜头标记卖点/排名/重复组信息。"""
+    items = [dict(x) for x in (plan or []) if isinstance(x, dict)]
+    clips = {str(x.get("source", "")): x for x in (analysis or {}).get("clips", []) if isinstance(x, dict)}
+    point_map = {str(x.get("name", "")): x for x in (coverage or {}).get("selling_points", []) if isinstance(x, dict)}
+    used_points: set[str] = set()
+    duplicate_groups: dict[str, list[str]] = {}
+    for i, shot in enumerate(items, 1):
+        source = str(shot.get("source", ""))
+        info = clips.get(source, {})
+        shot["material_rank"] = info.get("material_rank", 0)
+        shot["selection_score"] = info.get("selection_score")
+        shot["duplicate_group"] = info.get("duplicate_group", "")
+        shot["best_take"] = bool(info.get("best_take", False))
+        shot["sequence_index"] = i
+        text = " ".join(str(shot.get(k, "")) for k in ("objective", "visual", "description", "voiceover", "subtitle", "selling_point"))
+        matched = [p for p in point_map if p and p in text]
+        if not matched:
+            matched = [p for p, v in point_map.items() if v.get("best_source") == source]
+        shot["covered_selling_points"] = matched
+        used_points.update(matched)
+        group = str(info.get("duplicate_group", ""))
+        if group:
+            duplicate_groups.setdefault(group, []).append(source)
+    opening = str((coverage or {}).get("opening_candidate", ""))
+    opening_used = bool(opening and any(str(x.get("source", "")) == opening for x in items))
+    repeated_groups = {g: list(dict.fromkeys(v)) for g, v in duplicate_groups.items() if len(set(v)) > 1}
+    missing = [p for p in point_map if p and point_map[p].get("covered") and p not in used_points]
+    first_source = str(items[0].get("source", "")) if items else ""
+    opening_warning = bool(opening and first_source != opening and not (items and items[0].get("hook")))
+    return {
+        "shot_count": len(items),
+        "opening_candidate": opening,
+        "opening_used": opening_used,
+        "first_source": first_source,
+        "opening_warning": opening_warning,
+        "covered_selling_points": sorted(used_points),
+        "missing_selling_points": missing,
+        "duplicate_groups_reused": repeated_groups,
+        "plan": items,
+        "method": "最终分镜确定性复核：开场 + 卖点覆盖 + 素材排名 + 重复镜头",
+    }
+
 def archive_analyzed_waste(
     clips: list[FootageClip],
     analysis: dict,

@@ -503,7 +503,7 @@ class App(tk.Tk):
                             except Exception as speech_error:
                                 speech_transcripts.append({'source':clip.name,'error':str(speech_error)})
                     self.project.creative_plan['footage_transcripts']=speech_transcripts
-                    from .footage import validate_footage_plan, audit_footage_coverage
+                    from .footage import validate_footage_plan, audit_footage_coverage, audit_final_footage_plan
                     coverage=audit_footage_coverage(analysis, self.project.creative_plan)
                     self.project.creative_plan['footage_coverage']=coverage
                     raw_footage_plan=self.model_router.plan_footage(
@@ -513,6 +513,9 @@ class App(tk.Tk):
                         footage_coverage=coverage,
                     )
                     plan_items,warnings=validate_footage_plan(raw_footage_plan,usable)
+                    final_audit=audit_final_footage_plan(plan_items, analysis, coverage)
+                    self.project.creative_plan['footage_selection_audit']=final_audit
+                    plan_items=final_audit['plan']
                     self._apply_footage_plan(plan_items)
                     self.project.creative_plan['footage_plan']=plan_items
                 except Exception as fe:

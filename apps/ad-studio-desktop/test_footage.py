@@ -25,6 +25,7 @@ from ad_studio.footage import (
     normalize_footage_analysis,
     rank_footage_analysis,
     audit_footage_coverage,
+    audit_final_footage_plan,
 )
 
 from ad_studio import footage as footage_module
@@ -143,6 +144,23 @@ class NormalizeFootageAnalysisTests(unittest.TestCase):
         self.assertEqual(points["外观"]["best_source"], "rank1.mp4")
         self.assertEqual(points["续航"]["best_source"], "rank2.mp4")
         self.assertEqual(result["coverage_score"], 100.0)
+
+
+    def test_final_plan_audit_marks_uncovered_selling_point(self):
+        analysis={"clips":[
+            {"source":"a.mp4","material_rank":1,"selection_score":100,"duplicate_group":"g1","best_take":True},
+            {"source":"b.mp4","material_rank":2,"selection_score":90,"duplicate_group":"g1","best_take":False},
+        ]}
+        coverage={"opening_candidate":"a.mp4","selling_points":[
+            {"name":"续航","covered":True,"best_source":"a.mp4"},
+            {"name":"静音","covered":True,"best_source":"b.mp4"},
+        ]}
+        result=audit_final_footage_plan(
+            [{"source":"a.mp4","objective":"展示续航"}], analysis, coverage
+        )
+        self.assertTrue(result["opening_used"])
+        self.assertEqual(result["missing_selling_points"],["静音"])
+        self.assertEqual(result["plan"][0]["material_rank"],1)
 
     def test_coverage_detects_missing_required_shot_and_opening(self):
         analysis = {"clips": [{"source": "detail.mp4", "score": 90, "usable": True, "material_rank": 1, "selection_score": 90, "selling_points": ["材质"], "visual_tags": ["product_visible", "detail"]}]}
