@@ -401,6 +401,7 @@ class ModelRouter:
             },
             "footage_clips": footage_clips,
             "footage_analysis": footage_analysis or {},
+            "footage_transcripts": creative_plan.get("footage_transcripts", []),
             "constraints": constraints or {},
             "required_output_schema": STAGE_SCHEMAS["footage_director"],
         }

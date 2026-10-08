@@ -302,3 +302,6 @@ ProductionStore.postprocess_shot 会读取当前硬件能力画像，并在状�
 
 ## 2026-10-08：实拍口播自动转写
 实拍素材项目现在可配置独立“口播转写”模型。系统先用 FFmpeg 提取 16kHz 单声道音频，再调用兼容 `/audio/transcriptions` 的接口；文本和时间戳保存到 `creative_plan.footage_transcripts`，供后续剪辑导演处理口播。
+
+## 2026-10-08：口播结果进入剪辑导演
+素材剪辑导演现在会同时收到视觉分析与 `footage_transcripts`，因此后续可以依据实际口播内容和时间段选择/删除表达，而不是只看画面。

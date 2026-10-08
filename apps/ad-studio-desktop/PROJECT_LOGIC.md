@@ -322,3 +322,6 @@ CI 的桌面 Python 语法检查发现 `ffmpeg.py` 的 concat 清单 `write_text
 
 ## 8.3 口播转写进入实拍剪辑链
 用户拍摄素材创建时，若“口播转写”路由已启用且模型支持转写，逐个视频提取音频并调用 `/audio/transcriptions`。结果写入 `footage_transcripts`，并随 creative_plan 提供给素材剪辑导演；失败只记录错误，不伪造文本。
+
+## 8.4 视觉 + 口播联合决策
+`plan_footage` 的输入同时包含 `footage_visual_analysis` 与 `footage_transcripts`。视觉模型负责画面事实，转写模型负责语言事实，素材剪辑导演负责最终镜头选择、顺序和口播取舍。
