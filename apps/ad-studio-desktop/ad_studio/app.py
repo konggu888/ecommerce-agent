@@ -862,8 +862,10 @@ class App(tk.Tk):
         }
 
     def _activate_plan(self, raw, info):
-        existing_variants=self.project.creative_plan.get('creative_variants',[]) if self.project else []
-        existing_count=self.project.creative_plan.get('variant_count',len(existing_variants)) if self.project else 1
+        previous_plan=self.project.creative_plan if self.project else {}
+        existing_variants=previous_plan.get('creative_variants',[]) if self.project else []
+        existing_count=previous_plan.get('variant_count',len(existing_variants)) if self.project else 1
+        preserved_variant_state={key: value for key, value in previous_plan.items() if key.startswith('variant_')}
         plan=validate_plan(validate_task_type_plan(raw, self._creative_constraints()))
         self.project.form=plan.video_form
         self.project.product_name=info.name
@@ -871,6 +873,7 @@ class App(tk.Tk):
         if existing_variants:
             data['creative_variants']=existing_variants
             data['variant_count']=existing_count
+        data.update(preserved_variant_state)
         data['variant_index']=int(raw.get('_variant_index',1))
         data['variant_label']=raw.get('_variant_label',f"方案{data['variant_index']}｜{plan.video_form}")
         self.project.creative_plan=data
