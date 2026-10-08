@@ -46,6 +46,8 @@ class UsageLedger:
         project_id: str = "",
         shot_id: str = "",
         asset_kind: str = "",
+        quantity: float = 1.0,
+        unit_cost_rmb: float = 0.0,
     ) -> dict[str, Any]:
         item = {
             "id": uuid.uuid4().hex[:12],
@@ -55,6 +57,8 @@ class UsageLedger:
             "project_id": project_id,
             "shot_id": shot_id,
             "asset_kind": asset_kind,
+            "quantity": float(quantity or 1.0),
+            "unit_cost_rmb": round(float(unit_cost_rmb or 0), 6),
             "model_id": model_id,
             "model_name": model_name,
             "provider": provider,
