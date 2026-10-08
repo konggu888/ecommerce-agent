@@ -742,3 +742,7 @@ ProductionStore.save() 将 Project 序列化到项目自身 JSON，ProductionSto
 
 ## 2026-10-09：真实数据与模拟数据边界
 variant_performance 只接受用户主动回写的原始投放数据并计算统一指标，同时保存 variant_performance_provenance。该 provenance 只表达“用户提供、系统不验证真实性”，不是平台 API 验证结果。投放前创意测试对象保持“待真实投放数据”，不会注入 CTR/CVR/CPC/CPA/ROAS 等平台结果。
+
+
+## A29 数据边界补充
+`variant_performance_provenance` 用 `source_type=user_provided` 表示数据由用户主动回写，用 `verification_status=unverified` 明确系统未验证真实性。不得把未核验的用户数据解释成平台 API 已验证事实。

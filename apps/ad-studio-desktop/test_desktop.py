@@ -1156,7 +1156,7 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertTrue((root / f"{ar.id}.json").exists())
             self.assertTrue((root / f"{br.id}.json").exists())
 
-    def test_a29_real_data_boundary_requires_explicit_user_provenance_and_keeps_simulation_separate(self):
+    def test_a29_real_data_boundary_requires_explicit_user_provenance_and_unverified_status(self):
         try:
             from ad_studio.app import App
         except ModuleNotFoundError as exc:
@@ -1181,7 +1181,7 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertAlmostEqual(saved["ctr"], 0.1)
         provenance=project.creative_plan["variant_performance_provenance"]["1"]
         self.assertEqual(provenance["source_type"], "user_provided")
-        self.assertFalse(provenance["simulation"])
+        self.assertEqual(provenance["verification_status"], "unverified")
         self.assertIn("不验证真实性", provenance["statement"])
         self.assertNotIn("platform_api_response", saved)
 
