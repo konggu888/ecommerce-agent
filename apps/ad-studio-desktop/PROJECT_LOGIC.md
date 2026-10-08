@@ -521,3 +521,7 @@ restore_variant_shot_cache 位于 models.py，只处理 Shot 数据，不依赖 
 
 ### 方案缓存测试隔离
 方案缓存恢复属于纯数据层逻辑，回归测试直接覆盖 models.py 的 restore_variant_shot_cache，不依赖桌面 UI 环境。
+
+
+### 方案缓存恢复数据层
+restore_variant_shot_cache 位于 models.py。它以原始镜头稳定 ID 恢复基础镜头，以保存顺序保留额外镜头，并由 app.py 的方案激活流程调用。该函数不依赖 Tkinter，因此可以在 Linux CI 中直接测试。
