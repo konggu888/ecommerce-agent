@@ -887,13 +887,53 @@ class App(tk.Tk):
         cache=self.project.creative_plan.get('variant_shot_cache', {}) if self.project else {}
         saved=cache.get(str(self.active_variant_index), [])
         self.project.shots=_restore_variant_shot_cache(self.project.shots, saved)
+        self._restore_active_variant_runtime()
         return plan
 
     @ui_action
     def _cache_active_variant(self):
         if not self.project:return
-        cache=self.project.creative_plan.setdefault('variant_shot_cache', {})
+        plan=self.project.creative_plan
+        cache=plan.setdefault('variant_shot_cache', {})
         cache[str(self.active_variant_index)]=[dict(s.__dict__) for s in self.project.shots]
+
+        # 镜头之外的运行态也必须按方案隔离：尤其是 AI 补镜头任务。
+        # 否则 A 方案生成/复核过的缺口会在切到 B 方案时继续出现在复核窗口。
+        gap_tasks=plan.get('footage_gap_tasks')
+        if isinstance(gap_tasks, dict):
+            variant_tasks=plan.setdefault('variant_footage_gap_tasks', {})
+            variant_tasks[str(self.active_variant_index)]=json.loads(json.dumps(gap_tasks, ensure_ascii=False))
+
+        reviewed=plan.get('hybrid_reviewed_shots')
+        if isinstance(reviewed, list):
+            variant_reviewed=plan.setdefault('variant_hybrid_reviewed_shots', {})
+            variant_reviewed[str(self.active_variant_index)]=json.loads(json.dumps(reviewed, ensure_ascii=False))
+
+    def _restore_active_variant_runtime(self):
+        """恢复当前方案的补素材/混合生成运行态，禁止跨方案串数据。"""
+        if not self.project:
+            return
+        plan=self.project.creative_plan
+        idx=str(self.active_variant_index)
+
+        variant_tasks=plan.get('variant_footage_gap_tasks') or {}
+        if isinstance(variant_tasks, dict) and idx in variant_tasks:
+            plan['footage_gap_tasks']=json.loads(json.dumps(variant_tasks[idx], ensure_ascii=False))
+
+        variant_reviewed=plan.get('variant_hybrid_reviewed_shots') or {}
+        if isinstance(variant_reviewed, dict) and idx in variant_reviewed:
+            plan['hybrid_reviewed_shots']=json.loads(json.dumps(variant_reviewed[idx], ensure_ascii=False))
+
+        # 实拍多方案状态同样按方案恢复；没有对应数据时保留当前通用状态。
+        for field, storage in (
+            ('footage_plan','variant_footage_plans'),
+            ('footage_selection_audit','variant_footage_selection_audits'),
+            ('footage_coverage','variant_footage_coverage'),
+            ('footage_gaps','variant_footage_gaps'),
+        ):
+            values=plan.get(storage) or {}
+            if isinstance(values, dict) and idx in values:
+                plan[field]=json.loads(json.dumps(values[idx], ensure_ascii=False))
 
     def _record_variant_output(self, path):
         if not self.project:return
