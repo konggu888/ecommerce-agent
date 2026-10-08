@@ -12,7 +12,7 @@ from .capability import CapabilityRouter
 from .production import ProductionStore
 from .product_parser import parse_product_url, save_product
 from .creative_engine import CreativeEngine, validate_plan, validate_task_type_plan, TASK_TYPE_POLICIES
-from .model_router import ModelRouter, ModelProfile, FUNCTIONS
+from .model_router import ModelRouter, ModelProfile, FUNCTIONS, audit_ad_variant_set
 from .browser_skill import _find_agent_browser
 from .ffmpeg import available as ffmpeg_available, has_nvenc
 from .providers import load_video_provider
@@ -1191,6 +1191,8 @@ class App(tk.Tk):
             plan=self._activate_plan(raw_plans[0],info)
             self.project.creative_plan['creative_variants']=raw_plans
             self.project.creative_plan['variant_count']=variant_count
+            # 只审计创意实验设计，不推断投放平台，也不调用任何广告平台数据。
+            self.project.creative_plan['variant_set_audit']=audit_ad_variant_set(raw_plans, task_type)
             if footage_mode=='用户拍摄素材':
                 self.project.footage_folder=str(folder)
                 try:
