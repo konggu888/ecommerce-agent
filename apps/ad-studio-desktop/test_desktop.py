@@ -1002,6 +1002,31 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertFalse((p.creative_plan or {}).get("final_output_manifests"))
 
 
+    def test_a25_build_final_cleans_partial_output_when_concat_raises(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            p = new_project("https://item.jd.com/123.html", 2, "真人口播")
+            for shot in p.shots:
+                path = root / f"{shot.id}.mp4"
+                path.write_bytes(b"video")
+                shot.video_path = str(path)
+
+            def partial_then_fail(inputs, output):
+                Path(output).parent.mkdir(parents=True, exist_ok=True)
+                Path(output).write_bytes(b"partial")
+                raise RuntimeError("concat failed")
+
+            with patch("ad_studio.production.concat", side_effect=partial_then_fail):
+                with self.assertRaisesRegex(RuntimeError, "concat failed"):
+                    store.build_final(p, "9:16", 1)
+            final_dir = root / "final" / p.id
+            self.assertFalse(final_dir.exists() and any(final_dir.glob("final-9x16-v1*.mp4")))
+            self.assertFalse(final_dir.exists() and any(final_dir.glob("final-9x16-v1*.json")))
+            self.assertFalse((p.creative_plan or {}).get("final_output_manifests"))
+            self.assertFalse((p.creative_plan or {}).get("final_output_history_records"))
+
     def test_a26_final_output_history_keeps_revisions_independent(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
