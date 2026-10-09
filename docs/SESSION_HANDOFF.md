@@ -108,3 +108,11 @@
 ## 2026-10-09 下一步：AI 补镜头闸门执行级回归
 - 新增目标：用 mock 执行 generate_hybrid_gap_shots 的预算拒绝/云端授权拒绝路径，验证零 render_shot 调用，并验证预算拒绝不请求云端授权。
 - 本次测试只验证离线控制流；不证明真实 Provider 网络调用或计费。Windows 真机、剪映、真实 Provider 继续暂缓，PR #18 不得合并。
+
+
+## 2026-10-09 工作单元结果：AI 补镜头预算/授权拒绝路径
+- 实现/测试提交：9dcfd701d8dd5afb47184e9ad62a216599ca315f。
+- CI run 37908185866 success；doc-sync run 37908185803 success，均对应提交 9dcfd701d8dd5afb47184e9ad62a216599ca315f。
+- 新增执行级 mock 测试，直接运行 generate_hybrid_gap_shots 方法体：预算拒绝时不请求云端授权、不调用 render_shot；预算足够但云端授权拒绝时也不调用 render_shot。
+- 当前已补强三个控制点：批量生成拒绝路径、单镜头云端生成预算/授权闸门、AI 补镜头预算/授权拒绝路径。它们是离线模拟执行验证，不是实际 Provider 网络/计费或 Windows UI 验收。
+- 下一步：检查 AI 补镜头 UI 入口/状态反馈，以及单镜头/批量路径的预算和授权规则是否一致；再按正式验收计划继续。Windows 真机、真实剪映、真实 Provider/计费继续暂缓，PR #18 不得合并。
