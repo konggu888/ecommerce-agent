@@ -115,7 +115,7 @@ class WorkflowModePolicyTests(unittest.TestCase):
         build_at = body.index("out=self.store.build_final")
         try_at = body.rfind("try:", 0, build_at)
         except_at = body.index("except Exception as exc:", build_at)
-        continue_at = body.index("continue", except_at)
+        continue_at = body.index("\n                        continue", except_at)
         next_variant_at = body.index("for pos,raw0 in enumerate(variants,1):", body.index("done=[]; failed=[]; outputs=[]"))
         self.assertGreaterEqual(try_at, 0)
         self.assertGreater(except_at, build_at)
