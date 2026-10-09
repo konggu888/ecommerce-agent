@@ -1943,6 +1943,8 @@ class App(tk.Tk):
 
     @ui_action
     def postprocess_selected(self):
+        if not self._ui_execution_gate(): return
+        if not self.project: return messagebox.showinfo('提示','请先创建或打开一个项目。')
         s=self.selected()
         if not s:return messagebox.showinfo('提示','先选择一个已经生成的真实镜头。')
         try:
@@ -1955,6 +1957,8 @@ class App(tk.Tk):
 
     @ui_action
     def finish_selected(self):
+        if not self._ui_execution_gate(): return
+        if not self.project: return messagebox.showinfo('提示','请先创建或打开一个项目。')
         s=self.selected()
         if not s or not s.video_path:return messagebox.showinfo('提示','先选择一个已经生成的真实镜头。')
         win=tk.Toplevel(self); win.title(f'镜头 {s.index} · 本地成片加工'); win.geometry('620x430'); win.transient(self)
