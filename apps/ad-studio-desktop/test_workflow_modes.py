@@ -15,7 +15,7 @@ class WorkflowModePolicyTests(unittest.TestCase):
         app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
         self.assertIn("('created','创建时间',170)", app_source)
         self.assertIn("row.get('created_at','')", app_source)
-        self.assertIn("'final_output_history'", app_source)
+        self.assertIn("self.store.final_output_history(self.project)", app_source)
 
     def test_desktop_ui_exposes_and_persists_workflow_modes(self):
         app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
