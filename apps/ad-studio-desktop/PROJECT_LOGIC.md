@@ -829,3 +829,5 @@ A33 自动化验收分别覆盖电商短视频、商品主图视频、广告投�
 ## 批量异常恢复（2026-10-09）
 
 `_restore_variant_selection()` 不只用于预算/云端授权取消，也用于批量生成或批量输出发生异常后的恢复。切换回原方案前先调用 _cache_active_variant() 缓存当前运行态，避免异常恢复时丢失当前方案已完成的镜头/输出状态。批量异常路径保留失败提示；已完成输出不会因切换方案而主动删除。
+
+补充回归：`VariantRecoveryBehaviorTests.test_restore_caches_current_partial_variant_before_switching_back` 使用轻量 fake 对象执行真实恢复方法，验证先缓存当前方案，再激活原方案，最后刷新 UI 并保存项目；这比只检查源码中存在某个函数名更能覆盖调用顺序。
