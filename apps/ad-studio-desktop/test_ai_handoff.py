@@ -29,7 +29,9 @@ class AIHandoffTests(unittest.TestCase):
         for section in required_handoff_sections:
             self.assertIn(section, handoff)
 
-        self.assertIn("已完成：A0–A31；当前阶段：A32 · AI 接手能力；下一阶段：A33", handoff)
+        self.assertIn("已完成：A0–A33。", handoff)
+        self.assertIn("B1–B3 真实投放相关阶段按用户要求暂缓", handoff)
+        self.assertIn("docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md", handoff)
         for entry in ("AGENTS.md", "PROJECT_LOGIC.md", "HELP.md", "AD_STUDIO_ACCEPTANCE_PLAN.md", "test_ai_handoff.py"):
             self.assertIn(entry, handoff)
 
