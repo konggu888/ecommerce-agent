@@ -1824,6 +1824,9 @@ class App(tk.Tk):
         def apply():
             s.title=title.get().strip() or s.title; s.visual=visual.get('1.0','end').strip(); s.script=script.get('1.0','end').strip(); s.actor_id=actor_map.get(av.get()); s.scene_id=scene_map.get(sv.get()); s.status='需重生成'; s.video_path=None; s.version+=1
             invalidate_storyboard_approval(self.project.creative_plan, self.active_variant_index)
+            # Keep the per-variant cache aligned with edits before persistence; otherwise
+            # reopening/switching variants could restore the stale pre-edit shot snapshot.
+            self._cache_active_variant()
             self.store.save(self.project); self.refresh_shots(); self.show_shot(); win.destroy()
         ttk.Button(frm,text='保存修改并生成新版本',command=apply).pack(anchor='e',pady=10)
 
