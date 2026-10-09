@@ -30,7 +30,13 @@ class WorkflowModePolicyTests(unittest.TestCase):
         restore_end = app_source.index("\n    def switch_variant(self):", restore_start)
         restore_body = app_source[restore_start:restore_end]
         self.assertLess(restore_body.index("self._cache_active_variant()"), restore_body.index("self._activate_plan(target,info)"))
-        self.assertIn("except Exception as exc:", app_source[app_source.index("def batch_generate_variants(self):"):app_source.index("def batch_final_render(self):")])
+        batch_start = app_source.index("def batch_generate_variants(self):")
+        batch_end = app_source.index("def batch_final_render(self):", batch_start)
+        batch_source = app_source[batch_start:batch_end]
+        self.assertIn("批量生成预审失败；已恢复原来选中的创意方案。", batch_source)
+        self.assertIn("except Exception as exc:", batch_source[:batch_source.index("actual_cost=float")])
+        self.assertIn("self._restore_variant_selection(original_index)", batch_source)
+
         self.assertIn("except Exception as e:", app_source[app_source.index("def batch_final_render(self):"):app_source.index("def final_render(self):")])
         self.assertIn("已恢复原来选中的创意方案", app_source)
         self.assertIn("已完成的输出记录已保留", app_source)
