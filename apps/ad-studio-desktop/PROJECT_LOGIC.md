@@ -807,3 +807,10 @@ A33 自动化验收分别覆盖电商短视频、商品主图视频、广告投�
 激活创意方案时，`_activate_plan()` 会重建 `creative_plan`。因此必须通过 `preserve_workflow_state()` 将项目级 `workflow_mode` 和按方案记录的 `workflow_approvals` 从旧计划带入新计划。否则切换方案会丢失工作模式持久化及分镜批准记录，重新打开项目时可能回退为半自动默认值，或重复/跳过错误的审批节点。
 
 `variant_shot_cache` 等以 `variant_` 开头的数据仍由方案运行态机制处理，不作为工作模式状态复制。专项测试 `test_workflow_mode_and_storyboard_approvals_survive_variant_activation` 覆盖这条状态边界。
+
+
+## 云端视频生成授权闸门（2026-10-09）
+
+单镜头生产先通过 `CapabilityRouter` 判断目标能力。如果目标为云端，必须在调用 `ProductionStore.render_shot()` 前通过 `cloud_generation` 授权；拒绝时恢复镜头的“待生成”状态并退出，不触发 Provider。一键生成全部版本在预审各方案待生成镜头与预算后，如果存在待生成 AI 镜头且路由目标为云端，会在批量循环开始前统一授权，拒绝即零云端调用。实拍素材裁剪与本地生成不应触发云端授权框。
+
+专项测试 `test_workflow_modes.py` 要求单镜头与批量路径都显式接入同一授权策略。此授权只证明 UI 授权边界，不能替代真实 Provider 的运行验证，也不能绕过预算/事实/安全/分镜审核。
