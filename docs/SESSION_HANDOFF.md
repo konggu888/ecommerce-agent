@@ -190,3 +190,15 @@ undefined
 - 当前自动化结果：以最新 PR #18 HEAD 对应的 CI 与 docs-sync 为准；提交更新后必须实时查询，不能复用历史绿灯。
 - 下一步：若 CI/doc-sync 失败，读取日志并修复；通过后继续审查 UI 入口、运行状态、取消反馈、错误提示与重开恢复，优先核对费用/授权提示是否和真实执行路径一致。
 - 暂缓项不变：Windows 真机、真实剪映、真实 Provider/真实计费与 B1–B3 真实投放数据；PR #18 不得合并。
+
+
+## 2026-10-10 工作单元：成本账本 UI 可见性修复（本次代码已提交，等待最新 CI）
+- 本工作单元开始基线：PR #18 head c26cc96bf6bb5164392bdc4a32b53c291cb3bd9b；CI #1011 与 docs-sync #742 均成功。
+- 独立检查发现：“AI调用记录 · 本机成本账本”原先只读取模型调用账本的最近 150 条，没有显示 ProductionStore 独立记录的视频/素材生成费用，也无法在该入口浏览完整历史。
+- 修复提交：501892e3c8c0af58c6674f5e360d9d164a1c0adf。UI 分为“模型调用记录”和“视频/素材生产费用”两个标签页，分别读取各自完整账本；生产费用页显示项目ID、镜头ID、Provider、类别、状态、数量、单价、记录金额和错误；打开项目时显示该项目生产费用汇总。
+- 账本层：已在 9d8bf75efe7cb48c9525b1e72dbcd0f8ebd75967 加入 UsageLedger.all_entries()，完整读取并按最新在前排列；test_usage_ledger.py 已新增超过 2000 条记录的顺序/完整性测试与 UI 绑定契约测试。
+- 文档：HELP.md、PROJECT_LOGIC.md、AD_STUDIO_ACCEPTANCE_PLAN.md、AD_STUDIO_ACCEPTANCE_SOP.md 已补充此项；本快照同步记录当前状态。
+- CI 历史：中间提交曾因 UI 接线尚未完成而触发 test_cost_ledger_ui_shows_full_model_and_production_histories_separately 失败（CI #1026）；随后已提交 UI 修复，必须以该修复之后的最新 CI/doc-sync 结果为准。
+- 金额边界：模型 Token 估算费用与视频/素材生成费用分开列示，不直接合并；配置价格不等于供应商账单。
+- 下一步：查询当前最新 head 的 CI/doc-sync。若失败，读取最新失败日志、修复并重跑；通过后继续审查其他已实现 UI 的入口、运行状态、取消反馈、错误提示与重新打开恢复。
+- 限制：Windows 真机、真实剪映、真实 Provider/云端计费和供应商账单对账继续按用户要求暂缓；PR #18 不得合并。
