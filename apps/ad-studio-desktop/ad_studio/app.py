@@ -167,16 +167,19 @@ class App(tk.Tk):
         router = CapabilityRouter(ROOT)
         unknown_prices = []
         needs_cloud = False
+        cloud_cost = 0.0
         for row in estimate.get("明细", []):
             kind = str(row.get("类型") or "")
             decision = router.decide_asset(kind)
             if decision.target != "cloud":
                 continue
             needs_cloud = True
+            row_cost = float(row.get("小计", 0.0) or 0.0)
+            cloud_cost += row_cost
             if generator.price(kind) <= 0 and kind not in unknown_prices:
                 unknown_prices.append(kind)
         return {
-            "cost": round(float(estimate.get("总计", 0.0) or 0.0), 4),
+            "cost": round(cloud_cost, 4),
             "unknown_prices": unknown_prices,
             "needs_cloud": needs_cloud,
             "details": estimate.get("明细", []),
@@ -2178,6 +2181,8 @@ class App(tk.Tk):
                 self._activate_plan(raw,info)
                 pending_shots=[s for s in self.project.shots if not s.video_path or not Path(s.video_path).exists()]
                 pending_video_shots=[s for s in pending_shots if getattr(s,'clip_source','ai_generated')!='filmed']
+                if pending_video_shots and video_decision.target == 'unavailable':
+                    raise RuntimeError('视频生成不可用：' + str(getattr(video_decision, 'reason', '未配置本地或云端视频服务')))
                 missing_counts.append(len(pending_shots))
                 if pending_video_shots and video_decision.target == 'cloud':
                     needs_cloud_video=True
