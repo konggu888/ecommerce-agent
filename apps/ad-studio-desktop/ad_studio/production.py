@@ -450,10 +450,11 @@ class ProductionStore:
             "delivery_status": "可交付" if bool(media_check.get("valid")) else "不可交付",
             "created_at": datetime.datetime.now().isoformat(timespec="microseconds"),
         }
-        manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
         key = f"{int(variant_index)}|{aspect}"
         manifest["history_key"] = key
         manifest["revision_id"] = f"{key}|{manifest['created_at']}"
+        # Persist the complete manifest only after history/revision identifiers exist.
+        manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
         project.creative_plan.setdefault("final_output_manifests", {})[key] = manifest
         project.creative_plan.setdefault("final_output_history_records", []).append(manifest.copy())
         self.save(project)
