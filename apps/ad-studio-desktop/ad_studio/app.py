@@ -1856,6 +1856,25 @@ class App(tk.Tk):
             self.store.save(self.project); self.refresh_shots(); self.show_shot(); win.destroy()
         ttk.Button(frm,text='保存修改并生成新版本',command=apply).pack(anchor='e',pady=10)
 
+    def _restore_loaded_variant_state(self):
+        """Restore the active variant's canonical shot/runtime caches after reopening a project."""
+        if not self.project:
+            return
+        plan = self.project.creative_plan or {}
+        try:
+            index = int(plan.get("variant_index", self.active_variant_index) or 1)
+        except (TypeError, ValueError):
+            index = 1
+        self.active_variant_index = max(1, index)
+        cache = plan.get("variant_shot_cache")
+        key = str(self.active_variant_index)
+        if isinstance(cache, dict) and key in cache and isinstance(cache[key], list):
+            self.project.shots = _restore_variant_shot_cache(self.project.shots, cache[key])
+        # The JSON project stores active fields too, but the per-variant maps are
+        # authoritative whenever present; restore them to avoid stale cross-variant
+        # runtime data after an interrupted batch or a reopen.
+        self._restore_active_variant_runtime()
+
     @ui_action
     def load_project(self):
         files=sorted(PROJECTS.glob('project-*.json'), key=lambda p:p.stat().st_mtime, reverse=True)
@@ -1867,7 +1886,7 @@ class App(tk.Tk):
             if not sel:return
             project=self.store.load(files[sel[0]].stem)
             if not project:return messagebox.showerror('打开失败','项目文件无法读取。')
-            self.project=project; self.model_router.set_project_context(project.id); self.active_variant_index=int((project.creative_plan or {}).get('variant_index',1) or 1); self.workflow_mode.set(self._workflow_mode_label(get_project_workflow_mode(project))); self.url.set(''); self.level.set(project.level); self.form.set(project.form); self.refresh_shots(); c=project.cost_estimate; self.cost.set(f"项目预估 ¥{c.get('总计',0):.2f} · 云端 ¥{c.get('云端',0):.2f} · 已保存 {len(project.shots)} 个镜头" if c else f'已保存 {len(project.shots)} 个镜头'); self.detail.set(f'已恢复项目：{project.product_name} · {project.platform} · {project.form}'); win.destroy()
+            self.project=project; self._restore_loaded_variant_state(); self.model_router.set_project_context(project.id); self.workflow_mode.set(self._workflow_mode_label(get_project_workflow_mode(project))); self.url.set(''); self.level.set(project.level); self.form.set(project.form); self.refresh_shots(); c=project.cost_estimate; self.cost.set(f"项目预估 ¥{c.get('总计',0):.2f} · 云端 ¥{c.get('云端',0):.2f} · 已保存 {len(project.shots)} 个镜头" if c else f'已保存 {len(project.shots)} 个镜头'); self.detail.set(f'已恢复项目：{project.product_name} · {project.platform} · {project.form}'); win.destroy()
         ttk.Button(frm,text='打开',command=open_selected).pack(anchor='e')
 
     @ui_action
