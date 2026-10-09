@@ -72,6 +72,8 @@ class WorkflowModePolicyTests(unittest.TestCase):
         self.assertIn("已恢复原来选中的创意方案", app_source)
         self.assertIn("已完成的输出记录已保留", app_source)
         self.assertIn("def _confirm_budget_overrun(self, estimate, remaining", app_source)
+        self.assertNotIn("if budget>0 and estimate>remaining:", app_source)
+        self.assertNotIn("if budget>0 and estimated>remaining_budget:", app_source)
         self.assertIn("self._confirm_budget_overrun(estimate,remaining,'AI补镜头预算超限确认')", app_source)
         self.assertIn("self._confirm_budget_overrun(estimated,remaining_budget,'一键生成预算超限确认')", app_source)
         self.assertIn("if not pending:", app_source)
@@ -319,6 +321,13 @@ class WorkflowModePolicyTests(unittest.TestCase):
             budget_app._confirm_budget_overrun.assert_called_once()
             budget_app._restore_variant_selection.assert_called_once_with(1)
 
+            # A literal zero budget is a zero-spend limit, not an unlimited-budget sentinel.
+            zero_budget_app = make_fake_app(0.0, "local")
+            batch_method.__get__(zero_budget_app, type(zero_budget_app))()
+            zero_budget_app._confirm_budget_overrun.assert_called_once()
+            self.assertEqual(zero_budget_app.store.render_shot.call_count, 0)
+            zero_budget_app._restore_variant_selection.assert_called_once_with(1)
+
             # Cloud consent refusal: with enough budget, cloud authorization is declined.
             cloud_app = make_fake_app(100.0, "cloud")
             batch_method.__get__(cloud_app, type(cloud_app))()
@@ -410,6 +419,11 @@ class WorkflowModePolicyTests(unittest.TestCase):
             budget_app.store.render_shot.assert_not_called()
             budget_app.store.render_footage_shot.assert_not_called()
             self.assertEqual(budget_shot.status, "待生成")
+
+            zero_budget_app, _ = make_app(0.0, "cloud")
+            generate_shot.__get__(zero_budget_app, type(zero_budget_app))()
+            zero_budget_app._confirm_budget_overrun.assert_called_once()
+            zero_budget_app.store.render_shot.assert_not_called()
 
             cloud_app, _ = make_app(100.0, "cloud")
             generate_shot.__get__(cloud_app, type(cloud_app))()
