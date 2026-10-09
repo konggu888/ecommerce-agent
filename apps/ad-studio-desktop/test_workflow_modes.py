@@ -150,6 +150,42 @@ class WorkflowModePolicyTests(unittest.TestCase):
         self.assertEqual(local_result["unknown_prices"], [])
         self.assertFalse(local_result["needs_cloud"])
 
+    def test_asset_estimate_excludes_local_asset_costs(self):
+        import ast
+        from pathlib import Path
+
+        engine_source = (Path(__file__).parent / "ad_studio" / "engine.py").read_text(encoding="utf-8")
+        tree = ast.parse(engine_source)
+        method = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "estimate_asset_generation")
+
+        class FakeLibrary:
+            def best_match(self, _kind, _tags):
+                return None
+
+        class FakeGenerator:
+            target = "local"
+            def __init__(self, *_args):
+                self.capability = SimpleNamespace(
+                    decide_asset=lambda _kind: SimpleNamespace(target=self.target)
+                )
+            def price(self, _kind):
+                return 1.5
+            def configured(self, _kind):
+                return True
+
+        namespace = {"AssetGenerator": FakeGenerator}
+        exec(compile(ast.Module(body=[method], type_ignores=[]), "engine.py", "exec"), namespace)
+        shots = [{"index": 1, "asset_resolution": {"actor_tags": ["host"]}}]
+        estimate = namespace["estimate_asset_generation"](FakeLibrary(), Path("/fake/ad-studio"), shots)
+        self.assertEqual(estimate["总计"], 0.0)
+        self.assertEqual(estimate["明细"][0]["执行方式"], "local")
+        self.assertEqual(estimate["明细"][0]["单价"], 0.0)
+
+        FakeGenerator.target = "cloud"
+        cloud_estimate = namespace["estimate_asset_generation"](FakeLibrary(), Path("/fake/ad-studio"), shots)
+        self.assertEqual(cloud_estimate["总计"], 1.5)
+        self.assertEqual(cloud_estimate["明细"][0]["执行方式"], "cloud")
+
     def test_production_does_not_generate_assets_without_explicit_tags(self):
         source = (Path(__file__).parent / "ad_studio" / "production.py").read_text(encoding="utf-8")
         self.assertIn("generate_if_missing=bool(tags) and bool(req.get('generation_if_missing', True))", source)
