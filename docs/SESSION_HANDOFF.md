@@ -15,8 +15,8 @@
 - 仓库：konggu888/ecommerce-agent
 - 分支：agent/future-work-modes-foundation
 - PR：#18，https://github.com/konggu888/ecommerce-agent/pull/18
-- 最近已完成的交接机制实现提交：441cf724bd0ed86bc476477bb0ee22df993c12e7。
-- 该提交的 CI run #987（37902782056）：success；docs-sync run #698（37902782076）：success。
+- 跨窗口交接机制实现提交：441cf724bd0ed86bc476477bb0ee22df993c12e7；该提交 CI run #987（37902782056）与 docs-sync run #698（37902782076）均 success。
+- 本轮批量生成失败隔离修复提交：e280704976d66cc86fff29a8d2a466ab380b4acd 首轮 CI 未通过，原因是新测试把注释中的 continue 当成代码语句；测试定位已在 f3c3ae0d9f6d94ccda08259ebc42e3c1c04e4a8b 修正。该提交 CI run #990（37904491346）与 docs-sync run #700（37904491334）均 success。
 - 这些结果只证明对应提交，不证明此后新提交的最新 HEAD 通过。新窗口必须查询 PR 当前 head、最新 CI、最新 docs-sync；若有失败，先读失败日志并修复，不得继续叠加无关功能。新窗口必须查询 PR 当前 head、最新 CI、最新 docs-sync；若有失败，先读失败日志并修复，不得继续叠加无关功能。
 - PR #18 上次核验为 open、未合并；再次操作前重新检查，不得假定状态没变。
 
@@ -26,13 +26,13 @@
 2. 批量交付结束时尝试恢复操作前的方案选择、保存项目并刷新 UI，恢复/保存失败也写入结果明细。
 3. 最终视频拼接、媒体质检或 JSON 清单写入失败时，清理本次生成的部分 MP4/JSON，并移除对应的无效内存历史记录；不清理旧的有效输出。
 4. 增加相应回归测试，并更新 HELP.md、PROJECT_LOGIC.md、AI handoff、验收计划与 SOP。
-5. 跨聊天窗口交接机制已写入 SESSION_HANDOFF.md、AGENTS.md、AI handoff、验收计划/SOP、HELP.md、PROJECT_LOGIC.md，并加入 test_ai_handoff.py 自动化检查；提交 441cf724 的 CI/doc-sync 成功，快照同步提交 41db3af 的 CI/doc-sync 也成功。
-6. 本轮新增批量生成最终成片失败隔离逻辑及专项回归测试；最新提交 CI/doc-sync 尚待检查。
+5. 跨聊天窗口交接机制已写入 SESSION_HANDOFF.md、AGENTS.md、AI handoff、验收计划/SOP、HELP.md、PROJECT_LOGIC.md，并加入 test_ai_handoff.py 自动化检查；提交 441cf724 与快照同步提交 41db3af 的 CI/doc-sync 均成功。
+6. 本轮新增批量生成最终成片失败隔离逻辑及专项回归测试；修正测试断言后，f3c3ae0 的 CI/doc-sync 均成功。
 
 ## 下一步（按顺序执行，不要跳过）
 
 1. 已复查 PR #18 当前 head、CI、docs-sync：基线 41db3af 的 CI/doc-sync 均成功；本次新提交仍须等待新 HEAD 对应的检查。
-2. 本轮发现并修复批量“生成全部版本”中的缺口：镜头都生成成功但某方案最终成片构建失败时，不能中断后续方案；失败必须按方案记录并继续。首轮 CI 发现专项测试的断言误匹配了注释中的英文单词 continue，而不是代码语句；已收紧测试定位，待新提交 CI 复核。
+2. 本轮发现并修复批量“生成全部版本”中的缺口：镜头都生成成功但某方案最终成片构建失败时，不能中断后续方案；失败必须按方案记录并继续。首轮 CI 发现专项测试误匹配注释中的英文单词 continue，已收紧为匹配实际代码语句；修正提交 f3c3ae0 的 CI/doc-sync 均成功。
 3. 下一步为预算拒绝路径做更强的可执行测试：确认用户拒绝超预算时生成调用次数为零、方案选择/镜头列表/项目状态恢复。
 4. 再验证云端授权拒绝时 Provider 调用次数为零；本地生成与实拍裁剪不应错误弹出云端授权。
 5. 对已实现功能逐项检查 UI 是否真正有入口、状态反馈和错误提示；代码/AST 测试不等于真实 Windows UI 验收。
