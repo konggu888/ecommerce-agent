@@ -780,4 +780,13 @@ A33 自动化验收分别覆盖电商短视频、商品主图视频、广告投�
 
 新增 `ad_studio.workflow_modes`，统一定义 `ai_auto`、`ai_semi_auto`、`user_controlled_ai_assisted` 三种模式及动作授权规则。输入为项目当前模式、待执行动作和用户是否明确批准；策略模块输出是否允许、是否需要确认及原因。未知/缺失模式默认回退到半自动模式，避免意外获得更宽权限。项目模式可保存在既有 `Project.creative_plan["workflow_mode"]` 中。
 
-当前接入边界：本提交建立可测试的权限策略基础，**尚未将其接入桌面 UI、所有生产动作和完整暂停/继续状态机**。现有生产安全闸门仍独立生效；工作模式策略不能替代商品事实检查、预算确认、AI 镜头复核或最终安全闸门。测试入口：`apps/ad-studio-desktop/test_workflow_modes.py`。
+当前接入边界：主界面已提供中文模式选择；`App._workflow_mode_value()` 将界面标签映射为稳定模式 ID，`set_project_workflow_mode()` 将其保存在 `Project.creative_plan["workflow_mode"]`，打开/保存项目时恢复和同步。用户控制模式通过 `_choose_initial_plan()` 明确要求用户选择初始候选方案；最终交付与批量最终交付接入确认入口。尚未接入所有生产动作，也未完成半自动模式的全链路暂停/确认/继续状态机。现有生产安全闸门仍独立生效；工作模式策略不能替代商品事实检查、预算确认、AI 镜头复核或最终安全闸门。测试入口：`apps/ad-studio-desktop/test_workflow_modes.py`。
+
+
+## 2026-10-09：工作模式 UI 与关键动作接入（开发中）
+
+- UI：`App.ui()` 显示中文工作模式下拉框；模式标识仍以 `ai_auto`、`ai_semi_auto`、`user_controlled_ai_assisted` 保存，避免将显示文本作为持久化协议。
+- 持久化：新建项目时写入模式；打开项目从 `creative_plan.workflow_mode` 恢复；`App.save()` 和最终交付动作同步当前选择。
+- 用户控制：创意候选生成后通过模态列表要求用户选定初始方案，取消则停止创建；选择本身是用户决策。
+- 交付动作：最终成片与批量最终交付通过 `_authorize_workflow_action()` 询问确认。该函数只授权当前单次动作，不保存长期通用授权。
+- 限制：镜头生成、编辑、资产生成等其余操作尚未全部按三种模式建立统一的状态机；因此不能称为全链路完整实现。离线测试与 CI 结果不替代 Windows 真实机器验证。
