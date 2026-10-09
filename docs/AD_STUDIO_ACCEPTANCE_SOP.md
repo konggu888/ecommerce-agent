@@ -801,3 +801,9 @@ apps/ad-studio-desktop/test_ai_handoff.py 必须自动检查快照文件存在�
 - 执行 test_hybrid_gap_generation_records_success_and_isolates_task_failure。
 - 验证单项失败不会阻止其他补镜头任务，成功/失败状态持久化，detail 与弹窗提供明确反馈。
 - 此项验证使用 mock 渲染器，不等于真实 Provider 或 Windows UI 验收。
+
+
+## AI 补镜头跨方案隔离验收
+- 执行 test_hybrid_gap_generation_records_success_and_isolates_task_failure。
+- 测试应包含当前方案成功/失败任务以及另一方案任务；另一方案任务不得进入当前生成循环、不得改写状态或生成文件路径。
+- 复核代码路径确认 render_shot 的成本记账发生于生成阶段，accept_hybrid_generated_shot 只迁移生成成本元数据、不再次写入 UsageLedger；真实账单核对仍待真实 Provider 验收。

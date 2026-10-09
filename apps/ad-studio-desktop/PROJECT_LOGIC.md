@@ -943,3 +943,10 @@ docs/SESSION_HANDOFF.md 是项目的动态工作快照，与 docs/AD_STUDIO_AI_H
 ## 2026-10-09：AI 补镜头逐任务故障隔离
 - generate_hybrid_gap_shots 对每个 pending task 独立 try/except；成功任务写 generated_path/status/cost，失败任务写 generation_error/status，之后继续处理后续任务。
 - 完成后统一保存项目并在 detail 与结果弹窗显示成功/失败数量和错误明细。自动化测试使用模拟渲染器验证该行为。
+
+
+## AI 补镜头按方案隔离与成本记录
+- generate_hybrid_gap_shots 必须按 active_variant_index 过滤任务，不能在方案 A 的活动目录下生成方案 B 的素材。
+- 未带 variant_index 的旧任务兼容归入当前活动方案；新任务应保存方案编号。
+- render_shot 的实际视频/素材成本由 UsageLedger 记账；复核纳入分镜只迁移已生成文件与成本元数据，不得再次记入项目实际费用。
+- 对应离线测试覆盖跨方案任务不调用渲染器；真实 Provider 计费仍须另行实测。

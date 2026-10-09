@@ -138,3 +138,12 @@
 - 最新结果反馈测试提交：581b1d91ec3cd0b8010396395aa022ff6b40db85；CI 37908896934 success；doc-sync 37908896853 success。
 - 新测试模拟一项补镜头成功、另一项失败，验证成功文件路径、失败原因、任务级故障隔离、项目保存和界面成功/失败摘要/弹窗失败明细。
 - 下一步：继续检查各生成入口对预算与实际成本累计的处理是否一致，特别是 render_shot 对临时 AI 补镜头对象的成本记录；随后检查其他已实现功能的 UI 入口/状态/错误反馈。不要启动真实 Provider、Windows 真机或剪映测试。PR #18 不得合并。
+
+
+## 2026-10-09 工作单元：AI 补镜头跨方案隔离与成本路径审计
+- 发现 generate_hybrid_gap_shots 原先只筛选“已批准的 AI 补镜头”，未筛选任务所属方案；render_path 依据当前活动方案目录保存输出，可能把其他方案素材写入错误目录。
+- 已修复为只执行当前 active_variant_index 的任务，旧任务缺少 variant_index 时兼容归入当前方案。执行级 mock 回归增加另一方案任务，验证其不渲染且状态不变。
+- 成本路径核查：ProductionStore._render_with_provider 在成功生成时通过 UsageLedger 记视频成本；resolve_assets 若实际生成素材也通过账本记素材成本。项目 actual_cost_rmb 在生成时更新；复核纳入分镜只将 generation_cost_rmb 复制为镜头成本元数据，不再次记账。因此代码路径未发现“复核时重复加总项目实际费用”；真实 Provider 的账单/计费口径仍未验证。
+- 已同步 HELP.md、PROJECT_LOGIC.md、完整验收计划、验收 SOP 和本动态接手快照。
+- Windows 真机、真实 Provider/账单、剪映验证仍按用户要求暂缓；PR #18 不得合并。
+undefined

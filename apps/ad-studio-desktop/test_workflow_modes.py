@@ -399,11 +399,13 @@ class WorkflowModePolicyTests(unittest.TestCase):
         generate_hybrid = namespace["generate_hybrid_gap_shots"]
 
         tasks = [
-            {"task_id": "GAP-OK", "recommended_resolution": "AI补镜头", "generation_allowed": True, "need": "辅助镜头1"},
-            {"task_id": "GAP-FAIL", "recommended_resolution": "AI补镜头", "generation_allowed": True, "need": "辅助镜头2"},
+            {"task_id": "GAP-OK", "variant_index": 1, "recommended_resolution": "AI补镜头", "generation_allowed": True, "need": "辅助镜头1"},
+            {"task_id": "GAP-FAIL", "variant_index": 1, "recommended_resolution": "AI补镜头", "generation_allowed": True, "need": "辅助镜头2"},
+            {"task_id": "GAP-OTHER-VARIANT", "variant_index": 2, "recommended_resolution": "AI补镜头", "generation_allowed": True, "need": "方案二辅助镜头"},
         ]
         fake = SimpleNamespace()
         fake._ui_execution_gate = Mock(return_value=True)
+        fake.active_variant_index = 1
         fake._confirm_budget_overrun = Mock(return_value=False)
         fake._authorize_workflow_action = Mock(return_value=True)
         fake.project = SimpleNamespace(
@@ -425,6 +427,8 @@ class WorkflowModePolicyTests(unittest.TestCase):
         self.assertEqual(tasks[0]["generated_path"], "/tmp/gap-ok.mp4")
         self.assertEqual(tasks[1]["status"], "AI补镜头生成失败")
         self.assertIn("模拟 Provider 失败", tasks[1]["generation_error"])
+        self.assertNotIn("generated_path", tasks[2], "其他方案的补镜头不能在当前方案下生成")
+        self.assertNotIn("status", tasks[2], "其他方案任务状态应保持不变")
         self.assertEqual(len(fake.project.creative_plan["hybrid_generated_shots"]), 1)
         fake.store.save.assert_called_once_with(fake.project)
         fake.detail.set.assert_called_once()
