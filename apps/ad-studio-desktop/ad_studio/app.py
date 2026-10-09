@@ -2000,18 +2000,30 @@ class App(tk.Tk):
         except Exception:
             rate=0.72
         missing_counts=[]; estimated=0.0; needs_cloud_video=False
-        for pos,raw0 in enumerate(variants,1):
-            raw=dict(raw0); raw['_variant_index']=int(raw.get('_variant_index',pos)); raw['_variant_label']=raw.get('_variant_label',f'方案{raw["_variant_index"]}')
-            # 用当前项目规则恢复方案，仅用于确定镜头数量；不调用 AI。
-            info=__import__('ad_studio.product_parser',fromlist=['ProductInfo']).ProductInfo(**self.project.product_info)
-            self._activate_plan(raw,info)
-            pending_shots=[s for s in self.project.shots if not s.video_path or not Path(s.video_path).exists()]
-            missing=len(pending_shots)
-            if any(getattr(s,'clip_source','ai_generated')!='filmed' for s in pending_shots):
-                needs_cloud_video=True
-            missing_counts.append(missing)
-            if footage_mode!='用户拍摄素材': estimated += missing*rate
-            self._cache_active_variant()
+        try:
+            for pos,raw0 in enumerate(variants,1):
+                raw=dict(raw0); raw['_variant_index']=int(raw.get('_variant_index',pos)); raw['_variant_label']=raw.get('_variant_label',f'方案{raw["_variant_index"]}')
+                # 用当前项目规则恢复方案，仅用于确定镜头数量；不调用 AI。
+                info=__import__('ad_studio.product_parser',fromlist=['ProductInfo']).ProductInfo(**self.project.product_info)
+                self._activate_plan(raw,info)
+                pending_shots=[s for s in self.project.shots if not s.video_path or not Path(s.video_path).exists()]
+                missing=len(pending_shots)
+                if any(getattr(s,'clip_source','ai_generated')!='filmed' for s in pending_shots):
+                    needs_cloud_video=True
+                missing_counts.append(missing)
+                if footage_mode!='用户拍摄素材': estimated += missing*rate
+                self._cache_active_variant()
+
+        except Exception as exc:
+            # Preflight switches variants too. If parsing/routing any candidate fails,
+            # restore the user's original selection before returning an error.
+            try:
+                self._restore_variant_selection(original_index)
+                self.detail.set('批量生成预审失败；已恢复原来选中的创意方案。')
+            except Exception as restore_exc:
+                messagebox.showerror('方案恢复失败',f'预审错误：{exc}\n恢复原方案时也发生错误：{restore_exc}')
+            messagebox.showerror('批量生成预审失败',str(exc))
+            return
         actual_cost=float(getattr(self.project,'actual_cost_rmb',0.0) or 0.0)
         remaining_budget=max(0.0,budget-actual_cost) if budget>0 else 0.0
         if budget>0 and estimated>remaining_budget:
