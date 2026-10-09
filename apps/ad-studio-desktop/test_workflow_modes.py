@@ -139,6 +139,79 @@ class WorkflowModePolicyTests(unittest.TestCase):
         accept_method = next(node for node in ast.walk(review_method) if isinstance(node, ast.FunctionDef) and node.name == "accept")
         self.assertTrue(any(isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "invalidate_storyboard_approval" for node in ast.walk(accept_method)))
 
+    def test_variant_runtime_does_not_leak_when_target_variant_has_no_saved_state(self):
+        source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "_restore_active_variant_runtime")
+        method.decorator_list = []
+        module = ast.Module(body=[method], type_ignores=[])
+        ast.fix_missing_locations(module)
+        namespace = {"json": __import__("json")}
+        exec(compile(module, "ad_studio/app.py", "exec"), namespace)
+
+        fake = SimpleNamespace(project=SimpleNamespace(creative_plan={
+            "variant_footage_gap_tasks": {"1": {"tasks": [{"task_id": "A-gap"}]}},
+            "variant_hybrid_reviewed_shots": {"1": [{"shot_id": "A-shot"}]},
+            "variant_footage_plans": {"1": [{"source_file": "A.mp4"}]},
+            "variant_footage_selection_audits": {"1": {"audit": "A"}},
+            "variant_footage_coverage": {"1": {"score": 90}},
+            "variant_footage_gaps": {"1": {"missing": ["A"]}},
+            # These are stale active values left behind by variant 1.
+            "footage_gap_tasks": {"tasks": [{"task_id": "A-gap"}]},
+            "hybrid_reviewed_shots": [{"shot_id": "A-shot"}],
+            "footage_plan": [{"source_file": "A.mp4"}],
+            "footage_selection_audit": {"audit": "A"},
+            "footage_coverage": {"score": 90},
+            "footage_gaps": {"missing": ["A"]},
+        }))
+        fake.active_variant_index = 2
+        namespace["_restore_active_variant_runtime"](fake)
+
+        plan = fake.project.creative_plan
+        self.assertEqual(plan["footage_gap_tasks"], {})
+        self.assertEqual(plan["hybrid_reviewed_shots"], [])
+        self.assertEqual(plan["footage_plan"], [])
+        self.assertEqual(plan["footage_selection_audit"], {})
+        self.assertEqual(plan["footage_coverage"], {})
+        self.assertEqual(plan["footage_gaps"], {})
+
+    def test_variant_runtime_restores_saved_state_for_target_variant(self):
+        source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "_restore_active_variant_runtime")
+        method.decorator_list = []
+        module = ast.Module(body=[method], type_ignores=[])
+        ast.fix_missing_locations(module)
+        namespace = {"json": __import__("json")}
+        exec(compile(module, "ad_studio/app.py", "exec"), namespace)
+
+        expected = {
+            "footage_gap_tasks": {"tasks": [{"task_id": "B-gap"}]},
+            "hybrid_reviewed_shots": [{"shot_id": "B-shot"}],
+            "footage_plan": [{"source_file": "B.mp4"}],
+            "footage_selection_audit": {"audit": "B"},
+            "footage_coverage": {"score": 20},
+            "footage_gaps": {"missing": ["B"]},
+        }
+        storage = {
+            "variant_footage_gap_tasks": "footage_gap_tasks",
+            "variant_hybrid_reviewed_shots": "hybrid_reviewed_shots",
+            "variant_footage_plans": "footage_plan",
+            "variant_footage_selection_audits": "footage_selection_audit",
+            "variant_footage_coverage": "footage_coverage",
+            "variant_footage_gaps": "footage_gaps",
+        }
+        plan = {}
+        for key, field in storage.items():
+            plan[key] = {"2": expected[field]}
+        fake = SimpleNamespace(project=SimpleNamespace(creative_plan=plan))
+        fake.active_variant_index = 2
+        namespace["_restore_active_variant_runtime"](fake)
+        for field, value in expected.items():
+            self.assertEqual(plan[field], value)
+
     def test_mode_persists_in_existing_project_payload(self):
         project = SimpleNamespace(creative_plan={})
         self.assertEqual(set_project_workflow_mode(project, USER_CONTROLLED), USER_CONTROLLED)
