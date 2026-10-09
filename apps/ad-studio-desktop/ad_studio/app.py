@@ -2110,6 +2110,10 @@ class App(tk.Tk):
                 raw['_variant_index']=int(raw.get('_variant_index',pos))
                 raw['_variant_label']=raw.get('_variant_label',f'方案{raw["_variant_index"]}')
                 self._activate_plan(raw,info)
+                if not self._ensure_storyboard_approval():
+                    skipped.append(f'方案{self.active_variant_index}：分镜未获批准')
+                    self._cache_active_variant()
+                    continue
                 missing=[s.title for s in self.project.shots if not s.video_path or not Path(s.video_path).exists()]
                 if missing:
                     skipped.append(f'方案{self.active_variant_index}：缺少 {len(missing)} 个已生成镜头')
@@ -2141,6 +2145,7 @@ class App(tk.Tk):
         if not self.project:return messagebox.showinfo('提示','先创建项目。')
         if not self._authorize_workflow_action('final_delivery','最终成片交付确认'): return
         set_project_workflow_mode(self.project,self._workflow_mode_value())
+        if not self._ensure_storyboard_approval(): return
         try:
             out=self.store.build_final(self.project,self.aspect.get(),variant_index=self.active_variant_index)
             self._record_variant_output(out)
