@@ -495,7 +495,17 @@ class ProductionStore:
         if len(shots)!=len(project.shots):
             raise RuntimeError(f'还有 {len(project.shots)-len(shots)} 个镜头没有成片，暂不能输出最终广告')
         suffix=f'-v{int(variant_index)}' if variant_index else ''
-        out=self.root/'final'/project.id/f'final-{aspect.replace(":", "x")}{suffix}.mp4'
+        base_out=self.root/'final'/project.id/f'final-{aspect.replace(":", "x")}{suffix}.mp4'
+        out=base_out
+        # Keep every previously delivered file immutable. The JSON manifest and video
+        # are a revision pair, so an existing video OR manifest forces a new filename.
+        if out.exists() or out.with_suffix(".json").exists():
+            stamp=datetime.datetime.now().strftime("%Y%m%d-%H%M%S-%f")
+            out=base_out.with_name(f"{base_out.stem}-r{stamp}{base_out.suffix}")
+            revision=2
+            while out.exists() or out.with_suffix(".json").exists():
+                out=base_out.with_name(f"{base_out.stem}-r{stamp}-{revision}{base_out.suffix}")
+                revision += 1
         concat([Path(s.video_path) for s in shots],out)
         media_check=self.inspect_final_output(out, aspect)
         if not media_check["valid"]:
