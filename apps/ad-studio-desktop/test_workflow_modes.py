@@ -53,7 +53,8 @@ class WorkflowModePolicyTests(unittest.TestCase):
         self.assertLess(single_shot.index("_authorize_workflow_action('cloud_generation'"), single_shot.index("self.store.render_shot"))
         self.assertIn("if filmed:", single_shot)
         self.assertIn("self.store.render_footage_shot(self.project,s)", single_shot)
-        self.assertIn("if needs_cloud_video and CapabilityRouter(ROOT).decide_video().target == 'cloud':", app_source)
+        self.assertIn("needs_cloud=needs_cloud_video or needs_cloud_assets", app_source)
+        self.assertIn("if needs_cloud and not self._authorize_workflow_action('cloud_generation'", app_source)
         self.assertIn("def _restore_variant_selection(self, variant_index):", app_source)
         self.assertIn("self._restore_variant_selection(original_index)", app_source)
         restore_start = app_source.index("def _restore_variant_selection(self, variant_index):")
@@ -96,6 +97,55 @@ class WorkflowModePolicyTests(unittest.TestCase):
                 self.assertIn(required_call, calls)
                 self.assertTrue(any(isinstance(node, ast.If) and "self.project" in ast.unparse(node.test) for node in method.body))
 
+    def test_asset_preflight_reports_cloud_cost_and_unknown_price(self):
+        import ast
+        from pathlib import Path
+        from unittest.mock import Mock
+
+        app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        tree = ast.parse(app_source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "_preflight_asset_generation")
+        estimate = Mock(return_value={"总计": 1.5, "明细": [{"类型": "演员", "小计": 1.5}]})
+
+        class FakeGenerator:
+            def __init__(self, *_args):
+                pass
+            def price(self, _kind):
+                return 0.0
+
+        class FakeRouter:
+            def __init__(self, *_args):
+                pass
+            def decide_asset(self, _kind):
+                return SimpleNamespace(target="cloud")
+
+        root = Path("/fake/ad-studio")
+        namespace = {
+            "ROOT": root,
+            "estimate_asset_generation": estimate,
+            "AssetGenerator": FakeGenerator,
+            "CapabilityRouter": FakeRouter,
+        }
+        exec(compile(ast.Module(body=[method], type_ignores=[]), "app.py", "exec"), namespace)
+        helper = namespace["_preflight_asset_generation"]
+        raw_shot = {"index": 1, "asset_resolution": {"actor_tags": ["host"]}}
+        fake = SimpleNamespace(
+            project=SimpleNamespace(creative_plan={"shots": [raw_shot, {"index": 2}]}),
+            lib=object(),
+        )
+        shot = SimpleNamespace(index=1, clip_source="ai_generated")
+        result = helper.__get__(fake, type(fake))([shot])
+        self.assertEqual(result["cost"], 1.5)
+        self.assertEqual(result["unknown_prices"], ["演员"])
+        self.assertTrue(result["needs_cloud"])
+        estimate.assert_called_once_with(fake.lib, root, [raw_shot])
+
+    def test_production_does_not_generate_assets_without_explicit_tags(self):
+        source = (Path(__file__).parent / "ad_studio" / "production.py").read_text(encoding="utf-8")
+        self.assertIn("generate_if_missing=bool(tags) and bool(req.get('generation_if_missing', True))", source)
+        self.assertIn("'source':'未指定素材需求'", source)
+
     def test_batch_delivery_isolates_variant_failures_and_restores_selection(self):
         app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
         start = app_source.index("def batch_final_render(self):")
@@ -111,10 +161,13 @@ class WorkflowModePolicyTests(unittest.TestCase):
         batch_end = app_source.index("def batch_final_render(self):", batch_start)
         batch = app_source[batch_start:batch_end]
         budget_gate = batch.index("if not self._confirm_budget_overrun")
-        cloud_gate = batch.index("if needs_cloud_video and CapabilityRouter")
+        cloud_gate = batch.index("if needs_cloud and not self._authorize_workflow_action")
         first_render = batch.index("self.store.render_shot")
         self.assertLess(budget_gate, first_render)
         self.assertLess(cloud_gate, first_render)
+        self.assertIn("asset_preflight=self._preflight_asset_generation(pending_video_shots)", batch)
+        self.assertIn("estimated += float(asset_preflight.get('cost',0.0) or 0.0)", batch)
+        self.assertIn("unknown_asset_prices.extend(asset_preflight.get('unknown_prices', []))", batch)
         budget_refusal = batch[budget_gate:cloud_gate]
         self.assertIn("self._restore_variant_selection(original_index)", budget_refusal)
         self.assertIn("return", budget_refusal)
@@ -183,6 +236,8 @@ class WorkflowModePolicyTests(unittest.TestCase):
             fake._ui_execution_gate = Mock(return_value=True)
             fake._authorize_workflow_action = Mock(side_effect=lambda action, *_args: action != "cloud_generation")
             fake._confirm_budget_overrun = Mock(return_value=False)
+            fake._confirm_unknown_asset_prices = Mock(return_value=True)
+            fake._preflight_asset_generation = Mock(return_value={"cost": 0.2, "unknown_prices": [], "needs_cloud": False})
             fake.active_variant_index = 1
             fake.project = SimpleNamespace(
                 creative_plan={"creative_variants": [
@@ -224,7 +279,7 @@ class WorkflowModePolicyTests(unittest.TestCase):
             batch_method.__get__(cloud_app, type(cloud_app))()
             self.assertEqual(cloud_app.store.render_shot.call_count, 0)
             self.assertEqual(cloud_app.store.render_footage_shot.call_count, 0)
-            cloud_app._authorize_workflow_action.assert_any_call("cloud_generation", "批量云端视频生成授权")
+            cloud_app._authorize_workflow_action.assert_any_call("cloud_generation", "批量云端视频/素材生成授权")
             cloud_app._restore_variant_selection.assert_called_once_with(1)
 
 
@@ -276,6 +331,8 @@ class WorkflowModePolicyTests(unittest.TestCase):
             fake._ensure_storyboard_approval = Mock(return_value=True)
             fake._workflow_mode_value = Mock(return_value=SEMI_AUTO)
             fake._confirm_budget_overrun = Mock(return_value=False)
+            fake._confirm_unknown_asset_prices = Mock(return_value=True)
+            fake._preflight_asset_generation = Mock(return_value={"cost": 0.2, "unknown_prices": [], "needs_cloud": False})
             fake.project = SimpleNamespace(
                 creative_plan={}, cost_estimate={"预算": budget, "总计": 1.0},
                 actual_cost_rmb=0.0, shots=[shot],
@@ -302,7 +359,7 @@ class WorkflowModePolicyTests(unittest.TestCase):
 
             cloud_app, _ = make_app(100.0, "cloud")
             generate_shot.__get__(cloud_app, type(cloud_app))()
-            cloud_app._authorize_workflow_action.assert_any_call("cloud_generation", "云端视频生成授权")
+            cloud_app._authorize_workflow_action.assert_any_call("cloud_generation", "云端视频/素材生成授权")
             cloud_app.store.render_shot.assert_not_called()
             cloud_app.store.render_footage_shot.assert_not_called()
 
