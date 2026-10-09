@@ -1483,6 +1483,24 @@ class App(tk.Tk):
         outputs[str(self.active_variant_index)]={'variant_index':self.active_variant_index,'variant_label':self.project.creative_plan.get('variant_label',f'方案{self.active_variant_index}'),'path':str(path),'status':'已输出'}
 
     @ui_action
+    def _restore_variant_selection(self, variant_index):
+        """Restore the user's original active variant after a cancelled preflight."""
+        if not self.project:
+            return False
+        variants=(self.project.creative_plan or {}).get('creative_variants',[])
+        target=next((dict(v) for pos,v in enumerate(variants,1)
+                     if int(v.get('_variant_index',pos) or pos)==int(variant_index)),None)
+        if not target:
+            return False
+        target['_variant_index']=int(variant_index)
+        target['_variant_label']=target.get('_variant_label',f'方案{variant_index}')
+        info=__import__('ad_studio.product_parser',fromlist=['ProductInfo']).ProductInfo(**self.project.product_info)
+        self._activate_plan(target,info)
+        self.refresh_shots()
+        self.show_shot()
+        self.store.save(self.project)
+        return True
+
     def switch_variant(self):
         if not self.project:return messagebox.showinfo('提示','先创建或打开一个包含多个创意方案的项目。')
         variants=self.project.creative_plan.get('creative_variants',[])
@@ -1994,10 +2012,13 @@ class App(tk.Tk):
         remaining_budget=max(0.0,budget-actual_cost) if budget>0 else 0.0
         if budget>0 and estimated>remaining_budget:
             if not self._confirm_budget_overrun(estimated,remaining_budget,'一键生成预算超限确认'):
+                self._restore_variant_selection(original_index)
+                self.detail.set('已取消超预算批量生成；已恢复原来选中的创意方案。')
                 return
         if needs_cloud_video and CapabilityRouter(ROOT).decide_video().target == 'cloud':
             if not self._authorize_workflow_action('cloud_generation','批量云端视频生成授权'):
-                self.detail.set('用户未授权云端生成；批量任务未调用视频生成服务。')
+                self._restore_variant_selection(original_index)
+                self.detail.set('用户未授权云端生成；未调用云端服务，已恢复原来选中的创意方案。')
                 return
         original=original_index; info=__import__('ad_studio.product_parser',fromlist=['ProductInfo']).ProductInfo(**self.project.product_info)
         done=[]; failed=[]; outputs=[]
