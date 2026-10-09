@@ -73,7 +73,7 @@ class UsageLedger:
         }
         rows = self._load()
         rows.append(item)
-        self.path.write_text(json.dumps(rows[-2000:], ensure_ascii=False, indent=2), encoding="utf-8")
+        self.path.write_text(json.dumps(rows, ensure_ascii=False, indent=2), encoding="utf-8")
         return item
 
     def record_asset(
@@ -130,19 +130,6 @@ class UsageLedger:
             error=error,
         )
 
-    def project_summary(self, project_id: str) -> dict[str, Any]:
-        rows = [x for x in self._load() if x.get("project_id") == project_id]
-        success = [x for x in rows if x.get("status") == "success"]
-        by_category: dict[str, float] = {}
-        for row in success:
-            key = str(row.get("category") or "other")
-            by_category[key] = by_category.get(key, 0.0) + float(row.get("estimated_cost_rmb", 0) or 0)
-        return {
-            "project_id": project_id,
-            "entries": len(rows),
-            "actual_cost_rmb": round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in success), 6),
-            "by_category": {k: round(v, 6) for k, v in by_category.items()},
-        }
 
     def recent(self, limit: int = 100) -> list[dict[str, Any]]:
         return self._load()[-max(1, int(limit)):][::-1]
