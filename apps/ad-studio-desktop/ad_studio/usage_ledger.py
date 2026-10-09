@@ -131,8 +131,12 @@ class UsageLedger:
         )
 
 
+    def all_entries(self) -> list[dict[str, Any]]:
+        """Return the complete local history newest-first; UI views must not silently truncate it."""
+        return self._load()[::-1]
+
     def recent(self, limit: int = 100) -> list[dict[str, Any]]:
-        return self._load()[-max(1, int(limit)):][::-1]
+        return self.all_entries()[:max(1, int(limit))]
 
     def project_summary(self, project_id: str) -> dict[str, Any]:
         rows = [x for x in self._load() if x.get("project_id") == project_id]
