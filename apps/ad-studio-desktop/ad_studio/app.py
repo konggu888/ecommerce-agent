@@ -1748,6 +1748,10 @@ class App(tk.Tk):
             else:
                 decision=CapabilityRouter(ROOT).decide_video()
                 mode={'local':'本地','cloud':'云端','unavailable':'不可用'}.get(decision.target,decision.target)
+                if decision.target == 'cloud' and not self._authorize_workflow_action('cloud_generation','云端视频生成授权'):
+                    s.status='待生成'; self.store.save(self.project); self.refresh_shots()
+                    self.detail.set('用户未授权云端生成；未调用视频生成服务。')
+                    return
                 self.detail.set(f'镜头 {s.index} 正在{mode}生成…')
                 out=self.store.render_shot(self.project,s,config_root=ROOT)
                 self.refresh_shots(); self.cost.set(f'项目实际成本 ¥{self.project.actual_cost_rmb:.4f} · 预估 ¥{self.project.cost_estimate.get("总计",0):.2f}'); self.detail.set(f'镜头 {s.index} 已由{mode}生成 v{s.version}：{out} · 项目实际累计 ¥{self.project.actual_cost_rmb:.4f}')
@@ -1957,18 +1961,25 @@ class App(tk.Tk):
             rate=float(getattr(vp,'cost_per_shot_rmb',0.72))
         except Exception:
             rate=0.72
-        missing_counts=[]; estimated=0.0
+        missing_counts=[]; estimated=0.0; needs_cloud_video=False
         for pos,raw0 in enumerate(variants,1):
             raw=dict(raw0); raw['_variant_index']=int(raw.get('_variant_index',pos)); raw['_variant_label']=raw.get('_variant_label',f'方案{raw["_variant_index"]}')
             # 用当前项目规则恢复方案，仅用于确定镜头数量；不调用 AI。
             info=__import__('ad_studio.product_parser',fromlist=['ProductInfo']).ProductInfo(**self.project.product_info)
             self._activate_plan(raw,info)
-            missing=sum(1 for s in self.project.shots if not s.video_path or not Path(s.video_path).exists())
+            pending_shots=[s for s in self.project.shots if not s.video_path or not Path(s.video_path).exists()]
+            missing=len(pending_shots)
+            if any(getattr(s,'clip_source','ai_generated')!='filmed' for s in pending_shots):
+                needs_cloud_video=True
             missing_counts.append(missing)
             if footage_mode!='用户拍摄素材': estimated += missing*rate
             self._cache_active_variant()
         if budget>0 and estimated>budget:
             return messagebox.showwarning('预算闸门',f'本次一键生成预计还需约 ¥{estimated:.2f}，已超过项目预算 ¥{budget:.2f}。\n\n系统不会自动突破预算；请提高预算或减少待生成镜头后再执行。')
+        if needs_cloud_video and CapabilityRouter(ROOT).decide_video().target == 'cloud':
+            if not self._authorize_workflow_action('cloud_generation','批量云端视频生成授权'):
+                self.detail.set('用户未授权云端生成；批量任务未调用视频生成服务。')
+                return
         original=original_index; info=__import__('ad_studio.product_parser',fromlist=['ProductInfo']).ProductInfo(**self.project.product_info)
         done=[]; failed=[]; outputs=[]
         try:
