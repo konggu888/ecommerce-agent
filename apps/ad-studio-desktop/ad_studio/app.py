@@ -1494,6 +1494,10 @@ class App(tk.Tk):
             return False
         target['_variant_index']=int(variant_index)
         target['_variant_label']=target.get('_variant_label',f'方案{variant_index}')
+        # Save any partial work from the currently active variant before switching back.
+        # This is safe for cancellation paths too and prevents error recovery from dropping
+        # successful shots or output metadata produced earlier in the batch.
+        self._cache_active_variant()
         info=__import__('ad_studio.product_parser',fromlist=['ProductInfo']).ProductInfo(**self.project.product_info)
         self._activate_plan(target,info)
         self.refresh_shots()
