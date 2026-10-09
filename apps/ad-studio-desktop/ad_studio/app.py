@@ -1109,6 +1109,11 @@ class App(tk.Tk):
             shot=Shot(id=f"hybrid-{task.get('task_id','gap').lower().replace('_','-')}-v{self.active_variant_index}",index=(target_index if target_index is not None else max_index+1),title=f"AI补镜头｜{task.get('need','辅助画面')}",visual=str(task.get('need') or '补充通用辅助画面'),script=str(task.get('related_selling_point') or ''),status='已复核并纳入分镜',video_path=str(p),clip_source='ai_generated',provider=str(task.get('generation_provider') or 'AI视频生成'),generated_from_request=f"实拍缺口任务 {task.get('task_id')}：{task.get('reason','')}",actual_cost_rmb=round(float(task.get('generation_cost_rmb',0) or 0),4))
             for existing in self.project.shots[insert_at:]: existing.index=int(getattr(existing,'index',0) or 0)+1
             self.project.shots.insert(insert_at,shot); task['accepted_position']=insert_at+1; task['review_status']='已通过'; task['reviewed_at']=__import__('datetime').datetime.now().isoformat(timespec='seconds'); task['accepted_into_storyboard']=True; task['accepted_shot_id']=shot.id; task['accepted_variant_index']=self.active_variant_index; task['status']='AI补镜头已生成并通过人工复核'
+            # Adding a shot changes the approved storyboard. Semi-auto and user-controlled
+            # modes must review the revised shot list before any further generation.
+            approvals=plan.setdefault('workflow_approvals', {})
+            approvals.pop(str(int(self.active_variant_index or 1)), None)
+            plan['workflow_approvals']=approvals
             plan.setdefault('hybrid_reviewed_shots',[]).append({'task_id':task.get('task_id'),'shot_id':shot.id,'variant_index':self.active_variant_index,'path':str(p),'review_status':'已通过','accepted_at':task['reviewed_at']})
             self._cache_active_variant(); self.store.save(self.project); self.refresh_shots(); self.detail.set(f"AI补镜头 {task.get('task_id')} 已通过人工复核并纳入方案{self.active_variant_index}当前分镜。"); refresh_row(task)
             messagebox.showinfo('已纳入当前分镜',f"{task.get('task_id')} 已作为镜头 {shot.index} 纳入当前方案。现在可以继续后处理或生成最终成片。")
