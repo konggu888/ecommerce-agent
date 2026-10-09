@@ -1,4 +1,5 @@
 import unittest
+from pathlib import Path
 from types import SimpleNamespace
 
 from ad_studio.workflow_modes import (
@@ -9,6 +10,15 @@ from ad_studio.workflow_modes import (
 
 
 class WorkflowModePolicyTests(unittest.TestCase):
+    def test_desktop_ui_exposes_and_persists_workflow_modes(self):
+        app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        for label in ("AI 全自动", "AI 半自动", "用户控制 / AI 辅助"):
+            self.assertIn(label, app_source)
+        self.assertIn("set_project_workflow_mode(self.project,selected_mode)", app_source)
+        self.assertIn("self.workflow_mode.set(self._workflow_mode_label(get_project_workflow_mode(project)))", app_source)
+        self.assertIn("def _choose_initial_plan(self, plans):", app_source)
+        self.assertIn("if not self._authorize_workflow_action('final_delivery'", app_source)
+
     def test_known_modes_are_explicit_and_unknown_defaults_to_semi_auto(self):
         self.assertEqual(WORKFLOW_MODES, (AUTO, SEMI_AUTO, USER_CONTROLLED))
         self.assertEqual(normalize_mode("not-a-mode"), SEMI_AUTO)
