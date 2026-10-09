@@ -5,7 +5,7 @@ from types import SimpleNamespace
 from ad_studio.workflow_modes import (
     AUTO, SEMI_AUTO, USER_CONTROLLED, WORKFLOW_MODES,
     decide_action, get_project_workflow_mode, normalize_mode,
-    set_project_workflow_mode,
+    preserve_workflow_state, set_project_workflow_mode,
 )
 
 
@@ -64,6 +64,18 @@ class WorkflowModePolicyTests(unittest.TestCase):
             for action in ("budget_overrun", "publish_or_real_platform_write", "delete_original_asset"):
                 with self.subTest(mode=mode, action=action):
                     self.assertFalse(decide_action(mode, action).allowed)
+
+    def test_workflow_mode_and_storyboard_approvals_survive_variant_activation(self):
+        previous = {
+            "workflow_mode": USER_CONTROLLED,
+            "workflow_approvals": {"1": True, "2": False},
+            "variant_shot_cache": {"1": [{"id": "shot-01"}]},
+        }
+        next_plan = {"variant_index": 2, "strategy": "another creative plan"}
+        preserve_workflow_state(previous, next_plan)
+        self.assertEqual(next_plan["workflow_mode"], USER_CONTROLLED)
+        self.assertEqual(next_plan["workflow_approvals"], {"1": True, "2": False})
+        self.assertNotIn("variant_shot_cache", next_plan)
 
     def test_mode_persists_in_existing_project_payload(self):
         project = SimpleNamespace(creative_plan={})
