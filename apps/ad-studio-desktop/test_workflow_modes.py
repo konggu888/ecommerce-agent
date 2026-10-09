@@ -7,6 +7,7 @@ from ad_studio.workflow_modes import (
     decide_action, get_project_workflow_mode, normalize_mode,
     preserve_workflow_state, set_project_workflow_mode,
 )
+from ad_studio.app import App
 
 
 class WorkflowModePolicyTests(unittest.TestCase):
@@ -99,6 +100,48 @@ class WorkflowModePolicyTests(unittest.TestCase):
         self.assertEqual(get_project_workflow_mode(project), USER_CONTROLLED)
         project.creative_plan = {}
         self.assertEqual(get_project_workflow_mode(project), SEMI_AUTO)
+
+
+class VariantRecoveryBehaviorTests(unittest.TestCase):
+    def test_restore_caches_current_partial_variant_before_switching_back(self):
+        events = []
+
+        class Store:
+            def save(self, project):
+                events.append(("save", project.creative_plan.get("variant_index")))
+
+        class FakeApp:
+            pass
+
+        fake = FakeApp()
+        fake.project = SimpleNamespace(
+            creative_plan={
+                "creative_variants": [
+                    {"_variant_index": 1, "_variant_label": "方案一"},
+                    {"_variant_index": 2, "_variant_label": "方案二"},
+                ],
+                "variant_shot_cache": {},
+            },
+            product_info={"url": "", "platform": "自动识别"},
+        )
+        fake.active_variant_index = 2
+        fake.store = Store()
+        fake._cache_active_variant = lambda: events.append(("cache", fake.active_variant_index))
+        def activate(target, info):
+            fake.active_variant_index = target["_variant_index"]
+            fake.project.creative_plan["variant_index"] = target["_variant_index"]
+            events.append(("activate", target["_variant_index"]))
+        fake._activate_plan = activate
+        fake.refresh_shots = lambda: events.append(("refresh", fake.active_variant_index))
+        fake.show_shot = lambda: events.append(("show", fake.active_variant_index))
+
+        restored = App._restore_variant_selection(fake, 1)
+
+        self.assertTrue(restored)
+        self.assertEqual(events[0], ("cache", 2))
+        self.assertEqual(events[1], ("activate", 1))
+        self.assertEqual(fake.active_variant_index, 1)
+        self.assertIn(("save", 1), events)
 
 
 if __name__ == "__main__":
