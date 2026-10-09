@@ -11,6 +11,12 @@ from ad_studio.workflow_modes import (
 
 
 class WorkflowModePolicyTests(unittest.TestCase):
+    def test_final_delivery_history_ui_displays_creation_time(self):
+        app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        self.assertIn("('created','创建时间',170)", app_source)
+        self.assertIn("row.get('created_at','')", app_source)
+        self.assertIn("'final_output_history'", app_source)
+
     def test_desktop_ui_exposes_and_persists_workflow_modes(self):
         app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
         for label in ("AI 全自动", "AI 半自动", "用户控制 / AI 辅助"):
