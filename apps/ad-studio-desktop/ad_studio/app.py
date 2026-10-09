@@ -21,6 +21,7 @@ from .hybrid_router import route_footage_gap_tasks
 from .transcription import extract_audio
 from .ui_contract import verify_ui_action_contract, UIContractError, ui_action
 from .models import Shot
+from .workflow_modes import AUTO, SEMI_AUTO, USER_CONTROLLED, WORKFLOW_MODES, decide_action, get_project_workflow_mode, set_project_workflow_mode
 
 
 def _restore_variant_shot_cache(base_shots, saved_shots):
@@ -91,6 +92,66 @@ class App(tk.Tk):
             messagebox.showerror('UI 操作入口检查失败', f'代码可能已经实现，但界面入口存在缺失或失配。\\n\\n{exc}\\n\\n必须先修复 UI，再执行本次操作。')
             return False
 
+    def _workflow_mode_value(self):
+        """Return the currently selected mode, defaulting safely to semi-auto."""
+        return get_project_workflow_mode(self.project) if self.project else (
+            self.workflow_mode.get() if hasattr(self, "workflow_mode") else SEMI_AUTO
+        )
+
+    def _authorize_workflow_action(self, action, title="操作确认"):
+        """Apply workflow-mode confirmation policy without replacing safety gates."""
+        decision = decide_action(self._workflow_mode_value(), action)
+        if decision.allowed:
+            return True
+        if not decision.requires_confirmation:
+            messagebox.showwarning(title, decision.reason)
+            return False
+        approved = messagebox.askyesno(
+            title,
+            f"{decision.reason}\n\n操作：{action}\n工作模式：{decision.mode}\n\n是否确认继续？"
+        )
+        if not approved:
+            self.detail.set(f"已取消：{action}")
+            return False
+        # Consent is scoped to this single action; it is not stored as a blanket approval.
+        return decide_action(decision.mode, action, user_approved=True).allowed
+
+    def _choose_initial_plan(self, plans):
+        """In user-controlled mode, let the user select the initial AI proposal."""
+        if not plans or len(plans) <= 1:
+            return 0
+        win = tk.Toplevel(self)
+        win.title("选择初始创意方案")
+        win.geometry("760x430")
+        win.transient(self)
+        win.grab_set()
+        frm = ttk.Frame(win, padding=14)
+        frm.pack(fill="both", expand=True)
+        ttk.Label(frm, text="AI 已生成候选方案，请选择本项目先使用哪一套。", wraplength=700).pack(anchor="w")
+        box = tk.Listbox(frm, height=12)
+        box.pack(fill="both", expand=True, pady=10)
+        for i, plan in enumerate(plans, 1):
+            label = plan.get("_variant_label", plan.get("video_form", f"方案{i}"))
+            strategy = str(plan.get("strategy", ""))[:100]
+            box.insert("end", f"{i}. {label}｜{strategy}")
+        box.selection_set(0)
+        selected = {"index": None}
+        def confirm():
+            indexes = box.curselection()
+            if not indexes:
+                messagebox.showinfo("请选择方案", "请先选择一套创意方案。", parent=win)
+                return
+            selected["index"] = int(indexes[0])
+            win.destroy()
+        def cancel():
+            win.destroy()
+        actions = ttk.Frame(frm)
+        actions.pack(fill="x")
+        ttk.Button(actions, text="使用选中方案", command=confirm).pack(side="right")
+        ttk.Button(actions, text="取消创建", command=cancel).pack(side="right", padx=8)
+        self.wait_window(win)
+        return selected["index"]
+
     @ui_action
     def asset_library_settings(self):
         win=tk.Toplevel(self); win.title('资产库硬盘位置'); win.geometry('760x280'); win.transient(self)
@@ -138,6 +199,10 @@ class App(tk.Tk):
         ttk.Label(setup,text='素材来源').grid(row=5,column=0,sticky='w'); self.footage_mode=tk.StringVar(value='AI生成视频'); ttk.Combobox(setup,textvariable=self.footage_mode,values=['AI生成视频','用户拍摄素材'],state='readonly',width=16).grid(row=4,column=1,sticky='w',pady=(4,2))
         self.footage_folder=tk.StringVar(value=''); ttk.Entry(setup,textvariable=self.footage_folder,width=36).grid(row=5,column=2,sticky='w',padx=4); ttk.Button(setup,text='选择素材文件夹',command=self.choose_footage_folder).grid(row=4,column=3,sticky='e')
         ttk.Label(setup,text='用户拍摄素材：输入链接后 AI 分析产品 → 指定文件夹放入你拍好的视频 → AI 思考剪辑方案 → 本地 FFmpeg 出片（不调用视频生成服务）',foreground='#666').grid(row=6,column=0,columnspan=5,sticky='w',pady=(2,0))
+        ttk.Label(setup,text='AI 工作模式').grid(row=7,column=0,sticky='w',pady=(6,0))
+        self.workflow_mode=tk.StringVar(value=SEMI_AUTO)
+        ttk.Combobox(setup,textvariable=self.workflow_mode,values=[AUTO,SEMI_AUTO,USER_CONTROLLED],state='readonly',width=28).grid(row=7,column=1,sticky='w',pady=(6,0))
+        ttk.Label(setup,text='全自动 / 半自动 / 用户控制·AI辅助；云端费用、超预算等授权仍需明确确认',foreground='#666').grid(row=7,column=2,columnspan=5,sticky='w',pady=(6,0))
         ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='📹 实拍分析报告',command=self.footage_analysis_report).grid(row=2,column=5,sticky='e',padx=8); ttk.Button(setup,text='📋 补素材任务',command=self.footage_gap_tasks_report).grid(row=2,column=6,sticky='e',padx=8); ttk.Button(setup,text='🤖 执行AI补镜头',command=self.generate_hybrid_gap_shots).grid(row=2,column=10,sticky='e',padx=8); ttk.Button(setup,text='🔍 AI补镜头复核',command=self.review_hybrid_gap_shots).grid(row=2,column=11,sticky='e',padx=8); ttk.Button(setup,text='🔄 重新分析实拍素材',command=self.reanalyze_footage).grid(row=2,column=7,sticky='e',padx=8); ttk.Button(setup,text='🕘 分析历史',command=self.footage_reanalysis_history_report).grid(row=2,column=8,sticky='e',padx=8); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='📚 商品资料库',command=self.product_library_settings).grid(row=0,column=5,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='🧪 创意版本矩阵',command=self.variant_matrix_report).grid(row=2,column=9,sticky='e',padx=8); ttk.Button(setup,text='🧠 创意方案分析',command=self.creative_variant_analysis_report).grid(row=2,column=12,sticky='e',padx=8); ttk.Button(setup,text='🧪 创意测试方案',command=self.creative_test_plan_report).grid(row=2,column=14,sticky='e',padx=8); ttk.Button(setup,text='🛡 创意事实检查',command=self.creative_fact_check_report).grid(row=2,column=15,sticky='e',padx=8); ttk.Button(setup,text='🎬 分镜事实复核',command=self.storyboard_fact_check_report).grid(row=2,column=16,sticky='e',padx=8); ttk.Button(setup,text='🎥 成片视觉复核',command=self.visual_fact_check_report).grid(row=2,column=17,sticky='e',padx=8); ttk.Button(setup,text='📥 真实投放数据（可选）',command=self.variant_performance_entry).grid(row=2,column=13,sticky='e',padx=8); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
         main=ttk.Panedwindow(self,orient='horizontal'); main.pack(fill='both',expand=True,padx=16,pady=8)
         left=ttk.Frame(main,padding=8); right=ttk.Frame(main,padding=8); main.add(left,weight=3); main.add(right,weight=2)
@@ -1415,7 +1480,18 @@ class App(tk.Tk):
             for i,raw in enumerate(raw_plans,1):
                 raw['_variant_index']=int(raw.get('_variant_index',i))
                 raw['_variant_label']=raw.get('_variant_label',f"方案{i}｜{raw.get('video_form','AI创意方案')}")
+            selected_mode=self.workflow_mode.get() if hasattr(self,'workflow_mode') else SEMI_AUTO
+            if selected_mode == USER_CONTROLLED:
+                selected_index=self._choose_initial_plan(raw_plans)
+                if selected_index is None:
+                    self.project=None
+                    self.detail.set('用户取消了创意方案选择；未继续创建项目。')
+                    return
+                if selected_index:
+                    chosen=raw_plans.pop(selected_index)
+                    raw_plans.insert(0,chosen)
             plan=self._activate_plan(raw_plans[0],info)
+            set_project_workflow_mode(self.project,selected_mode)
             self.project.creative_plan['creative_variants']=raw_plans
             self.project.creative_plan['variant_count']=variant_count
             # 只审计创意实验设计，不推断投放平台，也不调用任何广告平台数据。
@@ -1590,6 +1666,9 @@ class App(tk.Tk):
         if not self._ui_execution_gate(): return
         s=self.selected()
         if not s:return messagebox.showinfo('提示','先选择一个镜头。')
+        if not self._authorize_workflow_action('generate_shot','生成镜头确认'): return
+        if self.project:
+            set_project_workflow_mode(self.project,self._workflow_mode_value())
         try:
             s.status='生成中…'; self.store.save(self.project); self.refresh_shots()
             self.update_idletasks()
@@ -1614,6 +1693,7 @@ class App(tk.Tk):
         if not self._ui_execution_gate(): return
         s=self.selected()
         if not s:return messagebox.showinfo('提示','先选择要重新生成的镜头。')
+        if not self._authorize_workflow_action('regenerate_shot','重新生成镜头确认'): return
         old=s.version; mark_regenerate(self.project,self.project.shots.index(s)); self.store.save(self.project); self.refresh_shots(); self.detail.set(f'镜头 {s.index}：v{old} → v{s.version}。其他镜头版本保持不变。')
 
     @ui_action
@@ -1643,7 +1723,7 @@ class App(tk.Tk):
             if not sel:return
             project=self.store.load(files[sel[0]].stem)
             if not project:return messagebox.showerror('打开失败','项目文件无法读取。')
-            self.project=project; self.model_router.set_project_context(project.id); self.active_variant_index=int((project.creative_plan or {}).get('variant_index',1) or 1); self.url.set(''); self.level.set(project.level); self.form.set(project.form); self.refresh_shots(); c=project.cost_estimate; self.cost.set(f"项目预估 ¥{c.get('总计',0):.2f} · 云端 ¥{c.get('云端',0):.2f} · 已保存 {len(project.shots)} 个镜头" if c else f'已保存 {len(project.shots)} 个镜头'); self.detail.set(f'已恢复项目：{project.product_name} · {project.platform} · {project.form}'); win.destroy()
+            self.project=project; self.model_router.set_project_context(project.id); self.active_variant_index=int((project.creative_plan or {}).get('variant_index',1) or 1); self.workflow_mode.set(get_project_workflow_mode(project)); self.url.set(''); self.level.set(project.level); self.form.set(project.form); self.refresh_shots(); c=project.cost_estimate; self.cost.set(f"项目预估 ¥{c.get('总计',0):.2f} · 云端 ¥{c.get('云端',0):.2f} · 已保存 {len(project.shots)} 个镜头" if c else f'已保存 {len(project.shots)} 个镜头'); self.detail.set(f'已恢复项目：{project.product_name} · {project.platform} · {project.form}'); win.destroy()
         ttk.Button(frm,text='打开',command=open_selected).pack(anchor='e')
 
     @ui_action
@@ -1859,6 +1939,8 @@ class App(tk.Tk):
         if not self._ui_execution_gate(): return
         if not self.project:
             return messagebox.showinfo('提示','先创建项目。')
+        if not self._authorize_workflow_action('final_delivery','批量最终交付确认'): return
+        set_project_workflow_mode(self.project,self._workflow_mode_value())
         variants=self.project.creative_plan.get('creative_variants',[])
         if len(variants)<=1:
             return messagebox.showinfo('提示','当前只有一个创意方案，请直接使用“生成最终成片”。')
@@ -1896,6 +1978,8 @@ class App(tk.Tk):
     def final_render(self):
         if not self._ui_execution_gate(): return
         if not self.project:return messagebox.showinfo('提示','先创建项目。')
+        if not self._authorize_workflow_action('final_delivery','最终成片交付确认'): return
+        set_project_workflow_mode(self.project,self._workflow_mode_value())
         try:
             out=self.store.build_final(self.project,self.aspect.get(),variant_index=self.active_variant_index)
             self._record_variant_output(out)
