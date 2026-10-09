@@ -77,3 +77,10 @@ CI 还会运行前端语法、Python 语法、Typecheck、Engine 和 Risk Contro
 - `_activate_plan()` 重建创意方案数据时，必须调用 `preserve_workflow_state()` 保留项目级 `workflow_mode` 与 `workflow_approvals`。
 - 专项测试 `test_workflow_mode_and_storyboard_approvals_survive_variant_activation` 覆盖跨方案切换时的模式/分镜审批持久性，并检查桌面代码确实接入该 helper。
 - 当前提交 `51894e4f575fa62f4cca0117aa8424f94cbba1df` 的 CI #869 和 doc-sync #482 均已成功。此修复不等于完整工作模式状态机已完成。
+
+
+### 云端视频生成授权修复（2026-10-09）
+
+- 单镜头生成和一键生成全部版本现在都会在第一次云端视频 Provider 调用前走 `cloud_generation` 授权策略；用户拒绝时不调用云端服务。
+- 本地生成和实拍素材裁剪不应触发云端授权框。
+- 测试增加了两条 UI 接入契约：单镜头云端授权和批量云端授权。Windows 真实机器和真实 Provider 仍未测试。
