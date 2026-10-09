@@ -21,7 +21,7 @@ from .hybrid_router import route_footage_gap_tasks
 from .transcription import extract_audio
 from .ui_contract import verify_ui_action_contract, UIContractError, ui_action
 from .models import Shot
-from .workflow_modes import AUTO, SEMI_AUTO, USER_CONTROLLED, WORKFLOW_MODES, decide_action, get_project_workflow_mode, preserve_workflow_state, set_project_workflow_mode
+from .workflow_modes import AUTO, SEMI_AUTO, USER_CONTROLLED, WORKFLOW_MODES, decide_action, get_project_workflow_mode, invalidate_storyboard_approval, preserve_workflow_state, set_project_workflow_mode
 
 
 def _restore_variant_shot_cache(base_shots, saved_shots):
@@ -1111,9 +1111,7 @@ class App(tk.Tk):
             self.project.shots.insert(insert_at,shot); task['accepted_position']=insert_at+1; task['review_status']='已通过'; task['reviewed_at']=__import__('datetime').datetime.now().isoformat(timespec='seconds'); task['accepted_into_storyboard']=True; task['accepted_shot_id']=shot.id; task['accepted_variant_index']=self.active_variant_index; task['status']='AI补镜头已生成并通过人工复核'
             # Adding a shot changes the approved storyboard. Semi-auto and user-controlled
             # modes must review the revised shot list before any further generation.
-            approvals=plan.setdefault('workflow_approvals', {})
-            approvals.pop(str(int(self.active_variant_index or 1)), None)
-            plan['workflow_approvals']=approvals
+            invalidate_storyboard_approval(plan, self.active_variant_index)
             plan.setdefault('hybrid_reviewed_shots',[]).append({'task_id':task.get('task_id'),'shot_id':shot.id,'variant_index':self.active_variant_index,'path':str(p),'review_status':'已通过','accepted_at':task['reviewed_at']})
             self._cache_active_variant(); self.store.save(self.project); self.refresh_shots(); self.detail.set(f"AI补镜头 {task.get('task_id')} 已通过人工复核并纳入方案{self.active_variant_index}当前分镜。"); refresh_row(task)
             messagebox.showinfo('已纳入当前分镜',f"{task.get('task_id')} 已作为镜头 {shot.index} 纳入当前方案。现在可以继续后处理或生成最终成片。")
@@ -1825,9 +1823,7 @@ class App(tk.Tk):
         ttk.Label(frm,text='演员').pack(anchor='w'); ttk.Combobox(frm,textvariable=av,values=actor_names,state='readonly').pack(fill='x',pady=4); ttk.Label(frm,text='场景').pack(anchor='w'); ttk.Combobox(frm,textvariable=sv,values=scene_names,state='readonly').pack(fill='x',pady=4)
         def apply():
             s.title=title.get().strip() or s.title; s.visual=visual.get('1.0','end').strip(); s.script=script.get('1.0','end').strip(); s.actor_id=actor_map.get(av.get()); s.scene_id=scene_map.get(sv.get()); s.status='需重生成'; s.video_path=None; s.version+=1
-            approvals=(self.project.creative_plan or {}).get('workflow_approvals') or {}
-            approvals.pop(str(int(self.active_variant_index or 1)),None)
-            self.project.creative_plan['workflow_approvals']=approvals
+            invalidate_storyboard_approval(self.project.creative_plan, self.active_variant_index)
             self.store.save(self.project); self.refresh_shots(); self.show_shot(); win.destroy()
         ttk.Button(frm,text='保存修改并生成新版本',command=apply).pack(anchor='e',pady=10)
 
