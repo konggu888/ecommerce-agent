@@ -1427,18 +1427,57 @@ class App(tk.Tk):
 
     @ui_action
     def usage_view(self):
-        win=tk.Toplevel(self); win.title('AI调用记录 · 本机成本账本'); win.geometry('1080x620'); win.transient(self)
+        win=tk.Toplevel(self); win.title('AI调用与生产费用账本'); win.geometry('1260x720'); win.minsize(980,580); win.transient(self)
         frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
-        summary=self.model_router.usage_summary()
-        ttk.Label(frm,text='AI调用记录',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
-        ttk.Label(frm,text=f"累计调用：{summary['calls']}  成功：{summary['success']}  失败：{summary['failed']}  Token：{summary['tokens']:,}  已记录模型成本：¥{summary['estimated_cost_rmb']:.4f}").pack(anchor='w',pady=(2,10))
-        ttk.Label(frm,text='成本为模型返回 Token × 本机配置单价；未配置单价的模型显示 ¥0，不代表供应商永久免费。').pack(anchor='w',pady=(0,8))
-        tree=ttk.Treeview(frm,columns=('time','function','model','provider','status','tokens','cost','duration'),show='headings')
-        for col,title,w in [('time','时间',135),('function','功能',120),('model','实际模型',180),('provider','提供方式',100),('status','状态',70),('tokens','Token',90),('cost','估算成本',90),('duration','耗时',80)]:
-            tree.heading(col,text=title); tree.column(col,width=w)
-        tree.pack(fill='both',expand=True)
-        for x in self.model_router.recent_usage(150):
-            tree.insert('', 'end', values=(x.get('time',''),x.get('function',''),x.get('model_name',''),x.get('provider',''),x.get('status',''),x.get('total_tokens',0),f"¥{float(x.get('estimated_cost_rmb',0)):.4f}",f"{int(x.get('duration_ms',0))}ms"))
+        model_summary=self.model_router.usage_summary()
+        production_summary=self.store.ledger.summary()
+        ttk.Label(frm,text='本机成本账本',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
+        ttk.Label(frm,text=f"模型调用：{model_summary['calls']} 次｜成功 {model_summary['success']}｜失败 {model_summary['failed']}｜Token {model_summary['tokens']:,}｜模型调用估算金额 ¥{model_summary['estimated_cost_rmb']:.4f}").pack(anchor='w',pady=(3,2))
+        production_line=f"视频/素材生产费用：{production_summary['calls']} 条｜成功 {production_summary['success']}｜失败 {production_summary['failed']}｜账本金额合计 ¥{production_summary['estimated_cost_rmb']:.4f}"
+        if self.project:
+            current_project_summary=self.store.ledger.project_summary(self.project.id)
+            production_line += f"｜当前项目已记录 ¥{current_project_summary['actual_cost_rmb']:.4f}"
+        ttk.Label(frm,text=production_line).pack(anchor='w',pady=(0,4))
+        ttk.Label(frm,text='模型 Token 费用与视频/素材生成费用分开列示，不直接合并；金额按本机配置价格估算，不等于供应商最终账单。').pack(anchor='w',pady=(0,8))
+
+        notebook=ttk.Notebook(frm); notebook.pack(fill='both',expand=True)
+        model_tab=ttk.Frame(notebook,padding=6); production_tab=ttk.Frame(notebook,padding=6)
+        notebook.add(model_tab,text='模型调用记录')
+        notebook.add(production_tab,text='视频/素材生产费用')
+
+        def make_table(parent, columns):
+            holder=ttk.Frame(parent); holder.pack(fill='both',expand=True)
+            tree=ttk.Treeview(holder,columns=tuple(x[0] for x in columns),show='headings')
+            for key,title,width in columns:
+                tree.heading(key,text=title); tree.column(key,width=width,stretch=True)
+            ybar=ttk.Scrollbar(holder,orient='vertical',command=tree.yview)
+            xbar=ttk.Scrollbar(holder,orient='horizontal',command=tree.xview)
+            tree.configure(yscrollcommand=ybar.set,xscrollcommand=xbar.set)
+            tree.grid(row=0,column=0,sticky='nsew'); ybar.grid(row=0,column=1,sticky='ns'); xbar.grid(row=1,column=0,sticky='ew')
+            holder.rowconfigure(0,weight=1); holder.columnconfigure(0,weight=1)
+            return tree
+
+        model_tree=make_table(model_tab,[
+            ('time','时间',145),('function','功能',130),('model','实际模型',180),('provider','提供方式',110),
+            ('status','状态',70),('tokens','Token',85),('cost','估算金额',95),('duration','耗时',85),('error','错误信息',220)
+        ])
+        status_names={'success':'成功','failed':'失败','error':'失败','pending':'进行中'}
+        for x in self.model_router.ledger.all_entries():
+            model_tree.insert('', 'end', values=(x.get('time',''),x.get('function',''),x.get('model_name',''),x.get('provider',''),
+                status_names.get(str(x.get('status','')),x.get('status','')),x.get('total_tokens',0),
+                f"¥{float(x.get('estimated_cost_rmb',0) or 0):.4f}",f"{int(x.get('duration_ms',0) or 0)}ms",x.get('error','')))
+
+        production_tree=make_table(production_tab,[
+            ('time','时间',145),('function','生成项目',145),('category','类别',85),('project','项目ID',135),
+            ('shot','镜头ID',135),('provider','生成服务',140),('status','状态',70),('quantity','数量',65),
+            ('unit_cost','单价',85),('cost','记录金额',90),('error','错误信息',220)
+        ])
+        category_names={'video':'视频生成','asset':'素材生成','model':'模型调用'}
+        for x in self.store.ledger.all_entries():
+            production_tree.insert('', 'end', values=(x.get('time',''),x.get('function',''),category_names.get(str(x.get('category','')),x.get('category','')),
+                x.get('project_id',''),x.get('shot_id',''),x.get('provider',''),status_names.get(str(x.get('status','')),x.get('status','')),
+                f"{float(x.get('quantity',1) or 1):g}",f"¥{float(x.get('unit_cost_rmb',0) or 0):.4f}",
+                f"¥{float(x.get('estimated_cost_rmb',0) or 0):.4f}",x.get('error','')))
         ttk.Button(frm,text='刷新',command=lambda:(win.destroy(),self.usage_view())).pack(anchor='e',pady=8)
 
     def refresh_gpu(self):
