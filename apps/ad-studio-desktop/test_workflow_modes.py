@@ -107,6 +107,23 @@ class WorkflowModePolicyTests(unittest.TestCase):
         self.assertLess(batch.index("if not self._authorize_workflow_action('cloud_generation'"), batch.index("self.store.render_shot"))
         self.assertIn("未调用云端服务", batch)
 
+    def test_batch_generate_isolates_final_output_failure_per_variant(self):
+        app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        start = app_source.index("def batch_generate_variants(self):")
+        end = app_source.index("def batch_final_render(self):", start)
+        body = app_source[start:end]
+        build_at = body.index("out=self.store.build_final")
+        try_at = body.rfind("try:", 0, build_at)
+        except_at = body.index("except Exception as exc:", build_at)
+        continue_at = body.index("continue", except_at)
+        next_variant_at = body.index("for pos,raw0 in enumerate(variants,1):", body.index("done=[]; failed=[]; outputs=[]"))
+        self.assertGreaterEqual(try_at, 0)
+        self.assertGreater(except_at, build_at)
+        self.assertGreater(continue_at, except_at)
+        self.assertIn("最终成片输出失败", body[except_at:continue_at])
+        self.assertIn("self._cache_active_variant()", body[except_at:continue_at])
+        self.assertLess(next_variant_at, build_at)
+
     def test_known_modes_are_explicit_and_unknown_defaults_to_semi_auto(self):
         self.assertEqual(WORKFLOW_MODES, (AUTO, SEMI_AUTO, USER_CONTROLLED))
         self.assertEqual(normalize_mode("not-a-mode"), SEMI_AUTO)

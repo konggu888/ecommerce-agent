@@ -2118,8 +2118,20 @@ class App(tk.Tk):
                 self._cache_active_variant()
                 missing=[s for s in self.project.shots if not s.video_path or not Path(s.video_path).exists()]
                 if not missing:
-                    out=self.store.build_final(self.project,self.aspect.get(),variant_index=self.active_variant_index)
-                    self._record_variant_output(out); outputs.append(f'方案{self.active_variant_index}：{out}')
+                    variant_label = str(raw.get('_variant_label') or f'方案{self.active_variant_index}')
+                    try:
+                        out=self.store.build_final(self.project,self.aspect.get(),variant_index=self.active_variant_index)
+                        self._record_variant_output(out)
+                        outputs.append(f'方案{self.active_variant_index}：{out}')
+                    except Exception as exc:
+                        # A finished-shot variant can still fail at final assembly/manifest persistence.
+                        # Record this variant's failure and continue with the remaining variants.
+                        failed.append(f'{variant_label}：最终成片输出失败：{exc}')
+                        try:
+                            self._cache_active_variant()
+                        except Exception as cache_exc:
+                            failed.append(f'{variant_label}：保存方案状态失败：{cache_exc}')
+                        continue
             target=next((dict(v) for v in variants if int(v.get('_variant_index',0))==original),None)
             if target:
                 target['_variant_index']=original; target['_variant_label']=target.get('_variant_label',f'方案{original}')
