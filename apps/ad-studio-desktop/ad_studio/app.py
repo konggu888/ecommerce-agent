@@ -971,7 +971,6 @@ class App(tk.Tk):
         if not self._ui_execution_gate(): return
         if not self.project:
             return messagebox.showinfo('提示','请先创建或打开一个项目。')
-        if not self._authorize_workflow_action('cloud_generation','云端 AI 补镜头授权'): return
         tasks=(self.project.creative_plan.get('footage_gap_tasks') or {}).get('tasks') or []
         approved=[x for x in tasks if isinstance(x,dict) and x.get('recommended_resolution')=='AI补镜头' and x.get('generation_allowed')]
         if not approved:
@@ -987,9 +986,12 @@ class App(tk.Tk):
         actual=float(getattr(self.project,'actual_cost_rmb',0.0) or 0.0)
         remaining=max(0.0,budget-actual) if budget>0 else 0.0
         pending=[x for x in approved if not x.get('generated_path') or not Path(str(x.get('generated_path'))).exists()]
+        if not pending:
+            return messagebox.showinfo('无需生成','当前所有已批准的 AI 补镜头任务都已有生成文件。')
         estimate=round(len(pending)*rate,4)
         if budget>0 and estimate>remaining:
             return messagebox.showwarning('预算闸门',f'本次 AI 补镜头预计还需 ¥{estimate:.2f}，当前剩余预算 ¥{remaining:.2f}。系统不会自动突破预算。')
+        if not self._authorize_workflow_action('cloud_generation','云端 AI 补镜头授权'): return
         Shot=__import__('ad_studio.models',fromlist=['Shot']).Shot
         results=[]; failures=[]
         for n,task in enumerate(pending,1):
