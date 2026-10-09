@@ -129,6 +129,38 @@ class App(tk.Tk):
         # Consent is scoped to this single action; it is not stored as a blanket approval.
         return decide_action(decision.mode, action, user_approved=True).allowed
 
+    def _ensure_storyboard_approval(self):
+        """Require one approval per active variant in semi-auto/user-controlled modes."""
+        if not self.project:
+            return False
+        mode = self._workflow_mode_value()
+        if mode == AUTO:
+            return True
+        plan = self.project.creative_plan
+        approvals = plan.setdefault("workflow_approvals", {})
+        key = str(int(self.active_variant_index or 1))
+        if approvals.get(key) is True:
+            return True
+        shots = list(self.project.shots or [])
+        summary = "\\n".join(
+            f"{shot.index}. {shot.title} — {str(shot.visual or '')[:110]}"
+            for shot in shots[:18]
+        )
+        if len(shots) > 18:
+            summary += f"\\n……其余 {len(shots) - 18} 个镜头"
+        prompt = (
+            f"当前方案：{self.active_variant_index}\\n"
+            f"工作模式：{self._workflow_mode_label(mode)}\\n"
+            f"分镜数量：{len(shots)}\\n\\n{summary}\\n\\n"
+            "请先检查分镜。确认后才允许开始生成当前方案的镜头；拒绝则暂停，不会调用视频生成服务。"
+        )
+        if not messagebox.askyesno("确认分镜后继续", prompt):
+            self.detail.set(f"方案{self.active_variant_index} 尚未批准分镜；本次生成已暂停。")
+            return False
+        approvals[key] = True
+        self.store.save(self.project)
+        return True
+
     def _choose_initial_plan(self, plans):
         """In user-controlled mode, let the user select the initial AI proposal."""
         if not plans:
@@ -1696,6 +1728,7 @@ class App(tk.Tk):
         s=self.selected()
         if not s:return messagebox.showinfo('提示','先选择一个镜头。')
         if not self._authorize_workflow_action('generate_shot','生成镜头确认'): return
+        if not self._ensure_storyboard_approval(): return
         if self.project:
             set_project_workflow_mode(self.project,self._workflow_mode_value())
         try:
@@ -1738,7 +1771,11 @@ class App(tk.Tk):
         cur_actor=next((a.name for a in actors if a.id==s.actor_id),'自动匹配'); cur_scene=next((a.name for a in scenes if a.id==s.scene_id),'自动匹配'); av=tk.StringVar(value=cur_actor); sv=tk.StringVar(value=cur_scene)
         ttk.Label(frm,text='演员').pack(anchor='w'); ttk.Combobox(frm,textvariable=av,values=actor_names,state='readonly').pack(fill='x',pady=4); ttk.Label(frm,text='场景').pack(anchor='w'); ttk.Combobox(frm,textvariable=sv,values=scene_names,state='readonly').pack(fill='x',pady=4)
         def apply():
-            s.title=title.get().strip() or s.title; s.visual=visual.get('1.0','end').strip(); s.script=script.get('1.0','end').strip(); s.actor_id=actor_map.get(av.get()); s.scene_id=scene_map.get(sv.get()); s.status='需重生成'; s.video_path=None; s.version+=1; self.store.save(self.project); self.refresh_shots(); self.show_shot(); win.destroy()
+            s.title=title.get().strip() or s.title; s.visual=visual.get('1.0','end').strip(); s.script=script.get('1.0','end').strip(); s.actor_id=actor_map.get(av.get()); s.scene_id=scene_map.get(sv.get()); s.status='需重生成'; s.video_path=None; s.version+=1
+            approvals=(self.project.creative_plan or {}).get('workflow_approvals') or {}
+            approvals.pop(str(int(self.active_variant_index or 1)),None)
+            self.project.creative_plan['workflow_approvals']=approvals
+            self.store.save(self.project); self.refresh_shots(); self.show_shot(); win.destroy()
         ttk.Button(frm,text='保存修改并生成新版本',command=apply).pack(anchor='e',pady=10)
 
     @ui_action
@@ -1932,6 +1969,9 @@ class App(tk.Tk):
             for pos,raw0 in enumerate(variants,1):
                 raw=dict(raw0); raw['_variant_index']=int(raw.get('_variant_index',pos)); raw['_variant_label']=raw.get('_variant_label',f'方案{raw["_variant_index"]}')
                 self._activate_plan(raw,info)
+                if not self._ensure_storyboard_approval():
+                    failed.append(f"方案{self.active_variant_index}：用户未批准分镜，已停止后续批量生成")
+                    break
                 for shot in self.project.shots:
                     if shot.video_path and Path(shot.video_path).exists():
                         continue
