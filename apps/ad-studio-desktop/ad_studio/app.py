@@ -2104,6 +2104,11 @@ class App(tk.Tk):
             self.detail.set(f'批量版本输出完成：成功 {len(done)} 个，跳过 {len(skipped)} 个')
             messagebox.showinfo('批量输出结果',summary)
         except Exception as e:
+            try:
+                self._restore_variant_selection(original_index)
+                self.detail.set('批量输出中途失败；已恢复原来选中的创意方案，已完成的输出记录已保留。')
+            except Exception as restore_exc:
+                messagebox.showerror('方案恢复失败',str(restore_exc))
             messagebox.showerror('批量输出失败',str(e))
 
     @ui_action
