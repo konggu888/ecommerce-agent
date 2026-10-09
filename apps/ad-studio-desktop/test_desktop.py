@@ -1,3 +1,4 @@
+import ast
 import tempfile
 import unittest
 from pathlib import Path
@@ -1283,6 +1284,37 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertIn(phrase, agents)
         self.assertIn("当前已知限制", help_doc)
         self.assertIn("测试", logic)
+
+    def test_in_app_help_page_exposes_current_feature_status_and_full_help_document(self):
+        app_path = Path(__file__).parent / "ad_studio" / "app.py"
+        source = app_path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        ui_method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "ui")
+        help_method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "help_view")
+        ui_source = ast.get_source_segment(source, ui_method)
+        help_source = ast.get_source_segment(source, help_method)
+        self.assertIn("📖 帮助与功能说明", ui_source)
+        self.assertIn("command=self.help_view", ui_source)
+        self.assertIn("当前功能与可用状态", help_source)
+        self.assertIn("完整帮助文档", help_source)
+        self.assertIn("HELP.md", help_source)
+        self.assertIn("可调用模型", help_source)
+        self.assertIn("视频/素材生产费用", help_source)
+        self.assertIn("不代表真实供应商", help_source)
+
+    def test_main_ui_separates_setup_tools_and_production_workspace(self):
+        app_path = Path(__file__).parent / "ad_studio" / "app.py"
+        source = app_path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        ui_method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "ui")
+        ui_source = ast.get_source_segment(source, ui_method)
+        self.assertIn("① 商品与任务设置", ui_source)
+        self.assertIn("② 工具与检查", ui_source)
+        self.assertIn("③ 分镜生产链", ui_source)
+        self.assertIn("④ 本地资产库", ui_source)
+        self.assertIn("def add_button_row", ui_source)
 
 
 if __name__ == "__main__":
