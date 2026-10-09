@@ -2058,6 +2058,11 @@ class App(tk.Tk):
             self.detail.set(msg.replace('\n','｜'))
             messagebox.showinfo('一键生成完成',msg)
         except Exception as exc:
+            try:
+                self._restore_variant_selection(original_index)
+                self.detail.set('一键生成遇到错误；已恢复原来选中的创意方案。')
+            except Exception as restore_exc:
+                messagebox.showerror('方案恢复失败',str(restore_exc))
             messagebox.showerror('一键生成失败',str(exc))
 
     @ui_action
