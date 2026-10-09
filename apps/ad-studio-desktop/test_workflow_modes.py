@@ -201,6 +201,16 @@ class WorkflowModePolicyTests(unittest.TestCase):
         self.assertEqual(plan["footage_gap_tasks"], {"tasks": [{"task_id": "v2-gap"}]})
         self.assertEqual(plan["hybrid_reviewed_shots"], [{"shot_id": "v2-shot"}])
 
+        # A legacy project without variant_index must not inherit the previous
+        # project's active index from the App instance.
+        legacy = SimpleNamespace(
+            active_variant_index=3,
+            project=SimpleNamespace(shots=[], creative_plan={}),
+        )
+        legacy._restore_active_variant_runtime = lambda: None
+        namespace["_restore_loaded_variant_state"](legacy)
+        self.assertEqual(legacy.active_variant_index, 1)
+
     def test_cache_active_variant_persists_all_footage_runtime_fields(self):
         source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
         tree = ast.parse(source)
