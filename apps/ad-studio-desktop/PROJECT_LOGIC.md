@@ -760,7 +760,7 @@ A31 的文档验收要求任何新的 AI 代理在不依赖本次聊天上下文
 2. **架构与强制规则**：读根目录 AGENTS.md，确认 LLM 负责决策、Python 负责编排/执行/存储，以及代码修改必须同步 HELP.md 与 PROJECT_LOGIC.md。
 3. **内部逻辑地图**：读本文件，按数据流、状态、成本、失败恢复和安全闸门理解实现，而不是从聊天记录推断。
 4. **用户操作与限制**：再读 HELP.md 的功能总表、工作流、成本和“当前已知限制”，不得把 Provider/API 框架当成真实服务已经接通。
-5. **验收与当前进度**：以 docs/AD_STUDIO_ACCEPTANCE_PLAN.md 为唯一阶段顺序；当前已完成到 **A31 帮助文档**，当前阶段为 **A32 AI接手能力**，完成后按计划进入 A33 完整用户流程。
+5. **验收与当前进度**：以 docs/AD_STUDIO_ACCEPTANCE_PLAN.md 为唯一阶段顺序；当前已完成到 **A31 帮助文档**，A0–A33 核心验收阶段已完成；B1–B3 真实投放相关阶段按用户要求暂缓。后续开发按 docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md 路线推进，不将未来路线误写成正式验收阶段。
 6. **测试入口**：桌面核心测试位于 apps/ad-studio-desktop/test_desktop.py；文档同步检查使用根目录 tools/check_ad_studio_docs.py；CI 还会执行类型检查、Engine 和 Risk Controller 测试。
 7. **安全边界**：事实、视觉、安全闸门、真实投放数据和真实 Provider 接通状态均以代码与文档中的确定性边界为准；不允许用模拟结果冒充真实平台结果。
 
