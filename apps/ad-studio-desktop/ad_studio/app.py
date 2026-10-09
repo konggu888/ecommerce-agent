@@ -21,7 +21,7 @@ from .hybrid_router import route_footage_gap_tasks
 from .transcription import extract_audio
 from .ui_contract import verify_ui_action_contract, UIContractError, ui_action
 from .models import Shot
-from .workflow_modes import AUTO, SEMI_AUTO, USER_CONTROLLED, WORKFLOW_MODES, decide_action, get_project_workflow_mode, set_project_workflow_mode
+from .workflow_modes import AUTO, SEMI_AUTO, USER_CONTROLLED, WORKFLOW_MODES, decide_action, get_project_workflow_mode, preserve_workflow_state, set_project_workflow_mode
 
 
 def _restore_variant_shot_cache(base_shots, saved_shots):
@@ -1395,6 +1395,7 @@ class App(tk.Tk):
             data['creative_variants']=existing_variants
             data['variant_count']=existing_count
         data.update(preserved_variant_state)
+        preserve_workflow_state(previous_plan, data)
         data['variant_index']=int(raw.get('_variant_index',1))
         data['variant_label']=raw.get('_variant_label',f"方案{data['variant_index']}｜{plan.video_form}")
         self.project.creative_plan=data
