@@ -16,16 +16,23 @@
 ## 1. AI 接手项目时必须先读
 
 按以下顺序理解项目：
-1. docs/AD_STUDIO_AI_HANDOFF.md（无聊天历史的最短入口）
-2. 本文件 AGENTS.md
-3. apps/ad-studio-desktop/PROJECT_LOGIC.md
-4. apps/ad-studio-desktop/HELP.md
-5. 目标代码文件及其依赖
-6. 测试文件
-7. 如进行验收：docs/AD_STUDIO_ACCEPTANCE_PLAN.md
-8. 如进行验收：docs/AD_STUDIO_ACCEPTANCE_SOP.md
+1. docs/SESSION_HANDOFF.md（跨聊天窗口的当前任务快照：先读，恢复正在做什么和下一步）
+2. docs/AD_STUDIO_AI_HANDOFF.md（项目长期接手入口）
+3. 本文件 AGENTS.md
+4. apps/ad-studio-desktop/PROJECT_LOGIC.md
+5. apps/ad-studio-desktop/HELP.md
+6. 目标代码文件及其依赖
+7. 测试文件
+8. 如进行验收：docs/AD_STUDIO_ACCEPTANCE_PLAN.md
+9. 如进行验收：docs/AD_STUDIO_ACCEPTANCE_SOP.md
 
 没有读完以上文档，不得直接重构核心流程。
+
+### 跨聊天窗口连续性（强制）
+- 每个独立工作单元完成后，以及准备结束/切换聊天窗口前，必须更新 `docs/SESSION_HANDOFF.md`：当前任务、已完成、发现/未完成、下一步、暂缓项和禁止事项都要准确。
+- 任何新窗口必须先读 `docs/SESSION_HANDOFF.md`，再读长期接手入口，并重新核对仓库当前 head、最新 CI 和 docs-sync。文件里的旧 CI 记录仅是历史证据，不能替代实时检查。
+- 下一步必须写成可执行的具体任务，不能只写“继续开发”或“继续完善”。
+- 不能承诺 ChatGPT 会自动读取旧聊天；依靠仓库中的持久化交接快照恢复项目上下文。用户在新窗口只需说“继续桌面项目”，AI 应自行读取上述文件，不得要求用户重复项目背景。
 
 ## 2. 修改程序后的强制动作
 

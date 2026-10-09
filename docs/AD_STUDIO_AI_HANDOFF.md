@@ -2,6 +2,10 @@
 
 > 本文件是“完全不知道本项目历史的新 AI”使用的最短接手入口。它不依赖聊天记录、个人记忆或上一位 AI 的口头结论。
 
+## 0. 跨聊天窗口的当前状态入口
+
+开始接手时先读取 `docs/SESSION_HANDOFF.md`。该文件记录当前具体任务、已完成工作、最新已知基线、下一步和暂缓项；它不能替代实时 GitHub/CI 核验。新窗口必须检查当前 PR head、最新 CI、docs-sync 与失败日志，不得直接继承旧窗口的结论。每个独立工作单元完成后，必须更新该文件，保证下一窗口能接着做。
+
 ## 1. 项目目标
 
 这是一个 Windows 本地的“AI 商品广告工厂”桌面项目。目标是让用户从商品资料/实拍素材开始，经 AI 分析与决策、本地程序编排执行、必要时调用云端生成能力，完成视频生产、事实/视觉/安全检查、成片交付与失败恢复。
@@ -59,7 +63,7 @@ CI 还会运行前端语法、Python 语法、Typecheck、Engine 和 Risk Contro
 
 ## 7. 新 AI 的固定接手顺序
 
-**本文件 → AGENTS.md → PROJECT_LOGIC.md → HELP.md → AD_STUDIO_ACCEPTANCE_PLAN.md → 目标代码/测试 → 安全边界**
+**SESSION_HANDOFF.md → 本文件 → AGENTS.md → PROJECT_LOGIC.md → HELP.md → AD_STUDIO_ACCEPTANCE_PLAN.md → AD_STUDIO_ACCEPTANCE_SOP.md → 目标代码/测试 → 安全边界**
 
 读完后，先检查当前最新 CI/失败日志和工作区状态，再决定是否继续修改。不得凭聊天记录或上一轮结论直接推进。
 
