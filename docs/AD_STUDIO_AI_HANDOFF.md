@@ -116,3 +116,9 @@ CI 还会运行前端语法、Python 语法、Typecheck、Engine 和 Risk Contro
 
 - 检查发现 `postprocess_selected()` 与 `finish_selected()` 未显式执行 `_ui_execution_gate()`，且没有先检查项目是否存在。已补充闸门和项目检查，并增加 AST 回归验证。
 - 这只验证入口契约，不等同于真实视频/字幕/BGM 编码的机器实测。
+
+### 工作模式审批状态复核与修复
+
+- 发现 AI 补镜头通过人工复核并插入当前分镜后，没有清除该方案旧的 `workflow_approvals`，可能让半自动/用户控制模式跳过对更新分镜的再次确认。
+- 已添加 `invalidate_storyboard_approval()` 公用逻辑，并同时接入镜头编辑保存、AI 补镜头插入路径；新增单元测试验证只清除当前方案审批，并用 AST 确认两个真实调用路径接入。
+- 需以最新提交 CI/doc-sync 为准。该修复未替代 Windows 真机或真实 Provider 测试。
