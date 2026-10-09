@@ -66,3 +66,7 @@ CI 还会运行前端语法、Python 语法、Typecheck、Engine 和 Risk Contro
 ## 8. 接手结论
 
 如果上述入口均可访问，且 A32 专项测试能从这些长期文件中独立验证七项信息，则项目具备“无聊天历史接手”的可验证基础。该能力属于项目可维护性/交接能力，不代表真实 AI Provider 或真实投放已经接通。
+
+## 9. 未来路线开发状态
+
+未来功能总表：`docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md`。2026-10-09 已启动“三种 AI 工作模式完整落地”的第一步：加入工作模式权限策略基础，测试入口为 `apps/ad-studio-desktop/test_workflow_modes.py`。当前只是策略基础，UI、全链路动作接入、暂停/确认/继续交互和 Windows 真机验证仍未完成；不能将其描述为三种模式已完整可用。
