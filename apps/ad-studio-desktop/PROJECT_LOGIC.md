@@ -847,3 +847,7 @@ AST 行为测试会移除提取方法上的 `@ui_action` 装饰器，因为测�
 ### 分镜审批失效规则（2026-10-09）
 
 新增 `invalidate_storyboard_approval(plan, variant_index)`，在镜头编辑保存和 AI 补镜头经人工复核后插入分镜时调用。该 helper 只删除当前方案编号的 `workflow_approvals` 项，其他方案批准状态保持不变。原因是镜头列表改变后，旧批准不再代表当前分镜内容；半自动/用户控制模式必须在后续生成前重新批准。全自动模式的行为不变：它不要求分镜人工审批，但云端生成仍需独立授权。
+
+
+## 版本镜头缓存一致性（2026-10-09）
+`App.edit_shot()` 的嵌套 `apply()` 在修改镜头后，先调用 `invalidate_storyboard_approval()` 清除当前方案的旧审批，再调用 `_cache_active_variant()` 更新当前方案快照，最后 `store.save()` 持久化。顺序不可反转：如果只保存 Project.shots 而不更新 `variant_shot_cache`，之后切换方案时 `_activate_plan()` 可能从旧快照恢复，覆盖用户修改。专项测试检查缓存更新调用存在且发生在保存前。
