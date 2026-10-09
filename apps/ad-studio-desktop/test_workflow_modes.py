@@ -139,6 +139,8 @@ class VariantRecoveryBehaviorTests(unittest.TestCase):
         tree = ast.parse(source)
         app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
         method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "_restore_variant_selection")
+        # The decorator belongs to the Tk UI class; omit it when executing the isolated method.
+        method.decorator_list = []
         module = ast.Module(body=[method], type_ignores=[])
         ast.fix_missing_locations(module)
         namespace = {}
