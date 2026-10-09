@@ -21,6 +21,9 @@ class WorkflowModePolicyTests(unittest.TestCase):
         self.assertIn("cloud_generation", app_source)
         self.assertIn("if selected_mode == SEMI_AUTO:", app_source)
         self.assertIn("确认 AI 创意方案", app_source)
+        self.assertIn("def _ensure_storyboard_approval(self):", app_source)
+        self.assertIn("workflow_approvals", app_source)
+        self.assertIn("if not self._ensure_storyboard_approval(): return", app_source)
         self.assertIn("if not self._authorize_workflow_action('final_delivery'", app_source)
 
     def test_known_modes_are_explicit_and_unknown_defaults_to_semi_auto(self):
