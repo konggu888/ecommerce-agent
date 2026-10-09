@@ -859,3 +859,7 @@ AST 行为测试会移除提取方法上的 `@ui_action` 装饰器，因为测�
 
 ## 方案运行态缺省值隔离（2026-10-09）
 `App._restore_active_variant_runtime()` 之前只在目标方案键存在时覆盖活动字段；目标方案没有条目时，前一方案的 `footage_gap_tasks`、`hybrid_reviewed_shots`、`footage_plan`、coverage/gaps/audit 可能残留，造成方案间串状态。现在当版本化映射存在且非空、但缺少目标键时，将相应活动字段清空为其类型对应的空值；若旧项目完全没有该映射，仍保留原字段以兼容旧数据。回归测试实际执行提取出的运行态恢复方法，覆盖缺省清空与目标方案恢复两条路径。
+
+
+## 活动实拍状态写回版本映射（2026-10-09）
+`App._cache_active_variant()` 不仅缓存 `variant_shot_cache`、`variant_footage_gap_tasks` 和 `variant_hybrid_reviewed_shots`，还必须将活动 `footage_plan`、`footage_selection_audit`、`footage_coverage`、`footage_gaps` 深拷贝写回对应 `variant_*` 映射。否则运行期间对活动字段的更新在切换方案时会丢失，`_restore_active_variant_runtime()` 反而会恢复旧映射。新增行为测试执行真实缓存方法，并逐项断言 6 类运行态按当前方案编号写回。
