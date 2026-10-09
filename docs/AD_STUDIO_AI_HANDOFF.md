@@ -106,3 +106,8 @@ CI 还会运行前端语法、Python 语法、Typecheck、Engine 和 Risk Contro
 - 测试不直接导入 `ad_studio.app`（CI/Linux 环境未安装 tkinter）；改为 AST 提取真实恢复方法，在 fake app/store 上执行，确保行为覆盖仍可在无 GUI 环境运行。
 
 - 行为测试从 AST 提取方法时移除 Tk 专用 `@ui_action` 装饰器，避免依赖桌面窗口初始化；最新 CI 会验证该测试是否可运行。
+
+### 本轮继续推进：批量预审失败恢复
+
+- 发现批量生成的逐方案预审循环位于主生成 `try` 之外：方案激活/解析异常可能导致 UI 留在预审中的其他方案。已为预审循环增加异常处理，失败后恢复原选中方案并终止生成。
+- `test_workflow_modes.py` 增加针对预审失败恢复路径的回归契约检查。以本次新 head 的 CI/doc-sync 为准，未进行真机/剪映/真实 Provider 测试。
