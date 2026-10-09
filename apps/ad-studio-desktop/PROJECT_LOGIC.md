@@ -917,3 +917,9 @@ docs/SESSION_HANDOFF.md 是项目的动态工作快照，与 docs/AD_STUDIO_AI_H
 - test_batch_rejections_execute_without_any_render_provider_calls 从 app.py AST 中提取实际 batch_generate_variants 方法，在不启动 Tk 主窗口的前提下使用模拟项目/路由执行拒绝路径。
 - 分别验证超预算拒绝与云端授权拒绝均不会调用 render_shot 或 render_footage_shot，且恢复原方案编号。
 - 这是执行级 mock 回归；不证明真实 Provider 网络请求、真实计费或 Windows UI 已验收。
+
+
+## 2026-10-09：单镜头预算闸门顺序
+- generate_shot 在调用任何渲染入口前先识别实拍/AI路径；云端 AI 镜头先估算费用、检查剩余预算，再请求云端授权。
+- 预算或授权被拒绝时直接返回，不修改镜头生成状态、不调用 render_shot/render_footage_shot。
+- filmed 镜头只调用本地 render_footage_shot，不进入云端预算/授权分支。

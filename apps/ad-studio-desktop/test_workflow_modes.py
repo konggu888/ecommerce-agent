@@ -220,6 +220,91 @@ class WorkflowModePolicyTests(unittest.TestCase):
             cloud_app._authorize_workflow_action.assert_any_call("cloud_generation", "批量云端视频生成授权")
             cloud_app._restore_variant_selection.assert_called_once_with(1)
 
+
+    def test_single_shot_budget_and_cloud_refusal_stop_before_render(self):
+        import sys
+        from pathlib import Path
+        from unittest.mock import Mock, patch
+
+        app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        tree = ast.parse(app_source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "generate_shot")
+        method.decorator_list = []
+        namespace = {
+            "Path": Path,
+            "ROOT": Path("/fake/ad-studio"),
+            "messagebox": SimpleNamespace(showinfo=Mock(), showerror=Mock()),
+            "CapabilityRouter": None,
+            "set_project_workflow_mode": Mock(),
+        }
+        exec(compile(ast.Module(body=[method], type_ignores=[]), "app.py", "exec"), namespace)
+        generate_shot = namespace["generate_shot"]
+
+        class FakeShot:
+            index = 1
+            version = 1
+            title = "镜头1"
+            status = "待生成"
+            clip_source = "ai_generated"
+            video_path = None
+
+        class FakeCapabilityRouter:
+            target = "cloud"
+            def __init__(self, _root):
+                pass
+            def decide_video(self):
+                return SimpleNamespace(target=self.target)
+
+        def make_app(budget, target, filmed=False):
+            shot = FakeShot()
+            shot.clip_source = "filmed" if filmed else "ai_generated"
+            shot.source_file = "/tmp/footage.mp4"
+            shot.source_start = 0.0
+            shot.source_duration = 2.0
+            fake = SimpleNamespace()
+            fake._ui_execution_gate = Mock(return_value=True)
+            fake.selected = Mock(return_value=shot)
+            fake._authorize_workflow_action = Mock(side_effect=lambda action, *_args: action != "cloud_generation")
+            fake._ensure_storyboard_approval = Mock(return_value=True)
+            fake._workflow_mode_value = Mock(return_value=SEMI_AUTO)
+            fake._confirm_budget_overrun = Mock(return_value=False)
+            fake.project = SimpleNamespace(
+                creative_plan={}, cost_estimate={"预算": budget, "总计": 1.0},
+                actual_cost_rmb=0.0, shots=[shot],
+            )
+            fake.store = SimpleNamespace(
+                render_shot=Mock(return_value="/tmp/generated.mp4"),
+                render_footage_shot=Mock(return_value="/tmp/cropped.mp4"),
+                save=Mock(),
+            )
+            fake.refresh_shots = Mock()
+            fake.update_idletasks = Mock()
+            fake.detail = SimpleNamespace(set=Mock())
+            fake.cost = SimpleNamespace(set=Mock())
+            FakeCapabilityRouter.target = target
+            return fake, shot
+
+        with patch.dict(namespace, {"CapabilityRouter": FakeCapabilityRouter}):
+            budget_app, budget_shot = make_app(0.1, "cloud")
+            generate_shot.__get__(budget_app, type(budget_app))()
+            budget_app._confirm_budget_overrun.assert_called_once()
+            budget_app.store.render_shot.assert_not_called()
+            budget_app.store.render_footage_shot.assert_not_called()
+            self.assertEqual(budget_shot.status, "待生成")
+
+            cloud_app, _ = make_app(100.0, "cloud")
+            generate_shot.__get__(cloud_app, type(cloud_app))()
+            cloud_app._authorize_workflow_action.assert_any_call("cloud_generation", "云端视频生成授权")
+            cloud_app.store.render_shot.assert_not_called()
+            cloud_app.store.render_footage_shot.assert_not_called()
+
+            footage_app, _ = make_app(0.1, "cloud", filmed=True)
+            generate_shot.__get__(footage_app, type(footage_app))()
+            self.assertFalse(any(call.args and call.args[0] == "cloud_generation" for call in footage_app._authorize_workflow_action.call_args_list))
+            footage_app.store.render_footage_shot.assert_called_once()
+            footage_app.store.render_shot.assert_not_called()
+
     def test_known_modes_are_explicit_and_unknown_defaults_to_semi_auto(self):
         self.assertEqual(WORKFLOW_MODES, (AUTO, SEMI_AUTO, USER_CONTROLLED))
         self.assertEqual(normalize_mode("not-a-mode"), SEMI_AUTO)

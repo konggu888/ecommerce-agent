@@ -777,3 +777,9 @@ apps/ad-studio-desktop/test_ai_handoff.py 必须自动检查快照文件存在�
 - 该测试必须实际运行提取自 App.batch_generate_variants 的方法，而不只是检查源码字符串。
 - 超预算拒绝与云端授权拒绝两条路径都必须证明本地镜头渲染和实拍裁剪入口调用次数为 0，并确认原方案被恢复。
 - 不得把 mock 调用计数扩展解释为真实 Provider 计费验证或 Windows 真机验收。
+
+
+## 2026-10-09 补充：单镜头生成验收
+- 执行 test_single_shot_budget_and_cloud_refusal_stop_before_render。
+- 验证云端单镜头生成超预算/拒绝授权均不调用渲染器；实拍镜头只走 render_footage_shot，不申请云端授权。
+- mock 结果仅为离线执行证据，不代表真实 Provider 计费或 Windows 真机验收。

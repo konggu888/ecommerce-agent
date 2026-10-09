@@ -1805,21 +1805,40 @@ class App(tk.Tk):
         if not self._ensure_storyboard_approval(): return
         if self.project:
             set_project_workflow_mode(self.project,self._workflow_mode_value())
+
+        filmed=getattr(s,'clip_source','ai_generated')=='filmed'
+        decision=None
+        if not filmed:
+            decision=CapabilityRouter(ROOT).decide_video()
+            # Only cloud generation incurs configured provider cost and needs cloud consent.
+            # Perform the budget check before changing shot status or invoking any renderer.
+            if decision.target == 'cloud':
+                try:
+                    provider=load_video_provider(ROOT/'video-provider.json')
+                    rate=float(getattr(provider,'cost_per_shot_rmb',0.72) or 0.72)
+                except Exception:
+                    rate=0.72
+                budget=float((self.project.cost_estimate or {}).get('预算',0) or 0)
+                actual=float(getattr(self.project,'actual_cost_rmb',0.0) or 0.0)
+                remaining=max(0.0,budget-actual) if budget>0 else 0.0
+                if budget>0 and rate>remaining:
+                    if not self._confirm_budget_overrun(rate,remaining,'单镜头生成预算超限确认'):
+                        self.detail.set('用户取消了超预算单镜头生成；未调用生成服务。')
+                        return
+                if not self._authorize_workflow_action('cloud_generation','云端视频生成授权'):
+                    self.detail.set('用户未授权云端生成；未调用视频生成服务。')
+                    return
+
         try:
             s.status='生成中…'; self.store.save(self.project); self.refresh_shots()
             self.update_idletasks()
-            if getattr(s,'clip_source','ai_generated')=='filmed':
+            if filmed:
                 src=Path(s.source_file).name if s.source_file else '(未指定素材)'
                 self.detail.set(f'镜头 {s.index} 正在从拍摄素材裁剪…（{src}，{s.source_start:.1f}s 起，{s.source_duration:.1f}s）')
                 out=self.store.render_footage_shot(self.project,s)
                 self.refresh_shots(); self.detail.set(f'镜头 {s.index} 已从拍摄素材裁剪 v{s.version}：{out}')
             else:
-                decision=CapabilityRouter(ROOT).decide_video()
                 mode={'local':'本地','cloud':'云端','unavailable':'不可用'}.get(decision.target,decision.target)
-                if decision.target == 'cloud' and not self._authorize_workflow_action('cloud_generation','云端视频生成授权'):
-                    s.status='待生成'; self.store.save(self.project); self.refresh_shots()
-                    self.detail.set('用户未授权云端生成；未调用视频生成服务。')
-                    return
                 self.detail.set(f'镜头 {s.index} 正在{mode}生成…')
                 out=self.store.render_shot(self.project,s,config_root=ROOT)
                 self.refresh_shots(); self.cost.set(f'项目实际成本 ¥{self.project.actual_cost_rmb:.4f} · 预估 ¥{self.project.cost_estimate.get("总计",0):.2f}'); self.detail.set(f'镜头 {s.index} 已由{mode}生成 v{s.version}：{out} · 项目实际累计 ¥{self.project.actual_cost_rmb:.4f}')

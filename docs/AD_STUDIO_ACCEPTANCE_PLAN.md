@@ -810,3 +810,9 @@
 - 新增可执行模拟测试，调用从实际 batch_generate_variants AST 提取的方法体。
 - 分别覆盖超预算拒绝与云端授权拒绝，断言 render_shot / render_footage_shot 调用次数为 0，且恢复原方案。
 - 验收边界：仅证明离线 mock 路径；真实 Provider 请求/计费与 Windows UI 操作仍未验证。
+
+
+## 2026-10-09 补充：单镜头预算/授权与实拍本地路径
+- 新增执行级 mock 测试覆盖单镜头超预算拒绝、云端授权拒绝和实拍裁剪路径。
+- 两类拒绝都必须在 renderer 调用前返回；预算拒绝保持镜头原状态。实拍裁剪不应请求 cloud_generation 授权。
+- 真实 Provider 计费、Windows UI 与真实 FFmpeg 仍未验收。
