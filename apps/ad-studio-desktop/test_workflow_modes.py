@@ -1,3 +1,4 @@
+import ast
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
@@ -7,7 +8,6 @@ from ad_studio.workflow_modes import (
     decide_action, get_project_workflow_mode, normalize_mode,
     preserve_workflow_state, set_project_workflow_mode,
 )
-from ad_studio.app import App
 
 
 class WorkflowModePolicyTests(unittest.TestCase):
@@ -135,7 +135,15 @@ class VariantRecoveryBehaviorTests(unittest.TestCase):
         fake.refresh_shots = lambda: events.append(("refresh", fake.active_variant_index))
         fake.show_shot = lambda: events.append(("show", fake.active_variant_index))
 
-        restored = App._restore_variant_selection(fake, 1)
+        source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "_restore_variant_selection")
+        module = ast.Module(body=[method], type_ignores=[])
+        ast.fix_missing_locations(module)
+        namespace = {}
+        exec(compile(module, "ad_studio/app.py", "exec"), namespace)
+        restored = namespace["_restore_variant_selection"](fake, 1)
 
         self.assertTrue(restored)
         self.assertEqual(events[0], ("cache", 2))
