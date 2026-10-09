@@ -139,7 +139,7 @@ class WorkflowModePolicyTests(unittest.TestCase):
         accept_method = next(node for node in ast.walk(review_method) if isinstance(node, ast.FunctionDef) and node.name == "accept")
         self.assertTrue(any(isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "invalidate_storyboard_approval" for node in ast.walk(accept_method)))
 
-    def test_reopening_project_restores_active_variant_shots_and_runtime_state(self):
+    def test_reopening_project_preserves_latest_active_shots_and_restores_variant_runtime(self):
         source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
         tree = ast.parse(source)
         shot_cache_fn = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "_restore_variant_shot_cache")
@@ -161,11 +161,11 @@ class WorkflowModePolicyTests(unittest.TestCase):
         fake = SimpleNamespace(
             active_variant_index=1,
             project=SimpleNamespace(
-                shots=[SimpleNamespace(id="shot-01", visual="stale active snapshot")],
+                shots=[SimpleNamespace(id="shot-01", visual="latest saved active shot")],
                 creative_plan={
                     "variant_index": 2,
                     "variant_shot_cache": {
-                        "2": [{"id": "shot-01", "visual": "variant 2 saved shot"}]
+                        "2": [{"id": "shot-01", "visual": "older variant 2 cache"}]
                     },
                     "variant_footage_plans": {"2": [{"source": "variant-2.mp4"}]},
                     "variant_footage_selection_audits": {"2": {"selected": ["variant-2.mp4"]}},
@@ -186,7 +186,7 @@ class WorkflowModePolicyTests(unittest.TestCase):
         namespace["_restore_loaded_variant_state"](fake)
 
         self.assertEqual(fake.active_variant_index, 2)
-        self.assertEqual(fake.project.shots[0].visual, "variant 2 saved shot")
+        self.assertEqual(fake.project.shots[0].visual, "latest saved active shot")
         plan = fake.project.creative_plan
         self.assertEqual(plan["footage_plan"], [{"source": "variant-2.mp4"}])
         self.assertEqual(plan["footage_selection_audit"], {"selected": ["variant-2.mp4"]})
