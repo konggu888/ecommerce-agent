@@ -863,3 +863,7 @@ AST 行为测试会移除提取方法上的 `@ui_action` 装饰器，因为测�
 
 ## 活动实拍状态写回版本映射（2026-10-09）
 `App._cache_active_variant()` 不仅缓存 `variant_shot_cache`、`variant_footage_gap_tasks` 和 `variant_hybrid_reviewed_shots`，还必须将活动 `footage_plan`、`footage_selection_audit`、`footage_coverage`、`footage_gaps` 深拷贝写回对应 `variant_*` 映射。否则运行期间对活动字段的更新在切换方案时会丢失，`_restore_active_variant_runtime()` 反而会恢复旧映射。新增行为测试执行真实缓存方法，并逐项断言 6 类运行态按当前方案编号写回。
+
+
+## 重新打开项目时恢复当前方案缓存（2026-10-09）
+项目文件同时包含活动镜头/活动实拍运行态和按方案分开的缓存。App._restore_loaded_variant_state() 在打开项目时先恢复 creative_plan.variant_index，若该方案存在 variant_shot_cache，就以该缓存恢复镜头；随后调用 _restore_active_variant_runtime()，从 variant_footage_* 与 variant_hybrid_reviewed_shots 等映射恢复活动运行态。版本化映射存在但没有当前方案键时，既有恢复逻辑会清空活动字段，避免残留其他方案数据。新增方法级行为测试覆盖镜头与六类实拍/混合制作状态恢复。该测试证明代码路径，不替代 Windows 上真实保存、关闭、重新打开的人工验收。
