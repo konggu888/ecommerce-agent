@@ -15,6 +15,7 @@ class WorkflowModePolicyTests(unittest.TestCase):
         for label in ("AI 全自动", "AI 半自动", "用户控制 / AI 辅助"):
             self.assertIn(label, app_source)
         self.assertIn("set_project_workflow_mode(self.project,selected_mode)", app_source)
+        self.assertIn("preserve_workflow_state(previous_plan, data)", app_source)
         self.assertIn("self.workflow_mode.set(self._workflow_mode_label(get_project_workflow_mode(project)))", app_source)
         self.assertIn("def _choose_initial_plan(self, plans):", app_source)
         self.assertIn("if len(plans) == 1:", app_source)
