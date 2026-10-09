@@ -851,3 +851,7 @@ AST 行为测试会移除提取方法上的 `@ui_action` 装饰器，因为测�
 
 ## 版本镜头缓存一致性（2026-10-09）
 `App.edit_shot()` 的嵌套 `apply()` 在修改镜头后，先调用 `invalidate_storyboard_approval()` 清除当前方案的旧审批，再调用 `_cache_active_variant()` 更新当前方案快照，最后 `store.save()` 持久化。顺序不可反转：如果只保存 Project.shots 而不更新 `variant_shot_cache`，之后切换方案时 `_activate_plan()` 可能从旧快照恢复，覆盖用户修改。专项测试检查缓存更新调用存在且发生在保存前。
+
+
+## 最终交付的分镜批准闸门（2026-10-09）
+`final_render()` 在 `build_final()` 前调用 `_ensure_storyboard_approval()`；`batch_final_render()` 对每个激活方案先检查批准状态，再检查镜头完整性并调用 `build_final()`。半自动/用户控制模式未批准时不输出该方案；全自动模式由 `_ensure_storyboard_approval()` 的 AUTO 分支直接放行，但独立的最终交付确认和其他安全/媒体质量闸门仍适用。专项回归检查两个最终交付入口的批准检查顺序早于最终构建。
