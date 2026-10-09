@@ -1868,11 +1868,13 @@ class App(tk.Tk):
         self.active_variant_index = max(1, index)
         cache = plan.get("variant_shot_cache")
         key = str(self.active_variant_index)
-        if isinstance(cache, dict) and key in cache and isinstance(cache[key], list):
+        # project.shots and variant_index are saved together. Prefer this active
+        # snapshot because a batch may have saved a successful shot before refreshing
+        # the secondary cache; only fall back to the cache when the project has no shots.
+        if not self.project.shots and isinstance(cache, dict) and key in cache and isinstance(cache[key], list):
             self.project.shots = _restore_variant_shot_cache(self.project.shots, cache[key])
-        # The JSON project stores active fields too, but the per-variant maps are
-        # authoritative whenever present; restore them to avoid stale cross-variant
-        # runtime data after an interrupted batch or a reopen.
+        # The per-variant runtime maps are authoritative whenever present; restore them
+        # to avoid stale cross-variant footage state after an interrupted batch/reopen.
         self._restore_active_variant_runtime()
 
     @ui_action
