@@ -33,7 +33,7 @@ class WorkflowModePolicyTests(unittest.TestCase):
         self.assertTrue(decide_action(AUTO, "cloud_generation", user_approved=True).allowed)
 
     def test_semi_auto_pauses_at_critical_checkpoints(self):
-        for action in ("approve_creative_plan", "approve_storyboard", "final_delivery"):
+        for action in ("approve_creative_plan", "approve_storyboard", "final_delivery", "generate_all_variants"):
             with self.subTest(action=action):
                 decision = decide_action(SEMI_AUTO, action)
                 self.assertFalse(decision.allowed)
@@ -41,7 +41,7 @@ class WorkflowModePolicyTests(unittest.TestCase):
                 self.assertTrue(decide_action(SEMI_AUTO, action, user_approved=True).allowed)
 
     def test_user_controlled_mode_does_not_make_decisions_for_user(self):
-        for action in ("choose_creative_plan", "choose_shots", "approve_storyboard", "final_delivery"):
+        for action in ("choose_creative_plan", "choose_shots", "approve_storyboard", "final_delivery", "generate_all_variants"):
             with self.subTest(action=action):
                 decision = decide_action(USER_CONTROLLED, action)
                 self.assertFalse(decision.allowed)
