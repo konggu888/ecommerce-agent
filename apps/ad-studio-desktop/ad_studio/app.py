@@ -1364,7 +1364,10 @@ class App(tk.Tk):
         lines=[f"项目预估：¥{c['总计']:.2f}",f"本地处理/FFmpeg：¥{c['本地']:.2f}",f"云端任务：¥{c['云端']:.2f}"]
         for item in c.get('明细',[]):
             if item['数量']: lines.append(f"  {item['项目']}：{item['数量']} × ¥{item['单价']:.2f} = ¥{item['小计']:.2f}")
-        actual=round(sum(float(getattr(s,'actual_cost_rmb',0) or 0) for s in (self.project.shots if self.project else [])),4)
+        shot_actual=round(sum(float(getattr(s,'actual_cost_rmb',0) or 0) for s in (self.project.shots if self.project else [])),4)
+        project_actual=float(getattr(self.project,'actual_cost_rmb',0.0) or 0.0) if self.project else 0.0
+        # Project ledger includes temporary AI gap shots not yet accepted into storyboard.
+        actual=round(max(project_actual,shot_actual),4)
         estimate=float(c.get('总计',0) or 0)
         pending=max(0.0,estimate-actual)
         lines += [f'已实际发生：¥{actual:.2f}',f'按当前计划尚未发生：¥{pending:.2f}']

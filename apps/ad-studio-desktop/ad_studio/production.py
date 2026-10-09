@@ -178,6 +178,7 @@ class ProductionStore:
                         library._write(library.all()+[result.asset])
                         item.update({'asset':result.asset.id,'source':'已生成并入库','cost_rmb':result.cost_rmb})
                         self._record_actual_cost(project, shot=shot, category='asset', amount_rmb=result.cost_rmb, provider=result.provider, quantity=1, unit_cost_rmb=result.cost_rmb, function=f'{kind}素材生成')
+                        shot.actual_cost_rmb=round(float(shot.actual_cost_rmb or 0)+float(result.cost_rmb or 0),4)
                     except Exception as exc:
                         item.update({'source':'自动生成失败','error':str(exc)})
                 else:

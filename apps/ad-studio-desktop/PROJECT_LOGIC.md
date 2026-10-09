@@ -955,3 +955,9 @@ docs/SESSION_HANDOFF.md 是项目的动态工作快照，与 docs/AD_STUDIO_AI_H
 ## 2026-10-09：AI 补镜头方案过滤的旧项目兼容
 - 当前方案编号读取增加安全默认值 1，避免旧项目或隔离测试对象缺少活动方案字段时抛出 AttributeError。
 - 新任务仍按当前方案编号过滤；没有 variant_index 的历史任务按活动方案兼容处理。
+
+
+## 成本显示与镜头成本归集
+- 项目级 actual_cost_rmb/UsageLedger 是费用总额的主来源，因为 AI 补镜头在人工复核前可能尚不属于 project.shots。
+- 成本 UI 采用 max(项目累计实际费用, 已纳入分镜镜头成本合计) 兼容旧项目，避免把未纳入分镜的补镜头成本漏掉，也避免两套累计值直接相加造成重复计费。
+- resolve_assets 生成素材后必须同步增加对应 shot.actual_cost_rmb；项目级 UsageLedger 仍只在生成时记录一次。

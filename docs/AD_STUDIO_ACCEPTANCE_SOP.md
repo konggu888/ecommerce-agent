@@ -812,3 +812,9 @@ apps/ad-studio-desktop/test_ai_handoff.py 必须自动检查快照文件存在�
 ## 2026-10-09：AI 补镜头方案过滤的旧项目兼容
 - 当前方案编号读取增加安全默认值 1，避免旧项目或隔离测试对象缺少活动方案字段时抛出 AttributeError。
 - 新任务仍按当前方案编号过滤；没有 variant_index 的历史任务按活动方案兼容处理。
+
+
+## 项目实际成本显示验收
+- 执行 test_cost_breakdown_uses_project_actual_cost_including_unaccepted_hybrid_shots。
+- 模拟项目累计实际费用高于当前分镜镜头成本合计时，成本 UI 必须显示项目累计值；旧项目累计值为零时应回退镜头成本合计。
+- 检查 resolve_assets 对生成的素材成本同时更新项目账本和对应镜头成本元数据，不能把账本总额与镜头成本相加作为总额。

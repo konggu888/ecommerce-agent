@@ -151,3 +151,10 @@ undefined
 ## 2026-10-09：AI 补镜头方案过滤的旧项目兼容
 - 当前方案编号读取增加安全默认值 1，避免旧项目或隔离测试对象缺少活动方案字段时抛出 AttributeError。
 - 新任务仍按当前方案编号过滤；没有 variant_index 的历史任务按活动方案兼容处理。
+
+
+## 2026-10-09 工作单元：成本显示与临时镜头费用
+- 发现成本 UI 仅累加 project.shots 的 actual_cost_rmb，遗漏尚未人工复核纳入分镜的 AI 补镜头费用；但项目级 actual_cost_rmb/UsageLedger 已在生成阶段记录该费用。
+- 已改为以项目累计费用为主，并以镜头成本合计兼容旧项目；采用两者最大值而不是相加，避免重复统计。
+- resolve_assets 自动生成素材后也同步更新对应 shot.actual_cost_rmb，让 hybrid task 的 generation_cost_rmb 能包含素材生成费。
+- 新增执行级 mock 测试覆盖临时补镜头费用显示与旧项目回退。真实 Provider/账单仍未验证。

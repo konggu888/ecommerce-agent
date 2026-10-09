@@ -745,6 +745,35 @@ class VariantRecoveryBehaviorTests(unittest.TestCase):
         self.assertEqual(fake.active_variant_index, 1)
         self.assertIn(("save", 1), events)
 
+    
+    def test_cost_breakdown_uses_project_actual_cost_including_unaccepted_hybrid_shots(self):
+        source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "_show_cost_breakdown")
+        method.decorator_list = []
+        module = ast.Module(body=[method], type_ignores=[])
+        ast.fix_missing_locations(module)
+        namespace = {}
+        exec(compile(module, "ad_studio/app.py", "exec"), namespace)
+
+        class CostValue:
+            value = ""
+            def set(self, value):
+                self.value = value
+
+        fake = SimpleNamespace(
+            project=SimpleNamespace(actual_cost_rmb=3.4, shots=[SimpleNamespace(actual_cost_rmb=1.0)]),
+            cost=CostValue(),
+        )
+        namespace["_show_cost_breakdown"](fake, {"总计": 10.0, "本地": 0.0, "云端": 10.0, "明细": []})
+        self.assertIn("已实际发生：¥3.40", fake.cost.value)
+        self.assertIn("按当前计划尚未发生：¥6.60", fake.cost.value)
+
+        fake.project.actual_cost_rmb = 0.0
+        namespace["_show_cost_breakdown"](fake, {"总计": 10.0, "本地": 0.0, "云端": 10.0, "明细": []})
+        self.assertIn("已实际发生：¥1.00", fake.cost.value)
+
 
 if __name__ == "__main__":
     unittest.main()
