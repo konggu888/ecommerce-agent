@@ -391,6 +391,7 @@ class WorkflowModePolicyTests(unittest.TestCase):
         namespace = {
             "Path": Path,
             "ROOT": Path("/fake/ad-studio"),
+            "LocalLibrary": lambda _root: SimpleNamespace(best_match=lambda _kind, _tags: SimpleNamespace(id="local-asset")),
             "load_video_provider": Mock(return_value=provider),
             "messagebox": SimpleNamespace(showinfo=showinfo, showerror=Mock()),
             "__import__": lambda name, *args, **kwargs: SimpleNamespace(Shot=FakeShot) if name == "ad_studio.models" else __import__(name, *args, **kwargs),

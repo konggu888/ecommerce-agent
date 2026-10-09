@@ -1005,7 +1005,40 @@ class App(tk.Tk):
         pending=[x for x in approved if not x.get('generated_path') or not Path(str(x.get('generated_path'))).exists()]
         if not pending:
             return messagebox.showinfo('无需生成','当前所有已批准的 AI 补镜头任务都已有生成文件。')
-        estimate=round(len(pending)*rate,4)
+        # The video call can also generate missing actor/scene/product assets inside render_shot.
+        # Include those potential cloud costs before authorization; unknown configured prices need
+        # a separate explicit warning instead of silently being treated as free.
+        asset_estimate=0.0
+        unknown_asset_prices=[]
+        try:
+            asset_config_path=ROOT/'asset-generation.json'
+            asset_config=json.loads(asset_config_path.read_text(encoding='utf-8')) if asset_config_path.exists() else {}
+            library=LocalLibrary(getattr(self.store,'library_root',ROOT/'library'))
+            for kind in ('演员','场景','商品素材'):
+                if library.best_match(kind,[]):
+                    continue
+                cfg=asset_config.get(kind) or asset_config.get('asset_generation') or {}
+                endpoint=str(cfg.get('endpoint') or '').strip()
+                local_endpoint=cfg.get('local') is True or '127.0.0.1' in endpoint.lower() or 'localhost' in endpoint.lower()
+                configured=bool(endpoint) and (bool(cfg.get('api_key')) or local_endpoint)
+                if not configured or local_endpoint:
+                    continue
+                try:
+                    price=float(cfg.get('price_rmb',0.0) or 0.0)
+                except (TypeError,ValueError):
+                    price=0.0
+                if price>0:
+                    # Conservative: account for each pending task potentially retrying a missing asset.
+                    asset_estimate+=price*len(pending)
+                else:
+                    unknown_asset_prices.append(kind)
+        except Exception as exc:
+            return messagebox.showerror('AI补镜头成本预估失败',f'无法可靠读取缺失素材成本配置，已停止云端生成：{exc}')
+        estimate=round(len(pending)*rate+asset_estimate,4)
+        if unknown_asset_prices:
+            unknown_text='、'.join(unknown_asset_prices)
+            if not messagebox.askyesno('素材生成价格未配置',f'以下云端素材生成服务未配置有效单价：{unknown_text}。本次费用预估不包含这些潜在费用。是否仍继续进入预算确认？'):
+                return
         if budget>0 and estimate>remaining:
             if not self._confirm_budget_overrun(estimate,remaining,'AI补镜头预算超限确认'): return
         if not self._authorize_workflow_action('cloud_generation','云端 AI 补镜头授权'): return

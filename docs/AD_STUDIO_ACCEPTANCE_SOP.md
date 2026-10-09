@@ -818,3 +818,9 @@ apps/ad-studio-desktop/test_ai_handoff.py 必须自动检查快照文件存在�
 - 执行 test_cost_breakdown_uses_project_actual_cost_including_unaccepted_hybrid_shots。
 - 模拟项目累计实际费用高于当前分镜镜头成本合计时，成本 UI 必须显示项目累计值；旧项目累计值为零时应回退镜头成本合计。
 - 检查 resolve_assets 对生成的素材成本同时更新项目账本和对应镜头成本元数据，不能把账本总额与镜头成本相加作为总额。
+
+
+## AI 补镜头预算成本覆盖验收
+- 执行 test_hybrid_gap_budget_includes_configured_missing_asset_cost，确认缺失素材配置的云端价格加入视频生成预算。
+- 对远程资产生成配置价格缺失/为零的场景，确认先显示估算不完整提示；用户拒绝后不调用云端授权或渲染。
+- 配置读取失败应 fail closed，不能用不完整估算继续生成。

@@ -961,3 +961,10 @@ docs/SESSION_HANDOFF.md 是项目的动态工作快照，与 docs/AD_STUDIO_AI_H
 - 项目级 actual_cost_rmb/UsageLedger 是费用总额的主来源，因为 AI 补镜头在人工复核前可能尚不属于 project.shots。
 - 成本 UI 采用 max(项目累计实际费用, 已纳入分镜镜头成本合计) 兼容旧项目，避免把未纳入分镜的补镜头成本漏掉，也避免两套累计值直接相加造成重复计费。
 - resolve_assets 生成素材后必须同步增加对应 shot.actual_cost_rmb；项目级 UsageLedger 仍只在生成时记录一次。
+
+
+## AI 补镜头预算：视频与潜在资产成本
+- generate_hybrid_gap_shots 在云端授权前检查本地可复用素材和 asset-generation.json 配置；缺失素材且存在远程生成配置时，将配置单价计入预估。
+- 对每个 pending 任务保守估算潜在缺失素材成本，以覆盖生成失败后下一任务再次尝试的情形。
+- 云端资产生成服务未配置有效单价时必须显示“不完整估算”并要求明确确认；拒绝或读取配置失败时不得授权或渲染。
+- 预算估算是基于本地配置的预估，不等于供应商账单；真实计费仍需单独验收。
