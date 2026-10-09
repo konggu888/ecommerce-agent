@@ -2139,7 +2139,7 @@ class App(tk.Tk):
 
     @ui_action
     def batch_final_render(self):
-        """只批量输出已经完成镜头的广告版本；不自动生成缺失镜头，不增加 AI 调用。"""
+        """只批量输出已经完成镜头的广告版本；单个方案交付失败不影响其他方案。"""
         if not self._ui_execution_gate(): return
         if not self.project:
             return messagebox.showinfo('提示','先创建项目。')
@@ -2151,41 +2151,66 @@ class App(tk.Tk):
         self._cache_active_variant()
         original_index=self.active_variant_index
         info=type('ProjectInfo',(),{'name':self.project.product_name or '商品'})()
-        done=[]; skipped=[]
+        done=[]; skipped=[]; failed=[]
         try:
             for pos,raw0 in enumerate(variants,1):
                 raw=dict(raw0)
                 raw['_variant_index']=int(raw.get('_variant_index',pos))
                 raw['_variant_label']=raw.get('_variant_label',f'方案{raw["_variant_index"]}')
-                self._activate_plan(raw,info)
-                if not self._ensure_storyboard_approval():
-                    skipped.append(f'方案{self.active_variant_index}：分镜未获批准')
-                    self._cache_active_variant()
+                variant_label=f'方案{raw["_variant_index"]}'
+                try:
+                    self._activate_plan(raw,info)
+                    variant_label=f'方案{self.active_variant_index}'
+                    if not self._ensure_storyboard_approval():
+                        skipped.append(f'{variant_label}：分镜未获批准')
+                        self._cache_active_variant()
+                        # 未获批准是明确的用户暂停信号，不再处理后续方案。
+                        break
+                    missing=[s.title for s in self.project.shots if not s.video_path or not Path(s.video_path).exists()]
+                    if missing:
+                        skipped.append(f'{variant_label}：缺少 {len(missing)} 个已生成镜头')
+                        self._cache_active_variant()
+                        continue
+                    try:
+                        out=self.store.build_final(self.project,self.aspect.get(),variant_index=self.active_variant_index)
+                        self._record_variant_output(out)
+                        self._cache_active_variant()
+                        done.append(f'{variant_label}：{out}')
+                    except Exception as exc:
+                        failed.append(f'{variant_label}：最终成片输出失败：{exc}')
+                        # 保留当前方案已存在的镜头和历史；失败方案不阻止后续方案。
+                        try:
+                            self._cache_active_variant()
+                            self.store.save(self.project)
+                        except Exception as save_exc:
+                            failed.append(f'{variant_label}：保存失败状态时出错：{save_exc}')
+                except Exception as exc:
+                    failed.append(f'{variant_label}：方案处理异常：{exc}')
+                    try:
+                        self._cache_active_variant()
+                        self.store.save(self.project)
+                    except Exception as save_exc:
+                        failed.append(f'{variant_label}：保存异常状态时出错：{save_exc}')
                     continue
-                missing=[s.title for s in self.project.shots if not s.video_path or not Path(s.video_path).exists()]
-                if missing:
-                    skipped.append(f'方案{self.active_variant_index}：缺少 {len(missing)} 个已生成镜头')
-                    continue
-                out=self.store.build_final(self.project,self.aspect.get(),variant_index=self.active_variant_index)
-                self._record_variant_output(out)
-                self._cache_active_variant()
-                done.append(f'方案{self.active_variant_index}：{out}')
-            target=next((dict(v) for v in variants if int(v.get('_variant_index',0))==original_index),None)
-            if target:
-                target['_variant_index']=original_index
-                target['_variant_label']=target.get('_variant_label',f'方案{original_index}')
-                self._activate_plan(target,info)
-            self.store.save(self.project); self.refresh_shots(); self.show_shot()
-            summary='已输出：\n'+'\n'.join(done or ['无'])+'\n\n未输出：\n'+'\n'.join(skipped or ['无'])
-            self.detail.set(f'批量版本输出完成：成功 {len(done)} 个，跳过 {len(skipped)} 个')
-            messagebox.showinfo('批量输出结果',summary)
         except Exception as e:
+            failed.append(f'批量交付流程异常：{e}')
+        finally:
             try:
                 self._restore_variant_selection(original_index)
-                self.detail.set('批量输出中途失败；已恢复原来选中的创意方案，已完成的输出记录已保留。')
             except Exception as restore_exc:
-                messagebox.showerror('方案恢复失败',str(restore_exc))
-            messagebox.showerror('批量输出失败',str(e))
+                failed.append(f'恢复原方案失败：{restore_exc}')
+            try:
+                self.store.save(self.project)
+                self.refresh_shots()
+                self.show_shot()
+            except Exception as save_exc:
+                failed.append(f'保存/刷新交付结果失败：{save_exc}')
+        summary='已输出：\n'+'\n'.join(done or ['无'])+'\n\n未输出：\n'+'\n'.join(skipped or ['无'])+'\n\n失败：\n'+'\n'.join(failed or ['无'])
+        self.detail.set(f'批量版本输出结束：成功 {len(done)} 个，跳过 {len(skipped)} 个，失败 {len(failed)} 个')
+        if failed:
+            messagebox.showwarning('批量输出结果',summary)
+        else:
+            messagebox.showinfo('批量输出结果',summary)
 
     @ui_action
     def final_render(self):
