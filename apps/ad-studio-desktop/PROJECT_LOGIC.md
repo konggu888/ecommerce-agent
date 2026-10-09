@@ -866,7 +866,7 @@ AST 行为测试会移除提取方法上的 `@ui_action` 装饰器，因为测�
 
 
 ## 重新打开项目时恢复当前方案缓存（2026-10-09）
-项目文件同时保存活动镜头/活动实拍运行态和按方案分开的缓存。App._restore_loaded_variant_state() 在打开项目时先恢复 creative_plan.variant_index；活动镜头优先使用项目 JSON 同步保存的 project.shots，因为批量生成可能已经保存成功镜头而辅助缓存尚未刷新。只有 project.shots 为空时才用当前方案的 variant_shot_cache 作为后备。随后调用 _restore_active_variant_runtime()，从 variant_footage_* 与 variant_hybrid_reviewed_shots 等映射恢复活动运行态。版本化映射存在但没有当前方案键时，既有恢复逻辑会清空活动字段，避免残留其他方案数据。新增方法级行为测试验证活动镜头不会被旧缓存覆盖，并恢复六类实拍/混合制作状态。该测试证明代码路径，不替代 Windows 上真实保存、关闭、重新打开的人工验收。
+项目文件同时保存活动镜头/活动实拍运行态和按方案分开的缓存。App._restore_loaded_variant_state() 在打开项目时先恢复 creative_plan.variant_index；旧项目没有该字段时默认回到方案 1，不能继承 App 实例中上一个项目的活动编号；活动镜头优先使用项目 JSON 同步保存的 project.shots，因为批量生成可能已经保存成功镜头而辅助缓存尚未刷新。只有 project.shots 为空时才用当前方案的 variant_shot_cache 作为后备。随后调用 _restore_active_variant_runtime()，从 variant_footage_* 与 variant_hybrid_reviewed_shots 等映射恢复活动运行态。版本化映射存在但没有当前方案键时，既有恢复逻辑会清空活动字段，避免残留其他方案数据。新增方法级行为测试验证活动镜头不会被旧缓存覆盖，并恢复六类实拍/混合制作状态。该测试证明代码路径，不替代 Windows 上真实保存、关闭、重新打开的人工验收。
 
 
 ## 最终成片文件修订不可覆盖（2026-10-09）
