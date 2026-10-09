@@ -1862,7 +1862,7 @@ class App(tk.Tk):
             return
         plan = self.project.creative_plan or {}
         try:
-            index = int(plan.get("variant_index", self.active_variant_index) or 1)
+            index = int(plan.get("variant_index", 1) or 1)
         except (TypeError, ValueError):
             index = 1
         self.active_variant_index = max(1, index)
