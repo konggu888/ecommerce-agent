@@ -31,12 +31,12 @@
 
 ## 下一步（按顺序执行，不要跳过）
 
-1. 当前已核验 PR #18 head 为 9f6f184c6d35a914c587c1906906a3a12e915036，CI #1009 与 docs-sync #735 均成功；这些只作为本工作单元开始前的基线。
-2. 本工作单元修复 UsageLedger 只保留最近 2000 条记录导致历史费用明细丢失的问题，并新增超过 2000 条记录的回归测试；更新完成后必须重新核对 PR head、CI 与 docs-sync。
-3. 若最新 CI/doc-sync 失败，先读取日志并修复，不得继续叠加功能。
+1. 本工作单元开始时已核验 PR #18 head 为 9f6f184c6d35a914c587c1906906a3a12e915036，CI #1009 与 docs-sync #735 均成功。
+2. 实现提交 d1786e79eff823c860c1db903b4239a038799b04 修复 UsageLedger 只保留最近 2000 条记录导致历史费用明细丢失的问题，并新增超过 2000 条记录的回归测试。
+3. 实现提交 CI run 37978797353（CI #1010）success；docs-sync run 37978797352（#741）success。桌面核心测试、Python 语法、Typecheck、Engine、Risk Controller 和文档同步均通过。
 4. 下一项：逐项检查已实现 UI 的入口、运行状态、取消反馈、错误提示和重新打开恢复；优先审计费用/授权提示与对应动作是否一致。
 5. 每个代码工作单元都要同步 HELP.md、PROJECT_LOGIC.md、验收计划、验收 SOP 和 SESSION_HANDOFF.md。
-6. 不宣布整体验收通过；Windows 真机、真实剪映、真实 Provider/云端计费仍暂缓，PR #18 不得合并。
+6. 不宣布整体验收通过；Windows 真机、真实剪映、真实 Provider/云端计费仍暂缓，PR #18 不得合并.
 
 ## 当前验收与真实性边界
 
@@ -173,3 +173,9 @@ undefined
 - 新增 test_usage_ledger.py：预置 2000 条历史后追加一条，验证 2001 条均保留、最早记录未丢失、项目累计成本为 ¥20.02。
 - 已同步 HELP.md、PROJECT_LOGIC.md、验收计划与验收 SOP。
 - 本次提交的 CI/doc-sync 结果必须在 PR 分支更新后实时查询；本地账本测试不等于真实 Provider 账单对账。
+
+
+## 2026-10-10 验证结果补记：实际成本账本完整历史
+- 实现提交 d1786e79eff823c860c1db903b4239a038799b04 已通过 CI run 37978797353（CI #1010）与 docs-sync run 37978797352（#741）。
+- 桌面核心测试已成功执行，覆盖新增长期账本回归；Python 语法、Typecheck、Engine 与 Risk Controller 均通过。
+- 本结论仅适用于上述实现提交。新窗口仍须查询 PR 当前 head 和其最新检查。
