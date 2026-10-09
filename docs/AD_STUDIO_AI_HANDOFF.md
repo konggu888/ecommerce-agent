@@ -70,3 +70,10 @@ CI 还会运行前端语法、Python 语法、Typecheck、Engine 和 Risk Contro
 ## 9. 未来路线开发状态
 
 未来功能总表：`docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md`。2026-10-09 已完成三种模式的第一轮 UI/关键动作接入，测试入口为 `apps/ad-studio-desktop/test_workflow_modes.py`。目前覆盖模式选择与项目持久化、半自动创意方案确认、用户控制模式下初始方案选择、云端补镜头授权、批量生成确认和最终交付确认。其余生产动作的统一策略与完整暂停/确认/继续状态机仍未完成；Windows 真机验证暂缓，不能将其描述为三种模式已完整可用。
+
+
+### 工作模式状态保留修复（2026-10-09）
+
+- `_activate_plan()` 重建创意方案数据时，必须调用 `preserve_workflow_state()` 保留项目级 `workflow_mode` 与 `workflow_approvals`。
+- 专项测试 `test_workflow_mode_and_storyboard_approvals_survive_variant_activation` 覆盖跨方案切换时的模式/分镜审批持久性，并检查桌面代码确实接入该 helper。
+- 当前提交 `51894e4f575fa62f4cca0117aa8424f94cbba1df` 的 CI #869 和 doc-sync #482 均已成功。此修复不等于完整工作模式状态机已完成。
