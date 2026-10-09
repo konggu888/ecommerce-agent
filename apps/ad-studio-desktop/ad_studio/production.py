@@ -168,8 +168,14 @@ class ProductionStore:
         req=ai.get("asset_resolution", {}) or {}
         generator=AssetGenerator(self.library_root/'asset-generation.json',self.library_root)
         for kind, tags in (("演员", req.get("actor_tags", [])), ("场景", req.get("scene_tags", [])), ("商品素材", req.get("product_tags", []))):
-            found=library.best_match(kind,tags)
-            item={'asset':found.id if found else None,'source':'本地复用' if found else '待自动生成','generate_if_missing':bool(req.get('generation_if_missing', True))}
+            tags = [str(tag).strip() for tag in (tags or []) if str(tag).strip()]
+            found=library.best_match(kind,tags) if tags else None
+            generate_if_missing=bool(tags) and bool(req.get('generation_if_missing', True))
+            item={
+                'asset':found.id if found else None,
+                'source':'本地复用' if found else ('待自动生成' if generate_if_missing else '未指定素材需求'),
+                'generate_if_missing':generate_if_missing,
+            }
             if not found and item['generate_if_missing']:
                 if generator.configured(kind):
                     item['source']='自动生成中'
