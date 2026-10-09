@@ -21,6 +21,8 @@ class WorkflowModePolicyTests(unittest.TestCase):
         self.assertIn("if len(plans) == 1:", app_source)
         self.assertIn("candidate['_variant_index']=variant_position", app_source)
         self.assertIn("cloud_generation", app_source)
+        self.assertIn("decision.target == 'cloud' and not self._authorize_workflow_action('cloud_generation'", app_source)
+        self.assertIn("if needs_cloud_video and CapabilityRouter(ROOT).decide_video().target == 'cloud':", app_source)
         self.assertIn("if not pending:", app_source)
         self.assertIn("if selected_mode == SEMI_AUTO:", app_source)
         self.assertIn("确认 AI 创意方案", app_source)
