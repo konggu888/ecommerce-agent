@@ -50,6 +50,10 @@ class WorkflowModePolicyTests(unittest.TestCase):
         self.assertIn("workflow_approvals", app_source)
         self.assertIn("if not self._ensure_storyboard_approval(): return", app_source)
         self.assertIn("if not self._authorize_workflow_action('final_delivery'", app_source)
+        batch_delivery = app_source[app_source.index("def batch_final_render(self):"):app_source.index("def final_render(self):")]
+        single_delivery = app_source[app_source.index("def final_render(self):"):app_source.index("def save(self):")]
+        self.assertLess(batch_delivery.index("_ensure_storyboard_approval()"), batch_delivery.index("build_final("))
+        self.assertLess(single_delivery.index("_ensure_storyboard_approval()"), single_delivery.index("build_final("))
         app_tree = ast.parse(app_source)
         app_class = next(node for node in app_tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
         for method_name, required_call in (
