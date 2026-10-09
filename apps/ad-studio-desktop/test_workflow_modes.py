@@ -327,8 +327,10 @@ class WorkflowModePolicyTests(unittest.TestCase):
         namespace = {
             "Path": Path,
             "ROOT": Path("/fake/ad-studio"),
+            "json": __import__("json"),
+            "LocalLibrary": lambda _root: SimpleNamespace(best_match=lambda _kind, _tags: SimpleNamespace(id="local-asset")),
             "load_video_provider": Mock(return_value=provider),
-            "messagebox": SimpleNamespace(showinfo=Mock(), showerror=Mock()),
+            "messagebox": SimpleNamespace(showinfo=Mock(), showerror=Mock(), askyesno=Mock(return_value=True)),
         }
         exec(compile(ast.Module(body=[method], type_ignores=[]), "app.py", "exec"), namespace)
         generate_hybrid = namespace["generate_hybrid_gap_shots"]
