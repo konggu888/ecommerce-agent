@@ -92,6 +92,20 @@ def preserve_workflow_state(previous_plan: dict[str, object], next_plan: dict[st
     return next_plan
 
 
+def invalidate_storyboard_approval(plan: dict[str, object], variant_index: int | str) -> bool:
+    """Invalidate one variant's storyboard approval after its shot list changes."""
+    if not isinstance(plan, dict):
+        return False
+    approvals = plan.get("workflow_approvals")
+    if not isinstance(approvals, dict):
+        return False
+    key = str(int(variant_index or 1))
+    existed = key in approvals
+    approvals.pop(key, None)
+    plan["workflow_approvals"] = approvals
+    return existed
+
+
 def set_project_workflow_mode(project, mode: str) -> str:
     """Persist the mode in the project's existing creative_plan payload."""
     selected = normalize_mode(mode)
