@@ -6,6 +6,7 @@ that a complete mode-selection UI or every workflow pause point is integrated.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from copy import deepcopy
 
 
 AUTO = "ai_auto"
@@ -89,6 +90,14 @@ def preserve_workflow_state(previous_plan: dict[str, object], next_plan: dict[st
     for key in ("workflow_mode", "workflow_approvals"):
         if key in previous_plan:
             next_plan[key] = previous_plan[key]
+    return next_plan
+
+
+def preserve_output_history(previous_plan: dict[str, object], next_plan: dict[str, object]) -> dict[str, object]:
+    """Keep project-wide final-output history when activating another creative variant."""
+    for key in ("final_output_manifests", "final_output_history_records"):
+        if key in previous_plan:
+            next_plan[key] = deepcopy(previous_plan[key])
     return next_plan
 
 
