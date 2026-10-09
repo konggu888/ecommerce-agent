@@ -6,6 +6,7 @@ import subprocess
 import json
 from .library import LocalLibrary
 from .engine import FORMS, new_project, mark_regenerate, estimate_cost, estimate_asset_generation
+from .asset_generation import AssetGenerator
 from .gpu import detect_gpu
 from .hardware import detect_hardware, format_hardware
 from .capability import CapabilityRouter
@@ -144,6 +145,53 @@ class App(tk.Tk):
             self.detail.set("用户取消了超预算操作；未开始本次生成。")
             return False
         return decide_action(decision.mode, "budget_overrun", user_approved=True).allowed
+
+    def _preflight_asset_generation(self, shots):
+        """估算待生成镜头可能触发的演员/场景/商品素材费用与云端授权需求；不调用生成器。"""
+        if not self.project or not shots:
+            return {"cost": 0.0, "unknown_prices": [], "needs_cloud": False}
+        pending_indexes = {
+            int(getattr(shot, "index", -1))
+            for shot in shots
+            if getattr(shot, "clip_source", "ai_generated") != "filmed"
+        }
+        if not pending_indexes:
+            return {"cost": 0.0, "unknown_prices": [], "needs_cloud": False}
+        plan_shots = self.project.creative_plan.get("shots", []) or []
+        pending_plan_shots = [
+            row for row in plan_shots
+            if isinstance(row, dict) and int(row.get("index", -1)) in pending_indexes
+        ]
+        estimate = estimate_asset_generation(self.lib, ROOT, pending_plan_shots)
+        generator = AssetGenerator(ROOT / "asset-generation.json", ROOT)
+        router = CapabilityRouter(ROOT)
+        unknown_prices = []
+        needs_cloud = False
+        for row in estimate.get("明细", []):
+            kind = str(row.get("类型") or "")
+            decision = router.decide_asset(kind)
+            if decision.target != "cloud":
+                continue
+            needs_cloud = True
+            if generator.price(kind) <= 0 and kind not in unknown_prices:
+                unknown_prices.append(kind)
+        return {
+            "cost": round(float(estimate.get("总计", 0.0) or 0.0), 4),
+            "unknown_prices": unknown_prices,
+            "needs_cloud": needs_cloud,
+            "details": estimate.get("明细", []),
+        }
+
+    def _confirm_unknown_asset_prices(self, kinds, title="素材生成价格未配置"):
+        """云端素材服务未配置有效单价时，必须先向用户说明估算缺口。"""
+        unique = list(dict.fromkeys(str(kind) for kind in (kinds or []) if str(kind)))
+        if not unique:
+            return True
+        return messagebox.askyesno(
+            title,
+            "以下云端素材生成服务未配置有效单价：" + "、".join(unique)
+            + "。本次预算估算不包含这些潜在费用，实际支出可能高于显示金额。是否仍继续？",
+        )
 
     def _ensure_storyboard_approval(self):
         """Require one approval per active variant in semi-auto/user-controlled modes."""
@@ -1847,24 +1895,32 @@ class App(tk.Tk):
         decision=None
         if not filmed:
             decision=CapabilityRouter(ROOT).decide_video()
-            # Only cloud generation incurs configured provider cost and needs cloud consent.
-            # Perform the budget check before changing shot status or invoking any renderer.
+            if decision.target == 'unavailable':
+                self.detail.set('当前没有可用的视频生成服务；未开始生成。')
+                return messagebox.showerror('视频生成不可用', decision.reason)
+            asset_preflight=self._preflight_asset_generation([s])
+            if not self._confirm_unknown_asset_prices(asset_preflight.get('unknown_prices', [])):
+                self.detail.set('用户取消了单镜头生成；未调用视频或素材生成服务。')
+                return
+            video_cost=0.0
             if decision.target == 'cloud':
                 try:
                     provider=load_video_provider(ROOT/'video-provider.json')
-                    rate=float(getattr(provider,'cost_per_shot_rmb',0.72) or 0.72)
+                    video_cost=float(getattr(provider,'cost_per_shot_rmb',0.72) or 0.72)
                 except Exception:
-                    rate=0.72
-                budget=float((self.project.cost_estimate or {}).get('预算',0) or 0)
-                actual=float(getattr(self.project,'actual_cost_rmb',0.0) or 0.0)
-                remaining=max(0.0,budget-actual) if budget>0 else 0.0
-                if budget>0 and rate>remaining:
-                    if not self._confirm_budget_overrun(rate,remaining,'单镜头生成预算超限确认'):
-                        self.detail.set('用户取消了超预算单镜头生成；未调用生成服务。')
-                        return
-                if not self._authorize_workflow_action('cloud_generation','云端视频生成授权'):
-                    self.detail.set('用户未授权云端生成；未调用视频生成服务。')
+                    video_cost=0.72
+            estimate=round(video_cost+float(asset_preflight.get('cost',0.0) or 0.0),4)
+            budget=float((self.project.cost_estimate or {}).get('预算',0) or 0)
+            actual=float(getattr(self.project,'actual_cost_rmb',0.0) or 0.0)
+            remaining=max(0.0,budget-actual) if budget>0 else 0.0
+            if budget>0 and estimate>remaining:
+                if not self._confirm_budget_overrun(estimate,remaining,'单镜头生成预算超限确认'):
+                    self.detail.set('用户取消了超预算单镜头生成；未调用生成服务。')
                     return
+            needs_cloud=decision.target == 'cloud' or bool(asset_preflight.get('needs_cloud'))
+            if needs_cloud and not self._authorize_workflow_action('cloud_generation','云端视频/素材生成授权'):
+                self.detail.set('用户未授权云端生成；未调用视频或素材生成服务。')
+                return
 
         try:
             s.status='生成中…'; self.store.save(self.project); self.refresh_shots()
@@ -2105,13 +2161,15 @@ class App(tk.Tk):
         self._cache_active_variant()
         budget=float((self.project.cost_estimate or {}).get('预算',0) or 0)
         footage_mode=self.footage_mode.get().strip() if hasattr(self,'footage_mode') else ''
+        video_decision=CapabilityRouter(ROOT).decide_video()
         try:
             from .providers import load_video_provider
             vp=load_video_provider(ROOT/'video-provider.json')
-            rate=float(getattr(vp,'cost_per_shot_rmb',0.72))
+            rate=float(getattr(vp,'cost_per_shot_rmb',0.72) or 0.72)
         except Exception:
             rate=0.72
         missing_counts=[]; estimated=0.0; needs_cloud_video=False
+        needs_cloud_assets=False; unknown_asset_prices=[]
         try:
             for pos,raw0 in enumerate(variants,1):
                 raw=dict(raw0); raw['_variant_index']=int(raw.get('_variant_index',pos)); raw['_variant_label']=raw.get('_variant_label',f'方案{raw["_variant_index"]}')
@@ -2119,11 +2177,15 @@ class App(tk.Tk):
                 info=__import__('ad_studio.product_parser',fromlist=['ProductInfo']).ProductInfo(**self.project.product_info)
                 self._activate_plan(raw,info)
                 pending_shots=[s for s in self.project.shots if not s.video_path or not Path(s.video_path).exists()]
-                missing=len(pending_shots)
-                if any(getattr(s,'clip_source','ai_generated')!='filmed' for s in pending_shots):
+                pending_video_shots=[s for s in pending_shots if getattr(s,'clip_source','ai_generated')!='filmed']
+                missing_counts.append(len(pending_shots))
+                if pending_video_shots and video_decision.target == 'cloud':
                     needs_cloud_video=True
-                missing_counts.append(missing)
-                if footage_mode!='用户拍摄素材': estimated += missing*rate
+                    estimated += len(pending_video_shots)*rate
+                asset_preflight=self._preflight_asset_generation(pending_video_shots)
+                estimated += float(asset_preflight.get('cost',0.0) or 0.0)
+                needs_cloud_assets = needs_cloud_assets or bool(asset_preflight.get('needs_cloud'))
+                unknown_asset_prices.extend(asset_preflight.get('unknown_prices', []))
                 self._cache_active_variant()
 
         except Exception as exc:
@@ -2133,8 +2195,12 @@ class App(tk.Tk):
                 self._restore_variant_selection(original_index)
                 self.detail.set('批量生成预审失败；已恢复原来选中的创意方案。')
             except Exception as restore_exc:
-                messagebox.showerror('方案恢复失败',f'预审错误：{exc}\n恢复原方案时也发生错误：{restore_exc}')
+                messagebox.showerror('方案恢复失败',f'预审错误：{exc}\\n恢复原方案时也发生错误：{restore_exc}')
             messagebox.showerror('批量生成预审失败',str(exc))
+            return
+        if unknown_asset_prices and not self._confirm_unknown_asset_prices(unknown_asset_prices, '批量素材生成价格未配置'):
+            self._restore_variant_selection(original_index)
+            self.detail.set('用户取消了素材价格不明的批量生成；未调用生成服务。')
             return
         actual_cost=float(getattr(self.project,'actual_cost_rmb',0.0) or 0.0)
         remaining_budget=max(0.0,budget-actual_cost) if budget>0 else 0.0
@@ -2143,11 +2209,12 @@ class App(tk.Tk):
                 self._restore_variant_selection(original_index)
                 self.detail.set('已取消超预算批量生成；已恢复原来选中的创意方案。')
                 return
-        if needs_cloud_video and CapabilityRouter(ROOT).decide_video().target == 'cloud':
-            if not self._authorize_workflow_action('cloud_generation','批量云端视频生成授权'):
-                self._restore_variant_selection(original_index)
-                self.detail.set('用户未授权云端生成；未调用云端服务，已恢复原来选中的创意方案。')
-                return
+        needs_cloud=needs_cloud_video or needs_cloud_assets
+        if needs_cloud and not self._authorize_workflow_action('cloud_generation','批量云端视频/素材生成授权'):
+            self._restore_variant_selection(original_index)
+            self.detail.set('用户未授权云端生成；未调用云端服务，已恢复原来选中的创意方案。')
+            return
+
         original=original_index; info=__import__('ad_studio.product_parser',fromlist=['ProductInfo']).ProductInfo(**self.project.product_info)
         done=[]; failed=[]; outputs=[]
         try:
