@@ -1123,7 +1123,7 @@ class App(tk.Tk):
             return messagebox.showerror('AI补镜头不可用',str(exc))
         budget=float((self.project.cost_estimate or {}).get('预算',0) or 0)
         actual=float(getattr(self.project,'actual_cost_rmb',0.0) or 0.0)
-        remaining=max(0.0,budget-actual) if budget>0 else 0.0
+        remaining=max(0.0,budget-actual)
         pending=[x for x in approved if not x.get('generated_path') or not Path(str(x.get('generated_path'))).exists()]
         if not pending:
             return messagebox.showinfo('无需生成','当前所有已批准的 AI 补镜头任务都已有生成文件。')
@@ -1161,7 +1161,7 @@ class App(tk.Tk):
             unknown_text='、'.join(unknown_asset_prices)
             if not messagebox.askyesno('素材生成价格未配置',f'以下云端素材生成服务未配置有效单价：{unknown_text}。本次费用预估不包含这些潜在费用。是否仍继续进入预算确认？'):
                 return
-        if budget>0 and estimate>remaining:
+        if estimate>remaining:
             if not self._confirm_budget_overrun(estimate,remaining,'AI补镜头预算超限确认'): return
         if not self._authorize_workflow_action('cloud_generation','云端 AI 补镜头授权'): return
         Shot=__import__('ad_studio.models',fromlist=['Shot']).Shot
@@ -2091,8 +2091,8 @@ class App(tk.Tk):
             estimate=round(video_cost+float(asset_preflight.get('cost',0.0) or 0.0),4)
             budget=float((self.project.cost_estimate or {}).get('预算',0) or 0)
             actual=float(getattr(self.project,'actual_cost_rmb',0.0) or 0.0)
-            remaining=max(0.0,budget-actual) if budget>0 else 0.0
-            if budget>0 and estimate>remaining:
+            remaining=max(0.0,budget-actual)
+            if estimate>remaining:
                 if not self._confirm_budget_overrun(estimate,remaining,'单镜头生成预算超限确认'):
                     self.detail.set('用户取消了超预算单镜头生成；未调用生成服务。')
                     return
@@ -2384,8 +2384,8 @@ class App(tk.Tk):
             self.detail.set('用户取消了素材价格不明的批量生成；未调用生成服务。')
             return
         actual_cost=float(getattr(self.project,'actual_cost_rmb',0.0) or 0.0)
-        remaining_budget=max(0.0,budget-actual_cost) if budget>0 else 0.0
-        if budget>0 and estimated>remaining_budget:
+        remaining_budget=max(0.0,budget-actual_cost)
+        if estimated>remaining_budget:
             if not self._confirm_budget_overrun(estimated,remaining_budget,'一键生成预算超限确认'):
                 self._restore_variant_selection(original_index)
                 self.detail.set('已取消超预算批量生成；已恢复原来选中的创意方案。')
