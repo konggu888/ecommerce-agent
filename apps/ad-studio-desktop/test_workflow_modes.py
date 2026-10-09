@@ -17,6 +17,8 @@ class WorkflowModePolicyTests(unittest.TestCase):
         self.assertIn("set_project_workflow_mode(self.project,selected_mode)", app_source)
         self.assertIn("self.workflow_mode.set(self._workflow_mode_label(get_project_workflow_mode(project)))", app_source)
         self.assertIn("def _choose_initial_plan(self, plans):", app_source)
+        self.assertIn("if len(plans) == 1:", app_source)
+        self.assertIn("cloud_generation", app_source)
         self.assertIn("if selected_mode == SEMI_AUTO:", app_source)
         self.assertIn("确认 AI 创意方案", app_source)
         self.assertIn("if not self._authorize_workflow_action('final_delivery'", app_source)
