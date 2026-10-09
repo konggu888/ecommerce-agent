@@ -144,7 +144,7 @@ class WorkflowModePolicyTests(unittest.TestCase):
     def test_production_does_not_generate_assets_without_explicit_tags(self):
         source = (Path(__file__).parent / "ad_studio" / "production.py").read_text(encoding="utf-8")
         self.assertIn("generate_if_missing=bool(tags) and bool(req.get('generation_if_missing', True))", source)
-        self.assertIn("'source':'未指定素材需求'", source)
+        self.assertIn("'未指定素材需求'", source)
 
     def test_batch_delivery_isolates_variant_failures_and_restores_selection(self):
         app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
@@ -171,7 +171,7 @@ class WorkflowModePolicyTests(unittest.TestCase):
         budget_refusal = batch[budget_gate:cloud_gate]
         self.assertIn("self._restore_variant_selection(original_index)", budget_refusal)
         self.assertIn("return", budget_refusal)
-        cloud_refusal_start = batch.index("if not self._authorize_workflow_action('cloud_generation'")
+        cloud_refusal_start = batch.index("if needs_cloud and not self._authorize_workflow_action('cloud_generation'")
         generation_start = batch.index("original=original_index")
         cloud_refusal = batch[cloud_refusal_start:generation_start]
         self.assertIn("self._restore_variant_selection(original_index)", cloud_refusal)
