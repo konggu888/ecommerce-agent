@@ -360,6 +360,16 @@ class WorkflowModePolicyTests(unittest.TestCase):
             cloud_app._authorize_workflow_action.assert_called_once_with("cloud_generation", "云端 AI 补镜头授权")
             cloud_app.store.render_shot.assert_not_called()
 
+            # Missing/zero provider price must use the same conservative default
+            # as single-shot and batch generation, rather than silently estimate ¥0.
+            zero_price_provider = SimpleNamespace(configured=lambda: True, cost_per_shot_rmb=0.0)
+            with patch.dict(namespace, {"load_video_provider": Mock(return_value=zero_price_provider)}):
+                zero_rate_app = make_app(0.1)
+                generate_hybrid.__get__(zero_rate_app, type(zero_rate_app))()
+                zero_rate_app._confirm_budget_overrun.assert_called_once()
+                zero_rate_app._authorize_workflow_action.assert_not_called()
+                zero_rate_app.store.render_shot.assert_not_called()
+
     def test_known_modes_are_explicit_and_unknown_defaults_to_semi_auto(self):
         self.assertEqual(WORKFLOW_MODES, (AUTO, SEMI_AUTO, USER_CONTROLLED))
         self.assertEqual(normalize_mode("not-a-mode"), SEMI_AUTO)

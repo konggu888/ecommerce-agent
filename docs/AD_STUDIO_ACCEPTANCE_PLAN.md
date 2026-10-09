@@ -822,3 +822,8 @@
 - 执行 test_hybrid_gap_generation_budget_and_cloud_refusal_do_not_render。
 - 超预算拒绝应在云端授权与渲染之前返回；云端授权拒绝应在 render_shot 之前返回。
 - 该项是离线 mock 执行级验证，不代表真实 Provider/计费或 Windows UI 通过。
+
+
+## 2026-10-09 补充：AI 补镜头单价缺省验收
+- Provider 单镜头价格为 0/空值时，不得将 AI 补镜头估算为零成本；应回退到统一默认估算 ¥0.72/镜头。
+- 执行级测试验证低预算用户拒绝后预算确认发生、云端授权和 render_shot 均为零调用。

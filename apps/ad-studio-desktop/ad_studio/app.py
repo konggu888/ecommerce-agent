@@ -995,7 +995,7 @@ class App(tk.Tk):
             provider=load_video_provider(ROOT/'video-provider.json')
             if not provider.configured():
                 raise RuntimeError('视频生成 Provider 尚未真实配置，不能执行 AI 补镜头。')
-            rate=float(getattr(provider,'cost_per_shot_rmb',0.0) or 0.0)
+            rate=float(getattr(provider,'cost_per_shot_rmb',0.72) or 0.72)
         except Exception as exc:
             return messagebox.showerror('AI补镜头不可用',str(exc))
         budget=float((self.project.cost_estimate or {}).get('预算',0) or 0)
