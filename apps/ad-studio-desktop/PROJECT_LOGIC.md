@@ -855,3 +855,7 @@ AST 行为测试会移除提取方法上的 `@ui_action` 装饰器，因为测�
 
 ## 最终交付的分镜批准闸门（2026-10-09）
 `final_render()` 在 `build_final()` 前调用 `_ensure_storyboard_approval()`；`batch_final_render()` 对每个激活方案先检查批准状态，再检查镜头完整性并调用 `build_final()`。半自动/用户控制模式未批准时不输出该方案；全自动模式由 `_ensure_storyboard_approval()` 的 AUTO 分支直接放行，但独立的最终交付确认和其他安全/媒体质量闸门仍适用。专项回归检查两个最终交付入口的批准检查顺序早于最终构建。
+
+
+## 方案运行态缺省值隔离（2026-10-09）
+`App._restore_active_variant_runtime()` 之前只在目标方案键存在时覆盖活动字段；目标方案没有条目时，前一方案的 `footage_gap_tasks`、`hybrid_reviewed_shots`、`footage_plan`、coverage/gaps/audit 可能残留，造成方案间串状态。现在当版本化映射存在且非空、但缺少目标键时，将相应活动字段清空为其类型对应的空值；若旧项目完全没有该映射，仍保留原字段以兼容旧数据。回归测试实际执行提取出的运行态恢复方法，覆盖缺省清空与目标方案恢复两条路径。
