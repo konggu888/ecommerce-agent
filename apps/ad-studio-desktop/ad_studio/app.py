@@ -302,39 +302,110 @@ class App(tk.Tk):
         ttk.Button(frm,text='保存并切换',command=save_location).pack(anchor='e',pady=8)
 
     def ui(self):
-        top=ttk.Frame(self,padding=16); top.pack(fill='x')
+        self.geometry('1280x850'); self.minsize(980,680)
+        top=ttk.Frame(self,padding=(16,12)); top.pack(fill='x')
         ttk.Label(top,text='AI 商品广告工厂',font=('Microsoft YaHei UI',22,'bold')).pack(side='left')
-        self.gpu_text=tk.StringVar(value='检测本地 GPU…'); ttk.Label(top,textvariable=self.gpu_text).pack(side='right')
-        setup=ttk.LabelFrame(self,text='① 商品与广告策略',padding=12); setup.pack(fill='x',padx=16,pady=8)
-        ttk.Label(setup,text='商品链接').grid(row=0,column=0,sticky='w'); self.url=tk.StringVar(); ttk.Entry(setup,textvariable=self.url,width=72).grid(row=0,column=1,columnspan=3,sticky='ew',padx=8)
-        ttk.Label(setup,text='广告强度').grid(row=1,column=0,sticky='w'); self.level=tk.IntVar(value=2); ttk.Combobox(setup,textvariable=self.level,values=[1,2,3,4,5],state='readonly',width=8).grid(row=1,column=1,sticky='w')
-        ttk.Label(setup,text='本次预算（¥）').grid(row=1,column=2,sticky='e'); self.budget=tk.StringVar(value='3'); ttk.Entry(setup,textvariable=self.budget,width=10).grid(row=1,column=3,sticky='w',padx=8)
-        ttk.Label(setup,text='留空/自动：交给AI判断；手动选择仅作为约束').grid(row=1,column=2,columnspan=2,sticky='w')
-        ttk.Label(setup,text='本次任务').grid(row=2,column=0,sticky='w'); self.task_type=tk.StringVar(value='电商短视频'); ttk.Combobox(setup,textvariable=self.task_type,values=['电商短视频','商品主图视频','广告投放视频'],state='readonly',width=18).grid(row=2,column=1,sticky='w'); ttk.Label(setup,text='每次只能选择一种任务').grid(row=2,column=2,columnspan=2,sticky='w')
-        ttk.Label(setup,text='视频形式').grid(row=3,column=0,sticky='w'); self.form=tk.StringVar(value='AI自动选择'); ttk.Combobox(setup,textvariable=self.form,values=['AI自动选择']+FORMS,state='readonly',width=22).grid(row=2,column=1,sticky='w')
-        ttk.Label(setup,text='创意方案数').grid(row=4,column=0,sticky='w'); self.variant_count=tk.StringVar(value='3'); ttk.Combobox(setup,textvariable=self.variant_count,values=['1','3'],state='readonly',width=8).grid(row=3,column=1,sticky='w'); ttk.Label(setup,text='3 = 同一商品自动生成三种明显不同的广告打法').grid(row=3,column=2,columnspan=3,sticky='w')
-        ttk.Label(setup,text='素材来源').grid(row=5,column=0,sticky='w'); self.footage_mode=tk.StringVar(value='AI生成视频'); ttk.Combobox(setup,textvariable=self.footage_mode,values=['AI生成视频','用户拍摄素材'],state='readonly',width=16).grid(row=4,column=1,sticky='w',pady=(4,2))
-        self.footage_folder=tk.StringVar(value=''); ttk.Entry(setup,textvariable=self.footage_folder,width=36).grid(row=5,column=2,sticky='w',padx=4); ttk.Button(setup,text='选择素材文件夹',command=self.choose_footage_folder).grid(row=4,column=3,sticky='e')
-        ttk.Label(setup,text='用户拍摄素材：输入链接后 AI 分析产品 → 指定文件夹放入你拍好的视频 → AI 思考剪辑方案 → 本地 FFmpeg 出片（不调用视频生成服务）',foreground='#666').grid(row=6,column=0,columnspan=5,sticky='w',pady=(2,0))
-        ttk.Label(setup,text='AI 工作模式').grid(row=7,column=0,sticky='w',pady=(6,0))
+        self.gpu_text=tk.StringVar(value='检测本地 GPU…')
+        ttk.Label(top,textvariable=self.gpu_text).pack(side='right',padx=(10,0))
+        ttk.Button(top,text='📖 帮助与功能说明',command=self.help_view).pack(side='right',padx=8)
+
+        setup=ttk.LabelFrame(self,text='① 商品与任务设置',padding=10); setup.pack(fill='x',padx=16,pady=(0,7))
+        for col in range(8): setup.columnconfigure(col,weight=1 if col in (1,3,5,7) else 0)
+        ttk.Label(setup,text='商品链接').grid(row=0,column=0,sticky='w',pady=4)
+        self.url=tk.StringVar()
+        ttk.Entry(setup,textvariable=self.url).grid(row=0,column=1,columnspan=6,sticky='ew',padx=6,pady=4)
+        ttk.Label(setup,text='本次任务').grid(row=1,column=0,sticky='w',pady=4)
+        self.task_type=tk.StringVar(value='电商短视频')
+        ttk.Combobox(setup,textvariable=self.task_type,values=['电商短视频','商品主图视频','广告投放视频'],state='readonly',width=17).grid(row=1,column=1,sticky='ew',padx=6,pady=4)
+        ttk.Label(setup,text='本次预算（¥）').grid(row=1,column=2,sticky='e',pady=4)
+        self.budget=tk.StringVar(value='3')
+        ttk.Entry(setup,textvariable=self.budget,width=9).grid(row=1,column=3,sticky='ew',padx=6,pady=4)
+        ttk.Label(setup,text='广告强度').grid(row=1,column=4,sticky='e',pady=4)
+        self.level=tk.IntVar(value=2)
+        ttk.Combobox(setup,textvariable=self.level,values=[1,2,3,4,5],state='readonly',width=7).grid(row=1,column=5,sticky='ew',padx=6,pady=4)
+        ttk.Label(setup,text='创意方案数').grid(row=1,column=6,sticky='e',pady=4)
+        self.variant_count=tk.StringVar(value='3')
+        ttk.Combobox(setup,textvariable=self.variant_count,values=['1','3'],state='readonly',width=6).grid(row=1,column=7,sticky='ew',padx=6,pady=4)
+
+        ttk.Label(setup,text='视频形式').grid(row=2,column=0,sticky='w',pady=4)
+        self.form=tk.StringVar(value='AI自动选择')
+        ttk.Combobox(setup,textvariable=self.form,values=['AI自动选择']+FORMS,state='readonly',width=17).grid(row=2,column=1,sticky='ew',padx=6,pady=4)
+        ttk.Label(setup,text='素材来源').grid(row=2,column=2,sticky='e',pady=4)
+        self.footage_mode=tk.StringVar(value='AI生成视频')
+        ttk.Combobox(setup,textvariable=self.footage_mode,values=['AI生成视频','用户拍摄素材'],state='readonly',width=16).grid(row=2,column=3,sticky='ew',padx=6,pady=4)
+        self.footage_folder=tk.StringVar(value='')
+        ttk.Entry(setup,textvariable=self.footage_folder).grid(row=2,column=4,columnspan=3,sticky='ew',padx=6,pady=4)
+        ttk.Button(setup,text='选择素材文件夹',command=self.choose_footage_folder).grid(row=2,column=7,sticky='ew',padx=6,pady=4)
+
+        ttk.Label(setup,text='AI 工作模式').grid(row=3,column=0,sticky='w',pady=4)
         self.workflow_mode=tk.StringVar(value='AI 半自动')
-        ttk.Combobox(setup,textvariable=self.workflow_mode,values=['AI 全自动','AI 半自动','用户控制 / AI 辅助'],state='readonly',width=28).grid(row=7,column=1,sticky='w',pady=(6,0))
-        ttk.Label(setup,text='全自动 / 半自动 / 用户控制·AI辅助；云端费用、超预算等授权仍需明确确认',foreground='#666').grid(row=7,column=2,columnspan=5,sticky='w',pady=(6,0))
-        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='📹 实拍分析报告',command=self.footage_analysis_report).grid(row=2,column=5,sticky='e',padx=8); ttk.Button(setup,text='📋 补素材任务',command=self.footage_gap_tasks_report).grid(row=2,column=6,sticky='e',padx=8); ttk.Button(setup,text='🤖 执行AI补镜头',command=self.generate_hybrid_gap_shots).grid(row=2,column=10,sticky='e',padx=8); ttk.Button(setup,text='🔍 AI补镜头复核',command=self.review_hybrid_gap_shots).grid(row=2,column=11,sticky='e',padx=8); ttk.Button(setup,text='🔄 重新分析实拍素材',command=self.reanalyze_footage).grid(row=2,column=7,sticky='e',padx=8); ttk.Button(setup,text='🕘 分析历史',command=self.footage_reanalysis_history_report).grid(row=2,column=8,sticky='e',padx=8); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='📚 商品资料库',command=self.product_library_settings).grid(row=0,column=5,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='🧪 创意版本矩阵',command=self.variant_matrix_report).grid(row=2,column=9,sticky='e',padx=8); ttk.Button(setup,text='🧠 创意方案分析',command=self.creative_variant_analysis_report).grid(row=2,column=12,sticky='e',padx=8); ttk.Button(setup,text='🧪 创意测试方案',command=self.creative_test_plan_report).grid(row=2,column=14,sticky='e',padx=8); ttk.Button(setup,text='🛡 创意事实检查',command=self.creative_fact_check_report).grid(row=2,column=15,sticky='e',padx=8); ttk.Button(setup,text='🎬 分镜事实复核',command=self.storyboard_fact_check_report).grid(row=2,column=16,sticky='e',padx=8); ttk.Button(setup,text='🎥 成片视觉复核',command=self.visual_fact_check_report).grid(row=2,column=17,sticky='e',padx=8); ttk.Button(setup,text='📥 真实投放数据（可选）',command=self.variant_performance_entry).grid(row=2,column=13,sticky='e',padx=8); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
-        main=ttk.Panedwindow(self,orient='horizontal'); main.pack(fill='both',expand=True,padx=16,pady=8)
+        ttk.Combobox(setup,textvariable=self.workflow_mode,values=['AI 全自动','AI 半自动','用户控制 / AI 辅助'],state='readonly',width=25).grid(row=3,column=1,sticky='ew',padx=6,pady=4)
+        ttk.Label(setup,text='留空/自动由 AI 判断；用户预算、云端费用和超预算操作仍需明确确认。',foreground='#555',wraplength=650).grid(row=3,column=2,columnspan=6,sticky='w',padx=6,pady=4)
+        project_actions=ttk.Frame(setup); project_actions.grid(row=4,column=0,columnspan=8,sticky='ew',pady=(6,0))
+        ttk.Button(project_actions,text='创建广告项目',command=self.create).pack(side='left',padx=(0,6))
+        ttk.Button(project_actions,text='打开已有项目',command=self.load_project).pack(side='left',padx=6)
+        ttk.Button(project_actions,text='保存项目',command=self.save).pack(side='left',padx=6)
+
+        tools=ttk.LabelFrame(self,text='② 工具与检查',padding=8); tools.pack(fill='x',padx=16,pady=(0,7))
+        def add_button_row(parent, row, items):
+            for col,(label,callback) in enumerate(items):
+                parent.columnconfigure(col,weight=1)
+                ttk.Button(parent,text=label,command=callback).grid(row=row,column=col,sticky='ew',padx=3,pady=3)
+        add_button_row(tools,0,[
+            ('📚 商品资料库',self.product_library_settings),('💾 资产库位置',self.asset_library_settings),
+            ('⚙ 模型设置',self.model_settings),('🎬 视频生成设置',self.video_provider_settings),
+            ('🧩 素材生成设置',self.asset_generation_settings),('🔎 系统状态',self.system_status),
+            ('📊 AI调用记录',self.usage_view)
+        ])
+        add_button_row(tools,1,[
+            ('🧪 创意版本矩阵',self.variant_matrix_report),('🧠 创意方案分析',self.creative_variant_analysis_report),
+            ('🧪 创意测试方案',self.creative_test_plan_report),('🛡 创意事实检查',self.creative_fact_check_report),
+            ('🎬 分镜事实复核',self.storyboard_fact_check_report),('🎥 成片视觉复核',self.visual_fact_check_report),
+            ('📥 真实投放数据（可选）',self.variant_performance_entry)
+        ])
+        add_button_row(tools,2,[
+            ('📹 实拍分析报告',self.footage_analysis_report),('📋 补素材任务',self.footage_gap_tasks_report),
+            ('🤖 执行AI补镜头',self.generate_hybrid_gap_shots),('🔍 AI补镜头复核',self.review_hybrid_gap_shots),
+            ('🔄 重新分析实拍素材',self.reanalyze_footage),('🕘 分析历史',self.footage_reanalysis_history_report)
+        ])
+
+        main=ttk.Panedwindow(self,orient='horizontal'); main.pack(fill='both',expand=True,padx=16,pady=(0,8))
         left=ttk.Frame(main,padding=8); right=ttk.Frame(main,padding=8); main.add(left,weight=3); main.add(right,weight=2)
-        ttk.Label(left,text='② 分镜生产链',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
-        self.shots=ttk.Treeview(left,columns=('v','status','actor','scene'),show='tree headings',height=17)
-        for c,t,w in [('v','版本',70),('status','状态',90),('actor','演员',150),('scene','场景',150)]: self.shots.heading(c,text=t); self.shots.column(c,width=w)
-        self.shots.column('#0',width=300); self.shots.pack(fill='both',expand=True,pady=8); self.shots.bind('<<TreeviewSelect>>',self.show_shot)
-        bar=ttk.Frame(left); bar.pack(fill='x'); ttk.Button(bar,text='切换创意方案',command=self.switch_variant).pack(side='left'); ttk.Button(bar,text='生成本镜头',command=self.generate_shot).pack(side='left',padx=8); ttk.Button(bar,text='重新生成本镜头',command=self.regen_shot).pack(side='left',padx=8); ttk.Button(bar,text='▶ 本地硬件后处理',command=self.postprocess_selected).pack(side='left',padx=8); ttk.Button(bar,text='生成最终成片',command=self.final_render).pack(side='right',padx=8); ttk.Button(bar,text='📦 成片交付中心',command=self.final_delivery_center).pack(side='right',padx=8); ttk.Button(bar,text='批量输出已完成版本',command=self.batch_final_render).pack(side='right',padx=8); ttk.Button(bar,text='⚡ 一键生成全部版本',command=self.batch_generate_variants).pack(side='right',padx=8); ttk.Button(bar,text='保存项目',command=self.save).pack(side='right')
-        ttk.Label(right,text='③ 本地资产库',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
-        self.assets=ttk.Treeview(right,columns=('kind','source','path'),show='tree headings',height=13)
-        for c,t,w in [('kind','类型',80),('source','来源',90),('path','本地文件',300)]: self.assets.heading(c,text=t); self.assets.column(c,width=w)
-        self.assets.column('#0',width=180); self.assets.pack(fill='both',expand=True,pady=8)
-        ab=ttk.Frame(right); ab.pack(fill='x'); ttk.Button(ab,text='＋上传演员',command=lambda:self.upload('演员')).pack(side='left'); ttk.Button(ab,text='＋上传场景',command=lambda:self.upload('场景')).pack(side='left',padx=5); ttk.Button(ab,text='＋上传产品素材',command=lambda:self.upload('产品图')).pack(side='left'); ttk.Button(ab,text='＋上传BGM',command=lambda:self.upload('BGM')).pack(side='left',padx=5); ttk.Button(ab,text='刷新资产库',command=self.refresh_assets).pack(side='right')
-        self.detail=tk.StringVar(value='等待创建项目'); ttk.Label(right,textvariable=self.detail,justify='left',wraplength=470).pack(fill='x',pady=10); ttk.Button(right,text='编辑当前分镜',command=self.edit_shot).pack(anchor='w',pady=4)
-        self.cost=tk.StringVar(value='成本：尚未计算'); ttk.Label(right,textvariable=self.cost,font=('Microsoft YaHei UI',12,'bold')).pack(anchor='w')
+        ttk.Label(left,text='③ 分镜生产链',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
+        self.shots=ttk.Treeview(left,columns=('v','status','actor','scene'),show='tree headings',height=12)
+        for c,t,w in [('v','版本',65),('status','状态',100),('actor','演员',125),('scene','场景',125)]:
+            self.shots.heading(c,text=t); self.shots.column(c,width=w)
+        self.shots.column('#0',width=250); self.shots.pack(fill='both',expand=True,pady=7); self.shots.bind('<<TreeviewSelect>>',self.show_shot)
+        shot_actions=ttk.Frame(left); shot_actions.pack(fill='x')
+        for label,callback in [
+            ('切换创意方案',self.switch_variant),('生成本镜头',self.generate_shot),
+            ('重新生成本镜头',self.regen_shot),('▶ 本地硬件后处理',self.postprocess_selected),
+            ('编辑当前分镜',self.edit_shot)
+        ]:
+            ttk.Button(shot_actions,text=label,command=callback).pack(side='left',padx=(0,5),pady=3)
+        delivery_actions=ttk.Frame(left); delivery_actions.pack(fill='x',pady=(3,0))
+        for label,callback in [
+            ('⚡ 一键生成全部版本',self.batch_generate_variants),('批量输出已完成版本',self.batch_final_render),
+            ('生成最终成片',self.final_render),('📦 成片交付中心',self.final_delivery_center)
+        ]:
+            ttk.Button(delivery_actions,text=label,command=callback).pack(side='left',padx=(0,5),pady=3)
+
+        ttk.Label(right,text='④ 本地资产库',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
+        self.assets=ttk.Treeview(right,columns=('kind','source','path'),show='tree headings',height=10)
+        for c,t,w in [('kind','类型',85),('source','来源',95),('path','本地文件',250)]:
+            self.assets.heading(c,text=t); self.assets.column(c,width=w)
+        self.assets.column('#0',width=150); self.assets.pack(fill='both',expand=True,pady=7)
+        asset_actions=ttk.Frame(right); asset_actions.pack(fill='x')
+        for label,callback in [
+            ('＋上传演员',lambda:self.upload('演员')),('＋上传场景',lambda:self.upload('场景')),
+            ('＋上传产品素材',lambda:self.upload('产品图')),('＋上传BGM',lambda:self.upload('BGM')),
+            ('刷新资产库',self.refresh_assets)
+        ]:
+            ttk.Button(asset_actions,text=label,command=callback).pack(side='left',padx=(0,4),pady=3)
+        self.detail=tk.StringVar(value='等待创建项目')
+        ttk.Label(right,textvariable=self.detail,justify='left',wraplength=460).pack(fill='x',pady=(8,4))
+        self.cost=tk.StringVar(value='成本：尚未计算')
+        ttk.Label(right,textvariable=self.cost,font=('Microsoft YaHei UI',11,'bold'),wraplength=460,justify='left').pack(anchor='w',pady=4)
         ttk.Label(self,text='本地存储：本机磁盘  |  资产库：永久复用  |  云端生成：仅在需要时调用',relief='sunken',anchor='w',padding=8).pack(fill='x',side='bottom')
 
 
@@ -1479,6 +1550,72 @@ class App(tk.Tk):
                 f"{float(x.get('quantity',1) or 1):g}",f"¥{float(x.get('unit_cost_rmb',0) or 0):.4f}",
                 f"¥{float(x.get('estimated_cost_rmb',0) or 0):.4f}",x.get('error','')))
         ttk.Button(frm,text='刷新',command=lambda:(win.destroy(),self.usage_view())).pack(anchor='e',pady=8)
+
+
+    @ui_action
+    def help_view(self):
+        """在软件内展示动态功能状态与完整 HELP.md；不发起任何网络请求或生成任务。"""
+        win=tk.Toplevel(self); win.title('帮助与功能说明'); win.geometry('1080x720'); win.minsize(850,560); win.transient(self)
+        frm=ttk.Frame(win,padding=12); frm.pack(fill='both',expand=True)
+        ttk.Label(frm,text='当前功能与可用状态',font=('Microsoft YaHei UI',17,'bold')).pack(anchor='w')
+        ttk.Label(frm,text='状态依据本机配置与本地工具检测；“已配置”不代表真实供应商已成功出片或已完成 Windows 现场验收。',wraplength=1000).pack(anchor='w',pady=(3,8))
+        tabs=ttk.Notebook(frm); tabs.pack(fill='both',expand=True)
+        status_tab=ttk.Frame(tabs,padding=8); help_tab=ttk.Frame(tabs,padding=8)
+        tabs.add(status_tab,text='当前功能')
+        tabs.add(help_tab,text='完整帮助文档')
+        table_frame=ttk.Frame(status_tab); table_frame.pack(fill='both',expand=True)
+        tree=ttk.Treeview(table_frame,columns=('feature','status','notes'),show='headings')
+        for col,title,width in [('feature','功能模块',190),('status','当前状态',170),('notes','说明与限制',610)]:
+            tree.heading(col,text=title); tree.column(col,width=width,anchor='w')
+        ybar=ttk.Scrollbar(table_frame,orient='vertical',command=tree.yview)
+        xbar=ttk.Scrollbar(table_frame,orient='horizontal',command=tree.xview)
+        tree.configure(yscrollcommand=ybar.set,xscrollcommand=xbar.set)
+        tree.grid(row=0,column=0,sticky='nsew'); ybar.grid(row=0,column=1,sticky='ns'); xbar.grid(row=1,column=0,sticky='ew')
+        table_frame.rowconfigure(0,weight=1); table_frame.columnconfigure(0,weight=1)
+
+        usable_models=[p for p in self.model_router.profiles() if p.enabled and (p.provider=='local_openai' or bool(p.api_key))]
+        try:
+            ffmpeg_ok=bool(ffmpeg_available())
+        except Exception:
+            ffmpeg_ok=False
+        video_cfg={}
+        try:
+            video_cfg=json.loads((ROOT/'video-provider.json').read_text(encoding='utf-8')).get('video_provider',{})
+        except Exception:
+            pass
+        video_ready=bool(video_cfg.get('endpoint') and video_cfg.get('api_key'))
+        asset_cfg={}
+        try:
+            asset_cfg=json.loads((ROOT/'asset-generation.json').read_text(encoding='utf-8'))
+        except Exception:
+            pass
+        asset_ready=sum(1 for kind in ('演员','场景','商品素材') if isinstance(asset_cfg.get(kind),dict) and asset_cfg[kind].get('endpoint') and asset_cfg[kind].get('model'))
+        rows=[
+            ('三类任务','界面已接入','电商短视频、商品主图视频、广告投放视频；每次任务只选择一种。'),
+            ('AI 工作模式','部分接入','AI 全自动、AI 半自动、用户控制 / AI 辅助已接入部分关键动作；完整暂停/确认/继续状态机仍在完善。'),
+            ('商品理解与创意分析',f'可调用模型 {len(usable_models)} 个' if usable_models else '待配置模型','模型路由按功能选择；需有可用的本地模型或已配置凭据的模型。'),
+            ('云端视频生成','已配置' if video_ready else '需检查配置','仅当能力路由要求云端时使用；保存 Endpoint/API Key 不代表供应商 API 已验证。'),
+            ('演员/场景/商品素材生成',f'已配置 {asset_ready}/3 类','优先复用本地资产；未配置服务时不会假装生成成功。'),
+            ('本地剪辑与最终拼接','FFmpeg 可用' if ffmpeg_ok else '未检测到 FFmpeg','本地裁剪、后处理与最终拼接依赖 FFmpeg；实际编码能力以本机检测为准。'),
+            ('用户实拍剪辑','依赖本机能力','支持素材文件夹、关键帧视觉分析与本地剪辑规划；视觉模型与 FFmpeg 需可用。'),
+            ('事实/视觉检查与交付','界面已接入','创意事实、分镜事实、成片视觉复核与最终交付安全闸门按已有数据运行。'),
+            ('本地成本账本','界面已接入','模型 Token 估算与视频/素材生产费用分开记录、分开显示；不等于供应商账单。'),
+            ('本地资产库','已初始化' if self.library_root.exists() else '目录待创建',str(self.library_root))
+        ]
+        for row in rows: tree.insert('', 'end', values=row)
+
+        help_path=Path(__file__).resolve().parents[1]/'HELP.md'
+        try:
+            help_content=help_path.read_text(encoding='utf-8')
+        except Exception as exc:
+            help_content=f'无法读取帮助文档：{help_path}\\n{exc}'
+        help_frame=ttk.Frame(help_tab); help_frame.pack(fill='both',expand=True)
+        help_text=tk.Text(help_frame,wrap='word',font=('Microsoft YaHei UI',10))
+        help_scroll=ttk.Scrollbar(help_frame,orient='vertical',command=help_text.yview)
+        help_text.configure(yscrollcommand=help_scroll.set)
+        help_text.pack(side='left',fill='both',expand=True); help_scroll.pack(side='right',fill='y')
+        help_text.insert('1.0',help_content); help_text.config(state='disabled')
+        ttk.Button(frm,text='关闭',command=win.destroy).pack(anchor='e',pady=(8,0))
 
     def refresh_gpu(self):
         g=detect_gpu(); self.gpu_text.set(('🟢 '+g.get('name','NVIDIA')+' · '+g.get('mode','CPU')) if g.get('available') else '⚪ 未检测到 NVIDIA GPU · CPU模式')
