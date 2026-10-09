@@ -84,6 +84,14 @@ def decide_action(mode: str | None, action: str, *, user_approved: bool = False)
                         "允许执行；仍须遵守独立的事实、安全、预算和镜头复核闸门。")
 
 
+def preserve_workflow_state(previous_plan: dict[str, object], next_plan: dict[str, object]) -> dict[str, object]:
+    """Carry project-wide mode and per-variant approvals across plan activation."""
+    for key in ("workflow_mode", "workflow_approvals"):
+        if key in previous_plan:
+            next_plan[key] = previous_plan[key]
+    return next_plan
+
+
 def set_project_workflow_mode(project, mode: str) -> str:
     """Persist the mode in the project's existing creative_plan payload."""
     selected = normalize_mode(mode)
