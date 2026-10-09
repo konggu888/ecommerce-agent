@@ -26,7 +26,7 @@ class WorkflowModePolicyTests(unittest.TestCase):
         self.assertIn("def _restore_variant_selection(self, variant_index):", app_source)
         self.assertIn("self._restore_variant_selection(original_index)", app_source)
         restore_start = app_source.index("def _restore_variant_selection(self, variant_index):")
-        restore_end = app_source.index("\\n    def switch_variant(self):", restore_start)
+        restore_end = app_source.index("\n    def switch_variant(self):", restore_start)
         restore_body = app_source[restore_start:restore_end]
         self.assertLess(restore_body.index("self._cache_active_variant()"), restore_body.index("self._activate_plan(target,info)"))
         self.assertIn("except Exception as exc:", app_source[app_source.index("def batch_generate_variants(self):"):app_source.index("def batch_final_render(self):")])
