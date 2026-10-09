@@ -124,6 +124,13 @@ class WorkflowModePolicyTests(unittest.TestCase):
         app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
         edit_method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "edit_shot")
         self.assertTrue(any(isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "invalidate_storyboard_approval" for node in ast.walk(edit_method)))
+        # Editing must update the per-variant snapshot before saving; otherwise a later
+        # switch/reopen can restore the stale pre-edit cached storyboard.
+        self.assertTrue(any(isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) and node.func.attr == "_cache_active_variant" for node in ast.walk(edit_method)))
+        self.assertLess(
+            next(i for i, node in enumerate(edit_method.body) if isinstance(node, ast.Expr) and isinstance(node.value, ast.Call) and isinstance(node.value.func, ast.Attribute) and node.value.func.attr == "_cache_active_variant"),
+            next(i for i, node in enumerate(edit_method.body) if isinstance(node, ast.Expr) and isinstance(node.value, ast.Call) and isinstance(node.value.func, ast.Attribute) and node.value.func.attr == "save")
+        )
         review_method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "review_hybrid_gap_shots")
         accept_method = next(node for node in ast.walk(review_method) if isinstance(node, ast.FunctionDef) and node.name == "accept")
         self.assertTrue(any(isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "invalidate_storyboard_approval" for node in ast.walk(accept_method)))
