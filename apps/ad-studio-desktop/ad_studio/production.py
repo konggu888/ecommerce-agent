@@ -507,14 +507,37 @@ class ProductionStore:
             while out.exists() or out.with_suffix(".json").exists():
                 out=base_out.with_name(f"{base_out.stem}-r{stamp}-{revision}{base_out.suffix}")
                 revision += 1
-        concat([Path(s.video_path) for s in shots],out)
-        media_check=self.inspect_final_output(out, aspect)
-        if not media_check["valid"]:
-            if out.exists():
-                out.unlink()
-            raise RuntimeError("最终成片机器质检未通过：" + str(media_check["reason"]))
-        self.write_final_output_manifest(
-            project, out, aspect, int(variant_index or self._variant_index(project)),
-            shots, gate, media_check,
-        )
-        return out
+        manifest_path=out.with_suffix(".json")
+        try:
+            concat([Path(s.video_path) for s in shots],out)
+            media_check=self.inspect_final_output(out, aspect)
+            if not media_check["valid"]:
+                raise RuntimeError("最终成片机器质检未通过：" + str(media_check["reason"]))
+            self.write_final_output_manifest(
+                project, out, aspect, int(variant_index or self._variant_index(project)),
+                shots, gate, media_check,
+            )
+            return out
+        except Exception:
+            # concat/ffprobe/manifest persistence can fail after creating a partial file.
+            # Never leave a broken MP4 or a dangling history row that looks deliverable.
+            for path in (out, manifest_path):
+                try:
+                    if path.exists():
+                        path.unlink()
+                except OSError:
+                    pass
+            plan=project.creative_plan or {}
+            manifests=plan.get("final_output_manifests",{})
+            if isinstance(manifests,dict):
+                plan["final_output_manifests"]={
+                    key:value for key,value in manifests.items()
+                    if not isinstance(value,dict) or str(value.get("output_path") or "")!=str(out)
+                }
+            records=plan.get("final_output_history_records",[])
+            if isinstance(records,list):
+                plan["final_output_history_records"]=[
+                    value for value in records
+                    if not isinstance(value,dict) or str(value.get("output_path") or "")!=str(out)
+                ]
+            raise
