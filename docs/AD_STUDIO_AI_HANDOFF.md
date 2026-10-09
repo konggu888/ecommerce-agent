@@ -111,3 +111,8 @@ CI 还会运行前端语法、Python 语法、Typecheck、Engine 和 Risk Contro
 
 - 发现批量生成的逐方案预审循环位于主生成 `try` 之外：方案激活/解析异常可能导致 UI 留在预审中的其他方案。已为预审循环增加异常处理，失败后恢复原选中方案并终止生成。
 - `test_workflow_modes.py` 增加针对预审失败恢复路径的回归契约检查。以本次新 head 的 CI/doc-sync 为准，未进行真机/剪映/真实 Provider 测试。
+
+### 本地后处理 UI 入口复核
+
+- 检查发现 `postprocess_selected()` 与 `finish_selected()` 未显式执行 `_ui_execution_gate()`，且没有先检查项目是否存在。已补充闸门和项目检查，并增加 AST 回归验证。
+- 这只验证入口契约，不等同于真实视频/字幕/BGM 编码的机器实测。
