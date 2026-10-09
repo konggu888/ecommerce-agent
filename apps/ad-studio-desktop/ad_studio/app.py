@@ -1494,6 +1494,16 @@ class App(tk.Tk):
                 raw['_variant_index']=int(raw.get('_variant_index',i))
                 raw['_variant_label']=raw.get('_variant_label',f"方案{i}｜{raw.get('video_form','AI创意方案')}")
             selected_mode=self._workflow_mode_value()
+            if selected_mode == SEMI_AUTO:
+                first_plan=raw_plans[0]
+                summary=(f"方案：{first_plan.get('_variant_label',first_plan.get('video_form','AI创意方案'))}\\n"
+                         f"策略：{str(first_plan.get('strategy',''))[:420]}\\n"
+                         f"视频形式：{first_plan.get('video_form','未指定')}\\n\\n"
+                         "半自动模式会先停在创意方案确认点。是否采用这套方案并继续？")
+                if not messagebox.askyesno('确认 AI 创意方案',summary):
+                    self.project=None
+                    self.detail.set('用户未批准创意方案；已停止本次项目创建。')
+                    return
             if selected_mode == USER_CONTROLLED:
                 selected_index=self._choose_initial_plan(raw_plans)
                 if selected_index is None:
