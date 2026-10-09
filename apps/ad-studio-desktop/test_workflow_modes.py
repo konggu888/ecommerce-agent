@@ -109,16 +109,18 @@ class WorkflowModePolicyTests(unittest.TestCase):
         estimate = Mock(return_value={"总计": 1.5, "明细": [{"类型": "演员", "小计": 1.5}]})
 
         class FakeGenerator:
+            unit_price = 0.0
             def __init__(self, *_args):
                 pass
             def price(self, _kind):
-                return 0.0
+                return self.unit_price
 
         class FakeRouter:
+            target = "cloud"
             def __init__(self, *_args):
                 pass
             def decide_asset(self, _kind):
-                return SimpleNamespace(target="cloud")
+                return SimpleNamespace(target=self.target)
 
         root = Path("/fake/ad-studio")
         namespace = {
@@ -140,6 +142,13 @@ class WorkflowModePolicyTests(unittest.TestCase):
         self.assertEqual(result["unknown_prices"], ["演员"])
         self.assertTrue(result["needs_cloud"])
         estimate.assert_called_once_with(fake.lib, root, [raw_shot])
+
+        FakeRouter.target = "local"
+        FakeGenerator.unit_price = 1.5
+        local_result = helper.__get__(fake, type(fake))([shot])
+        self.assertEqual(local_result["cost"], 0.0)
+        self.assertEqual(local_result["unknown_prices"], [])
+        self.assertFalse(local_result["needs_cloud"])
 
     def test_production_does_not_generate_assets_without_explicit_tags(self):
         source = (Path(__file__).parent / "ad_studio" / "production.py").read_text(encoding="utf-8")
@@ -282,6 +291,15 @@ class WorkflowModePolicyTests(unittest.TestCase):
             cloud_app._authorize_workflow_action.assert_any_call("cloud_generation", "批量云端视频/素材生成授权")
             cloud_app._restore_variant_selection.assert_called_once_with(1)
 
+            # Local video with cloud-only missing assets must still request cloud consent.
+            asset_cloud_app = make_fake_app(100.0, "local")
+            asset_cloud_app._preflight_asset_generation.return_value = {"cost": 1.5, "unknown_prices": [], "needs_cloud": True}
+            batch_method.__get__(asset_cloud_app, type(asset_cloud_app))()
+            asset_cloud_app._authorize_workflow_action.assert_any_call("cloud_generation", "批量云端视频/素材生成授权")
+            self.assertEqual(asset_cloud_app.store.render_shot.call_count, 0)
+            self.assertEqual(asset_cloud_app.store.render_footage_shot.call_count, 0)
+            asset_cloud_app._restore_variant_selection.assert_called_once_with(1)
+
 
     def test_single_shot_budget_and_cloud_refusal_stop_before_render(self):
         import sys
@@ -362,6 +380,14 @@ class WorkflowModePolicyTests(unittest.TestCase):
             cloud_app._authorize_workflow_action.assert_any_call("cloud_generation", "云端视频/素材生成授权")
             cloud_app.store.render_shot.assert_not_called()
             cloud_app.store.render_footage_shot.assert_not_called()
+
+            # Local video with a remote asset requirement must still be stopped if cloud consent is declined.
+            asset_cloud_app, _ = make_app(100.0, "local")
+            asset_cloud_app._preflight_asset_generation.return_value = {"cost": 1.5, "unknown_prices": [], "needs_cloud": True}
+            generate_shot.__get__(asset_cloud_app, type(asset_cloud_app))()
+            asset_cloud_app._authorize_workflow_action.assert_any_call("cloud_generation", "云端视频/素材生成授权")
+            asset_cloud_app.store.render_shot.assert_not_called()
+            asset_cloud_app.store.render_footage_shot.assert_not_called()
 
             footage_app, _ = make_app(0.1, "cloud", filmed=True)
             generate_shot.__get__(footage_app, type(footage_app))()
