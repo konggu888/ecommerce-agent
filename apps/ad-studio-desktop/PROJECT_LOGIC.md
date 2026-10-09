@@ -871,3 +871,7 @@ AST 行为测试会移除提取方法上的 `@ui_action` 装饰器，因为测�
 
 ## 最终成片文件修订不可覆盖（2026-10-09）
 ProductionStore.build_final() 原先对同一方案/画幅始终写入固定路径 final-{aspect}-v{variant}.mp4，导致再次输出覆盖上一次视频，历史记录虽保留多个时间条目，却可能全部指向同一个被覆盖的物理文件。现在固定路径首次输出；若视频或 JSON 清单已存在，则创建带时间修订后缀的新文件名，且检测到冲突时递增编号。视频和同名 JSON 清单作为一对独立保存；清单先生成 history_key、revision_id，再完整写入磁盘，避免历史标识只存在于内存记录中而未进入 JSON 文件。A33 专项测试连续输出两次，验证路径不同、旧视频与清单字节不变、历史包含两个仍存在的独立文件，且清单含 revision_id。最终成片交付中心历史表增加创建时间列，和方案/画幅、状态、时长、镜头数、文件存在性、路径一起展示。该项改善 A26 版本历史，但不代表 A26 全部条目已验收通过。
+
+
+## 方案激活时保留项目级最终成片历史（2026-10-09）
+App._activate_plan() 会根据当前创意方案重建 creative_plan。原先只复制 variant_* 键和 workflow 状态，未保留 ProductionStore.build_final() 写入的 final_output_manifests / final_output_history_records；批量输出切换到下一个方案时，可能把前一个方案刚写入的历史丢掉。新增 workflow_modes.preserve_output_history()，深拷贝这两类项目级历史，并在 _activate_plan() 中调用。专项测试验证历史内容保留、深拷贝隔离，以及实际方案激活路径调用该函数。
