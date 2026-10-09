@@ -103,9 +103,21 @@ class WorkflowModePolicyTests(unittest.TestCase):
         batch_start = app_source.index("def batch_generate_variants(self):")
         batch_end = app_source.index("def batch_final_render(self):", batch_start)
         batch = app_source[batch_start:batch_end]
-        self.assertLess(batch.index("if not self._confirm_budget_overrun"), batch.index("self.store.render_shot"))
-        self.assertLess(batch.index("if not self._authorize_workflow_action('cloud_generation'"), batch.index("self.store.render_shot"))
-        self.assertIn("未调用云端服务", batch)
+        budget_gate = batch.index("if not self._confirm_budget_overrun")
+        cloud_gate = batch.index("if needs_cloud_video and CapabilityRouter")
+        first_render = batch.index("self.store.render_shot")
+        self.assertLess(budget_gate, first_render)
+        self.assertLess(cloud_gate, first_render)
+        budget_refusal = batch[budget_gate:cloud_gate]
+        self.assertIn("self._restore_variant_selection(original_index)", budget_refusal)
+        self.assertIn("return", budget_refusal)
+        cloud_refusal_start = batch.index("if not self._authorize_workflow_action('cloud_generation'")
+        generation_start = batch.index("original=original_index")
+        cloud_refusal = batch[cloud_refusal_start:generation_start]
+        self.assertIn("self._restore_variant_selection(original_index)", cloud_refusal)
+        self.assertIn("未调用云端服务", cloud_refusal)
+        self.assertIn("return", cloud_refusal)
+        self.assertLess(generation_start, first_render)
 
     def test_batch_generate_isolates_final_output_failure_per_variant(self):
         app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
