@@ -129,6 +129,22 @@ class App(tk.Tk):
         # Consent is scoped to this single action; it is not stored as a blanket approval.
         return decide_action(decision.mode, action, user_approved=True).allowed
 
+    def _confirm_budget_overrun(self, estimate, remaining, title="预算超限确认"):
+        """Warn with exact amounts and require explicit consent instead of silently blocking."""
+        decision = decide_action(self._workflow_mode_value(), "budget_overrun")
+        if not decision.requires_confirmation:
+            return decision.allowed
+        approved = messagebox.askyesno(
+            title,
+            f"本次预计还需 ¥{float(estimate):.2f}，当前剩余预算 ¥{float(remaining):.2f}。"
+            f"预计超出 ¥{max(0.0, float(estimate) - float(remaining)):.2f}。\n\n"
+            "系统不会自动降质、换模型或减少镜头。是否仍要继续？"
+        )
+        if not approved:
+            self.detail.set("用户取消了超预算操作；未开始本次生成。")
+            return False
+        return decide_action(decision.mode, "budget_overrun", user_approved=True).allowed
+
     def _ensure_storyboard_approval(self):
         """Require one approval per active variant in semi-auto/user-controlled modes."""
         if not self.project:
@@ -990,7 +1006,7 @@ class App(tk.Tk):
             return messagebox.showinfo('无需生成','当前所有已批准的 AI 补镜头任务都已有生成文件。')
         estimate=round(len(pending)*rate,4)
         if budget>0 and estimate>remaining:
-            return messagebox.showwarning('预算闸门',f'本次 AI 补镜头预计还需 ¥{estimate:.2f}，当前剩余预算 ¥{remaining:.2f}。系统不会自动突破预算。')
+            if not self._confirm_budget_overrun(estimate,remaining,'AI补镜头预算超限确认'): return
         if not self._authorize_workflow_action('cloud_generation','云端 AI 补镜头授权'): return
         Shot=__import__('ad_studio.models',fromlist=['Shot']).Shot
         results=[]; failures=[]
@@ -1974,8 +1990,11 @@ class App(tk.Tk):
             missing_counts.append(missing)
             if footage_mode!='用户拍摄素材': estimated += missing*rate
             self._cache_active_variant()
-        if budget>0 and estimated>budget:
-            return messagebox.showwarning('预算闸门',f'本次一键生成预计还需约 ¥{estimated:.2f}，已超过项目预算 ¥{budget:.2f}。\n\n系统不会自动突破预算；请提高预算或减少待生成镜头后再执行。')
+        actual_cost=float(getattr(self.project,'actual_cost_rmb',0.0) or 0.0)
+        remaining_budget=max(0.0,budget-actual_cost) if budget>0 else 0.0
+        if budget>0 and estimated>remaining_budget:
+            if not self._confirm_budget_overrun(estimated,remaining_budget,'一键生成预算超限确认'):
+                return
         if needs_cloud_video and CapabilityRouter(ROOT).decide_video().target == 'cloud':
             if not self._authorize_workflow_action('cloud_generation','批量云端视频生成授权'):
                 self.detail.set('用户未授权云端生成；批量任务未调用视频生成服务。')
