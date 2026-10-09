@@ -89,6 +89,24 @@ class WorkflowModePolicyTests(unittest.TestCase):
                 self.assertIn(required_call, calls)
                 self.assertTrue(any(isinstance(node, ast.If) and "self.project" in ast.unparse(node.test) for node in method.body))
 
+    def test_batch_delivery_isolates_variant_failures_and_restores_selection(self):
+        app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        start = app_source.index("def batch_final_render(self):")
+        end = app_source.index("def final_render(self):", start)
+        body = app_source[start:end]
+        self.assertIn("failed.append(f'{variant_label}：最终成片输出失败：{exc}')", body)
+        self.assertIn("continue", body)
+        self.assertIn("finally:", body)
+        self.assertIn("self._restore_variant_selection(original_index)", body)
+        self.assertIn("self.store.save(self.project)", body)
+        # Budget and cloud-consent refusals must return before the first generation call.
+        batch_start = app_source.index("def batch_generate_variants(self):")
+        batch_end = app_source.index("def batch_final_render(self):", batch_start)
+        batch = app_source[batch_start:batch_end]
+        self.assertLess(batch.index("if not self._confirm_budget_overrun"), batch.index("self.store.render_shot"))
+        self.assertLess(batch.index("if not self._authorize_workflow_action('cloud_generation'"), batch.index("self.store.render_shot"))
+        self.assertIn("未调用云端服务", batch)
+
     def test_known_modes_are_explicit_and_unknown_defaults_to_semi_auto(self):
         self.assertEqual(WORKFLOW_MODES, (AUTO, SEMI_AUTO, USER_CONTROLLED))
         self.assertEqual(normalize_mode("not-a-mode"), SEMI_AUTO)
