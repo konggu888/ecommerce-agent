@@ -811,7 +811,7 @@ A33 自动化验收分别覆盖电商短视频、商品主图视频、广告投�
 
 ## 云端视频生成授权闸门（2026-10-09）
 
-单镜头生产先通过 `CapabilityRouter` 判断目标能力。如果目标为云端，必须在调用 `ProductionStore.render_shot()` 前通过 `cloud_generation` 授权；拒绝时恢复镜头的“待生成”状态并退出，不触发 Provider。一键生成全部版本在预审各方案待生成镜头与预算后，如果存在待生成 AI 镜头且路由目标为云端，会在批量循环开始前统一授权，拒绝即零云端调用。实拍素材裁剪与本地生成不应触发云端授权框。
+单镜头生产先通过 `CapabilityRouter` 判断视频目标，再对待生成镜头调用 `_preflight_asset_generation()`：从当前方案的 `creative_plan.shots[].asset_resolution` 中筛选需求，复用 `estimate_asset_generation()` 估算本次可能新增的演员/场景/商品素材费用，并按 `CapabilityRouter.decide_asset()` 判断是否会走云端。预算估算包含云端视频费用（仅视频路由为 cloud 时）和潜在云端素材费用；远程素材路由为 cloud 但单价缺失/为 0 时，必须明确提示估算不完整并取得用户确认。视频或素材任一能力需要云端时，统一在 `ProductionStore.render_shot()` 前通过 `cloud_generation` 授权；拒绝时不得进入渲染。批量生成对每个方案分别统计未生成的非实拍镜头和资产需求，在首个渲染前完成费用预审与统一云端授权。实拍素材裁剪不触发生成授权；本地视频/本地素材生成不计云端费用。`ProductionStore.resolve_assets()` 只对有明确标签的素材需求执行自动生成，空标签不再隐式生成泛化资产。
 
 专项测试 `test_workflow_modes.py` 要求单镜头与批量路径都显式接入同一授权策略。此授权只证明 UI 授权边界，不能替代真实 Provider 的运行验证，也不能绕过预算/事实/安全/分镜审核。
 
@@ -974,3 +974,12 @@ docs/SESSION_HANDOFF.md 是项目的动态工作快照，与 docs/AD_STUDIO_AI_H
 - UsageLedger 是本地实际生成成本的审计明细，不得在追加新记录时静默截断旧历史。
 - 项目累计成本应覆盖账本中该项目的全部成功记录；最近调用 UI 可以限制显示条数，但持久化账本不得因此丢弃旧数据。
 - test_usage_ledger.py 以 2000 条既有记录加一条新记录验证完整保留与累计金额；真实供应商计费仍需独立核验。
+
+
+## 2026-10-10：生成费用预审覆盖视频与缺失素材
+- `App._preflight_asset_generation(shots)` 只读取当前活动方案中与待生成镜头索引对应的资产需求，调用 `estimate_asset_generation()` 去重估算演员/场景/商品素材费用；不执行生成。
+- 单镜头与批量生成把远程视频费用（仅视频能力路由到 cloud 时）和潜在远程素材费用合并后，再与项目剩余预算比较。
+- 通过 `CapabilityRouter.decide_asset()` 判断素材生成是否需要云端。视频或素材任一项需要云端时，必须在渲染前完成一次明确授权；拒绝后不调用生产入口。
+- 云端素材价格未配置/为零时，先说明估算不完整并询问是否继续；不能把未知价格静默当成免费。
+- `ProductionStore.resolve_assets()` 不再对空标签素材需求调用生成器，避免隐式创建未定义的演员/场景/商品素材。
+- 以上是代码/自动化测试层面的行为，不等于真实 Provider 计费对账、Windows UI 或 FFmpeg 真实成片链路已通过。
