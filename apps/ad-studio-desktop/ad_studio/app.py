@@ -988,7 +988,8 @@ class App(tk.Tk):
         if not self.project:
             return messagebox.showinfo('提示','请先创建或打开一个项目。')
         tasks=(self.project.creative_plan.get('footage_gap_tasks') or {}).get('tasks') or []
-        approved=[x for x in tasks if isinstance(x,dict) and x.get('recommended_resolution')=='AI补镜头' and x.get('generation_allowed') and int(x.get('variant_index',self.active_variant_index) or self.active_variant_index)==self.active_variant_index]
+        active_variant_index=int(getattr(self,'active_variant_index',1) or 1)
+        approved=[x for x in tasks if isinstance(x,dict) and x.get('recommended_resolution')=='AI补镜头' and x.get('generation_allowed') and int(x.get('variant_index',active_variant_index) or active_variant_index)==active_variant_index]
         if not approved:
             return messagebox.showinfo('没有可执行任务','当前没有经过路由器批准的“AI补镜头”任务。商品/真人证据缺口仍需补拍。')
         try:

@@ -807,3 +807,8 @@ apps/ad-studio-desktop/test_ai_handoff.py 必须自动检查快照文件存在�
 - 执行 test_hybrid_gap_generation_records_success_and_isolates_task_failure。
 - 测试应包含当前方案成功/失败任务以及另一方案任务；另一方案任务不得进入当前生成循环、不得改写状态或生成文件路径。
 - 复核代码路径确认 render_shot 的成本记账发生于生成阶段，accept_hybrid_generated_shot 只迁移生成成本元数据、不再次写入 UsageLedger；真实账单核对仍待真实 Provider 验收。
+
+
+## 2026-10-09：AI 补镜头方案过滤的旧项目兼容
+- 当前方案编号读取增加安全默认值 1，避免旧项目或隔离测试对象缺少活动方案字段时抛出 AttributeError。
+- 新任务仍按当前方案编号过滤；没有 variant_index 的历史任务按活动方案兼容处理。
