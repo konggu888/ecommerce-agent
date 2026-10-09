@@ -923,3 +923,8 @@ docs/SESSION_HANDOFF.md 是项目的动态工作快照，与 docs/AD_STUDIO_AI_H
 - generate_shot 在调用任何渲染入口前先识别实拍/AI路径；云端 AI 镜头先估算费用、检查剩余预算，再请求云端授权。
 - 预算或授权被拒绝时直接返回，不修改镜头生成状态、不调用 render_shot/render_footage_shot。
 - filmed 镜头只调用本地 render_footage_shot，不进入云端预算/授权分支。
+
+
+## 测试维护补充：单镜头预算闸门结构断言
+- 工作模式回归测试不再绑定旧的一行式云端授权写法，而是验证预算确认先于云端授权、云端授权先于 render_shot，并确认 filmed 路径调用 render_footage_shot。
+- 即使只修改测试，也必须同步 HELP.md 与 PROJECT_LOGIC.md，以保持后续 AI 接手时的设计契约一致。
