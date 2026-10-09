@@ -50,6 +50,17 @@ class WorkflowModePolicyTests(unittest.TestCase):
         self.assertIn("workflow_approvals", app_source)
         self.assertIn("if not self._ensure_storyboard_approval(): return", app_source)
         self.assertIn("if not self._authorize_workflow_action('final_delivery'", app_source)
+        app_tree = ast.parse(app_source)
+        app_class = next(node for node in app_tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        for method_name, required_call in (
+            ("postprocess_selected", "_ui_execution_gate"),
+            ("finish_selected", "_ui_execution_gate"),
+        ):
+            with self.subTest(method=method_name):
+                method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == method_name)
+                calls = [node.func.attr for node in ast.walk(method) if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)]
+                self.assertIn(required_call, calls)
+                self.assertTrue(any(isinstance(node, ast.If) and "self.project" in ast.unparse(node.test) for node in method.body))
 
     def test_known_modes_are_explicit_and_unknown_defaults_to_semi_auto(self):
         self.assertEqual(WORKFLOW_MODES, (AUTO, SEMI_AUTO, USER_CONTROLLED))
