@@ -1302,6 +1302,10 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertIn("可调用模型", help_source)
         self.assertIn("视频/素材生产费用", help_source)
         self.assertIn("不代表真实供应商", help_source)
+        help_doc = (Path(__file__).parent / "HELP.md").read_text(encoding="utf-8")
+        self.assertIn("## 功能总表", help_doc)
+        self.assertIn("真实投放数据", help_doc)
+        self.assertIn("¥0 表示可用预算为零", help_doc)
 
     def test_main_ui_separates_setup_tools_and_production_workspace(self):
         app_path = Path(__file__).parent / "ad_studio" / "app.py"
