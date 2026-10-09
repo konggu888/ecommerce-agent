@@ -795,3 +795,9 @@ apps/ad-studio-desktop/test_ai_handoff.py 必须自动检查快照文件存在�
 - 执行 test_hybrid_gap_generation_budget_and_cloud_refusal_do_not_render 的零单价场景。
 - 当 Provider 报价为 0/空值时应使用 ¥0.72/镜头保守估算，预算拒绝后不得请求云端授权或调用 render_shot。
 - ¥0.72 是应用默认估算，不替代真实 Provider 报价/计费验收。
+
+
+## AI 补镜头结果反馈验收
+- 执行 test_hybrid_gap_generation_records_success_and_isolates_task_failure。
+- 验证单项失败不会阻止其他补镜头任务，成功/失败状态持久化，detail 与弹窗提供明确反馈。
+- 此项验证使用 mock 渲染器，不等于真实 Provider 或 Windows UI 验收。

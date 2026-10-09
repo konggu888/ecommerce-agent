@@ -370,6 +370,68 @@ class WorkflowModePolicyTests(unittest.TestCase):
                 zero_rate_app._authorize_workflow_action.assert_not_called()
                 zero_rate_app.store.render_shot.assert_not_called()
 
+
+    def test_hybrid_gap_generation_records_success_and_isolates_task_failure(self):
+        from pathlib import Path
+        from unittest.mock import Mock, patch
+
+        app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        tree = ast.parse(app_source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "generate_hybrid_gap_shots")
+        method.decorator_list = []
+
+        class FakeShot:
+            def __init__(self, **kwargs):
+                self.__dict__.update(kwargs)
+                self.actual_cost_rmb = 0.72
+
+        provider = SimpleNamespace(configured=lambda: True, cost_per_shot_rmb=0.72)
+        showinfo = Mock()
+        namespace = {
+            "Path": Path,
+            "ROOT": Path("/fake/ad-studio"),
+            "load_video_provider": Mock(return_value=provider),
+            "messagebox": SimpleNamespace(showinfo=showinfo, showerror=Mock()),
+            "__import__": lambda name, *args, **kwargs: SimpleNamespace(Shot=FakeShot) if name == "ad_studio.models" else __import__(name, *args, **kwargs),
+        }
+        exec(compile(ast.Module(body=[method], type_ignores=[]), "app.py", "exec"), namespace)
+        generate_hybrid = namespace["generate_hybrid_gap_shots"]
+
+        tasks = [
+            {"task_id": "GAP-OK", "recommended_resolution": "AI补镜头", "generation_allowed": True, "need": "辅助镜头1"},
+            {"task_id": "GAP-FAIL", "recommended_resolution": "AI补镜头", "generation_allowed": True, "need": "辅助镜头2"},
+        ]
+        fake = SimpleNamespace()
+        fake._ui_execution_gate = Mock(return_value=True)
+        fake._confirm_budget_overrun = Mock(return_value=False)
+        fake._authorize_workflow_action = Mock(return_value=True)
+        fake.project = SimpleNamespace(
+            creative_plan={"footage_gap_tasks": {"tasks": tasks}},
+            cost_estimate={"预算": 100.0},
+            actual_cost_rmb=0.0,
+        )
+        fake.store = SimpleNamespace(
+            render_shot=Mock(side_effect=["/tmp/gap-ok.mp4", RuntimeError("模拟 Provider 失败")]),
+            save=Mock(),
+        )
+        fake.detail = SimpleNamespace(set=Mock())
+
+        with patch.dict(namespace, {"load_video_provider": Mock(return_value=provider)}):
+            generate_hybrid.__get__(fake, type(fake))()
+
+        self.assertEqual(fake.store.render_shot.call_count, 2)
+        self.assertEqual(tasks[0]["status"], "AI补镜头已生成")
+        self.assertEqual(tasks[0]["generated_path"], "/tmp/gap-ok.mp4")
+        self.assertEqual(tasks[1]["status"], "AI补镜头生成失败")
+        self.assertIn("模拟 Provider 失败", tasks[1]["generation_error"])
+        self.assertEqual(len(fake.project.creative_plan["hybrid_generated_shots"]), 1)
+        fake.store.save.assert_called_once_with(fake.project)
+        fake.detail.set.assert_called_once()
+        self.assertIn("成功 1 个｜失败 1 个", fake.detail.set.call_args.args[0])
+        showinfo.assert_called_once()
+        self.assertIn("失败明细", showinfo.call_args.args[1])
+
     def test_known_modes_are_explicit_and_unknown_defaults_to_semi_auto(self):
         self.assertEqual(WORKFLOW_MODES, (AUTO, SEMI_AUTO, USER_CONTROLLED))
         self.assertEqual(normalize_mode("not-a-mode"), SEMI_AUTO)

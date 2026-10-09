@@ -938,3 +938,8 @@ docs/SESSION_HANDOFF.md 是项目的动态工作快照，与 docs/AD_STUDIO_AI_H
 ## 2026-10-09：统一 AI 补镜头单价默认值
 - generate_hybrid_gap_shots 与单镜头/批量生成一致：Provider 的 cost_per_shot_rmb 缺失、0 或空值时，默认按 ¥0.72/镜头估算。
 - 这是预算预审默认值，不是供应商真实报价；实际成本仍以 Provider 返回/记录的数据为准。价格配置必须在视频生成设置中明确填写。
+
+
+## 2026-10-09：AI 补镜头逐任务故障隔离
+- generate_hybrid_gap_shots 对每个 pending task 独立 try/except；成功任务写 generated_path/status/cost，失败任务写 generation_error/status，之后继续处理后续任务。
+- 完成后统一保存项目并在 detail 与结果弹窗显示成功/失败数量和错误明细。自动化测试使用模拟渲染器验证该行为。
