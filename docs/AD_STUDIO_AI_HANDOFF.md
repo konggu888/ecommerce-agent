@@ -146,3 +146,7 @@ CI 还会运行前端语法、Python 语法、Typecheck、Engine 和 Risk Contro
 
 ## 最新复查：最终成片重做会覆盖旧文件（2026-10-09）
 独立检查 A26 时发现，同一方案和画幅的 build_final() 使用固定文件路径；即使历史清单追加了 revision_id，旧视频和同名 JSON 仍会被覆盖，历史记录不能可靠还原以前的实际成片。现改为首次输出使用既有标准文件名，后续输出使用带时间修订后缀的独立文件名；若视频或清单路径冲突会继续编号。另修复 JSON 清单写入顺序，确保 history_key 与 revision_id 在落盘前已生成。新增 test_a33_full_flow.py 回归测试验证两次输出不覆盖旧视频/清单，且历史保留两个存在的文件和各自的修订标识。最终成片交付中心历史表已补充创建时间列，并有专项断言检查 UI 显示字段。A26 仍需继续核对其他元数据完整性与真实 UI 操作。
+
+
+## 最新复查：批量切换方案可能丢失已输出历史（2026-10-09）
+检查批量最终交付后发现，_activate_plan() 重建 creative_plan 时只保留 variant_* 字段，ProductionStore 维护的 final_output_manifests 与 final_output_history_records 不在该前缀下，切到下一方案时可能丢失前一方案的历史条目。新增 preserve_output_history() 并接入方案激活，深拷贝保留项目级输出清单与历史记录；test_workflow_modes.py 覆盖函数行为及调用路径。必须以该修复提交对应的最新 CI/doc-sync 为准。
