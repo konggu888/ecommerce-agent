@@ -26,6 +26,7 @@ SEMI_CONFIRM = frozenset({
     "approve_creative_plan",
     "approve_storyboard",
     "final_delivery",
+    "generate_all_variants",
 })
 
 # In user-controlled mode, AI may recommend but cannot decide these actions.
@@ -34,6 +35,7 @@ USER_DECISION = frozenset({
     "choose_shots",
     "approve_storyboard",
     "final_delivery",
+    "generate_all_variants",
 })
 
 
