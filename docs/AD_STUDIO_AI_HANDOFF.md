@@ -21,7 +21,7 @@
 
 以 docs/AD_STUDIO_ACCEPTANCE_PLAN.md 的正式顺序为准：
 
-**已完成：A0–A33。B1–B3 真实投放相关阶段按用户要求暂缓。当前未来功能开发入口：docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md；已开始三种 AI 工作模式的权限策略基础，尚未完成 UI 与全链路接入。**
+**已完成：A0–A33。B1–B3 真实投放相关阶段按用户要求暂缓。当前未来功能开发入口：docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md。三种 AI 工作模式已完成第一轮 UI/关键动作接入：主界面提供中文模式选择，项目可保存/恢复模式；半自动模式确认初始创意方案，用户控制模式要求用户选择初始方案，云端 AI 补镜头、批量生成版本和最终交付已接入相应确认入口。全生产链统一接入与完整暂停/确认/继续状态机仍未完成；Windows 真实机器测试暂缓。**
 
 不要把历史文档中的旧“下一阶段”文字当成当前状态；以本文件的当前验收进度和 docs/AD_STUDIO_ACCEPTANCE_PLAN.md 的最新记录为准。
 
@@ -69,4 +69,4 @@ CI 还会运行前端语法、Python 语法、Typecheck、Engine 和 Risk Contro
 
 ## 9. 未来路线开发状态
 
-未来功能总表：`docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md`。2026-10-09 已启动“三种 AI 工作模式完整落地”的第一步：加入工作模式权限策略基础，测试入口为 `apps/ad-studio-desktop/test_workflow_modes.py`。当前只是策略基础，UI、全链路动作接入、暂停/确认/继续交互和 Windows 真机验证仍未完成；不能将其描述为三种模式已完整可用。
+未来功能总表：`docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md`。2026-10-09 已完成三种模式的第一轮 UI/关键动作接入，测试入口为 `apps/ad-studio-desktop/test_workflow_modes.py`。目前覆盖模式选择与项目持久化、半自动创意方案确认、用户控制模式下初始方案选择、云端补镜头授权、批量生成确认和最终交付确认。其余生产动作的统一策略与完整暂停/确认/继续状态机仍未完成；Windows 真机验证暂缓，不能将其描述为三种模式已完整可用。
