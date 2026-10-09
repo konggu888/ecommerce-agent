@@ -122,3 +122,7 @@ CI 还会运行前端语法、Python 语法、Typecheck、Engine 和 Risk Contro
 - 发现 AI 补镜头通过人工复核并插入当前分镜后，没有清除该方案旧的 `workflow_approvals`，可能让半自动/用户控制模式跳过对更新分镜的再次确认。
 - 已添加 `invalidate_storyboard_approval()` 公用逻辑，并同时接入镜头编辑保存、AI 补镜头插入路径；新增单元测试验证只清除当前方案审批，并用 AST 确认两个真实调用路径接入。
 - 需以最新提交 CI/doc-sync 为准。该修复未替代 Windows 真机或真实 Provider 测试。
+
+
+## 最新工作项补充（2026-10-09）
+独立复查发现镜头编辑只保存当前 `project.shots`，未同步更新 `variant_shot_cache`。这可能导致之后切换创意方案时旧缓存覆盖编辑内容。已修复为镜头修改后先失效当前方案审批、更新当前方案缓存，再保存项目；回归测试检查嵌套编辑回调中的调用顺序。需以该修复提交对应的最新 CI 与 doc-sync 为最终验证依据。
