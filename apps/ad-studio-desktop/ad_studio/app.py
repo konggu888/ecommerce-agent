@@ -131,8 +131,13 @@ class App(tk.Tk):
 
     def _choose_initial_plan(self, plans):
         """In user-controlled mode, let the user select the initial AI proposal."""
-        if not plans or len(plans) <= 1:
-            return 0
+        if not plans:
+            return None
+        if len(plans) == 1:
+            return 0 if messagebox.askyesno(
+                "确认创意方案",
+                f"AI 当前只提出一套方案：{plans[0].get('_variant_label', plans[0].get('video_form', '创意方案'))}。\\n是否明确选择这套方案？"
+            ) else None
         win = tk.Toplevel(self)
         win.title("选择初始创意方案")
         win.geometry("760x430")
@@ -934,6 +939,7 @@ class App(tk.Tk):
         if not self._ui_execution_gate(): return
         if not self.project:
             return messagebox.showinfo('提示','请先创建或打开一个项目。')
+        if not self._authorize_workflow_action('cloud_generation','云端 AI 补镜头授权'): return
         tasks=(self.project.creative_plan.get('footage_gap_tasks') or {}).get('tasks') or []
         approved=[x for x in tasks if isinstance(x,dict) and x.get('recommended_resolution')=='AI补镜头' and x.get('generation_allowed')]
         if not approved:
@@ -1894,6 +1900,7 @@ class App(tk.Tk):
         """一次生成全部广告版本：预算先审计，逐版本独立生成并最终出片。"""
         if not self._ui_execution_gate(): return
         if not self.project: return messagebox.showinfo('提示','先创建项目。')
+        if not self._authorize_workflow_action('generate_all_variants','批量生成版本确认'): return
         variants=self.project.creative_plan.get('creative_variants',[])
         if len(variants)<=1: return messagebox.showinfo('提示','当前只有一个方案，请直接生成当前镜头。')
         # 先锁定用户当前方案；预算预审会逐方案切换，不能把“最后一次预审方案”误当成原方案。
