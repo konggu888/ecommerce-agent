@@ -19,9 +19,11 @@
 1. docs/AD_STUDIO_AI_HANDOFF.md（无聊天历史的最短入口）
 2. 本文件 AGENTS.md
 3. apps/ad-studio-desktop/PROJECT_LOGIC.md
-3. apps/ad-studio-desktop/HELP.md
-4. 目标代码文件及其依赖
-5. 测试文件
+4. apps/ad-studio-desktop/HELP.md
+5. 目标代码文件及其依赖
+6. 测试文件
+7. 如进行验收：docs/AD_STUDIO_ACCEPTANCE_PLAN.md
+8. 如进行验收：docs/AD_STUDIO_ACCEPTANCE_SOP.md
 
 没有读完以上文档，不得直接重构核心流程。
 
@@ -85,6 +87,7 @@ python tools/check_ad_studio_docs.py --base <base-ref> --head <head-ref>
 GitHub Actions 也会执行相同检查；代码改了而两个文档没有同步修改时，CI 应失败。
 
 ## 18. AI 强制推进前检查闸门（最高执行规则）
+
 任何 AI、Codex 或自动化开发代理准备执行“继续”“推进”“下一步”“修复后继续”等动作前，必须先完成一次当前状态检查，不得凭上一轮结论直接继续。
 
 强制顺序：
@@ -100,10 +103,17 @@ GitHub Actions 也会执行相同检查；代码改了而两个文档没有同�
 
 因此，AI 每次收到“继续”“推进”“按你的来”等指令时，第一动作必须是：检查最新状态 → 判断是否存在失败 → 有失败先修失败 → 再继续。
 
-
 ### A32 AI 接手入口
 - 无历史 AI 应先阅读 docs/AD_STUDIO_AI_HANDOFF.md，再按其中固定顺序核对长期文档、测试入口、当前验收进度和安全边界。
 - A32 验收必须由可独立执行的自动化测试证明，不得只凭文档存在或口头说明判定通过。
+
+### 验收强制入口
+- 所有“验收 / 重新验收 / 独立验收 / 从头验收”必须先阅读 docs/AD_STUDIO_ACCEPTANCE_SOP.md。
+- 验收必须以当前代码实际检查为证据，不得从聊天记录、旧 CI 或旧验收结论直接继承。
+- 具体阶段目标以 docs/AD_STUDIO_ACCEPTANCE_PLAN.md 为唯一正式范围依据。
+- 用户说“从头验收”时，必须重新执行专项测试、完整回归、最新 CI/doc-sync 检查，并记录本轮证据。
+- 验收不通过必须停止推进，先定位、修复、回归，再继续下一阶段。
+- 只有最新 CI、doc-sync、专项测试及数据/安全边界均满足要求，才能宣布“通过”；真实模型、Windows、剪映或真实平台未验证时必须明确写“有条件通过”。
 
 ### Variant shot cache invariant
 - 每个创意方案必须独立保存完整 shots 快照。
