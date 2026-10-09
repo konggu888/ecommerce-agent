@@ -824,3 +824,11 @@ apps/ad-studio-desktop/test_ai_handoff.py 必须自动检查快照文件存在�
 - 执行 test_hybrid_gap_budget_includes_configured_missing_asset_cost，确认缺失素材配置的云端价格加入视频生成预算。
 - 对远程资产生成配置价格缺失/为零的场景，确认先显示估算不完整提示；用户拒绝后不调用云端授权或渲染。
 - 配置读取失败应 fail closed，不能用不完整估算继续生成。
+
+
+## 本地实际成本账本长期完整性验收（A34）
+1. 执行 `python -m unittest test_usage_ledger`（工作目录为 `apps/ad-studio-desktop`）。
+2. 测试必须预置 2000 条历史后追加新记录，确认文件仍有 2001 条且最早记录未被删除。
+3. 确认 project_summary 的 entries、success、actual_cost_rmb 和 by_category 都覆盖完整历史。
+4. 如果账本保留策略或汇总行为变化，必须同步 HELP.md、PROJECT_LOGIC.md、验收计划和 SESSION_HANDOFF.md。
+5. 该项不得描述为真实供应商账单通过；真实 Provider 费用对账仍属于暂缓的真实环境验收。
