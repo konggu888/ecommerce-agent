@@ -816,3 +816,9 @@
 - 新增执行级 mock 测试覆盖单镜头超预算拒绝、云端授权拒绝和实拍裁剪路径。
 - 两类拒绝都必须在 renderer 调用前返回；预算拒绝保持镜头原状态。实拍裁剪不应请求 cloud_generation 授权。
 - 真实 Provider 计费、Windows UI 与真实 FFmpeg 仍未验收。
+
+
+## 2026-10-09 补充：AI 补镜头拒绝路径
+- 执行 test_hybrid_gap_generation_budget_and_cloud_refusal_do_not_render。
+- 超预算拒绝应在云端授权与渲染之前返回；云端授权拒绝应在 render_shot 之前返回。
+- 该项是离线 mock 执行级验证，不代表真实 Provider/计费或 Windows UI 通过。

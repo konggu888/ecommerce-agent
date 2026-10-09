@@ -928,3 +928,8 @@ docs/SESSION_HANDOFF.md 是项目的动态工作快照，与 docs/AD_STUDIO_AI_H
 ## 测试维护补充：单镜头预算闸门结构断言
 - 工作模式回归测试不再绑定旧的一行式云端授权写法，而是验证预算确认先于云端授权、云端授权先于 render_shot，并确认 filmed 路径调用 render_footage_shot。
 - 即使只修改测试，也必须同步 HELP.md 与 PROJECT_LOGIC.md，以保持后续 AI 接手时的设计契约一致。
+
+
+## 2026-10-09：AI 补镜头执行闸门
+- generate_hybrid_gap_shots 的顺序是：筛选已批准任务 → 检查 Provider 配置 → 计算剩余预算 → 超预算确认 → 云端授权 → render_shot。
+- 自动化测试执行真实方法体，分别验证预算拒绝不触发授权/渲染、授权拒绝不触发渲染。

@@ -783,3 +783,9 @@ apps/ad-studio-desktop/test_ai_handoff.py 必须自动检查快照文件存在�
 - 执行 test_single_shot_budget_and_cloud_refusal_stop_before_render。
 - 验证云端单镜头生成超预算/拒绝授权均不调用渲染器；实拍镜头只走 render_footage_shot，不申请云端授权。
 - mock 结果仅为离线执行证据，不代表真实 Provider 计费或 Windows 真机验收。
+
+
+## AI 补镜头拒绝路径验收
+- 执行 test_hybrid_gap_generation_budget_and_cloud_refusal_do_not_render。
+- 确认超预算拒绝时授权与渲染均零调用；云端授权拒绝时渲染零调用。
+- 如测试失败，先读取对应 CI job 日志，修复后重跑最新 CI 与 doc-sync；不能以历史绿灯替代。

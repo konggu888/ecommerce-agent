@@ -312,6 +312,54 @@ class WorkflowModePolicyTests(unittest.TestCase):
             footage_app.store.render_footage_shot.assert_called_once()
             footage_app.store.render_shot.assert_not_called()
 
+
+    def test_hybrid_gap_generation_budget_and_cloud_refusal_do_not_render(self):
+        import types
+        from pathlib import Path
+        from unittest.mock import Mock, patch
+
+        app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        tree = ast.parse(app_source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "generate_hybrid_gap_shots")
+        method.decorator_list = []
+        provider = SimpleNamespace(configured=lambda: True, cost_per_shot_rmb=0.72)
+        namespace = {
+            "Path": Path,
+            "ROOT": Path("/fake/ad-studio"),
+            "load_video_provider": Mock(return_value=provider),
+            "messagebox": SimpleNamespace(showinfo=Mock(), showerror=Mock()),
+        }
+        exec(compile(ast.Module(body=[method], type_ignores=[]), "app.py", "exec"), namespace)
+        generate_hybrid = namespace["generate_hybrid_gap_shots"]
+
+        def make_app(budget):
+            task = {"task_id": "GAP-1", "recommended_resolution": "AI补镜头", "generation_allowed": True}
+            fake = SimpleNamespace()
+            fake._ui_execution_gate = Mock(return_value=True)
+            fake._confirm_budget_overrun = Mock(return_value=False)
+            fake._authorize_workflow_action = Mock(side_effect=lambda action, *_args: action != "cloud_generation")
+            fake.project = SimpleNamespace(
+                creative_plan={"footage_gap_tasks": {"tasks": [task]}},
+                cost_estimate={"预算": budget},
+                actual_cost_rmb=0.0,
+            )
+            fake.store = SimpleNamespace(render_shot=Mock(), save=Mock())
+            fake.detail = SimpleNamespace(set=Mock())
+            return fake
+
+        with patch.dict(namespace, {"load_video_provider": Mock(return_value=provider)}):
+            budget_app = make_app(0.1)
+            generate_hybrid.__get__(budget_app, type(budget_app))()
+            budget_app._confirm_budget_overrun.assert_called_once()
+            budget_app.store.render_shot.assert_not_called()
+            budget_app._authorize_workflow_action.assert_not_called()
+
+            cloud_app = make_app(100.0)
+            generate_hybrid.__get__(cloud_app, type(cloud_app))()
+            cloud_app._authorize_workflow_action.assert_called_once_with("cloud_generation", "云端 AI 补镜头授权")
+            cloud_app.store.render_shot.assert_not_called()
+
     def test_known_modes_are_explicit_and_unknown_defaults_to_semi_auto(self):
         self.assertEqual(WORKFLOW_MODES, (AUTO, SEMI_AUTO, USER_CONTROLLED))
         self.assertEqual(normalize_mode("not-a-mode"), SEMI_AUTO)
