@@ -1461,24 +1461,36 @@ class App(tk.Tk):
         plan=self.project.creative_plan
         idx=str(self.active_variant_index)
 
-        variant_tasks=plan.get('variant_footage_gap_tasks') or {}
-        if isinstance(variant_tasks, dict) and idx in variant_tasks:
-            plan['footage_gap_tasks']=json.loads(json.dumps(variant_tasks[idx], ensure_ascii=False))
+        variant_tasks=plan.get('variant_footage_gap_tasks')
+        if isinstance(variant_tasks, dict):
+            if idx in variant_tasks:
+                plan['footage_gap_tasks']=json.loads(json.dumps(variant_tasks[idx], ensure_ascii=False))
+            elif variant_tasks:
+                # If another variant has task state but this one does not, clear the
+                # previous variant's active value instead of leaking it across variants.
+                plan['footage_gap_tasks']={}
 
-        variant_reviewed=plan.get('variant_hybrid_reviewed_shots') or {}
-        if isinstance(variant_reviewed, dict) and idx in variant_reviewed:
-            plan['hybrid_reviewed_shots']=json.loads(json.dumps(variant_reviewed[idx], ensure_ascii=False))
+        variant_reviewed=plan.get('variant_hybrid_reviewed_shots')
+        if isinstance(variant_reviewed, dict):
+            if idx in variant_reviewed:
+                plan['hybrid_reviewed_shots']=json.loads(json.dumps(variant_reviewed[idx], ensure_ascii=False))
+            elif variant_reviewed:
+                plan['hybrid_reviewed_shots']=[]
 
-        # 实拍多方案状态同样按方案恢复；没有对应数据时保留当前通用状态。
+        # Restore variant-specific footage decisions. Once per-variant storage exists,
+        # a missing entry means "no state for this variant", not "reuse another variant".
         for field, storage in (
             ('footage_plan','variant_footage_plans'),
             ('footage_selection_audit','variant_footage_selection_audits'),
             ('footage_coverage','variant_footage_coverage'),
             ('footage_gaps','variant_footage_gaps'),
         ):
-            values=plan.get(storage) or {}
-            if isinstance(values, dict) and idx in values:
-                plan[field]=json.loads(json.dumps(values[idx], ensure_ascii=False))
+            values=plan.get(storage)
+            if isinstance(values, dict):
+                if idx in values:
+                    plan[field]=json.loads(json.dumps(values[idx], ensure_ascii=False))
+                elif values:
+                    plan[field]=[] if field == 'footage_plan' else {}
 
     def _record_variant_output(self, path):
         if not self.project:return
