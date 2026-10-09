@@ -2193,7 +2193,7 @@ class App(tk.Tk):
                         failed.append(f'{variant_label}：保存异常状态时出错：{save_exc}')
                     continue
         except Exception as e:
-            failed.append(f'批量交付流程异常：{e}')
+            failed.append(f'批量交付流程异常：{e}；已完成的输出记录已保留')
         finally:
             try:
                 self._restore_variant_selection(original_index)
