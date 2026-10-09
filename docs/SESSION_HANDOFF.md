@@ -15,9 +15,9 @@
 - 仓库：konggu888/ecommerce-agent
 - 分支：agent/future-work-modes-foundation
 - PR：#18，https://github.com/konggu888/ecommerce-agent/pull/18
-- 已知基线提交：54edd763fd233d9132939dc814c86a035aba9069
-- 该基线的 CI run #37902268222：success；docs-sync run #37902268251：success。
-- 上述 CI 只证明当时的基线，不证明本文件及其后续提交对应的最新 HEAD 通过。新窗口必须查询 PR 当前 head、最新 CI、最新 docs-sync；若有失败，先读失败日志并修复，不得继续叠加无关功能。
+- 最近已完成的交接机制实现提交：441cf724bd0ed86bc476477bb0ee22df993c12e7。
+- 该提交的 CI run #987（37902782056）：success；docs-sync run #698（37902782076）：success。
+- 这些结果只证明对应提交，不证明此后新提交的最新 HEAD 通过。新窗口必须查询 PR 当前 head、最新 CI、最新 docs-sync；若有失败，先读失败日志并修复，不得继续叠加无关功能。新窗口必须查询 PR 当前 head、最新 CI、最新 docs-sync；若有失败，先读失败日志并修复，不得继续叠加无关功能。
 - PR #18 上次核验为 open、未合并；再次操作前重新检查，不得假定状态没变。
 
 ## 已完成的最近工作
@@ -26,7 +26,7 @@
 2. 批量交付结束时尝试恢复操作前的方案选择、保存项目并刷新 UI，恢复/保存失败也写入结果明细。
 3. 最终视频拼接、媒体质检或 JSON 清单写入失败时，清理本次生成的部分 MP4/JSON，并移除对应的无效内存历史记录；不清理旧的有效输出。
 4. 增加相应回归测试，并更新 HELP.md、PROJECT_LOGIC.md、AI handoff、验收计划与 SOP。
-5. 最近已知基线 CI 与 docs-sync 均成功；当前新增加的跨窗口交接改动仍需以提交后最新 CI/doc-sync 为准。
+5. 本次新增的跨聊天窗口交接机制已写入 SESSION_HANDOFF.md、AGENTS.md、AI handoff、验收计划/SOP、HELP.md、PROJECT_LOGIC.md，并加入 test_ai_handoff.py 自动化检查；实现提交 441cf724 的 CI 与 docs-sync 均成功。若本次快照本身随后再次提交，必须仍以那个新 HEAD 的 CI/doc-sync 为准。
 
 ## 下一步（按顺序执行，不要跳过）
 
