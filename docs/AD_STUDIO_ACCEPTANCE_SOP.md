@@ -770,3 +770,10 @@ apps/ad-studio-desktop/test_ai_handoff.py 必须自动检查快照文件存在�
 
 - 加强批量生成预审测试：不仅检查预算确认/云端授权闸门位于镜头生成调用之前，还检查拒绝分支会恢复原方案、设置明确状态并提前返回。
 - 这属于代码结构级回归保护，可防止后续重构把生成调用挪到授权之前；它不等于真实 Provider 计费或 Windows UI 操作已验证。
+
+
+## 2026-10-09 补充：批量生成拒绝路径
+- 执行 test_batch_rejections_execute_without_any_render_provider_calls。
+- 该测试必须实际运行提取自 App.batch_generate_variants 的方法，而不只是检查源码字符串。
+- 超预算拒绝与云端授权拒绝两条路径都必须证明本地镜头渲染和实拍裁剪入口调用次数为 0，并确认原方案被恢复。
+- 不得把 mock 调用计数扩展解释为真实 Provider 计费验证或 Windows 真机验收。

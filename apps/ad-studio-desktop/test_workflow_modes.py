@@ -136,6 +136,90 @@ class WorkflowModePolicyTests(unittest.TestCase):
         self.assertIn("self._cache_active_variant()", body[except_at:continue_at])
         self.assertLess(next_variant_at, build_at)
 
+
+    def test_batch_rejections_execute_without_any_render_provider_calls(self):
+        """Execute the real batch preflight method with fakes; refusal must stop before rendering."""
+        import sys
+        import types
+        from pathlib import Path
+        from unittest.mock import Mock, patch
+
+        app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        tree = ast.parse(app_source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "batch_generate_variants")
+        method.decorator_list = []
+        namespace = {
+            "Path": Path,
+            "ROOT": Path("/fake/ad-studio"),
+            "messagebox": SimpleNamespace(showinfo=Mock(), showerror=Mock()),
+        }
+        exec(compile(ast.Module(body=[method], type_ignores=[]), "app.py", "exec"), namespace)
+        batch_method = namespace["batch_generate_variants"]
+
+        class FakeShot:
+            video_path = None
+            clip_source = "ai_generated"
+
+        class FakeCapabilityRouter:
+            target = "local"
+            def __init__(self, _root):
+                pass
+            def decide_video(self):
+                return SimpleNamespace(target=self.target)
+
+        product_parser = types.ModuleType("ad_studio.product_parser")
+        product_parser.ProductInfo = lambda **kwargs: SimpleNamespace(**kwargs)
+
+        def make_fake_app(budget, cloud_target):
+            fake = SimpleNamespace()
+            fake._ui_execution_gate = Mock(return_value=True)
+            fake._authorize_workflow_action = Mock(side_effect=lambda action, *_args: action != "cloud_generation")
+            fake._confirm_budget_overrun = Mock(return_value=False)
+            fake.active_variant_index = 1
+            fake.project = SimpleNamespace(
+                creative_plan={"creative_variants": [
+                    {"_variant_index": 1, "_variant_label": "方案1"},
+                    {"_variant_index": 2, "_variant_label": "方案2"},
+                ]},
+                cost_estimate={"预算": budget},
+                actual_cost_rmb=0.0,
+                product_info={},
+                shots=[FakeShot()],
+            )
+            fake.footage_mode = SimpleNamespace(get=lambda: "")
+            fake.detail = SimpleNamespace(set=Mock())
+            fake.store = SimpleNamespace(
+                render_shot=Mock(),
+                render_footage_shot=Mock(),
+                save=Mock(),
+            )
+            fake._cache_active_variant = Mock()
+            def activate(raw, _info):
+                fake.active_variant_index = raw["_variant_index"]
+                fake.project.shots = [FakeShot()]
+            fake._activate_plan = Mock(side_effect=activate)
+            fake._restore_variant_selection = Mock(side_effect=lambda idx: setattr(fake, "active_variant_index", idx))
+            FakeCapabilityRouter.target = cloud_target
+            return fake
+
+        with patch.dict(sys.modules, {"ad_studio.product_parser": product_parser}), patch.dict(namespace, {"CapabilityRouter": FakeCapabilityRouter}):
+            # Budget refusal: the confirmation is declined and no shot renderer runs.
+            budget_app = make_fake_app(0.1, "local")
+            batch_method.__get__(budget_app, type(budget_app))()
+            self.assertEqual(budget_app.store.render_shot.call_count, 0)
+            self.assertEqual(budget_app.store.render_footage_shot.call_count, 0)
+            budget_app._confirm_budget_overrun.assert_called_once()
+            budget_app._restore_variant_selection.assert_called_once_with(1)
+
+            # Cloud consent refusal: with enough budget, cloud authorization is declined.
+            cloud_app = make_fake_app(100.0, "cloud")
+            batch_method.__get__(cloud_app, type(cloud_app))()
+            self.assertEqual(cloud_app.store.render_shot.call_count, 0)
+            self.assertEqual(cloud_app.store.render_footage_shot.call_count, 0)
+            cloud_app._authorize_workflow_action.assert_any_call("cloud_generation", "批量云端视频生成授权")
+            cloud_app._restore_variant_selection.assert_called_once_with(1)
+
     def test_known_modes_are_explicit_and_unknown_defaults_to_semi_auto(self):
         self.assertEqual(WORKFLOW_MODES, (AUTO, SEMI_AUTO, USER_CONTROLLED))
         self.assertEqual(normalize_mode("not-a-mode"), SEMI_AUTO)

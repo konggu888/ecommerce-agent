@@ -911,3 +911,9 @@ docs/SESSION_HANDOFF.md 是项目的动态工作快照，与 docs/AD_STUDIO_AI_H
 
 - 加强批量生成预审测试：不仅检查预算确认/云端授权闸门位于镜头生成调用之前，还检查拒绝分支会恢复原方案、设置明确状态并提前返回。
 - 这属于代码结构级回归保护，可防止后续重构把生成调用挪到授权之前；它不等于真实 Provider 计费或 Windows UI 操作已验证。
+
+
+## 2026-10-09：批量生成拒绝路径的执行级回归
+- test_batch_rejections_execute_without_any_render_provider_calls 从 app.py AST 中提取实际 batch_generate_variants 方法，在不启动 Tk 主窗口的前提下使用模拟项目/路由执行拒绝路径。
+- 分别验证超预算拒绝与云端授权拒绝均不会调用 render_shot 或 render_footage_shot，且恢复原方案编号。
+- 这是执行级 mock 回归；不证明真实 Provider 网络请求、真实计费或 Windows UI 已验收。
