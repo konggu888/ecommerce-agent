@@ -1551,6 +1551,9 @@ class App(tk.Tk):
                 if selected_index:
                     chosen=raw_plans.pop(selected_index)
                     raw_plans.insert(0,chosen)
+                    # Re-number fresh-project variants to match their visible list order.
+                    for variant_position, candidate in enumerate(raw_plans,1):
+                        candidate['_variant_index']=variant_position
             plan=self._activate_plan(raw_plans[0],info)
             set_project_workflow_mode(self.project,selected_mode)
             self.project.creative_plan['creative_variants']=raw_plans
