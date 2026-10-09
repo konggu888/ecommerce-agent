@@ -109,7 +109,7 @@ class App(tk.Tk):
             AUTO: "AI 全自动",
             SEMI_AUTO: "AI 半自动",
             USER_CONTROLLED: "用户控制 / AI 辅助",
-        }.get(get_project_workflow_mode(type("ModeProject", (), {"creative_plan": {"workflow_mode": mode}})()), "AI 半自动")
+        }.get(mode, "AI 半自动")
 
     def _authorize_workflow_action(self, action, title="操作确认"):
         """Apply workflow-mode confirmation policy without replacing safety gates."""
