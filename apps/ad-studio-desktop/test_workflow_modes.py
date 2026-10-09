@@ -6,7 +6,7 @@ from types import SimpleNamespace
 from ad_studio.workflow_modes import (
     AUTO, SEMI_AUTO, USER_CONTROLLED, WORKFLOW_MODES,
     decide_action, get_project_workflow_mode, normalize_mode,
-    preserve_workflow_state, set_project_workflow_mode,
+    preserve_workflow_state, set_project_workflow_mode, invalidate_storyboard_approval,
 )
 
 
@@ -110,6 +110,23 @@ class WorkflowModePolicyTests(unittest.TestCase):
         self.assertEqual(next_plan["workflow_mode"], USER_CONTROLLED)
         self.assertEqual(next_plan["workflow_approvals"], {"1": True, "2": False})
         self.assertNotIn("variant_shot_cache", next_plan)
+
+    def test_storyboard_approval_is_invalidated_only_for_changed_variant(self):
+        plan = {"workflow_approvals": {"1": True, "2": True, "3": False}}
+        self.assertTrue(invalidate_storyboard_approval(plan, 2))
+        self.assertEqual(plan["workflow_approvals"], {"1": True, "3": False})
+        self.assertFalse(invalidate_storyboard_approval(plan, 2))
+        self.assertFalse(invalidate_storyboard_approval({}, 1))
+
+    def test_editing_or_inserting_a_shot_invalidates_its_variant_approval(self):
+        app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        tree = ast.parse(app_source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        edit_method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "edit_shot")
+        self.assertTrue(any(isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "invalidate_storyboard_approval" for node in ast.walk(edit_method)))
+        review_method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "review_hybrid_gap_shots")
+        accept_method = next(node for node in ast.walk(review_method) if isinstance(node, ast.FunctionDef) and node.name == "accept")
+        self.assertTrue(any(isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "invalidate_storyboard_approval" for node in ast.walk(accept_method)))
 
     def test_mode_persists_in_existing_project_payload(self):
         project = SimpleNamespace(creative_plan={})
