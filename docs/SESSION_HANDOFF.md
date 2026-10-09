@@ -76,3 +76,11 @@
 - 真实性边界不变：mock 不代表真实 Provider 网络/计费，不代表 Windows UI 或剪映链路通过。
 - 用户明确暂缓：Windows 真机、真实剪映、真实 Provider/云端生成授权与真实计费；PR #18 不得合并。
 - 如果新测试失败，先读取最新 CI 失败日志，修复后重跑 CI 与 doc-sync；成功后更新本节中的新提交 SHA 和对应运行编号。
+
+
+## 2026-10-09 工作单元结果：批量拒绝路径执行级回归已通过
+- 实现提交：931ebaf8e0050e5c1125e93d82141439107e68ba。
+- CI run 37907237539：success；doc-sync run 37907237540：success。CI 结果对应实现提交 931ebaf8e0050e5c1125e93d82141439107e68ba。
+- 新测试实际执行从 app.py AST 提取的 batch_generate_variants 方法，分别模拟预算拒绝和云端授权拒绝；两条路径均断言 render_shot 与 render_footage_shot 调用次数为 0，并断言恢复原方案。
+- 此测试为离线 mock 执行级回归，不代表真实 Provider 网络/计费、Windows 真机、剪映或真实 UI 人工验收。
+- 下一步：继续复查单镜头生成入口的云端授权与本地/实拍分流；再检查已实现功能的 UI 入口、状态反馈与错误提示。Windows 真机、真实剪映、真实 Provider/计费仍暂缓，PR #18 不得合并。
