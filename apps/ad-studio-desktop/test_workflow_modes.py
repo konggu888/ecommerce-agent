@@ -6,11 +6,28 @@ from types import SimpleNamespace
 from ad_studio.workflow_modes import (
     AUTO, SEMI_AUTO, USER_CONTROLLED, WORKFLOW_MODES,
     decide_action, get_project_workflow_mode, normalize_mode,
-    preserve_workflow_state, set_project_workflow_mode, invalidate_storyboard_approval,
+    preserve_workflow_state, preserve_output_history, set_project_workflow_mode, invalidate_storyboard_approval,
 )
 
 
 class WorkflowModePolicyTests(unittest.TestCase):
+    def test_final_output_history_survives_variant_activation(self):
+        previous = {
+            "final_output_manifests": {"1|9:16": {"output_path": "old.mp4"}},
+            "final_output_history_records": [
+                {"variant_index": 1, "output_path": "old.mp4", "revision_id": "rev-1"}
+            ],
+        }
+        next_plan = {}
+        preserve_output_history(previous, next_plan)
+        self.assertEqual(next_plan["final_output_manifests"], previous["final_output_manifests"])
+        self.assertEqual(next_plan["final_output_history_records"], previous["final_output_history_records"])
+        self.assertIsNot(next_plan["final_output_history_records"], previous["final_output_history_records"])
+        app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        activate_start = app_source.index("def _activate_plan(self, raw, info):")
+        activate_end = app_source.index("def _cache_active_variant(self):", activate_start)
+        self.assertIn("preserve_output_history(previous_plan, data)", app_source[activate_start:activate_end])
+
     def test_final_delivery_history_ui_displays_creation_time(self):
         app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
         self.assertIn("('created','创建时间',170)", app_source)
