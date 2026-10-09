@@ -1454,6 +1454,20 @@ class App(tk.Tk):
             variant_reviewed=plan.setdefault('variant_hybrid_reviewed_shots', {})
             variant_reviewed[str(self.active_variant_index)]=json.loads(json.dumps(reviewed, ensure_ascii=False))
 
+        # Persist all mutable footage-planning state, not only gap tasks/reviewed shots.
+        # These fields are edited during reanalysis and gap completion; if only the
+        # active fields change, switching away and back must not resurrect stale maps.
+        for field, storage, expected_type in (
+            ('footage_plan','variant_footage_plans',list),
+            ('footage_selection_audit','variant_footage_selection_audits',dict),
+            ('footage_coverage','variant_footage_coverage',dict),
+            ('footage_gaps','variant_footage_gaps',dict),
+        ):
+            value=plan.get(field)
+            if isinstance(value, expected_type):
+                values=plan.setdefault(storage, {})
+                values[str(self.active_variant_index)]=json.loads(json.dumps(value, ensure_ascii=False))
+
     def _restore_active_variant_runtime(self):
         """恢复当前方案的补素材/混合生成运行态，禁止跨方案串数据。"""
         if not self.project:
