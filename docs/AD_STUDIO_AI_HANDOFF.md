@@ -102,3 +102,5 @@ CI 还会运行前端语法、Python 语法、Typecheck、Engine 和 Risk Contro
 - `test_workflow_modes.py` 增加对应源代码契约检查。提交后的 CI 仍需单独核验；这不是 Windows 真机测试，也不是完整工作模式状态机验收。
 
 - 新增行为级离线测试 `VariantRecoveryBehaviorTests.test_restore_caches_current_partial_variant_before_switching_back`，通过 fake app/store 执行真实恢复方法，验证缓存、切换、刷新和保存顺序；最新提交必须重新跑 CI 后才可视为验证通过。
+
+- 测试不直接导入 `ad_studio.app`（CI/Linux 环境未安装 tkinter）；改为 AST 提取真实恢复方法，在 fake app/store 上执行，确保行为覆盖仍可在无 GUI 环境运行。
