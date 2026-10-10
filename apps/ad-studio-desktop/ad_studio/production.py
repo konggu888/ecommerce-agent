@@ -184,7 +184,7 @@ class ProductionStore:
                 )
             project.actual_cost_summary = summary
 
-    def _record_actual_cost(self, project: Project, *, shot: Shot | None, category: str, amount_rmb: float, provider: str, quantity: float = 1.0, unit_cost_rmb: float = 0.0, function: str = "生成任务"):
+    def _record_actual_cost(self, project: Project, *, shot: Shot | None, category: str, amount_rmb: float, provider: str, quantity: float = 1.0, unit_cost_rmb: float = 0.0, function: str = "生成任务", status: str = "success", error: str = ""):
         amount = round(float(amount_rmb or 0), 6)
         # Preserve pre-ledger costs (e.g. older projects created before cost-ledger
         # tracking) before appending the first new charge. Saving the baseline first
@@ -198,7 +198,7 @@ class ProductionStore:
             self.save(project)
         self.ledger.record(
             function=function, model_id="", model_name="", provider=provider, model="",
-            status="success", estimated_cost_rmb=amount,
+            status=status, estimated_cost_rmb=amount, error=error,
             project_id=project.id, shot_id=shot.id if shot else "",
             category=category, quantity=quantity, unit_cost_rmb=unit_cost_rmb,
         )
@@ -356,7 +356,15 @@ class ProductionStore:
         shot.provider=getattr(provider,'provider_name','Generic REST')
         shot.generated_from_request=prompt
         self.save(project)
+        provider_call_started = False
+        cost_recorded = False
+        video_cost = round(float(getattr(provider, 'cost_per_shot_rmb', 0.0) or 0.0), 4)
+        provider_name = getattr(provider, 'provider_name', 'Generic REST')
         try:
+            # Once the external call begins, a timeout or malformed/empty response may
+            # still have incurred provider-side cost. Record a conservative estimate on
+            # failure instead of silently treating the attempt as free.
+            provider_call_started = True
             result=provider.generate(GenerationRequest(
                 prompt=prompt,
                 output=temp,
@@ -371,26 +379,44 @@ class ProductionStore:
             # Never unlink the last known-good output first: a filesystem error during replace
             # must not destroy the previous file while shot.video_path still points to it.
             result.replace(out)
-            video_cost=round(float(getattr(provider,'cost_per_shot_rmb',0.0)),4)
             shot.actual_cost_rmb=round(float(shot.actual_cost_rmb or 0.0)+video_cost,4)
             self._record_actual_cost(
                 project,
                 shot=shot,
                 category="video",
                 amount_rmb=video_cost,
-                provider=getattr(provider,'provider_name','Generic REST'),
+                provider=provider_name,
                 quantity=1,
                 unit_cost_rmb=video_cost,
                 function="视频镜头生成",
             )
+            cost_recorded = True
             self.mark_ready(project,shot,out)
             return out
         except Exception as exc:
+            if provider_call_started and not cost_recorded:
+                try:
+                    self._record_actual_cost(
+                        project,
+                        shot=shot,
+                        category="video",
+                        amount_rmb=video_cost,
+                        provider=provider_name,
+                        quantity=1,
+                        unit_cost_rmb=video_cost,
+                        function="视频镜头生成",
+                        status="failed",
+                        error=f"Provider调用失败或结果未能交付；是否实际计费需以供应商账单核对：{exc}",
+                    )
+                except Exception as ledger_exc:
+                    # Keep the original generation error visible, but explicitly surface
+                    # that the local cost estimate could not be persisted.
+                    exc = RuntimeError(f"{exc}；失败费用写入账本也失败：{ledger_exc}")
             if temp.exists():
                 temp.unlink()
             shot.video_path=previous_path
             shot.status='生成失败（已保留上一版本）' if previous_path else '生成失败'
-            shot.provider=getattr(provider,'provider_name',shot.provider)
+            shot.provider=provider_name
             self.save(project)
             raise RuntimeError(f'镜头 {shot.index} v{shot.version} 生成失败：{exc}') from exc
 
