@@ -2017,6 +2017,12 @@ class App(tk.Tk):
                 })
             estimate['预算'] = budget
             estimate['超预算'] = float(estimate['总计']) > budget
+            audit = audit_short_drama(plan, dict(self.project.product_info or {}))
+            estimate['短剧质量复核'] = audit
+            audit_lines = [f"质量/事实复核：{audit['status']}（{audit['issue_count']}项提示）"]
+            audit_lines.extend(f"- {item['message']}" for item in audit['issues'][:8])
+            if len(audit['issues']) > 8:
+                audit_lines.append(f"- 其余 {len(audit['issues']) - 8} 项请在“短剧质量/事实复核”窗口查看。")
             detail = '\n'.join([
                 f"商品：{self.project.product_name}",
                 f"短剧题材：{plan.get('genre', '待确认')}",
@@ -2029,6 +2035,9 @@ class App(tk.Tk):
                 ('⚠ 预计超过本次预算。' if estimate['超预算'] else '✓ 预计不超过本次预算。'),
                 estimate.get('计价说明', ''),
                 '',
+                *audit_lines,
+                '',
+                '质量/事实复核为规则筛查，出现提示时请检查；未出现提示也不代表保证合规或画面连续。',
                 '确认后只创建独立短剧制作项目，不会立刻调用云端素材/视频生成；后续仍由你逐镜头点击生成。',
                 '原广告项目、原广告分镜和创意方案会保留。是否创建？',
             ])
@@ -2050,6 +2059,7 @@ class App(tk.Tk):
                 'variant_count': 1,
                 'source_project_id': source_project.id,
                 'production_mode': 'short_drama',
+                'short_drama_audit': audit,
             }
             drama_project.shots = [
                 Shot(
