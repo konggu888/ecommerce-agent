@@ -263,3 +263,9 @@ undefined
 - 修复 app.py：历史表新增“失效原因”列，展示 recovery_reason，并调整路径列宽；test_desktop.py 新增 UI 字段绑定契约测试。
 - 已同步 HELP.md、PROJECT_LOGIC.md、AD_STUDIO_ACCEPTANCE_PLAN.md、AD_STUDIO_ACCEPTANCE_SOP.md 与本交接快照。
 - 当前最新 HEAD 的 CI/doc-sync 仍需重新查询；此前提交 2e862b8 的 CI #1064 与 docs-sync #835 均成功，但不作为本次新提交的验收依据。
+
+## 2026-10-11 工作单元：恢复错误弹窗换行格式
+- 复查 A30 项目打开错误反馈时发现，损坏 JSON 与恢复异常提示把换行写成了双重转义，可能在界面中显示字面量 `\\n`，降低可读性。
+- 已修正 `app.py` 两条错误提示的换行控制符，并在 `test_desktop.py` 增加契约断言，防止重新出现字面量 `\\n`。
+- 已同步 HELP.md、PROJECT_LOGIC.md、完整验收计划和验收 SOP。当前最新 HEAD 的 CI/doc-sync 仍需重新核验；Windows 弹窗现场验收仍未执行。PR #18 不得合并，Windows 真机/真实 Provider/实际计费/剪映及 B1–B3 继续按用户要求暂缓。
+- 下一步：核对最新 HEAD 的 CI 与 docs-sync；通过后继续复查其他 UI 的取消/失败反馈和交付中心的边界状态。
