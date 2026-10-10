@@ -283,3 +283,8 @@ undefined
 - 已修改 `batch_generate_variants()`：有失败项时改用警告框，无失败项时用普通信息框，统一中性标题；增加桌面回归测试，并同步 HELP.md、PROJECT_LOGIC.md、验收计划与 SOP。
 - 本轮最新代码和文档 HEAD 的 CI/doc-sync 尚待重新验收；PR #18 不得合并，Windows 真机、真实 Provider/计费、剪映与 B1–B3 继续暂缓。
 - 下一步：检查本轮最新 HEAD 的 CI/doc-sync；通过后继续审查取消操作与任务结束状态反馈。
+
+## 2026-10-11 工作单元：批量生成失败计数文案
+- 在上一轮 CI #1083 与 docs-sync #873 均通过后，继续复查批量生成反馈文案，发现统一 `failed` 列表包含镜头、最终成片组装和状态保存等失败，但汇总标签仍写“失败镜头”。
+- 已将标签改为“失败项”，并补充回归断言；已同步 HELP.md、PROJECT_LOGIC.md、验收计划和 SOP。
+- 当前最新 HEAD 的 CI/doc-sync 仍待核验；PR #18 不得合并。Windows 真机、真实 Provider/计费、剪映现场及 B1–B3 继续暂缓。
