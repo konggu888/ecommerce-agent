@@ -900,3 +900,9 @@ apps/ad-studio-desktop/test_ai_handoff.py 必须自动检查快照文件存在�
 2. 执行 `test_desktop.py` 中 `test_open_project_reports_corrupt_json_and_recovery_exceptions_without_switching_project`，确认回归契约会拦截错误的转义写法。
 3. 检查最新 HEAD 对应 CI 与 docs-sync；如失败先读日志修复。
 4. 未在 Windows 桌面实际打开弹窗前，不宣称完成真机 UI 验收。
+
+## 2026-10-11：最终交付中心失败反馈专项步骤
+1. 通过 `test_final_delivery_center_surfaces_initial_and_retry_check_errors` 检查初次打开与点击“一键重新检查”两条异常路径均有捕获和可见反馈。
+2. 核对失败时状态明确显示“检查失败”，问题区包含异常原因和重试建议；不得显示“可以交付”，不得删除既有历史记录。
+3. 检查最新提交的 CI、文档同步和部署预览；若 CI 失败，读取日志修复并重新运行。
+4. Windows 实际弹窗与操作仍需现场验收，不可由 AST 契约测试代替。
