@@ -205,3 +205,6 @@ CI 还会运行前端语法、Python 语法、Typecheck、Engine 和 Risk Contro
 - `ProductionStore._sync_actual_cost()` 已接入 `recover_project()`，项目恢复时将持久化账本合计同步到项目费用缓存；若账本合计更高，修复累计成本，避免中断后预算低估；账本为空则保留旧项目金额。
 - 新增 `test_recovery_reconciles_project_budget_from_durable_ledger`，覆盖已有记录 + 新追加记录、崩溃时缓存滞后、恢复后重新加载。
 - 这属于本地账本一致性保护，不代表供应商已确认账单；最新 CI/doc-sync/preview 必须重新检查。
+
+## 费用恢复补充：旧项目基线
+旧项目可能有成本账本上线前的累计费用。第一次追加生产账本费用前，`ProductionStore._record_actual_cost()` 先持久化 `legacy_cost_baseline_rmb`，避免新费用写入后恢复时把历史费用与账本费用混为一个总数。新项目按“历史基线 + 账本汇总”恢复；未初始化基线的旧项目保留兼容策略。`test_first_ledger_charge_preserves_legacy_project_cost` 覆盖历史 ¥0.50 加新费用 ¥0.23 的恢复结果 ¥0.73。请核验最新 HEAD 的 CI/doc-sync/deploy；勿将自动化验证视为供应商对账或 Windows 真机验收。
