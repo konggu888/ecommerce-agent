@@ -549,6 +549,8 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertIn("messagebox.showwarning('一键生成结果',msg)", method_source)
         self.assertIn("messagebox.showinfo('一键生成结果',msg)", method_source)
         self.assertNotIn("messagebox.showinfo('一键生成完成',msg)", method_source)
+        self.assertIn("失败项：{len(failed)} 个", method_source)
+        self.assertNotIn("失败镜头：{len(failed)} 个", method_source)
 
     def test_batch_generation_captures_original_variant_before_preflight(self):
         # 回归：预算预审会切换方案，原始方案必须在预审前锁定。
