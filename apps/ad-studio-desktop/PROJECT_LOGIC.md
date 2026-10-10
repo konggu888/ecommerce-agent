@@ -1061,3 +1061,6 @@ estimate_asset_generation 使用 AssetGenerator 的 CapabilityRouter 结果决�
 
 ## 2026-10-11：批量生成的用户暂停语义
 `batch_generate_variants()` 中 `_ensure_storyboard_approval()` 返回 false 代表用户未批准分镜，是工作流暂停/拒绝信号，不是生成器故障。此分支将方案记录到 `skipped`，停止后续批量方案，汇总独立显示跳过项和失败项；只有真实执行异常才进入 `failed`。
+
+### 镜头文件原子替换与失败恢复（新增）
+`ProductionStore._render_with_provider()` 将 Provider 输出先写入 `.part.mp4`，校验非空后再通过 `Path.replace()` 替换当前版本文件。禁止先 `unlink()` 目标文件再替换：文件系统在替换瞬间报错时，旧的 `shot.video_path` 可能仍指向已被删除的文件。替换失败必须保留旧文件与旧路径，记录失败状态并清理临时文件。回归测试模拟最终 replace 抛出 `OSError`，验证旧输出内容仍完整。
