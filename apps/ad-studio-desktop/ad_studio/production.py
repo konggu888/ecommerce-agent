@@ -314,8 +314,9 @@ class ProductionStore:
             result=Path(result)
             if not result.exists() or result.stat().st_size == 0:
                 raise RuntimeError('视频 Provider 返回成功，但生成文件不存在或为空。')
-            if out.exists():
-                out.unlink()
+            # Path.replace/os.replace replaces an existing destination atomically where supported.
+            # Never unlink the last known-good output first: a filesystem error during replace
+            # must not destroy the previous file while shot.video_path still points to it.
             result.replace(out)
             video_cost=round(float(getattr(provider,'cost_per_shot_rmb',0.0)),4)
             shot.actual_cost_rmb=round(float(shot.actual_cost_rmb or 0.0)+video_cost,4)
