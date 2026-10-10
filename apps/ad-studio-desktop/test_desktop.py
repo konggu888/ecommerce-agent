@@ -1330,6 +1330,35 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(history["delivery_status"], "不可交付")
             self.assertEqual(project.creative_plan["recovery"]["status"], "可继续")
 
+    def test_recovery_reconciles_project_budget_from_durable_ledger(self):
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td))
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            project.actual_cost_rmb = 0.05
+            store.save(project)
+
+            # Simulate a crash after the append-only ledger write but before the
+            # project JSON's cached total was updated.
+            store.ledger.record(
+                function="视频镜头生成",
+                model_id="",
+                model_name="test provider",
+                provider="test provider",
+                model="",
+                status="success",
+                estimated_cost_rmb=0.23,
+                project_id=project.id,
+                category="video",
+            )
+            project.actual_cost_rmb = 0.05
+            store.recover_project(project)
+
+            self.assertAlmostEqual(project.actual_cost_rmb, 0.28, places=6)
+            self.assertAlmostEqual(project.cost_estimate["actual_cost_rmb"], 0.23, places=6)
+            self.assertAlmostEqual(project.actual_cost_summary["estimated_cost_rmb"], 0.23, places=6)
+            restored = store.load(project.id)
+            self.assertAlmostEqual(restored.actual_cost_rmb, 0.28, places=6)
+
     def test_a30_budget_and_non_retryable_failures_have_explicit_next_actions(self):
         with tempfile.TemporaryDirectory() as td:
             store = ProductionStore(Path(td))
