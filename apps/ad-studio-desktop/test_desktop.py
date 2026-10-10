@@ -1347,6 +1347,18 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(row["delivery_status"], "不可交付")
             self.assertFalse(row["exists"])
 
+    def test_final_delivery_history_ui_displays_invalid_output_reason(self):
+        app_path = Path(__file__).parent / "ad_studio" / "app.py"
+        source = app_path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "final_delivery_center")
+        method_source = ast.get_source_segment(source, method)
+        self.assertIn("'reason'", method_source)
+        self.assertIn("'失效原因'", method_source)
+        self.assertIn("row.get('recovery_reason','')", method_source)
+        self.assertIn("row['delivery_status']", method_source)
+
     def test_reopening_project_runs_local_recovery_and_surfaces_findings(self):
         app_path = Path(__file__).parent / "ad_studio" / "app.py"
         source = app_path.read_text(encoding="utf-8")
