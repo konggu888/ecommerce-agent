@@ -301,15 +301,24 @@ class ProductionStore:
             provider=load_asset_provider(asset_provider_path)
             if isinstance(provider, type(load_asset_provider(Path('__missing__')))):
                 raise RuntimeError('尚未配置云端资产生成器，且本地素材服务不可用。')
-            result=provider.generate_asset(GenerationRequest(prompt=prompt,output=out,reference_assets=[]))
             provider_name = getattr(provider, 'provider_name', '云端资产生成器')
-            cost = float(getattr(provider, 'cost_per_asset_rmb', 0.0))
-        item=library.register_generated(f'{kind}-{shot.index}',kind,result,tags=[request_text],request=prompt)
-        if kind=='演员': shot.actor_id=item.id
-        elif kind=='场景': shot.scene_id=item.id
-        elif kind=='商品素材': shot.product_asset_ids.append(item.id)
-        shot.asset_source='ai_generated'
-        shot.actual_cost_rmb=round(shot.actual_cost_rmb+cost,4)
+            cost = float(getattr(provider, 'cost_per_asset_rmb', 0.0) or 0.0)
+            try:
+                result=provider.generate_asset(GenerationRequest(prompt=prompt,output=out,reference_assets=[]))
+            except Exception as exc:
+                if cost > 0:
+                    try:
+                        self._record_actual_cost(
+                            project, shot=shot, category="asset", amount_rmb=cost,
+                            provider=provider_name, quantity=1, unit_cost_rmb=cost,
+                            function=f"{kind}素材生成", status="failed",
+                            error=f"云端素材生成请求失败；是否实际计费需以供应商账单核对：{exc}",
+                        )
+                    except Exception as ledger_exc:
+                        raise RuntimeError(f"{exc}；失败素材费用写入账本也失败：{ledger_exc}") from exc
+                raise
+        # Record the provider generation before registering the asset locally. If local
+        # registration fails, the completed external generation must not disappear from costs.
         self._record_actual_cost(
             project,
             shot=shot,
@@ -320,6 +329,12 @@ class ProductionStore:
             unit_cost_rmb=cost,
             function=f"{kind}素材生成",
         )
+        item=library.register_generated(f'{kind}-{shot.index}',kind,result,tags=[request_text],request=prompt)
+        if kind=='演员': shot.actor_id=item.id
+        elif kind=='场景': shot.scene_id=item.id
+        elif kind=='商品素材': shot.product_asset_ids.append(item.id)
+        shot.asset_source='ai_generated'
+        shot.actual_cost_rmb=round(shot.actual_cost_rmb+cost,4)
         shot.provider = provider_name
         shot.status=f'{kind}已生成并入库'
         self.save(project)
