@@ -1967,12 +1967,12 @@ class App(tk.Tk):
         mode_dialog.geometry('520x250')
         mode_dialog.transient(self)
         mode_dialog.grab_set()
-        mode_var = tk.StringVar(value='single_episode')
+        mode_var = tk.StringVar(value='单集短剧')
         count_var = tk.StringVar(value='6')
         ttk.Label(mode_dialog, text='创作模式').pack(anchor='w', padx=16, pady=(16, 4))
         ttk.Combobox(
             mode_dialog, textvariable=mode_var, state='readonly',
-            values=('single_episode', 'continuous_series', 'anthology_series'),
+            values=('单集短剧', '连续多集短剧', '系列短剧'),
         ).pack(fill='x', padx=16)
         ttk.Label(
             mode_dialog,
@@ -1983,7 +1983,15 @@ class App(tk.Tk):
         ttk.Entry(mode_dialog, textvariable=count_var).pack(fill='x', padx=16)
         selected = {}
         def confirm_mode():
-            selected['mode'] = mode_var.get()
+            selected_mode = mode_var.get()
+            selected['mode'] = {
+                '单集短剧': 'single_episode',
+                '连续多集短剧': 'continuous_series',
+                '系列短剧': 'anthology_series',
+            }.get(selected_mode)
+            if not selected['mode']:
+                messagebox.showerror('模式无效', '请选择单集短剧、连续多集短剧或系列短剧。', parent=mode_dialog)
+                return
             try:
                 selected['count'] = 1 if selected['mode'] == 'single_episode' else int(count_var.get().strip())
             except (TypeError, ValueError):
