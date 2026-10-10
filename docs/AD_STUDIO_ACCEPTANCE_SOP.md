@@ -954,3 +954,11 @@ apps/ad-studio-desktop/test_ai_handoff.py 必须自动检查快照文件存在�
 2. 执行项目恢复，检查当前镜头及缓存快照均被修正，路径为空、状态为待重新生成/重新选择素材。
 3. 切换离开再切回相关方案，确认失效路径不会重新出现。
 4. 同时确认有效镜头不被清除、不自动调用 Provider，最终输出历史的可交付性仍单独校验。
+
+
+### 成本账本损坏与原子写入验收（新增）
+1. 运行 test_corrupt_ledger_is_quarantined_instead_of_silently_overwritten、test_invalid_ledger_shape_is_preserved_before_new_history_is_written 和 test_atomic_write_failure_preserves_existing_ledger。
+2. 确认损坏 JSON 与非法结构不会被静默当成空列表；原文件被隔离后原始字节必须完整保留。
+3. 确认写入先落同目录临时文件，再原子替换；替换失败时旧账本保留且临时文件清理。
+4. 运行 test_cost_ledger_ui_surfaces_quarantined_history_warning，确认软件内成本账本页显示异常文件已隔离和需要人工恢复的提示。
+5. 检查最新 HEAD 对应 CI、doc-sync 与部署预览。以上为代码/自动化验证；Windows 断电、磁盘空间不足、外部程序占用及多进程写入尚未现场验收。
