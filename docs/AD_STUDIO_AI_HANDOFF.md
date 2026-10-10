@@ -169,3 +169,6 @@ CI 还会运行前端语法、Python 语法、Typecheck、Engine 和 Risk Contro
 - `ProductionStore` 使用 `_is_nonempty_file()` 统一处理文件状态检查；`is_file()` 与 `stat()` 之间发生文件消失/权限变化时，按不可用处理而非让交付中心或项目恢复抛出异常。
 - 自动化测试模拟 `PermissionError` 并覆盖 `final_output_history()` 与 `recover_project()`。此结果只证明模拟文件系统异常路径，不代表 Windows 实际权限/外接盘/网络盘验收通过。
 - 测试夹具边界：权限异常测试仅模拟目标输出文件的 `stat()` 失败；不要全局 patch 所有路径，否则项目目录检查也会失败并产生误导性测试结果。
+
+### 2026-10-11：批量生成的用户暂停分类
+`batch_generate_variants()` 遇到分镜未获批准时，按用户暂停/拒绝信号记入 `skipped` 并停止后续方案；不能把它计入生成故障 `failed`。汇总分别展示跳过项与失败项，自动化契约覆盖此文案和分类；真实 Windows UI 仍待验收。
