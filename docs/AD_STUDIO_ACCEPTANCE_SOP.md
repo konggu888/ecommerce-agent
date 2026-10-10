@@ -920,3 +920,9 @@ apps/ad-studio-desktop/test_ai_handoff.py 必须自动检查快照文件存在�
 1. 运行 `test_final_render_failure_updates_main_status_and_shows_error`。
 2. 确认最终成片失败时，主界面状态与错误弹窗都反映失败原因，不留下旧的成功状态。
 3. 核验最新 HEAD 的 CI、docs-sync 和部署预览；未实际在 Windows 操作前，不宣称真机验收完成。
+
+## 2026-10-11：最终输出文件系统异常验收
+1. 运行 `test_final_output_history_and_recovery_tolerate_stat_permission_errors`。
+2. 确认输出文件检查出现 `OSError` 时，历史列表按不可交付显示，不让整个历史页面异常退出。
+3. 确认项目恢复仍能结束，并将该输出列入 `invalid_outputs`、记录不可交付状态。
+4. 检查最新 HEAD 的 CI、docs-sync 与部署预览；模拟权限错误不等同于 Windows 真实磁盘权限验收。
