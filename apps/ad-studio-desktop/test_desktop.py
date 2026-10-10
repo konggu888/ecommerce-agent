@@ -1361,6 +1361,17 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(row["delivery_status"], "不可交付")
             self.assertFalse(row["exists"])
 
+    def test_final_render_failure_updates_main_status_and_shows_error(self):
+        app_path = Path(__file__).parent / "ad_studio" / "app.py"
+        source = app_path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "final_render")
+        method_source = ast.get_source_segment(source, method)
+        self.assertIn("except Exception as e:", method_source)
+        self.assertIn("self.detail.set(f'最终成片生成失败：{e}')", method_source)
+        self.assertIn("messagebox.showerror('暂不能成片',str(e))", method_source)
+
     def test_final_delivery_center_surfaces_initial_and_retry_check_errors(self):
         app_path = Path(__file__).parent / "ad_studio" / "app.py"
         source = app_path.read_text(encoding="utf-8")
