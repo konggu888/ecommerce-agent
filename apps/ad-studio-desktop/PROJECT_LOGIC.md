@@ -1072,3 +1072,11 @@ estimate_asset_generation 使用 AssetGenerator 的 CapabilityRouter 结果决�
 
 ### 恢复时修复所有方案镜头缓存（新增）
 `ProductionStore.recover_project()` 必须同时修复 `project.shots` 与 `creative_plan.variant_shot_cache`。缓存快照会在方案切换时恢复；若恢复流程只清除当前方案路径，后续切换可能重新引入失效的 `video_path`。当前实现对两处使用同一 `_is_nonempty_file()` 判定，并将失效缓存记录设为 `video_path=None`、状态 `待重新生成/重新选择素材`。`test_a30_recovery_cleans_interrupted_assets_and_marks_corrupt_outputs` 覆盖当前列表与方案缓存同步。
+
+
+## 2026-10-11：成本账本损坏保护与原子写入
+- UsageLedger._load() 不得把 JSON 解析失败、文件读取异常或根结构不合法静默转换成空账本；否则下一次记账会覆盖原有文件，造成历史数据丢失。
+- 当前处理会把异常原文件改名为 usage-ledger.json.corrupt-<时间戳> 并保留原始字节，再允许建立新账本；若无法安全隔离原文件则抛出明确错误，不继续覆盖。
+- UsageLedger._save() 先写入同目录临时文件、flush/fsync，再用 os.replace() 原子替换，避免进程中断时把账本截断成半个 JSON。替换失败时保留旧账本并清理临时文件。
+- last_load_warning 将隔离情况传给成本账本 UI，显示历史文件位置和需人工恢复的提示。
+- 自动化覆盖损坏 JSON、非法根结构、原子替换失败及 UI 警告；尚未实现跨进程并发写入锁，因此当前账本写入假设桌面应用单实例/串行记账。
