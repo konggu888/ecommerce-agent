@@ -199,3 +199,9 @@ CI 还会运行前端语法、Python 语法、Typecheck、Engine 和 Risk Contro
 - `UsageLedger.record()` 已在写入前验证 `estimated_cost_rmb`、`unit_cost_rmb` 为有限非负金额，并统一保留 6 位小数；非法值抛出 `ValueError`，防止污染历史和汇总。
 - 新增 `test_rejects_negative_and_nonfinite_cost_values`，覆盖负数、NaN、正/负无穷以及拒绝写入。
 - 本项必须以最新 HEAD 的 CI、doc-sync 与部署预览为准；供应商账单对账和 Windows 真机测试仍未执行。
+
+## 追加工作记录：恢复时的成本对账
+
+- `ProductionStore._sync_actual_cost()` 已接入 `recover_project()`，项目恢复时将持久化账本合计同步到项目费用缓存；若账本合计更高，修复累计成本，避免中断后预算低估；账本为空则保留旧项目金额。
+- 新增 `test_recovery_reconciles_project_budget_from_durable_ledger`，覆盖已有记录 + 新追加记录、崩溃时缓存滞后、恢复后重新加载。
+- 这属于本地账本一致性保护，不代表供应商已确认账单；最新 CI/doc-sync/preview 必须重新检查。
