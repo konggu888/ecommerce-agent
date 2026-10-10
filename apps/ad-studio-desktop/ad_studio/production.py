@@ -14,6 +14,16 @@ from .hardware import detect_hardware
 from .capability import CapabilityRouter
 from .usage_ledger import UsageLedger
 
+
+def _is_nonempty_file(path: Path) -> bool:
+    """Return whether a path is a non-empty regular file, treating filesystem races/errors as unavailable."""
+    try:
+        return path.is_file() and path.stat().st_size > 0
+    except OSError:
+        # Files may disappear or become inaccessible between is_file() and stat().
+        return False
+
+
 class ProductionStore:
     def __init__(self, root: Path, library_root: Path | None = None):
         self.root=root; self.root.mkdir(parents=True,exist_ok=True)
@@ -79,7 +89,7 @@ class ProductionStore:
                 continue
             seen.add(output_path)
             path = Path(output_path)
-            if item.get("delivery_status") == "可交付" and (not output_path or not path.is_file() or path.stat().st_size <= 0):
+            if item.get("delivery_status") == "可交付" and (not output_path or not _is_nonempty_file(path)):
                 item["delivery_status"] = "不可交付"
                 item["recovery_reason"] = "最终输出文件缺失、不是普通文件或为空"
                 invalid_outputs.append(output_path)
@@ -482,7 +492,7 @@ class ProductionStore:
                 continue
             output_path = str(item.get("output_path", "") or "")
             path = Path(output_path)
-            exists = path.is_file() and path.stat().st_size > 0
+            exists = _is_nonempty_file(path)
             delivery_status = item.get("delivery_status", "未知")
             recovery_reason = item.get("recovery_reason", "")
             # Reflect missing/empty outputs immediately in the history UI, even if the
