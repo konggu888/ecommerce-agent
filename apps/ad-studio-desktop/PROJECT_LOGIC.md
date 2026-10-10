@@ -1026,3 +1026,9 @@ estimate_asset_generation 使用 AssetGenerator 的 CapabilityRouter 结果决�
 - 本地 `recover_project()` 异常会触发尽力而为的 `record_recovery_failure()` 诊断记录。若诊断保存也失败，仍保留明确 UI 错误提示。
 - 恢复未完成时不切换 `self.project` 或刷新活动方案 UI，避免把未完成恢复的项目呈现为已成功打开。恢复可能已经执行部分文件操作，因此错误提示要求先备份，再检查磁盘权限/空间。
 - 自动化契约测试验证损坏 JSON/恢复异常提示、诊断调用以及项目状态切换顺序；不等同于真实磁盘故障或 Windows 文件权限现场测试。
+
+
+## A26 最终成片历史即时状态校验（2026-10-10）
+- final_output_history() 在每次读取历史时重新检查 output_path 是否指向存在且非空的普通文件；历史记录虽保存“可交付”，但文件缺失、为空或变成目录时，返回给 UI 的状态会即时降为“不可交付”，并附上 recovery_reason。
+- 读取时的即时状态用于避免“可交付 + 文件不存在”的矛盾显示，不负责持久化项目 JSON；打开项目时 recover_project() 会将修正后的状态保存回历史。
+- 回归测试覆盖正常文件、删除文件、路径变成目录；这不是 Windows 权限/磁盘故障的现场验收。
