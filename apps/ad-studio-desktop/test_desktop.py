@@ -1337,8 +1337,19 @@ class DesktopCoreTests(unittest.TestCase):
             project.actual_cost_rmb = 0.05
             store.save(project)
 
-            # Simulate a crash after the append-only ledger write but before the
-            # project JSON's cached total was updated.
+            # A previous charge is already in the ledger. Simulate a crash
+            # after a second append but before the project JSON cache is updated.
+            store.ledger.record(
+                function="演员素材生成",
+                model_id="",
+                model_name="test provider",
+                provider="test provider",
+                model="",
+                status="success",
+                estimated_cost_rmb=0.05,
+                project_id=project.id,
+                category="asset",
+            )
             store.ledger.record(
                 function="视频镜头生成",
                 model_id="",
@@ -1354,8 +1365,8 @@ class DesktopCoreTests(unittest.TestCase):
             store.recover_project(project)
 
             self.assertAlmostEqual(project.actual_cost_rmb, 0.28, places=6)
-            self.assertAlmostEqual(project.cost_estimate["actual_cost_rmb"], 0.23, places=6)
-            self.assertAlmostEqual(project.actual_cost_summary["estimated_cost_rmb"], 0.23, places=6)
+            self.assertAlmostEqual(project.cost_estimate["actual_cost_rmb"], 0.28, places=6)
+            self.assertAlmostEqual(project.actual_cost_summary["estimated_cost_rmb"], 0.28, places=6)
             restored = store.load(project.id)
             self.assertAlmostEqual(restored.actual_cost_rmb, 0.28, places=6)
 
