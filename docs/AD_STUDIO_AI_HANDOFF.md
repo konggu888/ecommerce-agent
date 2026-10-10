@@ -181,3 +181,6 @@ CI 还会运行前端语法、Python 语法、Typecheck、Engine 和 Risk Contro
 
 ### CI 夹具修正补记（2026-10-11）
 首轮新增文件有效性闸门后，CI 揭示 `test_hybrid_router.py` 旧测试依赖固定 `/tmp/generated.mp4` 而未创建文件。已改用 `TemporaryDirectory` 生成非空测试媒体，并断言 Provider/费用字段；继续以最新 HEAD 的 CI 为准。
+
+## 多方案恢复状态一致性（2026-10-11）
+恢复流程必须同步修复 `project.shots` 与 `creative_plan.variant_shot_cache`。否则当前方案看似恢复成功，之后切换方案会从缓存复活已丢失的 `video_path`。恢复现在统一校验非空普通文件，并修正缓存中的失效路径/状态；A30 回归测试覆盖此路径。补镜头文件接受闸门、Provider/成本归属和可移植测试夹具修复也已提交，最终以最新 HEAD CI/doc-sync/deploy 状态为准。
