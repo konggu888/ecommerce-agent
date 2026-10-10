@@ -316,3 +316,6 @@ undefined
 - 已在核心接受函数增加文件有效性校验；复核列表、打开与纳入按钮统一使用安全的非空文件检查。
 - 纳入正式镜头时优先保存任务中的 `generation_provider` 与 `generation_cost_rmb`，兼容旧字段，避免 Provider/成本信息丢失。
 - 新增测试覆盖未审批、缺失文件、零字节文件、有效文件，以及 Provider/成本持久化。等待最新 HEAD 的 CI、文档同步和部署预览完成后再确认结果。
+
+### 本轮 CI 失败与夹具修正
+首轮 CI 在 `test_reviewed_gap_is_inserted_once_and_reindexed` 失败，原因是旧测试使用固定路径 `/tmp/generated.mp4`，未创建真实测试文件。已将测试改为临时目录创建非空文件，并增加 Provider 与生成费用断言；修复提交后仍须等待最新 HEAD 的 CI 完成。
