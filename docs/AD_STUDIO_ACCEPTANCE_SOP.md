@@ -927,3 +927,9 @@ apps/ad-studio-desktop/test_ai_handoff.py 必须自动检查快照文件存在�
 3. 确认项目恢复仍能结束，并将该输出列入 `invalid_outputs`、记录不可交付状态。
 4. 检查最新 HEAD 的 CI、docs-sync 与部署预览；模拟权限错误不等同于 Windows 真实磁盘权限验收。
 补充：权限错误测试应仅对被测输出文件注入 `PermissionError`，不能全局替换所有路径的 `stat()`；否则项目目录自身也会被模拟成不可访问，测试结果无效。
+
+## 2026-10-11：批量生成被用户暂停时的分类验收
+1. 运行 `test_batch_generation_uses_warning_dialog_when_any_step_fails`。
+2. 检查分镜未批准分支进入 `skipped`，而不是 `failed`，且会停止后续方案生成。
+3. 确认汇总分别列出跳过项、失败项和停止原因；真正生成失败仍使用警告提示。
+4. 检查最新 HEAD 的 CI、docs-sync 和部署预览；自动化契约不代替 Windows 真机验收。
