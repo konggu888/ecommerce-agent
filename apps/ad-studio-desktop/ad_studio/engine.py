@@ -55,8 +55,14 @@ def estimate_asset_generation(library, root, creative_shots):
             if identity in seen:
                 continue
             seen.add(identity)
-            price=float(generator.price(kind))
-            rows.append({'镜头':shot.get('index'),'类型':kind,'标签':list(tags),'状态':'需要自动生成','单价':price,'小计':round(price,2)})
+            decision=generator.capability.decide_asset(kind)
+            # 本地生成不计云端费用；只有实际路由到云端时才计入远程单价。
+            price=float(generator.price(kind)) if decision.target == 'cloud' else 0.0
+            rows.append({
+                '镜头':shot.get('index'),'类型':kind,'标签':list(tags),'状态':'需要自动生成',
+                '执行方式':decision.target,'单价':price,'小计':round(price,2),
+                '价格已配置':decision.target != 'cloud' or price > 0,
+            })
             total += price
     return {
         '数量':len(rows),

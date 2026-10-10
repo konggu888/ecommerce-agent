@@ -1,3 +1,4 @@
+import ast
 import tempfile
 import unittest
 from pathlib import Path
@@ -1002,6 +1003,31 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertFalse((p.creative_plan or {}).get("final_output_manifests"))
 
 
+    def test_a25_build_final_cleans_partial_output_when_concat_raises(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            p = new_project("https://item.jd.com/123.html", 2, "真人口播")
+            for shot in p.shots:
+                path = root / f"{shot.id}.mp4"
+                path.write_bytes(b"video")
+                shot.video_path = str(path)
+
+            def partial_then_fail(inputs, output):
+                Path(output).parent.mkdir(parents=True, exist_ok=True)
+                Path(output).write_bytes(b"partial")
+                raise RuntimeError("concat failed")
+
+            with patch("ad_studio.production.concat", side_effect=partial_then_fail):
+                with self.assertRaisesRegex(RuntimeError, "concat failed"):
+                    store.build_final(p, "9:16", 1)
+            final_dir = root / "final" / p.id
+            self.assertFalse(final_dir.exists() and any(final_dir.glob("final-9x16-v1*.mp4")))
+            self.assertFalse(final_dir.exists() and any(final_dir.glob("final-9x16-v1*.json")))
+            self.assertFalse((p.creative_plan or {}).get("final_output_manifests"))
+            self.assertFalse((p.creative_plan or {}).get("final_output_history_records"))
+
     def test_a26_final_output_history_keeps_revisions_independent(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
@@ -1258,6 +1284,114 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertIn(phrase, agents)
         self.assertIn("当前已知限制", help_doc)
         self.assertIn("测试", logic)
+
+    def test_in_app_help_page_exposes_current_feature_status_and_full_help_document(self):
+        app_path = Path(__file__).parent / "ad_studio" / "app.py"
+        source = app_path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        ui_method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "ui")
+        help_method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "help_view")
+        ui_source = ast.get_source_segment(source, ui_method)
+        help_source = ast.get_source_segment(source, help_method)
+        self.assertIn("📖 帮助与功能说明", ui_source)
+        self.assertIn("command=self.help_view", ui_source)
+        self.assertIn("当前功能与可用状态", help_source)
+        self.assertIn("完整帮助文档", help_source)
+        self.assertIn("HELP.md", help_source)
+        self.assertIn("可调用模型", help_source)
+        self.assertIn("视频/素材生产费用", help_source)
+        self.assertIn("不代表真实供应商", help_source)
+        help_doc = (Path(__file__).parent / "HELP.md").read_text(encoding="utf-8")
+        self.assertIn("## 功能总表", help_doc)
+        self.assertIn("真实投放数据", help_doc)
+        self.assertIn("¥0 表示可用预算为零", help_doc)
+
+    def test_main_ui_separates_setup_tools_and_production_workspace(self):
+        app_path = Path(__file__).parent / "ad_studio" / "app.py"
+        source = app_path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        ui_method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "ui")
+        ui_source = ast.get_source_segment(source, ui_method)
+        self.assertIn("① 商品与任务设置", ui_source)
+        self.assertIn("② 工具与检查", ui_source)
+        self.assertIn("③ 分镜生产链", ui_source)
+        self.assertIn("④ 本地资产库", ui_source)
+        self.assertIn("def add_button_row", ui_source)
+
+
+    def test_final_output_history_does_not_show_missing_or_empty_file_as_deliverable(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 2, "真人口播")
+            output = root / "final-output.mp4"
+            output.write_bytes(b"valid-enough-for-history")
+            gate = {"allowed": True, "reasons": [], "checked": True}
+            media = {"valid": True, "duration_seconds": 5.0, "width": 1080, "height": 1920}
+            store.write_final_output_manifest(project, output, "9:16", 1, project.shots[:1], gate, media)
+
+            row = store.final_output_history(project)[0]
+            self.assertEqual(row["delivery_status"], "可交付")
+            self.assertTrue(row["exists"])
+
+            output.unlink()
+            row = store.final_output_history(project)[0]
+            self.assertEqual(row["delivery_status"], "不可交付")
+            self.assertFalse(row["exists"])
+            self.assertIn("缺失", row["recovery_reason"])
+
+            output.mkdir()
+            row = store.final_output_history(project)[0]
+            self.assertEqual(row["delivery_status"], "不可交付")
+            self.assertFalse(row["exists"])
+
+    def test_final_delivery_history_ui_displays_invalid_output_reason(self):
+        app_path = Path(__file__).parent / "ad_studio" / "app.py"
+        source = app_path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "final_delivery_center")
+        method_source = ast.get_source_segment(source, method)
+        self.assertIn("'reason'", method_source)
+        self.assertIn("'失效原因'", method_source)
+        self.assertIn("row.get('recovery_reason','')", method_source)
+        self.assertIn("row['delivery_status']", method_source)
+
+    def test_reopening_project_runs_local_recovery_and_surfaces_findings(self):
+        app_path = Path(__file__).parent / "ad_studio" / "app.py"
+        source = app_path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        load_method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "load_project")
+        load_source = ast.get_source_segment(source, load_method)
+        self.assertIn("self.store.recover_project(project)", load_source)
+        self.assertIn("recovery.get('removed_temp_files')", load_source)
+        self.assertIn("recovery.get('missing_media')", load_source)
+        self.assertIn("recovery.get('invalid_outputs')", load_source)
+        self.assertIn("恢复检查：", load_source)
+        self.assertLess(load_source.index("self.store.recover_project(project)"), load_source.index("self._restore_loaded_variant_state()"))
+        self.assertIn("does not call a provider", load_source)
+
+    def test_open_project_reports_corrupt_json_and_recovery_exceptions_without_switching_project(self):
+        app_path = Path(__file__).parent / "ad_studio" / "app.py"
+        source = app_path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        load_method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "load_project")
+        load_source = ast.get_source_segment(source, load_method)
+        self.assertIn("json.JSONDecodeError", load_source)
+        self.assertIn("项目文件无法读取或 JSON 格式损坏", load_source)
+        self.assertIn("项目恢复未完成", load_source)
+        self.assertIn("self.store.record_recovery_failure", load_source)
+        self.assertIn("当前工作项目未切换", load_source)
+        self.assertIn("parent=win", load_source)
+        recovery_try = load_source.index("recovery=self.store.recover_project(project)")
+        recovery_error = load_source.index("except Exception as exc:", recovery_try)
+        project_switch = load_source.index("self.project=project")
+        self.assertLess(recovery_try, recovery_error)
+        self.assertLess(recovery_error, project_switch)
 
 
 if __name__ == "__main__":

@@ -6,6 +6,7 @@ import subprocess
 import json
 from .library import LocalLibrary
 from .engine import FORMS, new_project, mark_regenerate, estimate_cost, estimate_asset_generation
+from .asset_generation import AssetGenerator
 from .gpu import detect_gpu
 from .hardware import detect_hardware, format_hardware
 from .capability import CapabilityRouter
@@ -21,6 +22,7 @@ from .hybrid_router import route_footage_gap_tasks
 from .transcription import extract_audio
 from .ui_contract import verify_ui_action_contract, UIContractError, ui_action
 from .models import Shot
+from .workflow_modes import AUTO, SEMI_AUTO, USER_CONTROLLED, WORKFLOW_MODES, decide_action, get_project_workflow_mode, invalidate_storyboard_approval, preserve_output_history, preserve_workflow_state, set_project_workflow_mode
 
 
 def _restore_variant_shot_cache(base_shots, saved_shots):
@@ -91,6 +93,182 @@ class App(tk.Tk):
             messagebox.showerror('UI 操作入口检查失败', f'代码可能已经实现，但界面入口存在缺失或失配。\\n\\n{exc}\\n\\n必须先修复 UI，再执行本次操作。')
             return False
 
+    def _workflow_mode_value(self):
+        """Map the Chinese UI label to the persisted, stable mode identifier."""
+        labels = {
+            "AI 全自动": AUTO,
+            "AI 半自动": SEMI_AUTO,
+            "用户控制 / AI 辅助": USER_CONTROLLED,
+        }
+        if hasattr(self, "workflow_mode"):
+            value = str(self.workflow_mode.get() or "").strip()
+            return labels.get(value, value if value in WORKFLOW_MODES else SEMI_AUTO)
+        return get_project_workflow_mode(self.project) if self.project else SEMI_AUTO
+
+    def _workflow_mode_label(self, mode):
+        return {
+            AUTO: "AI 全自动",
+            SEMI_AUTO: "AI 半自动",
+            USER_CONTROLLED: "用户控制 / AI 辅助",
+        }.get(mode, "AI 半自动")
+
+    def _authorize_workflow_action(self, action, title="操作确认"):
+        """Apply workflow-mode confirmation policy without replacing safety gates."""
+        decision = decide_action(self._workflow_mode_value(), action)
+        if decision.allowed:
+            return True
+        if not decision.requires_confirmation:
+            messagebox.showwarning(title, decision.reason)
+            return False
+        approved = messagebox.askyesno(
+            title,
+            f"{decision.reason}\n\n操作：{action}\n工作模式：{decision.mode}\n\n是否确认继续？"
+        )
+        if not approved:
+            self.detail.set(f"已取消：{action}")
+            return False
+        # Consent is scoped to this single action; it is not stored as a blanket approval.
+        return decide_action(decision.mode, action, user_approved=True).allowed
+
+    def _confirm_budget_overrun(self, estimate, remaining, title="预算超限确认"):
+        """Warn with exact amounts and require explicit consent instead of silently blocking."""
+        decision = decide_action(self._workflow_mode_value(), "budget_overrun")
+        if not decision.requires_confirmation:
+            return decision.allowed
+        approved = messagebox.askyesno(
+            title,
+            f"本次预计还需 ¥{float(estimate):.2f}，当前剩余预算 ¥{float(remaining):.2f}。"
+            f"预计超出 ¥{max(0.0, float(estimate) - float(remaining)):.2f}。\n\n"
+            "系统不会自动降质、换模型或减少镜头。是否仍要继续？"
+        )
+        if not approved:
+            self.detail.set("用户取消了超预算操作；未开始本次生成。")
+            return False
+        return decide_action(decision.mode, "budget_overrun", user_approved=True).allowed
+
+    def _preflight_asset_generation(self, shots):
+        """估算待生成镜头可能触发的演员/场景/商品素材费用与云端授权需求；不调用生成器。"""
+        if not self.project or not shots:
+            return {"cost": 0.0, "unknown_prices": [], "needs_cloud": False}
+        pending_indexes = {
+            int(getattr(shot, "index", -1))
+            for shot in shots
+            if getattr(shot, "clip_source", "ai_generated") != "filmed"
+        }
+        if not pending_indexes:
+            return {"cost": 0.0, "unknown_prices": [], "needs_cloud": False}
+        plan_shots = self.project.creative_plan.get("shots", []) or []
+        pending_plan_shots = [
+            row for row in plan_shots
+            if isinstance(row, dict) and int(row.get("index", -1)) in pending_indexes
+        ]
+        estimate = estimate_asset_generation(self.lib, ROOT, pending_plan_shots)
+        generator = AssetGenerator(ROOT / "asset-generation.json", ROOT)
+        router = CapabilityRouter(ROOT)
+        unknown_prices = []
+        needs_cloud = False
+        cloud_cost = 0.0
+        for row in estimate.get("明细", []):
+            kind = str(row.get("类型") or "")
+            decision = router.decide_asset(kind)
+            if decision.target != "cloud":
+                continue
+            needs_cloud = True
+            row_cost = float(row.get("小计", 0.0) or 0.0)
+            cloud_cost += row_cost
+            if generator.price(kind) <= 0 and kind not in unknown_prices:
+                unknown_prices.append(kind)
+        return {
+            "cost": round(cloud_cost, 4),
+            "unknown_prices": unknown_prices,
+            "needs_cloud": needs_cloud,
+            "details": estimate.get("明细", []),
+        }
+
+    def _confirm_unknown_asset_prices(self, kinds, title="素材生成价格未配置"):
+        """云端素材服务未配置有效单价时，必须先向用户说明估算缺口。"""
+        unique = list(dict.fromkeys(str(kind) for kind in (kinds or []) if str(kind)))
+        if not unique:
+            return True
+        return messagebox.askyesno(
+            title,
+            "以下云端素材生成服务未配置有效单价：" + "、".join(unique)
+            + "。本次预算估算不包含这些潜在费用，实际支出可能高于显示金额。是否仍继续？",
+        )
+
+    def _ensure_storyboard_approval(self):
+        """Require one approval per active variant in semi-auto/user-controlled modes."""
+        if not self.project:
+            return False
+        mode = self._workflow_mode_value()
+        if mode == AUTO:
+            return True
+        plan = self.project.creative_plan
+        approvals = plan.setdefault("workflow_approvals", {})
+        key = str(int(self.active_variant_index or 1))
+        if approvals.get(key) is True:
+            return True
+        shots = list(self.project.shots or [])
+        summary = "\\n".join(
+            f"{shot.index}. {shot.title} — {str(shot.visual or '')[:110]}"
+            for shot in shots[:18]
+        )
+        if len(shots) > 18:
+            summary += f"\\n……其余 {len(shots) - 18} 个镜头"
+        prompt = (
+            f"当前方案：{self.active_variant_index}\\n"
+            f"工作模式：{self._workflow_mode_label(mode)}\\n"
+            f"分镜数量：{len(shots)}\\n\\n{summary}\\n\\n"
+            "请先检查分镜。确认后才允许开始生成当前方案的镜头；拒绝则暂停，不会调用视频生成服务。"
+        )
+        if not messagebox.askyesno("确认分镜后继续", prompt):
+            self.detail.set(f"方案{self.active_variant_index} 尚未批准分镜；本次生成已暂停。")
+            return False
+        approvals[key] = True
+        self.store.save(self.project)
+        return True
+
+    def _choose_initial_plan(self, plans):
+        """In user-controlled mode, let the user select the initial AI proposal."""
+        if not plans:
+            return None
+        if len(plans) == 1:
+            return 0 if messagebox.askyesno(
+                "确认创意方案",
+                f"AI 当前只提出一套方案：{plans[0].get('_variant_label', plans[0].get('video_form', '创意方案'))}。\\n是否明确选择这套方案？"
+            ) else None
+        win = tk.Toplevel(self)
+        win.title("选择初始创意方案")
+        win.geometry("760x430")
+        win.transient(self)
+        win.grab_set()
+        frm = ttk.Frame(win, padding=14)
+        frm.pack(fill="both", expand=True)
+        ttk.Label(frm, text="AI 已生成候选方案，请选择本项目先使用哪一套。", wraplength=700).pack(anchor="w")
+        box = tk.Listbox(frm, height=12)
+        box.pack(fill="both", expand=True, pady=10)
+        for i, plan in enumerate(plans, 1):
+            label = plan.get("_variant_label", plan.get("video_form", f"方案{i}"))
+            strategy = str(plan.get("strategy", ""))[:100]
+            box.insert("end", f"{i}. {label}｜{strategy}")
+        box.selection_set(0)
+        selected = {"index": None}
+        def confirm():
+            indexes = box.curselection()
+            if not indexes:
+                messagebox.showinfo("请选择方案", "请先选择一套创意方案。", parent=win)
+                return
+            selected["index"] = int(indexes[0])
+            win.destroy()
+        def cancel():
+            win.destroy()
+        actions = ttk.Frame(frm)
+        actions.pack(fill="x")
+        ttk.Button(actions, text="使用选中方案", command=confirm).pack(side="right")
+        ttk.Button(actions, text="取消创建", command=cancel).pack(side="right", padx=8)
+        self.wait_window(win)
+        return selected["index"]
+
     @ui_action
     def asset_library_settings(self):
         win=tk.Toplevel(self); win.title('资产库硬盘位置'); win.geometry('760x280'); win.transient(self)
@@ -124,35 +302,110 @@ class App(tk.Tk):
         ttk.Button(frm,text='保存并切换',command=save_location).pack(anchor='e',pady=8)
 
     def ui(self):
-        top=ttk.Frame(self,padding=16); top.pack(fill='x')
+        self.geometry('1280x850'); self.minsize(980,680)
+        top=ttk.Frame(self,padding=(16,12)); top.pack(fill='x')
         ttk.Label(top,text='AI 商品广告工厂',font=('Microsoft YaHei UI',22,'bold')).pack(side='left')
-        self.gpu_text=tk.StringVar(value='检测本地 GPU…'); ttk.Label(top,textvariable=self.gpu_text).pack(side='right')
-        setup=ttk.LabelFrame(self,text='① 商品与广告策略',padding=12); setup.pack(fill='x',padx=16,pady=8)
-        ttk.Label(setup,text='商品链接').grid(row=0,column=0,sticky='w'); self.url=tk.StringVar(); ttk.Entry(setup,textvariable=self.url,width=72).grid(row=0,column=1,columnspan=3,sticky='ew',padx=8)
-        ttk.Label(setup,text='广告强度').grid(row=1,column=0,sticky='w'); self.level=tk.IntVar(value=2); ttk.Combobox(setup,textvariable=self.level,values=[1,2,3,4,5],state='readonly',width=8).grid(row=1,column=1,sticky='w')
-        ttk.Label(setup,text='本次预算（¥）').grid(row=1,column=2,sticky='e'); self.budget=tk.StringVar(value='3'); ttk.Entry(setup,textvariable=self.budget,width=10).grid(row=1,column=3,sticky='w',padx=8)
-        ttk.Label(setup,text='留空/自动：交给AI判断；手动选择仅作为约束').grid(row=1,column=2,columnspan=2,sticky='w')
-        ttk.Label(setup,text='本次任务').grid(row=2,column=0,sticky='w'); self.task_type=tk.StringVar(value='电商短视频'); ttk.Combobox(setup,textvariable=self.task_type,values=['电商短视频','商品主图视频','广告投放视频'],state='readonly',width=18).grid(row=2,column=1,sticky='w'); ttk.Label(setup,text='每次只能选择一种任务').grid(row=2,column=2,columnspan=2,sticky='w')
-        ttk.Label(setup,text='视频形式').grid(row=3,column=0,sticky='w'); self.form=tk.StringVar(value='AI自动选择'); ttk.Combobox(setup,textvariable=self.form,values=['AI自动选择']+FORMS,state='readonly',width=22).grid(row=2,column=1,sticky='w')
-        ttk.Label(setup,text='创意方案数').grid(row=4,column=0,sticky='w'); self.variant_count=tk.StringVar(value='3'); ttk.Combobox(setup,textvariable=self.variant_count,values=['1','3'],state='readonly',width=8).grid(row=3,column=1,sticky='w'); ttk.Label(setup,text='3 = 同一商品自动生成三种明显不同的广告打法').grid(row=3,column=2,columnspan=3,sticky='w')
-        ttk.Label(setup,text='素材来源').grid(row=5,column=0,sticky='w'); self.footage_mode=tk.StringVar(value='AI生成视频'); ttk.Combobox(setup,textvariable=self.footage_mode,values=['AI生成视频','用户拍摄素材'],state='readonly',width=16).grid(row=4,column=1,sticky='w',pady=(4,2))
-        self.footage_folder=tk.StringVar(value=''); ttk.Entry(setup,textvariable=self.footage_folder,width=36).grid(row=5,column=2,sticky='w',padx=4); ttk.Button(setup,text='选择素材文件夹',command=self.choose_footage_folder).grid(row=4,column=3,sticky='e')
-        ttk.Label(setup,text='用户拍摄素材：输入链接后 AI 分析产品 → 指定文件夹放入你拍好的视频 → AI 思考剪辑方案 → 本地 FFmpeg 出片（不调用视频生成服务）',foreground='#666').grid(row=6,column=0,columnspan=5,sticky='w',pady=(2,0))
-        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='📹 实拍分析报告',command=self.footage_analysis_report).grid(row=2,column=5,sticky='e',padx=8); ttk.Button(setup,text='📋 补素材任务',command=self.footage_gap_tasks_report).grid(row=2,column=6,sticky='e',padx=8); ttk.Button(setup,text='🤖 执行AI补镜头',command=self.generate_hybrid_gap_shots).grid(row=2,column=10,sticky='e',padx=8); ttk.Button(setup,text='🔍 AI补镜头复核',command=self.review_hybrid_gap_shots).grid(row=2,column=11,sticky='e',padx=8); ttk.Button(setup,text='🔄 重新分析实拍素材',command=self.reanalyze_footage).grid(row=2,column=7,sticky='e',padx=8); ttk.Button(setup,text='🕘 分析历史',command=self.footage_reanalysis_history_report).grid(row=2,column=8,sticky='e',padx=8); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='📚 商品资料库',command=self.product_library_settings).grid(row=0,column=5,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='🧪 创意版本矩阵',command=self.variant_matrix_report).grid(row=2,column=9,sticky='e',padx=8); ttk.Button(setup,text='🧠 创意方案分析',command=self.creative_variant_analysis_report).grid(row=2,column=12,sticky='e',padx=8); ttk.Button(setup,text='🧪 创意测试方案',command=self.creative_test_plan_report).grid(row=2,column=14,sticky='e',padx=8); ttk.Button(setup,text='🛡 创意事实检查',command=self.creative_fact_check_report).grid(row=2,column=15,sticky='e',padx=8); ttk.Button(setup,text='🎬 分镜事实复核',command=self.storyboard_fact_check_report).grid(row=2,column=16,sticky='e',padx=8); ttk.Button(setup,text='🎥 成片视觉复核',command=self.visual_fact_check_report).grid(row=2,column=17,sticky='e',padx=8); ttk.Button(setup,text='📥 真实投放数据（可选）',command=self.variant_performance_entry).grid(row=2,column=13,sticky='e',padx=8); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
-        main=ttk.Panedwindow(self,orient='horizontal'); main.pack(fill='both',expand=True,padx=16,pady=8)
+        self.gpu_text=tk.StringVar(value='检测本地 GPU…')
+        ttk.Label(top,textvariable=self.gpu_text).pack(side='right',padx=(10,0))
+        ttk.Button(top,text='📖 帮助与功能说明',command=self.help_view).pack(side='right',padx=8)
+
+        setup=ttk.LabelFrame(self,text='① 商品与任务设置',padding=10); setup.pack(fill='x',padx=16,pady=(0,7))
+        for col in range(8): setup.columnconfigure(col,weight=1 if col in (1,3,5,7) else 0)
+        ttk.Label(setup,text='商品链接').grid(row=0,column=0,sticky='w',pady=4)
+        self.url=tk.StringVar()
+        ttk.Entry(setup,textvariable=self.url).grid(row=0,column=1,columnspan=6,sticky='ew',padx=6,pady=4)
+        ttk.Label(setup,text='本次任务').grid(row=1,column=0,sticky='w',pady=4)
+        self.task_type=tk.StringVar(value='电商短视频')
+        ttk.Combobox(setup,textvariable=self.task_type,values=['电商短视频','商品主图视频','广告投放视频'],state='readonly',width=17).grid(row=1,column=1,sticky='ew',padx=6,pady=4)
+        ttk.Label(setup,text='本次预算（¥）').grid(row=1,column=2,sticky='e',pady=4)
+        self.budget=tk.StringVar(value='3')
+        ttk.Entry(setup,textvariable=self.budget,width=9).grid(row=1,column=3,sticky='ew',padx=6,pady=4)
+        ttk.Label(setup,text='广告强度').grid(row=1,column=4,sticky='e',pady=4)
+        self.level=tk.IntVar(value=2)
+        ttk.Combobox(setup,textvariable=self.level,values=[1,2,3,4,5],state='readonly',width=7).grid(row=1,column=5,sticky='ew',padx=6,pady=4)
+        ttk.Label(setup,text='创意方案数').grid(row=1,column=6,sticky='e',pady=4)
+        self.variant_count=tk.StringVar(value='3')
+        ttk.Combobox(setup,textvariable=self.variant_count,values=['1','3'],state='readonly',width=6).grid(row=1,column=7,sticky='ew',padx=6,pady=4)
+
+        ttk.Label(setup,text='视频形式').grid(row=2,column=0,sticky='w',pady=4)
+        self.form=tk.StringVar(value='AI自动选择')
+        ttk.Combobox(setup,textvariable=self.form,values=['AI自动选择']+FORMS,state='readonly',width=17).grid(row=2,column=1,sticky='ew',padx=6,pady=4)
+        ttk.Label(setup,text='素材来源').grid(row=2,column=2,sticky='e',pady=4)
+        self.footage_mode=tk.StringVar(value='AI生成视频')
+        ttk.Combobox(setup,textvariable=self.footage_mode,values=['AI生成视频','用户拍摄素材'],state='readonly',width=16).grid(row=2,column=3,sticky='ew',padx=6,pady=4)
+        self.footage_folder=tk.StringVar(value='')
+        ttk.Entry(setup,textvariable=self.footage_folder).grid(row=2,column=4,columnspan=3,sticky='ew',padx=6,pady=4)
+        ttk.Button(setup,text='选择素材文件夹',command=self.choose_footage_folder).grid(row=2,column=7,sticky='ew',padx=6,pady=4)
+
+        ttk.Label(setup,text='AI 工作模式').grid(row=3,column=0,sticky='w',pady=4)
+        self.workflow_mode=tk.StringVar(value='AI 半自动')
+        ttk.Combobox(setup,textvariable=self.workflow_mode,values=['AI 全自动','AI 半自动','用户控制 / AI 辅助'],state='readonly',width=25).grid(row=3,column=1,sticky='ew',padx=6,pady=4)
+        ttk.Label(setup,text='留空/自动由 AI 判断；用户预算、云端费用和超预算操作仍需明确确认。',foreground='#555',wraplength=650).grid(row=3,column=2,columnspan=6,sticky='w',padx=6,pady=4)
+        project_actions=ttk.Frame(setup); project_actions.grid(row=4,column=0,columnspan=8,sticky='ew',pady=(6,0))
+        ttk.Button(project_actions,text='创建广告项目',command=self.create).pack(side='left',padx=(0,6))
+        ttk.Button(project_actions,text='打开已有项目',command=self.load_project).pack(side='left',padx=6)
+        ttk.Button(project_actions,text='保存项目',command=self.save).pack(side='left',padx=6)
+
+        tools=ttk.LabelFrame(self,text='② 工具与检查',padding=8); tools.pack(fill='x',padx=16,pady=(0,7))
+        def add_button_row(parent, row, items):
+            for col,(label,callback) in enumerate(items):
+                parent.columnconfigure(col,weight=1)
+                ttk.Button(parent,text=label,command=callback).grid(row=row,column=col,sticky='ew',padx=3,pady=3)
+        add_button_row(tools,0,[
+            ('📚 商品资料库',self.product_library_settings),('💾 资产库位置',self.asset_library_settings),
+            ('⚙ 模型设置',self.model_settings),('🎬 视频生成设置',self.video_provider_settings),
+            ('🧩 素材生成设置',self.asset_generation_settings),('🔎 系统状态',self.system_status),
+            ('📊 AI调用记录',self.usage_view)
+        ])
+        add_button_row(tools,1,[
+            ('🧪 创意版本矩阵',self.variant_matrix_report),('🧠 创意方案分析',self.creative_variant_analysis_report),
+            ('🧪 创意测试方案',self.creative_test_plan_report),('🛡 创意事实检查',self.creative_fact_check_report),
+            ('🎬 分镜事实复核',self.storyboard_fact_check_report),('🎥 成片视觉复核',self.visual_fact_check_report),
+            ('📥 真实投放数据（可选）',self.variant_performance_entry)
+        ])
+        add_button_row(tools,2,[
+            ('📹 实拍分析报告',self.footage_analysis_report),('📋 补素材任务',self.footage_gap_tasks_report),
+            ('🤖 执行AI补镜头',self.generate_hybrid_gap_shots),('🔍 AI补镜头复核',self.review_hybrid_gap_shots),
+            ('🔄 重新分析实拍素材',self.reanalyze_footage),('🕘 分析历史',self.footage_reanalysis_history_report)
+        ])
+
+        main=ttk.Panedwindow(self,orient='horizontal'); main.pack(fill='both',expand=True,padx=16,pady=(0,8))
         left=ttk.Frame(main,padding=8); right=ttk.Frame(main,padding=8); main.add(left,weight=3); main.add(right,weight=2)
-        ttk.Label(left,text='② 分镜生产链',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
-        self.shots=ttk.Treeview(left,columns=('v','status','actor','scene'),show='tree headings',height=17)
-        for c,t,w in [('v','版本',70),('status','状态',90),('actor','演员',150),('scene','场景',150)]: self.shots.heading(c,text=t); self.shots.column(c,width=w)
-        self.shots.column('#0',width=300); self.shots.pack(fill='both',expand=True,pady=8); self.shots.bind('<<TreeviewSelect>>',self.show_shot)
-        bar=ttk.Frame(left); bar.pack(fill='x'); ttk.Button(bar,text='切换创意方案',command=self.switch_variant).pack(side='left'); ttk.Button(bar,text='生成本镜头',command=self.generate_shot).pack(side='left',padx=8); ttk.Button(bar,text='重新生成本镜头',command=self.regen_shot).pack(side='left',padx=8); ttk.Button(bar,text='▶ 本地硬件后处理',command=self.postprocess_selected).pack(side='left',padx=8); ttk.Button(bar,text='生成最终成片',command=self.final_render).pack(side='right',padx=8); ttk.Button(bar,text='📦 成片交付中心',command=self.final_delivery_center).pack(side='right',padx=8); ttk.Button(bar,text='批量输出已完成版本',command=self.batch_final_render).pack(side='right',padx=8); ttk.Button(bar,text='⚡ 一键生成全部版本',command=self.batch_generate_variants).pack(side='right',padx=8); ttk.Button(bar,text='保存项目',command=self.save).pack(side='right')
-        ttk.Label(right,text='③ 本地资产库',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
-        self.assets=ttk.Treeview(right,columns=('kind','source','path'),show='tree headings',height=13)
-        for c,t,w in [('kind','类型',80),('source','来源',90),('path','本地文件',300)]: self.assets.heading(c,text=t); self.assets.column(c,width=w)
-        self.assets.column('#0',width=180); self.assets.pack(fill='both',expand=True,pady=8)
-        ab=ttk.Frame(right); ab.pack(fill='x'); ttk.Button(ab,text='＋上传演员',command=lambda:self.upload('演员')).pack(side='left'); ttk.Button(ab,text='＋上传场景',command=lambda:self.upload('场景')).pack(side='left',padx=5); ttk.Button(ab,text='＋上传产品素材',command=lambda:self.upload('产品图')).pack(side='left'); ttk.Button(ab,text='＋上传BGM',command=lambda:self.upload('BGM')).pack(side='left',padx=5); ttk.Button(ab,text='刷新资产库',command=self.refresh_assets).pack(side='right')
-        self.detail=tk.StringVar(value='等待创建项目'); ttk.Label(right,textvariable=self.detail,justify='left',wraplength=470).pack(fill='x',pady=10); ttk.Button(right,text='编辑当前分镜',command=self.edit_shot).pack(anchor='w',pady=4)
-        self.cost=tk.StringVar(value='成本：尚未计算'); ttk.Label(right,textvariable=self.cost,font=('Microsoft YaHei UI',12,'bold')).pack(anchor='w')
+        ttk.Label(left,text='③ 分镜生产链',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
+        self.shots=ttk.Treeview(left,columns=('v','status','actor','scene'),show='tree headings',height=12)
+        for c,t,w in [('v','版本',65),('status','状态',100),('actor','演员',125),('scene','场景',125)]:
+            self.shots.heading(c,text=t); self.shots.column(c,width=w)
+        self.shots.column('#0',width=250); self.shots.pack(fill='both',expand=True,pady=7); self.shots.bind('<<TreeviewSelect>>',self.show_shot)
+        shot_actions=ttk.Frame(left); shot_actions.pack(fill='x')
+        for label,callback in [
+            ('切换创意方案',self.switch_variant),('生成本镜头',self.generate_shot),
+            ('重新生成本镜头',self.regen_shot),('▶ 本地硬件后处理',self.postprocess_selected),
+            ('编辑当前分镜',self.edit_shot)
+        ]:
+            ttk.Button(shot_actions,text=label,command=callback).pack(side='left',padx=(0,5),pady=3)
+        delivery_actions=ttk.Frame(left); delivery_actions.pack(fill='x',pady=(3,0))
+        for label,callback in [
+            ('⚡ 一键生成全部版本',self.batch_generate_variants),('批量输出已完成版本',self.batch_final_render),
+            ('生成最终成片',self.final_render),('📦 成片交付中心',self.final_delivery_center)
+        ]:
+            ttk.Button(delivery_actions,text=label,command=callback).pack(side='left',padx=(0,5),pady=3)
+
+        ttk.Label(right,text='④ 本地资产库',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
+        self.assets=ttk.Treeview(right,columns=('kind','source','path'),show='tree headings',height=10)
+        for c,t,w in [('kind','类型',85),('source','来源',95),('path','本地文件',250)]:
+            self.assets.heading(c,text=t); self.assets.column(c,width=w)
+        self.assets.column('#0',width=150); self.assets.pack(fill='both',expand=True,pady=7)
+        asset_actions=ttk.Frame(right); asset_actions.pack(fill='x')
+        for label,callback in [
+            ('＋上传演员',lambda:self.upload('演员')),('＋上传场景',lambda:self.upload('场景')),
+            ('＋上传产品素材',lambda:self.upload('产品图')),('＋上传BGM',lambda:self.upload('BGM')),
+            ('刷新资产库',self.refresh_assets)
+        ]:
+            ttk.Button(asset_actions,text=label,command=callback).pack(side='left',padx=(0,4),pady=3)
+        self.detail=tk.StringVar(value='等待创建项目')
+        ttk.Label(right,textvariable=self.detail,justify='left',wraplength=460).pack(fill='x',pady=(8,4))
+        self.cost=tk.StringVar(value='成本：尚未计算')
+        ttk.Label(right,textvariable=self.cost,font=('Microsoft YaHei UI',11,'bold'),wraplength=460,justify='left').pack(anchor='w',pady=4)
         ttk.Label(self,text='本地存储：本机磁盘  |  资产库：永久复用  |  云端生成：仅在需要时调用',relief='sunken',anchor='w',padding=8).pack(fill='x',side='bottom')
 
 
@@ -219,8 +472,8 @@ class App(tk.Tk):
         ttk.Label(frm,text='最终成片交付中心',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
         status=tk.StringVar()
         ttk.Label(frm,textvariable=status,font=('Microsoft YaHei UI',13,'bold')).pack(anchor='w',pady=(4,8))
-        tree=ttk.Treeview(frm,columns=('key','status','aspect','duration','shots','exists','path'),show='headings',height=8)
-        for c,t,w in [('key','方案·画幅',100),('status','交付状态',90),('aspect','画幅',80),('duration','时长',80),('shots','镜头数',80),('exists','文件',70),('path','成片路径',620)]:
+        tree=ttk.Treeview(frm,columns=('key','status','aspect','duration','shots','created','exists','reason','path'),show='headings',height=8)
+        for c,t,w in [('key','方案·画幅',100),('status','交付状态',90),('aspect','画幅',70),('duration','时长',70),('shots','镜头数',70),('created','创建时间',170),('exists','文件',60),('reason','失效原因',220),('path','成片路径',350)]:
             tree.heading(c,text=t); tree.column(c,width=w,anchor='w')
         tree.pack(fill='x',pady=(0,8))
         issues=tk.Text(frm,height=16); issues.pack(fill='both',expand=True,pady=(4,8))
@@ -228,7 +481,7 @@ class App(tk.Tk):
             status.set('🟢 可以交付' if result['delivery_ready'] else '🔴 暂不能交付')
             for item in tree.get_children(): tree.delete(item)
             for row in self.store.final_output_history(self.project):
-                tree.insert('', 'end', values=(row['key'],row['delivery_status'],row['aspect'],f"{row['duration_seconds']}s",row['shot_count'],'存在' if row['exists'] else '缺失',row['output_path']))
+                tree.insert('', 'end', values=(row['key'],row['delivery_status'],row['aspect'],f"{row['duration_seconds']}s",row['shot_count'],row.get('created_at',''), '存在' if row['exists'] else '缺失',row.get('recovery_reason',''),row['output_path']))
             issues.config(state='normal'); issues.delete('1.0','end')
             issues.insert('end',f"当前检查：方案{result['variant_index']}｜{result['aspect']}\n")
             issues.insert('end',f"安全闸门：{'通过' if result['gate']['allowed'] else '拦截'}\n")
@@ -857,23 +1110,60 @@ class App(tk.Tk):
         if not self.project:
             return messagebox.showinfo('提示','请先创建或打开一个项目。')
         tasks=(self.project.creative_plan.get('footage_gap_tasks') or {}).get('tasks') or []
-        approved=[x for x in tasks if isinstance(x,dict) and x.get('recommended_resolution')=='AI补镜头' and x.get('generation_allowed')]
+        active_variant_index=int(getattr(self,'active_variant_index',1) or 1)
+        approved=[x for x in tasks if isinstance(x,dict) and x.get('recommended_resolution')=='AI补镜头' and x.get('generation_allowed') and int(x.get('variant_index',active_variant_index) or active_variant_index)==active_variant_index]
         if not approved:
             return messagebox.showinfo('没有可执行任务','当前没有经过路由器批准的“AI补镜头”任务。商品/真人证据缺口仍需补拍。')
         try:
             provider=load_video_provider(ROOT/'video-provider.json')
             if not provider.configured():
                 raise RuntimeError('视频生成 Provider 尚未真实配置，不能执行 AI 补镜头。')
-            rate=float(getattr(provider,'cost_per_shot_rmb',0.0) or 0.0)
+            rate=float(getattr(provider,'cost_per_shot_rmb',0.72) or 0.72)
         except Exception as exc:
             return messagebox.showerror('AI补镜头不可用',str(exc))
         budget=float((self.project.cost_estimate or {}).get('预算',0) or 0)
         actual=float(getattr(self.project,'actual_cost_rmb',0.0) or 0.0)
-        remaining=max(0.0,budget-actual) if budget>0 else 0.0
+        remaining=max(0.0,budget-actual)
         pending=[x for x in approved if not x.get('generated_path') or not Path(str(x.get('generated_path'))).exists()]
-        estimate=round(len(pending)*rate,4)
-        if budget>0 and estimate>remaining:
-            return messagebox.showwarning('预算闸门',f'本次 AI 补镜头预计还需 ¥{estimate:.2f}，当前剩余预算 ¥{remaining:.2f}。系统不会自动突破预算。')
+        if not pending:
+            return messagebox.showinfo('无需生成','当前所有已批准的 AI 补镜头任务都已有生成文件。')
+        # The video call can also generate missing actor/scene/product assets inside render_shot.
+        # Include those potential cloud costs before authorization; unknown configured prices need
+        # a separate explicit warning instead of silently being treated as free.
+        asset_estimate=0.0
+        unknown_asset_prices=[]
+        try:
+            asset_config_path=ROOT/'asset-generation.json'
+            asset_config=json.loads(asset_config_path.read_text(encoding='utf-8')) if asset_config_path.exists() else {}
+            library=LocalLibrary(getattr(self.store,'library_root',ROOT/'library'))
+            for kind in ('演员','场景','商品素材'):
+                if library.best_match(kind,[]):
+                    continue
+                cfg=asset_config.get(kind) or asset_config.get('asset_generation') or {}
+                endpoint=str(cfg.get('endpoint') or '').strip()
+                local_endpoint=cfg.get('local') is True or '127.0.0.1' in endpoint.lower() or 'localhost' in endpoint.lower()
+                configured=bool(endpoint) and (bool(cfg.get('api_key')) or local_endpoint)
+                if not configured or local_endpoint:
+                    continue
+                try:
+                    price=float(cfg.get('price_rmb',0.0) or 0.0)
+                except (TypeError,ValueError):
+                    price=0.0
+                if price>0:
+                    # Conservative: account for each pending task potentially retrying a missing asset.
+                    asset_estimate+=price*len(pending)
+                else:
+                    unknown_asset_prices.append(kind)
+        except Exception as exc:
+            return messagebox.showerror('AI补镜头成本预估失败',f'无法可靠读取缺失素材成本配置，已停止云端生成：{exc}')
+        estimate=round(len(pending)*rate+asset_estimate,4)
+        if unknown_asset_prices:
+            unknown_text='、'.join(unknown_asset_prices)
+            if not messagebox.askyesno('素材生成价格未配置',f'以下云端素材生成服务未配置有效单价：{unknown_text}。本次费用预估不包含这些潜在费用。是否仍继续进入预算确认？'):
+                return
+        if estimate>remaining:
+            if not self._confirm_budget_overrun(estimate,remaining,'AI补镜头预算超限确认'): return
+        if not self._authorize_workflow_action('cloud_generation','云端 AI 补镜头授权'): return
         Shot=__import__('ad_studio.models',fromlist=['Shot']).Shot
         results=[]; failures=[]
         for n,task in enumerate(pending,1):
@@ -975,6 +1265,9 @@ class App(tk.Tk):
             shot=Shot(id=f"hybrid-{task.get('task_id','gap').lower().replace('_','-')}-v{self.active_variant_index}",index=(target_index if target_index is not None else max_index+1),title=f"AI补镜头｜{task.get('need','辅助画面')}",visual=str(task.get('need') or '补充通用辅助画面'),script=str(task.get('related_selling_point') or ''),status='已复核并纳入分镜',video_path=str(p),clip_source='ai_generated',provider=str(task.get('generation_provider') or 'AI视频生成'),generated_from_request=f"实拍缺口任务 {task.get('task_id')}：{task.get('reason','')}",actual_cost_rmb=round(float(task.get('generation_cost_rmb',0) or 0),4))
             for existing in self.project.shots[insert_at:]: existing.index=int(getattr(existing,'index',0) or 0)+1
             self.project.shots.insert(insert_at,shot); task['accepted_position']=insert_at+1; task['review_status']='已通过'; task['reviewed_at']=__import__('datetime').datetime.now().isoformat(timespec='seconds'); task['accepted_into_storyboard']=True; task['accepted_shot_id']=shot.id; task['accepted_variant_index']=self.active_variant_index; task['status']='AI补镜头已生成并通过人工复核'
+            # Adding a shot changes the approved storyboard. Semi-auto and user-controlled
+            # modes must review the revised shot list before any further generation.
+            invalidate_storyboard_approval(plan, self.active_variant_index)
             plan.setdefault('hybrid_reviewed_shots',[]).append({'task_id':task.get('task_id'),'shot_id':shot.id,'variant_index':self.active_variant_index,'path':str(p),'review_status':'已通过','accepted_at':task['reviewed_at']})
             self._cache_active_variant(); self.store.save(self.project); self.refresh_shots(); self.detail.set(f"AI补镜头 {task.get('task_id')} 已通过人工复核并纳入方案{self.active_variant_index}当前分镜。"); refresh_row(task)
             messagebox.showinfo('已纳入当前分镜',f"{task.get('task_id')} 已作为镜头 {shot.index} 纳入当前方案。现在可以继续后处理或生成最终成片。")
@@ -1205,19 +1498,124 @@ class App(tk.Tk):
 
     @ui_action
     def usage_view(self):
-        win=tk.Toplevel(self); win.title('AI调用记录 · 本机成本账本'); win.geometry('1080x620'); win.transient(self)
+        win=tk.Toplevel(self); win.title('AI调用与生产费用账本'); win.geometry('1260x720'); win.minsize(980,580); win.transient(self)
         frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
-        summary=self.model_router.usage_summary()
-        ttk.Label(frm,text='AI调用记录',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
-        ttk.Label(frm,text=f"累计调用：{summary['calls']}  成功：{summary['success']}  失败：{summary['failed']}  Token：{summary['tokens']:,}  已记录模型成本：¥{summary['estimated_cost_rmb']:.4f}").pack(anchor='w',pady=(2,10))
-        ttk.Label(frm,text='成本为模型返回 Token × 本机配置单价；未配置单价的模型显示 ¥0，不代表供应商永久免费。').pack(anchor='w',pady=(0,8))
-        tree=ttk.Treeview(frm,columns=('time','function','model','provider','status','tokens','cost','duration'),show='headings')
-        for col,title,w in [('time','时间',135),('function','功能',120),('model','实际模型',180),('provider','提供方式',100),('status','状态',70),('tokens','Token',90),('cost','估算成本',90),('duration','耗时',80)]:
-            tree.heading(col,text=title); tree.column(col,width=w)
-        tree.pack(fill='both',expand=True)
-        for x in self.model_router.recent_usage(150):
-            tree.insert('', 'end', values=(x.get('time',''),x.get('function',''),x.get('model_name',''),x.get('provider',''),x.get('status',''),x.get('total_tokens',0),f"¥{float(x.get('estimated_cost_rmb',0)):.4f}",f"{int(x.get('duration_ms',0))}ms"))
+        model_summary=self.model_router.usage_summary()
+        production_summary=self.store.ledger.summary()
+        ttk.Label(frm,text='本机成本账本',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
+        ttk.Label(frm,text=f"模型调用：{model_summary['calls']} 次｜成功 {model_summary['success']}｜失败 {model_summary['failed']}｜Token {model_summary['tokens']:,}｜模型调用估算金额 ¥{model_summary['estimated_cost_rmb']:.4f}").pack(anchor='w',pady=(3,2))
+        production_line=f"视频/素材生产费用：{production_summary['calls']} 条｜成功 {production_summary['success']}｜失败 {production_summary['failed']}｜账本金额合计 ¥{production_summary['estimated_cost_rmb']:.4f}"
+        if self.project:
+            current_project_summary=self.store.ledger.project_summary(self.project.id)
+            production_line += f"｜当前项目已记录 ¥{current_project_summary['actual_cost_rmb']:.4f}"
+        ttk.Label(frm,text=production_line).pack(anchor='w',pady=(0,4))
+        ttk.Label(frm,text='模型 Token 费用与视频/素材生成费用分开列示，不直接合并；金额按本机配置价格估算，不等于供应商最终账单。').pack(anchor='w',pady=(0,8))
+
+        notebook=ttk.Notebook(frm); notebook.pack(fill='both',expand=True)
+        model_tab=ttk.Frame(notebook,padding=6); production_tab=ttk.Frame(notebook,padding=6)
+        notebook.add(model_tab,text='模型调用记录')
+        notebook.add(production_tab,text='视频/素材生产费用')
+
+        def make_table(parent, columns):
+            holder=ttk.Frame(parent); holder.pack(fill='both',expand=True)
+            tree=ttk.Treeview(holder,columns=tuple(x[0] for x in columns),show='headings')
+            for key,title,width in columns:
+                tree.heading(key,text=title); tree.column(key,width=width,stretch=True)
+            ybar=ttk.Scrollbar(holder,orient='vertical',command=tree.yview)
+            xbar=ttk.Scrollbar(holder,orient='horizontal',command=tree.xview)
+            tree.configure(yscrollcommand=ybar.set,xscrollcommand=xbar.set)
+            tree.grid(row=0,column=0,sticky='nsew'); ybar.grid(row=0,column=1,sticky='ns'); xbar.grid(row=1,column=0,sticky='ew')
+            holder.rowconfigure(0,weight=1); holder.columnconfigure(0,weight=1)
+            return tree
+
+        model_tree=make_table(model_tab,[
+            ('time','时间',145),('function','功能',130),('model','实际模型',180),('provider','提供方式',110),
+            ('status','状态',70),('tokens','Token',85),('cost','估算金额',95),('duration','耗时',85),('error','错误信息',220)
+        ])
+        status_names={'success':'成功','failed':'失败','error':'失败','pending':'进行中'}
+        for x in self.model_router.ledger.all_entries():
+            model_tree.insert('', 'end', values=(x.get('time',''),x.get('function',''),x.get('model_name',''),x.get('provider',''),
+                status_names.get(str(x.get('status','')),x.get('status','')),x.get('total_tokens',0),
+                f"¥{float(x.get('estimated_cost_rmb',0) or 0):.4f}",f"{int(x.get('duration_ms',0) or 0)}ms",x.get('error','')))
+
+        production_tree=make_table(production_tab,[
+            ('time','时间',145),('function','生成项目',145),('category','类别',85),('project','项目ID',135),
+            ('shot','镜头ID',135),('provider','生成服务',140),('status','状态',70),('quantity','数量',65),
+            ('unit_cost','单价',85),('cost','记录金额',90),('error','错误信息',220)
+        ])
+        category_names={'video':'视频生成','asset':'素材生成','model':'模型调用'}
+        for x in self.store.ledger.all_entries():
+            production_tree.insert('', 'end', values=(x.get('time',''),x.get('function',''),category_names.get(str(x.get('category','')),x.get('category','')),
+                x.get('project_id',''),x.get('shot_id',''),x.get('provider',''),status_names.get(str(x.get('status','')),x.get('status','')),
+                f"{float(x.get('quantity',1) or 1):g}",f"¥{float(x.get('unit_cost_rmb',0) or 0):.4f}",
+                f"¥{float(x.get('estimated_cost_rmb',0) or 0):.4f}",x.get('error','')))
         ttk.Button(frm,text='刷新',command=lambda:(win.destroy(),self.usage_view())).pack(anchor='e',pady=8)
+
+
+    @ui_action
+    def help_view(self):
+        """在软件内展示动态功能状态与完整 HELP.md；不发起任何网络请求或生成任务。"""
+        win=tk.Toplevel(self); win.title('帮助与功能说明'); win.geometry('1080x720'); win.minsize(850,560); win.transient(self)
+        frm=ttk.Frame(win,padding=12); frm.pack(fill='both',expand=True)
+        ttk.Label(frm,text='当前功能与可用状态',font=('Microsoft YaHei UI',17,'bold')).pack(anchor='w')
+        ttk.Label(frm,text='状态依据本机配置与本地工具检测；“已配置”不代表真实供应商已成功出片或已完成 Windows 现场验收。',wraplength=1000).pack(anchor='w',pady=(3,8))
+        tabs=ttk.Notebook(frm); tabs.pack(fill='both',expand=True)
+        status_tab=ttk.Frame(tabs,padding=8); help_tab=ttk.Frame(tabs,padding=8)
+        tabs.add(status_tab,text='当前功能')
+        tabs.add(help_tab,text='完整帮助文档')
+        table_frame=ttk.Frame(status_tab); table_frame.pack(fill='both',expand=True)
+        tree=ttk.Treeview(table_frame,columns=('feature','status','notes'),show='headings')
+        for col,title,width in [('feature','功能模块',190),('status','当前状态',170),('notes','说明与限制',610)]:
+            tree.heading(col,text=title); tree.column(col,width=width,anchor='w')
+        ybar=ttk.Scrollbar(table_frame,orient='vertical',command=tree.yview)
+        xbar=ttk.Scrollbar(table_frame,orient='horizontal',command=tree.xview)
+        tree.configure(yscrollcommand=ybar.set,xscrollcommand=xbar.set)
+        tree.grid(row=0,column=0,sticky='nsew'); ybar.grid(row=0,column=1,sticky='ns'); xbar.grid(row=1,column=0,sticky='ew')
+        table_frame.rowconfigure(0,weight=1); table_frame.columnconfigure(0,weight=1)
+
+        usable_models=[p for p in self.model_router.profiles() if p.enabled and (p.provider=='local_openai' or bool(p.api_key))]
+        try:
+            ffmpeg_ok=bool(ffmpeg_available())
+        except Exception:
+            ffmpeg_ok=False
+        video_cfg={}
+        try:
+            video_cfg=json.loads((ROOT/'video-provider.json').read_text(encoding='utf-8')).get('video_provider',{})
+        except Exception:
+            pass
+        video_ready=bool(video_cfg.get('endpoint') and video_cfg.get('api_key'))
+        asset_cfg={}
+        try:
+            asset_cfg=json.loads((ROOT/'asset-generation.json').read_text(encoding='utf-8'))
+        except Exception:
+            pass
+        asset_ready=sum(1 for kind in ('演员','场景','商品素材') if isinstance(asset_cfg.get(kind),dict) and asset_cfg[kind].get('endpoint') and asset_cfg[kind].get('model'))
+        rows=[
+            ('三类任务','界面已接入','电商短视频、商品主图视频、广告投放视频；每次任务只选择一种。'),
+            ('AI 工作模式','部分接入','AI 全自动、AI 半自动、用户控制 / AI 辅助已接入部分关键动作；完整暂停/确认/继续状态机仍在完善。'),
+            ('商品理解与创意分析',f'可调用模型 {len(usable_models)} 个' if usable_models else '待配置模型','模型路由按功能选择；需有可用的本地模型或已配置凭据的模型。'),
+            ('云端视频生成','已配置' if video_ready else '需检查配置','仅当能力路由要求云端时使用；保存 Endpoint/API Key 不代表供应商 API 已验证。'),
+            ('演员/场景/商品素材生成',f'已配置 {asset_ready}/3 类','优先复用本地资产；未配置服务时不会假装生成成功。'),
+            ('本地剪辑与最终拼接','FFmpeg 可用' if ffmpeg_ok else '未检测到 FFmpeg','本地裁剪、后处理与最终拼接依赖 FFmpeg；实际编码能力以本机检测为准。'),
+            ('用户实拍剪辑','依赖本机能力','支持素材文件夹、关键帧视觉分析与本地剪辑规划；视觉模型与 FFmpeg 需可用。'),
+            ('事实/视觉检查与交付','界面已接入','创意事实、分镜事实、成片视觉复核与最终交付安全闸门按已有数据运行。'),
+            ('本地成本账本','界面已接入','模型 Token 估算与视频/素材生产费用分开记录、分开显示；不等于供应商账单。'),
+            ('本地资产库','已初始化' if self.library_root.exists() else '目录待创建',str(self.library_root))
+        ]
+        for row in rows: tree.insert('', 'end', values=row)
+
+        help_path=Path(__file__).resolve().parents[1]/'HELP.md'
+        try:
+            help_content=help_path.read_text(encoding='utf-8')
+        except Exception as exc:
+            help_content=f'无法读取帮助文档：{help_path}\\n{exc}'
+        help_frame=ttk.Frame(help_tab); help_frame.pack(fill='both',expand=True)
+        help_text=tk.Text(help_frame,wrap='word',font=('Microsoft YaHei UI',10))
+        help_scroll=ttk.Scrollbar(help_frame,orient='vertical',command=help_text.yview)
+        help_text.configure(yscrollcommand=help_scroll.set)
+        help_text.pack(side='left',fill='both',expand=True); help_scroll.pack(side='right',fill='y')
+        help_text.insert('1.0',help_content); help_text.config(state='disabled')
+        ttk.Button(frm,text='关闭',command=win.destroy).pack(anchor='e',pady=(8,0))
 
     def refresh_gpu(self):
         g=detect_gpu(); self.gpu_text.set(('🟢 '+g.get('name','NVIDIA')+' · '+g.get('mode','CPU')) if g.get('available') else '⚪ 未检测到 NVIDIA GPU · CPU模式')
@@ -1226,7 +1624,10 @@ class App(tk.Tk):
         lines=[f"项目预估：¥{c['总计']:.2f}",f"本地处理/FFmpeg：¥{c['本地']:.2f}",f"云端任务：¥{c['云端']:.2f}"]
         for item in c.get('明细',[]):
             if item['数量']: lines.append(f"  {item['项目']}：{item['数量']} × ¥{item['单价']:.2f} = ¥{item['小计']:.2f}")
-        actual=round(sum(float(getattr(s,'actual_cost_rmb',0) or 0) for s in (self.project.shots if self.project else [])),4)
+        shot_actual=round(sum(float(getattr(s,'actual_cost_rmb',0) or 0) for s in (self.project.shots if self.project else [])),4)
+        project_actual=float(getattr(self.project,'actual_cost_rmb',0.0) or 0.0) if self.project else 0.0
+        # Project ledger includes temporary AI gap shots not yet accepted into storyboard.
+        actual=round(max(project_actual,shot_actual),4)
         estimate=float(c.get('总计',0) or 0)
         pending=max(0.0,estimate-actual)
         lines += [f'已实际发生：¥{actual:.2f}',f'按当前计划尚未发生：¥{pending:.2f}']
@@ -1277,6 +1678,8 @@ class App(tk.Tk):
             data['creative_variants']=existing_variants
             data['variant_count']=existing_count
         data.update(preserved_variant_state)
+        preserve_workflow_state(previous_plan, data)
+        preserve_output_history(previous_plan, data)
         data['variant_index']=int(raw.get('_variant_index',1))
         data['variant_label']=raw.get('_variant_label',f"方案{data['variant_index']}｜{plan.video_form}")
         self.project.creative_plan=data
@@ -1316,6 +1719,20 @@ class App(tk.Tk):
             variant_reviewed=plan.setdefault('variant_hybrid_reviewed_shots', {})
             variant_reviewed[str(self.active_variant_index)]=json.loads(json.dumps(reviewed, ensure_ascii=False))
 
+        # Persist all mutable footage-planning state, not only gap tasks/reviewed shots.
+        # These fields are edited during reanalysis and gap completion; if only the
+        # active fields change, switching away and back must not resurrect stale maps.
+        for field, storage, expected_type in (
+            ('footage_plan','variant_footage_plans',list),
+            ('footage_selection_audit','variant_footage_selection_audits',dict),
+            ('footage_coverage','variant_footage_coverage',dict),
+            ('footage_gaps','variant_footage_gaps',dict),
+        ):
+            value=plan.get(field)
+            if isinstance(value, expected_type):
+                values=plan.setdefault(storage, {})
+                values[str(self.active_variant_index)]=json.loads(json.dumps(value, ensure_ascii=False))
+
     def _restore_active_variant_runtime(self):
         """恢复当前方案的补素材/混合生成运行态，禁止跨方案串数据。"""
         if not self.project:
@@ -1323,24 +1740,36 @@ class App(tk.Tk):
         plan=self.project.creative_plan
         idx=str(self.active_variant_index)
 
-        variant_tasks=plan.get('variant_footage_gap_tasks') or {}
-        if isinstance(variant_tasks, dict) and idx in variant_tasks:
-            plan['footage_gap_tasks']=json.loads(json.dumps(variant_tasks[idx], ensure_ascii=False))
+        variant_tasks=plan.get('variant_footage_gap_tasks')
+        if isinstance(variant_tasks, dict):
+            if idx in variant_tasks:
+                plan['footage_gap_tasks']=json.loads(json.dumps(variant_tasks[idx], ensure_ascii=False))
+            elif variant_tasks:
+                # If another variant has task state but this one does not, clear the
+                # previous variant's active value instead of leaking it across variants.
+                plan['footage_gap_tasks']={}
 
-        variant_reviewed=plan.get('variant_hybrid_reviewed_shots') or {}
-        if isinstance(variant_reviewed, dict) and idx in variant_reviewed:
-            plan['hybrid_reviewed_shots']=json.loads(json.dumps(variant_reviewed[idx], ensure_ascii=False))
+        variant_reviewed=plan.get('variant_hybrid_reviewed_shots')
+        if isinstance(variant_reviewed, dict):
+            if idx in variant_reviewed:
+                plan['hybrid_reviewed_shots']=json.loads(json.dumps(variant_reviewed[idx], ensure_ascii=False))
+            elif variant_reviewed:
+                plan['hybrid_reviewed_shots']=[]
 
-        # 实拍多方案状态同样按方案恢复；没有对应数据时保留当前通用状态。
+        # Restore variant-specific footage decisions. Once per-variant storage exists,
+        # a missing entry means "no state for this variant", not "reuse another variant".
         for field, storage in (
             ('footage_plan','variant_footage_plans'),
             ('footage_selection_audit','variant_footage_selection_audits'),
             ('footage_coverage','variant_footage_coverage'),
             ('footage_gaps','variant_footage_gaps'),
         ):
-            values=plan.get(storage) or {}
-            if isinstance(values, dict) and idx in values:
-                plan[field]=json.loads(json.dumps(values[idx], ensure_ascii=False))
+            values=plan.get(storage)
+            if isinstance(values, dict):
+                if idx in values:
+                    plan[field]=json.loads(json.dumps(values[idx], ensure_ascii=False))
+                elif values:
+                    plan[field]=[] if field == 'footage_plan' else {}
 
     def _record_variant_output(self, path):
         if not self.project:return
@@ -1348,6 +1777,28 @@ class App(tk.Tk):
         outputs[str(self.active_variant_index)]={'variant_index':self.active_variant_index,'variant_label':self.project.creative_plan.get('variant_label',f'方案{self.active_variant_index}'),'path':str(path),'status':'已输出'}
 
     @ui_action
+    def _restore_variant_selection(self, variant_index):
+        """Restore the user's original active variant after a cancelled preflight."""
+        if not self.project:
+            return False
+        variants=(self.project.creative_plan or {}).get('creative_variants',[])
+        target=next((dict(v) for pos,v in enumerate(variants,1)
+                     if int(v.get('_variant_index',pos) or pos)==int(variant_index)),None)
+        if not target:
+            return False
+        target['_variant_index']=int(variant_index)
+        target['_variant_label']=target.get('_variant_label',f'方案{variant_index}')
+        # Save any partial work from the currently active variant before switching back.
+        # This is safe for cancellation paths too and prevents error recovery from dropping
+        # successful shots or output metadata produced earlier in the batch.
+        self._cache_active_variant()
+        info=__import__('ad_studio.product_parser',fromlist=['ProductInfo']).ProductInfo(**self.project.product_info)
+        self._activate_plan(target,info)
+        self.refresh_shots()
+        self.show_shot()
+        self.store.save(self.project)
+        return True
+
     def switch_variant(self):
         if not self.project:return messagebox.showinfo('提示','先创建或打开一个包含多个创意方案的项目。')
         variants=self.project.creative_plan.get('creative_variants',[])
@@ -1415,7 +1866,31 @@ class App(tk.Tk):
             for i,raw in enumerate(raw_plans,1):
                 raw['_variant_index']=int(raw.get('_variant_index',i))
                 raw['_variant_label']=raw.get('_variant_label',f"方案{i}｜{raw.get('video_form','AI创意方案')}")
+            selected_mode=self._workflow_mode_value()
+            if selected_mode == SEMI_AUTO:
+                first_plan=raw_plans[0]
+                summary=(f"方案：{first_plan.get('_variant_label',first_plan.get('video_form','AI创意方案'))}\\n"
+                         f"策略：{str(first_plan.get('strategy',''))[:420]}\\n"
+                         f"视频形式：{first_plan.get('video_form','未指定')}\\n\\n"
+                         "半自动模式会先停在创意方案确认点。是否采用这套方案并继续？")
+                if not messagebox.askyesno('确认 AI 创意方案',summary):
+                    self.project=None
+                    self.detail.set('用户未批准创意方案；已停止本次项目创建。')
+                    return
+            if selected_mode == USER_CONTROLLED:
+                selected_index=self._choose_initial_plan(raw_plans)
+                if selected_index is None:
+                    self.project=None
+                    self.detail.set('用户取消了创意方案选择；未继续创建项目。')
+                    return
+                if selected_index:
+                    chosen=raw_plans.pop(selected_index)
+                    raw_plans.insert(0,chosen)
+                    # Re-number fresh-project variants to match their visible list order.
+                    for variant_position, candidate in enumerate(raw_plans,1):
+                        candidate['_variant_index']=variant_position
             plan=self._activate_plan(raw_plans[0],info)
+            set_project_workflow_mode(self.project,selected_mode)
             self.project.creative_plan['creative_variants']=raw_plans
             self.project.creative_plan['variant_count']=variant_count
             # 只审计创意实验设计，不推断投放平台，也不调用任何广告平台数据。
@@ -1590,16 +2065,51 @@ class App(tk.Tk):
         if not self._ui_execution_gate(): return
         s=self.selected()
         if not s:return messagebox.showinfo('提示','先选择一个镜头。')
+        if not self._authorize_workflow_action('generate_shot','生成镜头确认'): return
+        if not self._ensure_storyboard_approval(): return
+        if self.project:
+            set_project_workflow_mode(self.project,self._workflow_mode_value())
+
+        filmed=getattr(s,'clip_source','ai_generated')=='filmed'
+        decision=None
+        if not filmed:
+            decision=CapabilityRouter(ROOT).decide_video()
+            if decision.target == 'unavailable':
+                self.detail.set('当前没有可用的视频生成服务；未开始生成。')
+                return messagebox.showerror('视频生成不可用', decision.reason)
+            asset_preflight=self._preflight_asset_generation([s])
+            if not self._confirm_unknown_asset_prices(asset_preflight.get('unknown_prices', [])):
+                self.detail.set('用户取消了单镜头生成；未调用视频或素材生成服务。')
+                return
+            video_cost=0.0
+            if decision.target == 'cloud':
+                try:
+                    provider=load_video_provider(ROOT/'video-provider.json')
+                    video_cost=float(getattr(provider,'cost_per_shot_rmb',0.72) or 0.72)
+                except Exception:
+                    video_cost=0.72
+            estimate=round(video_cost+float(asset_preflight.get('cost',0.0) or 0.0),4)
+            budget=float((self.project.cost_estimate or {}).get('预算',0) or 0)
+            actual=float(getattr(self.project,'actual_cost_rmb',0.0) or 0.0)
+            remaining=max(0.0,budget-actual)
+            if estimate>remaining:
+                if not self._confirm_budget_overrun(estimate,remaining,'单镜头生成预算超限确认'):
+                    self.detail.set('用户取消了超预算单镜头生成；未调用生成服务。')
+                    return
+            needs_cloud=decision.target == 'cloud' or bool(asset_preflight.get('needs_cloud'))
+            if needs_cloud and not self._authorize_workflow_action('cloud_generation','云端视频/素材生成授权'):
+                self.detail.set('用户未授权云端生成；未调用视频或素材生成服务。')
+                return
+
         try:
             s.status='生成中…'; self.store.save(self.project); self.refresh_shots()
             self.update_idletasks()
-            if getattr(s,'clip_source','ai_generated')=='filmed':
+            if filmed:
                 src=Path(s.source_file).name if s.source_file else '(未指定素材)'
                 self.detail.set(f'镜头 {s.index} 正在从拍摄素材裁剪…（{src}，{s.source_start:.1f}s 起，{s.source_duration:.1f}s）')
                 out=self.store.render_footage_shot(self.project,s)
                 self.refresh_shots(); self.detail.set(f'镜头 {s.index} 已从拍摄素材裁剪 v{s.version}：{out}')
             else:
-                decision=CapabilityRouter(ROOT).decide_video()
                 mode={'local':'本地','cloud':'云端','unavailable':'不可用'}.get(decision.target,decision.target)
                 self.detail.set(f'镜头 {s.index} 正在{mode}生成…')
                 out=self.store.render_shot(self.project,s,config_root=ROOT)
@@ -1614,6 +2124,7 @@ class App(tk.Tk):
         if not self._ui_execution_gate(): return
         s=self.selected()
         if not s:return messagebox.showinfo('提示','先选择要重新生成的镜头。')
+        if not self._authorize_workflow_action('regenerate_shot','重新生成镜头确认'): return
         old=s.version; mark_regenerate(self.project,self.project.shots.index(s)); self.store.save(self.project); self.refresh_shots(); self.detail.set(f'镜头 {s.index}：v{old} → v{s.version}。其他镜头版本保持不变。')
 
     @ui_action
@@ -1629,8 +2140,34 @@ class App(tk.Tk):
         cur_actor=next((a.name for a in actors if a.id==s.actor_id),'自动匹配'); cur_scene=next((a.name for a in scenes if a.id==s.scene_id),'自动匹配'); av=tk.StringVar(value=cur_actor); sv=tk.StringVar(value=cur_scene)
         ttk.Label(frm,text='演员').pack(anchor='w'); ttk.Combobox(frm,textvariable=av,values=actor_names,state='readonly').pack(fill='x',pady=4); ttk.Label(frm,text='场景').pack(anchor='w'); ttk.Combobox(frm,textvariable=sv,values=scene_names,state='readonly').pack(fill='x',pady=4)
         def apply():
-            s.title=title.get().strip() or s.title; s.visual=visual.get('1.0','end').strip(); s.script=script.get('1.0','end').strip(); s.actor_id=actor_map.get(av.get()); s.scene_id=scene_map.get(sv.get()); s.status='需重生成'; s.video_path=None; s.version+=1; self.store.save(self.project); self.refresh_shots(); self.show_shot(); win.destroy()
+            s.title=title.get().strip() or s.title; s.visual=visual.get('1.0','end').strip(); s.script=script.get('1.0','end').strip(); s.actor_id=actor_map.get(av.get()); s.scene_id=scene_map.get(sv.get()); s.status='需重生成'; s.video_path=None; s.version+=1
+            invalidate_storyboard_approval(self.project.creative_plan, self.active_variant_index)
+            # Keep the per-variant cache aligned with edits before persistence; otherwise
+            # reopening/switching variants could restore the stale pre-edit shot snapshot.
+            self._cache_active_variant()
+            self.store.save(self.project); self.refresh_shots(); self.show_shot(); win.destroy()
         ttk.Button(frm,text='保存修改并生成新版本',command=apply).pack(anchor='e',pady=10)
+
+    def _restore_loaded_variant_state(self):
+        """Restore the active variant's canonical shot/runtime caches after reopening a project."""
+        if not self.project:
+            return
+        plan = self.project.creative_plan or {}
+        try:
+            index = int(plan.get("variant_index", 1) or 1)
+        except (TypeError, ValueError):
+            index = 1
+        self.active_variant_index = max(1, index)
+        cache = plan.get("variant_shot_cache")
+        key = str(self.active_variant_index)
+        # project.shots and variant_index are saved together. Prefer this active
+        # snapshot because a batch may have saved a successful shot before refreshing
+        # the secondary cache; only fall back to the cache when the project has no shots.
+        if not self.project.shots and isinstance(cache, dict) and key in cache and isinstance(cache[key], list):
+            self.project.shots = _restore_variant_shot_cache(self.project.shots, cache[key])
+        # The per-variant runtime maps are authoritative whenever present; restore them
+        # to avoid stale cross-variant footage state after an interrupted batch/reopen.
+        self._restore_active_variant_runtime()
 
     @ui_action
     def load_project(self):
@@ -1641,9 +2178,48 @@ class App(tk.Tk):
         def open_selected():
             sel=box.curselection()
             if not sel:return
-            project=self.store.load(files[sel[0]].stem)
-            if not project:return messagebox.showerror('打开失败','项目文件无法读取。')
-            self.project=project; self.model_router.set_project_context(project.id); self.active_variant_index=int((project.creative_plan or {}).get('variant_index',1) or 1); self.url.set(''); self.level.set(project.level); self.form.set(project.form); self.refresh_shots(); c=project.cost_estimate; self.cost.set(f"项目预估 ¥{c.get('总计',0):.2f} · 云端 ¥{c.get('云端',0):.2f} · 已保存 {len(project.shots)} 个镜头" if c else f'已保存 {len(project.shots)} 个镜头'); self.detail.set(f'已恢复项目：{project.product_name} · {project.platform} · {project.form}'); win.destroy()
+            project_file=files[sel[0]]
+            try:
+                project=self.store.load(project_file.stem)
+            except (OSError, json.JSONDecodeError, TypeError, ValueError) as exc:
+                messagebox.showerror(
+                    '打开失败',
+                    f'项目文件无法读取或 JSON 格式损坏。\\n文件：{project_file}\\n原因：{exc}\\n\\n软件不会自动删除或覆盖该文件。请先备份，再检查文件内容。',
+                    parent=win,
+                )
+                return
+            if not project:
+                return messagebox.showerror('打开失败','项目文件不存在或无法读取。',parent=win)
+            # Recover interrupted local work when reopening a project. This is local-only;
+            # it does not call a provider, generate assets, or publish to any platform.
+            try:
+                recovery=self.store.recover_project(project)
+            except Exception as exc:
+                # Best-effort persistence of recovery diagnostics; do not switch the
+                # active UI to a project whose recovery check did not complete.
+                try:
+                    self.store.record_recovery_failure(
+                        project,
+                        stage='打开项目恢复',
+                        error=str(exc),
+                        next_action='检查项目 JSON、文件权限和磁盘空间后重新打开项目',
+                        retryable=True,
+                    )
+                except Exception:
+                    pass
+                messagebox.showerror(
+                    '项目恢复未完成',
+                    f'项目文件已读取，但本地恢复检查失败。当前工作项目未切换。\\n原因：{exc}\\n\\n恢复过程可能已部分执行；请先备份项目文件，检查磁盘权限/空间后重试。',
+                    parent=win,
+                )
+                return
+            self.project=project; self._restore_loaded_variant_state(); self.model_router.set_project_context(project.id); self.workflow_mode.set(self._workflow_mode_label(get_project_workflow_mode(project))); self.url.set(''); self.level.set(project.level); self.form.set(project.form); self.refresh_shots(); c=project.cost_estimate; self.cost.set(f"项目预估 ¥{c.get('总计',0):.2f} · 云端 ¥{c.get('云端',0):.2f} · 已保存 {len(project.shots)} 个镜头" if c else f'已保存 {len(project.shots)} 个镜头')
+            recovery_note=[]
+            if recovery.get('removed_temp_files'): recovery_note.append(f"清理未完成临时文件 {recovery['removed_temp_files']} 个")
+            if recovery.get('missing_media'): recovery_note.append(f"发现缺失镜头 {len(recovery['missing_media'])} 个")
+            if recovery.get('invalid_outputs'): recovery_note.append(f"发现失效成片 {len(recovery['invalid_outputs'])} 个")
+            suffix=('；恢复检查：'+'；'.join(recovery_note)) if recovery_note else '；恢复检查：未发现需要处理的中断文件'
+            self.detail.set(f'已恢复项目：{project.product_name} · {project.platform} · {project.form}{suffix}'); win.destroy()
         ttk.Button(frm,text='打开',command=open_selected).pack(anchor='e')
 
     @ui_action
@@ -1749,6 +2325,8 @@ class App(tk.Tk):
 
     @ui_action
     def postprocess_selected(self):
+        if not self._ui_execution_gate(): return
+        if not self.project: return messagebox.showinfo('提示','请先创建或打开一个项目。')
         s=self.selected()
         if not s:return messagebox.showinfo('提示','先选择一个已经生成的真实镜头。')
         try:
@@ -1761,6 +2339,8 @@ class App(tk.Tk):
 
     @ui_action
     def finish_selected(self):
+        if not self._ui_execution_gate(): return
+        if not self.project: return messagebox.showinfo('提示','请先创建或打开一个项目。')
         s=self.selected()
         if not s or not s.video_path:return messagebox.showinfo('提示','先选择一个已经生成的真实镜头。')
         win=tk.Toplevel(self); win.title(f'镜头 {s.index} · 本地成片加工'); win.geometry('620x430'); win.transient(self)
@@ -1791,6 +2371,7 @@ class App(tk.Tk):
         """一次生成全部广告版本：预算先审计，逐版本独立生成并最终出片。"""
         if not self._ui_execution_gate(): return
         if not self.project: return messagebox.showinfo('提示','先创建项目。')
+        if not self._authorize_workflow_action('generate_all_variants','批量生成版本确认'): return
         variants=self.project.creative_plan.get('creative_variants',[])
         if len(variants)<=1: return messagebox.showinfo('提示','当前只有一个方案，请直接生成当前镜头。')
         # 先锁定用户当前方案；预算预审会逐方案切换，不能把“最后一次预审方案”误当成原方案。
@@ -1798,30 +2379,71 @@ class App(tk.Tk):
         self._cache_active_variant()
         budget=float((self.project.cost_estimate or {}).get('预算',0) or 0)
         footage_mode=self.footage_mode.get().strip() if hasattr(self,'footage_mode') else ''
+        video_decision=CapabilityRouter(ROOT).decide_video()
         try:
             from .providers import load_video_provider
             vp=load_video_provider(ROOT/'video-provider.json')
-            rate=float(getattr(vp,'cost_per_shot_rmb',0.72))
+            rate=float(getattr(vp,'cost_per_shot_rmb',0.72) or 0.72)
         except Exception:
             rate=0.72
-        missing_counts=[]; estimated=0.0
-        for pos,raw0 in enumerate(variants,1):
-            raw=dict(raw0); raw['_variant_index']=int(raw.get('_variant_index',pos)); raw['_variant_label']=raw.get('_variant_label',f'方案{raw["_variant_index"]}')
-            # 用当前项目规则恢复方案，仅用于确定镜头数量；不调用 AI。
-            info=__import__('ad_studio.product_parser',fromlist=['ProductInfo']).ProductInfo(**self.project.product_info)
-            self._activate_plan(raw,info)
-            missing=sum(1 for s in self.project.shots if not s.video_path or not Path(s.video_path).exists())
-            missing_counts.append(missing)
-            if footage_mode!='用户拍摄素材': estimated += missing*rate
-            self._cache_active_variant()
-        if budget>0 and estimated>budget:
-            return messagebox.showwarning('预算闸门',f'本次一键生成预计还需约 ¥{estimated:.2f}，已超过项目预算 ¥{budget:.2f}。\n\n系统不会自动突破预算；请提高预算或减少待生成镜头后再执行。')
+        missing_counts=[]; estimated=0.0; needs_cloud_video=False
+        needs_cloud_assets=False; unknown_asset_prices=[]
+        try:
+            for pos,raw0 in enumerate(variants,1):
+                raw=dict(raw0); raw['_variant_index']=int(raw.get('_variant_index',pos)); raw['_variant_label']=raw.get('_variant_label',f'方案{raw["_variant_index"]}')
+                # 用当前项目规则恢复方案，仅用于确定镜头数量；不调用 AI。
+                info=__import__('ad_studio.product_parser',fromlist=['ProductInfo']).ProductInfo(**self.project.product_info)
+                self._activate_plan(raw,info)
+                pending_shots=[s for s in self.project.shots if not s.video_path or not Path(s.video_path).exists()]
+                pending_video_shots=[s for s in pending_shots if getattr(s,'clip_source','ai_generated')!='filmed']
+                if pending_video_shots and video_decision.target == 'unavailable':
+                    raise RuntimeError('视频生成不可用：' + str(getattr(video_decision, 'reason', '未配置本地或云端视频服务')))
+                missing_counts.append(len(pending_shots))
+                if pending_video_shots and video_decision.target == 'cloud':
+                    needs_cloud_video=True
+                    estimated += len(pending_video_shots)*rate
+                asset_preflight=self._preflight_asset_generation(pending_video_shots)
+                estimated += float(asset_preflight.get('cost',0.0) or 0.0)
+                needs_cloud_assets = needs_cloud_assets or bool(asset_preflight.get('needs_cloud'))
+                unknown_asset_prices.extend(asset_preflight.get('unknown_prices', []))
+                self._cache_active_variant()
+
+        except Exception as exc:
+            # Preflight switches variants too. If parsing/routing any candidate fails,
+            # restore the user's original selection before returning an error.
+            try:
+                self._restore_variant_selection(original_index)
+                self.detail.set('批量生成预审失败；已恢复原来选中的创意方案。')
+            except Exception as restore_exc:
+                messagebox.showerror('方案恢复失败',f'预审错误：{exc}\\n恢复原方案时也发生错误：{restore_exc}')
+            messagebox.showerror('批量生成预审失败',str(exc))
+            return
+        if unknown_asset_prices and not self._confirm_unknown_asset_prices(unknown_asset_prices, '批量素材生成价格未配置'):
+            self._restore_variant_selection(original_index)
+            self.detail.set('用户取消了素材价格不明的批量生成；未调用生成服务。')
+            return
+        actual_cost=float(getattr(self.project,'actual_cost_rmb',0.0) or 0.0)
+        remaining_budget=max(0.0,budget-actual_cost)
+        if estimated>remaining_budget:
+            if not self._confirm_budget_overrun(estimated,remaining_budget,'一键生成预算超限确认'):
+                self._restore_variant_selection(original_index)
+                self.detail.set('已取消超预算批量生成；已恢复原来选中的创意方案。')
+                return
+        needs_cloud=needs_cloud_video or needs_cloud_assets
+        if needs_cloud and not self._authorize_workflow_action('cloud_generation','批量云端视频/素材生成授权'):
+            self._restore_variant_selection(original_index)
+            self.detail.set('用户未授权云端生成；未调用云端服务，已恢复原来选中的创意方案。')
+            return
+
         original=original_index; info=__import__('ad_studio.product_parser',fromlist=['ProductInfo']).ProductInfo(**self.project.product_info)
         done=[]; failed=[]; outputs=[]
         try:
             for pos,raw0 in enumerate(variants,1):
                 raw=dict(raw0); raw['_variant_index']=int(raw.get('_variant_index',pos)); raw['_variant_label']=raw.get('_variant_label',f'方案{raw["_variant_index"]}')
                 self._activate_plan(raw,info)
+                if not self._ensure_storyboard_approval():
+                    failed.append(f"方案{self.active_variant_index}：用户未批准分镜，已停止后续批量生成")
+                    break
                 for shot in self.project.shots:
                     if shot.video_path and Path(shot.video_path).exists():
                         continue
@@ -1839,8 +2461,20 @@ class App(tk.Tk):
                 self._cache_active_variant()
                 missing=[s for s in self.project.shots if not s.video_path or not Path(s.video_path).exists()]
                 if not missing:
-                    out=self.store.build_final(self.project,self.aspect.get(),variant_index=self.active_variant_index)
-                    self._record_variant_output(out); outputs.append(f'方案{self.active_variant_index}：{out}')
+                    variant_label = str(raw.get('_variant_label') or f'方案{self.active_variant_index}')
+                    try:
+                        out=self.store.build_final(self.project,self.aspect.get(),variant_index=self.active_variant_index)
+                        self._record_variant_output(out)
+                        outputs.append(f'方案{self.active_variant_index}：{out}')
+                    except Exception as exc:
+                        # A finished-shot variant can still fail at final assembly/manifest persistence.
+                        # Record this variant's failure and continue with the remaining variants.
+                        failed.append(f'{variant_label}：最终成片输出失败：{exc}')
+                        try:
+                            self._cache_active_variant()
+                        except Exception as cache_exc:
+                            failed.append(f'{variant_label}：保存方案状态失败：{cache_exc}')
+                        continue
             target=next((dict(v) for v in variants if int(v.get('_variant_index',0))==original),None)
             if target:
                 target['_variant_index']=original; target['_variant_label']=target.get('_variant_label',f'方案{original}')
@@ -1851,51 +2485,95 @@ class App(tk.Tk):
             self.detail.set(msg.replace('\n','｜'))
             messagebox.showinfo('一键生成完成',msg)
         except Exception as exc:
+            try:
+                self._restore_variant_selection(original_index)
+                self.detail.set('一键生成遇到错误；已恢复原来选中的创意方案。')
+            except Exception as restore_exc:
+                messagebox.showerror('方案恢复失败',str(restore_exc))
             messagebox.showerror('一键生成失败',str(exc))
 
     @ui_action
     def batch_final_render(self):
-        """只批量输出已经完成镜头的广告版本；不自动生成缺失镜头，不增加 AI 调用。"""
+        """只批量输出已经完成镜头的广告版本；单个方案交付失败不影响其他方案。"""
         if not self._ui_execution_gate(): return
         if not self.project:
             return messagebox.showinfo('提示','先创建项目。')
+        if not self._authorize_workflow_action('final_delivery','批量最终交付确认'): return
+        set_project_workflow_mode(self.project,self._workflow_mode_value())
         variants=self.project.creative_plan.get('creative_variants',[])
         if len(variants)<=1:
             return messagebox.showinfo('提示','当前只有一个创意方案，请直接使用“生成最终成片”。')
         self._cache_active_variant()
         original_index=self.active_variant_index
         info=type('ProjectInfo',(),{'name':self.project.product_name or '商品'})()
-        done=[]; skipped=[]
+        done=[]; skipped=[]; failed=[]
         try:
             for pos,raw0 in enumerate(variants,1):
                 raw=dict(raw0)
                 raw['_variant_index']=int(raw.get('_variant_index',pos))
                 raw['_variant_label']=raw.get('_variant_label',f'方案{raw["_variant_index"]}')
-                self._activate_plan(raw,info)
-                missing=[s.title for s in self.project.shots if not s.video_path or not Path(s.video_path).exists()]
-                if missing:
-                    skipped.append(f'方案{self.active_variant_index}：缺少 {len(missing)} 个已生成镜头')
+                variant_label=f'方案{raw["_variant_index"]}'
+                try:
+                    self._activate_plan(raw,info)
+                    variant_label=f'方案{self.active_variant_index}'
+                    if not self._ensure_storyboard_approval():
+                        skipped.append(f'{variant_label}：分镜未获批准')
+                        self._cache_active_variant()
+                        # 未获批准是明确的用户暂停信号，不再处理后续方案。
+                        break
+                    missing=[s.title for s in self.project.shots if not s.video_path or not Path(s.video_path).exists()]
+                    if missing:
+                        skipped.append(f'{variant_label}：缺少 {len(missing)} 个已生成镜头')
+                        self._cache_active_variant()
+                        continue
+                    try:
+                        out=self.store.build_final(self.project,self.aspect.get(),variant_index=self.active_variant_index)
+                        self._record_variant_output(out)
+                        self._cache_active_variant()
+                        done.append(f'{variant_label}：{out}')
+                    except Exception as exc:
+                        failed.append(f'{variant_label}：最终成片输出失败：{exc}')
+                        # 保留当前方案已存在的镜头和历史；失败方案不阻止后续方案。
+                        try:
+                            self._cache_active_variant()
+                            self.store.save(self.project)
+                        except Exception as save_exc:
+                            failed.append(f'{variant_label}：保存失败状态时出错：{save_exc}')
+                except Exception as exc:
+                    failed.append(f'{variant_label}：方案处理异常：{exc}')
+                    try:
+                        self._cache_active_variant()
+                        self.store.save(self.project)
+                    except Exception as save_exc:
+                        failed.append(f'{variant_label}：保存异常状态时出错：{save_exc}')
                     continue
-                out=self.store.build_final(self.project,self.aspect.get(),variant_index=self.active_variant_index)
-                self._record_variant_output(out)
-                self._cache_active_variant()
-                done.append(f'方案{self.active_variant_index}：{out}')
-            target=next((dict(v) for v in variants if int(v.get('_variant_index',0))==original_index),None)
-            if target:
-                target['_variant_index']=original_index
-                target['_variant_label']=target.get('_variant_label',f'方案{original_index}')
-                self._activate_plan(target,info)
-            self.store.save(self.project); self.refresh_shots(); self.show_shot()
-            summary='已输出：\n'+'\n'.join(done or ['无'])+'\n\n未输出：\n'+'\n'.join(skipped or ['无'])
-            self.detail.set(f'批量版本输出完成：成功 {len(done)} 个，跳过 {len(skipped)} 个')
-            messagebox.showinfo('批量输出结果',summary)
         except Exception as e:
-            messagebox.showerror('批量输出失败',str(e))
+            failed.append(f'批量交付流程异常：{e}；已完成的输出记录已保留')
+        finally:
+            try:
+                self._restore_variant_selection(original_index)
+            except Exception as restore_exc:
+                failed.append(f'恢复原方案失败：{restore_exc}')
+            try:
+                self.store.save(self.project)
+                self.refresh_shots()
+                self.show_shot()
+            except Exception as save_exc:
+                failed.append(f'保存/刷新交付结果失败：{save_exc}')
+        summary='已输出：\n'+'\n'.join(done or ['无'])+'\n\n未输出：\n'+'\n'.join(skipped or ['无'])+'\n\n失败：\n'+'\n'.join(failed or ['无'])
+        self.detail.set(f'批量版本输出结束：成功 {len(done)} 个，跳过 {len(skipped)} 个，失败 {len(failed)} 个')
+        if failed:
+            messagebox.showwarning('批量输出结果',summary)
+        else:
+            messagebox.showinfo('批量输出结果',summary)
 
     @ui_action
     def final_render(self):
         if not self._ui_execution_gate(): return
         if not self.project:return messagebox.showinfo('提示','先创建项目。')
+        if not self._authorize_workflow_action('final_delivery','最终成片交付确认'): return
+        set_project_workflow_mode(self.project,self._workflow_mode_value())
+        if not self._ensure_storyboard_approval(): return
         try:
             out=self.store.build_final(self.project,self.aspect.get(),variant_index=self.active_variant_index)
             self._record_variant_output(out)
@@ -1907,4 +2585,5 @@ class App(tk.Tk):
 
     def save(self):
         if not self.project:return messagebox.showinfo('提示','当前没有项目可保存。')
+        set_project_workflow_mode(self.project,self._workflow_mode_value())
         self.store.save(self.project); self.detail.set(f'项目已保存：{self.project.id}')

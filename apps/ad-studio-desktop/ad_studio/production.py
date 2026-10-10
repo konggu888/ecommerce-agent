@@ -79,9 +79,9 @@ class ProductionStore:
                 continue
             seen.add(output_path)
             path = Path(output_path)
-            if item.get("delivery_status") == "可交付" and (not output_path or not path.exists() or path.stat().st_size <= 0):
+            if item.get("delivery_status") == "可交付" and (not output_path or not path.is_file() or path.stat().st_size <= 0):
                 item["delivery_status"] = "不可交付"
-                item["recovery_reason"] = "最终输出文件缺失或为空"
+                item["recovery_reason"] = "最终输出文件缺失、不是普通文件或为空"
                 invalid_outputs.append(output_path)
         now = datetime.datetime.now().isoformat(timespec="seconds")
         recovery.update({
@@ -168,8 +168,14 @@ class ProductionStore:
         req=ai.get("asset_resolution", {}) or {}
         generator=AssetGenerator(self.library_root/'asset-generation.json',self.library_root)
         for kind, tags in (("演员", req.get("actor_tags", [])), ("场景", req.get("scene_tags", [])), ("商品素材", req.get("product_tags", []))):
-            found=library.best_match(kind,tags)
-            item={'asset':found.id if found else None,'source':'本地复用' if found else '待自动生成','generate_if_missing':bool(req.get('generation_if_missing', True))}
+            tags = [str(tag).strip() for tag in (tags or []) if str(tag).strip()]
+            found=library.best_match(kind,tags) if tags else None
+            generate_if_missing=bool(tags) and bool(req.get('generation_if_missing', True))
+            item={
+                'asset':found.id if found else None,
+                'source':'本地复用' if found else ('待自动生成' if generate_if_missing else '未指定素材需求'),
+                'generate_if_missing':generate_if_missing,
+            }
             if not found and item['generate_if_missing']:
                 if generator.configured(kind):
                     item['source']='自动生成中'
@@ -178,6 +184,7 @@ class ProductionStore:
                         library._write(library.all()+[result.asset])
                         item.update({'asset':result.asset.id,'source':'已生成并入库','cost_rmb':result.cost_rmb})
                         self._record_actual_cost(project, shot=shot, category='asset', amount_rmb=result.cost_rmb, provider=result.provider, quantity=1, unit_cost_rmb=result.cost_rmb, function=f'{kind}素材生成')
+                        shot.actual_cost_rmb=round(float(shot.actual_cost_rmb or 0)+float(result.cost_rmb or 0),4)
                     except Exception as exc:
                         item.update({'source':'自动生成失败','error':str(exc)})
                 else:
@@ -450,10 +457,11 @@ class ProductionStore:
             "delivery_status": "可交付" if bool(media_check.get("valid")) else "不可交付",
             "created_at": datetime.datetime.now().isoformat(timespec="microseconds"),
         }
-        manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
         key = f"{int(variant_index)}|{aspect}"
         manifest["history_key"] = key
         manifest["revision_id"] = f"{key}|{manifest['created_at']}"
+        # Persist the complete manifest only after history/revision identifiers exist.
+        manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
         project.creative_plan.setdefault("final_output_manifests", {})[key] = manifest
         project.creative_plan.setdefault("final_output_history_records", []).append(manifest.copy())
         self.save(project)
@@ -472,15 +480,26 @@ class ProductionStore:
         for key, item in items:
             if not isinstance(item, dict):
                 continue
-            path = Path(str(item.get("output_path", "")))
+            output_path = str(item.get("output_path", "") or "")
+            path = Path(output_path)
+            exists = path.is_file() and path.stat().st_size > 0
+            delivery_status = item.get("delivery_status", "未知")
+            recovery_reason = item.get("recovery_reason", "")
+            # Reflect missing/empty outputs immediately in the history UI, even if the
+            # project has not been reopened since the file disappeared. Persistence of
+            # the corrected manifest status remains the job of recover_project().
+            if delivery_status == "可交付" and (not output_path or not exists):
+                delivery_status = "不可交付"
+                recovery_reason = "最终输出文件缺失、不是普通文件或为空"
             rows.append({
                 "key": key,
                 "revision_id": item.get("revision_id", ""),
                 "variant_index": item.get("variant_index"),
                 "aspect": item.get("aspect"),
                 "output_path": str(path),
-                "exists": path.exists(),
-                "delivery_status": item.get("delivery_status", "未知"),
+                "exists": exists,
+                "delivery_status": delivery_status,
+                "recovery_reason": recovery_reason,
                 "duration_seconds": (item.get("media_check") or {}).get("duration_seconds", 0),
                 "shot_count": item.get("shot_count", 0),
                 "created_at": item.get("created_at", ""),
@@ -495,15 +514,48 @@ class ProductionStore:
         if len(shots)!=len(project.shots):
             raise RuntimeError(f'还有 {len(project.shots)-len(shots)} 个镜头没有成片，暂不能输出最终广告')
         suffix=f'-v{int(variant_index)}' if variant_index else ''
-        out=self.root/'final'/project.id/f'final-{aspect.replace(":", "x")}{suffix}.mp4'
-        concat([Path(s.video_path) for s in shots],out)
-        media_check=self.inspect_final_output(out, aspect)
-        if not media_check["valid"]:
-            if out.exists():
-                out.unlink()
-            raise RuntimeError("最终成片机器质检未通过：" + str(media_check["reason"]))
-        self.write_final_output_manifest(
-            project, out, aspect, int(variant_index or self._variant_index(project)),
-            shots, gate, media_check,
-        )
-        return out
+        base_out=self.root/'final'/project.id/f'final-{aspect.replace(":", "x")}{suffix}.mp4'
+        out=base_out
+        # Keep every previously delivered file immutable. The JSON manifest and video
+        # are a revision pair, so an existing video OR manifest forces a new filename.
+        if out.exists() or out.with_suffix(".json").exists():
+            stamp=datetime.datetime.now().strftime("%Y%m%d-%H%M%S-%f")
+            out=base_out.with_name(f"{base_out.stem}-r{stamp}{base_out.suffix}")
+            revision=2
+            while out.exists() or out.with_suffix(".json").exists():
+                out=base_out.with_name(f"{base_out.stem}-r{stamp}-{revision}{base_out.suffix}")
+                revision += 1
+        manifest_path=out.with_suffix(".json")
+        try:
+            concat([Path(s.video_path) for s in shots],out)
+            media_check=self.inspect_final_output(out, aspect)
+            if not media_check["valid"]:
+                raise RuntimeError("最终成片机器质检未通过：" + str(media_check["reason"]))
+            self.write_final_output_manifest(
+                project, out, aspect, int(variant_index or self._variant_index(project)),
+                shots, gate, media_check,
+            )
+            return out
+        except Exception:
+            # concat/ffprobe/manifest persistence can fail after creating a partial file.
+            # Never leave a broken MP4 or a dangling history row that looks deliverable.
+            for path in (out, manifest_path):
+                try:
+                    if path.exists():
+                        path.unlink()
+                except OSError:
+                    pass
+            plan=project.creative_plan or {}
+            manifests=plan.get("final_output_manifests",{})
+            if isinstance(manifests,dict):
+                plan["final_output_manifests"]={
+                    key:value for key,value in manifests.items()
+                    if not isinstance(value,dict) or str(value.get("output_path") or "")!=str(out)
+                }
+            records=plan.get("final_output_history_records",[])
+            if isinstance(records,list):
+                plan["final_output_history_records"]=[
+                    value for value in records
+                    if not isinstance(value,dict) or str(value.get("output_path") or "")!=str(out)
+                ]
+            raise
