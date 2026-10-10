@@ -1966,7 +1966,7 @@ class App(tk.Tk):
         mode_dialog.transient(self)
         mode_dialog.grab_set()
         mode_var = tk.StringVar(value='单集短剧')
-        business_mode_var = tk.StringVar(value='通用AI短剧')
+        business_mode_var = tk.StringVar(value='通用AI短剧（可以完全不带商品）')
         count_var = tk.StringVar(value='6')
         ttk.Label(mode_dialog, text='短剧创作目标').pack(anchor='w', padx=16, pady=(14, 4))
         ttk.Combobox(
