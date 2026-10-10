@@ -2450,13 +2450,13 @@ class App(tk.Tk):
             return
 
         original=original_index; info=__import__('ad_studio.product_parser',fromlist=['ProductInfo']).ProductInfo(**self.project.product_info)
-        done=[]; failed=[]; outputs=[]
+        done=[]; failed=[]; outputs=[]; skipped=[]
         try:
             for pos,raw0 in enumerate(variants,1):
                 raw=dict(raw0); raw['_variant_index']=int(raw.get('_variant_index',pos)); raw['_variant_label']=raw.get('_variant_label',f'方案{raw["_variant_index"]}')
                 self._activate_plan(raw,info)
                 if not self._ensure_storyboard_approval():
-                    failed.append(f"方案{self.active_variant_index}：用户未批准分镜，已停止后续批量生成")
+                    skipped.append(f"方案{self.active_variant_index}：用户未批准分镜，已停止后续批量生成")
                     break
                 for shot in self.project.shots:
                     if shot.video_path and Path(shot.video_path).exists():
@@ -2494,7 +2494,8 @@ class App(tk.Tk):
                 target['_variant_index']=original; target['_variant_label']=target.get('_variant_label',f'方案{original}')
                 self._activate_plan(target,info)
             self.store.save(self.project); self.refresh_shots(); self.show_shot()
-            msg=f'生成镜头：{len(done)} 个\n最终成片：{len(outputs)} 个\n失败项：{len(failed)} 个'
+            msg=f'生成镜头：{len(done)} 个\n最终成片：{len(outputs)} 个\n跳过项：{len(skipped)} 个\n失败项：{len(failed)} 个'
+            if skipped: msg+='\n\n已停止/跳过：\n'+'\n'.join(skipped[:8])
             if failed: msg+='\n\n失败明细：\n'+'\n'.join(failed[:8])
             self.detail.set(msg.replace('\n','｜'))
             if failed:
