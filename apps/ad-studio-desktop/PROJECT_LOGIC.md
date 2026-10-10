@@ -1080,3 +1080,5 @@ estimate_asset_generation 使用 AssetGenerator 的 CapabilityRouter 结果决�
 - UsageLedger._save() 先写入同目录临时文件、flush/fsync，再用 os.replace() 原子替换，避免进程中断时把账本截断成半个 JSON。替换失败时保留旧账本并清理临时文件。
 - last_load_warning 将隔离情况传给成本账本 UI，显示历史文件位置和需人工恢复的提示。
 - 自动化覆盖损坏 JSON、非法根结构、原子替换失败及 UI 警告；尚未实现跨进程并发写入锁，因此当前账本写入假设桌面应用单实例/串行记账。
+
+补充 UI 文案约束：成本账本异常警告中的多个账本提示必须使用真实换行符分行显示，不能将反斜杠-n 字符原样呈现给用户。
