@@ -1354,7 +1354,7 @@ class DesktopCoreTests(unittest.TestCase):
         app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
         method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "final_delivery_center")
         method_source = ast.get_source_segment(source, method)
-        self.assertIn("try:\\n            result=self._run_final_delivery_recheck()", method_source)
+        self.assertIn("try:\n            result=self._run_final_delivery_recheck()", method_source)
         self.assertIn("最终交付检查失败", method_source)
         self.assertIn("except Exception as exc:", method_source)
         self.assertIn("status.set('🔴 检查失败')", method_source)
