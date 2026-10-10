@@ -2178,11 +2178,41 @@ class App(tk.Tk):
         def open_selected():
             sel=box.curselection()
             if not sel:return
-            project=self.store.load(files[sel[0]].stem)
-            if not project:return messagebox.showerror('打开失败','项目文件无法读取。')
+            project_file=files[sel[0]]
+            try:
+                project=self.store.load(project_file.stem)
+            except (OSError, json.JSONDecodeError, TypeError, ValueError) as exc:
+                messagebox.showerror(
+                    '打开失败',
+                    f'项目文件无法读取或 JSON 格式损坏。\\n文件：{project_file}\\n原因：{exc}\\n\\n软件不会自动删除或覆盖该文件。请先备份，再检查文件内容。',
+                    parent=win,
+                )
+                return
+            if not project:
+                return messagebox.showerror('打开失败','项目文件不存在或无法读取。',parent=win)
             # Recover interrupted local work when reopening a project. This is local-only;
             # it does not call a provider, generate assets, or publish to any platform.
-            recovery=self.store.recover_project(project)
+            try:
+                recovery=self.store.recover_project(project)
+            except Exception as exc:
+                # Best-effort persistence of recovery diagnostics; do not switch the
+                # active UI to a project whose recovery check did not complete.
+                try:
+                    self.store.record_recovery_failure(
+                        project,
+                        stage='打开项目恢复',
+                        error=str(exc),
+                        next_action='检查项目 JSON、文件权限和磁盘空间后重新打开项目',
+                        retryable=True,
+                    )
+                except Exception:
+                    pass
+                messagebox.showerror(
+                    '项目恢复未完成',
+                    f'项目文件已读取，但本地恢复检查失败。当前工作项目未切换。\\n原因：{exc}\\n\\n恢复过程可能已部分执行；请先备份项目文件，检查磁盘权限/空间后重试。',
+                    parent=win,
+                )
+                return
             self.project=project; self._restore_loaded_variant_state(); self.model_router.set_project_context(project.id); self.workflow_mode.set(self._workflow_mode_label(get_project_workflow_mode(project))); self.url.set(''); self.level.set(project.level); self.form.set(project.form); self.refresh_shots(); c=project.cost_estimate; self.cost.set(f"项目预估 ¥{c.get('总计',0):.2f} · 云端 ¥{c.get('云端',0):.2f} · 已保存 {len(project.shots)} 个镜头" if c else f'已保存 {len(project.shots)} 个镜头')
             recovery_note=[]
             if recovery.get('removed_temp_files'): recovery_note.append(f"清理未完成临时文件 {recovery['removed_temp_files']} 个")
