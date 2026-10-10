@@ -4,6 +4,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 import json
+import math
 import os
 import tempfile
 import uuid
@@ -77,6 +78,17 @@ class UsageLedger:
                 except OSError:
                     pass
 
+    @staticmethod
+    def _validate_money(value: float, field_name: str) -> float:
+        """Reject invalid cost values before they can corrupt project totals or JSON."""
+        try:
+            amount = float(value)
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise ValueError(f"{field_name} 必须是有限的非负金额") from exc
+        if not math.isfinite(amount) or amount < 0:
+            raise ValueError(f"{field_name} 必须是有限的非负金额")
+        return round(amount, 6)
+
     def record(
         self,
         *,
@@ -99,6 +111,8 @@ class UsageLedger:
         quantity: float = 1.0,
         unit_cost_rmb: float = 0.0,
     ) -> dict[str, Any]:
+        estimated_cost_rmb = self._validate_money(estimated_cost_rmb, "estimated_cost_rmb")
+        unit_cost_rmb = self._validate_money(unit_cost_rmb, "unit_cost_rmb")
         item = {
             "id": uuid.uuid4().hex[:12],
             "time": datetime.now().isoformat(timespec="seconds"),
@@ -108,7 +122,7 @@ class UsageLedger:
             "shot_id": shot_id,
             "asset_kind": asset_kind,
             "quantity": float(quantity or 1.0),
-            "unit_cost_rmb": round(float(unit_cost_rmb or 0), 6),
+            "unit_cost_rmb": unit_cost_rmb,
             "model_id": model_id,
             "model_name": model_name,
             "provider": provider,
@@ -117,7 +131,7 @@ class UsageLedger:
             "prompt_tokens": int(prompt_tokens or 0),
             "completion_tokens": int(completion_tokens or 0),
             "total_tokens": int(total_tokens or 0),
-            "estimated_cost_rmb": round(float(estimated_cost_rmb or 0), 6),
+            "estimated_cost_rmb": estimated_cost_rmb,
             "duration_ms": int(duration_ms or 0),
             "error": error,
         }
