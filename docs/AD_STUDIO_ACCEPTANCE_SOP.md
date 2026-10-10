@@ -962,3 +962,5 @@ apps/ad-studio-desktop/test_ai_handoff.py 必须自动检查快照文件存在�
 3. 确认写入先落同目录临时文件，再原子替换；替换失败时旧账本保留且临时文件清理。
 4. 运行 test_cost_ledger_ui_surfaces_quarantined_history_warning，确认软件内成本账本页显示异常文件已隔离和需要人工恢复的提示。
 5. 检查最新 HEAD 对应 CI、doc-sync 与部署预览。以上为代码/自动化验证；Windows 断电、磁盘空间不足、外部程序占用及多进程写入尚未现场验收。
+
+补充步骤：检查成本账本异常提示中多条账本警告是否使用真实换行符分行显示；若出现字面量反斜杠-n，判为 UI 文案缺陷。
