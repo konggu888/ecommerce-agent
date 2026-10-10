@@ -142,5 +142,17 @@ class UsageLedgerRetentionTests(unittest.TestCase):
             self.assertEqual(list(Path(directory).glob("*.tmp")), [])
 
 
+    def test_cost_ledger_ui_surfaces_quarantined_history_warning(self):
+        app_path = Path(__file__).parent / "ad_studio" / "app.py"
+        source = app_path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "usage_view")
+        method_source = ast.get_source_segment(source, method)
+        self.assertIn("last_load_warning", method_source)
+        self.assertIn("成本账本已隔离异常文件", method_source)
+        self.assertIn("历史可能需要人工恢复", method_source)
+
+
 if __name__ == "__main__":
     unittest.main()
