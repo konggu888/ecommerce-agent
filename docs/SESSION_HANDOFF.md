@@ -256,3 +256,10 @@ undefined
 - 修复 production.py：final_output_history() 每次读取都重新检查文件是否存在、非空且为普通文件；失效输出即时返回“不可交付”与原因；recover_project() 同时加强普通文件检查，并在项目重开时持久化校正。
 - 新增 test_desktop.py 回归，覆盖有效文件、删除文件与路径变成目录；已同步 HELP.md、PROJECT_LOGIC.md、完整验收计划和验收 SOP。
 - 本轮最终代码/测试/文档 HEAD 的 CI 与 docs-sync 仍需实时核验；Windows 真机、真实 Provider/计费、剪映与 B1–B3 仍暂缓，PR #18 不得合并。
+
+
+## 2026-10-10 工作单元：交付历史失效原因显示
+- 在数据层即时标记失效成片后，继续检查 UI 发现 recovery_reason 虽已返回，但最终交付中心历史表没有显示该字段，用户不容易判断原因。
+- 修复 app.py：历史表新增“失效原因”列，展示 recovery_reason，并调整路径列宽；test_desktop.py 新增 UI 字段绑定契约测试。
+- 已同步 HELP.md、PROJECT_LOGIC.md、AD_STUDIO_ACCEPTANCE_PLAN.md、AD_STUDIO_ACCEPTANCE_SOP.md 与本交接快照。
+- 当前最新 HEAD 的 CI/doc-sync 仍需重新查询；此前提交 2e862b8 的 CI #1064 与 docs-sync #835 均成功，但不作为本次新提交的验收依据。
