@@ -953,3 +953,10 @@
 - **代码级检查：** Provider 新输出生成后才替换正式文件；最终文件替换异常时，旧文件仍存在且内容不变，镜头路径仍指向旧文件，临时文件清理。
 - **自动化回归：** `test_failed_atomic_replace_preserves_previous_shot_file` 模拟文件系统替换失败。
 - **边界：** 该项自动化测试通过不等于 Windows 真机/实际 Provider 已验收；真实文件系统行为仍按既定安排暂缓现场测试。
+
+### 补充验收项：AI 补镜头文件有效性与成本归属
+- 缺失文件、零字节文件、目录路径、文件状态读取异常均不得纳入当前分镜。
+- 只有人工复核通过且输出文件为可访问的非空普通文件时，才能创建正式镜头记录。
+- 纳入后的镜头应保留生成 Provider 与 `generation_cost_rmb` 实际成本，兼容旧任务字段。
+- 回归测试：`test_hybrid_generated_shot_requires_review_and_valid_media_before_acceptance`、`test_reviewed_hybrid_task_persists_into_project`。
+- 自动化测试不等同于 Windows 真机或真实视频 Provider 验收。
