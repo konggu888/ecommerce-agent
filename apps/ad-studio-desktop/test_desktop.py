@@ -317,6 +317,47 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(shot.video_path, str(output))
             self.assertEqual(shot.status, "生成失败（已保留上一版本）")
 
+    def test_failed_cloud_asset_attempt_is_recorded_as_estimated_cost(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            library_root = root / "library"
+            library_root.mkdir()
+            store = ProductionStore(root, library_root=library_root)
+            project = new_project("https://item.jd.com/123.html", 1, "真人口播")
+            shot = project.shots[0]
+            project.creative_plan = {"shots": [{
+                "index": shot.index,
+                "asset_resolution": {
+                    "actor_tags": ["青年男演员"],
+                    "scene_tags": [],
+                    "product_tags": [],
+                    "generation_if_missing": True,
+                },
+            }]}
+            (library_root / "asset-generation.json").write_text(
+                json.dumps({"演员": {
+                    "endpoint": "https://assets.example.invalid/generate",
+                    "api_key": "test-key",
+                    "price_rmb": 0.18,
+                    "provider": "测试素材Provider",
+                }}),
+                encoding="utf-8",
+            )
+            cloud = type("Decision", (), {"target": "cloud"})()
+            with patch("ad_studio.asset_generation.CapabilityRouter.decide_asset", return_value=cloud), \
+                 patch("ad_studio.asset_generation.AssetGenerator._cloud_generate", side_effect=TimeoutError("asset provider timeout")):
+                result = store.resolve_assets(project, shot)
+
+            self.assertEqual(result["演员"]["source"], "自动生成失败")
+            summary = store.ledger.project_summary(project.id)
+            self.assertEqual(summary["entries"], 1)
+            self.assertEqual(summary["failed"], 1)
+            self.assertEqual(summary["success"], 0)
+            self.assertAlmostEqual(summary["estimated_cost_rmb"], 0.18, places=6)
+            entry = next(x for x in store.ledger.all_entries() if x["project_id"] == project.id)
+            self.assertEqual(entry["status"], "failed")
+            self.assertIn("是否实际计费需以供应商账单核对", entry["error"])
+
     def test_failed_video_provider_attempt_is_recorded_as_estimated_cost(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
