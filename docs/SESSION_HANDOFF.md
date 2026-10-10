@@ -299,3 +299,4 @@ undefined
 - 新增 `_is_nonempty_file()` 统一捕获文件系统 `OSError` 并按文件不可用处理；历史 UI 显示不可交付，项目恢复会修正状态并记录无效输出。
 - 新增执行级测试模拟 `is_file()` 成功而 `stat()` 抛出 `PermissionError`，覆盖历史展示和恢复两条路径。
 - 已同步 HELP.md、PROJECT_LOGIC.md、验收计划与 SOP。必须查询本轮最新 HEAD 对应 CI/doc-sync/部署预览；Windows 权限/外接盘/网络盘真机测试继续暂缓，PR #18 不得合并。
+- 首次 CI #1089 暴露测试夹具过度模拟：全局 patch `Path.stat()` 使项目 `render_root.exists()` 也抛出权限错误。已将测试限制为仅目标输出文件的 `stat()` 抛出 `PermissionError`，其他路径保留真实临时文件系统行为。首次失败不作为通过证据；后续以修正提交的最新 CI/doc-sync 为准。
