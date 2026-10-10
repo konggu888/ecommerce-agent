@@ -12,7 +12,7 @@ from .capability import CapabilityRouter
 from .production import ProductionStore
 from .product_parser import parse_product_url, save_product, save_product_library, load_product_library, merge_product_library, ProductInfo
 from .creative_engine import CreativeEngine, validate_plan, validate_task_type_plan, TASK_TYPE_POLICIES
-from .short_drama import generate_short_drama
+from .short_drama import generate_short_drama, short_drama_production_rows
 from .model_router import ModelRouter, ModelProfile, FUNCTIONS, audit_ad_variant_set, build_creative_test_plan, audit_creative_factual_consistency, audit_storyboard_fact_consistency, audit_visual_fact_consistency
 from .browser_skill import _find_agent_browser
 from .ffmpeg import available as ffmpeg_available, has_nvenc
@@ -21,7 +21,7 @@ from .footage import build_visual_manifest, footage_analysis_public, archive_ana
 from .hybrid_router import route_footage_gap_tasks
 from .transcription import extract_audio
 from .ui_contract import verify_ui_action_contract, UIContractError, ui_action
-from .models import Shot
+from .models import Shot, uid
 
 
 def _restore_variant_shot_cache(base_shots, saved_shots):
@@ -1953,7 +1953,106 @@ class App(tk.Tk):
             footer = ttk.Frame(win, padding=12); footer.pack(fill='x')
             ttk.Label(footer, text=f"已保存到项目：{self.project.id}；分镜数：{len(plan.get('storyboard', []))}。当前只完成短剧策划，尚未触发镜头素材生成。").pack(side='left')
             ttk.Button(footer, text='关闭', command=win.destroy).pack(side='right')
+            ttk.Button(footer, text='建立独立短剧制作项目', command=lambda: self.create_short_drama_production_project(plan, win)).pack(side='right', padx=8)
             self.detail.set(f"AI短剧方案已保存｜题材：{plan.get('genre', '待确认')}｜分镜：{len(plan.get('storyboard', []))}｜未覆盖原广告方案")
             messagebox.showinfo('短剧方案已保存', 'AI短剧创作方案已保存到当前项目。原广告方案和现有分镜未被替换。')
         except Exception as exc:
             messagebox.showerror('AI短剧编导失败', str(exc))
+
+    @ui_action
+    def create_short_drama_production_project(self, plan, window=None):
+        """Create a separate production project; preserve the source ad project unchanged."""
+        if not self._ui_execution_gate(): return
+        if not self.project:
+            return messagebox.showinfo('提示', '当前没有商品项目。请先创建或打开原商品项目。')
+        try:
+            budget = float(self.budget.get().strip())
+            if budget < 0: raise ValueError
+        except ValueError:
+            return messagebox.showerror('预算格式错误', '请输入有效的非负预算金额。')
+        try:
+            rows = short_drama_production_rows(plan, self.project.product_name)
+            if not rows:
+                return messagebox.showerror('短剧分镜为空', '短剧方案没有可用于生产的分镜。')
+            provider = load_video_provider(ROOT / 'video-provider.json')
+            rate = float(getattr(provider, 'cost_per_shot_rmb', 0.72))
+            estimate = estimate_cost(len(rows), {'cloud_video_per_shot': rate})
+            asset_est = estimate_asset_generation(self.lib, ROOT, rows)
+            estimate['资产生成'] = asset_est
+            asset_total = float(asset_est.get('总计', 0.0))
+            if asset_total:
+                estimate['云端'] = round(float(estimate.get('云端', 0.0)) + asset_total, 2)
+                estimate['总计'] = round(float(estimate.get('本地', 0.0)) + float(estimate['云端']), 2)
+                estimate['明细'].append({
+                    '项目': '短剧演员/场景/商品素材自动生成',
+                    '数量': asset_est.get('数量', 0), '单价': 0.0,
+                    '小计': asset_total, '计费方式': '按缺失资产配置价格'
+                })
+            estimate['预算'] = budget
+            estimate['超预算'] = float(estimate['总计']) > budget
+            detail = '\n'.join([
+                f"商品：{self.project.product_name}",
+                f"短剧题材：{plan.get('genre', '待确认')}",
+                f"计划镜头：{len(rows)}",
+                f"视频生成费用：¥{rate * len(rows):.2f}",
+                f"演员/场景/商品素材生成费用：¥{asset_total:.2f}",
+                f"本地处理/FFmpeg：¥{estimate.get('本地', 0.0):.2f}",
+                f"预计总费用：¥{estimate.get('总计', 0.0):.2f}",
+                f"本次预算：¥{budget:.2f}",
+                ('⚠ 预计超过本次预算。' if estimate['超预算'] else '✓ 预计不超过本次预算。'),
+                estimate.get('计价说明', ''),
+                '',
+                '确认后只创建独立短剧制作项目，不会立刻调用云端素材/视频生成；后续仍由你逐镜头点击生成。',
+                '原广告项目、原广告分镜和创意方案会保留。是否创建？',
+            ])
+            if not messagebox.askyesno('短剧制作项目与预算确认', detail):
+                self.detail.set('已取消短剧制作项目创建；没有调用素材或视频生成服务。')
+                return
+            source_project = self.project
+            self._cache_active_variant()
+            self.store.save(source_project)
+            drama_project = new_project(self.url.get().strip(), source_project.level, 'AI短剧')
+            drama_project.product_name = source_project.product_name
+            drama_project.platform = source_project.platform
+            drama_project.product_info = json.loads(json.dumps(source_project.product_info, ensure_ascii=False))
+            drama_project.cost_estimate = estimate
+            drama_project.creative_plan = {
+                'task_type': 'AI短剧',
+                'short_drama': json.loads(json.dumps(plan, ensure_ascii=False)),
+                'shots': rows,
+                'variant_count': 1,
+                'source_project_id': source_project.id,
+                'production_mode': 'short_drama',
+            }
+            drama_project.shots = [
+                Shot(
+                    id=uid('drama-shot'),
+                    index=row['index'],
+                    title=row['title'],
+                    visual=row['visual'],
+                    script=row['script'],
+                    status='待生成',
+                    duration_seconds=row['duration_seconds'],
+                )
+                for row in rows
+            ]
+            self.store.save(drama_project)
+            self.project = drama_project
+            self.model_router.set_project_context(drama_project.id)
+            self.active_variant_index = 1
+            self.refresh_shots()
+            self.detail.set(
+                f"已创建独立短剧制作项目：{drama_project.id}｜{len(rows)}个镜头｜"
+                f"预算预估¥{estimate['总计']:.2f}。原广告项目 {source_project.id} 已保留。"
+            )
+            if window is not None:
+                try: window.destroy()
+                except tk.TclError: pass
+            messagebox.showinfo(
+                '短剧制作项目已创建',
+                f"已创建独立短剧项目：{drama_project.id}\n"
+                f"镜头数：{len(rows)}\n"
+                '尚未生成任何云端素材/视频。现在可复用现有生产链逐镜头生成、重新生成、后处理和最终合成。'
+            )
+        except Exception as exc:
+            messagebox.showerror('创建短剧制作项目失败', str(exc))
