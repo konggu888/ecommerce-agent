@@ -472,8 +472,8 @@ class App(tk.Tk):
         ttk.Label(frm,text='最终成片交付中心',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
         status=tk.StringVar()
         ttk.Label(frm,textvariable=status,font=('Microsoft YaHei UI',13,'bold')).pack(anchor='w',pady=(4,8))
-        tree=ttk.Treeview(frm,columns=('key','status','aspect','duration','shots','created','exists','path'),show='headings',height=8)
-        for c,t,w in [('key','方案·画幅',100),('status','交付状态',90),('aspect','画幅',70),('duration','时长',70),('shots','镜头数',70),('created','创建时间',170),('exists','文件',60),('path','成片路径',480)]:
+        tree=ttk.Treeview(frm,columns=('key','status','aspect','duration','shots','created','exists','reason','path'),show='headings',height=8)
+        for c,t,w in [('key','方案·画幅',100),('status','交付状态',90),('aspect','画幅',70),('duration','时长',70),('shots','镜头数',70),('created','创建时间',170),('exists','文件',60),('reason','失效原因',220),('path','成片路径',350)]:
             tree.heading(c,text=t); tree.column(c,width=w,anchor='w')
         tree.pack(fill='x',pady=(0,8))
         issues=tk.Text(frm,height=16); issues.pack(fill='both',expand=True,pady=(4,8))
@@ -481,7 +481,7 @@ class App(tk.Tk):
             status.set('🟢 可以交付' if result['delivery_ready'] else '🔴 暂不能交付')
             for item in tree.get_children(): tree.delete(item)
             for row in self.store.final_output_history(self.project):
-                tree.insert('', 'end', values=(row['key'],row['delivery_status'],row['aspect'],f"{row['duration_seconds']}s",row['shot_count'],row.get('created_at',''), '存在' if row['exists'] else '缺失',row['output_path']))
+                tree.insert('', 'end', values=(row['key'],row['delivery_status'],row['aspect'],f"{row['duration_seconds']}s",row['shot_count'],row.get('created_at',''), '存在' if row['exists'] else '缺失',row.get('recovery_reason',''),row['output_path']))
             issues.config(state='normal'); issues.delete('1.0','end')
             issues.insert('end',f"当前检查：方案{result['variant_index']}｜{result['aspect']}\n")
             issues.insert('end',f"安全闸门：{'通过' if result['gate']['allowed'] else '拦截'}\n")
