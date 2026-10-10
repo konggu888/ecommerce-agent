@@ -12,7 +12,7 @@ from .capability import CapabilityRouter
 from .production import ProductionStore
 from .product_parser import parse_product_url, save_product, save_product_library, load_product_library, merge_product_library, ProductInfo
 from .creative_engine import CreativeEngine, validate_plan, validate_task_type_plan, TASK_TYPE_POLICIES
-from .short_drama import generate_short_drama, short_drama_production_rows
+from .short_drama import audit_short_drama, generate_short_drama, short_drama_production_rows
 from .model_router import ModelRouter, ModelProfile, FUNCTIONS, audit_ad_variant_set, build_creative_test_plan, audit_creative_factual_consistency, audit_storyboard_fact_consistency, audit_visual_fact_consistency
 from .browser_skill import _find_agent_browser
 from .ffmpeg import available as ffmpeg_available, has_nvenc
@@ -1953,11 +1953,38 @@ class App(tk.Tk):
             footer = ttk.Frame(win, padding=12); footer.pack(fill='x')
             ttk.Label(footer, text=f"已保存到项目：{self.project.id}；分镜数：{len(plan.get('storyboard', []))}。当前只完成短剧策划，尚未触发镜头素材生成。").pack(side='left')
             ttk.Button(footer, text='关闭', command=win.destroy).pack(side='right')
+            ttk.Button(footer, text='短剧质量/事实复核', command=lambda: self.show_short_drama_audit(plan)).pack(side='right', padx=8)
             ttk.Button(footer, text='建立独立短剧制作项目', command=lambda: self.create_short_drama_production_project(plan, win)).pack(side='right', padx=8)
             self.detail.set(f"AI短剧方案已保存｜题材：{plan.get('genre', '待确认')}｜分镜：{len(plan.get('storyboard', []))}｜未覆盖原广告方案")
             messagebox.showinfo('短剧方案已保存', 'AI短剧创作方案已保存到当前项目。原广告方案和现有分镜未被替换。')
         except Exception as exc:
             messagebox.showerror('AI短剧编导失败', str(exc))
+
+    @ui_action
+    def show_short_drama_audit(self, plan):
+        """Show a deterministic pre-production review without modifying the plan."""
+        if not self._ui_execution_gate(): return
+        try:
+            product_material = dict(self.project.product_info or {}) if self.project else {}
+            report = audit_short_drama(plan, product_material)
+            if self.project:
+                self.project.creative_plan['short_drama_audit'] = report
+                self.store.save(self.project)
+            win = tk.Toplevel(self)
+            win.title('AI短剧｜质量、事实与连续性复核')
+            win.geometry('850x620')
+            win.transient(self)
+            ttk.Label(win, text=f"检查状态：{report['status']}｜总时长：{report['total_duration_seconds']}秒｜提示数：{report['issue_count']}", font=('Microsoft YaHei UI', 12, 'bold')).pack(anchor='w', padx=12, pady=10)
+            frame = ttk.Frame(win, padding=(12, 0, 12, 12)); frame.pack(fill='both', expand=True)
+            view = tk.Text(frame, wrap='word', font=('Microsoft YaHei UI', 10))
+            scroll = ttk.Scrollbar(frame, orient='vertical', command=view.yview)
+            view.configure(yscrollcommand=scroll.set)
+            scroll.pack(side='right', fill='y'); view.pack(side='left', fill='both', expand=True)
+            view.insert('1.0', json.dumps(report, ensure_ascii=False, indent=2))
+            view.configure(state='disabled')
+            ttk.Button(win, text='关闭', command=win.destroy).pack(anchor='e', padx=12, pady=10)
+        except Exception as exc:
+            messagebox.showerror('短剧复核失败', str(exc))
 
     @ui_action
     def create_short_drama_production_project(self, plan, window=None):
