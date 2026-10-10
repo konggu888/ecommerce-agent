@@ -293,3 +293,9 @@ undefined
 - 在批量失败计数文案修复对应 CI #1085、docs-sync #879 和部署预览均通过后，继续审查单版本“生成最终成片”入口。
 - 发现 `final_render()` 失败时只弹出错误对话框，主界面状态没有同步更新，可能保留旧状态。已修复异常分支先更新 `detail`，再弹出错误提示，并增加回归测试。
 - 已同步 HELP.md、PROJECT_LOGIC.md、验收计划和 SOP。当前最新 HEAD 的 CI/doc-sync 待核验；PR #18 不得合并，Windows 真机、真实 Provider/计费、剪映及 B1–B3 继续暂缓。
+
+## 2026-10-11 工作单元：最终输出文件检查的文件系统异常容错
+- 独立复查发现，`final_output_history()` 与 `recover_project()` 先调用 `is_file()` 再调用 `stat()`，若文件在两次检查间消失或变为不可访问，`OSError` 可能打断交付历史或项目恢复。
+- 新增 `_is_nonempty_file()` 统一捕获文件系统 `OSError` 并按文件不可用处理；历史 UI 显示不可交付，项目恢复会修正状态并记录无效输出。
+- 新增执行级测试模拟 `is_file()` 成功而 `stat()` 抛出 `PermissionError`，覆盖历史展示和恢复两条路径。
+- 已同步 HELP.md、PROJECT_LOGIC.md、验收计划与 SOP。必须查询本轮最新 HEAD 对应 CI/doc-sync/部署预览；Windows 权限/外接盘/网络盘真机测试继续暂缓，PR #18 不得合并。
