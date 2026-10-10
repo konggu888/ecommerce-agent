@@ -915,3 +915,8 @@ apps/ad-studio-desktop/test_ai_handoff.py 必须自动检查快照文件存在�
 
 ## 2026-10-11：批量失败数量文案检查
 检查批量生成的失败汇总标签为“失败项”，并确认明细区仍显示方案/镜头及错误内容；不得把包含成片组装错误的统一列表称为“失败镜头”。
+
+## 2026-10-11：单版本最终成片失败反馈检查
+1. 运行 `test_final_render_failure_updates_main_status_and_shows_error`。
+2. 确认最终成片失败时，主界面状态与错误弹窗都反映失败原因，不留下旧的成功状态。
+3. 核验最新 HEAD 的 CI、docs-sync 和部署预览；未实际在 Windows 操作前，不宣称真机验收完成。
