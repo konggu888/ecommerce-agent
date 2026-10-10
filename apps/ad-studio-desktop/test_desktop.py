@@ -1370,6 +1370,32 @@ class DesktopCoreTests(unittest.TestCase):
             restored = store.load(project.id)
             self.assertAlmostEqual(restored.actual_cost_rmb, 0.28, places=6)
 
+    def test_first_ledger_charge_preserves_legacy_project_cost(self):
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td))
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            # This total predates the production ledger and must remain part of
+            # the budget after new ledger-tracked generation charges are added.
+            project.actual_cost_rmb = 0.50
+            store.save(project)
+
+            store._record_actual_cost(
+                project,
+                shot=project.shots[0],
+                category="video",
+                amount_rmb=0.23,
+                provider="test provider",
+                unit_cost_rmb=0.23,
+                function="视频镜头生成",
+            )
+            self.assertAlmostEqual(project.legacy_cost_baseline_rmb, 0.50, places=6)
+            self.assertAlmostEqual(project.actual_cost_rmb, 0.73, places=6)
+
+            restored = store.load(project.id)
+            store.recover_project(restored)
+            self.assertAlmostEqual(restored.actual_cost_rmb, 0.73, places=6)
+            self.assertAlmostEqual(restored.legacy_cost_baseline_rmb, 0.50, places=6)
+
     def test_a30_budget_and_non_retryable_failures_have_explicit_next_actions(self):
         with tempfile.TemporaryDirectory() as td:
             store = ProductionStore(Path(td))
