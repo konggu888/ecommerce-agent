@@ -183,7 +183,18 @@ def generate_short_drama(model_router, product: dict[str, Any], constraints: dic
         if "unexpected keyword argument 'function'" not in str(exc):
             raise
         result = model_router.complete_json(profile, prompt)
-    return validate_short_drama(result)
+    validated = validate_short_drama(result)
+    requested_mode = str(constraints.get("short_drama_mode", "single_episode"))
+    requested_count = int(constraints.get("episode_count", 1))
+    if validated.get("format_mode") != requested_mode:
+        raise ShortDramaPlanError(
+            f"模型返回的短剧模式为 {validated.get('format_mode')}，与所选模式 {requested_mode} 不一致；请重新生成，避免把多集需求误当成单集。"
+        )
+    if validated.get("episode_count") != requested_count:
+        raise ShortDramaPlanError(
+            f"模型返回 {validated.get('episode_count')} 集，但用户选择了 {requested_count} 集；未保存不匹配的方案。"
+        )
+    return validated
 
 
 def short_drama_production_rows(plan: dict[str, Any], product_name: str) -> list[dict[str, Any]]:
