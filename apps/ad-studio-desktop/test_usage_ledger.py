@@ -154,5 +154,44 @@ class UsageLedgerRetentionTests(unittest.TestCase):
         self.assertIn("历史可能需要人工恢复", method_source)
 
 
+    def test_project_summary_counts_cost_for_failed_billable_calls(self):
+        with tempfile.TemporaryDirectory() as directory:
+            ledger_path = Path(directory) / "usage-ledger.json"
+            ledger = UsageLedger(ledger_path)
+            ledger.record(
+                function="creative plan parsing",
+                model_id="",
+                model_name="test provider",
+                provider="test provider",
+                model="",
+                status="failed",
+                estimated_cost_rmb=0.07,
+                total_tokens=120,
+                project_id="project-b",
+                category="model",
+                error="malformed JSON after billable response",
+            )
+            ledger.record(
+                function="local validation",
+                model_id="",
+                model_name="local",
+                provider="local",
+                model="",
+                status="failed",
+                estimated_cost_rmb=0,
+                project_id="project-b",
+                category="model",
+            )
+
+            summary = ledger.project_summary("project-b")
+            self.assertEqual(summary["entries"], 2)
+            self.assertEqual(summary["success"], 0)
+            self.assertEqual(summary["failed"], 2)
+            self.assertEqual(summary["tokens"], 120)
+            self.assertAlmostEqual(summary["estimated_cost_rmb"], 0.07, places=6)
+            self.assertAlmostEqual(summary["actual_cost_rmb"], 0.07, places=6)
+            self.assertAlmostEqual(summary["by_category"]["model"], 0.07, places=6)
+
+
 if __name__ == "__main__":
     unittest.main()
