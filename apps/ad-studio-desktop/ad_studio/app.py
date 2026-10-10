@@ -1893,17 +1893,57 @@ class App(tk.Tk):
         except Exception as e:
             messagebox.showerror('批量输出失败',str(e))
 
+    def _choose_short_drama_episode(self):
+        episodes = sorted({int(getattr(shot, "episode_number", 1) or 1) for shot in self.project.shots})
+        if len(episodes) <= 1:
+            return episodes[0] if episodes else None
+        dialog = tk.Toplevel(self)
+        dialog.title('选择要交付的短剧集数')
+        dialog.geometry('420x150')
+        dialog.transient(self)
+        dialog.grab_set()
+        value = tk.StringVar(value=str(episodes[0]))
+        ttk.Label(dialog, text='选择本次要单独输出的集数：').pack(anchor='w', padx=14, pady=(14, 6))
+        ttk.Combobox(dialog, textvariable=value, state='readonly', values=tuple(str(x) for x in episodes)).pack(fill='x', padx=14)
+        result = {}
+        buttons = ttk.Frame(dialog); buttons.pack(fill='x', padx=14, pady=12)
+        def confirm():
+            try:
+                selected = int(value.get())
+            except (TypeError, ValueError):
+                messagebox.showerror('集数无效', '请选择有效集数。', parent=dialog)
+                return
+            if selected not in episodes:
+                messagebox.showerror('集数无效', '所选集数不在当前项目中。', parent=dialog)
+                return
+            result['episode'] = selected
+            dialog.destroy()
+        ttk.Button(buttons, text='取消', command=dialog.destroy).pack(side='right')
+        ttk.Button(buttons, text='输出本集', command=confirm).pack(side='right', padx=8)
+        self.wait_window(dialog)
+        return result.get('episode')
+
     @ui_action
     def final_render(self):
         if not self._ui_execution_gate(): return
         if not self.project:return messagebox.showinfo('提示','先创建项目。')
         try:
-            out=self.store.build_final(self.project,self.aspect.get(),variant_index=self.active_variant_index)
+            episode_number = None
+            if (self.project.creative_plan or {}).get('production_mode') == 'short_drama':
+                episode_number = self._choose_short_drama_episode()
+                if episode_number is None:
+                    self.detail.set('已取消短剧分集交付；未输出文件。')
+                    return
+            out=self.store.build_final(
+                self.project,self.aspect.get(),variant_index=self.active_variant_index,
+                episode_number=episode_number,
+            )
             self._record_variant_output(out)
             self._cache_active_variant()
             self.store.save(self.project)
-            self.detail.set(f'方案{self.active_variant_index} 最终成片已独立输出：{out}')
-            messagebox.showinfo('完成',f'方案{self.active_variant_index} 最终广告已生成\n{out}')
+            label = f'第{episode_number}集' if episode_number is not None else f'方案{self.active_variant_index}'
+            self.detail.set(f'{label} 最终成片已独立输出：{out}')
+            messagebox.showinfo('完成',f'{label}最终成片已生成\n{out}')
         except Exception as e: messagebox.showerror('暂不能成片',str(e))
 
     def save(self):
@@ -2113,6 +2153,7 @@ class App(tk.Tk):
                     script=row['script'],
                     status='待生成',
                     duration_seconds=row['duration_seconds'],
+                    episode_number=int(row.get('episode_number', 1)),
                 )
                 for row in rows
             ]

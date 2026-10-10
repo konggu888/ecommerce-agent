@@ -380,7 +380,7 @@ class ProductionStore:
         self.save(project)
         return out
 
-    def final_render_gate(self, project: Project) -> dict[str, Any]:
+    def final_render_gate(self, project: Project, episode_number: int | None = None) -> dict[str, Any]:
         """最终成片安全闸门：发现明确事实/视觉风险时阻止输出。"""
         plan = project.creative_plan or {}
         reasons = []
@@ -394,7 +394,10 @@ class ProductionStore:
             for shot in variant.get('shots', []) if isinstance(variant, dict) else []:
                 risks = shot.get('risks') or []
                 if risks: reasons.append(f"方案{variant.get('variant_index','?')}·{shot.get('source','未知素材')}：{'；'.join(map(str, risks))}")
-        reasons.extend([f"镜头{s.index}：AI生成镜头尚未通过人工复核" for s in project.shots if getattr(s,'clip_source','ai_generated')=='ai_generated' and getattr(s,'storyboard_review','不需要')=='待复核'])
+        gate_shots = project.shots
+        if episode_number is not None:
+            gate_shots = [s for s in project.shots if int(getattr(s, "episode_number", 1) or 1) == int(episode_number)]
+        reasons.extend([f"镜头{s.index}：AI生成镜头尚未通过人工复核" for s in gate_shots if getattr(s,'clip_source','ai_generated')=='ai_generated' and getattr(s,'storyboard_review','不需要')=='待复核'])
         return {'allowed': not reasons, 'reasons': reasons, 'checked': bool(fact or visual), 'message': '最终成片安全闸门通过' if not reasons else '最终成片被安全闸门拦截'}
 
     def inspect_final_output(self, output: Path, aspect: str) -> dict[str, Any]:
@@ -439,11 +442,13 @@ class ProductionStore:
             return result
 
     def write_final_output_manifest(self, project: Project, output: Path, aspect: str, variant_index: int,
-                                    shots: list[Shot], safety_gate: dict[str, Any], media_check: dict[str, Any]) -> Path:
+                                    shots: list[Shot], safety_gate: dict[str, Any], media_check: dict[str, Any],
+                                    episode_number: int | None = None) -> Path:
         """保存最终交付清单，记录实际输出版本、镜头组成和机器质检结果。"""
         manifest_path = Path(output).with_suffix(".json")
         manifest = {
             "project_id": project.id, "variant_index": int(variant_index), "aspect": aspect,
+            "episode_number": int(episode_number) if episode_number is not None else None,
             "output_path": str(output), "shot_count": len(shots),
             "shot_ids": [shot.id for shot in shots], "shot_indices": [shot.index for shot in shots],
             "safety_gate": safety_gate, "media_check": media_check,
@@ -451,7 +456,7 @@ class ProductionStore:
             "created_at": datetime.datetime.now().isoformat(timespec="microseconds"),
         }
         manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
-        key = f"{int(variant_index)}|{aspect}"
+        key = f"{int(variant_index)}|{aspect}" + (f"|ep{int(episode_number)}" if episode_number is not None else "")
         manifest["history_key"] = key
         manifest["revision_id"] = f"{key}|{manifest['created_at']}"
         project.creative_plan.setdefault("final_output_manifests", {})[key] = manifest
@@ -478,6 +483,7 @@ class ProductionStore:
                 "revision_id": item.get("revision_id", ""),
                 "variant_index": item.get("variant_index"),
                 "aspect": item.get("aspect"),
+                "episode_number": item.get("episode_number"),
                 "output_path": str(path),
                 "exists": path.exists(),
                 "delivery_status": item.get("delivery_status", "未知"),
@@ -487,15 +493,27 @@ class ProductionStore:
             })
         return sorted(rows, key=lambda x: x.get("created_at", ""), reverse=True)
 
-    def build_final(self, project: Project, aspect: str = "9:16", variant_index: int | None = None):
-        gate=self.final_render_gate(project)
+    def build_final(self, project: Project, aspect: str = "9:16", variant_index: int | None = None,
+                    episode_number: int | None = None):
+        gate=self.final_render_gate(project, episode_number=episode_number)
         if not gate['allowed']:
             raise RuntimeError(gate['message'] + ":\n" + "\n".join(f"- {x}" for x in gate['reasons']))
-        shots=self.current_shots(project)
-        if len(shots)!=len(project.shots):
-            raise RuntimeError(f'还有 {len(project.shots)-len(shots)} 个镜头没有成片，暂不能输出最终广告')
+        expected_shots = project.shots
+        if episode_number is not None:
+            expected_shots = [s for s in project.shots if int(getattr(s, "episode_number", 1) or 1) == int(episode_number)]
+            if not expected_shots:
+                raise RuntimeError(f"项目中没有第{int(episode_number)}集的镜头。")
+        current = self.current_shots(project)
+        shots = current if episode_number is None else [
+            s for s in current if int(getattr(s, "episode_number", 1) or 1) == int(episode_number)
+        ]
+        if len(shots) != len(expected_shots):
+            missing = len(expected_shots) - len(shots)
+            label = f"第{int(episode_number)}集" if episode_number is not None else "项目"
+            raise RuntimeError(f'{label}还有 {missing} 个镜头没有成片，暂不能输出')
         suffix=f'-v{int(variant_index)}' if variant_index else ''
-        out=self.root/'final'/project.id/f'final-{aspect.replace(":", "x")}{suffix}.mp4'
+        episode_suffix=f'-ep{int(episode_number)}' if episode_number is not None else ''
+        out=self.root/'final'/project.id/f'final-{aspect.replace(":", "x")}{episode_suffix}{suffix}.mp4'
         concat([Path(s.video_path) for s in shots],out)
         media_check=self.inspect_final_output(out, aspect)
         if not media_check["valid"]:
@@ -504,6 +522,6 @@ class ProductionStore:
             raise RuntimeError("最终成片机器质检未通过：" + str(media_check["reason"]))
         self.write_final_output_manifest(
             project, out, aspect, int(variant_index or self._variant_index(project)),
-            shots, gate, media_check,
+            shots, gate, media_check, episode_number=episode_number,
         )
         return out
