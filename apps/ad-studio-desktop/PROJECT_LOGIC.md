@@ -1091,3 +1091,7 @@ estimate_asset_generation 使用 AssetGenerator 的 CapabilityRouter 结果决�
 ## 成本账本金额边界
 
 `UsageLedger.record()` 在写入前校验 `estimated_cost_rmb` 与 `unit_cost_rmb`：必须能转换为有限的非负数，统一保留 6 位小数；负数、NaN、正/负无穷或不可转换值均抛出 `ValueError`，不写入账本。这样可避免无效值传播到 JSON 和项目费用汇总。`actual_cost_rmb` 仍为兼容字段，代表本地估算而非供应商对账结果。
+
+## 恢复时的成本账本对账
+
+`ProductionStore.recover_project()` 在保存恢复状态前调用 `_sync_actual_cost()`。该方法汇总当前项目的生产账本，并将 `project.actual_cost_rmb` 与账本累计值取较大者，避免崩溃发生在 ledger append 成功、项目 JSON 保存之前导致预算低估；若该项目账本没有任何记录，则保留旧项目累计值，兼容历史项目。`cost_estimate.actual_cost_rmb` 和 `actual_cost_summary` 更新为账本汇总。此策略用于恢复漏写的缓存，不宣称可替代供应商账单核对。
