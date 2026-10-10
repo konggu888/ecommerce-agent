@@ -230,7 +230,8 @@ def short_drama_production_rows(plan: dict[str, Any], product_name: str) -> list
         ) if part)
         episode_number = int(shot.get("episode_number", 1))
         rows.append({
-            "index": int(shot.get("index", index)),
+            "index": index,
+            "episode_shot_index": int(shot.get("index", index)),
             "episode_number": episode_number,
             "title": f"第{episode_number}集｜{title}" if validated.get("episode_count", 1) > 1 else title,
             "visual": visual,

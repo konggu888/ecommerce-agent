@@ -110,6 +110,8 @@ class ShortDramaTests(unittest.TestCase):
         self.assertEqual([x["episode_number"] for x in validated["storyboard"]], [1, 2])
         rows = short_drama_production_rows(validated, "测试商品")
         self.assertEqual([x["episode_number"] for x in rows], [1, 2])
+        self.assertEqual([x["index"] for x in rows], [1, 2])
+        self.assertEqual([x["episode_shot_index"] for x in rows], [1, 1])
         self.assertTrue(rows[1]["title"].startswith("第2集"))
 
     def test_rejects_missing_episode_in_series(self):

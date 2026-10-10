@@ -1938,8 +1938,11 @@ class App(tk.Tk):
                 self.project,self.aspect.get(),variant_index=self.active_variant_index,
                 episode_number=episode_number,
             )
-            self._record_variant_output(out)
-            self._cache_active_variant()
+            if episode_number is None:
+                self._record_variant_output(out)
+                self._cache_active_variant()
+            else:
+                self.project.creative_plan.setdefault('episode_outputs', {})[str(episode_number)] = str(out)
             self.store.save(self.project)
             label = f'第{episode_number}集' if episode_number is not None else f'方案{self.active_variant_index}'
             self.detail.set(f'{label} 最终成片已独立输出：{out}')
