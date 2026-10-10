@@ -70,11 +70,34 @@ class ProductionStore:
                 part.unlink(missing_ok=True)
                 removed_parts += 1
         missing_media = []
+        seen_missing_media = set()
+
+        def invalidate_missing_media(record, shot_id):
+            media_path = str(record.get("video_path") or "").strip()
+            if not media_path or _is_nonempty_file(Path(media_path)):
+                return
+            if shot_id not in seen_missing_media:
+                missing_media.append(shot_id)
+                seen_missing_media.add(shot_id)
+            record["video_path"] = None
+            record["status"] = "待重新生成/重新选择素材"
+
         for shot in project.shots:
-            if shot.video_path and not Path(shot.video_path).exists():
-                missing_media.append(shot.id)
-                shot.video_path = None
-                shot.status = "待重新生成/重新选择素材"
+            invalidate_missing_media(shot.__dict__, str(shot.id))
+
+        # Variant snapshots are independently restored on future scheme switches.
+        # Repair them too; otherwise switching variants after recovery could resurrect
+        # a stale path that was just invalidated in project.shots.
+        variant_cache = creative_plan.get("variant_shot_cache")
+        if isinstance(variant_cache, dict):
+            for variant_key, cached_shots in variant_cache.items():
+                if not isinstance(cached_shots, list):
+                    continue
+                for cached_shot in cached_shots:
+                    if not isinstance(cached_shot, dict):
+                        continue
+                    shot_id = str(cached_shot.get("id") or f"variant-{variant_key}-unknown-shot")
+                    invalidate_missing_media(cached_shot, shot_id)
         invalid_outputs = []
         records = list(creative_plan.get("final_output_history_records", []) or [])
         manifests = creative_plan.get("final_output_manifests", {}) or {}
