@@ -97,7 +97,10 @@ def validate_short_drama(raw: dict[str, Any]) -> dict[str, Any]:
         for episode_index, episode in enumerate(episodes, 1):
             if not isinstance(episode, dict):
                 raise ShortDramaPlanError(f"第{episode_index}集结构无效。")
-            episode_number = int(episode.get("episode_number", episode_index))
+            try:
+                episode_number = int(episode.get("episode_number", episode_index))
+            except (TypeError, ValueError) as exc:
+                raise ShortDramaPlanError(f"第{episode_index}集编号无效。") from exc
             episode_shots = episode.get("storyboard", [])
             if not isinstance(episode_shots, list) or not episode_shots:
                 raise ShortDramaPlanError(f"第{episode_number}集没有分镜。")
