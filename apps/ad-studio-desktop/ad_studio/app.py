@@ -90,7 +90,7 @@ class App(tk.Tk):
             verify_ui_action_contract(Path(__file__))
             return True
         except (OSError, SyntaxError, UIContractError) as exc:
-            messagebox.showerror('UI 操作入口检查失败', f'代码可能已经实现，但界面入口存在缺失或失配。\\n\\n{exc}\\n\\n必须先修复 UI，再执行本次操作。')
+            messagebox.showerror('UI 操作入口检查失败', f'代码可能已经实现，但界面入口存在缺失或失配。\n\n{exc}\n\n必须先修复 UI，再执行本次操作。')
             return False
 
     def _workflow_mode_value(self):
@@ -209,16 +209,16 @@ class App(tk.Tk):
         if approvals.get(key) is True:
             return True
         shots = list(self.project.shots or [])
-        summary = "\\n".join(
+        summary = "\n".join(
             f"{shot.index}. {shot.title} — {str(shot.visual or '')[:110]}"
             for shot in shots[:18]
         )
         if len(shots) > 18:
-            summary += f"\\n……其余 {len(shots) - 18} 个镜头"
+            summary += f"\n……其余 {len(shots) - 18} 个镜头"
         prompt = (
-            f"当前方案：{self.active_variant_index}\\n"
-            f"工作模式：{self._workflow_mode_label(mode)}\\n"
-            f"分镜数量：{len(shots)}\\n\\n{summary}\\n\\n"
+            f"当前方案：{self.active_variant_index}\n"
+            f"工作模式：{self._workflow_mode_label(mode)}\n"
+            f"分镜数量：{len(shots)}\n\n{summary}\n\n"
             "请先检查分镜。确认后才允许开始生成当前方案的镜头；拒绝则暂停，不会调用视频生成服务。"
         )
         if not messagebox.askyesno("确认分镜后继续", prompt):
@@ -235,7 +235,7 @@ class App(tk.Tk):
         if len(plans) == 1:
             return 0 if messagebox.askyesno(
                 "确认创意方案",
-                f"AI 当前只提出一套方案：{plans[0].get('_variant_label', plans[0].get('video_form', '创意方案'))}。\\n是否明确选择这套方案？"
+                f"AI 当前只提出一套方案：{plans[0].get('_variant_label', plans[0].get('video_form', '创意方案'))}。\n是否明确选择这套方案？"
             ) else None
         win = tk.Toplevel(self)
         win.title("选择初始创意方案")
@@ -1608,7 +1608,7 @@ class App(tk.Tk):
         try:
             help_content=help_path.read_text(encoding='utf-8')
         except Exception as exc:
-            help_content=f'无法读取帮助文档：{help_path}\\n{exc}'
+            help_content=f'无法读取帮助文档：{help_path}\n{exc}'
         help_frame=ttk.Frame(help_tab); help_frame.pack(fill='both',expand=True)
         help_text=tk.Text(help_frame,wrap='word',font=('Microsoft YaHei UI',10))
         help_scroll=ttk.Scrollbar(help_frame,orient='vertical',command=help_text.yview)
@@ -1869,9 +1869,9 @@ class App(tk.Tk):
             selected_mode=self._workflow_mode_value()
             if selected_mode == SEMI_AUTO:
                 first_plan=raw_plans[0]
-                summary=(f"方案：{first_plan.get('_variant_label',first_plan.get('video_form','AI创意方案'))}\\n"
-                         f"策略：{str(first_plan.get('strategy',''))[:420]}\\n"
-                         f"视频形式：{first_plan.get('video_form','未指定')}\\n\\n"
+                summary=(f"方案：{first_plan.get('_variant_label',first_plan.get('video_form','AI创意方案'))}\n"
+                         f"策略：{str(first_plan.get('strategy',''))[:420]}\n"
+                         f"视频形式：{first_plan.get('video_form','未指定')}\n\n"
                          "半自动模式会先停在创意方案确认点。是否采用这套方案并继续？")
                 if not messagebox.askyesno('确认 AI 创意方案',summary):
                     self.project=None
@@ -2184,7 +2184,7 @@ class App(tk.Tk):
             except (OSError, json.JSONDecodeError, TypeError, ValueError) as exc:
                 messagebox.showerror(
                     '打开失败',
-                    f'项目文件无法读取或 JSON 格式损坏。\\n文件：{project_file}\\n原因：{exc}\\n\\n软件不会自动删除或覆盖该文件。请先备份，再检查文件内容。',
+                    f'项目文件无法读取或 JSON 格式损坏。\n文件：{project_file}\n原因：{exc}\n\n软件不会自动删除或覆盖该文件。请先备份，再检查文件内容。',
                     parent=win,
                 )
                 return
@@ -2209,7 +2209,7 @@ class App(tk.Tk):
                     pass
                 messagebox.showerror(
                     '项目恢复未完成',
-                    f'项目文件已读取，但本地恢复检查失败。当前工作项目未切换。\\n原因：{exc}\\n\\n恢复过程可能已部分执行；请先备份项目文件，检查磁盘权限/空间后重试。',
+                    f'项目文件已读取，但本地恢复检查失败。当前工作项目未切换。\n原因：{exc}\n\n恢复过程可能已部分执行；请先备份项目文件，检查磁盘权限/空间后重试。',
                     parent=win,
                 )
                 return
@@ -2415,7 +2415,7 @@ class App(tk.Tk):
                 self._restore_variant_selection(original_index)
                 self.detail.set('批量生成预审失败；已恢复原来选中的创意方案。')
             except Exception as restore_exc:
-                messagebox.showerror('方案恢复失败',f'预审错误：{exc}\\n恢复原方案时也发生错误：{restore_exc}')
+                messagebox.showerror('方案恢复失败',f'预审错误：{exc}\n恢复原方案时也发生错误：{restore_exc}')
             messagebox.showerror('批量生成预审失败',str(exc))
             return
         if unknown_asset_prices and not self._confirm_unknown_asset_prices(unknown_asset_prices, '批量素材生成价格未配置'):
