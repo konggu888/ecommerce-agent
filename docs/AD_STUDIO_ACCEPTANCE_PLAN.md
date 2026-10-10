@@ -960,3 +960,5 @@
 - 纳入后的镜头应保留生成 Provider 与 `generation_cost_rmb` 实际成本，兼容旧任务字段。
 - 回归测试：`test_hybrid_generated_shot_requires_review_and_valid_media_before_acceptance`、`test_reviewed_hybrid_task_persists_into_project`。
 - 自动化测试不等同于 Windows 真机或真实视频 Provider 验收。
+
+测试夹具要求：所有接受成功的补镜头用例必须自行创建临时非空媒体文件，不能依赖 runner 上预存的绝对路径。若该专项 CI 失败，需先读取失败日志、修正夹具后重跑最新 HEAD。
