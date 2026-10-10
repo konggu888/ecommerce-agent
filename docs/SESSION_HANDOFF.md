@@ -249,3 +249,10 @@ undefined
 ## 2026-10-10 验收计划与 SOP 已同步：A30 恢复异常
 - 已确认正式文档路径为 docs/AD_STUDIO_ACCEPTANCE_PLAN.md 与 docs/AD_STUDIO_ACCEPTANCE_SOP.md，并将损坏项目 JSON、恢复异常、活动项目不切换及 Windows 现场边界补入两份完整验收文档。
 - 当前工作单元涉及代码、测试、HELP、PROJECT_LOGIC、验收计划、验收 SOP 与交接快照；最终必须以最后一个文档提交对应的 CI/doc-sync 为准。
+
+
+## 2026-10-10 工作单元：最终成片历史即时状态
+- 在审查历史 UI 时发现：项目打开期间若成片文件被删除或变为空文件，历史表虽然可显示文件不存在，但 delivery_status 仍可能保留旧值“可交付”，造成状态矛盾。
+- 修复 production.py：final_output_history() 每次读取都重新检查文件是否存在、非空且为普通文件；失效输出即时返回“不可交付”与原因；recover_project() 同时加强普通文件检查，并在项目重开时持久化校正。
+- 新增 test_desktop.py 回归，覆盖有效文件、删除文件与路径变成目录；已同步 HELP.md、PROJECT_LOGIC.md、完整验收计划和验收 SOP。
+- 本轮最终代码/测试/文档 HEAD 的 CI 与 docs-sync 仍需实时核验；Windows 真机、真实 Provider/计费、剪映与 B1–B3 仍暂缓，PR #18 不得合并。
