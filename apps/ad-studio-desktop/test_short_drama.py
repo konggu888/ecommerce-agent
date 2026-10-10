@@ -118,6 +118,18 @@ class ShortDramaTests(unittest.TestCase):
         self.assertEqual([x["episode_shot_index"] for x in rows], [1, 1])
         self.assertTrue(rows[1]["title"].startswith("第2集"))
 
+    def test_general_mode_can_generate_without_product(self):
+        seen = {}
+        class FakeRouter:
+            def resolve_route(self, function): return "profile"
+            def complete_json(self, profile, prompt, function=None):
+                plan = sample_plan()
+                plan["drama_business_mode"] = "general"
+                plan["storyboard"][0]["product_integration"] = "本镜不出现商品"
+                return plan
+        result = generate_short_drama(FakeRouter(), {}, {"drama_business_mode": "general"})
+        self.assertEqual(result["drama_business_mode"], "general")
+
     def test_rejects_unknown_drama_business_mode(self):
         plan = sample_plan()
         plan["drama_business_mode"] = "random_mode"

@@ -11,7 +11,6 @@ from typing import Any
 
 SHORT_DRAMA_SCHEMA = {
     "format_mode": "single_episode / continuous_series / anthology_series",
-    "drama_business_mode": "general / product_placement / product_conversion",
     "episode_count": "integer",
     "series_bible": {"series_arc": "全剧主线", "character_state": "人物长期状态与关系", "continuity_rules": ["跨集必须保持的事实"]},
     "episodes": [{"episode_number": "integer", "title": "集名", "logline": "本集梗概", "plot_beats": ["本集节拍"], "ending_hook": "本集结尾/悬念", "full_script": "本集完整剧本", "storyboard": ["本集分镜，字段与根级 storyboard 相同"]}],
