@@ -466,7 +466,12 @@ class App(tk.Tk):
         """最终成片交付中心：历史、总检查、问题回退和一键重新检查。"""
         if not self.project:
             return messagebox.showinfo('提示','请先创建或打开一个项目。')
-        result=self._run_final_delivery_recheck()
+        try:
+            result=self._run_final_delivery_recheck()
+        except Exception as exc:
+            self.detail.set(f'最终交付检查失败：{exc}')
+            messagebox.showerror('最终交付检查失败',f'未能完成最终交付检查。\n原因：{exc}\n\n请检查项目文件、成片路径和磁盘权限后重试。')
+            return
         win=tk.Toplevel(self); win.title('最终成片交付中心'); win.geometry('1220x780'); win.transient(self)
         frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
         ttk.Label(frm,text='最终成片交付中心',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
@@ -499,7 +504,16 @@ class App(tk.Tk):
         render(result)
         bar=ttk.Frame(frm); bar.pack(fill='x')
         def recheck():
-            latest=self._run_final_delivery_recheck()
+            try:
+                latest=self._run_final_delivery_recheck()
+            except Exception as exc:
+                status.set('🔴 检查失败')
+                issues.config(state='normal'); issues.delete('1.0','end')
+                issues.insert('end',f'最终交付检查未完成。\\n原因：{exc}\\n\\n请检查项目文件、成片路径和磁盘权限后重试。')
+                issues.config(state='disabled')
+                self.detail.set(f'最终交付检查失败：{exc}')
+                messagebox.showerror('最终交付检查失败',str(exc),parent=win)
+                return
             if latest:
                 render(latest)
                 self.detail.set('最终交付检查已重新执行：'+('可以交付' if latest['delivery_ready'] else '存在需要修复的问题'))
