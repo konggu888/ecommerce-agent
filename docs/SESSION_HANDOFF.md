@@ -300,3 +300,8 @@ undefined
 - 新增执行级测试模拟 `is_file()` 成功而 `stat()` 抛出 `PermissionError`，覆盖历史展示和恢复两条路径。
 - 已同步 HELP.md、PROJECT_LOGIC.md、验收计划与 SOP。必须查询本轮最新 HEAD 对应 CI/doc-sync/部署预览；Windows 权限/外接盘/网络盘真机测试继续暂缓，PR #18 不得合并。
 - 首次 CI #1089 暴露测试夹具过度模拟：全局 patch `Path.stat()` 使项目 `render_root.exists()` 也抛出权限错误。已将测试限制为仅目标输出文件的 `stat()` 抛出 `PermissionError`，其他路径保留真实临时文件系统行为。首次失败不作为通过证据；后续以修正提交的最新 CI/doc-sync 为准。
+
+## 2026-10-11 工作单元：批量生成用户暂停与失败分类
+- 复查 `batch_generate_variants()` 发现分镜未获批准时，代码正确停止后续方案，但将用户拒绝记录为 `failed`，会把用户控制行为误报成生成故障。
+- 已将该方案记入 `skipped`，汇总增加“跳过项”和“已停止/跳过”明细；真实镜头生成、成片组装和状态保存异常仍归入 `failed`。
+- 扩展 `test_batch_generation_uses_warning_dialog_when_any_step_fails`，锁定用户暂停的分类、计数和提示内容。代码、测试及文档提交后的最新 CI/doc-sync/部署预览必须重新核验；PR #18 不得合并，Windows 真机和真实 Provider/计费继续暂缓。
