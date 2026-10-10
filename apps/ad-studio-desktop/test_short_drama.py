@@ -2,7 +2,7 @@ import unittest
 
 from ad_studio.short_drama import (
     ShortDramaPlanError, build_short_drama_prompt, generate_short_drama,
-    audit_short_drama, short_drama_production_rows, validate_short_drama,
+    audit_short_drama, build_episode_continuity_ledger, short_drama_production_rows, validate_short_drama,
 )
 
 
@@ -105,9 +105,9 @@ class ShortDramaTests(unittest.TestCase):
         plan["series_bible"] = {"series_arc": "从误会到和解", "continuity_rules": ["主角外观保持一致"]}
         plan["episodes"] = [
             {"episode_number": 1, "title": "误会", "logline": "冲突发生", "full_script": "第一集剧本",
-             "plot_beats": ["开场", "冲突", "悬念"], "ending_hook": "主角发现线索", "storyboard": [first_shot]},
+             "plot_beats": ["开场", "冲突", "悬念"], "ending_hook": "主角发现线索", "continuity_state": {"opening_state": "小林准备出门", "character_state_changes": ["小林发现线索"], "unresolved_threads": ["线索来自谁"], "ending_state": "小林拿到一张匿名便条", "next_episode_requirements": ["第二集必须解释便条来源"]}, "storyboard": [first_shot]},
             {"episode_number": 2, "title": "反转", "logline": "线索揭晓", "full_script": "第二集剧本",
-             "plot_beats": ["承接", "反转", "收束"], "ending_hook": "阶段结局", "storyboard": [second_shot]},
+             "plot_beats": ["承接", "反转", "收束"], "ending_hook": "阶段结局", "continuity_state": {"opening_state": "小林持有上一集的匿名便条", "character_state_changes": ["小林开始信任同事"], "unresolved_threads": [], "ending_state": "便条来源得到解释", "next_episode_requirements": []}, "storyboard": [second_shot]},
         ]
         plan["storyboard"] = []
         validated = validate_short_drama(plan)
@@ -117,6 +117,9 @@ class ShortDramaTests(unittest.TestCase):
         self.assertEqual([x["index"] for x in rows], [1, 2])
         self.assertEqual([x["episode_shot_index"] for x in rows], [1, 1])
         self.assertTrue(rows[1]["title"].startswith("第2集"))
+        self.assertEqual([x["episode_number"] for x in validated["continuity_ledger"]], [1, 2])
+        self.assertIn("匿名便条", validated["continuity_ledger"][0]["ending_state"])
+        self.assertIn("解释便条来源", validated["continuity_ledger"][0]["next_episode_requirements"][0])
 
     def test_general_mode_can_generate_without_product(self):
         seen = {}
@@ -134,6 +137,24 @@ class ShortDramaTests(unittest.TestCase):
         plan = sample_plan()
         plan["drama_business_mode"] = "random_mode"
         with self.assertRaises(ShortDramaPlanError):
+            validate_short_drama(plan)
+
+    def test_builds_continuity_ledger_in_episode_order(self):
+        plan = sample_plan()
+        plan["episodes"] = [
+            {"episode_number": 1, "continuity_state": {"opening_state": "A", "character_state_changes": ["B"], "unresolved_threads": ["C"], "ending_state": "D", "next_episode_requirements": ["E"]}},
+            {"episode_number": 2, "continuity_state": {"opening_state": "D", "character_state_changes": [], "unresolved_threads": [], "ending_state": "F", "next_episode_requirements": []}},
+        ]
+        ledger = build_episode_continuity_ledger(plan)
+        self.assertEqual([row["episode_number"] for row in ledger], [1, 2])
+        self.assertEqual(ledger[1]["opening_state"], "D")
+
+    def test_rejects_multi_episode_plan_without_continuity_state(self):
+        plan = sample_plan()
+        plan["format_mode"] = "continuous_series"
+        plan["episode_count"] = 2
+        plan["episodes"] = [{"episode_number": 1, "storyboard": [dict(plan["storyboard"][0])]}, {"episode_number": 2, "storyboard": [dict(plan["storyboard"][0])]}]
+        with self.assertRaisesRegex(ShortDramaPlanError, "continuity_state"):
             validate_short_drama(plan)
 
     def test_rejects_missing_episode_in_series(self):
