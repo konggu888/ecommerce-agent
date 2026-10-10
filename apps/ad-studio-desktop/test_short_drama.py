@@ -105,9 +105,9 @@ class ShortDramaTests(unittest.TestCase):
         plan["series_bible"] = {"series_arc": "从误会到和解", "continuity_rules": ["主角外观保持一致"]}
         plan["episodes"] = [
             {"episode_number": 1, "title": "误会", "logline": "冲突发生", "full_script": "第一集剧本",
-             "plot_beats": ["开场", "冲突", "悬念"], "ending_hook": "主角发现线索", "storyboard": [first_shot]},
+             "plot_beats": ["开场", "冲突", "悬念"], "ending_hook": "主角发现线索", "continuity_state": {"opening_state": "小林准备出门", "character_state_changes": ["小林发现线索"], "unresolved_threads": ["线索来自谁"], "ending_state": "小林拿到一张匿名便条", "next_episode_requirements": ["第二集必须解释便条来源"]}, "storyboard": [first_shot]},
             {"episode_number": 2, "title": "反转", "logline": "线索揭晓", "full_script": "第二集剧本",
-             "plot_beats": ["承接", "反转", "收束"], "ending_hook": "阶段结局", "storyboard": [second_shot]},
+             "plot_beats": ["承接", "反转", "收束"], "ending_hook": "阶段结局", "continuity_state": {"opening_state": "小林持有上一集的匿名便条", "character_state_changes": ["小林开始信任同事"], "unresolved_threads": [], "ending_state": "便条来源得到解释", "next_episode_requirements": []}, "storyboard": [second_shot]},
         ]
         plan["storyboard"] = []
         validated = validate_short_drama(plan)
