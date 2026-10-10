@@ -1095,3 +1095,9 @@ estimate_asset_generation 使用 AssetGenerator 的 CapabilityRouter 结果决�
 ## 恢复时的成本账本对账
 
 `ProductionStore.recover_project()` 在保存恢复状态前调用 `_sync_actual_cost()`。该方法汇总当前项目的生产账本，并将 `project.actual_cost_rmb` 与账本累计值取较大者，避免崩溃发生在 ledger append 成功、项目 JSON 保存之前导致预算低估；若该项目账本没有任何记录，则保留旧项目累计值，兼容历史项目。`cost_estimate.actual_cost_rmb` 和 `actual_cost_summary` 更新为账本汇总。此策略用于恢复漏写的缓存，不宣称可替代供应商账单核对。
+
+## 费用对账补充：旧项目基线不可丢失
+- `Project.legacy_cost_baseline_rmb`记录成本账本启用前已累计的历史费用，默认 `None` 表示尚未初始化。
+- `ProductionStore._record_actual_cost()` 在第一次追加生产账本记录前，先根据项目累计值减去已有账本汇总计算基线，并先保存项目，再写账本。这样即使进程在账本追加后、项目新累计值保存前退出，恢复时仍能重建总额。
+- 有基线的项目总额统一为“基线 + 账本累计估算”；没有基线的旧项目继续使用 `max(项目缓存, 账本合计)` 的保守兼容策略，避免对旧数据做无法证明的重算。
+- 回归测试 `test_first_ledger_charge_preserves_legacy_project_cost` 覆盖旧项目已有 ¥0.50、首次账本新费用 ¥0.23，恢复后总额仍为 ¥0.73。
