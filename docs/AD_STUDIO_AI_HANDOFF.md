@@ -175,3 +175,6 @@ CI 还会运行前端语法、Python 语法、Typecheck、Engine 和 Risk Contro
 
 ## 单镜头生成恢复规则（2026-10-11）
 `ProductionStore._render_with_provider()` 不得在最终替换前删除旧成片。新输出先写入临时文件并校验，再直接 `Path.replace()`；若替换失败，保留旧输出文件、原 `video_path` 和明确失败状态，同时清理临时文件。回归测试 `test_failed_atomic_replace_preserves_previous_shot_file` 覆盖此异常路径。提交后须核验最新 HEAD 的 CI 与文档同步；此自动化结果不能替代 Windows 真机/真实 Provider 验收。
+
+## AI 补镜头接受闸门修复（2026-10-11）
+补镜头不能仅凭 `generated_path` 非空就进入分镜。`accept_hybrid_generated_shot()` 必须确认文件存在、为普通文件且非空；无法安全读取时拒绝接受。审核 UI 使用生产层 `_is_nonempty_file()` 做同样的安全检查。写入镜头时保留 `generation_provider` 与 `generation_cost_rmb`，并兼容旧字段。对应自动化覆盖待复核/文件缺失/零字节/有效输出与成本持久化；真实 Provider 和 Windows 现场测试仍暂缓。
