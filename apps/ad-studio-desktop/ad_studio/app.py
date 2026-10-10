@@ -2494,7 +2494,7 @@ class App(tk.Tk):
                 target['_variant_index']=original; target['_variant_label']=target.get('_variant_label',f'方案{original}')
                 self._activate_plan(target,info)
             self.store.save(self.project); self.refresh_shots(); self.show_shot()
-            msg=f'生成镜头：{len(done)} 个\n最终成片：{len(outputs)} 个\n失败镜头：{len(failed)} 个'
+            msg=f'生成镜头：{len(done)} 个\n最终成片：{len(outputs)} 个\n失败项：{len(failed)} 个'
             if failed: msg+='\n\n失败明细：\n'+'\n'.join(failed[:8])
             self.detail.set(msg.replace('\n','｜'))
             if failed:
