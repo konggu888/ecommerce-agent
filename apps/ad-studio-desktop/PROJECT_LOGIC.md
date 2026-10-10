@@ -1064,3 +1064,6 @@ estimate_asset_generation 使用 AssetGenerator 的 CapabilityRouter 结果决�
 
 ### 镜头文件原子替换与失败恢复（新增）
 `ProductionStore._render_with_provider()` 将 Provider 输出先写入 `.part.mp4`，校验非空后再通过 `Path.replace()` 替换当前版本文件。禁止先 `unlink()` 目标文件再替换：文件系统在替换瞬间报错时，旧的 `shot.video_path` 可能仍指向已被删除的文件。替换失败必须保留旧文件与旧路径，记录失败状态并清理临时文件。回归测试模拟最终 replace 抛出 `OSError`，验证旧输出内容仍完整。
+
+### AI 补镜头接受闸门与成本归属（新增）
+`models.accept_hybrid_generated_shot()` 是补镜头写入分镜的核心入口：除人工复核状态外，必须验证 `generated_path` 指向可访问、非空的普通文件，遇到 `OSError` 也必须拒绝纳入。UI 复核列表与打开/纳入动作使用相同的 `_is_nonempty_file()` 校验，避免坏文件被展示为可用素材。写入 `Shot` 时，Provider 优先读取 `generation_provider`，实际成本优先读取 `generation_cost_rmb`，兼容旧字段 `provider` / `estimated_cost_rmb`，避免生成费用丢失或归属错误。
