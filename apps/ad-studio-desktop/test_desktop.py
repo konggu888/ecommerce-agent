@@ -1314,12 +1314,19 @@ class DesktopCoreTests(unittest.TestCase):
             corrupt = root / "final.mp4"
             history = {"output_path": str(corrupt), "delivery_status": "可交付"}
             project.creative_plan["final_output_history_records"] = [history]
+            project.creative_plan["variant_shot_cache"] = {
+                "1": [dict(shot.__dict__)],
+                "2": [dict(shot.__dict__, video_path=str(missing), status="已生成")],
+            }
             store.save(project)
             result = store.recover_project(project)
             self.assertEqual(result["removed_temp_files"], 1)
             self.assertEqual(result["missing_media"], [shot.id])
             self.assertEqual(result["invalid_outputs"], [str(corrupt)])
             self.assertEqual(shot.status, "待重新生成/重新选择素材")
+            for variant_shots in project.creative_plan["variant_shot_cache"].values():
+                self.assertIsNone(variant_shots[0]["video_path"])
+                self.assertEqual(variant_shots[0]["status"], "待重新生成/重新选择素材")
             self.assertEqual(history["delivery_status"], "不可交付")
             self.assertEqual(project.creative_plan["recovery"]["status"], "可继续")
 
