@@ -509,7 +509,7 @@ class App(tk.Tk):
             except Exception as exc:
                 status.set('🔴 检查失败')
                 issues.config(state='normal'); issues.delete('1.0','end')
-                issues.insert('end',f'最终交付检查未完成。\\n原因：{exc}\\n\\n请检查项目文件、成片路径和磁盘权限后重试。')
+                issues.insert('end',f'最终交付检查未完成。\n原因：{exc}\n\n请检查项目文件、成片路径和磁盘权限后重试。')
                 issues.config(state='disabled')
                 self.detail.set(f'最终交付检查失败：{exc}')
                 messagebox.showerror('最终交付检查失败',str(exc),parent=win)
