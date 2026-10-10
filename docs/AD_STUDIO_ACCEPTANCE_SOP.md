@@ -894,3 +894,9 @@ apps/ad-studio-desktop/test_ai_handoff.py 必须自动检查快照文件存在�
 3. 确认正常有效文件不显示误导性的失效原因，原有历史修订、创建时间和输出路径仍可识别。
 4. 运行 test_desktop.py、完整 CI 与 docs-sync；检查最新提交结果。
 5. Windows 真机未运行时，只记录代码/自动化验收，不宣称已完成真实 UI 现场验收。
+
+## 2026-10-11：项目恢复错误提示换行专项检查
+1. 检查 `App.load_project()` 中读取异常和恢复异常的弹窗字符串，确保路径、原因、建议使用真实换行分隔，而不是显示字面量 `\\n`。
+2. 执行 `test_desktop.py` 中 `test_open_project_reports_corrupt_json_and_recovery_exceptions_without_switching_project`，确认回归契约会拦截错误的转义写法。
+3. 检查最新 HEAD 对应 CI 与 docs-sync；如失败先读日志修复。
+4. 未在 Windows 桌面实际打开弹窗前，不宣称完成真机 UI 验收。
