@@ -177,3 +177,106 @@ def short_drama_production_rows(plan: dict[str, Any], product_name: str) -> list
             "product_integration": integration,
         })
     return rows
+
+
+def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Run deterministic pre-production checks; warnings require human review, not blind approval."""
+    checked = validate_short_drama(json.loads(json.dumps(plan, ensure_ascii=False)))
+    issues: list[dict[str, str]] = []
+    def add(level: str, code: str, message: str) -> None:
+        issues.append({"level": level, "code": code, "message": message})
+
+    if len(checked.get("alternative_directions", [])) < 2:
+        add("warning", "ALT_DIRECTIONS", "备选故事方向少于两个；尚未满足多方向创作要求。")
+
+    character_names = {
+        str(item.get("name", "")).strip()
+        for item in checked.get("characters", [])
+        if isinstance(item, dict) and str(item.get("name", "")).strip()
+    }
+    seen_scene_locations: dict[str, str] = {}
+    total_seconds = 0
+    for number, shot in enumerate(checked.get("storyboard", []), 1):
+        total_seconds += int(shot.get("duration_seconds", 0))
+        if not str(shot.get("shot_type", "")).strip():
+            add("warning", "SHOT_TYPE", f"第{number}镜缺少景别/镜头运动。")
+        if not str(shot.get("generation_prompt", "")).strip():
+            add("warning", "GENERATION_PROMPT", f"第{number}镜缺少可执行的生成提示。")
+        if not str(shot.get("product_integration", "")).strip():
+            add("warning", "PRODUCT_INTEGRATION", f"第{number}镜未说明商品是否出现及如何融入剧情。")
+        shot_characters = [str(x).strip() for x in shot.get("characters", []) if str(x).strip()]
+        for name in shot_characters:
+            if character_names and name not in character_names:
+                add("warning", "UNKNOWN_CHARACTER", f"第{number}镜出现人物“{name}”，但人物表中没有对应设定。")
+        scene = str(shot.get("scene", "")).strip()
+        location = str(shot.get("location", "")).strip()
+        if scene and location:
+            previous = seen_scene_locations.get(scene)
+            if previous and previous != location:
+                add("warning", "SCENE_CONTINUITY", f"场景“{scene}”在分镜中对应不同地点（“{previous}”/“{location}”），请确认是有意变化还是连续性错误。")
+            else:
+                seen_scene_locations[scene] = location
+
+    if total_seconds <= 0:
+        add("error", "DURATION", "分镜总时长无效。")
+    if total_seconds > 180:
+        add("warning", "LONG_RUNTIME", f"当前分镜合计约{total_seconds}秒，请确认这符合本次短剧投放时长目标。")
+
+    content_parts: list[str] = [
+        str(checked.get("full_script", "")),
+        str(checked.get("conflict_and_reversal", "")),
+        str(checked.get("ending", "")),
+    ]
+    for shot in checked.get("storyboard", []):
+        content_parts.extend(str(shot.get(key, "")) for key in ("action", "dialogue", "product_integration", "generation_prompt"))
+    script_text = "\\n".join(content_parts)
+    risky_claims = [
+        ("绝对化/极限词", ("百分百", "100%", "第一", "最强", "顶级", "唯一", "绝对", "保证有效", "永久有效")),
+        ("医疗/健康功效表述", ("根治", "治愈", "无副作用", "包治", "降血糖", "抗癌")),
+        ("安全保证表述", ("零风险", "绝对安全", "完全无害")),
+    ]
+    for category, terms in risky_claims:
+        matched = [term for term in terms if term in script_text]
+        if matched:
+            add("warning", "AD_CLAIM_REVIEW", f"检测到可能需要广告合规人工复核的{category}词语：{'、'.join(matched)}。该提示不等同于法律结论。")
+
+    material = product_material or {}
+    def flatten(value: Any) -> list[str]:
+        if isinstance(value, dict):
+            result: list[str] = []
+            for key, item in value.items():
+                result.extend(flatten(item))
+            return result
+        if isinstance(value, (list, tuple, set)):
+            result = []
+            for item in value:
+                result.extend(flatten(item))
+            return result
+        if isinstance(value, (str, int, float)) and str(value).strip():
+            return [str(value).strip()]
+        return []
+    trusted_text = " ".join(flatten(material))
+    for truth in checked.get("product_truths", []):
+        claim = str(truth).strip()
+        if claim and trusted_text and claim not in trusted_text:
+            add("warning", "PRODUCT_TRUTH_UNVERIFIED", f"商品事实“{claim}”未在当前商品资料中找到直接对应文本，请人工核实。")
+        elif claim and not trusted_text:
+            add("warning", "PRODUCT_MATERIAL_EMPTY", "当前没有可供比对的商品资料，商品事实无法自动核验。")
+            break
+
+    counts: dict[str, int] = {}
+    for issue in issues:
+        counts[issue["level"]] = counts.get(issue["level"], 0) + 1
+    return {
+        "passed": not any(issue["level"] == "error" for issue in issues),
+        "status": "需人工复核" if issues else "规则检查未发现问题",
+        "total_duration_seconds": total_seconds,
+        "issue_count": len(issues),
+        "counts": counts,
+        "issues": issues,
+        "limitations": [
+            "本报告是确定性规则检查，不等于AI语义审查或法律意见。",
+            "人物/场景一致性只能检查可结构化的信息，不能保证生成画面身份完全一致。",
+            "商品事实未在资料中逐字匹配时只标记待核实，不直接判定为虚假。"
+        ],
+    }
