@@ -381,19 +381,31 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertEqual(task["status"], "AI补镜头生成失败")
         self.assertFalse(task.get("accepted_into_storyboard", False))
 
-    def test_hybrid_generated_shot_requires_human_review_before_acceptance(self):
+    def test_hybrid_generated_shot_requires_review_and_valid_media_before_acceptance(self):
         from ad_studio.models import Shot, accept_hybrid_generated_shot
-        shots = [Shot(id="shot-01", index=1, title="原镜头", visual="商品", script="")]
-        task = {
-            "task_id": "gap-1", "generated_path": "/tmp/gap.mp4",
-            "review_status": "待复核", "need": "通用辅助画面",
-        }
-        with self.assertRaises(ValueError):
-            accept_hybrid_generated_shot(task, shots)
-        task["review_status"] = "已通过"
-        updated = accept_hybrid_generated_shot(task, shots)
-        self.assertEqual(updated[-1].storyboard_review, "已通过")
-        self.assertTrue(task["accepted_into_storyboard"])
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            output = root / "gap.mp4"
+            shots = [Shot(id="shot-01", index=1, title="原镜头", visual="商品", script="")]
+            task = {
+                "task_id": "gap-1", "generated_path": str(output),
+                "review_status": "待复核", "need": "通用辅助画面",
+                "generation_provider": "测试Provider", "generation_cost_rmb": 0.72,
+            }
+            with self.assertRaisesRegex(ValueError, "人工复核通过"):
+                accept_hybrid_generated_shot(task, shots)
+            task["review_status"] = "已通过"
+            with self.assertRaisesRegex(ValueError, "不存在"):
+                accept_hybrid_generated_shot(task, shots)
+            output.write_bytes(b"")
+            with self.assertRaisesRegex(ValueError, "为空"):
+                accept_hybrid_generated_shot(task, shots)
+            output.write_bytes(b"valid-video")
+            updated = accept_hybrid_generated_shot(task, shots)
+            self.assertEqual(updated[-1].storyboard_review, "已通过")
+            self.assertEqual(updated[-1].provider, "测试Provider")
+            self.assertEqual(updated[-1].actual_cost_rmb, 0.72)
+            self.assertTrue(task["accepted_into_storyboard"])
 
     def test_reviewed_hybrid_task_persists_into_project(self):
         with tempfile.TemporaryDirectory() as td:
@@ -403,14 +415,16 @@ class DesktopCoreTests(unittest.TestCase):
                 "task_id": "GAP-PERSIST-1",
                 "generated_path": str(Path(td) / "support.mp4"),
                 "review_status": "已通过",
-                "estimated_cost_rmb": 0.72,
-                "provider": "测试Provider",
+                "generation_cost_rmb": 0.72,
+                "generation_provider": "测试Provider",
                 "target_shot_index": 2,
             }
             Path(task["generated_path"]).write_bytes(b"fake-video")
             accepted = store.accept_hybrid_generated_task(p, task)
             self.assertIsNotNone(accepted)
             self.assertTrue(task["accepted_into_storyboard"])
+            self.assertEqual(accepted.provider, "测试Provider")
+            self.assertEqual(accepted.actual_cost_rmb, 0.72)
             self.assertEqual(len(p.shots), 6)
             self.assertTrue(any(s.id == task["accepted_shot_id"] for s in p.shots))
             restored = store.load(p.id)
