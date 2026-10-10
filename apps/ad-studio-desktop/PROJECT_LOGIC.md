@@ -1051,3 +1051,6 @@ estimate_asset_generation 使用 AssetGenerator 的 CapabilityRouter 结果决�
 
 ## 2026-10-11：批量生成汇总计数语义
 `batch_generate_variants()` 的 `failed` 列表不只包含镜头生成失败，也可能包含最终成片组装和方案状态保存失败，因此汇总字段必须叫“失败项”，不能叫“失败镜头”。回归测试锁定该显示语义。
+
+## 2026-10-11：单版本最终成片失败后的状态同步
+`App.final_render()` 捕获成片组装、媒体检查或清单写入等异常时，必须先将主界面 `detail` 更新为“最终成片生成失败：原因”，再显示错误弹窗。避免仅弹窗报错而主界面状态仍显示旧结果。`test_desktop.py` 新增 AST 契约测试。
