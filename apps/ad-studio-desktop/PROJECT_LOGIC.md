@@ -1101,3 +1101,10 @@ estimate_asset_generation 使用 AssetGenerator 的 CapabilityRouter 结果决�
 - `ProductionStore._record_actual_cost()` 在第一次追加生产账本记录前，先根据项目累计值减去已有账本汇总计算基线，并先保存项目，再写账本。这样即使进程在账本追加后、项目新累计值保存前退出，恢复时仍能重建总额。
 - 有基线的项目总额统一为“基线 + 账本累计估算”；没有基线的旧项目继续使用 `max(项目缓存, 账本合计)` 的保守兼容策略，避免对旧数据做无法证明的重算。
 - 回归测试 `test_first_ledger_charge_preserves_legacy_project_cost` 覆盖旧项目已有 ¥0.50、首次账本新费用 ¥0.23，恢复后总额仍为 ¥0.73。
+
+## 视频 Provider 失败尝试的费用记录
+- `ProductionStore._render_with_provider()` 在进入 `provider.generate()` 前标记外部调用已开始。此后若调用超时、输出无效或原子替换失败，且成功费用记录尚未完成，则按 Provider 配置单价追加一条 `status=failed` 的生产账本记录。
+- 失败记录包含错误说明，明确提示是否实际计费必须以供应商账单核对。费用汇总会纳入该条非零估算，因此预算采取保守口径，避免失败请求被误当作零成本。
+- 若异常发生在 Provider 调用开始前（例如本地素材解析失败），不追加视频调用费用。
+- 新增回归测试 `test_failed_video_provider_attempt_is_recorded_as_estimated_cost`，验证超时失败会产生一条失败账本记录、项目累计估算费用正确，且不会伪装为成功。
+- 该账本是本地估算记录；供应商实际扣费状态、异步任务最终计费和退款仍需独立账单核对。
