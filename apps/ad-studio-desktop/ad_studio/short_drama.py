@@ -71,7 +71,7 @@ def build_short_drama_prompt(product: dict[str, Any], constraints: dict[str, Any
     }
     return (
         "你是独立的AI短剧编剧、导演和商业叙事设计师。当前任务是创作完整短剧，"
-        "不是把常规广告脚本扩写成几个镜头。必须先理解商品与目标人群，再自主选择最合适的故事机制。\n"
+        "不是把常规广告脚本扩写成几个镜头。必须先理解用户选择的创作目标、已有素材和目标受众（如适用），再自主选择最合适的故事机制。\n"
         "要求：\n"
         "0. 先严格识别 constraints.drama_business_mode：general=通用AI短剧，允许完全不带商品；product_placement=商品植入短剧，商品自然参与剧情但不能挤压故事；product_conversion=商品转化短剧，剧情服务于指定商品的目标人群与转化目标。不得把三种模式混为一谈。\n"
         "0.1 通用AI短剧不要求必须出现商品；如果没有商品资料，不得编造商品，分镜 product_integration 应写明“不适用”或“本镜不出现商品”。若用户提供商品，也只在剧情合理且用户选择允许时使用。\n"
