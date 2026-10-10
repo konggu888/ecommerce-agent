@@ -1032,3 +1032,8 @@ estimate_asset_generation 使用 AssetGenerator 的 CapabilityRouter 结果决�
 - final_output_history() 在每次读取历史时重新检查 output_path 是否指向存在且非空的普通文件；历史记录虽保存“可交付”，但文件缺失、为空或变成目录时，返回给 UI 的状态会即时降为“不可交付”，并附上 recovery_reason。
 - 读取时的即时状态用于避免“可交付 + 文件不存在”的矛盾显示，不负责持久化项目 JSON；打开项目时 recover_project() 会将修正后的状态保存回历史。
 - 回归测试覆盖正常文件、删除文件、路径变成目录；这不是 Windows 权限/磁盘故障的现场验收。
+
+
+## A26 交付历史 UI 失效原因可见性（2026-10-10）
+- 最终交付中心历史表将 final_output_history() 返回的 recovery_reason 显示在“失效原因”列，并与交付状态、文件存在性、输出路径并列展示。
+- 这让即时检测出的“不可交付”状态带有可理解原因；空原因表示该历史条目当前没有检测到恢复原因。测试通过 AST 契约检查 UI 读取字段与列定义。
