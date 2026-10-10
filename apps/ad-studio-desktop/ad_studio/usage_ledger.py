@@ -4,6 +4,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 import json
+import os
+import tempfile
 import uuid
 
 
@@ -17,15 +19,63 @@ class UsageLedger:
     def __init__(self, path: Path):
         self.path = path
         self.path.parent.mkdir(parents=True, exist_ok=True)
+        self.last_load_warning = ""
 
     def _load(self) -> list[dict[str, Any]]:
         if not self.path.exists():
             return []
         try:
             value = json.loads(self.path.read_text(encoding="utf-8"))
-            return value if isinstance(value, list) else []
-        except Exception:
+        except (OSError, json.JSONDecodeError) as exc:
+            # Never silently treat a damaged ledger as empty: preserve the original
+            # bytes before allowing a new ledger to be written.
+            stamp = datetime.now().strftime("%Y%m%d-%H%M%S-%f")
+            backup = self.path.with_name(f"{self.path.name}.corrupt-{stamp}")
+            try:
+                self.path.replace(backup)
+            except OSError as move_exc:
+                raise RuntimeError(
+                    f"成本账本无法读取，且无法安全保留损坏文件：{self.path} ({move_exc})"
+                ) from exc
+            self.last_load_warning = f"成本账本格式/读取异常，原文件已保留为：{backup}；原因：{exc}"
             return []
+        if not isinstance(value, list) or any(not isinstance(row, dict) for row in value):
+            stamp = datetime.now().strftime("%Y%m%d-%H%M%S-%f")
+            backup = self.path.with_name(f"{self.path.name}.corrupt-{stamp}")
+            try:
+                self.path.replace(backup)
+            except OSError as exc:
+                raise RuntimeError(
+                    f"成本账本结构异常，且无法安全保留损坏文件：{self.path} ({exc})"
+                ) from exc
+            self.last_load_warning = f"成本账本结构异常，原文件已保留为：{backup}"
+            return []
+        return value
+
+    def _save(self, rows: list[dict[str, Any]]) -> None:
+        """Atomically replace the ledger so an interrupted write cannot truncate history."""
+        temp_path = None
+        try:
+            with tempfile.NamedTemporaryFile(
+                mode="w",
+                encoding="utf-8",
+                newline="",
+                dir=self.path.parent,
+                prefix=f".{self.path.name}.",
+                suffix=".tmp",
+                delete=False,
+            ) as stream:
+                temp_path = Path(stream.name)
+                json.dump(rows, stream, ensure_ascii=False, indent=2)
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.replace(temp_path, self.path)
+        finally:
+            if temp_path is not None:
+                try:
+                    temp_path.unlink(missing_ok=True)
+                except OSError:
+                    pass
 
     def record(
         self,
@@ -73,7 +123,7 @@ class UsageLedger:
         }
         rows = self._load()
         rows.append(item)
-        self.path.write_text(json.dumps(rows, ensure_ascii=False, indent=2), encoding="utf-8")
+        self._save(rows)
         return item
 
     def record_asset(
