@@ -1,4 +1,6 @@
 import unittest
+import tempfile
+from pathlib import Path
 """实拍缺口混合路由回归测试。"""
 from ad_studio.hybrid_router import route_footage_gap_tasks
 
@@ -223,21 +225,26 @@ class HybridAcceptanceGateTests(unittest.TestCase):
 
     def test_reviewed_gap_is_inserted_once_and_reindexed(self):
         from ad_studio.models import Shot, accept_hybrid_generated_shot
-        shots = [
-            Shot(id="shot-01", index=1, title="1", visual="", script=""),
-            Shot(id="shot-02", index=2, title="2", visual="", script=""),
-        ]
-        task = {
-            "task_id": "GAP-ACCEPT-2",
-            "generated_path": "/tmp/generated.mp4",
-            "review_status": "已通过",
-            "estimated_cost_rmb": 1,
-            "target_shot_index": 2,
-            "provider": "测试Provider",
-        }
-        accept_hybrid_generated_shot(task, shots)
-        self.assertEqual([s.id for s in shots], ["shot-01", "hybrid-GAP-ACCEPT-2-v1", "shot-02"])
-        self.assertEqual([s.index for s in shots], [1, 2, 3])
-        self.assertTrue(task["accepted_into_storyboard"])
-        accept_hybrid_generated_shot(task, shots)
-        self.assertEqual([s.id for s in shots], ["shot-01", "hybrid-GAP-ACCEPT-2-v1", "shot-02"])
+        with tempfile.TemporaryDirectory() as td:
+            output = Path(td) / "generated.mp4"
+            output.write_bytes(b"valid-video")
+            shots = [
+                Shot(id="shot-01", index=1, title="1", visual="", script=""),
+                Shot(id="shot-02", index=2, title="2", visual="", script=""),
+            ]
+            task = {
+                "task_id": "GAP-ACCEPT-2",
+                "generated_path": str(output),
+                "review_status": "已通过",
+                "generation_cost_rmb": 1,
+                "target_shot_index": 2,
+                "generation_provider": "测试Provider",
+            }
+            accept_hybrid_generated_shot(task, shots)
+            self.assertEqual([s.id for s in shots], ["shot-01", "hybrid-GAP-ACCEPT-2-v1", "shot-02"])
+            self.assertEqual([s.index for s in shots], [1, 2, 3])
+            self.assertEqual(shots[1].provider, "测试Provider")
+            self.assertEqual(shots[1].actual_cost_rmb, 1)
+            self.assertTrue(task["accepted_into_storyboard"])
+            accept_hybrid_generated_shot(task, shots)
+            self.assertEqual([s.id for s in shots], ["shot-01", "hybrid-GAP-ACCEPT-2-v1", "shot-02"])
