@@ -64,6 +64,8 @@ class Project:
     cost_estimate: dict = field(default_factory=dict)
     actual_cost_rmb: float = 0.0
     actual_cost_summary: dict = field(default_factory=dict)
+    # Legacy costs that predate the append-only production ledger; persisted before the first new ledger append.
+    legacy_cost_baseline_rmb: Optional[float] = None
     product_info: dict = field(default_factory=dict)
     creative_plan: dict = field(default_factory=dict)
     footage_folder: Optional[str]=None
