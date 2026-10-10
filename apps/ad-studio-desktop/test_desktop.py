@@ -1321,6 +1321,22 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertIn("def add_button_row", ui_source)
 
 
+    def test_reopening_project_runs_local_recovery_and_surfaces_findings(self):
+        app_path = Path(__file__).parent / "ad_studio" / "app.py"
+        source = app_path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        load_method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "load_project")
+        load_source = ast.get_source_segment(source, load_method)
+        self.assertIn("self.store.recover_project(project)", load_source)
+        self.assertIn("recovery.get('removed_temp_files')", load_source)
+        self.assertIn("recovery.get('missing_media')", load_source)
+        self.assertIn("recovery.get('invalid_outputs')", load_source)
+        self.assertIn("恢复检查：", load_source)
+        self.assertLess(load_source.index("self.store.recover_project(project)"), load_source.index("self._restore_loaded_variant_state()"))
+        self.assertIn("does not call a provider", load_source)
+
+
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.
