@@ -1108,3 +1108,9 @@ estimate_asset_generation 使用 AssetGenerator 的 CapabilityRouter 结果决�
 - 若异常发生在 Provider 调用开始前（例如本地素材解析失败），不追加视频调用费用。
 - 新增回归测试 `test_failed_video_provider_attempt_is_recorded_as_estimated_cost`，验证超时失败会产生一条失败账本记录、项目累计估算费用正确，且不会伪装为成功。
 - 该账本是本地估算记录；供应商实际扣费状态、异步任务最终计费和退款仍需独立账单核对。
+
+## 云端素材失败尝试与本地入库错误
+- `ProductionStore.resolve_assets()` 在云端路由、有效单价大于零且生成请求抛错时，追加 `status=failed` 的素材费用估算；错误信息明确要求以供应商账单核实是否实际计费。路由为本地或价格为零时不虚构云端费用。
+- 素材 Provider 已成功返回后，先记录成功生成费用，再写本地素材库。这样即使后续本地目录/JSON 写入失败，也不会把已完成的云端生成算成零成本。
+- 新增 `test_failed_cloud_asset_attempt_is_recorded_as_estimated_cost`，模拟云端素材 Provider 超时并检查失败记录、单价估算与账单核对提示。
+- 该机制只覆盖 `resolve_assets()` 的自动补素材路径；`generate_missing_asset()` 的独立入口仍需单独审查其失败费用路径，真实供应商账单/退款仍需外部核对。
