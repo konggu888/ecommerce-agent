@@ -227,3 +227,12 @@ undefined
 - 已同步 HELP.md、PROJECT_LOGIC.md、AD_STUDIO_ACCEPTANCE_PLAN.md、AD_STUDIO_ACCEPTANCE_SOP.md 与本快照。
 - 零预算闸门修复提交 826b46120f8a8c42c687ee07de58a126fbfb6f34 已通过 CI #1050 与 docs-sync #806。此次交接快照自身是后续文档提交，必须再实时查询其对应 CI/doc-sync，不能直接继承前一提交的绿灯。
 - 下一步：先查当前 PR HEAD 对应 CI/doc-sync，若失败先读日志修复；通过后继续检查 UI 入口、取消反馈、错误提示和项目重开恢复。PR #18 不得合并；Windows 真机/真实 Provider/计费继续暂缓。
+
+
+## 2026-10-10 工作单元：项目重开自动执行本地恢复
+- 复查发现：`ProductionStore.recover_project()` 已实现中断恢复，但桌面“打开已有项目”的回调仅调用 `store.load()`，并未调用恢复逻辑；因此临时文件清理、缺失镜头状态校正和失效成片标记不会在正常重开流程自动执行。
+- 已修复 `apps/ad-studio-desktop/ad_studio/app.py`：打开项目后先执行 `recover_project(project)`，再恢复当前方案运行态；主界面提示清理临时文件、缺失镜头、失效成片数量，无异常时也显示检查完成。
+- 新增 `test_desktop.py` 接线回归，检查打开项目路径调用恢复函数、三类恢复结果均反馈到 UI，且恢复先于方案运行态恢复。
+- 已同步 HELP.md、PROJECT_LOGIC.md 与本交接快照。
+- 本地恢复仅处理磁盘文件与项目 JSON，不调用 Provider/云端生成、不发布。
+- 下一步：核验最新 PR HEAD 的 CI 与 doc-sync；失败则读取日志并修复。通过后继续检查打开项目的损坏 JSON/恢复异常反馈、最终交付历史状态与其他 UI 入口。Windows 真机、真实 Provider/计费、剪映和 B1–B3 继续暂缓；PR #18 不得合并。
