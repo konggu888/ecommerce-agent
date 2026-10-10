@@ -164,3 +164,7 @@ CI 还会运行前端语法、Python 语法、Typecheck、Engine 和 Risk Contro
 - 新增回归测试：模拟 FFmpeg 拼接创建部分文件后抛错，验证 MP4/JSON 和历史记录均不残留；工作模式测试检查批量交付逐方案隔离、最终恢复/保存路径，以及预算拒绝和云端授权拒绝必须早于镜头生成调用。
 - 预算拒绝与云端授权拒绝路径仍要求“不调用生成服务”；云端授权只对能力路由判定需要云端的任务触发。真实 Provider 计费/授权验证未在本轮执行。
 - 验收状态：代码级修复与新增回归测试已通过最新提交 CI（Desktop Python syntax、Desktop core tests、Typecheck、Engine、Risk Controller）及 docs-sync。此前中间提交出现一条旧的工作模式测试断言失败，已按兼容契约修复后重跑通过；不把旧失败记录当作当前 HEAD 失败。Windows 真机、真实 FFmpeg 成片链路、真实 Provider/云端授权仍暂缓，不得将离线测试标记为真机通过。
+
+## 2026-10-11：最终输出历史与恢复的文件系统异常容错
+- `ProductionStore` 使用 `_is_nonempty_file()` 统一处理文件状态检查；`is_file()` 与 `stat()` 之间发生文件消失/权限变化时，按不可用处理而非让交付中心或项目恢复抛出异常。
+- 自动化测试模拟 `PermissionError` 并覆盖 `final_output_history()` 与 `recover_project()`。此结果只证明模拟文件系统异常路径，不代表 Windows 实际权限/外接盘/网络盘验收通过。
