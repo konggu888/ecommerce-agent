@@ -1347,6 +1347,20 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(row["delivery_status"], "不可交付")
             self.assertFalse(row["exists"])
 
+    def test_final_delivery_center_surfaces_initial_and_retry_check_errors(self):
+        app_path = Path(__file__).parent / "ad_studio" / "app.py"
+        source = app_path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "final_delivery_center")
+        method_source = ast.get_source_segment(source, method)
+        self.assertIn("try:\\n            result=self._run_final_delivery_recheck()", method_source)
+        self.assertIn("最终交付检查失败", method_source)
+        self.assertIn("except Exception as exc:", method_source)
+        self.assertIn("status.set('🔴 检查失败')", method_source)
+        self.assertIn("parent=win", method_source)
+        self.assertIn("请检查项目文件、成片路径和磁盘权限后重试", method_source)
+
     def test_final_delivery_history_ui_displays_invalid_output_reason(self):
         app_path = Path(__file__).parent / "ad_studio" / "app.py"
         source = app_path.read_text(encoding="utf-8")
