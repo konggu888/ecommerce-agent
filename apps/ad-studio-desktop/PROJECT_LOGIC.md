@@ -1114,3 +1114,9 @@ estimate_asset_generation 使用 AssetGenerator 的 CapabilityRouter 结果决�
 - 素材 Provider 已成功返回后，先记录成功生成费用，再写本地素材库。这样即使后续本地目录/JSON 写入失败，也不会把已完成的云端生成算成零成本。
 - 新增 `test_failed_cloud_asset_attempt_is_recorded_as_estimated_cost`，模拟云端素材 Provider 超时并检查失败记录、单价估算与账单核对提示。
 - 该机制只覆盖 `resolve_assets()` 的自动补素材路径；`generate_missing_asset()` 的独立入口仍需单独审查其失败费用路径，真实供应商账单/退款仍需外部核对。
+
+## 独立素材生成入口费用保护
+- `ProductionStore.generate_missing_asset()` 对云端素材调用增加失败费用记录：当 Provider 调用抛出异常且配置单价大于零时，追加 `status=failed` 的估算记录，错误中提示实际扣费需以供应商账单核对。
+- Provider 成功返回后，先将费用写入生产账本，再执行本地素材注册，避免本地库写入失败导致已完成的云端生成被漏记。
+- 新增 `test_failed_standalone_cloud_asset_attempt_is_recorded_as_estimated_cost`，覆盖独立入口超时失败的费用估算、失败状态和账单核对提示。
+- 该入口和 `resolve_assets()` 的失败估算均是预算保护估算，不等于供应商确认扣款；异步任务、退款与真实账单仍需核验。
