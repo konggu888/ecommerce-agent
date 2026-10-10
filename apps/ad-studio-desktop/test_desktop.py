@@ -317,6 +317,35 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(shot.video_path, str(output))
             self.assertEqual(shot.status, "生成失败（已保留上一版本）")
 
+    def test_failed_video_provider_attempt_is_recorded_as_estimated_cost(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 1, "真人口播")
+            shot = project.shots[0]
+            store.resolve_assets = lambda _project, _shot: None
+
+            class Provider:
+                provider_name = "失败测试Provider"
+                cost_per_shot_rmb = 0.72
+
+                def generate(self, request):
+                    raise TimeoutError("provider timed out after request submission")
+
+            with self.assertRaisesRegex(RuntimeError, "生成失败"):
+                store._render_with_provider(project, shot, Provider())
+
+            summary = store.ledger.project_summary(project.id)
+            self.assertEqual(summary["entries"], 1)
+            self.assertEqual(summary["failed"], 1)
+            self.assertEqual(summary["success"], 0)
+            self.assertAlmostEqual(summary["estimated_cost_rmb"], 0.72, places=6)
+            self.assertAlmostEqual(project.actual_cost_rmb, 0.72, places=6)
+            entry = next(x for x in store.ledger.all_entries() if x["project_id"] == project.id)
+            self.assertEqual(entry["status"], "failed")
+            self.assertIn("是否实际计费需以供应商账单核对", entry["error"])
+            self.assertEqual(shot.status, "生成失败")
+
     def test_only_selected_shot_changes_version(self):
         p = new_project("https://item.jd.com/123.html", 2, "真人口播")
         old = [s.version for s in p.shots]
