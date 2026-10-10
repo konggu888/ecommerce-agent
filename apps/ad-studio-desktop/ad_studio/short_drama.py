@@ -13,7 +13,8 @@ SHORT_DRAMA_SCHEMA = {
     "format_mode": "single_episode / continuous_series / anthology_series",
     "episode_count": "integer",
     "series_bible": {"series_arc": "全剧主线", "character_state": "人物长期状态与关系", "continuity_rules": ["跨集必须保持的事实"]},
-    "episodes": [{"episode_number": "integer", "title": "集名", "logline": "本集梗概", "plot_beats": ["本集节拍"], "ending_hook": "本集结尾/悬念", "full_script": "本集完整剧本", "storyboard": ["本集分镜，字段与根级 storyboard 相同"]}],
+    "episodes": [{"episode_number": "integer", "title": "集名", "logline": "本集梗概", "plot_beats": ["本集节拍"], "ending_hook": "本集结尾/悬念", "full_script": "本集完整剧本", "continuity_state": {"opening_state": "本集开始时承接的剧情/人物状态", "character_state_changes": ["本集人物状态或关系的变化"], "unresolved_threads": ["本集结束后仍未解决的悬念/冲突"], "ending_state": "本集结束时可供后续承接的事实状态", "next_episode_requirements": ["下一集必须承接的事件/事实；最终集可为空列表"]}, "storyboard": ["本集分镜，字段与根级 storyboard 相同"]}],
+    "continuity_ledger": [{"episode_number": "integer", "opening_state": "承接状态", "character_state_changes": ["人物状态变化"], "unresolved_threads": ["未解决线索"], "ending_state": "集末状态", "next_episode_requirements": ["下一集承接要求"]}],
     "drama_business_mode": "通用AI短剧/商品植入短剧/商品转化短剧",
     "genre": "AI根据创作目标、人群、卖点和场景自主判断的短剧题材",
     "genre_reasoning": "为什么该题材适合这个商品与目标受众",
@@ -93,6 +94,33 @@ def build_short_drama_prompt(product: dict[str, Any], constraints: dict[str, Any
     )
 
 
+def build_episode_continuity_ledger(plan: dict[str, Any]) -> list[dict[str, Any]]:
+    """Return an ordered, JSON-safe continuity ledger from per-episode state declarations."""
+    episodes = plan.get("episodes")
+    if not isinstance(episodes, list):
+        return []
+    ledger: list[dict[str, Any]] = []
+    for position, episode in enumerate(episodes, 1):
+        if not isinstance(episode, dict):
+            continue
+        state = episode.get("continuity_state")
+        if not isinstance(state, dict):
+            state = {}
+        try:
+            number = int(episode.get("episode_number", position))
+        except (TypeError, ValueError):
+            number = position
+        ledger.append({
+            "episode_number": number,
+            "opening_state": str(state.get("opening_state", "")).strip(),
+            "character_state_changes": [str(x).strip() for x in state.get("character_state_changes", []) if str(x).strip()] if isinstance(state.get("character_state_changes", []), list) else [],
+            "unresolved_threads": [str(x).strip() for x in state.get("unresolved_threads", []) if str(x).strip()] if isinstance(state.get("unresolved_threads", []), list) else [],
+            "ending_state": str(state.get("ending_state", "")).strip(),
+            "next_episode_requirements": [str(x).strip() for x in state.get("next_episode_requirements", []) if str(x).strip()] if isinstance(state.get("next_episode_requirements", []), list) else [],
+        })
+    return ledger
+
+
 def validate_short_drama(raw: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(raw, dict):
         raise ShortDramaPlanError("AI短剧编导没有返回JSON对象。")
@@ -152,6 +180,22 @@ def validate_short_drama(raw: dict[str, Any]) -> dict[str, Any]:
         actual = [int(e.get("episode_number", i)) for i, e in enumerate(episodes, 1) if isinstance(e, dict)]
         if actual != expected:
             raise ShortDramaPlanError("分集编号必须从第1集开始连续递增，不能缺集或重复。")
+        for episode in episodes:
+            state = episode.get("continuity_state")
+            number = episode["episode_number"]
+            if not isinstance(state, dict):
+                raise ShortDramaPlanError(f"第{number}集缺少跨集连续性状态 continuity_state。")
+            for field in ("opening_state", "character_state_changes", "unresolved_threads", "ending_state", "next_episode_requirements"):
+                if field not in state:
+                    raise ShortDramaPlanError(f"第{number}集连续性状态缺少字段 {field}。")
+            if not str(state.get("opening_state", "")).strip():
+                raise ShortDramaPlanError(f"第{number}集必须说明开集承接状态。")
+            if not str(state.get("ending_state", "")).strip():
+                raise ShortDramaPlanError(f"第{number}集必须说明集末人物/剧情状态。")
+            for field in ("character_state_changes", "unresolved_threads", "next_episode_requirements"):
+                if not isinstance(state.get(field), list):
+                    raise ShortDramaPlanError(f"第{number}集连续性字段 {field} 必须是列表。")
+        raw["continuity_ledger"] = build_episode_continuity_ledger(raw)
     if not isinstance(raw["characters"], list) or not raw["characters"]:
         raise ShortDramaPlanError("短剧必须至少设计一个人物。")
     if not isinstance(raw["storyboard"], list) or not raw["storyboard"]:
@@ -181,6 +225,8 @@ def validate_short_drama(raw: dict[str, Any]) -> dict[str, Any]:
     for key in ("characters", "plot_beats", "product_truths", "risk_notes", "alternative_directions"):
         if not isinstance(raw[key], list):
             raise ShortDramaPlanError(f"短剧方案字段 {key} 必须是列表。")
+    if raw.get("format_mode") == "single_episode":
+        raw.setdefault("continuity_ledger", build_episode_continuity_ledger(raw))
     return raw
 
 
@@ -319,6 +365,18 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
     for shot in checked.get("storyboard", []):
         content_parts.extend(str(shot.get(key, "")) for key in ("action", "dialogue", "product_integration", "generation_prompt"))
     script_text = "\\n".join(content_parts)
+    ledger = checked.get("continuity_ledger", [])
+    if checked.get("format_mode") != "single_episode":
+        if not isinstance(ledger, list) or len(ledger) != checked.get("episode_count"):
+            add("warning", "CONTINUITY_LEDGER", "跨集连续性台账缺失或集数不完整；后续续写/修改影响分析可能不可靠。")
+        else:
+            for idx, item in enumerate(ledger):
+                if not item.get("opening_state") or not item.get("ending_state"):
+                    add("warning", "EPISODE_CONTINUITY_STATE", f"第{idx + 1}集缺少开集承接或集末状态。")
+                if idx > 0 and checked.get("format_mode") == "continuous_series":
+                    previous = ledger[idx - 1]
+                    if not previous.get("next_episode_requirements"):
+                        add("warning", "NEXT_EPISODE_HANDOFF", f"第{idx}集没有明确下一集必须承接的事项；请人工核对第{idx + 1}集是否延续前情。")
     for note in checked.get("risk_notes", []):
         note_text = str(note).strip()
         if note_text:

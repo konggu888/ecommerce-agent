@@ -2,7 +2,7 @@ import unittest
 
 from ad_studio.short_drama import (
     ShortDramaPlanError, build_short_drama_prompt, generate_short_drama,
-    audit_short_drama, short_drama_production_rows, validate_short_drama,
+    audit_short_drama, build_episode_continuity_ledger, short_drama_production_rows, validate_short_drama,
 )
 
 
@@ -117,6 +117,9 @@ class ShortDramaTests(unittest.TestCase):
         self.assertEqual([x["index"] for x in rows], [1, 2])
         self.assertEqual([x["episode_shot_index"] for x in rows], [1, 1])
         self.assertTrue(rows[1]["title"].startswith("第2集"))
+        self.assertEqual([x["episode_number"] for x in validated["continuity_ledger"]], [1, 2])
+        self.assertIn("匿名便条", validated["continuity_ledger"][0]["ending_state"])
+        self.assertIn("解释便条来源", validated["continuity_ledger"][0]["next_episode_requirements"][0])
 
     def test_general_mode_can_generate_without_product(self):
         seen = {}
@@ -134,6 +137,24 @@ class ShortDramaTests(unittest.TestCase):
         plan = sample_plan()
         plan["drama_business_mode"] = "random_mode"
         with self.assertRaises(ShortDramaPlanError):
+            validate_short_drama(plan)
+
+    def test_builds_continuity_ledger_in_episode_order(self):
+        plan = sample_plan()
+        plan["episodes"] = [
+            {"episode_number": 1, "continuity_state": {"opening_state": "A", "character_state_changes": ["B"], "unresolved_threads": ["C"], "ending_state": "D", "next_episode_requirements": ["E"]}},
+            {"episode_number": 2, "continuity_state": {"opening_state": "D", "character_state_changes": [], "unresolved_threads": [], "ending_state": "F", "next_episode_requirements": []}},
+        ]
+        ledger = build_episode_continuity_ledger(plan)
+        self.assertEqual([row["episode_number"] for row in ledger], [1, 2])
+        self.assertEqual(ledger[1]["opening_state"], "D")
+
+    def test_rejects_multi_episode_plan_without_continuity_state(self):
+        plan = sample_plan()
+        plan["format_mode"] = "continuous_series"
+        plan["episode_count"] = 2
+        plan["episodes"] = [{"episode_number": 1, "storyboard": [dict(plan["storyboard"][0])]}, {"episode_number": 2, "storyboard": [dict(plan["storyboard"][0])]}]
+        with self.assertRaisesRegex(ShortDramaPlanError, "continuity_state"):
             validate_short_drama(plan)
 
     def test_rejects_missing_episode_in_series(self):
