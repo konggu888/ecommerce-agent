@@ -2,7 +2,7 @@ import unittest
 
 from ad_studio.short_drama import (
     ShortDramaPlanError, build_short_drama_prompt, generate_short_drama,
-    short_drama_production_rows, validate_short_drama,
+    audit_short_drama, short_drama_production_rows, validate_short_drama,
 )
 
 
@@ -67,6 +67,28 @@ class ShortDramaTests(unittest.TestCase):
         self.assertEqual(rows[0]["asset_resolution"]["scene_tags"], ["公寓玄关"])
         self.assertEqual(rows[0]["asset_resolution"]["product_tags"], [])
         self.assertEqual(rows[0]["director_mode"], "short_drama")
+
+    def test_audit_flags_ad_claim_and_unknown_character(self):
+        plan = sample_plan()
+        plan["full_script"] = "本产品保证有效，绝对安全。"
+        plan["storyboard"][0]["characters"] = ["未定义人物"]
+        report = audit_short_drama(plan, {"description": "普通日用品"})
+        codes = {item["code"] for item in report["issues"]}
+        self.assertIn("AD_CLAIM_REVIEW", codes)
+        self.assertIn("UNKNOWN_CHARACTER", codes)
+        self.assertEqual(report["status"], "需人工复核")
+        self.assertTrue(report["passed"])
+
+    def test_audit_flags_scene_location_conflict(self):
+        plan = sample_plan()
+        second = dict(plan["storyboard"][0])
+        second["index"] = 2
+        second["location"] = "另一个完全不同的地点"
+        second["scene"] = plan["storyboard"][0]["scene"]
+        plan["storyboard"].append(second)
+        report = audit_short_drama(plan, {"description": "便携商品"})
+        self.assertIn("SCENE_CONTINUITY", {item["code"] for item in report["issues"]})
+        self.assertEqual(report["total_duration_seconds"], 8)
 
     def test_uses_dedicated_route_and_records_function(self):
         seen = {}
