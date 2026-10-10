@@ -269,3 +269,10 @@ undefined
 - 已修正 `app.py` 两条错误提示的换行控制符，并在 `test_desktop.py` 增加契约断言，防止重新出现字面量 `\\n`。
 - 已同步 HELP.md、PROJECT_LOGIC.md、完整验收计划和验收 SOP。当前最新 HEAD 的 CI/doc-sync 仍需重新核验；Windows 弹窗现场验收仍未执行。PR #18 不得合并，Windows 真机/真实 Provider/实际计费/剪映及 B1–B3 继续按用户要求暂缓。
 - 下一步：核对最新 HEAD 的 CI 与 docs-sync；通过后继续复查其他 UI 的取消/失败反馈和交付中心的边界状态。
+
+## 2026-10-11 工作单元：最终交付中心异常反馈
+- 先确认前一提交 `ec2f131e` 的 CI #1075、docs-sync #854 与部署预览均成功。
+- 继续检查最终交付中心，发现初次打开时 `_run_final_delivery_recheck()` 异常没有捕获，窗口内“一键重新检查”异常也会直接退出回调，用户缺少明确原因和下一步建议。
+- 已修复 `app.py`：初始检查失败时显示错误原因并返回；重检失败时状态显示“检查失败”、问题区展示原因、弹出带父窗口的错误提示。已增加 `test_desktop.py` 契约测试，并同步 HELP.md、PROJECT_LOGIC.md、验收计划与 SOP。
+- 最新代码/文档 HEAD 的 CI 和 docs-sync 尚待实时核验；本轮 Windows 真机 UI 仍未验收。PR #18 不得合并；真实 Provider、实际计费、剪映现场与 B1–B3 继续暂缓。
+- 下一步：检查本轮最新 HEAD 的 CI/doc-sync；若通过，继续审查其它 UI 入口的异常反馈和取消后的状态一致性。
