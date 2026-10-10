@@ -208,3 +208,6 @@ CI 还会运行前端语法、Python 语法、Typecheck、Engine 和 Risk Contro
 
 ## 费用恢复补充：旧项目基线
 旧项目可能有成本账本上线前的累计费用。第一次追加生产账本费用前，`ProductionStore._record_actual_cost()` 先持久化 `legacy_cost_baseline_rmb`，避免新费用写入后恢复时把历史费用与账本费用混为一个总数。新项目按“历史基线 + 账本汇总”恢复；未初始化基线的旧项目保留兼容策略。`test_first_ledger_charge_preserves_legacy_project_cost` 覆盖历史 ¥0.50 加新费用 ¥0.23 的恢复结果 ¥0.73。请核验最新 HEAD 的 CI/doc-sync/deploy；勿将自动化验证视为供应商对账或 Windows 真机验收。
+
+## 失败的视频调用费用估算
+`ProductionStore._render_with_provider()` 在 Provider 调用开始后若发生超时、空结果或结果交付失败，且尚未成功记录该次费用，会把配置单价写为 `status=failed` 的账本估算，避免预算低估。错误说明必须保留“实际计费需核对供应商账单”的边界。自动化回归测试为 `test_failed_video_provider_attempt_is_recorded_as_estimated_cost`。此项不代表供应商已确认收费；后续仍要审查素材生成失败路径及真实账单/退款对账。
