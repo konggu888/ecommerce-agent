@@ -1348,8 +1348,16 @@ class DesktopCoreTests(unittest.TestCase):
 
             # Simulate a file that still passes is_file() but becomes inaccessible
             # before stat(); the history UI and recovery path must fail closed.
-            with patch.object(Path, "is_file", return_value=True), patch.object(
-                Path, "stat", side_effect=PermissionError("permission denied")
+            original_is_file = Path.is_file
+            original_stat = Path.stat
+            def is_file_with_target_error(path_obj):
+                return True if path_obj == output else original_is_file(path_obj)
+            def stat_with_target_error(path_obj, *args, **kwargs):
+                if path_obj == output:
+                    raise PermissionError("permission denied")
+                return original_stat(path_obj, *args, **kwargs)
+            with patch.object(Path, "is_file", is_file_with_target_error), patch.object(
+                Path, "stat", stat_with_target_error
             ):
                 rows = store.final_output_history(project)
                 self.assertFalse(rows[0]["exists"])
