@@ -193,3 +193,9 @@ CI 还会运行前端语法、Python 语法、Typecheck、Engine 和 Risk Contro
 
 ## 费用汇总审查补充
 项目成本汇总现把已记录的失败阶段非零费用估算纳入总额，因为模型调用可能已产生计费 token 后才在解析阶段失败。成功/失败计数独立计算；actual_cost_rmb 为兼容旧字段保留，不代表供应商已确认扣款。接手时仍须验证最新 HEAD 的测试和 CI。
+
+## 追加工作记录：成本账本金额边界
+
+- `UsageLedger.record()` 已在写入前验证 `estimated_cost_rmb`、`unit_cost_rmb` 为有限非负金额，并统一保留 6 位小数；非法值抛出 `ValueError`，防止污染历史和汇总。
+- 新增 `test_rejects_negative_and_nonfinite_cost_values`，覆盖负数、NaN、正/负无穷以及拒绝写入。
+- 本项必须以最新 HEAD 的 CI、doc-sync 与部署预览为准；供应商账单对账和 Windows 真机测试仍未执行。
