@@ -214,3 +214,6 @@ CI 还会运行前端语法、Python 语法、Typecheck、Engine 和 Risk Contro
 
 ## 云端素材失败费用
 `ProductionStore.resolve_assets()` 已在云端路由且单价有效时，对生成异常记录 `status=failed` 的保守估算，并提示实际扣费需核对供应商账单；生成成功后先记账再写入本地库，避免本地入库失败导致漏记。自动化测试为 `test_failed_cloud_asset_attempt_is_recorded_as_estimated_cost`。下一步需要独立审查 `generate_missing_asset()` 入口及重试/退款路径；不要将估算费用表述为供应商确认账单。
+
+## 独立素材生成入口
+`ProductionStore.generate_missing_asset()` 已补充云端失败费用估算与账单提示，并把成功生成的费用记录移到本地素材注册之前。回归测试为 `test_failed_standalone_cloud_asset_attempt_is_recorded_as_estimated_cost`。该记录用于保守预算管理，不是供应商确认账单；继续检查失败重试、重复账本记录、异步任务与退款的边界。
