@@ -1067,3 +1067,5 @@ estimate_asset_generation 使用 AssetGenerator 的 CapabilityRouter 结果决�
 
 ### AI 补镜头接受闸门与成本归属（新增）
 `models.accept_hybrid_generated_shot()` 是补镜头写入分镜的核心入口：除人工复核状态外，必须验证 `generated_path` 指向可访问、非空的普通文件，遇到 `OSError` 也必须拒绝纳入。UI 复核列表与打开/纳入动作使用相同的 `_is_nonempty_file()` 校验，避免坏文件被展示为可用素材。写入 `Shot` 时，Provider 优先读取 `generation_provider`，实际成本优先读取 `generation_cost_rmb`，兼容旧字段 `provider` / `estimated_cost_rmb`，避免生成费用丢失或归属错误。
+
+测试夹具约束：涉及补镜头接受的测试必须在临时目录创建非空媒体文件，不可依赖 `/tmp/generated.mp4` 等机器外部路径。CI 首轮暴露了旧夹具依赖固定路径的问题，现已改为隔离的临时文件，并同步验证 Provider/成本字段。
