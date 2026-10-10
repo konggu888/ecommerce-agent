@@ -1335,6 +1335,31 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertIn("def add_button_row", ui_source)
 
 
+    def test_final_output_history_and_recovery_tolerate_stat_permission_errors(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 1, "真人口播")
+            output = root / "final-output.mp4"
+            output.write_bytes(b"video")
+            record = {"output_path": str(output), "delivery_status": "可交付"}
+            project.creative_plan["final_output_history_records"] = [record]
+
+            # Simulate a file that still passes is_file() but becomes inaccessible
+            # before stat(); the history UI and recovery path must fail closed.
+            with patch.object(Path, "is_file", return_value=True), patch.object(
+                Path, "stat", side_effect=PermissionError("permission denied")
+            ):
+                rows = store.final_output_history(project)
+                self.assertFalse(rows[0]["exists"])
+                self.assertEqual(rows[0]["delivery_status"], "不可交付")
+                self.assertIn("缺失", rows[0]["recovery_reason"])
+                result = store.recover_project(project)
+
+            self.assertEqual(result["invalid_outputs"], [str(output)])
+            self.assertEqual(record["delivery_status"], "不可交付")
+
     def test_final_output_history_does_not_show_missing_or_empty_file_as_deliverable(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
