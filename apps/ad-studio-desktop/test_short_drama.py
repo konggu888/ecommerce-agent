@@ -2,7 +2,7 @@ import unittest
 
 from ad_studio.short_drama import (
     ShortDramaPlanError, build_short_drama_prompt, generate_short_drama,
-    validate_short_drama,
+    short_drama_production_rows, validate_short_drama,
 )
 
 
@@ -24,6 +24,8 @@ def sample_plan():
             "characters": ["小林"], "action": "主角翻找物品并看向时钟",
             "dialogue": "怎么又找不到了？", "product_integration": "暂不出现",
             "asset_needs": ["演员：年轻上班族", "场景：公寓玄关"],
+            "actor_requirements": ["年轻上班族"], "scene_requirements": ["公寓玄关"],
+            "product_asset_requirements": [],
             "shot_type": "中景推近", "duration_seconds": 4,
             "generation_prompt": "自然光，生活化表演"
         }],
@@ -57,6 +59,14 @@ class ShortDramaTests(unittest.TestCase):
         self.assertIn("测试商品", prompt)
         self.assertIn("已有广告脚本", prompt)
         self.assertIn("不是把常规广告脚本扩写成几个镜头", prompt)
+
+    def test_builds_existing_production_contract(self):
+        rows = short_drama_production_rows(sample_plan(), "测试商品")
+        self.assertEqual(rows[0]["duration_seconds"], 4)
+        self.assertEqual(rows[0]["asset_resolution"]["actor_tags"], ["年轻上班族"])
+        self.assertEqual(rows[0]["asset_resolution"]["scene_tags"], ["公寓玄关"])
+        self.assertEqual(rows[0]["asset_resolution"]["product_tags"], [])
+        self.assertEqual(rows[0]["director_mode"], "short_drama")
 
     def test_uses_dedicated_route_and_records_function(self):
         seen = {}
