@@ -857,3 +857,11 @@ A33 自动化验收分别覆盖电商短视频、商品主图视频、广告投�
 - validate_short_drama 校验字段存在性、状态描述非空和列表类型，并构建按集排序的 continuity_ledger。
 - 连续剧的第 N 集必须在提示词中承接第 N-1 集集末状态及承接要求；复核会提示缺少下一集承接要求的风险。
 - 这属于结构化连续性数据契约和规则提醒，不宣称能自动证明剧情语义完全一致。
+
+
+## 多集短剧跨集连续性数据契约（本轮更新）
+
+- 每个多集 episode 必须含 continuity_state：opening_state、character_state_changes、unresolved_threads、ending_state、next_episode_requirements。
+- validate_short_drama 校验字段存在性、状态描述非空和列表类型，并构建按集排序的 continuity_ledger。
+- 连续剧的第 N 集必须在提示词中承接第 N-1 集集末状态及承接要求；复核会提示缺少下一集承接要求的风险。
+- 这属于结构化连续性数据契约和规则提醒，不宣称能自动证明剧情语义完全一致。
