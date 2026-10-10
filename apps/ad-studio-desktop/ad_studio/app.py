@@ -2180,7 +2180,16 @@ class App(tk.Tk):
             if not sel:return
             project=self.store.load(files[sel[0]].stem)
             if not project:return messagebox.showerror('打开失败','项目文件无法读取。')
-            self.project=project; self._restore_loaded_variant_state(); self.model_router.set_project_context(project.id); self.workflow_mode.set(self._workflow_mode_label(get_project_workflow_mode(project))); self.url.set(''); self.level.set(project.level); self.form.set(project.form); self.refresh_shots(); c=project.cost_estimate; self.cost.set(f"项目预估 ¥{c.get('总计',0):.2f} · 云端 ¥{c.get('云端',0):.2f} · 已保存 {len(project.shots)} 个镜头" if c else f'已保存 {len(project.shots)} 个镜头'); self.detail.set(f'已恢复项目：{project.product_name} · {project.platform} · {project.form}'); win.destroy()
+            # Recover interrupted local work when reopening a project. This is local-only;
+            # it does not call a provider, generate assets, or publish to any platform.
+            recovery=self.store.recover_project(project)
+            self.project=project; self._restore_loaded_variant_state(); self.model_router.set_project_context(project.id); self.workflow_mode.set(self._workflow_mode_label(get_project_workflow_mode(project))); self.url.set(''); self.level.set(project.level); self.form.set(project.form); self.refresh_shots(); c=project.cost_estimate; self.cost.set(f"项目预估 ¥{c.get('总计',0):.2f} · 云端 ¥{c.get('云端',0):.2f} · 已保存 {len(project.shots)} 个镜头" if c else f'已保存 {len(project.shots)} 个镜头')
+            recovery_note=[]
+            if recovery.get('removed_temp_files'): recovery_note.append(f"清理未完成临时文件 {recovery['removed_temp_files']} 个")
+            if recovery.get('missing_media'): recovery_note.append(f"发现缺失镜头 {len(recovery['missing_media'])} 个")
+            if recovery.get('invalid_outputs'): recovery_note.append(f"发现失效成片 {len(recovery['invalid_outputs'])} 个")
+            suffix=('；恢复检查：'+'；'.join(recovery_note)) if recovery_note else '；恢复检查：未发现需要处理的中断文件'
+            self.detail.set(f'已恢复项目：{project.product_name} · {project.platform} · {project.form}{suffix}'); win.destroy()
         ttk.Button(frm,text='打开',command=open_selected).pack(anchor='e')
 
     @ui_action
