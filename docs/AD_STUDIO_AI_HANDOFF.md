@@ -184,3 +184,7 @@ CI 还会运行前端语法、Python 语法、Typecheck、Engine 和 Risk Contro
 
 ## 多方案恢复状态一致性（2026-10-11）
 恢复流程必须同步修复 `project.shots` 与 `creative_plan.variant_shot_cache`。否则当前方案看似恢复成功，之后切换方案会从缓存复活已丢失的 `video_path`。恢复现在统一校验非空普通文件，并修正缓存中的失效路径/状态；A30 回归测试覆盖此路径。补镜头文件接受闸门、Provider/成本归属和可移植测试夹具修复也已提交，最终以最新 HEAD CI/doc-sync/deploy 状态为准。
+
+
+## 最新工作单元：成本账本异常保护
+成本账本 apps/ad-studio-desktop/ad_studio/usage_ledger.py 曾在解析异常时静默返回空列表，可能让后续写入覆盖原历史；直接写账本文件也可能因中断留下截断 JSON。现已加入异常账本隔离（保留原始文件）、原子写入和 UI 警告，并补充回归测试。接手者应先实时核验 PR #18 最新 head、CI、doc-sync、部署预览；不要从本段推断最新 CI 已通过。当前未实现跨进程写锁，且 Windows 现场、真实 Provider/计费、剪映与 B1–B3 继续暂缓；PR #18 不得合并。
