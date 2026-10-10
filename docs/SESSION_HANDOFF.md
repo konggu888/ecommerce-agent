@@ -356,3 +356,9 @@ undefined
 - 新增 `Project.legacy_cost_baseline_rmb`；第一次写入生产账本前先持久化历史费用基线，之后总额按基线 + 账本汇总计算。未带基线的历史项目保留原兼容恢复逻辑。
 - 新增 `test_first_ledger_charge_preserves_legacy_project_cost`，覆盖旧项目 ¥0.50 + 新账本费用 ¥0.23 = ¥0.73，以及重载恢复后仍保持正确。
 - 必须继续以最新 HEAD 的 CI、doc-sync 和 deploy preview 验收；真实供应商账单、Windows 真机中断恢复仍暂缓，PR #18 不得合并。
+
+## 追加工作记录：失败的视频 Provider 调用计入保守费用估算
+- 独立审查发现，视频费用只在 Provider 返回有效文件并完成替换后才写入账本；如果外部调用已经发出后超时或结果无效，可能有供应商费用但本地记录为零。
+- `_record_actual_cost()` 现在支持状态和错误说明；`_render_with_provider()` 在调用开始后发生异常且尚未记成功费用时，会追加 `status=failed` 的单价估算记录，明确说明实际扣费需要核对供应商账单。
+- 新增 `test_failed_video_provider_attempt_is_recorded_as_estimated_cost`，覆盖 ¥0.72 的失败调用、失败状态、费用累计和非成功计数。
+- 注意该策略是预算保护用的保守估算，可能高于最终实际账单；真实供应商账单、退款及异步任务仍需单独核对。PR #18 保持开放，不合并。
