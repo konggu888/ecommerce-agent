@@ -305,3 +305,8 @@ undefined
 - 复查 `batch_generate_variants()` 发现分镜未获批准时，代码正确停止后续方案，但将用户拒绝记录为 `failed`，会把用户控制行为误报成生成故障。
 - 已将该方案记入 `skipped`，汇总增加“跳过项”和“已停止/跳过”明细；真实镜头生成、成片组装和状态保存异常仍归入 `failed`。
 - 扩展 `test_batch_generation_uses_warning_dialog_when_any_step_fails`，锁定用户暂停的分类、计数和提示内容。代码、测试及文档提交后的最新 CI/doc-sync/部署预览必须重新核验；PR #18 不得合并，Windows 真机和真实 Provider/计费继续暂缓。
+
+## 最新推进记录：单镜头输出替换失败保护
+- 独立审查发现 `_render_with_provider()` 先删除正式输出再执行 `replace()`，若替换遇到文件系统错误，会丢失旧成片而 `shot.video_path` 仍指向该路径。
+- 已移除预先删除操作，改由 `Path.replace()` 直接替换；增加回归测试模拟替换失败并验证旧文件内容和路径保留。
+- 自动化测试及最新 HEAD 的 CI/doc-sync 状态仍需本轮提交后核验；Windows 真机、真实 Provider 测试继续暂缓。
