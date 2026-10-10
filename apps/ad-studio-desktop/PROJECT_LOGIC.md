@@ -1088,3 +1088,6 @@ estimate_asset_generation 使用 AssetGenerator 的 CapabilityRouter 结果决�
 - 项目成本汇总按账本中所有记录的 estimated_cost_rmb 汇总，并按类别归集；成功/失败数量单独统计。零费用失败不会凭空增加费用。
 - actual_cost_rmb 是为兼容现有 UI/项目字段保留的历史键名，当前账本无法证明供应商实际扣款，用户侧仍须明确说明这是本机记录/估算而非最终账单。
 
+## 成本账本金额边界
+
+`UsageLedger.record()` 在写入前校验 `estimated_cost_rmb` 与 `unit_cost_rmb`：必须能转换为有限的非负数，统一保留 6 位小数；负数、NaN、正/负无穷或不可转换值均抛出 `ValueError`，不写入账本。这样可避免无效值传播到 JSON 和项目费用汇总。`actual_cost_rmb` 仍为兼容字段，代表本地估算而非供应商对账结果。
