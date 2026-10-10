@@ -90,6 +90,36 @@ class ShortDramaTests(unittest.TestCase):
         self.assertIn("SCENE_CONTINUITY", {item["code"] for item in report["issues"]})
         self.assertEqual(report["total_duration_seconds"], 8)
 
+    def test_accepts_and_flattens_continuous_multi_episode_plan(self):
+        plan = sample_plan()
+        first_shot = dict(plan["storyboard"][0])
+        second_shot = dict(plan["storyboard"][0])
+        second_shot["index"] = 1
+        second_shot["scene"] = "办公室"
+        plan["format_mode"] = "continuous_series"
+        plan["episode_count"] = 2
+        plan["series_bible"] = {"series_arc": "从误会到和解", "continuity_rules": ["主角外观保持一致"]}
+        plan["episodes"] = [
+            {"episode_number": 1, "title": "误会", "logline": "冲突发生", "full_script": "第一集剧本",
+             "plot_beats": ["开场", "冲突", "悬念"], "ending_hook": "主角发现线索", "storyboard": [first_shot]},
+            {"episode_number": 2, "title": "反转", "logline": "线索揭晓", "full_script": "第二集剧本",
+             "plot_beats": ["承接", "反转", "收束"], "ending_hook": "阶段结局", "storyboard": [second_shot]},
+        ]
+        plan["storyboard"] = []
+        validated = validate_short_drama(plan)
+        self.assertEqual([x["episode_number"] for x in validated["storyboard"]], [1, 2])
+        rows = short_drama_production_rows(validated, "测试商品")
+        self.assertEqual([x["episode_number"] for x in rows], [1, 2])
+        self.assertTrue(rows[1]["title"].startswith("第2集"))
+
+    def test_rejects_missing_episode_in_series(self):
+        plan = sample_plan()
+        plan["format_mode"] = "continuous_series"
+        plan["episode_count"] = 2
+        plan["episodes"] = [{"episode_number": 1, "storyboard": [dict(plan["storyboard"][0])]}]
+        with self.assertRaises(ShortDramaPlanError):
+            validate_short_drama(plan)
+
     def test_uses_dedicated_route_and_records_function(self):
         seen = {}
         class FakeRouter:

@@ -1,6 +1,6 @@
 from pathlib import Path
 import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
+from tkinter import ttk, filedialog, messagebox, simpledialog
 import shutil
 import subprocess
 import json
@@ -1919,9 +1919,29 @@ class App(tk.Tk):
         product = dict(self.project.product_info or {})
         if not product:
             return messagebox.showerror('商品资料缺失','当前项目没有可用的商品资料，请重新创建项目或补充商品资料。')
+        mode_choice = simpledialog.askstring(
+            '选择短剧模式',
+            '请选择创作模式：\\n1 = 单集短剧\\n2 = 连续多集（每集承接主线）\\n3 = 系列短剧（共享人物/世界观，每集相对独立）',
+            initialvalue='1', parent=self,
+        )
+        if mode_choice is None:
+            return
+        mode_map = {'1': 'single_episode', '2': 'continuous_series', '3': 'anthology_series'}
+        mode = mode_map.get(mode_choice.strip())
+        if not mode:
+            return messagebox.showerror('模式无效', '请输入 1、2 或 3。')
+        episode_count = 1
+        if mode != 'single_episode':
+            episode_count = simpledialog.askinteger(
+                '设置集数', '请输入总集数（2—50集）：', minvalue=2, maxvalue=50, initialvalue=6, parent=self,
+            )
+            if episode_count is None:
+                return
+        mode_label = {'single_episode': '单集短剧', 'continuous_series': '连续多集短剧', 'anthology_series': '系列短剧'}[mode]
         if not messagebox.askyesno(
             '启动 AI 短剧编导',
-            'AI 将根据当前商品资料独立设计短剧题材、人物关系、剧情冲突/反转、完整剧本和可执行分镜。\\n\\n'
+            f'创作模式：{mode_label}\\n计划集数：{episode_count}\\n\\n'
+            'AI 将根据当前商品资料设计题材、人物关系、剧情冲突/反转、剧本和分集分镜。\\n'
             '本步骤会调用“AI短剧编导”路由模型；模型费用按该模型配置计费。\\n'
             '这里只生成并保存创作方案，不会自动调用付费素材/视频生成服务，也不会覆盖原广告方案。\\n\\n是否继续？'
         ):
@@ -1929,6 +1949,8 @@ class App(tk.Tk):
         try:
             constraints = self._creative_constraints()
             constraints['creative_mode'] = 'AI短剧编导'
+            constraints['short_drama_mode'] = mode
+            constraints['episode_count'] = episode_count
             plan = generate_short_drama(
                 self.model_router, product, constraints,
                 existing_creative_plan=self.project.creative_plan,
@@ -1941,7 +1963,7 @@ class App(tk.Tk):
             win.geometry('920x720')
             win.transient(self)
             head = ttk.Frame(win, padding=12); head.pack(fill='x')
-            ttk.Label(head, text=f"题材：{plan.get('genre', '待确认')}", font=('Microsoft YaHei UI', 16, 'bold')).pack(anchor='w')
+            ttk.Label(head, text=f"题材：{plan.get('genre', '待确认')}｜模式：{plan.get('format_mode', mode)}｜集数：{plan.get('episode_count', episode_count)}", font=('Microsoft YaHei UI', 16, 'bold')).pack(anchor='w')
             ttk.Label(head, text=plan.get('logline', ''), wraplength=870).pack(anchor='w', pady=(5, 0))
             text_frame = ttk.Frame(win, padding=(12, 0, 12, 12)); text_frame.pack(fill='both', expand=True)
             view = tk.Text(text_frame, wrap='word', font=('Microsoft YaHei UI', 10))
@@ -1951,11 +1973,11 @@ class App(tk.Tk):
             view.insert('1.0', json.dumps(plan, ensure_ascii=False, indent=2))
             view.configure(state='disabled')
             footer = ttk.Frame(win, padding=12); footer.pack(fill='x')
-            ttk.Label(footer, text=f"已保存到项目：{self.project.id}；分镜数：{len(plan.get('storyboard', []))}。当前只完成短剧策划，尚未触发镜头素材生成。").pack(side='left')
+            ttk.Label(footer, text=f"已保存到项目：{self.project.id}；{plan.get('episode_count', episode_count)}集；分镜数：{len(plan.get('storyboard', []))}。当前只完成策划，尚未触发镜头素材生成。").pack(side='left')
             ttk.Button(footer, text='关闭', command=win.destroy).pack(side='right')
             ttk.Button(footer, text='短剧质量/事实复核', command=lambda: self.show_short_drama_audit(plan)).pack(side='right', padx=8)
             ttk.Button(footer, text='建立独立短剧制作项目', command=lambda: self.create_short_drama_production_project(plan, win)).pack(side='right', padx=8)
-            self.detail.set(f"AI短剧方案已保存｜题材：{plan.get('genre', '待确认')}｜分镜：{len(plan.get('storyboard', []))}｜未覆盖原广告方案")
+            self.detail.set(f"AI短剧方案已保存｜{plan.get('episode_count', episode_count)}集｜题材：{plan.get('genre', '待确认')}｜分镜：{len(plan.get('storyboard', []))}｜未覆盖原广告方案")
             messagebox.showinfo('短剧方案已保存', 'AI短剧创作方案已保存到当前项目。原广告方案和现有分镜未被替换。')
         except Exception as exc:
             messagebox.showerror('AI短剧编导失败', str(exc))
