@@ -1,6 +1,6 @@
 from pathlib import Path
 import tkinter as tk
-from tkinter import ttk, filedialog, messagebox, simpledialog
+from tkinter import ttk, filedialog, messagebox
 import shutil
 import subprocess
 import json
@@ -1919,24 +1919,45 @@ class App(tk.Tk):
         product = dict(self.project.product_info or {})
         if not product:
             return messagebox.showerror('商品资料缺失','当前项目没有可用的商品资料，请重新创建项目或补充商品资料。')
-        mode_choice = simpledialog.askstring(
-            '选择短剧模式',
-            '请选择创作模式：\\n1 = 单集短剧\\n2 = 连续多集（每集承接主线）\\n3 = 系列短剧（共享人物/世界观，每集相对独立）',
-            initialvalue='1', parent=self,
-        )
-        if mode_choice is None:
-            return
-        mode_map = {'1': 'single_episode', '2': 'continuous_series', '3': 'anthology_series'}
-        mode = mode_map.get(mode_choice.strip())
-        if not mode:
-            return messagebox.showerror('模式无效', '请输入 1、2 或 3。')
-        episode_count = 1
-        if mode != 'single_episode':
-            episode_count = simpledialog.askinteger(
-                '设置集数', '请输入总集数（2—50集）：', minvalue=2, maxvalue=50, initialvalue=6, parent=self,
-            )
-            if episode_count is None:
+        mode_dialog = tk.Toplevel(self)
+        mode_dialog.title('选择短剧模式与集数')
+        mode_dialog.geometry('520x250')
+        mode_dialog.transient(self)
+        mode_dialog.grab_set()
+        mode_var = tk.StringVar(value='single_episode')
+        count_var = tk.StringVar(value='6')
+        ttk.Label(mode_dialog, text='创作模式').pack(anchor='w', padx=16, pady=(16, 4))
+        ttk.Combobox(
+            mode_dialog, textvariable=mode_var, state='readonly',
+            values=('single_episode', 'continuous_series', 'anthology_series'),
+        ).pack(fill='x', padx=16)
+        ttk.Label(
+            mode_dialog,
+            text='模式说明：single_episode=单集；continuous_series=连续多集；anthology_series=共享人物/世界观的系列剧',
+            wraplength=480,
+        ).pack(anchor='w', padx=16, pady=6)
+        ttk.Label(mode_dialog, text='总集数（多集模式填写 2—50；单集模式自动按1集处理）').pack(anchor='w', padx=16, pady=(4, 2))
+        ttk.Entry(mode_dialog, textvariable=count_var).pack(fill='x', padx=16)
+        selected = {}
+        def confirm_mode():
+            selected['mode'] = mode_var.get()
+            try:
+                selected['count'] = 1 if selected['mode'] == 'single_episode' else int(count_var.get().strip())
+            except (TypeError, ValueError):
+                messagebox.showerror('集数无效', '请输入 2—50 之间的整数。', parent=mode_dialog)
                 return
+            if selected['mode'] != 'single_episode' and not 2 <= selected['count'] <= 50:
+                messagebox.showerror('集数无效', '多集模式的集数必须为 2—50。', parent=mode_dialog)
+                return
+            mode_dialog.destroy()
+        buttons = ttk.Frame(mode_dialog); buttons.pack(fill='x', padx=16, pady=12)
+        ttk.Button(buttons, text='取消', command=mode_dialog.destroy).pack(side='right')
+        ttk.Button(buttons, text='确定', command=confirm_mode).pack(side='right', padx=8)
+        self.wait_window(mode_dialog)
+        if not selected:
+            return
+        mode = selected['mode']
+        episode_count = selected['count']
         mode_label = {'single_episode': '单集短剧', 'continuous_series': '连续多集短剧', 'anthology_series': '系列短剧'}[mode]
         if not messagebox.askyesno(
             '启动 AI 短剧编导',
