@@ -193,5 +193,29 @@ class UsageLedgerRetentionTests(unittest.TestCase):
             self.assertAlmostEqual(summary["by_category"]["model"], 0.07, places=6)
 
 
+    def test_rejects_negative_and_nonfinite_cost_values(self):
+        invalid_values = (-0.01, float("nan"), float("inf"), float("-inf"))
+        with tempfile.TemporaryDirectory() as directory:
+            ledger_path = Path(directory) / "usage-ledger.json"
+            ledger = UsageLedger(ledger_path)
+            for field in ("estimated_cost_rmb", "unit_cost_rmb"):
+                for value in invalid_values:
+                    with self.subTest(field=field, value=value):
+                        kwargs = {
+                            "function": "test",
+                            "model_id": "",
+                            "model_name": "test provider",
+                            "provider": "test provider",
+                            "model": "",
+                            "status": "failed",
+                            "project_id": "project-invalid",
+                            "category": "model",
+                            field: value,
+                        }
+                        with self.assertRaises(ValueError):
+                            ledger.record(**kwargs)
+            self.assertFalse(ledger_path.exists(), "invalid monetary values must not create or alter ledger history")
+
+
 if __name__ == "__main__":
     unittest.main()
