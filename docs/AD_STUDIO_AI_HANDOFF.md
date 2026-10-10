@@ -211,3 +211,6 @@ CI 还会运行前端语法、Python 语法、Typecheck、Engine 和 Risk Contro
 
 ## 失败的视频调用费用估算
 `ProductionStore._render_with_provider()` 在 Provider 调用开始后若发生超时、空结果或结果交付失败，且尚未成功记录该次费用，会把配置单价写为 `status=failed` 的账本估算，避免预算低估。错误说明必须保留“实际计费需核对供应商账单”的边界。自动化回归测试为 `test_failed_video_provider_attempt_is_recorded_as_estimated_cost`。此项不代表供应商已确认收费；后续仍要审查素材生成失败路径及真实账单/退款对账。
+
+## 云端素材失败费用
+`ProductionStore.resolve_assets()` 已在云端路由且单价有效时，对生成异常记录 `status=failed` 的保守估算，并提示实际扣费需核对供应商账单；生成成功后先记账再写入本地库，避免本地入库失败导致漏记。自动化测试为 `test_failed_cloud_asset_attempt_is_recorded_as_estimated_cost`。下一步需要独立审查 `generate_missing_asset()` 入口及重试/退款路径；不要将估算费用表述为供应商确认账单。
