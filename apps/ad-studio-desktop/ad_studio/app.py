@@ -12,7 +12,7 @@ from .capability import CapabilityRouter
 from .production import ProductionStore
 from .product_parser import parse_product_url, save_product, save_product_library, load_product_library, merge_product_library, ProductInfo
 from .creative_engine import CreativeEngine, validate_plan, validate_task_type_plan, TASK_TYPE_POLICIES
-from .short_drama import audit_short_drama, generate_short_drama, short_drama_production_rows
+from .short_drama import audit_short_drama, build_episode_continuity_ledger, generate_short_drama, short_drama_production_rows
 from .model_router import ModelRouter, ModelProfile, FUNCTIONS, audit_ad_variant_set, build_creative_test_plan, audit_creative_factual_consistency, audit_storyboard_fact_consistency, audit_visual_fact_consistency
 from .browser_skill import _find_agent_browser
 from .ffmpeg import available as ffmpeg_available, has_nvenc
@@ -2064,12 +2064,67 @@ class App(tk.Tk):
             footer = ttk.Frame(win, padding=12); footer.pack(fill='x')
             ttk.Label(footer, text=f"已保存到项目：{self.project.id}；{plan.get('episode_count', episode_count)}集；分镜数：{len(plan.get('storyboard', []))}。当前只完成策划，尚未触发镜头素材生成。").pack(side='left')
             ttk.Button(footer, text='关闭', command=win.destroy).pack(side='right')
+            ttk.Button(footer, text='跨集连续性台账', command=lambda: self.show_short_drama_continuity_ledger(plan)).pack(side='right', padx=8)
             ttk.Button(footer, text='短剧质量/事实复核', command=lambda: self.show_short_drama_audit(plan)).pack(side='right', padx=8)
             ttk.Button(footer, text='建立独立短剧制作项目', command=lambda: self.create_short_drama_production_project(plan, win)).pack(side='right', padx=8)
             self.detail.set(f"AI短剧方案已保存｜{plan.get('episode_count', episode_count)}集｜题材：{plan.get('genre', '待确认')}｜分镜：{len(plan.get('storyboard', []))}｜未覆盖原广告方案")
             messagebox.showinfo('短剧方案已保存', 'AI短剧创作方案已保存到当前项目。原广告方案和现有分镜未被替换。')
         except Exception as exc:
             messagebox.showerror('AI短剧编导失败', str(exc))
+
+    @ui_action
+    def show_short_drama_continuity_ledger(self, plan):
+        """Present per-episode continuity state in a readable, dedicated desktop view."""
+        if not self._ui_execution_gate(): return
+        try:
+            ledger = plan.get('continuity_ledger')
+            if not isinstance(ledger, list) or len(ledger) != len(plan.get('episodes', [])):
+                ledger = build_episode_continuity_ledger(plan)
+            win = tk.Toplevel(self)
+            win.title('AI短剧｜跨集剧情连续性台账')
+            win.geometry('900x680')
+            win.transient(self)
+            ttk.Label(
+                win,
+                text='逐集核对人物状态、未解决线索与下一集承接要求',
+                font=('Microsoft YaHei UI', 15, 'bold'),
+            ).pack(anchor='w', padx=14, pady=(12, 4))
+            ttk.Label(
+                win,
+                text='这是编导模型提供的连续性记录，程序检查字段完整性，但不能单凭结构校验保证剧情事实绝对一致。请重点核对前一集结尾与后一集开场。',
+                wraplength=860,
+            ).pack(anchor='w', padx=14, pady=(0, 10))
+            frame = ttk.Frame(win, padding=(12, 0, 12, 12))
+            frame.pack(fill='both', expand=True)
+            view = tk.Text(frame, wrap='word', font=('Microsoft YaHei UI', 10))
+            scroll = ttk.Scrollbar(frame, orient='vertical', command=view.yview)
+            view.configure(yscrollcommand=scroll.set)
+            scroll.pack(side='right', fill='y')
+            view.pack(side='left', fill='both', expand=True)
+            labels = (
+                ('opening_state', '开集承接状态'),
+                ('character_state_changes', '人物/关系变化'),
+                ('unresolved_threads', '尚未解决的线索/冲突'),
+                ('ending_state', '集末确定状态'),
+                ('next_episode_requirements', '下一集必须承接'),
+            )
+            for item in ledger:
+                if not isinstance(item, dict):
+                    continue
+                view.insert('end', f"第{item.get('episode_number', '?')}集\n" + '—' * 36 + '\n')
+                for key, label in labels:
+                    value = item.get(key, [])
+                    if isinstance(value, list):
+                        rendered = '\n'.join(f'  • {str(entry)}' for entry in value if str(entry).strip()) or '  （无）'
+                    else:
+                        rendered = str(value).strip() or '（未填写）'
+                    view.insert('end', f'{label}：\n{rendered}\n\n')
+            if not ledger:
+                view.insert('end', '当前方案没有可展示的分集连续性记录。请重新生成多集方案，或检查创作方案数据。')
+            view.configure(state='disabled')
+            ttk.Button(win, text='关闭', command=win.destroy).pack(anchor='e', padx=14, pady=(0, 12))
+        except Exception as exc:
+            messagebox.showerror('连续性台账打开失败', str(exc))
 
     @ui_action
     def show_short_drama_audit(self, plan):
