@@ -1048,3 +1048,6 @@ estimate_asset_generation 使用 AssetGenerator 的 CapabilityRouter 结果决�
 
 ## 2026-10-11：批量生成结果提示与失败状态一致
 `App.batch_generate_variants()` 汇总结果后按 `failed` 选择提示级别：存在任一失败项时用 `messagebox.showwarning('一键生成结果', msg)`；无失败项时用 `showinfo`。不再在有失败项时显示“一键生成完成”的成功式标题。回归测试验证两条提示分支均存在且旧成功式提示已移除。
+
+## 2026-10-11：批量生成汇总计数语义
+`batch_generate_variants()` 的 `failed` 列表不只包含镜头生成失败，也可能包含最终成片组装和方案状态保存失败，因此汇总字段必须叫“失败项”，不能叫“失败镜头”。回归测试锁定该显示语义。
