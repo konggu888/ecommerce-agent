@@ -79,9 +79,9 @@ class ProductionStore:
                 continue
             seen.add(output_path)
             path = Path(output_path)
-            if item.get("delivery_status") == "可交付" and (not output_path or not path.exists() or path.stat().st_size <= 0):
+            if item.get("delivery_status") == "可交付" and (not output_path or not path.is_file() or path.stat().st_size <= 0):
                 item["delivery_status"] = "不可交付"
-                item["recovery_reason"] = "最终输出文件缺失或为空"
+                item["recovery_reason"] = "最终输出文件缺失、不是普通文件或为空"
                 invalid_outputs.append(output_path)
         now = datetime.datetime.now().isoformat(timespec="seconds")
         recovery.update({
@@ -480,15 +480,26 @@ class ProductionStore:
         for key, item in items:
             if not isinstance(item, dict):
                 continue
-            path = Path(str(item.get("output_path", "")))
+            output_path = str(item.get("output_path", "") or "")
+            path = Path(output_path)
+            exists = path.is_file() and path.stat().st_size > 0
+            delivery_status = item.get("delivery_status", "未知")
+            recovery_reason = item.get("recovery_reason", "")
+            # Reflect missing/empty outputs immediately in the history UI, even if the
+            # project has not been reopened since the file disappeared. Persistence of
+            # the corrected manifest status remains the job of recover_project().
+            if delivery_status == "可交付" and (not output_path or not exists):
+                delivery_status = "不可交付"
+                recovery_reason = "最终输出文件缺失、不是普通文件或为空"
             rows.append({
                 "key": key,
                 "revision_id": item.get("revision_id", ""),
                 "variant_index": item.get("variant_index"),
                 "aspect": item.get("aspect"),
                 "output_path": str(path),
-                "exists": path.exists(),
-                "delivery_status": item.get("delivery_status", "未知"),
+                "exists": exists,
+                "delivery_status": delivery_status,
+                "recovery_reason": recovery_reason,
                 "duration_seconds": (item.get("media_check") or {}).get("duration_seconds", 0),
                 "shot_count": item.get("shot_count", 0),
                 "created_at": item.get("created_at", ""),
