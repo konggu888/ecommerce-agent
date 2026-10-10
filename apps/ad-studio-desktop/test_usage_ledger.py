@@ -4,6 +4,7 @@ import ast
 import json
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 from ad_studio.usage_ledger import UsageLedger
@@ -76,6 +77,69 @@ class UsageLedgerRetentionTests(unittest.TestCase):
         self.assertIn("视频/素材生产费用", method_source)
         self.assertIn("当前项目已记录", method_source)
         self.assertIn("不等于供应商最终账单", method_source)
+
+
+    def test_corrupt_ledger_is_quarantined_instead_of_silently_overwritten(self):
+        with tempfile.TemporaryDirectory() as directory:
+            ledger_path = Path(directory) / "usage-ledger.json"
+            damaged_bytes = b'[{broken-json'
+            ledger_path.write_bytes(damaged_bytes)
+            ledger = UsageLedger(ledger_path)
+
+            ledger.record(
+                function="video generation",
+                model_id="",
+                model_name="test provider",
+                provider="test provider",
+                model="",
+                status="success",
+                estimated_cost_rmb=0.03,
+                project_id="project-a",
+                category="video",
+            )
+
+            backups = list(Path(directory).glob("usage-ledger.json.corrupt-*"))
+            self.assertEqual(len(backups), 1)
+            self.assertEqual(backups[0].read_bytes(), damaged_bytes)
+            self.assertEqual(json.loads(ledger_path.read_text(encoding="utf-8"))[0]["estimated_cost_rmb"], 0.03)
+            self.assertIn("原文件已保留", ledger.last_load_warning)
+
+    def test_invalid_ledger_shape_is_preserved_before_new_history_is_written(self):
+        with tempfile.TemporaryDirectory() as directory:
+            ledger_path = Path(directory) / "usage-ledger.json"
+            original = json.dumps({"not": "a list"}, ensure_ascii=False).encode("utf-8")
+            ledger_path.write_bytes(original)
+            ledger = UsageLedger(ledger_path)
+
+            self.assertEqual(ledger.all_entries(), [])
+            backups = list(Path(directory).glob("usage-ledger.json.corrupt-*"))
+            self.assertEqual(len(backups), 1)
+            self.assertEqual(backups[0].read_bytes(), original)
+            self.assertIn("结构异常", ledger.last_load_warning)
+
+    def test_atomic_write_failure_preserves_existing_ledger(self):
+        with tempfile.TemporaryDirectory() as directory:
+            ledger_path = Path(directory) / "usage-ledger.json"
+            original = json.dumps([{"id": "old", "status": "success"}]).encode("utf-8")
+            ledger_path.write_bytes(original)
+            ledger = UsageLedger(ledger_path)
+
+            with patch("ad_studio.usage_ledger.os.replace", side_effect=OSError("replace failed")):
+                with self.assertRaises(OSError):
+                    ledger.record(
+                        function="video generation",
+                        model_id="",
+                        model_name="test provider",
+                        provider="test provider",
+                        model="",
+                        status="success",
+                        estimated_cost_rmb=0.03,
+                        project_id="project-a",
+                        category="video",
+                    )
+
+            self.assertEqual(ledger_path.read_bytes(), original)
+            self.assertEqual(list(Path(directory).glob("*.tmp")), [])
 
 
 if __name__ == "__main__":
