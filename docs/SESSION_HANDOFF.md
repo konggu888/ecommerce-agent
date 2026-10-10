@@ -343,3 +343,10 @@ undefined
 - 已修改 `UsageLedger.record()`：`estimated_cost_rmb` 和 `unit_cost_rmb` 写入前必须是有限非负金额，统一保留 6 位小数；无效值抛出 `ValueError`，不写入账本。
 - 新增 `test_rejects_negative_and_nonfinite_cost_values`，覆盖负数、NaN、正/负无穷和不产生账本文件。
 - 代码/测试/文档后的最新 HEAD CI、doc-sync、部署预览必须重新验收。真实供应商账单对账、Windows 真机仍暂缓，PR #18 不得合并。
+
+## 追加工作记录：项目恢复费用对账
+
+- 发现 `ProductionStore._sync_actual_cost()` 原本有实现但未被项目恢复流程调用。若账本追加成功后进程中断、项目 JSON 缓存未同步，重开项目时预算可能低估已记录成本。
+- 已在 `recover_project()` 保存恢复结果前调用费用同步：用项目账本累计值修复较低的项目累计缓存，同时保留没有账本记录的历史项目金额。
+- 新增 `test_recovery_reconciles_project_budget_from_durable_ledger`，覆盖多笔费用合计、项目 JSON 重载持久化和账本/缓存不同步场景。
+- 需以最新 HEAD 的 CI、doc-sync 和部署预览为最终验收；真实供应商账单对账及 Windows 真机仍暂缓。
