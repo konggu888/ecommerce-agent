@@ -1,0 +1,915 @@
+import ast
+import unittest
+from pathlib import Path
+from types import SimpleNamespace
+
+from ad_studio.workflow_modes import (
+    AUTO, SEMI_AUTO, USER_CONTROLLED, WORKFLOW_MODES,
+    decide_action, get_project_workflow_mode, normalize_mode,
+    preserve_workflow_state, preserve_output_history, set_project_workflow_mode, invalidate_storyboard_approval,
+)
+
+
+class WorkflowModePolicyTests(unittest.TestCase):
+    def test_final_output_history_survives_variant_activation(self):
+        previous = {
+            "final_output_manifests": {"1|9:16": {"output_path": "old.mp4"}},
+            "final_output_history_records": [
+                {"variant_index": 1, "output_path": "old.mp4", "revision_id": "rev-1"}
+            ],
+        }
+        next_plan = {}
+        preserve_output_history(previous, next_plan)
+        self.assertEqual(next_plan["final_output_manifests"], previous["final_output_manifests"])
+        self.assertEqual(next_plan["final_output_history_records"], previous["final_output_history_records"])
+        self.assertIsNot(next_plan["final_output_history_records"], previous["final_output_history_records"])
+        app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        activate_start = app_source.index("def _activate_plan(self, raw, info):")
+        activate_end = app_source.index("def _cache_active_variant(self):", activate_start)
+        self.assertIn("preserve_output_history(previous_plan, data)", app_source[activate_start:activate_end])
+
+    def test_final_delivery_history_ui_displays_creation_time(self):
+        app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        self.assertIn("('created','创建时间',170)", app_source)
+        self.assertIn("row.get('created_at','')", app_source)
+        self.assertIn("self.store.final_output_history(self.project)", app_source)
+
+    def test_desktop_ui_exposes_and_persists_workflow_modes(self):
+        app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        for label in ("AI 全自动", "AI 半自动", "用户控制 / AI 辅助"):
+            self.assertIn(label, app_source)
+        self.assertIn("set_project_workflow_mode(self.project,selected_mode)", app_source)
+        self.assertIn("preserve_workflow_state(previous_plan, data)", app_source)
+        self.assertIn("self.workflow_mode.set(self._workflow_mode_label(get_project_workflow_mode(project)))", app_source)
+        self.assertIn("def _choose_initial_plan(self, plans):", app_source)
+        self.assertIn("if len(plans) == 1:", app_source)
+        self.assertIn("candidate['_variant_index']=variant_position", app_source)
+        self.assertIn("cloud_generation", app_source)
+        single_shot_start = app_source.index("def generate_shot(self):")
+        single_shot_end = app_source.index("def regen_shot(self):", single_shot_start)
+        single_shot = app_source[single_shot_start:single_shot_end]
+        self.assertIn("if decision.target == 'cloud':", single_shot)
+        self.assertLess(single_shot.index("_confirm_budget_overrun"), single_shot.index("_authorize_workflow_action('cloud_generation'"))
+        self.assertLess(single_shot.index("_authorize_workflow_action('cloud_generation'"), single_shot.index("self.store.render_shot"))
+        self.assertIn("if filmed:", single_shot)
+        self.assertIn("self.store.render_footage_shot(self.project,s)", single_shot)
+        self.assertIn("needs_cloud=needs_cloud_video or needs_cloud_assets", app_source)
+        self.assertIn("if needs_cloud and not self._authorize_workflow_action('cloud_generation'", app_source)
+        self.assertIn("def _restore_variant_selection(self, variant_index):", app_source)
+        self.assertIn("self._restore_variant_selection(original_index)", app_source)
+        restore_start = app_source.index("def _restore_variant_selection(self, variant_index):")
+        restore_end = app_source.index("\n    def switch_variant(self):", restore_start)
+        restore_body = app_source[restore_start:restore_end]
+        self.assertLess(restore_body.index("self._cache_active_variant()"), restore_body.index("self._activate_plan(target,info)"))
+        batch_start = app_source.index("def batch_generate_variants(self):")
+        batch_end = app_source.index("def batch_final_render(self):", batch_start)
+        batch_source = app_source[batch_start:batch_end]
+        self.assertIn("批量生成预审失败；已恢复原来选中的创意方案。", batch_source)
+        self.assertIn("except Exception as exc:", batch_source[:batch_source.index("actual_cost=float")])
+        self.assertIn("self._restore_variant_selection(original_index)", batch_source)
+
+        self.assertIn("except Exception as e:", app_source[app_source.index("def batch_final_render(self):"):app_source.index("def final_render(self):")])
+        self.assertIn("已恢复原来选中的创意方案", app_source)
+        self.assertIn("已完成的输出记录已保留", app_source)
+        self.assertIn("def _confirm_budget_overrun(self, estimate, remaining", app_source)
+        self.assertNotIn("if budget>0 and estimate>remaining:", app_source)
+        self.assertNotIn("if budget>0 and estimated>remaining_budget:", app_source)
+        self.assertIn("self._confirm_budget_overrun(estimate,remaining,'AI补镜头预算超限确认')", app_source)
+        self.assertIn("self._confirm_budget_overrun(estimated,remaining_budget,'一键生成预算超限确认')", app_source)
+        self.assertIn("if not pending:", app_source)
+        self.assertIn("if selected_mode == SEMI_AUTO:", app_source)
+        self.assertIn("确认 AI 创意方案", app_source)
+        self.assertIn("def _ensure_storyboard_approval(self):", app_source)
+        self.assertIn("workflow_approvals", app_source)
+        self.assertIn("if not self._ensure_storyboard_approval(): return", app_source)
+        self.assertIn("if not self._authorize_workflow_action('final_delivery'", app_source)
+        batch_delivery = app_source[app_source.index("def batch_final_render(self):"):app_source.index("def final_render(self):")]
+        single_delivery = app_source[app_source.index("def final_render(self):"):app_source.index("def save(self):")]
+        self.assertLess(batch_delivery.index("_ensure_storyboard_approval()"), batch_delivery.index("build_final("))
+        self.assertLess(single_delivery.index("_ensure_storyboard_approval()"), single_delivery.index("build_final("))
+        app_tree = ast.parse(app_source)
+        app_class = next(node for node in app_tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        for method_name, required_call in (
+            ("postprocess_selected", "_ui_execution_gate"),
+            ("finish_selected", "_ui_execution_gate"),
+        ):
+            with self.subTest(method=method_name):
+                method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == method_name)
+                calls = [node.func.attr for node in ast.walk(method) if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)]
+                self.assertIn(required_call, calls)
+                self.assertTrue(any(isinstance(node, ast.If) and "self.project" in ast.unparse(node.test) for node in method.body))
+
+    def test_asset_preflight_reports_cloud_cost_and_unknown_price(self):
+        import ast
+        from pathlib import Path
+        from unittest.mock import Mock
+
+        app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        tree = ast.parse(app_source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "_preflight_asset_generation")
+        estimate = Mock(return_value={"总计": 1.5, "明细": [{"类型": "演员", "小计": 1.5}]})
+
+        class FakeGenerator:
+            unit_price = 0.0
+            def __init__(self, *_args):
+                pass
+            def price(self, _kind):
+                return self.unit_price
+
+        class FakeRouter:
+            target = "cloud"
+            def __init__(self, *_args):
+                pass
+            def decide_asset(self, _kind):
+                return SimpleNamespace(target=self.target)
+
+        root = Path("/fake/ad-studio")
+        namespace = {
+            "ROOT": root,
+            "estimate_asset_generation": estimate,
+            "AssetGenerator": FakeGenerator,
+            "CapabilityRouter": FakeRouter,
+        }
+        exec(compile(ast.Module(body=[method], type_ignores=[]), "app.py", "exec"), namespace)
+        helper = namespace["_preflight_asset_generation"]
+        raw_shot = {"index": 1, "asset_resolution": {"actor_tags": ["host"]}}
+        fake = SimpleNamespace(
+            project=SimpleNamespace(creative_plan={"shots": [raw_shot, {"index": 2}]}),
+            lib=object(),
+        )
+        shot = SimpleNamespace(index=1, clip_source="ai_generated")
+        result = helper.__get__(fake, type(fake))([shot])
+        self.assertEqual(result["cost"], 1.5)
+        self.assertEqual(result["unknown_prices"], ["演员"])
+        self.assertTrue(result["needs_cloud"])
+        estimate.assert_called_once_with(fake.lib, root, [raw_shot])
+
+        FakeRouter.target = "local"
+        FakeGenerator.unit_price = 1.5
+        local_result = helper.__get__(fake, type(fake))([shot])
+        self.assertEqual(local_result["cost"], 0.0)
+        self.assertEqual(local_result["unknown_prices"], [])
+        self.assertFalse(local_result["needs_cloud"])
+
+    def test_asset_estimate_excludes_local_asset_costs(self):
+        import ast
+        from pathlib import Path
+
+        engine_source = (Path(__file__).parent / "ad_studio" / "engine.py").read_text(encoding="utf-8")
+        tree = ast.parse(engine_source)
+        method = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "estimate_asset_generation")
+
+        class FakeLibrary:
+            def best_match(self, _kind, _tags):
+                return None
+
+        class FakeGenerator:
+            target = "local"
+            def __init__(self, *_args):
+                self.capability = SimpleNamespace(
+                    decide_asset=lambda _kind: SimpleNamespace(target=self.target)
+                )
+            def price(self, _kind):
+                return 1.5
+            def configured(self, _kind):
+                return True
+
+        namespace = {"AssetGenerator": FakeGenerator}
+        exec(compile(ast.Module(body=[method], type_ignores=[]), "engine.py", "exec"), namespace)
+        shots = [{"index": 1, "asset_resolution": {"actor_tags": ["host"]}}]
+        estimate = namespace["estimate_asset_generation"](FakeLibrary(), Path("/fake/ad-studio"), shots)
+        self.assertEqual(estimate["总计"], 0.0)
+        self.assertEqual(estimate["明细"][0]["执行方式"], "local")
+        self.assertEqual(estimate["明细"][0]["单价"], 0.0)
+
+        FakeGenerator.target = "cloud"
+        cloud_estimate = namespace["estimate_asset_generation"](FakeLibrary(), Path("/fake/ad-studio"), shots)
+        self.assertEqual(cloud_estimate["总计"], 1.5)
+        self.assertEqual(cloud_estimate["明细"][0]["执行方式"], "cloud")
+
+    def test_production_does_not_generate_assets_without_explicit_tags(self):
+        source = (Path(__file__).parent / "ad_studio" / "production.py").read_text(encoding="utf-8")
+        self.assertIn("generate_if_missing=bool(tags) and bool(req.get('generation_if_missing', True))", source)
+        self.assertIn("'未指定素材需求'", source)
+
+    def test_batch_delivery_isolates_variant_failures_and_restores_selection(self):
+        app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        start = app_source.index("def batch_final_render(self):")
+        end = app_source.index("def final_render(self):", start)
+        body = app_source[start:end]
+        self.assertIn("failed.append(f'{variant_label}：最终成片输出失败：{exc}')", body)
+        self.assertIn("continue", body)
+        self.assertIn("finally:", body)
+        self.assertIn("self._restore_variant_selection(original_index)", body)
+        self.assertIn("self.store.save(self.project)", body)
+        # Budget and cloud-consent refusals must return before the first generation call.
+        batch_start = app_source.index("def batch_generate_variants(self):")
+        batch_end = app_source.index("def batch_final_render(self):", batch_start)
+        batch = app_source[batch_start:batch_end]
+        budget_gate = batch.index("if not self._confirm_budget_overrun")
+        cloud_gate = batch.index("if needs_cloud and not self._authorize_workflow_action")
+        first_render = batch.index("self.store.render_shot")
+        self.assertLess(budget_gate, first_render)
+        self.assertLess(cloud_gate, first_render)
+        self.assertIn("asset_preflight=self._preflight_asset_generation(pending_video_shots)", batch)
+        self.assertIn("estimated += float(asset_preflight.get('cost',0.0) or 0.0)", batch)
+        self.assertIn("unknown_asset_prices.extend(asset_preflight.get('unknown_prices', []))", batch)
+        budget_refusal = batch[budget_gate:cloud_gate]
+        self.assertIn("self._restore_variant_selection(original_index)", budget_refusal)
+        self.assertIn("return", budget_refusal)
+        cloud_refusal_start = batch.index("if needs_cloud and not self._authorize_workflow_action('cloud_generation'")
+        generation_start = batch.index("original=original_index")
+        cloud_refusal = batch[cloud_refusal_start:generation_start]
+        self.assertIn("self._restore_variant_selection(original_index)", cloud_refusal)
+        self.assertIn("未调用云端服务", cloud_refusal)
+        self.assertIn("return", cloud_refusal)
+        self.assertLess(generation_start, first_render)
+
+    def test_batch_generate_isolates_final_output_failure_per_variant(self):
+        app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        start = app_source.index("def batch_generate_variants(self):")
+        end = app_source.index("def batch_final_render(self):", start)
+        body = app_source[start:end]
+        build_at = body.index("out=self.store.build_final")
+        try_at = body.rfind("try:", 0, build_at)
+        except_at = body.index("except Exception as exc:", build_at)
+        continue_at = body.index("\n                        continue", except_at)
+        next_variant_at = body.index("for pos,raw0 in enumerate(variants,1):", body.index("done=[]; failed=[]; outputs=[]"))
+        self.assertGreaterEqual(try_at, 0)
+        self.assertGreater(except_at, build_at)
+        self.assertGreater(continue_at, except_at)
+        self.assertIn("最终成片输出失败", body[except_at:continue_at])
+        self.assertIn("self._cache_active_variant()", body[except_at:continue_at])
+        self.assertLess(next_variant_at, build_at)
+
+
+    def test_batch_rejections_execute_without_any_render_provider_calls(self):
+        """Execute the real batch preflight method with fakes; refusal must stop before rendering."""
+        import sys
+        import types
+        from pathlib import Path
+        from unittest.mock import Mock, patch
+
+        app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        tree = ast.parse(app_source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "batch_generate_variants")
+        method.decorator_list = []
+        namespace = {
+            "Path": Path,
+            "ROOT": Path("/fake/ad-studio"),
+            "messagebox": SimpleNamespace(showinfo=Mock(), showerror=Mock()),
+        }
+        exec(compile(ast.Module(body=[method], type_ignores=[]), "app.py", "exec"), namespace)
+        batch_method = namespace["batch_generate_variants"]
+
+        class FakeShot:
+            video_path = None
+            clip_source = "ai_generated"
+
+        class FakeCapabilityRouter:
+            target = "local"
+            def __init__(self, _root):
+                pass
+            def decide_video(self):
+                return SimpleNamespace(target=self.target)
+
+        product_parser = types.ModuleType("ad_studio.product_parser")
+        product_parser.ProductInfo = lambda **kwargs: SimpleNamespace(**kwargs)
+
+        def make_fake_app(budget, cloud_target):
+            fake = SimpleNamespace()
+            fake._ui_execution_gate = Mock(return_value=True)
+            fake._authorize_workflow_action = Mock(side_effect=lambda action, *_args: action != "cloud_generation")
+            fake._confirm_budget_overrun = Mock(return_value=False)
+            fake._confirm_unknown_asset_prices = Mock(return_value=True)
+            fake._preflight_asset_generation = Mock(return_value={"cost": 0.2, "unknown_prices": [], "needs_cloud": False})
+            fake.active_variant_index = 1
+            fake.project = SimpleNamespace(
+                creative_plan={"creative_variants": [
+                    {"_variant_index": 1, "_variant_label": "方案1"},
+                    {"_variant_index": 2, "_variant_label": "方案2"},
+                ]},
+                cost_estimate={"预算": budget},
+                actual_cost_rmb=0.0,
+                product_info={},
+                shots=[FakeShot()],
+            )
+            fake.footage_mode = SimpleNamespace(get=lambda: "")
+            fake.detail = SimpleNamespace(set=Mock())
+            fake.store = SimpleNamespace(
+                render_shot=Mock(),
+                render_footage_shot=Mock(),
+                save=Mock(),
+            )
+            fake._cache_active_variant = Mock()
+            def activate(raw, _info):
+                fake.active_variant_index = raw["_variant_index"]
+                fake.project.shots = [FakeShot()]
+            fake._activate_plan = Mock(side_effect=activate)
+            fake._restore_variant_selection = Mock(side_effect=lambda idx: setattr(fake, "active_variant_index", idx))
+            FakeCapabilityRouter.target = cloud_target
+            return fake
+
+        with patch.dict(sys.modules, {"ad_studio.product_parser": product_parser}), patch.dict(namespace, {"CapabilityRouter": FakeCapabilityRouter}):
+            # Budget refusal: the confirmation is declined and no shot renderer runs.
+            budget_app = make_fake_app(0.1, "local")
+            batch_method.__get__(budget_app, type(budget_app))()
+            self.assertEqual(budget_app.store.render_shot.call_count, 0)
+            self.assertEqual(budget_app.store.render_footage_shot.call_count, 0)
+            budget_app._confirm_budget_overrun.assert_called_once()
+            budget_app._restore_variant_selection.assert_called_once_with(1)
+
+            # A literal zero budget is a zero-spend limit, not an unlimited-budget sentinel.
+            zero_budget_app = make_fake_app(0.0, "local")
+            batch_method.__get__(zero_budget_app, type(zero_budget_app))()
+            zero_budget_app._confirm_budget_overrun.assert_called_once()
+            self.assertEqual(zero_budget_app.store.render_shot.call_count, 0)
+            zero_budget_app._restore_variant_selection.assert_called_once_with(1)
+
+            # Cloud consent refusal: with enough budget, cloud authorization is declined.
+            cloud_app = make_fake_app(100.0, "cloud")
+            batch_method.__get__(cloud_app, type(cloud_app))()
+            self.assertEqual(cloud_app.store.render_shot.call_count, 0)
+            self.assertEqual(cloud_app.store.render_footage_shot.call_count, 0)
+            cloud_app._authorize_workflow_action.assert_any_call("cloud_generation", "批量云端视频/素材生成授权")
+            cloud_app._restore_variant_selection.assert_called_once_with(1)
+
+            # Local video with cloud-only missing assets must still request cloud consent.
+            asset_cloud_app = make_fake_app(100.0, "local")
+            asset_cloud_app._preflight_asset_generation.return_value = {"cost": 1.5, "unknown_prices": [], "needs_cloud": True}
+            batch_method.__get__(asset_cloud_app, type(asset_cloud_app))()
+            asset_cloud_app._authorize_workflow_action.assert_any_call("cloud_generation", "批量云端视频/素材生成授权")
+            self.assertEqual(asset_cloud_app.store.render_shot.call_count, 0)
+            self.assertEqual(asset_cloud_app.store.render_footage_shot.call_count, 0)
+            asset_cloud_app._restore_variant_selection.assert_called_once_with(1)
+
+
+    def test_single_shot_budget_and_cloud_refusal_stop_before_render(self):
+        import sys
+        from pathlib import Path
+        from unittest.mock import Mock, patch
+
+        app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        tree = ast.parse(app_source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "generate_shot")
+        method.decorator_list = []
+        namespace = {
+            "Path": Path,
+            "ROOT": Path("/fake/ad-studio"),
+            "messagebox": SimpleNamespace(showinfo=Mock(), showerror=Mock()),
+            "CapabilityRouter": None,
+            "set_project_workflow_mode": Mock(),
+        }
+        exec(compile(ast.Module(body=[method], type_ignores=[]), "app.py", "exec"), namespace)
+        generate_shot = namespace["generate_shot"]
+
+        class FakeShot:
+            index = 1
+            version = 1
+            title = "镜头1"
+            status = "待生成"
+            clip_source = "ai_generated"
+            video_path = None
+
+        class FakeCapabilityRouter:
+            target = "cloud"
+            def __init__(self, _root):
+                pass
+            def decide_video(self):
+                return SimpleNamespace(target=self.target)
+
+        def make_app(budget, target, filmed=False):
+            shot = FakeShot()
+            shot.clip_source = "filmed" if filmed else "ai_generated"
+            shot.source_file = "/tmp/footage.mp4"
+            shot.source_start = 0.0
+            shot.source_duration = 2.0
+            fake = SimpleNamespace()
+            fake._ui_execution_gate = Mock(return_value=True)
+            fake.selected = Mock(return_value=shot)
+            fake._authorize_workflow_action = Mock(side_effect=lambda action, *_args: action != "cloud_generation")
+            fake._ensure_storyboard_approval = Mock(return_value=True)
+            fake._workflow_mode_value = Mock(return_value=SEMI_AUTO)
+            fake._confirm_budget_overrun = Mock(return_value=False)
+            fake._confirm_unknown_asset_prices = Mock(return_value=True)
+            fake._preflight_asset_generation = Mock(return_value={"cost": 0.2, "unknown_prices": [], "needs_cloud": False})
+            fake.project = SimpleNamespace(
+                creative_plan={}, cost_estimate={"预算": budget, "总计": 1.0},
+                actual_cost_rmb=0.0, shots=[shot],
+            )
+            fake.store = SimpleNamespace(
+                render_shot=Mock(return_value="/tmp/generated.mp4"),
+                render_footage_shot=Mock(return_value="/tmp/cropped.mp4"),
+                save=Mock(),
+            )
+            fake.refresh_shots = Mock()
+            fake.update_idletasks = Mock()
+            fake.detail = SimpleNamespace(set=Mock())
+            fake.cost = SimpleNamespace(set=Mock())
+            FakeCapabilityRouter.target = target
+            return fake, shot
+
+        with patch.dict(namespace, {"CapabilityRouter": FakeCapabilityRouter}):
+            budget_app, budget_shot = make_app(0.1, "cloud")
+            generate_shot.__get__(budget_app, type(budget_app))()
+            budget_app._confirm_budget_overrun.assert_called_once()
+            budget_app.store.render_shot.assert_not_called()
+            budget_app.store.render_footage_shot.assert_not_called()
+            self.assertEqual(budget_shot.status, "待生成")
+
+            zero_budget_app, _ = make_app(0.0, "cloud")
+            generate_shot.__get__(zero_budget_app, type(zero_budget_app))()
+            zero_budget_app._confirm_budget_overrun.assert_called_once()
+            zero_budget_app.store.render_shot.assert_not_called()
+
+            cloud_app, _ = make_app(100.0, "cloud")
+            generate_shot.__get__(cloud_app, type(cloud_app))()
+            cloud_app._authorize_workflow_action.assert_any_call("cloud_generation", "云端视频/素材生成授权")
+            cloud_app.store.render_shot.assert_not_called()
+            cloud_app.store.render_footage_shot.assert_not_called()
+
+            # Local video with a remote asset requirement must still be stopped if cloud consent is declined.
+            asset_cloud_app, _ = make_app(100.0, "local")
+            asset_cloud_app._preflight_asset_generation.return_value = {"cost": 1.5, "unknown_prices": [], "needs_cloud": True}
+            generate_shot.__get__(asset_cloud_app, type(asset_cloud_app))()
+            asset_cloud_app._authorize_workflow_action.assert_any_call("cloud_generation", "云端视频/素材生成授权")
+            asset_cloud_app.store.render_shot.assert_not_called()
+            asset_cloud_app.store.render_footage_shot.assert_not_called()
+
+            footage_app, _ = make_app(0.1, "cloud", filmed=True)
+            generate_shot.__get__(footage_app, type(footage_app))()
+            self.assertFalse(any(call.args and call.args[0] == "cloud_generation" for call in footage_app._authorize_workflow_action.call_args_list))
+            footage_app.store.render_footage_shot.assert_called_once()
+            footage_app.store.render_shot.assert_not_called()
+
+
+    def test_hybrid_gap_generation_budget_and_cloud_refusal_do_not_render(self):
+        import types
+        from pathlib import Path
+        from unittest.mock import Mock, patch
+
+        app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        tree = ast.parse(app_source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "generate_hybrid_gap_shots")
+        method.decorator_list = []
+        provider = SimpleNamespace(configured=lambda: True, cost_per_shot_rmb=0.72)
+        namespace = {
+            "Path": Path,
+            "ROOT": Path("/fake/ad-studio"),
+            "json": __import__("json"),
+            "LocalLibrary": lambda _root: SimpleNamespace(best_match=lambda _kind, _tags: SimpleNamespace(id="local-asset")),
+            "load_video_provider": Mock(return_value=provider),
+            "messagebox": SimpleNamespace(showinfo=Mock(), showerror=Mock(), askyesno=Mock(return_value=True)),
+        }
+        exec(compile(ast.Module(body=[method], type_ignores=[]), "app.py", "exec"), namespace)
+        generate_hybrid = namespace["generate_hybrid_gap_shots"]
+
+        def make_app(budget):
+            task = {"task_id": "GAP-1", "recommended_resolution": "AI补镜头", "generation_allowed": True}
+            fake = SimpleNamespace()
+            fake._ui_execution_gate = Mock(return_value=True)
+            fake._confirm_budget_overrun = Mock(return_value=False)
+            fake._authorize_workflow_action = Mock(side_effect=lambda action, *_args: action != "cloud_generation")
+            fake.project = SimpleNamespace(
+                creative_plan={"footage_gap_tasks": {"tasks": [task]}},
+                cost_estimate={"预算": budget},
+                actual_cost_rmb=0.0,
+            )
+            fake.store = SimpleNamespace(render_shot=Mock(), save=Mock())
+            fake.detail = SimpleNamespace(set=Mock())
+            return fake
+
+        with patch.dict(namespace, {"load_video_provider": Mock(return_value=provider)}):
+            budget_app = make_app(0.1)
+            generate_hybrid.__get__(budget_app, type(budget_app))()
+            budget_app._confirm_budget_overrun.assert_called_once()
+            budget_app.store.render_shot.assert_not_called()
+            budget_app._authorize_workflow_action.assert_not_called()
+
+            cloud_app = make_app(100.0)
+            generate_hybrid.__get__(cloud_app, type(cloud_app))()
+            cloud_app._authorize_workflow_action.assert_called_once_with("cloud_generation", "云端 AI 补镜头授权")
+            cloud_app.store.render_shot.assert_not_called()
+
+            # Missing/zero provider price must use the same conservative default
+            # as single-shot and batch generation, rather than silently estimate ¥0.
+            zero_price_provider = SimpleNamespace(configured=lambda: True, cost_per_shot_rmb=0.0)
+            with patch.dict(namespace, {"load_video_provider": Mock(return_value=zero_price_provider)}):
+                zero_rate_app = make_app(0.1)
+                generate_hybrid.__get__(zero_rate_app, type(zero_rate_app))()
+                zero_rate_app._confirm_budget_overrun.assert_called_once()
+                zero_rate_app._authorize_workflow_action.assert_not_called()
+                zero_rate_app.store.render_shot.assert_not_called()
+
+
+    def test_hybrid_gap_generation_records_success_and_isolates_task_failure(self):
+        from pathlib import Path
+        from unittest.mock import Mock, patch
+
+        app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        tree = ast.parse(app_source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "generate_hybrid_gap_shots")
+        method.decorator_list = []
+
+        class FakeShot:
+            def __init__(self, **kwargs):
+                self.__dict__.update(kwargs)
+                self.actual_cost_rmb = 0.72
+
+        provider = SimpleNamespace(configured=lambda: True, cost_per_shot_rmb=0.72)
+        showinfo = Mock()
+        namespace = {
+            "Path": Path,
+            "ROOT": Path("/fake/ad-studio"),
+            "LocalLibrary": lambda _root: SimpleNamespace(best_match=lambda _kind, _tags: SimpleNamespace(id="local-asset")),
+            "load_video_provider": Mock(return_value=provider),
+            "messagebox": SimpleNamespace(showinfo=showinfo, showerror=Mock()),
+            "__import__": lambda name, *args, **kwargs: SimpleNamespace(Shot=FakeShot) if name == "ad_studio.models" else __import__(name, *args, **kwargs),
+        }
+        exec(compile(ast.Module(body=[method], type_ignores=[]), "app.py", "exec"), namespace)
+        generate_hybrid = namespace["generate_hybrid_gap_shots"]
+
+        tasks = [
+            {"task_id": "GAP-OK", "variant_index": 1, "recommended_resolution": "AI补镜头", "generation_allowed": True, "need": "辅助镜头1"},
+            {"task_id": "GAP-FAIL", "variant_index": 1, "recommended_resolution": "AI补镜头", "generation_allowed": True, "need": "辅助镜头2"},
+            {"task_id": "GAP-OTHER-VARIANT", "variant_index": 2, "recommended_resolution": "AI补镜头", "generation_allowed": True, "need": "方案二辅助镜头"},
+        ]
+        fake = SimpleNamespace()
+        fake._ui_execution_gate = Mock(return_value=True)
+        fake.active_variant_index = 1
+        fake._confirm_budget_overrun = Mock(return_value=False)
+        fake._authorize_workflow_action = Mock(return_value=True)
+        fake.project = SimpleNamespace(
+            creative_plan={"footage_gap_tasks": {"tasks": tasks}},
+            cost_estimate={"预算": 100.0},
+            actual_cost_rmb=0.0,
+        )
+        fake.store = SimpleNamespace(
+            render_shot=Mock(side_effect=["/tmp/gap-ok.mp4", RuntimeError("模拟 Provider 失败")]),
+            save=Mock(),
+        )
+        fake.detail = SimpleNamespace(set=Mock())
+
+        with patch.dict(namespace, {"load_video_provider": Mock(return_value=provider)}):
+            generate_hybrid.__get__(fake, type(fake))()
+
+        self.assertEqual(fake.store.render_shot.call_count, 2)
+        self.assertEqual(tasks[0]["status"], "AI补镜头已生成")
+        self.assertEqual(tasks[0]["generated_path"], "/tmp/gap-ok.mp4")
+        self.assertEqual(tasks[1]["status"], "AI补镜头生成失败")
+        self.assertIn("模拟 Provider 失败", tasks[1]["generation_error"])
+        self.assertNotIn("generated_path", tasks[2], "其他方案的补镜头不能在当前方案下生成")
+        self.assertNotIn("status", tasks[2], "其他方案任务状态应保持不变")
+        self.assertEqual(len(fake.project.creative_plan["hybrid_generated_shots"]), 1)
+        fake.store.save.assert_called_once_with(fake.project)
+        fake.detail.set.assert_called_once()
+        self.assertIn("成功 1 个｜失败 1 个", fake.detail.set.call_args.args[0])
+        showinfo.assert_called_once()
+        self.assertIn("失败明细", showinfo.call_args.args[1])
+
+    def test_known_modes_are_explicit_and_unknown_defaults_to_semi_auto(self):
+        self.assertEqual(WORKFLOW_MODES, (AUTO, SEMI_AUTO, USER_CONTROLLED))
+        self.assertEqual(normalize_mode("not-a-mode"), SEMI_AUTO)
+        self.assertEqual(normalize_mode(None), SEMI_AUTO)
+
+    def test_auto_mode_still_cannot_bypass_cloud_consent(self):
+        decision = decide_action(AUTO, "cloud_generation")
+        self.assertFalse(decision.allowed)
+        self.assertTrue(decision.requires_confirmation)
+        self.assertTrue(decide_action(AUTO, "cloud_generation", user_approved=True).allowed)
+
+    def test_semi_auto_pauses_at_critical_checkpoints(self):
+        for action in ("approve_creative_plan", "approve_storyboard", "final_delivery", "generate_all_variants"):
+            with self.subTest(action=action):
+                decision = decide_action(SEMI_AUTO, action)
+                self.assertFalse(decision.allowed)
+                self.assertTrue(decision.requires_confirmation)
+                self.assertTrue(decide_action(SEMI_AUTO, action, user_approved=True).allowed)
+
+    def test_user_controlled_mode_does_not_make_decisions_for_user(self):
+        for action in ("choose_creative_plan", "choose_shots", "approve_storyboard", "final_delivery", "generate_all_variants"):
+            with self.subTest(action=action):
+                decision = decide_action(USER_CONTROLLED, action)
+                self.assertFalse(decision.allowed)
+                self.assertTrue(decision.requires_confirmation)
+
+    def test_non_sensitive_auto_actions_can_proceed(self):
+        decision = decide_action(AUTO, "analyze_product")
+        self.assertTrue(decision.allowed)
+        self.assertFalse(decision.requires_confirmation)
+
+    def test_explicit_consent_boundaries_apply_in_every_mode(self):
+        for mode in WORKFLOW_MODES:
+            for action in ("budget_overrun", "publish_or_real_platform_write", "delete_original_asset"):
+                with self.subTest(mode=mode, action=action):
+                    self.assertFalse(decide_action(mode, action).allowed)
+
+    def test_workflow_mode_and_storyboard_approvals_survive_variant_activation(self):
+        previous = {
+            "workflow_mode": USER_CONTROLLED,
+            "workflow_approvals": {"1": True, "2": False},
+            "variant_shot_cache": {"1": [{"id": "shot-01"}]},
+        }
+        next_plan = {"variant_index": 2, "strategy": "another creative plan"}
+        preserve_workflow_state(previous, next_plan)
+        self.assertEqual(next_plan["workflow_mode"], USER_CONTROLLED)
+        self.assertEqual(next_plan["workflow_approvals"], {"1": True, "2": False})
+        self.assertNotIn("variant_shot_cache", next_plan)
+
+    def test_storyboard_approval_is_invalidated_only_for_changed_variant(self):
+        plan = {"workflow_approvals": {"1": True, "2": True, "3": False}}
+        self.assertTrue(invalidate_storyboard_approval(plan, 2))
+        self.assertEqual(plan["workflow_approvals"], {"1": True, "3": False})
+        self.assertFalse(invalidate_storyboard_approval(plan, 2))
+        self.assertFalse(invalidate_storyboard_approval({}, 1))
+
+    def test_editing_or_inserting_a_shot_invalidates_its_variant_approval(self):
+        app_source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        tree = ast.parse(app_source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        edit_method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "edit_shot")
+        self.assertTrue(any(isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "invalidate_storyboard_approval" for node in ast.walk(edit_method)))
+        # Editing must update the per-variant snapshot before saving; otherwise a later
+        # switch/reopen can restore the stale pre-edit cached storyboard.
+        self.assertTrue(any(isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) and node.func.attr == "_cache_active_variant" for node in ast.walk(edit_method)))
+        apply_method = next(node for node in ast.walk(edit_method) if isinstance(node, ast.FunctionDef) and node.name == "apply")
+        cache_pos = next(i for i, node in enumerate(apply_method.body) if isinstance(node, ast.Expr) and isinstance(node.value, ast.Call) and isinstance(node.value.func, ast.Attribute) and node.value.func.attr == "_cache_active_variant")
+        save_pos = next(i for i, node in enumerate(apply_method.body) if isinstance(node, ast.Expr) and isinstance(node.value, ast.Call) and isinstance(node.value.func, ast.Attribute) and node.value.func.attr == "save")
+        self.assertLess(cache_pos, save_pos)
+        review_method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "review_hybrid_gap_shots")
+        accept_method = next(node for node in ast.walk(review_method) if isinstance(node, ast.FunctionDef) and node.name == "accept")
+        self.assertTrue(any(isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "invalidate_storyboard_approval" for node in ast.walk(accept_method)))
+
+    def test_reopening_project_preserves_latest_active_shots_and_restores_variant_runtime(self):
+        source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        shot_cache_fn = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "_restore_variant_shot_cache")
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        methods = {
+            node.name: node for node in app_class.body
+            if isinstance(node, ast.FunctionDef) and node.name in {
+                "_restore_loaded_variant_state", "_restore_active_variant_runtime"
+            }
+        }
+        self.assertEqual(set(methods), {"_restore_loaded_variant_state", "_restore_active_variant_runtime"})
+        for node in (shot_cache_fn, *methods.values()):
+            node.decorator_list = []
+        module = ast.Module(body=[shot_cache_fn, methods["_restore_active_variant_runtime"], methods["_restore_loaded_variant_state"]], type_ignores=[])
+        ast.fix_missing_locations(module)
+        namespace = {"json": __import__("json")}
+        exec(compile(module, "ad_studio/app.py", "exec"), namespace)
+
+        fake = SimpleNamespace(
+            active_variant_index=1,
+            project=SimpleNamespace(
+                shots=[SimpleNamespace(id="shot-01", visual="latest saved active shot")],
+                creative_plan={
+                    "variant_index": 2,
+                    "variant_shot_cache": {
+                        "2": [{"id": "shot-01", "visual": "older variant 2 cache"}]
+                    },
+                    "variant_footage_plans": {"2": [{"source": "variant-2.mp4"}]},
+                    "variant_footage_selection_audits": {"2": {"selected": ["variant-2.mp4"]}},
+                    "variant_footage_coverage": {"2": {"score": 92}},
+                    "variant_footage_gaps": {"2": {"missing": []}},
+                    "variant_footage_gap_tasks": {"2": {"tasks": [{"task_id": "v2-gap"}]}},
+                    "variant_hybrid_reviewed_shots": {"2": [{"shot_id": "v2-shot"}]},
+                    "footage_plan": [{"source": "stale.mp4"}],
+                    "footage_selection_audit": {"selected": ["stale.mp4"]},
+                    "footage_coverage": {"score": 1},
+                    "footage_gaps": {"missing": ["stale"]},
+                    "footage_gap_tasks": {"tasks": [{"task_id": "stale-gap"}]},
+                    "hybrid_reviewed_shots": [{"shot_id": "stale-shot"}],
+                },
+            ),
+        )
+        fake._restore_active_variant_runtime = lambda: namespace["_restore_active_variant_runtime"](fake)
+        namespace["_restore_loaded_variant_state"](fake)
+
+        self.assertEqual(fake.active_variant_index, 2)
+        self.assertEqual(fake.project.shots[0].visual, "latest saved active shot")
+        plan = fake.project.creative_plan
+        self.assertEqual(plan["footage_plan"], [{"source": "variant-2.mp4"}])
+        self.assertEqual(plan["footage_selection_audit"], {"selected": ["variant-2.mp4"]})
+        self.assertEqual(plan["footage_coverage"], {"score": 92})
+        self.assertEqual(plan["footage_gaps"], {"missing": []})
+        self.assertEqual(plan["footage_gap_tasks"], {"tasks": [{"task_id": "v2-gap"}]})
+        self.assertEqual(plan["hybrid_reviewed_shots"], [{"shot_id": "v2-shot"}])
+
+        # A legacy project without variant_index must not inherit the previous
+        # project's active index from the App instance.
+        legacy = SimpleNamespace(
+            active_variant_index=3,
+            project=SimpleNamespace(shots=[], creative_plan={}),
+        )
+        legacy._restore_active_variant_runtime = lambda: None
+        namespace["_restore_loaded_variant_state"](legacy)
+        self.assertEqual(legacy.active_variant_index, 1)
+
+    def test_cache_active_variant_persists_all_footage_runtime_fields(self):
+        source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "_cache_active_variant")
+        method.decorator_list = []
+        module = ast.Module(body=[method], type_ignores=[])
+        ast.fix_missing_locations(module)
+        namespace = {"json": __import__("json")}
+        exec(compile(module, "ad_studio/app.py", "exec"), namespace)
+
+        active = {
+            "footage_gap_tasks": {"tasks": [{"task_id": "B-gap"}]},
+            "hybrid_reviewed_shots": [{"shot_id": "B-shot"}],
+            "footage_plan": [{"source": "B.mp4", "start": 4.0}],
+            "footage_selection_audit": {"selected": ["B.mp4"]},
+            "footage_coverage": {"score": 85},
+            "footage_gaps": {"missing": ["B-point"]},
+        }
+        fake = SimpleNamespace(
+            project=SimpleNamespace(creative_plan=dict(active, variant_shot_cache={})),
+            active_variant_index=2,
+        )
+        fake.project.shots = [SimpleNamespace(id="shot-01", index=1)]
+        namespace["_cache_active_variant"](fake)
+        plan = fake.project.creative_plan
+        expected_storage = {
+            "variant_footage_gap_tasks": "footage_gap_tasks",
+            "variant_hybrid_reviewed_shots": "hybrid_reviewed_shots",
+            "variant_footage_plans": "footage_plan",
+            "variant_footage_selection_audits": "footage_selection_audit",
+            "variant_footage_coverage": "footage_coverage",
+            "variant_footage_gaps": "footage_gaps",
+        }
+        for storage, field in expected_storage.items():
+            with self.subTest(storage=storage):
+                self.assertEqual(plan[storage]["2"], active[field])
+
+    def test_variant_runtime_does_not_leak_when_target_variant_has_no_saved_state(self):
+        source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "_restore_active_variant_runtime")
+        method.decorator_list = []
+        module = ast.Module(body=[method], type_ignores=[])
+        ast.fix_missing_locations(module)
+        namespace = {"json": __import__("json")}
+        exec(compile(module, "ad_studio/app.py", "exec"), namespace)
+
+        fake = SimpleNamespace(project=SimpleNamespace(creative_plan={
+            "variant_footage_gap_tasks": {"1": {"tasks": [{"task_id": "A-gap"}]}},
+            "variant_hybrid_reviewed_shots": {"1": [{"shot_id": "A-shot"}]},
+            "variant_footage_plans": {"1": [{"source_file": "A.mp4"}]},
+            "variant_footage_selection_audits": {"1": {"audit": "A"}},
+            "variant_footage_coverage": {"1": {"score": 90}},
+            "variant_footage_gaps": {"1": {"missing": ["A"]}},
+            # These are stale active values left behind by variant 1.
+            "footage_gap_tasks": {"tasks": [{"task_id": "A-gap"}]},
+            "hybrid_reviewed_shots": [{"shot_id": "A-shot"}],
+            "footage_plan": [{"source_file": "A.mp4"}],
+            "footage_selection_audit": {"audit": "A"},
+            "footage_coverage": {"score": 90},
+            "footage_gaps": {"missing": ["A"]},
+        }))
+        fake.active_variant_index = 2
+        namespace["_restore_active_variant_runtime"](fake)
+
+        plan = fake.project.creative_plan
+        self.assertEqual(plan["footage_gap_tasks"], {})
+        self.assertEqual(plan["hybrid_reviewed_shots"], [])
+        self.assertEqual(plan["footage_plan"], [])
+        self.assertEqual(plan["footage_selection_audit"], {})
+        self.assertEqual(plan["footage_coverage"], {})
+        self.assertEqual(plan["footage_gaps"], {})
+
+    def test_variant_runtime_restores_saved_state_for_target_variant(self):
+        source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "_restore_active_variant_runtime")
+        method.decorator_list = []
+        module = ast.Module(body=[method], type_ignores=[])
+        ast.fix_missing_locations(module)
+        namespace = {"json": __import__("json")}
+        exec(compile(module, "ad_studio/app.py", "exec"), namespace)
+
+        expected = {
+            "footage_gap_tasks": {"tasks": [{"task_id": "B-gap"}]},
+            "hybrid_reviewed_shots": [{"shot_id": "B-shot"}],
+            "footage_plan": [{"source_file": "B.mp4"}],
+            "footage_selection_audit": {"audit": "B"},
+            "footage_coverage": {"score": 20},
+            "footage_gaps": {"missing": ["B"]},
+        }
+        storage = {
+            "variant_footage_gap_tasks": "footage_gap_tasks",
+            "variant_hybrid_reviewed_shots": "hybrid_reviewed_shots",
+            "variant_footage_plans": "footage_plan",
+            "variant_footage_selection_audits": "footage_selection_audit",
+            "variant_footage_coverage": "footage_coverage",
+            "variant_footage_gaps": "footage_gaps",
+        }
+        plan = {}
+        for key, field in storage.items():
+            plan[key] = {"2": expected[field]}
+        fake = SimpleNamespace(project=SimpleNamespace(creative_plan=plan))
+        fake.active_variant_index = 2
+        namespace["_restore_active_variant_runtime"](fake)
+        for field, value in expected.items():
+            self.assertEqual(plan[field], value)
+
+    def test_mode_persists_in_existing_project_payload(self):
+        project = SimpleNamespace(creative_plan={})
+        self.assertEqual(set_project_workflow_mode(project, USER_CONTROLLED), USER_CONTROLLED)
+        self.assertEqual(get_project_workflow_mode(project), USER_CONTROLLED)
+        project.creative_plan = {}
+        self.assertEqual(get_project_workflow_mode(project), SEMI_AUTO)
+
+
+class VariantRecoveryBehaviorTests(unittest.TestCase):
+    def test_restore_caches_current_partial_variant_before_switching_back(self):
+        events = []
+
+        class Store:
+            def save(self, project):
+                events.append(("save", project.creative_plan.get("variant_index")))
+
+        class FakeApp:
+            pass
+
+        fake = FakeApp()
+        fake.project = SimpleNamespace(
+            creative_plan={
+                "creative_variants": [
+                    {"_variant_index": 1, "_variant_label": "方案一"},
+                    {"_variant_index": 2, "_variant_label": "方案二"},
+                ],
+                "variant_shot_cache": {},
+            },
+            product_info={"url": "", "platform": "自动识别"},
+        )
+        fake.active_variant_index = 2
+        fake.store = Store()
+        fake._cache_active_variant = lambda: events.append(("cache", fake.active_variant_index))
+        def activate(target, info):
+            fake.active_variant_index = target["_variant_index"]
+            fake.project.creative_plan["variant_index"] = target["_variant_index"]
+            events.append(("activate", target["_variant_index"]))
+        fake._activate_plan = activate
+        fake.refresh_shots = lambda: events.append(("refresh", fake.active_variant_index))
+        fake.show_shot = lambda: events.append(("show", fake.active_variant_index))
+
+        source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "_restore_variant_selection")
+        # The decorator belongs to the Tk UI class; omit it when executing the isolated method.
+        method.decorator_list = []
+        module = ast.Module(body=[method], type_ignores=[])
+        ast.fix_missing_locations(module)
+        namespace = {}
+        exec(compile(module, "ad_studio/app.py", "exec"), namespace)
+        restored = namespace["_restore_variant_selection"](fake, 1)
+
+        self.assertTrue(restored)
+        self.assertEqual(events[0], ("cache", 2))
+        self.assertEqual(events[1], ("activate", 1))
+        self.assertEqual(fake.active_variant_index, 1)
+        self.assertIn(("save", 1), events)
+
+    
+    def test_cost_breakdown_uses_project_actual_cost_including_unaccepted_hybrid_shots(self):
+        source = (Path(__file__).parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "_show_cost_breakdown")
+        method.decorator_list = []
+        module = ast.Module(body=[method], type_ignores=[])
+        ast.fix_missing_locations(module)
+        namespace = {}
+        exec(compile(module, "ad_studio/app.py", "exec"), namespace)
+
+        class CostValue:
+            value = ""
+            def set(self, value):
+                self.value = value
+
+        fake = SimpleNamespace(
+            project=SimpleNamespace(actual_cost_rmb=3.4, shots=[SimpleNamespace(actual_cost_rmb=1.0)]),
+            cost=CostValue(),
+        )
+        namespace["_show_cost_breakdown"](fake, {"总计": 10.0, "本地": 0.0, "云端": 10.0, "明细": []})
+        self.assertIn("已实际发生：¥3.40", fake.cost.value)
+        self.assertIn("按当前计划尚未发生：¥6.60", fake.cost.value)
+
+        fake.project.actual_cost_rmb = 0.0
+        namespace["_show_cost_breakdown"](fake, {"总计": 10.0, "本地": 0.0, "云端": 10.0, "明细": []})
+        self.assertIn("已实际发生：¥1.00", fake.cost.value)
+
+
+if __name__ == "__main__":
+    unittest.main()

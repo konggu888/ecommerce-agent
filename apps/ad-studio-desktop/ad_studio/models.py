@@ -64,6 +64,8 @@ class Project:
     cost_estimate: dict = field(default_factory=dict)
     actual_cost_rmb: float = 0.0
     actual_cost_summary: dict = field(default_factory=dict)
+    # Legacy costs that predate the append-only production ledger; persisted before the first new ledger append.
+    legacy_cost_baseline_rmb: Optional[float] = None
     product_info: dict = field(default_factory=dict)
     creative_plan: dict = field(default_factory=dict)
     footage_folder: Optional[str]=None
@@ -119,6 +121,12 @@ def accept_hybrid_generated_shot(task: dict, shots: list[Shot], *, accepted_shot
     path = str(task.get("generated_path") or "").strip()
     if not path:
         raise ValueError("缺口任务没有生成文件")
+    output = Path(path)
+    try:
+        if not output.is_file() or output.stat().st_size <= 0:
+            raise ValueError("AI补镜头文件不存在、不是普通文件或为空，不能纳入分镜")
+    except OSError as exc:
+        raise ValueError(f"无法安全验证 AI 补镜头文件，不能纳入分镜：{exc}") from exc
     if task.get("accepted_into_storyboard"):
         return shots
     target_index = task.get("target_shot_index")
@@ -138,8 +146,8 @@ def accept_hybrid_generated_shot(task: dict, shots: list[Shot], *, accepted_shot
         script=str(task.get("script") or ""),
         status="已复核并纳入分镜",
         video_path=path,
-        provider=task.get("provider"),
-        actual_cost_rmb=float(task.get("estimated_cost_rmb") or 0),
+        provider=task.get("generation_provider") or task.get("provider"),
+        actual_cost_rmb=float(task.get("generation_cost_rmb") or task.get("estimated_cost_rmb") or 0),
         clip_source="ai_generated",
         asset_source="ai_generated",
         source_file=path,

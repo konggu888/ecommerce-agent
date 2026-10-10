@@ -14,6 +14,16 @@ from .hardware import detect_hardware
 from .capability import CapabilityRouter
 from .usage_ledger import UsageLedger
 
+
+def _is_nonempty_file(path: Path) -> bool:
+    """Return whether a path is a non-empty regular file, treating filesystem races/errors as unavailable."""
+    try:
+        return path.is_file() and path.stat().st_size > 0
+    except OSError:
+        # Files may disappear or become inaccessible between is_file() and stat().
+        return False
+
+
 class ProductionStore:
     def __init__(self, root: Path, library_root: Path | None = None):
         self.root=root; self.root.mkdir(parents=True,exist_ok=True)
@@ -60,11 +70,34 @@ class ProductionStore:
                 part.unlink(missing_ok=True)
                 removed_parts += 1
         missing_media = []
+        seen_missing_media = set()
+
+        def invalidate_missing_media(record, shot_id):
+            media_path = str(record.get("video_path") or "").strip()
+            if not media_path or _is_nonempty_file(Path(media_path)):
+                return
+            if shot_id not in seen_missing_media:
+                missing_media.append(shot_id)
+                seen_missing_media.add(shot_id)
+            record["video_path"] = None
+            record["status"] = "待重新生成/重新选择素材"
+
         for shot in project.shots:
-            if shot.video_path and not Path(shot.video_path).exists():
-                missing_media.append(shot.id)
-                shot.video_path = None
-                shot.status = "待重新生成/重新选择素材"
+            invalidate_missing_media(shot.__dict__, str(shot.id))
+
+        # Variant snapshots are independently restored on future scheme switches.
+        # Repair them too; otherwise switching variants after recovery could resurrect
+        # a stale path that was just invalidated in project.shots.
+        variant_cache = creative_plan.get("variant_shot_cache")
+        if isinstance(variant_cache, dict):
+            for variant_key, cached_shots in variant_cache.items():
+                if not isinstance(cached_shots, list):
+                    continue
+                for cached_shot in cached_shots:
+                    if not isinstance(cached_shot, dict):
+                        continue
+                    shot_id = str(cached_shot.get("id") or f"variant-{variant_key}-unknown-shot")
+                    invalidate_missing_media(cached_shot, shot_id)
         invalid_outputs = []
         records = list(creative_plan.get("final_output_history_records", []) or [])
         manifests = creative_plan.get("final_output_manifests", {}) or {}
@@ -79,9 +112,9 @@ class ProductionStore:
                 continue
             seen.add(output_path)
             path = Path(output_path)
-            if item.get("delivery_status") == "可交付" and (not output_path or not path.exists() or path.stat().st_size <= 0):
+            if item.get("delivery_status") == "可交付" and (not output_path or not _is_nonempty_file(path)):
                 item["delivery_status"] = "不可交付"
-                item["recovery_reason"] = "最终输出文件缺失或为空"
+                item["recovery_reason"] = "最终输出文件缺失、不是普通文件或为空"
                 invalid_outputs.append(output_path)
         now = datetime.datetime.now().isoformat(timespec="seconds")
         recovery.update({
@@ -91,6 +124,7 @@ class ProductionStore:
             "last_recovery": {"removed_temp_files": removed_parts, "missing_media": missing_media, "invalid_outputs": invalid_outputs, "updated_at": now},
             "updated_at": now,
         })
+        self._sync_actual_cost(project)
         self.save(project)
         return recovery["last_recovery"]
 
@@ -133,18 +167,47 @@ class ProductionStore:
         summary = self.ledger.project_summary(project.id)
         project.cost_estimate.setdefault("actual", {})
         project.cost_estimate["actual"] = summary
-        project.cost_estimate["actual_cost_rmb"] = summary["actual_cost_rmb"]
+        project.cost_estimate["actual_cost_rmb"] = summary["estimated_cost_rmb"]
+        # Newer projects persist the legacy baseline before their first ledger append.
+        # Older projects without that marker retain the conservative max() recovery rule.
+        if summary["entries"]:
+            baseline = getattr(project, "legacy_cost_baseline_rmb", None)
+            if baseline is None:
+                project.actual_cost_rmb = round(
+                    max(float(project.actual_cost_rmb or 0), float(summary["estimated_cost_rmb"] or 0)),
+                    6,
+                )
+            else:
+                project.actual_cost_rmb = round(
+                    max(0.0, float(baseline or 0)) + float(summary["estimated_cost_rmb"] or 0),
+                    6,
+                )
+            project.actual_cost_summary = summary
 
-    def _record_actual_cost(self, project: Project, *, shot: Shot | None, category: str, amount_rmb: float, provider: str, quantity: float = 1.0, unit_cost_rmb: float = 0.0, function: str = "生成任务"):
+    def _record_actual_cost(self, project: Project, *, shot: Shot | None, category: str, amount_rmb: float, provider: str, quantity: float = 1.0, unit_cost_rmb: float = 0.0, function: str = "生成任务", status: str = "success", error: str = ""):
         amount = round(float(amount_rmb or 0), 6)
+        # Preserve pre-ledger costs (e.g. older projects created before cost-ledger
+        # tracking) before appending the first new charge. Saving the baseline first
+        # makes recovery deterministic if the process stops immediately after append.
+        if getattr(project, "legacy_cost_baseline_rmb", None) is None:
+            prior_total = float(self.ledger.project_summary(project.id)["estimated_cost_rmb"] or 0)
+            project.legacy_cost_baseline_rmb = round(
+                max(0.0, float(project.actual_cost_rmb or 0) - prior_total),
+                6,
+            )
+            self.save(project)
         self.ledger.record(
             function=function, model_id="", model_name="", provider=provider, model="",
-            status="success", estimated_cost_rmb=amount,
+            status=status, estimated_cost_rmb=amount, error=error,
             project_id=project.id, shot_id=shot.id if shot else "",
             category=category, quantity=quantity, unit_cost_rmb=unit_cost_rmb,
         )
-        project.actual_cost_rmb = round(float(project.actual_cost_rmb or 0) + amount, 6)
-        project.actual_cost_summary = self.ledger.project_summary(project.id)
+        summary = self.ledger.project_summary(project.id)
+        project.actual_cost_rmb = round(
+            max(0.0, float(project.legacy_cost_baseline_rmb or 0)) + float(summary["estimated_cost_rmb"] or 0),
+            6,
+        )
+        project.actual_cost_summary = summary
         self.save(project)
 
     def mark_ready(self, project: Project, shot: Shot, output: Path):
@@ -168,17 +231,44 @@ class ProductionStore:
         req=ai.get("asset_resolution", {}) or {}
         generator=AssetGenerator(self.library_root/'asset-generation.json',self.library_root)
         for kind, tags in (("演员", req.get("actor_tags", [])), ("场景", req.get("scene_tags", [])), ("商品素材", req.get("product_tags", []))):
-            found=library.best_match(kind,tags)
-            item={'asset':found.id if found else None,'source':'本地复用' if found else '待自动生成','generate_if_missing':bool(req.get('generation_if_missing', True))}
+            tags = [str(tag).strip() for tag in (tags or []) if str(tag).strip()]
+            found=library.best_match(kind,tags) if tags else None
+            generate_if_missing=bool(tags) and bool(req.get('generation_if_missing', True))
+            item={
+                'asset':found.id if found else None,
+                'source':'本地复用' if found else ('待自动生成' if generate_if_missing else '未指定素材需求'),
+                'generate_if_missing':generate_if_missing,
+            }
             if not found and item['generate_if_missing']:
                 if generator.configured(kind):
                     item['source']='自动生成中'
+                    generation_returned = False
                     try:
                         result=generator.generate(kind,project.product_name+'-'+kind,shot.visual+'；需求：'+'、'.join(tags),tags,shot.id)
+                        generation_returned = True
+                        # Record the completed provider generation before local library writes,
+                        # so a disk/library error cannot make a billable asset look free.
+                        self._record_actual_cost(project, shot=shot, category='asset', amount_rmb=result.cost_rmb, provider=result.provider, quantity=1, unit_cost_rmb=result.cost_rmb, function=f'{kind}素材生成')
+                        shot.actual_cost_rmb=round(float(shot.actual_cost_rmb or 0)+float(result.cost_rmb or 0),4)
                         library._write(library.all()+[result.asset])
                         item.update({'asset':result.asset.id,'source':'已生成并入库','cost_rmb':result.cost_rmb})
-                        self._record_actual_cost(project, shot=shot, category='asset', amount_rmb=result.cost_rmb, provider=result.provider, quantity=1, unit_cost_rmb=result.cost_rmb, function=f'{kind}素材生成')
                     except Exception as exc:
+                        # A failed remote request can still be billable. Keep a conservative
+                        # estimate in the ledger when the router selected cloud and a price exists.
+                        if not generation_returned:
+                            try:
+                                route = generator.capability.decide_asset(kind)
+                                price = float(generator.price(kind) or 0.0)
+                                if route.target == 'cloud' and price > 0:
+                                    self._record_actual_cost(
+                                        project, shot=shot, category='asset', amount_rmb=price,
+                                        provider=str(generator._cfg(kind).get('provider') or 'Generic Asset REST'),
+                                        quantity=1, unit_cost_rmb=price, function=f'{kind}素材生成',
+                                        status='failed',
+                                        error=f'云端素材生成请求失败；是否实际计费需以供应商账单核对：{exc}',
+                                    )
+                            except Exception as ledger_exc:
+                                item['cost_recording_error'] = str(ledger_exc)
                         item.update({'source':'自动生成失败','error':str(exc)})
                 else:
                     item['source']='未配置生成服务'
@@ -211,15 +301,24 @@ class ProductionStore:
             provider=load_asset_provider(asset_provider_path)
             if isinstance(provider, type(load_asset_provider(Path('__missing__')))):
                 raise RuntimeError('尚未配置云端资产生成器，且本地素材服务不可用。')
-            result=provider.generate_asset(GenerationRequest(prompt=prompt,output=out,reference_assets=[]))
             provider_name = getattr(provider, 'provider_name', '云端资产生成器')
-            cost = float(getattr(provider, 'cost_per_asset_rmb', 0.0))
-        item=library.register_generated(f'{kind}-{shot.index}',kind,result,tags=[request_text],request=prompt)
-        if kind=='演员': shot.actor_id=item.id
-        elif kind=='场景': shot.scene_id=item.id
-        elif kind=='商品素材': shot.product_asset_ids.append(item.id)
-        shot.asset_source='ai_generated'
-        shot.actual_cost_rmb=round(shot.actual_cost_rmb+cost,4)
+            cost = float(getattr(provider, 'cost_per_asset_rmb', 0.0) or 0.0)
+            try:
+                result=provider.generate_asset(GenerationRequest(prompt=prompt,output=out,reference_assets=[]))
+            except Exception as exc:
+                if cost > 0:
+                    try:
+                        self._record_actual_cost(
+                            project, shot=shot, category="asset", amount_rmb=cost,
+                            provider=provider_name, quantity=1, unit_cost_rmb=cost,
+                            function=f"{kind}素材生成", status="failed",
+                            error=f"云端素材生成请求失败；是否实际计费需以供应商账单核对：{exc}",
+                        )
+                    except Exception as ledger_exc:
+                        raise RuntimeError(f"{exc}；失败素材费用写入账本也失败：{ledger_exc}") from exc
+                raise
+        # Record the provider generation before registering the asset locally. If local
+        # registration fails, the completed external generation must not disappear from costs.
         self._record_actual_cost(
             project,
             shot=shot,
@@ -230,6 +329,12 @@ class ProductionStore:
             unit_cost_rmb=cost,
             function=f"{kind}素材生成",
         )
+        item=library.register_generated(f'{kind}-{shot.index}',kind,result,tags=[request_text],request=prompt)
+        if kind=='演员': shot.actor_id=item.id
+        elif kind=='场景': shot.scene_id=item.id
+        elif kind=='商品素材': shot.product_asset_ids.append(item.id)
+        shot.asset_source='ai_generated'
+        shot.actual_cost_rmb=round(shot.actual_cost_rmb+cost,4)
         shot.provider = provider_name
         shot.status=f'{kind}已生成并入库'
         self.save(project)
@@ -286,7 +391,15 @@ class ProductionStore:
         shot.provider=getattr(provider,'provider_name','Generic REST')
         shot.generated_from_request=prompt
         self.save(project)
+        provider_call_started = False
+        cost_recorded = False
+        video_cost = round(float(getattr(provider, 'cost_per_shot_rmb', 0.0) or 0.0), 4)
+        provider_name = getattr(provider, 'provider_name', 'Generic REST')
         try:
+            # Once the external call begins, a timeout or malformed/empty response may
+            # still have incurred provider-side cost. Record a conservative estimate on
+            # failure instead of silently treating the attempt as free.
+            provider_call_started = True
             result=provider.generate(GenerationRequest(
                 prompt=prompt,
                 output=temp,
@@ -297,29 +410,48 @@ class ProductionStore:
             result=Path(result)
             if not result.exists() or result.stat().st_size == 0:
                 raise RuntimeError('视频 Provider 返回成功，但生成文件不存在或为空。')
-            if out.exists():
-                out.unlink()
+            # Path.replace/os.replace replaces an existing destination atomically where supported.
+            # Never unlink the last known-good output first: a filesystem error during replace
+            # must not destroy the previous file while shot.video_path still points to it.
             result.replace(out)
-            video_cost=round(float(getattr(provider,'cost_per_shot_rmb',0.0)),4)
             shot.actual_cost_rmb=round(float(shot.actual_cost_rmb or 0.0)+video_cost,4)
             self._record_actual_cost(
                 project,
                 shot=shot,
                 category="video",
                 amount_rmb=video_cost,
-                provider=getattr(provider,'provider_name','Generic REST'),
+                provider=provider_name,
                 quantity=1,
                 unit_cost_rmb=video_cost,
                 function="视频镜头生成",
             )
+            cost_recorded = True
             self.mark_ready(project,shot,out)
             return out
         except Exception as exc:
+            if provider_call_started and not cost_recorded:
+                try:
+                    self._record_actual_cost(
+                        project,
+                        shot=shot,
+                        category="video",
+                        amount_rmb=video_cost,
+                        provider=provider_name,
+                        quantity=1,
+                        unit_cost_rmb=video_cost,
+                        function="视频镜头生成",
+                        status="failed",
+                        error=f"Provider调用失败或结果未能交付；是否实际计费需以供应商账单核对：{exc}",
+                    )
+                except Exception as ledger_exc:
+                    # Keep the original generation error visible, but explicitly surface
+                    # that the local cost estimate could not be persisted.
+                    exc = RuntimeError(f"{exc}；失败费用写入账本也失败：{ledger_exc}")
             if temp.exists():
                 temp.unlink()
             shot.video_path=previous_path
             shot.status='生成失败（已保留上一版本）' if previous_path else '生成失败'
-            shot.provider=getattr(provider,'provider_name',shot.provider)
+            shot.provider=provider_name
             self.save(project)
             raise RuntimeError(f'镜头 {shot.index} v{shot.version} 生成失败：{exc}') from exc
 
@@ -450,10 +582,11 @@ class ProductionStore:
             "delivery_status": "可交付" if bool(media_check.get("valid")) else "不可交付",
             "created_at": datetime.datetime.now().isoformat(timespec="microseconds"),
         }
-        manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
         key = f"{int(variant_index)}|{aspect}"
         manifest["history_key"] = key
         manifest["revision_id"] = f"{key}|{manifest['created_at']}"
+        # Persist the complete manifest only after history/revision identifiers exist.
+        manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
         project.creative_plan.setdefault("final_output_manifests", {})[key] = manifest
         project.creative_plan.setdefault("final_output_history_records", []).append(manifest.copy())
         self.save(project)
@@ -472,15 +605,26 @@ class ProductionStore:
         for key, item in items:
             if not isinstance(item, dict):
                 continue
-            path = Path(str(item.get("output_path", "")))
+            output_path = str(item.get("output_path", "") or "")
+            path = Path(output_path)
+            exists = _is_nonempty_file(path)
+            delivery_status = item.get("delivery_status", "未知")
+            recovery_reason = item.get("recovery_reason", "")
+            # Reflect missing/empty outputs immediately in the history UI, even if the
+            # project has not been reopened since the file disappeared. Persistence of
+            # the corrected manifest status remains the job of recover_project().
+            if delivery_status == "可交付" and (not output_path or not exists):
+                delivery_status = "不可交付"
+                recovery_reason = "最终输出文件缺失、不是普通文件或为空"
             rows.append({
                 "key": key,
                 "revision_id": item.get("revision_id", ""),
                 "variant_index": item.get("variant_index"),
                 "aspect": item.get("aspect"),
                 "output_path": str(path),
-                "exists": path.exists(),
-                "delivery_status": item.get("delivery_status", "未知"),
+                "exists": exists,
+                "delivery_status": delivery_status,
+                "recovery_reason": recovery_reason,
                 "duration_seconds": (item.get("media_check") or {}).get("duration_seconds", 0),
                 "shot_count": item.get("shot_count", 0),
                 "created_at": item.get("created_at", ""),
@@ -495,15 +639,48 @@ class ProductionStore:
         if len(shots)!=len(project.shots):
             raise RuntimeError(f'还有 {len(project.shots)-len(shots)} 个镜头没有成片，暂不能输出最终广告')
         suffix=f'-v{int(variant_index)}' if variant_index else ''
-        out=self.root/'final'/project.id/f'final-{aspect.replace(":", "x")}{suffix}.mp4'
-        concat([Path(s.video_path) for s in shots],out)
-        media_check=self.inspect_final_output(out, aspect)
-        if not media_check["valid"]:
-            if out.exists():
-                out.unlink()
-            raise RuntimeError("最终成片机器质检未通过：" + str(media_check["reason"]))
-        self.write_final_output_manifest(
-            project, out, aspect, int(variant_index or self._variant_index(project)),
-            shots, gate, media_check,
-        )
-        return out
+        base_out=self.root/'final'/project.id/f'final-{aspect.replace(":", "x")}{suffix}.mp4'
+        out=base_out
+        # Keep every previously delivered file immutable. The JSON manifest and video
+        # are a revision pair, so an existing video OR manifest forces a new filename.
+        if out.exists() or out.with_suffix(".json").exists():
+            stamp=datetime.datetime.now().strftime("%Y%m%d-%H%M%S-%f")
+            out=base_out.with_name(f"{base_out.stem}-r{stamp}{base_out.suffix}")
+            revision=2
+            while out.exists() or out.with_suffix(".json").exists():
+                out=base_out.with_name(f"{base_out.stem}-r{stamp}-{revision}{base_out.suffix}")
+                revision += 1
+        manifest_path=out.with_suffix(".json")
+        try:
+            concat([Path(s.video_path) for s in shots],out)
+            media_check=self.inspect_final_output(out, aspect)
+            if not media_check["valid"]:
+                raise RuntimeError("最终成片机器质检未通过：" + str(media_check["reason"]))
+            self.write_final_output_manifest(
+                project, out, aspect, int(variant_index or self._variant_index(project)),
+                shots, gate, media_check,
+            )
+            return out
+        except Exception:
+            # concat/ffprobe/manifest persistence can fail after creating a partial file.
+            # Never leave a broken MP4 or a dangling history row that looks deliverable.
+            for path in (out, manifest_path):
+                try:
+                    if path.exists():
+                        path.unlink()
+                except OSError:
+                    pass
+            plan=project.creative_plan or {}
+            manifests=plan.get("final_output_manifests",{})
+            if isinstance(manifests,dict):
+                plan["final_output_manifests"]={
+                    key:value for key,value in manifests.items()
+                    if not isinstance(value,dict) or str(value.get("output_path") or "")!=str(out)
+                }
+            records=plan.get("final_output_history_records",[])
+            if isinstance(records,list):
+                plan["final_output_history_records"]=[
+                    value for value in records
+                    if not isinstance(value,dict) or str(value.get("output_path") or "")!=str(out)
+                ]
+            raise

@@ -4,6 +4,9 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 import json
+import math
+import os
+import tempfile
 import uuid
 
 
@@ -17,15 +20,74 @@ class UsageLedger:
     def __init__(self, path: Path):
         self.path = path
         self.path.parent.mkdir(parents=True, exist_ok=True)
+        self.last_load_warning = ""
 
     def _load(self) -> list[dict[str, Any]]:
         if not self.path.exists():
             return []
         try:
             value = json.loads(self.path.read_text(encoding="utf-8"))
-            return value if isinstance(value, list) else []
-        except Exception:
+        except (OSError, json.JSONDecodeError) as exc:
+            # Never silently treat a damaged ledger as empty: preserve the original
+            # bytes before allowing a new ledger to be written.
+            stamp = datetime.now().strftime("%Y%m%d-%H%M%S-%f")
+            backup = self.path.with_name(f"{self.path.name}.corrupt-{stamp}")
+            try:
+                self.path.replace(backup)
+            except OSError as move_exc:
+                raise RuntimeError(
+                    f"成本账本无法读取，且无法安全保留损坏文件：{self.path} ({move_exc})"
+                ) from exc
+            self.last_load_warning = f"成本账本格式/读取异常，原文件已保留为：{backup}；原因：{exc}"
             return []
+        if not isinstance(value, list) or any(not isinstance(row, dict) for row in value):
+            stamp = datetime.now().strftime("%Y%m%d-%H%M%S-%f")
+            backup = self.path.with_name(f"{self.path.name}.corrupt-{stamp}")
+            try:
+                self.path.replace(backup)
+            except OSError as exc:
+                raise RuntimeError(
+                    f"成本账本结构异常，且无法安全保留损坏文件：{self.path} ({exc})"
+                ) from exc
+            self.last_load_warning = f"成本账本结构异常，原文件已保留为：{backup}"
+            return []
+        return value
+
+    def _save(self, rows: list[dict[str, Any]]) -> None:
+        """Atomically replace the ledger so an interrupted write cannot truncate history."""
+        temp_path = None
+        try:
+            with tempfile.NamedTemporaryFile(
+                mode="w",
+                encoding="utf-8",
+                newline="",
+                dir=self.path.parent,
+                prefix=f".{self.path.name}.",
+                suffix=".tmp",
+                delete=False,
+            ) as stream:
+                temp_path = Path(stream.name)
+                json.dump(rows, stream, ensure_ascii=False, indent=2)
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.replace(temp_path, self.path)
+        finally:
+            if temp_path is not None:
+                try:
+                    temp_path.unlink(missing_ok=True)
+                except OSError:
+                    pass
+
+    @staticmethod
+    def _validate_money(value: float, field_name: str) -> float:
+        """Reject invalid cost values before they can corrupt project totals or JSON."""
+        try:
+            amount = float(value)
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise ValueError(f"{field_name} 必须是有限的非负金额") from exc
+        if not math.isfinite(amount) or amount < 0:
+            raise ValueError(f"{field_name} 必须是有限的非负金额")
+        return round(amount, 6)
 
     def record(
         self,
@@ -49,6 +111,8 @@ class UsageLedger:
         quantity: float = 1.0,
         unit_cost_rmb: float = 0.0,
     ) -> dict[str, Any]:
+        estimated_cost_rmb = self._validate_money(estimated_cost_rmb, "estimated_cost_rmb")
+        unit_cost_rmb = self._validate_money(unit_cost_rmb, "unit_cost_rmb")
         item = {
             "id": uuid.uuid4().hex[:12],
             "time": datetime.now().isoformat(timespec="seconds"),
@@ -58,7 +122,7 @@ class UsageLedger:
             "shot_id": shot_id,
             "asset_kind": asset_kind,
             "quantity": float(quantity or 1.0),
-            "unit_cost_rmb": round(float(unit_cost_rmb or 0), 6),
+            "unit_cost_rmb": unit_cost_rmb,
             "model_id": model_id,
             "model_name": model_name,
             "provider": provider,
@@ -67,13 +131,13 @@ class UsageLedger:
             "prompt_tokens": int(prompt_tokens or 0),
             "completion_tokens": int(completion_tokens or 0),
             "total_tokens": int(total_tokens or 0),
-            "estimated_cost_rmb": round(float(estimated_cost_rmb or 0), 6),
+            "estimated_cost_rmb": estimated_cost_rmb,
             "duration_ms": int(duration_ms or 0),
             "error": error,
         }
         rows = self._load()
         rows.append(item)
-        self.path.write_text(json.dumps(rows[-2000:], ensure_ascii=False, indent=2), encoding="utf-8")
+        self._save(rows)
         return item
 
     def record_asset(
@@ -130,34 +194,33 @@ class UsageLedger:
             error=error,
         )
 
-    def project_summary(self, project_id: str) -> dict[str, Any]:
-        rows = [x for x in self._load() if x.get("project_id") == project_id]
-        success = [x for x in rows if x.get("status") == "success"]
-        by_category: dict[str, float] = {}
-        for row in success:
-            key = str(row.get("category") or "other")
-            by_category[key] = by_category.get(key, 0.0) + float(row.get("estimated_cost_rmb", 0) or 0)
-        return {
-            "project_id": project_id,
-            "entries": len(rows),
-            "actual_cost_rmb": round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in success), 6),
-            "by_category": {k: round(v, 6) for k, v in by_category.items()},
-        }
+
+    def all_entries(self) -> list[dict[str, Any]]:
+        """Return the complete local history newest-first; UI views must not silently truncate it."""
+        return self._load()[::-1]
 
     def recent(self, limit: int = 100) -> list[dict[str, Any]]:
-        return self._load()[-max(1, int(limit)):][::-1]
+        return self.all_entries()[:max(1, int(limit))]
 
     def project_summary(self, project_id: str) -> dict[str, Any]:
         rows = [x for x in self._load() if x.get("project_id") == project_id]
         success = [x for x in rows if x.get("status") == "success"]
+        # A failed stage can still incur provider cost (for example, a model
+        # returned billable tokens but malformed JSON). Include every recorded
+        # non-zero estimate in cost totals; success/failure counts remain separate.
+        estimated_cost = round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in rows), 6)
+        categories = sorted({x.get("category", "model") for x in rows if float(x.get("estimated_cost_rmb", 0) or 0) != 0})
         return {
             "project_id": project_id,
             "entries": len(rows),
             "success": len(success),
             "failed": len(rows) - len(success),
             "tokens": sum(int(x.get("total_tokens", 0) or 0) for x in rows),
-            "actual_cost_rmb": round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in success), 6),
-            "by_category": {category: round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in success if x.get("category") == category), 6) for category in sorted({x.get("category", "model") for x in success})},
+            "estimated_cost_rmb": estimated_cost,
+            # Kept for existing project/UI compatibility; it is an estimate,
+            # not a verified provider invoice total.
+            "actual_cost_rmb": estimated_cost,
+            "by_category": {category: round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in rows if x.get("category", "model") == category), 6) for category in categories},
         }
 
     def summary(self) -> dict[str, Any]:

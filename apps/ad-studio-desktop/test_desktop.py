@@ -1,5 +1,8 @@
+import ast
+import json
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 from ad_studio.engine import detect_platform, estimate_cost, new_project, mark_regenerate
@@ -281,6 +284,141 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertEqual(video["小计"], 5.0)
         self.assertTrue(c["计价说明"])
 
+    def test_failed_atomic_replace_preserves_previous_shot_file(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 1, "真人口播")
+            shot = project.shots[0]
+            output = store.render_path(project, shot)
+            output.write_bytes(b"previous-valid-output")
+            shot.video_path = str(output)
+            store.resolve_assets = lambda _project, _shot: None
+
+            class Provider:
+                provider_name = "测试Provider"
+                cost_per_shot_rmb = 0.0
+
+                def generate(self, request):
+                    request.output.write_bytes(b"new-output")
+                    return request.output
+
+            original_replace = Path.replace
+            def fail_only_final_replace(path, target):
+                if path.name.endswith(".part.mp4") and Path(target) == output:
+                    raise OSError("simulated atomic replace failure")
+                return original_replace(path, target)
+
+            with patch.object(Path, "replace", fail_only_final_replace):
+                with self.assertRaisesRegex(RuntimeError, "生成失败"):
+                    store._render_with_provider(project, shot, Provider())
+
+            self.assertTrue(output.is_file())
+            self.assertEqual(output.read_bytes(), b"previous-valid-output")
+            self.assertEqual(shot.video_path, str(output))
+            self.assertEqual(shot.status, "生成失败（已保留上一版本）")
+
+    def test_failed_standalone_cloud_asset_attempt_is_recorded_as_estimated_cost(self):
+        from ad_studio.providers import UnconfiguredProvider
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 1, "真人口播")
+            shot = project.shots[0]
+
+            class Provider:
+                provider_name = "独立素材测试Provider"
+                cost_per_asset_rmb = 0.18
+
+                def generate_asset(self, request):
+                    raise TimeoutError("asset generation timed out")
+
+            cloud = type("Decision", (), {"target": "cloud"})()
+            with patch("ad_studio.production.CapabilityRouter") as router, \
+                 patch("ad_studio.production.load_asset_provider", side_effect=[Provider(), UnconfiguredProvider()]):
+                router.return_value.decide_asset.return_value = cloud
+                with self.assertRaisesRegex(TimeoutError, "timed out"):
+                    store.generate_missing_asset(project, shot, "演员", "青年男演员", root / "asset-provider.json")
+
+            summary = store.ledger.project_summary(project.id)
+            self.assertEqual(summary["entries"], 1)
+            self.assertEqual(summary["failed"], 1)
+            self.assertEqual(summary["success"], 0)
+            self.assertAlmostEqual(summary["estimated_cost_rmb"], 0.18, places=6)
+            entry = next(x for x in store.ledger.all_entries() if x["project_id"] == project.id)
+            self.assertEqual(entry["status"], "failed")
+            self.assertIn("是否实际计费需以供应商账单核对", entry["error"])
+
+    def test_failed_cloud_asset_attempt_is_recorded_as_estimated_cost(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            library_root = root / "library"
+            library_root.mkdir()
+            store = ProductionStore(root, library_root=library_root)
+            project = new_project("https://item.jd.com/123.html", 1, "真人口播")
+            shot = project.shots[0]
+            project.creative_plan = {"shots": [{
+                "index": shot.index,
+                "asset_resolution": {
+                    "actor_tags": ["青年男演员"],
+                    "scene_tags": [],
+                    "product_tags": [],
+                    "generation_if_missing": True,
+                },
+            }]}
+            (library_root / "asset-generation.json").write_text(
+                json.dumps({"演员": {
+                    "endpoint": "https://assets.example.invalid/generate",
+                    "api_key": "test-key",
+                    "price_rmb": 0.18,
+                    "provider": "测试素材Provider",
+                }}),
+                encoding="utf-8",
+            )
+            cloud = type("Decision", (), {"target": "cloud"})()
+            with patch("ad_studio.asset_generation.CapabilityRouter.decide_asset", return_value=cloud), \
+                 patch("ad_studio.asset_generation.AssetGenerator._cloud_generate", side_effect=TimeoutError("asset provider timeout")):
+                result = store.resolve_assets(project, shot)
+
+            self.assertEqual(result["演员"]["source"], "自动生成失败")
+            summary = store.ledger.project_summary(project.id)
+            self.assertEqual(summary["entries"], 1)
+            self.assertEqual(summary["failed"], 1)
+            self.assertEqual(summary["success"], 0)
+            self.assertAlmostEqual(summary["estimated_cost_rmb"], 0.18, places=6)
+            entry = next(x for x in store.ledger.all_entries() if x["project_id"] == project.id)
+            self.assertEqual(entry["status"], "failed")
+            self.assertIn("是否实际计费需以供应商账单核对", entry["error"])
+
+    def test_failed_video_provider_attempt_is_recorded_as_estimated_cost(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 1, "真人口播")
+            shot = project.shots[0]
+            store.resolve_assets = lambda _project, _shot: None
+
+            class Provider:
+                provider_name = "失败测试Provider"
+                cost_per_shot_rmb = 0.72
+
+                def generate(self, request):
+                    raise TimeoutError("provider timed out after request submission")
+
+            with self.assertRaisesRegex(RuntimeError, "生成失败"):
+                store._render_with_provider(project, shot, Provider())
+
+            summary = store.ledger.project_summary(project.id)
+            self.assertEqual(summary["entries"], 1)
+            self.assertEqual(summary["failed"], 1)
+            self.assertEqual(summary["success"], 0)
+            self.assertAlmostEqual(summary["estimated_cost_rmb"], 0.72, places=6)
+            self.assertAlmostEqual(project.actual_cost_rmb, 0.72, places=6)
+            entry = next(x for x in store.ledger.all_entries() if x["project_id"] == project.id)
+            self.assertEqual(entry["status"], "failed")
+            self.assertIn("是否实际计费需以供应商账单核对", entry["error"])
+            self.assertEqual(shot.status, "生成失败")
+
     def test_only_selected_shot_changes_version(self):
         p = new_project("https://item.jd.com/123.html", 2, "真人口播")
         old = [s.version for s in p.shots]
@@ -345,19 +483,31 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertEqual(task["status"], "AI补镜头生成失败")
         self.assertFalse(task.get("accepted_into_storyboard", False))
 
-    def test_hybrid_generated_shot_requires_human_review_before_acceptance(self):
+    def test_hybrid_generated_shot_requires_review_and_valid_media_before_acceptance(self):
         from ad_studio.models import Shot, accept_hybrid_generated_shot
-        shots = [Shot(id="shot-01", index=1, title="原镜头", visual="商品", script="")]
-        task = {
-            "task_id": "gap-1", "generated_path": "/tmp/gap.mp4",
-            "review_status": "待复核", "need": "通用辅助画面",
-        }
-        with self.assertRaises(ValueError):
-            accept_hybrid_generated_shot(task, shots)
-        task["review_status"] = "已通过"
-        updated = accept_hybrid_generated_shot(task, shots)
-        self.assertEqual(updated[-1].storyboard_review, "已通过")
-        self.assertTrue(task["accepted_into_storyboard"])
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            output = root / "gap.mp4"
+            shots = [Shot(id="shot-01", index=1, title="原镜头", visual="商品", script="")]
+            task = {
+                "task_id": "gap-1", "generated_path": str(output),
+                "review_status": "待复核", "need": "通用辅助画面",
+                "generation_provider": "测试Provider", "generation_cost_rmb": 0.72,
+            }
+            with self.assertRaisesRegex(ValueError, "人工复核通过"):
+                accept_hybrid_generated_shot(task, shots)
+            task["review_status"] = "已通过"
+            with self.assertRaisesRegex(ValueError, "不存在"):
+                accept_hybrid_generated_shot(task, shots)
+            output.write_bytes(b"")
+            with self.assertRaisesRegex(ValueError, "为空"):
+                accept_hybrid_generated_shot(task, shots)
+            output.write_bytes(b"valid-video")
+            updated = accept_hybrid_generated_shot(task, shots)
+            self.assertEqual(updated[-1].storyboard_review, "已通过")
+            self.assertEqual(updated[-1].provider, "测试Provider")
+            self.assertEqual(updated[-1].actual_cost_rmb, 0.72)
+            self.assertTrue(task["accepted_into_storyboard"])
 
     def test_reviewed_hybrid_task_persists_into_project(self):
         with tempfile.TemporaryDirectory() as td:
@@ -367,14 +517,16 @@ class DesktopCoreTests(unittest.TestCase):
                 "task_id": "GAP-PERSIST-1",
                 "generated_path": str(Path(td) / "support.mp4"),
                 "review_status": "已通过",
-                "estimated_cost_rmb": 0.72,
-                "provider": "测试Provider",
+                "generation_cost_rmb": 0.72,
+                "generation_provider": "测试Provider",
                 "target_shot_index": 2,
             }
             Path(task["generated_path"]).write_bytes(b"fake-video")
             accepted = store.accept_hybrid_generated_task(p, task)
             self.assertIsNotNone(accepted)
             self.assertTrue(task["accepted_into_storyboard"])
+            self.assertEqual(accepted.provider, "测试Provider")
+            self.assertEqual(accepted.actual_cost_rmb, 0.72)
             self.assertEqual(len(p.shots), 6)
             self.assertTrue(any(s.id == task["accepted_shot_id"] for s in p.shots))
             restored = store.load(p.id)
@@ -536,6 +688,24 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(app.project.creative_plan["variant_outputs"]["1"]["path"], "/tmp/a-final.mp4")
             self.assertIn("2", app.project.creative_plan["variant_shot_cache"])
             self.assertIn("1", app.project.creative_plan["variant_footage_gap_tasks"])
+
+    def test_batch_generation_uses_warning_dialog_when_any_step_fails(self):
+        app_path = Path(__file__).parent / "ad_studio" / "app.py"
+        source = app_path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "batch_generate_variants")
+        method_source = ast.get_source_segment(source, method)
+        self.assertIn("if failed:", method_source)
+        self.assertIn("messagebox.showwarning('一键生成结果',msg)", method_source)
+        self.assertIn("messagebox.showinfo('一键生成结果',msg)", method_source)
+        self.assertNotIn("messagebox.showinfo('一键生成完成',msg)", method_source)
+        self.assertIn("失败项：{len(failed)} 个", method_source)
+        self.assertNotIn("失败镜头：{len(failed)} 个", method_source)
+        self.assertIn("skipped=[]", method_source)
+        self.assertIn('skipped.append(f"方案{self.active_variant_index}：用户未批准分镜，已停止后续批量生成")', method_source)
+        self.assertIn("跳过项：{len(skipped)} 个", method_source)
+        self.assertIn("已停止/跳过：", method_source)
 
     def test_batch_generation_captures_original_variant_before_preflight(self):
         # 回归：预算预审会切换方案，原始方案必须在预审前锁定。
@@ -1002,6 +1172,31 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertFalse((p.creative_plan or {}).get("final_output_manifests"))
 
 
+    def test_a25_build_final_cleans_partial_output_when_concat_raises(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            p = new_project("https://item.jd.com/123.html", 2, "真人口播")
+            for shot in p.shots:
+                path = root / f"{shot.id}.mp4"
+                path.write_bytes(b"video")
+                shot.video_path = str(path)
+
+            def partial_then_fail(inputs, output):
+                Path(output).parent.mkdir(parents=True, exist_ok=True)
+                Path(output).write_bytes(b"partial")
+                raise RuntimeError("concat failed")
+
+            with patch("ad_studio.production.concat", side_effect=partial_then_fail):
+                with self.assertRaisesRegex(RuntimeError, "concat failed"):
+                    store.build_final(p, "9:16", 1)
+            final_dir = root / "final" / p.id
+            self.assertFalse(final_dir.exists() and any(final_dir.glob("final-9x16-v1*.mp4")))
+            self.assertFalse(final_dir.exists() and any(final_dir.glob("final-9x16-v1*.json")))
+            self.assertFalse((p.creative_plan or {}).get("final_output_manifests"))
+            self.assertFalse((p.creative_plan or {}).get("final_output_history_records"))
+
     def test_a26_final_output_history_keeps_revisions_independent(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
@@ -1221,14 +1416,87 @@ class DesktopCoreTests(unittest.TestCase):
             corrupt = root / "final.mp4"
             history = {"output_path": str(corrupt), "delivery_status": "可交付"}
             project.creative_plan["final_output_history_records"] = [history]
+            project.creative_plan["variant_shot_cache"] = {
+                "1": [dict(shot.__dict__)],
+                "2": [dict(shot.__dict__, video_path=str(missing), status="已生成")],
+            }
             store.save(project)
             result = store.recover_project(project)
             self.assertEqual(result["removed_temp_files"], 1)
             self.assertEqual(result["missing_media"], [shot.id])
             self.assertEqual(result["invalid_outputs"], [str(corrupt)])
             self.assertEqual(shot.status, "待重新生成/重新选择素材")
+            for variant_shots in project.creative_plan["variant_shot_cache"].values():
+                self.assertIsNone(variant_shots[0]["video_path"])
+                self.assertEqual(variant_shots[0]["status"], "待重新生成/重新选择素材")
             self.assertEqual(history["delivery_status"], "不可交付")
             self.assertEqual(project.creative_plan["recovery"]["status"], "可继续")
+
+    def test_recovery_reconciles_project_budget_from_durable_ledger(self):
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td))
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            project.actual_cost_rmb = 0.05
+            store.save(project)
+
+            # A previous charge is already in the ledger. Simulate a crash
+            # after a second append but before the project JSON cache is updated.
+            store.ledger.record(
+                function="演员素材生成",
+                model_id="",
+                model_name="test provider",
+                provider="test provider",
+                model="",
+                status="success",
+                estimated_cost_rmb=0.05,
+                project_id=project.id,
+                category="asset",
+            )
+            store.ledger.record(
+                function="视频镜头生成",
+                model_id="",
+                model_name="test provider",
+                provider="test provider",
+                model="",
+                status="success",
+                estimated_cost_rmb=0.23,
+                project_id=project.id,
+                category="video",
+            )
+            project.actual_cost_rmb = 0.05
+            store.recover_project(project)
+
+            self.assertAlmostEqual(project.actual_cost_rmb, 0.28, places=6)
+            self.assertAlmostEqual(project.cost_estimate["actual_cost_rmb"], 0.28, places=6)
+            self.assertAlmostEqual(project.actual_cost_summary["estimated_cost_rmb"], 0.28, places=6)
+            restored = store.load(project.id)
+            self.assertAlmostEqual(restored.actual_cost_rmb, 0.28, places=6)
+
+    def test_first_ledger_charge_preserves_legacy_project_cost(self):
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td))
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            # This total predates the production ledger and must remain part of
+            # the budget after new ledger-tracked generation charges are added.
+            project.actual_cost_rmb = 0.50
+            store.save(project)
+
+            store._record_actual_cost(
+                project,
+                shot=project.shots[0],
+                category="video",
+                amount_rmb=0.23,
+                provider="test provider",
+                unit_cost_rmb=0.23,
+                function="视频镜头生成",
+            )
+            self.assertAlmostEqual(project.legacy_cost_baseline_rmb, 0.50, places=6)
+            self.assertAlmostEqual(project.actual_cost_rmb, 0.73, places=6)
+
+            restored = store.load(project.id)
+            store.recover_project(restored)
+            self.assertAlmostEqual(restored.actual_cost_rmb, 0.73, places=6)
+            self.assertAlmostEqual(restored.legacy_cost_baseline_rmb, 0.50, places=6)
 
     def test_a30_budget_and_non_retryable_failures_have_explicit_next_actions(self):
         with tempfile.TemporaryDirectory() as td:
@@ -1258,6 +1526,176 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertIn(phrase, agents)
         self.assertIn("当前已知限制", help_doc)
         self.assertIn("测试", logic)
+
+    def test_in_app_help_page_exposes_current_feature_status_and_full_help_document(self):
+        app_path = Path(__file__).parent / "ad_studio" / "app.py"
+        source = app_path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        ui_method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "ui")
+        help_method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "help_view")
+        ui_source = ast.get_source_segment(source, ui_method)
+        help_source = ast.get_source_segment(source, help_method)
+        self.assertIn("📖 帮助与功能说明", ui_source)
+        self.assertIn("command=self.help_view", ui_source)
+        self.assertIn("当前功能与可用状态", help_source)
+        self.assertIn("完整帮助文档", help_source)
+        self.assertIn("HELP.md", help_source)
+        self.assertIn("可调用模型", help_source)
+        self.assertIn("视频/素材生产费用", help_source)
+        self.assertIn("不代表真实供应商", help_source)
+        help_doc = (Path(__file__).parent / "HELP.md").read_text(encoding="utf-8")
+        self.assertIn("## 功能总表", help_doc)
+        self.assertIn("真实投放数据", help_doc)
+        self.assertIn("¥0 表示可用预算为零", help_doc)
+
+    def test_main_ui_separates_setup_tools_and_production_workspace(self):
+        app_path = Path(__file__).parent / "ad_studio" / "app.py"
+        source = app_path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        ui_method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "ui")
+        ui_source = ast.get_source_segment(source, ui_method)
+        self.assertIn("① 商品与任务设置", ui_source)
+        self.assertIn("② 工具与检查", ui_source)
+        self.assertIn("③ 分镜生产链", ui_source)
+        self.assertIn("④ 本地资产库", ui_source)
+        self.assertIn("def add_button_row", ui_source)
+
+
+    def test_final_output_history_and_recovery_tolerate_stat_permission_errors(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 1, "真人口播")
+            output = root / "final-output.mp4"
+            output.write_bytes(b"video")
+            record = {"output_path": str(output), "delivery_status": "可交付"}
+            project.creative_plan["final_output_history_records"] = [record]
+
+            # Simulate a file that still passes is_file() but becomes inaccessible
+            # before stat(); the history UI and recovery path must fail closed.
+            original_is_file = Path.is_file
+            original_stat = Path.stat
+            def is_file_with_target_error(path_obj):
+                return True if path_obj == output else original_is_file(path_obj)
+            def stat_with_target_error(path_obj, *args, **kwargs):
+                if path_obj == output:
+                    raise PermissionError("permission denied")
+                return original_stat(path_obj, *args, **kwargs)
+            with patch.object(Path, "is_file", is_file_with_target_error), patch.object(
+                Path, "stat", stat_with_target_error
+            ):
+                rows = store.final_output_history(project)
+                self.assertFalse(rows[0]["exists"])
+                self.assertEqual(rows[0]["delivery_status"], "不可交付")
+                self.assertIn("缺失", rows[0]["recovery_reason"])
+                result = store.recover_project(project)
+
+            self.assertEqual(result["invalid_outputs"], [str(output)])
+            self.assertEqual(record["delivery_status"], "不可交付")
+
+    def test_final_output_history_does_not_show_missing_or_empty_file_as_deliverable(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 2, "真人口播")
+            output = root / "final-output.mp4"
+            output.write_bytes(b"valid-enough-for-history")
+            gate = {"allowed": True, "reasons": [], "checked": True}
+            media = {"valid": True, "duration_seconds": 5.0, "width": 1080, "height": 1920}
+            store.write_final_output_manifest(project, output, "9:16", 1, project.shots[:1], gate, media)
+
+            row = store.final_output_history(project)[0]
+            self.assertEqual(row["delivery_status"], "可交付")
+            self.assertTrue(row["exists"])
+
+            output.unlink()
+            row = store.final_output_history(project)[0]
+            self.assertEqual(row["delivery_status"], "不可交付")
+            self.assertFalse(row["exists"])
+            self.assertIn("缺失", row["recovery_reason"])
+
+            output.mkdir()
+            row = store.final_output_history(project)[0]
+            self.assertEqual(row["delivery_status"], "不可交付")
+            self.assertFalse(row["exists"])
+
+    def test_final_render_failure_updates_main_status_and_shows_error(self):
+        app_path = Path(__file__).parent / "ad_studio" / "app.py"
+        source = app_path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "final_render")
+        method_source = ast.get_source_segment(source, method)
+        self.assertIn("except Exception as e:", method_source)
+        self.assertIn("self.detail.set(f'最终成片生成失败：{e}')", method_source)
+        self.assertIn("messagebox.showerror('暂不能成片',str(e))", method_source)
+
+    def test_final_delivery_center_surfaces_initial_and_retry_check_errors(self):
+        app_path = Path(__file__).parent / "ad_studio" / "app.py"
+        source = app_path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "final_delivery_center")
+        method_source = ast.get_source_segment(source, method)
+        self.assertIn("try:\n            result=self._run_final_delivery_recheck()", method_source)
+        self.assertIn("最终交付检查失败", method_source)
+        self.assertIn("except Exception as exc:", method_source)
+        self.assertIn("status.set('🔴 检查失败')", method_source)
+        self.assertIn("parent=win", method_source)
+        self.assertIn("请检查项目文件、成片路径和磁盘权限后重试", method_source)
+
+    def test_final_delivery_history_ui_displays_invalid_output_reason(self):
+        app_path = Path(__file__).parent / "ad_studio" / "app.py"
+        source = app_path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "final_delivery_center")
+        method_source = ast.get_source_segment(source, method)
+        self.assertIn("'reason'", method_source)
+        self.assertIn("'失效原因'", method_source)
+        self.assertIn("row.get('recovery_reason','')", method_source)
+        self.assertIn("row['delivery_status']", method_source)
+
+    def test_reopening_project_runs_local_recovery_and_surfaces_findings(self):
+        app_path = Path(__file__).parent / "ad_studio" / "app.py"
+        source = app_path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        load_method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "load_project")
+        load_source = ast.get_source_segment(source, load_method)
+        self.assertIn("self.store.recover_project(project)", load_source)
+        self.assertIn("recovery.get('removed_temp_files')", load_source)
+        self.assertIn("recovery.get('missing_media')", load_source)
+        self.assertIn("recovery.get('invalid_outputs')", load_source)
+        self.assertIn("恢复检查：", load_source)
+        self.assertLess(load_source.index("self.store.recover_project(project)"), load_source.index("self._restore_loaded_variant_state()"))
+        self.assertIn("does not call a provider", load_source)
+
+    def test_open_project_reports_corrupt_json_and_recovery_exceptions_without_switching_project(self):
+        app_path = Path(__file__).parent / "ad_studio" / "app.py"
+        source = app_path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        load_method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "load_project")
+        load_source = ast.get_source_segment(source, load_method)
+        self.assertIn("json.JSONDecodeError", load_source)
+        self.assertIn("项目文件无法读取或 JSON 格式损坏", load_source)
+        self.assertIn("项目恢复未完成", load_source)
+        self.assertIn("self.store.record_recovery_failure", load_source)
+        self.assertIn("当前工作项目未切换", load_source)
+        self.assertIn("parent=win", load_source)
+        # Tk message strings must contain real line breaks, not literal backslash-n text.
+        self.assertNotIn(r"\\n文件：", load_source)
+        self.assertNotIn(r"\\n原因：", load_source)
+        self.assertNotIn(r"\\n\\n软件不会", load_source)
+        recovery_try = load_source.index("recovery=self.store.recover_project(project)")
+        recovery_error = load_source.index("except Exception as exc:", recovery_try)
+        project_switch = load_source.index("self.project=project")
+        self.assertLess(recovery_try, recovery_error)
+        self.assertLess(recovery_error, project_switch)
 
 
 if __name__ == "__main__":

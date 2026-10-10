@@ -107,5 +107,32 @@ class A33FullUserFlowTests(unittest.TestCase):
                 self.assertTrue(manifest["media_check"]["valid"])
 
 
+    def test_final_output_revisions_do_not_overwrite_previous_deliveries(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = make_project("广告投放视频")
+            self._prepare_completed_shots(root, project)
+
+            first_output, first_manifest = self._finalize(store, project, root)
+            first_manifest_path = first_output.with_suffix(".json")
+            first_video_bytes = first_output.read_bytes()
+            first_manifest_bytes = first_manifest_path.read_bytes()
+
+            second_output, second_manifest = self._finalize(store, project, root)
+
+            self.assertNotEqual(first_output, second_output)
+            self.assertTrue(first_output.exists())
+            self.assertTrue(second_output.exists())
+            self.assertEqual(first_output.read_bytes(), first_video_bytes)
+            self.assertEqual(first_manifest_path.read_bytes(), first_manifest_bytes)
+            self.assertNotEqual(first_manifest["revision_id"], second_manifest["revision_id"])
+            history = store.final_output_history(project)
+            matching = [item for item in history if item["variant_index"] == 1 and item["aspect"] == "9:16"]
+            self.assertEqual(len(matching), 2)
+            self.assertEqual({item["output_path"] for item in matching}, {str(first_output), str(second_output)})
+            self.assertTrue(all(item["exists"] for item in matching))
+
+
 if __name__ == "__main__":
     unittest.main()
