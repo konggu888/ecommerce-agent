@@ -2598,7 +2598,9 @@ class App(tk.Tk):
             self.store.save(self.project)
             self.detail.set(f'方案{self.active_variant_index} 最终成片已独立输出：{out}')
             messagebox.showinfo('完成',f'方案{self.active_variant_index} 最终广告已生成\n{out}')
-        except Exception as e: messagebox.showerror('暂不能成片',str(e))
+        except Exception as e:
+            self.detail.set(f'最终成片生成失败：{e}')
+            messagebox.showerror('暂不能成片',str(e))
 
     def save(self):
         if not self.project:return messagebox.showinfo('提示','当前没有项目可保存。')
