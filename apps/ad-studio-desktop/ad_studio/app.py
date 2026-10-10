@@ -1523,7 +1523,7 @@ class App(tk.Tk):
                 ledger_warnings.append(f'{label}：{warning}')
         ttk.Label(frm,text='本机成本账本',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
         if ledger_warnings:
-            ttk.Label(frm,text='⚠ 成本账本已隔离异常文件，历史可能需要人工恢复：\\n'+'\\n'.join(ledger_warnings),
+            ttk.Label(frm,text='⚠ 成本账本已隔离异常文件，历史可能需要人工恢复：\n'+'\n'.join(ledger_warnings),
                       foreground='#9A3412',wraplength=1180,justify='left').pack(anchor='w',pady=(4,6))
         ttk.Label(frm,text=f"模型调用：{model_summary['calls']} 次｜成功 {model_summary['success']}｜失败 {model_summary['failed']}｜Token {model_summary['tokens']:,}｜模型调用估算金额 ¥{model_summary['estimated_cost_rmb']:.4f}").pack(anchor='w',pady=(3,2))
         production_line=f"视频/素材生产费用：{production_summary['calls']} 条｜成功 {production_summary['success']}｜失败 {production_summary['failed']}｜账本金额合计 ¥{production_summary['estimated_cost_rmb']:.4f}"
