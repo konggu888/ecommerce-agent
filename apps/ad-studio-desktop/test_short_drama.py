@@ -8,6 +8,7 @@ from ad_studio.short_drama import (
 
 def sample_plan():
     return {
+        "drama_business_mode": "product_placement",
         "genre": "都市轻喜剧",
         "genre_reasoning": "目标人群熟悉通勤生活",
         "logline": "一场出门前的混乱让主角发现商品的实际用途",
@@ -59,6 +60,9 @@ class ShortDramaTests(unittest.TestCase):
         self.assertIn("测试商品", prompt)
         self.assertIn("已有广告脚本", prompt)
         self.assertIn("不是把常规广告脚本扩写成几个镜头", prompt)
+        self.assertIn("constraints.drama_business_mode", prompt)
+        general_prompt = build_short_drama_prompt({}, {"drama_business_mode": "general"})
+        self.assertIn("允许完全不带商品", general_prompt)
 
     def test_builds_existing_production_contract(self):
         rows = short_drama_production_rows(sample_plan(), "测试商品")
@@ -114,6 +118,24 @@ class ShortDramaTests(unittest.TestCase):
         self.assertEqual([x["episode_shot_index"] for x in rows], [1, 1])
         self.assertTrue(rows[1]["title"].startswith("第2集"))
 
+    def test_general_mode_can_generate_without_product(self):
+        seen = {}
+        class FakeRouter:
+            def resolve_route(self, function): return "profile"
+            def complete_json(self, profile, prompt, function=None):
+                plan = sample_plan()
+                plan["drama_business_mode"] = "general"
+                plan["storyboard"][0]["product_integration"] = "本镜不出现商品"
+                return plan
+        result = generate_short_drama(FakeRouter(), {}, {"drama_business_mode": "general"})
+        self.assertEqual(result["drama_business_mode"], "general")
+
+    def test_rejects_unknown_drama_business_mode(self):
+        plan = sample_plan()
+        plan["drama_business_mode"] = "random_mode"
+        with self.assertRaises(ShortDramaPlanError):
+            validate_short_drama(plan)
+
     def test_rejects_missing_episode_in_series(self):
         plan = sample_plan()
         plan["format_mode"] = "continuous_series"
@@ -131,7 +153,7 @@ class ShortDramaTests(unittest.TestCase):
             def complete_json(self, profile, prompt, function=None):
                 seen["function"] = function
                 return sample_plan()
-        result = generate_short_drama(FakeRouter(), {"name": "商品"}, {})
+        result = generate_short_drama(FakeRouter(), {"name": "商品"}, {"drama_business_mode": "product_placement"})
         self.assertEqual(seen["route"], "AI短剧编导")
         self.assertEqual(seen["function"], "AI短剧编导")
         self.assertEqual(len(result["storyboard"]), 1)

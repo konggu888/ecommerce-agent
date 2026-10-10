@@ -14,7 +14,8 @@ SHORT_DRAMA_SCHEMA = {
     "episode_count": "integer",
     "series_bible": {"series_arc": "全剧主线", "character_state": "人物长期状态与关系", "continuity_rules": ["跨集必须保持的事实"]},
     "episodes": [{"episode_number": "integer", "title": "集名", "logline": "本集梗概", "plot_beats": ["本集节拍"], "ending_hook": "本集结尾/悬念", "full_script": "本集完整剧本", "storyboard": ["本集分镜，字段与根级 storyboard 相同"]}],
-    "genre": "AI根据商品、人群、卖点和场景自主判断的短剧题材",
+    "drama_business_mode": "通用AI短剧/商品植入短剧/商品转化短剧",
+    "genre": "AI根据创作目标、人群、卖点和场景自主判断的短剧题材",
     "genre_reasoning": "为什么该题材适合这个商品与目标受众",
     "logline": "一句话故事梗概",
     "premise": "故事前提与核心创意机制",
@@ -70,11 +71,14 @@ def build_short_drama_prompt(product: dict[str, Any], constraints: dict[str, Any
     }
     return (
         "你是独立的AI短剧编剧、导演和商业叙事设计师。当前任务是创作完整短剧，"
-        "不是把常规广告脚本扩写成几个镜头。必须先理解商品与目标人群，再自主选择最合适的故事机制。\n"
+        "不是把常规广告脚本扩写成几个镜头。必须先理解用户选择的创作目标、已有素材和目标受众（如适用），再自主选择最合适的故事机制。\n"
         "要求：\n"
-        "1. 题材必须根据商品事实、目标人群、使用场景和传播目标推导，不得机械套用固定题材清单。\n"
+        "0. 先严格识别 constraints.drama_business_mode：general=通用AI短剧，允许完全不带商品；product_placement=商品植入短剧，商品自然参与剧情但不能挤压故事；product_conversion=商品转化短剧，剧情服务于指定商品的目标人群与转化目标。不得把三种模式混为一谈。\n"
+        "0.1 通用AI短剧不要求必须出现商品；如果没有商品资料，不得编造商品，分镜 product_integration 应写明“不适用”或“本镜不出现商品”。若用户提供商品，也只在剧情合理且用户选择允许时使用。\n"
+        "0.2 商品植入/商品转化模式必须有指定商品资料；商品植入应自然，商品转化需明确剧情节点、真实卖点展示和转化路径，但不得夸大效果或虚构事实。\n"
+        "1. 题材必须根据创作目标、商品事实（如适用）、目标人群、使用场景和传播目标推导，不得机械套用固定题材清单。\n"
         "2. 设计完整的人物目标与关系、场景、冲突、节奏、转折和结尾；故事要有因果，不是卖点罗列。\n"
-        "3. 商品应在剧情中自然出现，但不得篡改商品外观、结构、核心功能、使用方式、规格、功效或其他事实。\n"
+        "3. 商品是否出现必须服从所选创作目标：通用模式允许不出现；商品植入/转化模式应按目标呈现。任何模式都不得篡改商品外观、结构、核心功能、使用方式、规格、功效或其他事实。\n"
         "4. 未提供或无法验证的商品信息必须标为待确认，不得编造认证、销量、价格、效果或用户证言。\n"
         "5. 输出完整剧本和可执行分镜。每个分镜必须说明动作、台词、场景、人物、商品融入方式、素材需求和生成提示。\n"
         "6. 提供至少两个故事方向备选，机制应有实质差异，不只是换标题。\n"
@@ -82,7 +86,9 @@ def build_short_drama_prompt(product: dict[str, Any], constraints: dict[str, Any
         "8. 只输出符合给定结构的合法JSON，不要输出Markdown。\n"
         "9. 如果 constraints.short_drama_mode 为 continuous_series 或 anthology_series，必须输出指定数量的 episodes；每集有独立剧本、分镜和结尾钩子。根级 storyboard 必须按集顺序汇总全部分镜，每个镜头带 episode_number；不要把多集缩成一集。\n"
         "10. continuous_series 必须跨集承接人物状态、因果和悬念；anthology_series 共用人物/世界观但每集有相对独立的故事。单集模式 episodes 可以只含一集。\n"
-        "11. 每个镜头必须带 episode_number；同一角色的外貌、身份、关键服装和关系在 series_bible 中保持稳定。\n\n输入与约束：\n"
+
+        "11. 每个镜头必须带 episode_number；同一角色的外貌、身份、关键服装和关系在 series_bible 中保持稳定。\n"
+        "12. 输出必须包含 drama_business_mode，且与 constraints.drama_business_mode 一致；人物、场景、商品素材需求要与所选模式匹配。\n\n输入与约束：\n"
         + json.dumps(payload, ensure_ascii=False, indent=2)
     )
 
@@ -119,6 +125,9 @@ def validate_short_drama(raw: dict[str, Any]) -> dict[str, Any]:
                 f"第{e.get('episode_number', i)}集：{e.get('title', '')}\\n{e.get('full_script', '')}"
                 for i, e in enumerate(episodes, 1)
             )
+    raw.setdefault("drama_business_mode", "product_placement")
+    if raw.get("drama_business_mode") not in {"general", "product_placement", "product_conversion"}:
+        raise ShortDramaPlanError("短剧商业模式无效，必须是通用AI短剧、商品植入短剧或商品转化短剧。")
     raw.setdefault("format_mode", "single_episode")
     raw.setdefault("episode_count", 1)
     raw.setdefault("series_bible", {})
@@ -189,6 +198,11 @@ def generate_short_drama(model_router, product: dict[str, Any], constraints: dic
     validated = validate_short_drama(result)
     requested_mode = str(constraints.get("short_drama_mode", "single_episode"))
     requested_count = int(constraints.get("episode_count", 1))
+    requested_business_mode = str(constraints.get("drama_business_mode", "product_placement"))
+    if validated.get("drama_business_mode") != requested_business_mode:
+        raise ShortDramaPlanError(
+            f"模型返回的短剧商业模式为 {validated.get('drama_business_mode')}，与所选模式 {requested_business_mode} 不一致；请重新生成，避免创作目标错位。"
+        )
     if validated.get("format_mode") != requested_mode:
         raise ShortDramaPlanError(
             f"模型返回的短剧模式为 {validated.get('format_mode')}，与所选模式 {requested_mode} 不一致；请重新生成，避免把多集需求误当成单集。"

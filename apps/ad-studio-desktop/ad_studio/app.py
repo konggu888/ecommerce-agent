@@ -1960,26 +1960,31 @@ class App(tk.Tk):
         if not self.project:
             return messagebox.showinfo('提示','请先输入商品链接并创建/打开一个商品项目，再启动 AI 短剧编导。')
         product = dict(self.project.product_info or {})
-        if not product:
-            return messagebox.showerror('商品资料缺失','当前项目没有可用的商品资料，请重新创建项目或补充商品资料。')
         mode_dialog = tk.Toplevel(self)
-        mode_dialog.title('选择短剧模式与集数')
-        mode_dialog.geometry('520x250')
+        mode_dialog.title('选择短剧创作目标、模式与集数')
+        mode_dialog.geometry('560x390')
         mode_dialog.transient(self)
         mode_dialog.grab_set()
         mode_var = tk.StringVar(value='单集短剧')
+        business_mode_var = tk.StringVar(value='通用AI短剧（可以完全不带商品）')
         count_var = tk.StringVar(value='6')
-        ttk.Label(mode_dialog, text='创作模式').pack(anchor='w', padx=16, pady=(16, 4))
+        ttk.Label(mode_dialog, text='短剧创作目标').pack(anchor='w', padx=16, pady=(14, 4))
+        ttk.Combobox(
+            mode_dialog, textvariable=business_mode_var, state='readonly',
+            values=('通用AI短剧（可以完全不带商品）', '商品植入短剧（商品自然融入剧情）', '商品转化短剧（剧情服务于商品转化）'),
+        ).pack(fill='x', padx=16)
+        ttk.Label(mode_dialog, text='通用AI短剧可以不提供商品；后两种模式需要商品资料。', wraplength=520).pack(anchor='w', padx=16, pady=(3, 8))
+        ttk.Label(mode_dialog, text='分集结构').pack(anchor='w', padx=16, pady=(2, 4))
         ttk.Combobox(
             mode_dialog, textvariable=mode_var, state='readonly',
             values=('单集短剧', '连续多集短剧', '系列短剧'),
         ).pack(fill='x', padx=16)
         ttk.Label(
             mode_dialog,
-            text='模式说明：单集短剧讲完一个完整故事；连续多集短剧前后剧情承接；系列短剧共享人物与世界观、每集相对独立',
-            wraplength=480,
-        ).pack(anchor='w', padx=16, pady=6)
-        ttk.Label(mode_dialog, text='总集数（多集模式填写 2—50；单集模式自动按1集处理）').pack(anchor='w', padx=16, pady=(4, 2))
+            text='单集短剧讲完一个完整故事；连续多集前后承接；系列短剧共享人物与世界观、每集相对独立。',
+            wraplength=520,
+        ).pack(anchor='w', padx=16, pady=5)
+        ttk.Label(mode_dialog, text='总集数（多集模式填写 2—50；单集模式自动按1集处理）').pack(anchor='w', padx=16, pady=(2, 2))
         ttk.Entry(mode_dialog, textvariable=count_var).pack(fill='x', padx=16)
         selected = {}
         def confirm_mode():
@@ -1989,8 +1994,17 @@ class App(tk.Tk):
                 '连续多集短剧': 'continuous_series',
                 '系列短剧': 'anthology_series',
             }.get(selected_mode)
+            selected_business_label = business_mode_var.get()
+            selected['business_mode'] = {
+                '通用AI短剧（可以完全不带商品）': 'general',
+                '商品植入短剧（商品自然融入剧情）': 'product_placement',
+                '商品转化短剧（剧情服务于商品转化）': 'product_conversion',
+            }.get(selected_business_label)
             if not selected['mode']:
                 messagebox.showerror('模式无效', '请选择单集短剧、连续多集短剧或系列短剧。', parent=mode_dialog)
+                return
+            if selected['business_mode'] != 'general' and not product:
+                messagebox.showerror('商品资料缺失', '商品植入短剧和商品转化短剧需要先补充商品资料；如暂时不提供商品，请选择“通用AI短剧”。', parent=mode_dialog)
                 return
             try:
                 selected['count'] = 1 if selected['mode'] == 'single_episode' else int(count_var.get().strip())
@@ -2009,11 +2023,13 @@ class App(tk.Tk):
             return
         mode = selected['mode']
         episode_count = selected['count']
+        business_mode = selected['business_mode']
+        business_label = {'general': '通用AI短剧', 'product_placement': '商品植入短剧', 'product_conversion': '商品转化短剧'}[business_mode]
         mode_label = {'single_episode': '单集短剧', 'continuous_series': '连续多集短剧', 'anthology_series': '系列短剧'}[mode]
         if not messagebox.askyesno(
             '启动 AI 短剧编导',
-            f'创作模式：{mode_label}\\n计划集数：{episode_count}\\n\\n'
-            'AI 将根据当前商品资料设计题材、人物关系、剧情冲突/反转、剧本和分集分镜。\\n'
+            f'创作目标：{business_label}\\n分集结构：{mode_label}\\n计划集数：{episode_count}\\n\\n'
+            'AI 将按创作目标设计人物关系、剧情冲突/反转、剧本和分集分镜；通用AI短剧允许完全不出现商品。\\n'
             '本步骤会调用“AI短剧编导”路由模型；模型费用按该模型配置计费。\\n'
             '这里只生成并保存创作方案，不会自动调用付费素材/视频生成服务，也不会覆盖原广告方案。\\n\\n是否继续？'
         ):
@@ -2022,6 +2038,7 @@ class App(tk.Tk):
             constraints = self._creative_constraints()
             constraints['creative_mode'] = 'AI短剧编导'
             constraints['short_drama_mode'] = mode
+            constraints['drama_business_mode'] = business_mode
             constraints['episode_count'] = episode_count
             plan = generate_short_drama(
                 self.model_router, product, constraints,
