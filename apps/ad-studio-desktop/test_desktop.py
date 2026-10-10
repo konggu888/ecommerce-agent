@@ -1336,6 +1336,25 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertLess(load_source.index("self.store.recover_project(project)"), load_source.index("self._restore_loaded_variant_state()"))
         self.assertIn("does not call a provider", load_source)
 
+    def test_open_project_reports_corrupt_json_and_recovery_exceptions_without_switching_project(self):
+        app_path = Path(__file__).parent / "ad_studio" / "app.py"
+        source = app_path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        load_method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "load_project")
+        load_source = ast.get_source_segment(source, load_method)
+        self.assertIn("json.JSONDecodeError", load_source)
+        self.assertIn("项目文件无法读取或 JSON 格式损坏", load_source)
+        self.assertIn("项目恢复未完成", load_source)
+        self.assertIn("self.store.record_recovery_failure", load_source)
+        self.assertIn("当前工作项目未切换", load_source)
+        self.assertIn("parent=win", load_source)
+        recovery_try = load_source.index("recovery=self.store.recover_project(project)")
+        recovery_error = load_source.index("except Exception as exc:", recovery_try)
+        project_switch = load_source.index("self.project=project")
+        self.assertLess(recovery_try, recovery_error)
+        self.assertLess(recovery_error, project_switch)
+
 
 if __name__ == "__main__":
     unittest.main()
