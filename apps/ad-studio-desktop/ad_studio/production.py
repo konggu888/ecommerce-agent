@@ -168,27 +168,46 @@ class ProductionStore:
         project.cost_estimate.setdefault("actual", {})
         project.cost_estimate["actual"] = summary
         project.cost_estimate["actual_cost_rmb"] = summary["estimated_cost_rmb"]
-        # The append-only ledger is the durable source of newly recorded charges.
-        # If a process stopped after writing the ledger but before persisting the
-        # project JSON, restore the higher total so budget checks cannot undercount.
-        # Keep legacy project totals when no ledger entries exist.
+        # Newer projects persist the legacy baseline before their first ledger append.
+        # Older projects without that marker retain the conservative max() recovery rule.
         if summary["entries"]:
-            project.actual_cost_rmb = round(
-                max(float(project.actual_cost_rmb or 0), float(summary["estimated_cost_rmb"] or 0)),
-                6,
-            )
+            baseline = getattr(project, "legacy_cost_baseline_rmb", None)
+            if baseline is None:
+                project.actual_cost_rmb = round(
+                    max(float(project.actual_cost_rmb or 0), float(summary["estimated_cost_rmb"] or 0)),
+                    6,
+                )
+            else:
+                project.actual_cost_rmb = round(
+                    max(0.0, float(baseline or 0)) + float(summary["estimated_cost_rmb"] or 0),
+                    6,
+                )
             project.actual_cost_summary = summary
 
     def _record_actual_cost(self, project: Project, *, shot: Shot | None, category: str, amount_rmb: float, provider: str, quantity: float = 1.0, unit_cost_rmb: float = 0.0, function: str = "生成任务"):
         amount = round(float(amount_rmb or 0), 6)
+        # Preserve pre-ledger costs (e.g. older projects created before cost-ledger
+        # tracking) before appending the first new charge. Saving the baseline first
+        # makes recovery deterministic if the process stops immediately after append.
+        if getattr(project, "legacy_cost_baseline_rmb", None) is None:
+            prior_total = float(self.ledger.project_summary(project.id)["estimated_cost_rmb"] or 0)
+            project.legacy_cost_baseline_rmb = round(
+                max(0.0, float(project.actual_cost_rmb or 0) - prior_total),
+                6,
+            )
+            self.save(project)
         self.ledger.record(
             function=function, model_id="", model_name="", provider=provider, model="",
             status="success", estimated_cost_rmb=amount,
             project_id=project.id, shot_id=shot.id if shot else "",
             category=category, quantity=quantity, unit_cost_rmb=unit_cost_rmb,
         )
-        project.actual_cost_rmb = round(float(project.actual_cost_rmb or 0) + amount, 6)
-        project.actual_cost_summary = self.ledger.project_summary(project.id)
+        summary = self.ledger.project_summary(project.id)
+        project.actual_cost_rmb = round(
+            max(0.0, float(project.legacy_cost_baseline_rmb or 0)) + float(summary["estimated_cost_rmb"] or 0),
+            6,
+        )
+        project.actual_cost_summary = summary
         self.save(project)
 
     def mark_ready(self, project: Project, shot: Shot, output: Path):
