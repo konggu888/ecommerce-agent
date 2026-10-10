@@ -226,10 +226,16 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
         str(checked.get("full_script", "")),
         str(checked.get("conflict_and_reversal", "")),
         str(checked.get("ending", "")),
+        " ".join(str(x) for x in checked.get("product_truths", [])),
+        " ".join(str(x) for x in checked.get("plot_beats", [])),
     ]
     for shot in checked.get("storyboard", []):
         content_parts.extend(str(shot.get(key, "")) for key in ("action", "dialogue", "product_integration", "generation_prompt"))
     script_text = "\\n".join(content_parts)
+    for note in checked.get("risk_notes", []):
+        note_text = str(note).strip()
+        if note_text:
+            add("warning", "MODEL_RISK_NOTE", f"编导模型标记的待确认风险：{note_text}")
     risky_claims = [
         ("绝对化/极限词", ("百分百", "100%", "第一", "最强", "顶级", "唯一", "绝对", "保证有效", "永久有效")),
         ("医疗/健康功效表述", ("根治", "治愈", "无副作用", "包治", "降血糖", "抗癌")),
