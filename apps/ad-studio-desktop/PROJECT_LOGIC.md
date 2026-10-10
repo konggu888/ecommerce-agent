@@ -1058,3 +1058,6 @@ estimate_asset_generation 使用 AssetGenerator 的 CapabilityRouter 结果决�
 ## 2026-10-11：最终输出文件检查容错
 新增 `_is_nonempty_file()` 统一判断输出路径是否为非空普通文件，并捕获文件系统 `OSError`。`final_output_history()` 遇到检查期间的权限/状态竞争错误时将输出视为不可用；`recover_project()` 同样将原本标记为可交付但无法安全确认文件有效性的输出改为不可交付并记录恢复原因，避免单个文件异常打断整个项目恢复。
 测试边界补充：文件权限回归测试只对目标最终输出路径注入 `PermissionError`，其他项目目录仍使用真实临时目录文件系统行为，避免把测试夹具造成的目录级故障误判为生产逻辑问题。
+
+## 2026-10-11：批量生成的用户暂停语义
+`batch_generate_variants()` 中 `_ensure_storyboard_approval()` 返回 false 代表用户未批准分镜，是工作流暂停/拒绝信号，不是生成器故障。此分支将方案记录到 `skipped`，停止后续批量方案，汇总独立显示跳过项和失败项；只有真实执行异常才进入 `failed`。
