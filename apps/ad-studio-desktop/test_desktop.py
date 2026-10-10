@@ -1,6 +1,7 @@
 import ast
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 from ad_studio.engine import detect_platform, estimate_cost, new_project, mark_regenerate
@@ -281,6 +282,40 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertEqual(video["单价"], 1.0)
         self.assertEqual(video["小计"], 5.0)
         self.assertTrue(c["计价说明"])
+
+    def test_failed_atomic_replace_preserves_previous_shot_file(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 1, "真人口播")
+            shot = project.shots[0]
+            output = store.render_path(project, shot)
+            output.write_bytes(b"previous-valid-output")
+            shot.video_path = str(output)
+            store.resolve_assets = lambda _project, _shot: None
+
+            class Provider:
+                provider_name = "测试Provider"
+                cost_per_shot_rmb = 0.0
+
+                def generate(self, request):
+                    request.output.write_bytes(b"new-output")
+                    return request.output
+
+            original_replace = Path.replace
+            def fail_only_final_replace(path, target):
+                if path.name.endswith(".part.mp4") and Path(target) == output:
+                    raise OSError("simulated atomic replace failure")
+                return original_replace(path, target)
+
+            with patch.object(Path, "replace", fail_only_final_replace):
+                with self.assertRaisesRegex(RuntimeError, "生成失败"):
+                    store._render_with_provider(project, shot, Provider())
+
+            self.assertTrue(output.is_file())
+            self.assertEqual(output.read_bytes(), b"previous-valid-output")
+            self.assertEqual(shot.video_path, str(output))
+            self.assertEqual(shot.status, "生成失败（已保留上一版本）")
 
     def test_only_selected_shot_changes_version(self):
         p = new_project("https://item.jd.com/123.html", 2, "真人口播")
