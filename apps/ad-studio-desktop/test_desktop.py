@@ -551,6 +551,10 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertNotIn("messagebox.showinfo('一键生成完成',msg)", method_source)
         self.assertIn("失败项：{len(failed)} 个", method_source)
         self.assertNotIn("失败镜头：{len(failed)} 个", method_source)
+        self.assertIn("skipped=[]", method_source)
+        self.assertIn('skipped.append(f"方案{self.active_variant_index}：用户未批准分镜，已停止后续批量生成")', method_source)
+        self.assertIn("跳过项：{len(skipped)} 个", method_source)
+        self.assertIn("已停止/跳过：", method_source)
 
     def test_batch_generation_captures_original_variant_before_preflight(self):
         # 回归：预算预审会切换方案，原始方案必须在预审前锁定。
