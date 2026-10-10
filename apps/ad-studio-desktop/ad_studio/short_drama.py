@@ -1,4 +1,4 @@
-"""Standalone AI short-drama director planning, separate from the existing ad workflow.
+"""Standalone AI short-drama director planning and deterministic pre-production audit, separate from the existing ad workflow.
 
 This module creates a story-first drama package. It does not overwrite the
 existing ad creative plan or silently trigger paid asset/video generation.
