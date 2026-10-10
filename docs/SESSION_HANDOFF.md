@@ -350,3 +350,9 @@ undefined
 - 已在 `recover_project()` 保存恢复结果前调用费用同步：用项目账本累计值修复较低的项目累计缓存，同时保留没有账本记录的历史项目金额。
 - 新增 `test_recovery_reconciles_project_budget_from_durable_ledger`，覆盖多笔费用合计、项目 JSON 重载持久化和账本/缓存不同步场景。
 - 需以最新 HEAD 的 CI、doc-sync 和部署预览为最终验收；真实供应商账单对账及 Windows 真机仍暂缓。
+
+## 追加工作记录：旧项目历史费用基线
+- 独立审查发现：若旧项目在生产账本启用前已累计历史费用，第一次新增账本记录后，恢复逻辑仅取“项目累计值”和“账本合计”的较大值，会漏掉其中一部分旧费用。
+- 新增 `Project.legacy_cost_baseline_rmb`；第一次写入生产账本前先持久化历史费用基线，之后总额按基线 + 账本汇总计算。未带基线的历史项目保留原兼容恢复逻辑。
+- 新增 `test_first_ledger_charge_preserves_legacy_project_cost`，覆盖旧项目 ¥0.50 + 新账本费用 ¥0.23 = ¥0.73，以及重载恢复后仍保持正确。
+- 必须继续以最新 HEAD 的 CI、doc-sync 和 deploy preview 验收；真实供应商账单、Windows 真机中断恢复仍暂缓，PR #18 不得合并。
