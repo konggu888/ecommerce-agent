@@ -10,6 +10,10 @@ from typing import Any
 
 
 SHORT_DRAMA_SCHEMA = {
+    "format_mode": "single_episode / continuous_series / anthology_series",
+    "episode_count": "integer",
+    "series_bible": {"series_arc": "全剧主线", "character_state": "人物长期状态与关系", "continuity_rules": ["跨集必须保持的事实"]},
+    "episodes": [{"episode_number": "integer", "title": "集名", "logline": "本集梗概", "plot_beats": ["本集节拍"], "ending_hook": "本集结尾/悬念", "full_script": "本集完整剧本", "storyboard": ["本集分镜，字段与根级 storyboard 相同"]}],
     "genre": "AI根据商品、人群、卖点和场景自主判断的短剧题材",
     "genre_reasoning": "为什么该题材适合这个商品与目标受众",
     "logline": "一句话故事梗概",
@@ -75,7 +79,10 @@ def build_short_drama_prompt(product: dict[str, Any], constraints: dict[str, Any
         "5. 输出完整剧本和可执行分镜。每个分镜必须说明动作、台词、场景、人物、商品融入方式、素材需求和生成提示。\n"
         "6. 提供至少两个故事方向备选，机制应有实质差异，不只是换标题。\n"
         "7. 本次只做创作方案，不要调用素材生成或视频生成，不要假称已经生成成片。\n"
-        "8. 只输出符合给定结构的合法JSON，不要输出Markdown。\n\n输入与约束：\n"
+        "8. 只输出符合给定结构的合法JSON，不要输出Markdown。\n"
+        "9. 如果 constraints.short_drama_mode 为 continuous_series 或 anthology_series，必须输出指定数量的 episodes；每集有独立剧本、分镜和结尾钩子。根级 storyboard 必须按集顺序汇总全部分镜，每个镜头带 episode_number；不要把多集缩成一集。\n"
+        "10. continuous_series 必须跨集承接人物状态、因果和悬念；anthology_series 共用人物/世界观但每集有相对独立的故事。单集模式 episodes 可以只含一集。\n"
+        "11. 每个镜头必须带 episode_number；同一角色的外貌、身份、关键服装和关系在 series_bible 中保持稳定。\n\n输入与约束：\n"
         + json.dumps(payload, ensure_ascii=False, indent=2)
     )
 
@@ -83,6 +90,38 @@ def build_short_drama_prompt(product: dict[str, Any], constraints: dict[str, Any
 def validate_short_drama(raw: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(raw, dict):
         raise ShortDramaPlanError("AI短剧编导没有返回JSON对象。")
+    # Backward compatible: older one-episode plans need not contain series fields.
+    episodes = raw.get("episodes")
+    if isinstance(episodes, list) and episodes:
+        flattened = []
+        for episode_index, episode in enumerate(episodes, 1):
+            if not isinstance(episode, dict):
+                raise ShortDramaPlanError(f"第{episode_index}集结构无效。")
+            try:
+                episode_number = int(episode.get("episode_number", episode_index))
+            except (TypeError, ValueError) as exc:
+                raise ShortDramaPlanError(f"第{episode_index}集编号无效。") from exc
+            episode_shots = episode.get("storyboard", [])
+            if not isinstance(episode_shots, list) or not episode_shots:
+                raise ShortDramaPlanError(f"第{episode_number}集没有分镜。")
+            for shot in episode_shots:
+                if not isinstance(shot, dict):
+                    raise ShortDramaPlanError(f"第{episode_number}集存在无效分镜。")
+                shot.setdefault("episode_number", episode_number)
+                flattened.append(shot)
+        if not raw.get("storyboard"):
+            raw["storyboard"] = flattened
+        raw.setdefault("episode_count", len(episodes))
+        raw.setdefault("format_mode", "single_episode" if len(episodes) == 1 else "continuous_series")
+        raw.setdefault("series_bible", {})
+        if not raw.get("full_script"):
+            raw["full_script"] = "\\n\\n".join(
+                f"第{e.get('episode_number', i)}集：{e.get('title', '')}\\n{e.get('full_script', '')}"
+                for i, e in enumerate(episodes, 1)
+            )
+    raw.setdefault("format_mode", "single_episode")
+    raw.setdefault("episode_count", 1)
+    raw.setdefault("series_bible", {})
     required = [
         "genre", "genre_reasoning", "logline", "premise", "world",
         "characters", "plot_beats", "conflict_and_reversal", "ending",
@@ -92,6 +131,18 @@ def validate_short_drama(raw: dict[str, Any]) -> dict[str, Any]:
     missing = [key for key in required if key not in raw]
     if missing:
         raise ShortDramaPlanError("短剧方案缺少字段：" + "、".join(missing))
+    if raw.get("format_mode") not in {"single_episode", "continuous_series", "anthology_series"}:
+        raise ShortDramaPlanError("短剧模式无效，必须是单集、连续多集或系列剧。")
+    if not isinstance(raw.get("episode_count"), int) or raw["episode_count"] < 1:
+        raise ShortDramaPlanError("短剧集数必须是正整数。")
+    if raw.get("format_mode") != "single_episode":
+        episodes = raw.get("episodes")
+        if not isinstance(episodes, list) or len(episodes) != raw["episode_count"]:
+            raise ShortDramaPlanError(f"多集短剧要求恰好提供 {raw['episode_count']} 集，实际为 {len(episodes) if isinstance(episodes, list) else 0} 集。")
+        expected = list(range(1, raw["episode_count"] + 1))
+        actual = [int(e.get("episode_number", i)) for i, e in enumerate(episodes, 1) if isinstance(e, dict)]
+        if actual != expected:
+            raise ShortDramaPlanError("分集编号必须从第1集开始连续递增，不能缺集或重复。")
     if not isinstance(raw["characters"], list) or not raw["characters"]:
         raise ShortDramaPlanError("短剧必须至少设计一个人物。")
     if not isinstance(raw["storyboard"], list) or not raw["storyboard"]:
@@ -108,6 +159,13 @@ def validate_short_drama(raw: dict[str, Any]) -> dict[str, Any]:
             shot["duration_seconds"] = max(1, int(shot.get("duration_seconds", 4)))
         except (TypeError, ValueError) as exc:
             raise ShortDramaPlanError(f"第{index}个短剧分镜时长无效。") from exc
+        shot.setdefault("episode_number", 1)
+        try:
+            shot["episode_number"] = int(shot["episode_number"])
+        except (TypeError, ValueError) as exc:
+            raise ShortDramaPlanError(f"第{index}个分镜集数无效。") from exc
+        if shot["episode_number"] < 1 or shot["episode_number"] > raw["episode_count"]:
+            raise ShortDramaPlanError(f"第{index}个分镜引用了不存在的集数。")
         for key in ("characters", "asset_needs", "actor_requirements", "scene_requirements", "product_asset_requirements"):
             if not isinstance(shot.get(key), list):
                 shot[key] = []
@@ -128,7 +186,18 @@ def generate_short_drama(model_router, product: dict[str, Any], constraints: dic
         if "unexpected keyword argument 'function'" not in str(exc):
             raise
         result = model_router.complete_json(profile, prompt)
-    return validate_short_drama(result)
+    validated = validate_short_drama(result)
+    requested_mode = str(constraints.get("short_drama_mode", "single_episode"))
+    requested_count = int(constraints.get("episode_count", 1))
+    if validated.get("format_mode") != requested_mode:
+        raise ShortDramaPlanError(
+            f"模型返回的短剧模式为 {validated.get('format_mode')}，与所选模式 {requested_mode} 不一致；请重新生成，避免把多集需求误当成单集。"
+        )
+    if validated.get("episode_count") != requested_count:
+        raise ShortDramaPlanError(
+            f"模型返回 {validated.get('episode_count')} 集，但用户选择了 {requested_count} 集；未保存不匹配的方案。"
+        )
+    return validated
 
 
 def short_drama_production_rows(plan: dict[str, Any], product_name: str) -> list[dict[str, Any]]:
@@ -159,9 +228,12 @@ def short_drama_production_rows(plan: dict[str, Any], product_name: str) -> list
             f"商品融入：{integration}" if integration else "",
             f"生成要求：{prompt}" if prompt else "",
         ) if part)
+        episode_number = int(shot.get("episode_number", 1))
         rows.append({
-            "index": int(shot.get("index", index)),
-            "title": title,
+            "index": index,
+            "episode_shot_index": int(shot.get("index", index)),
+            "episode_number": episode_number,
+            "title": f"第{episode_number}集｜{title}" if validated.get("episode_count", 1) > 1 else title,
             "visual": visual,
             "script": str(shot.get("dialogue", "")).strip(),
             "duration_seconds": max(1, int(shot.get("duration_seconds", 4))),
@@ -174,6 +246,7 @@ def short_drama_production_rows(plan: dict[str, Any], product_name: str) -> list
             "director_mode": "short_drama",
             "story_scene": title,
             "story_action": action,
+            "episode_number": episode_number,
             "product_integration": integration,
         })
     return rows

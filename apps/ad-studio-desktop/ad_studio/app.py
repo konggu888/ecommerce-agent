@@ -1893,17 +1893,60 @@ class App(tk.Tk):
         except Exception as e:
             messagebox.showerror('批量输出失败',str(e))
 
+    def _choose_short_drama_episode(self):
+        episodes = sorted({int(getattr(shot, "episode_number", 1) or 1) for shot in self.project.shots})
+        if len(episodes) <= 1:
+            return episodes[0] if episodes else None
+        dialog = tk.Toplevel(self)
+        dialog.title('选择要交付的短剧集数')
+        dialog.geometry('420x150')
+        dialog.transient(self)
+        dialog.grab_set()
+        value = tk.StringVar(value=str(episodes[0]))
+        ttk.Label(dialog, text='选择本次要单独输出的集数：').pack(anchor='w', padx=14, pady=(14, 6))
+        ttk.Combobox(dialog, textvariable=value, state='readonly', values=tuple(str(x) for x in episodes)).pack(fill='x', padx=14)
+        result = {}
+        buttons = ttk.Frame(dialog); buttons.pack(fill='x', padx=14, pady=12)
+        def confirm():
+            try:
+                selected = int(value.get())
+            except (TypeError, ValueError):
+                messagebox.showerror('集数无效', '请选择有效集数。', parent=dialog)
+                return
+            if selected not in episodes:
+                messagebox.showerror('集数无效', '所选集数不在当前项目中。', parent=dialog)
+                return
+            result['episode'] = selected
+            dialog.destroy()
+        ttk.Button(buttons, text='取消', command=dialog.destroy).pack(side='right')
+        ttk.Button(buttons, text='输出本集', command=confirm).pack(side='right', padx=8)
+        self.wait_window(dialog)
+        return result.get('episode')
+
     @ui_action
     def final_render(self):
         if not self._ui_execution_gate(): return
         if not self.project:return messagebox.showinfo('提示','先创建项目。')
         try:
-            out=self.store.build_final(self.project,self.aspect.get(),variant_index=self.active_variant_index)
-            self._record_variant_output(out)
-            self._cache_active_variant()
+            episode_number = None
+            if (self.project.creative_plan or {}).get('production_mode') == 'short_drama':
+                episode_number = self._choose_short_drama_episode()
+                if episode_number is None:
+                    self.detail.set('已取消短剧分集交付；未输出文件。')
+                    return
+            out=self.store.build_final(
+                self.project,self.aspect.get(),variant_index=self.active_variant_index,
+                episode_number=episode_number,
+            )
+            if episode_number is None:
+                self._record_variant_output(out)
+                self._cache_active_variant()
+            else:
+                self.project.creative_plan.setdefault('episode_outputs', {})[str(episode_number)] = str(out)
             self.store.save(self.project)
-            self.detail.set(f'方案{self.active_variant_index} 最终成片已独立输出：{out}')
-            messagebox.showinfo('完成',f'方案{self.active_variant_index} 最终广告已生成\n{out}')
+            label = f'第{episode_number}集' if episode_number is not None else f'方案{self.active_variant_index}'
+            self.detail.set(f'{label} 最终成片已独立输出：{out}')
+            messagebox.showinfo('完成',f'{label}最终成片已生成\n{out}')
         except Exception as e: messagebox.showerror('暂不能成片',str(e))
 
     def save(self):
@@ -1919,9 +1962,50 @@ class App(tk.Tk):
         product = dict(self.project.product_info or {})
         if not product:
             return messagebox.showerror('商品资料缺失','当前项目没有可用的商品资料，请重新创建项目或补充商品资料。')
+        mode_dialog = tk.Toplevel(self)
+        mode_dialog.title('选择短剧模式与集数')
+        mode_dialog.geometry('520x250')
+        mode_dialog.transient(self)
+        mode_dialog.grab_set()
+        mode_var = tk.StringVar(value='single_episode')
+        count_var = tk.StringVar(value='6')
+        ttk.Label(mode_dialog, text='创作模式').pack(anchor='w', padx=16, pady=(16, 4))
+        ttk.Combobox(
+            mode_dialog, textvariable=mode_var, state='readonly',
+            values=('single_episode', 'continuous_series', 'anthology_series'),
+        ).pack(fill='x', padx=16)
+        ttk.Label(
+            mode_dialog,
+            text='模式说明：single_episode=单集；continuous_series=连续多集；anthology_series=共享人物/世界观的系列剧',
+            wraplength=480,
+        ).pack(anchor='w', padx=16, pady=6)
+        ttk.Label(mode_dialog, text='总集数（多集模式填写 2—50；单集模式自动按1集处理）').pack(anchor='w', padx=16, pady=(4, 2))
+        ttk.Entry(mode_dialog, textvariable=count_var).pack(fill='x', padx=16)
+        selected = {}
+        def confirm_mode():
+            selected['mode'] = mode_var.get()
+            try:
+                selected['count'] = 1 if selected['mode'] == 'single_episode' else int(count_var.get().strip())
+            except (TypeError, ValueError):
+                messagebox.showerror('集数无效', '请输入 2—50 之间的整数。', parent=mode_dialog)
+                return
+            if selected['mode'] != 'single_episode' and not 2 <= selected['count'] <= 50:
+                messagebox.showerror('集数无效', '多集模式的集数必须为 2—50。', parent=mode_dialog)
+                return
+            mode_dialog.destroy()
+        buttons = ttk.Frame(mode_dialog); buttons.pack(fill='x', padx=16, pady=12)
+        ttk.Button(buttons, text='取消', command=mode_dialog.destroy).pack(side='right')
+        ttk.Button(buttons, text='确定', command=confirm_mode).pack(side='right', padx=8)
+        self.wait_window(mode_dialog)
+        if not selected:
+            return
+        mode = selected['mode']
+        episode_count = selected['count']
+        mode_label = {'single_episode': '单集短剧', 'continuous_series': '连续多集短剧', 'anthology_series': '系列短剧'}[mode]
         if not messagebox.askyesno(
             '启动 AI 短剧编导',
-            'AI 将根据当前商品资料独立设计短剧题材、人物关系、剧情冲突/反转、完整剧本和可执行分镜。\\n\\n'
+            f'创作模式：{mode_label}\\n计划集数：{episode_count}\\n\\n'
+            'AI 将根据当前商品资料设计题材、人物关系、剧情冲突/反转、剧本和分集分镜。\\n'
             '本步骤会调用“AI短剧编导”路由模型；模型费用按该模型配置计费。\\n'
             '这里只生成并保存创作方案，不会自动调用付费素材/视频生成服务，也不会覆盖原广告方案。\\n\\n是否继续？'
         ):
@@ -1929,6 +2013,8 @@ class App(tk.Tk):
         try:
             constraints = self._creative_constraints()
             constraints['creative_mode'] = 'AI短剧编导'
+            constraints['short_drama_mode'] = mode
+            constraints['episode_count'] = episode_count
             plan = generate_short_drama(
                 self.model_router, product, constraints,
                 existing_creative_plan=self.project.creative_plan,
@@ -1941,7 +2027,7 @@ class App(tk.Tk):
             win.geometry('920x720')
             win.transient(self)
             head = ttk.Frame(win, padding=12); head.pack(fill='x')
-            ttk.Label(head, text=f"题材：{plan.get('genre', '待确认')}", font=('Microsoft YaHei UI', 16, 'bold')).pack(anchor='w')
+            ttk.Label(head, text=f"题材：{plan.get('genre', '待确认')}｜模式：{plan.get('format_mode', mode)}｜集数：{plan.get('episode_count', episode_count)}", font=('Microsoft YaHei UI', 16, 'bold')).pack(anchor='w')
             ttk.Label(head, text=plan.get('logline', ''), wraplength=870).pack(anchor='w', pady=(5, 0))
             text_frame = ttk.Frame(win, padding=(12, 0, 12, 12)); text_frame.pack(fill='both', expand=True)
             view = tk.Text(text_frame, wrap='word', font=('Microsoft YaHei UI', 10))
@@ -1951,11 +2037,11 @@ class App(tk.Tk):
             view.insert('1.0', json.dumps(plan, ensure_ascii=False, indent=2))
             view.configure(state='disabled')
             footer = ttk.Frame(win, padding=12); footer.pack(fill='x')
-            ttk.Label(footer, text=f"已保存到项目：{self.project.id}；分镜数：{len(plan.get('storyboard', []))}。当前只完成短剧策划，尚未触发镜头素材生成。").pack(side='left')
+            ttk.Label(footer, text=f"已保存到项目：{self.project.id}；{plan.get('episode_count', episode_count)}集；分镜数：{len(plan.get('storyboard', []))}。当前只完成策划，尚未触发镜头素材生成。").pack(side='left')
             ttk.Button(footer, text='关闭', command=win.destroy).pack(side='right')
             ttk.Button(footer, text='短剧质量/事实复核', command=lambda: self.show_short_drama_audit(plan)).pack(side='right', padx=8)
             ttk.Button(footer, text='建立独立短剧制作项目', command=lambda: self.create_short_drama_production_project(plan, win)).pack(side='right', padx=8)
-            self.detail.set(f"AI短剧方案已保存｜题材：{plan.get('genre', '待确认')}｜分镜：{len(plan.get('storyboard', []))}｜未覆盖原广告方案")
+            self.detail.set(f"AI短剧方案已保存｜{plan.get('episode_count', episode_count)}集｜题材：{plan.get('genre', '待确认')}｜分镜：{len(plan.get('storyboard', []))}｜未覆盖原广告方案")
             messagebox.showinfo('短剧方案已保存', 'AI短剧创作方案已保存到当前项目。原广告方案和现有分镜未被替换。')
         except Exception as exc:
             messagebox.showerror('AI短剧编导失败', str(exc))
@@ -2070,6 +2156,7 @@ class App(tk.Tk):
                     script=row['script'],
                     status='待生成',
                     duration_seconds=row['duration_seconds'],
+                    episode_number=int(row.get('episode_number', 1)),
                 )
                 for row in rows
             ]

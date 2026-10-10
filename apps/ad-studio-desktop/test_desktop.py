@@ -919,6 +919,50 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertFalse(final_dir.exists() and any(final_dir.iterdir()))
 
 
+    def test_short_drama_final_render_is_episode_isolated(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            p = new_project("https://item.jd.com/123.html", 2, "AI短剧")
+            p.creative_plan = {"production_mode": "short_drama"}
+            p.shots = p.shots[:2]
+            for index, shot in enumerate(p.shots, 1):
+                shot.episode_number = index
+                video = root / f"{shot.id}.mp4"
+                video.write_bytes(b"video")
+                shot.video_path = str(video)
+            completed = type("Completed", (), {"stdout": '{"streams":[{"codec_type":"video","width":1080,"height":1920}],"format":{"duration":"4.0"}}'})()
+            with patch("ad_studio.production.concat") as concat, patch(
+                "ad_studio.production.shutil.which", return_value="/usr/bin/ffprobe"
+            ), patch("ad_studio.production.subprocess.run", return_value=completed):
+                def fake_concat(inputs, output):
+                    Path(output).parent.mkdir(parents=True, exist_ok=True)
+                    Path(output).write_bytes(b"episode-video")
+                concat.side_effect = fake_concat
+                output = store.build_final(p, "9:16", variant_index=1, episode_number=2)
+            self.assertEqual(concat.call_count, 1)
+            self.assertEqual([Path(x) for x in concat.call_args.args[0]], [Path(p.shots[1].video_path)])
+            self.assertIn("-ep2", output.name)
+            manifest = __import__("json").loads(output.with_suffix(".json").read_text(encoding="utf-8"))
+            self.assertEqual(manifest["episode_number"], 2)
+            self.assertEqual(manifest["shot_ids"], [p.shots[1].id])
+            self.assertIn("1|9:16|ep2", p.creative_plan["final_output_manifests"])
+
+    def test_short_drama_episode_render_blocks_when_selected_episode_incomplete(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            p = new_project("https://item.jd.com/123.html", 2, "AI短剧")
+            p.shots = p.shots[:2]
+            p.shots[0].episode_number = 1
+            p.shots[1].episode_number = 2
+            video = root / f"{p.shots[0].id}.mp4"
+            video.write_bytes(b"video")
+            p.shots[0].video_path = str(video)
+            with self.assertRaisesRegex(RuntimeError, "第2集还有 1 个镜头"):
+                store.build_final(p, "9:16", episode_number=2)
+
     def test_a25_media_qc_rejects_missing_empty_and_no_video_stream(self):
         from unittest.mock import patch
         with tempfile.TemporaryDirectory() as td:

@@ -51,6 +51,7 @@ class Shot:
     source_ranges: list[list[float]] = field(default_factory=list)
     storyboard_review: str='不需要'
     duration_seconds: int=3
+    episode_number: int=1
 
 @dataclass
 class Project:
