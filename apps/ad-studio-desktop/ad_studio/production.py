@@ -124,6 +124,7 @@ class ProductionStore:
             "last_recovery": {"removed_temp_files": removed_parts, "missing_media": missing_media, "invalid_outputs": invalid_outputs, "updated_at": now},
             "updated_at": now,
         })
+        self._sync_actual_cost(project)
         self.save(project)
         return recovery["last_recovery"]
 
@@ -166,7 +167,17 @@ class ProductionStore:
         summary = self.ledger.project_summary(project.id)
         project.cost_estimate.setdefault("actual", {})
         project.cost_estimate["actual"] = summary
-        project.cost_estimate["actual_cost_rmb"] = summary["actual_cost_rmb"]
+        project.cost_estimate["actual_cost_rmb"] = summary["estimated_cost_rmb"]
+        # The append-only ledger is the durable source of newly recorded charges.
+        # If a process stopped after writing the ledger but before persisting the
+        # project JSON, restore the higher total so budget checks cannot undercount.
+        # Keep legacy project totals when no ledger entries exist.
+        if summary["entries"]:
+            project.actual_cost_rmb = round(
+                max(float(project.actual_cost_rmb or 0), float(summary["estimated_cost_rmb"] or 0)),
+                6,
+            )
+            project.actual_cost_summary = summary
 
     def _record_actual_cost(self, project: Project, *, shot: Shot | None, category: str, amount_rmb: float, provider: str, quantity: float = 1.0, unit_cost_rmb: float = 0.0, function: str = "生成任务"):
         amount = round(float(amount_rmb or 0), 6)
