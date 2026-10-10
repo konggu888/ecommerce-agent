@@ -10,7 +10,7 @@ from .asset_generation import AssetGenerator
 from .gpu import detect_gpu
 from .hardware import detect_hardware, format_hardware
 from .capability import CapabilityRouter
-from .production import ProductionStore
+from .production import ProductionStore, _is_nonempty_file
 from .product_parser import parse_product_url, save_product, save_product_library, load_product_library, merge_product_library, ProductInfo
 from .creative_engine import CreativeEngine, validate_plan, validate_task_type_plan, TASK_TYPE_POLICIES
 from .model_router import ModelRouter, ModelProfile, FUNCTIONS, audit_ad_variant_set, build_creative_test_plan, audit_creative_factual_consistency, audit_storyboard_fact_consistency, audit_visual_fact_consistency
@@ -1223,7 +1223,7 @@ class App(tk.Tk):
         tasks=task_box.get('tasks') if isinstance(task_box,dict) else []
         # 只复核当前激活版本，禁止跨版本把 AI 补镜头带入当前分镜。
         tasks=[x for x in tasks if isinstance(x,dict) and x.get('recommended_resolution')=='AI补镜头' and int(x.get('variant_index',self.active_variant_index) or self.active_variant_index)==self.active_variant_index]
-        generated=[x for x in tasks if x.get('generated_path') and Path(str(x.get('generated_path'))).exists()]
+        generated=[x for x in tasks if x.get('generated_path') and _is_nonempty_file(Path(str(x.get('generated_path'))))]
         if not generated: return messagebox.showinfo('暂无待复核素材','当前没有已经真实生成、可供人工复核的 AI 补镜头。')
         win=tk.Toplevel(self); win.title('AI补镜头人工复核'); win.geometry('1120x650'); win.transient(self)
         frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
@@ -1251,7 +1251,7 @@ class App(tk.Tk):
             task=selected_task();
             if not task:return
             p=Path(str(task.get('generated_path','')))
-            if not p.exists():return messagebox.showerror('文件不存在',str(p))
+            if not _is_nonempty_file(p):return messagebox.showerror('文件不可用','生成文件不存在、不是普通文件或为空，无法打开。')
             try:
                 import os
                 if hasattr(os,'startfile'): os.startfile(str(p))
@@ -1268,7 +1268,7 @@ class App(tk.Tk):
             if not task:return
             if task.get('accepted_into_storyboard'): return messagebox.showinfo('已纳入','该 AI 补镜头已经在当前分镜中。')
             p=Path(str(task.get('generated_path','')))
-            if not p.exists() or p.stat().st_size<=0: return messagebox.showerror('不能纳入','生成文件不存在或为空，不能进入分镜。')
+            if not _is_nonempty_file(p): return messagebox.showerror('不能纳入','生成文件不存在、不是普通文件或为空，不能进入分镜。')
             # 有确定目标位置就插入缺口位置；无法稳定定位时才追加到末尾，避免算法猜错位置。
             target_index=task.get('target_shot_index')
             try: target_index=int(target_index) if target_index is not None else None
