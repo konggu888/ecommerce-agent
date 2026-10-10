@@ -178,3 +178,6 @@ CI 还会运行前端语法、Python 语法、Typecheck、Engine 和 Risk Contro
 
 ## AI 补镜头接受闸门修复（2026-10-11）
 补镜头不能仅凭 `generated_path` 非空就进入分镜。`accept_hybrid_generated_shot()` 必须确认文件存在、为普通文件且非空；无法安全读取时拒绝接受。审核 UI 使用生产层 `_is_nonempty_file()` 做同样的安全检查。写入镜头时保留 `generation_provider` 与 `generation_cost_rmb`，并兼容旧字段。对应自动化覆盖待复核/文件缺失/零字节/有效输出与成本持久化；真实 Provider 和 Windows 现场测试仍暂缓。
+
+### CI 夹具修正补记（2026-10-11）
+首轮新增文件有效性闸门后，CI 揭示 `test_hybrid_router.py` 旧测试依赖固定 `/tmp/generated.mp4` 而未创建文件。已改用 `TemporaryDirectory` 生成非空测试媒体，并断言 Provider/费用字段；继续以最新 HEAD 的 CI 为准。
