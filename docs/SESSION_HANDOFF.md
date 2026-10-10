@@ -244,3 +244,8 @@ undefined
 - 修复：捕获文件读取/JSON/模型构造异常，显示项目文件路径与原因；恢复异常时尽力调用 `record_recovery_failure()` 保存下一步建议，显示“恢复未完成”，并在恢复成功前不切换当前活动项目。
 - 新增自动化契约测试检查损坏 JSON 提示、恢复失败提示、恢复诊断调用和切换顺序；HELP.md 与 PROJECT_LOGIC.md 已同步。
 - 这项代码和测试必须以新 HEAD 对应的 CI/doc-sync 为准，当前尚未验收。下一步：查询新 HEAD 检查结果；通过后继续审计最终交付历史在“文件缺失/清单状态过期”时的 UI 表现与恢复逻辑。Windows 真机、真实 Provider/计费、剪映与 B1–B3 继续暂缓，PR #18 不得合并。
+
+
+## 2026-10-10 验收计划与 SOP 已同步：A30 恢复异常
+- 已确认正式文档路径为 docs/AD_STUDIO_ACCEPTANCE_PLAN.md 与 docs/AD_STUDIO_ACCEPTANCE_SOP.md，并将损坏项目 JSON、恢复异常、活动项目不切换及 Windows 现场边界补入两份完整验收文档。
+- 当前工作单元涉及代码、测试、HELP、PROJECT_LOGIC、验收计划、验收 SOP 与交接快照；最终必须以最后一个文档提交对应的 CI/doc-sync 为准。
