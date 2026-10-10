@@ -1321,6 +1321,32 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertIn("def add_button_row", ui_source)
 
 
+    def test_final_output_history_does_not_show_missing_or_empty_file_as_deliverable(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 2, "真人口播")
+            output = root / "final-output.mp4"
+            output.write_bytes(b"valid-enough-for-history")
+            gate = {"allowed": True, "reasons": [], "checked": True}
+            media = {"valid": True, "duration_seconds": 5.0, "width": 1080, "height": 1920}
+            store.write_final_output_manifest(project, output, "9:16", 1, project.shots[:1], gate, media)
+
+            row = store.final_output_history(project)[0]
+            self.assertEqual(row["delivery_status"], "可交付")
+            self.assertTrue(row["exists"])
+
+            output.unlink()
+            row = store.final_output_history(project)[0]
+            self.assertEqual(row["delivery_status"], "不可交付")
+            self.assertFalse(row["exists"])
+            self.assertIn("缺失", row["recovery_reason"])
+
+            output.mkdir()
+            row = store.final_output_history(project)[0]
+            self.assertEqual(row["delivery_status"], "不可交付")
+            self.assertFalse(row["exists"])
+
     def test_reopening_project_runs_local_recovery_and_surfaces_findings(self):
         app_path = Path(__file__).parent / "ad_studio" / "app.py"
         source = app_path.read_text(encoding="utf-8")
