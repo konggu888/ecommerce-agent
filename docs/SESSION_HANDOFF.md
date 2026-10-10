@@ -368,3 +368,9 @@ undefined
 - 现在云端路由且配置有效单价时，失败尝试会以 `status=failed` 记入保守估算；成功生成后先记账再写本地素材库，避免磁盘写入错误导致已完成的生成费用丢失。
 - 新增 `test_failed_cloud_asset_attempt_is_recorded_as_estimated_cost`，使用测试替身模拟超时，无真实 Provider 调用。
 - 仍需继续审查 `generate_missing_asset()` 独立入口及异步任务/退款；实际扣费仍需供应商账单核对。PR #18 保持开放，不合并。
+
+## 追加工作记录：独立素材生成入口
+- 继续审查后发现 `generate_missing_asset()` 与自动补素材路径不同，云端调用失败时此前会直接抛出异常而不记费用。
+- 现在独立入口在云端 Provider 调用失败且配置单价非零时追加失败估算；Provider 成功后先记账再注册本地素材。
+- 新增 `test_failed_standalone_cloud_asset_attempt_is_recorded_as_estimated_cost`。前一轮新测试首次 CI 因测试文件缺少顶层 `json` 导入失败，已修复导入并在最新提交重新验收；不得引用旧失败提交作为最终状态。
+- 继续检查最新 HEAD 的 CI/doc-sync/preview；真实供应商账单仍需核对，PR #18 不合并。
