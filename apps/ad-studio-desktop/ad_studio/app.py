@@ -1516,7 +1516,15 @@ class App(tk.Tk):
         frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
         model_summary=self.model_router.usage_summary()
         production_summary=self.store.ledger.summary()
+        ledger_warnings=[]
+        for label, ledger in (('模型调用账本', self.model_router.ledger), ('视频/素材生产账本', self.store.ledger)):
+            warning=getattr(ledger, 'last_load_warning', '')
+            if warning:
+                ledger_warnings.append(f'{label}：{warning}')
         ttk.Label(frm,text='本机成本账本',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
+        if ledger_warnings:
+            ttk.Label(frm,text='⚠ 成本账本已隔离异常文件，历史可能需要人工恢复：\\n'+'\\n'.join(ledger_warnings),
+                      foreground='#9A3412',wraplength=1180,justify='left').pack(anchor='w',pady=(4,6))
         ttk.Label(frm,text=f"模型调用：{model_summary['calls']} 次｜成功 {model_summary['success']}｜失败 {model_summary['failed']}｜Token {model_summary['tokens']:,}｜模型调用估算金额 ¥{model_summary['estimated_cost_rmb']:.4f}").pack(anchor='w',pady=(3,2))
         production_line=f"视频/素材生产费用：{production_summary['calls']} 条｜成功 {production_summary['success']}｜失败 {production_summary['failed']}｜账本金额合计 ¥{production_summary['estimated_cost_rmb']:.4f}"
         if self.project:
