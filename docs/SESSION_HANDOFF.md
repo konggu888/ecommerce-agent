@@ -336,3 +336,10 @@ undefined
 
 ## 2026-10-11 追加：失败阶段费用汇总口径
 独立检查发现项目汇总原先只累加成功记录，但模型可能已返回计费 token、随后因 JSON 解析失败而被记为 failed，导致费用估算被漏算。已修正项目汇总：成功/失败计数保持独立，费用按全部记录的非零估算汇总，并按类别归集。兼容字段 actual_cost_rmb 暂时保留，但不能解读为供应商确认的实际账单。已新增 `test_project_summary_counts_cost_for_failed_billable_calls`，覆盖失败但已产生估算费用的模型调用；最新 HEAD 的 CI 仍在运行，需等待完成后再核验最终状态。
+
+## 追加工作记录：成本账本金额边界
+
+- 审查成本汇总后，继续检查账本输入边界，发现成本字段没有阻止负数或 NaN/无穷值，可能造成汇总失真或非标准 JSON 数值。
+- 已修改 `UsageLedger.record()`：`estimated_cost_rmb` 和 `unit_cost_rmb` 写入前必须是有限非负金额，统一保留 6 位小数；无效值抛出 `ValueError`，不写入账本。
+- 新增 `test_rejects_negative_and_nonfinite_cost_values`，覆盖负数、NaN、正/负无穷和不产生账本文件。
+- 代码/测试/文档后的最新 HEAD CI、doc-sync、部署预览必须重新验收。真实供应商账单对账、Windows 真机仍暂缓，PR #18 不得合并。
