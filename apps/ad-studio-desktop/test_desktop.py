@@ -1387,6 +1387,10 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertIn("self.store.record_recovery_failure", load_source)
         self.assertIn("当前工作项目未切换", load_source)
         self.assertIn("parent=win", load_source)
+        # Tk message strings must contain real line breaks, not literal backslash-n text.
+        self.assertNotIn(r"\\n文件：", load_source)
+        self.assertNotIn(r"\\n原因：", load_source)
+        self.assertNotIn(r"\\n\\n软件不会", load_source)
         recovery_try = load_source.index("recovery=self.store.recover_project(project)")
         recovery_error = load_source.index("except Exception as exc:", recovery_try)
         project_switch = load_source.index("self.project=project")
