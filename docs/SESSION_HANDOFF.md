@@ -362,3 +362,9 @@ undefined
 - `_record_actual_cost()` 现在支持状态和错误说明；`_render_with_provider()` 在调用开始后发生异常且尚未记成功费用时，会追加 `status=failed` 的单价估算记录，明确说明实际扣费需要核对供应商账单。
 - 新增 `test_failed_video_provider_attempt_is_recorded_as_estimated_cost`，覆盖 ¥0.72 的失败调用、失败状态、费用累计和非成功计数。
 - 注意该策略是预算保护用的保守估算，可能高于最终实际账单；真实供应商账单、退款及异步任务仍需单独核对。PR #18 保持开放，不合并。
+
+## 追加工作记录：云端素材失败费用估算
+- `ProductionStore.resolve_assets()` 之前捕获素材生成异常后只显示失败状态，云端调用可能发生费用但未写账本。
+- 现在云端路由且配置有效单价时，失败尝试会以 `status=failed` 记入保守估算；成功生成后先记账再写本地素材库，避免磁盘写入错误导致已完成的生成费用丢失。
+- 新增 `test_failed_cloud_asset_attempt_is_recorded_as_estimated_cost`，使用测试替身模拟超时，无真实 Provider 调用。
+- 仍需继续审查 `generate_missing_asset()` 独立入口及异步任务/退款；实际扣费仍需供应商账单核对。PR #18 保持开放，不合并。
