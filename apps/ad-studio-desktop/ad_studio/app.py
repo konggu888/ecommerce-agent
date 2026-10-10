@@ -12,7 +12,7 @@ from .capability import CapabilityRouter
 from .production import ProductionStore
 from .product_parser import parse_product_url, save_product, save_product_library, load_product_library, merge_product_library, ProductInfo
 from .creative_engine import CreativeEngine, validate_plan, validate_task_type_plan, TASK_TYPE_POLICIES
-from .short_drama import audit_short_drama, build_episode_continuity_ledger, generate_short_drama, short_drama_production_rows
+from .short_drama import audit_short_drama, build_episode_continuity_ledger, generate_short_drama, generate_next_short_drama_episode, short_drama_production_rows
 from .model_router import ModelRouter, ModelProfile, FUNCTIONS, audit_ad_variant_set, build_creative_test_plan, audit_creative_factual_consistency, audit_storyboard_fact_consistency, audit_visual_fact_consistency
 from .browser_skill import _find_agent_browser
 from .ffmpeg import available as ffmpeg_available, has_nvenc
@@ -2064,6 +2064,7 @@ class App(tk.Tk):
             footer = ttk.Frame(win, padding=12); footer.pack(fill='x')
             ttk.Label(footer, text=f"已保存到项目：{self.project.id}；{plan.get('episode_count', episode_count)}集；分镜数：{len(plan.get('storyboard', []))}。当前只完成策划，尚未触发镜头素材生成。").pack(side='left')
             ttk.Button(footer, text='关闭', command=win.destroy).pack(side='right')
+            ttk.Button(footer, text='续写下一集', command=lambda: self.continue_short_drama_episode(plan, win, view)).pack(side='right', padx=8)
             ttk.Button(footer, text='跨集连续性台账', command=lambda: self.show_short_drama_continuity_ledger(plan)).pack(side='right', padx=8)
             ttk.Button(footer, text='短剧质量/事实复核', command=lambda: self.show_short_drama_audit(plan)).pack(side='right', padx=8)
             ttk.Button(footer, text='建立独立短剧制作项目', command=lambda: self.create_short_drama_production_project(plan, win)).pack(side='right', padx=8)
@@ -2071,6 +2072,46 @@ class App(tk.Tk):
             messagebox.showinfo('短剧方案已保存', 'AI短剧创作方案已保存到当前项目。原广告方案和现有分镜未被替换。')
         except Exception as exc:
             messagebox.showerror('AI短剧编导失败', str(exc))
+
+    @ui_action
+    def continue_short_drama_episode(self, plan, parent_window=None, plan_view=None):
+        """Generate one episode from continuity handoff and save only after validation."""
+        if not self._ui_execution_gate(): return
+        if not self.project:
+            messagebox.showerror('无法续写', '当前没有打开的项目.')
+            return
+        if plan.get('format_mode') == 'single_episode':
+            messagebox.showerror('无法续写', '当前是单集短剧。请先创建连续多集短剧或系列短剧方案。')
+            return
+        if int(plan.get('episode_count', 0) or 0) >= 50:
+            messagebox.showerror('无法续写', '短剧最多支持50集，当前已达到上限。')
+            return
+        next_number = int(plan.get('episode_count', 0) or 0) + 1
+        mode_label = '连续多集短剧' if plan.get('format_mode') == 'continuous_series' else '系列短剧'
+        if not messagebox.askyesno(
+            '续写下一集',
+            f'将生成第{next_number}集（{mode_label}）。\n\n'
+            '系统会把上一集完整内容、人物状态、未解线索、集末状态、下一集承接要求和连续性台账交给编导模型。\n'
+            '成功校验后才保存；失败时保留原方案。这里只生成剧本和分镜，不会启动素材/视频生成。\n\n是否继续？',
+            parent=parent_window or self,
+        ):
+            return
+        try:
+            updated = generate_next_short_drama_episode(self.model_router, plan, dict(self.project.product_info or {}))
+            updated['created_at'] = plan.get('created_at') or __import__('datetime').datetime.now().isoformat(timespec='seconds')
+            self.project.creative_plan['short_drama'] = updated
+            self.store.save(self.project)
+            plan.clear()
+            plan.update(updated)
+            if plan_view is not None:
+                plan_view.configure(state='normal')
+                plan_view.delete('1.0', 'end')
+                plan_view.insert('1.0', json.dumps(plan, ensure_ascii=False, indent=2))
+                plan_view.configure(state='disabled')
+            self.detail.set(f'AI短剧已续写第{next_number}集｜总集数：{updated["episode_count"]}｜分镜：{len(updated["storyboard"])}')
+            messagebox.showinfo('续写完成', f'第{next_number}集已通过结构校验并保存。此前各集未被覆盖；尚未生成镜头素材或视频。', parent=parent_window or self)
+        except Exception as exc:
+            messagebox.showerror('续写失败', f'第{next_number}集未保存，原方案保持不变。\n\n{exc}', parent=parent_window or self)
 
     @ui_action
     def show_short_drama_continuity_ledger(self, plan):

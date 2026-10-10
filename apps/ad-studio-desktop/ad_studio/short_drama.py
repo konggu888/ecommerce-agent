@@ -432,3 +432,97 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
             "商品事实未在资料中逐字匹配时只标记待核实，不直接判定为虚假。"
         ],
     }
+
+
+def generate_next_short_drama_episode(model_router, plan: dict[str, Any],
+                                      product: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Append one validated episode generated from the saved continuity handoff."""
+    source = validate_short_drama(json.loads(json.dumps(plan, ensure_ascii=False)))
+    if source.get("format_mode") == "single_episode":
+        raise ShortDramaPlanError("当前是单集短剧，不能直接续写；请先创建连续多集或系列短剧方案。")
+    episodes = source.get("episodes", [])
+    if not episodes:
+        raise ShortDramaPlanError("当前方案没有分集剧本，无法续写下一集。")
+    previous_number = int(source.get("episode_count", len(episodes)))
+    if previous_number >= 50:
+        raise ShortDramaPlanError("短剧最多支持50集，当前已达到上限。")
+    previous = episodes[-1]
+    state = previous.get("continuity_state", {})
+    if not isinstance(state, dict):
+        raise ShortDramaPlanError(f"第{previous_number}集缺少连续性状态，无法安全续写。")
+    next_number = previous_number + 1
+    handoff = {
+        "previous_episode": previous,
+        "previous_episode_continuity": state,
+        "continuity_ledger": source.get("continuity_ledger") or build_episode_continuity_ledger(source),
+        "series_bible": source.get("series_bible", {}),
+        "characters": source.get("characters", []),
+        "world": source.get("world", ""),
+        "genre": source.get("genre", ""),
+        "drama_business_mode": source.get("drama_business_mode", "general"),
+        "product_truths": source.get("product_truths", []),
+        "product_material": product or {},
+        "format_mode": source.get("format_mode"),
+        "new_episode_number": next_number,
+    }
+    prompt = (
+        "你是负责续写既有短剧的编剧。只生成下一集的JSON对象，不要输出整季，不要改写旧集。\n"
+        f"本次必须生成第{next_number}集。输入包含上一集完整内容、人物状态、连续性台账和系列设定。\n"
+        "连续多集：必须因果承接上一集结尾、人物变化、未解线索和下一集承接要求；不能让人物忘记已发生的事，不能无解释地改变地点、关系或道具状态。\n"
+        "系列短剧：共享世界观与人物设定，但本集故事可以相对独立；只继承必要的长期人物状态，不要强行把上一集悬念变成本集主线。\n"
+        "通用AI短剧可以不出现商品；商品植入/转化遵守商品事实，不编造功效或参数。\n"
+        "输出对象必须包含 episode_number、title、logline、plot_beats、ending_hook、full_script、continuity_state、storyboard。"
+        "continuity_state 必须含 opening_state、character_state_changes（列表）、unresolved_threads（列表）、ending_state、next_episode_requirements（列表）。"
+        "storyboard 至少一个镜头；每个镜头含 index、scene、location、characters（列表）、action、dialogue、product_integration、asset_needs（列表）、actor_requirements（列表）、scene_requirements（列表）、product_asset_requirements（列表）、shot_type、duration_seconds、generation_prompt。"
+        "index 从本集第1镜开始。只返回合法JSON。\n输入：\n"
+        + json.dumps(handoff, ensure_ascii=False, indent=2)
+    )
+    profile = model_router.resolve_route("AI短剧编导")
+    try:
+        generated = model_router.complete_json(profile, prompt, function="AI短剧编导")
+    except TypeError as exc:
+        if "unexpected keyword argument 'function'" not in str(exc):
+            raise
+        generated = model_router.complete_json(profile, prompt)
+    if isinstance(generated, dict) and isinstance(generated.get("episode"), dict):
+        generated = generated["episode"]
+    if not isinstance(generated, dict):
+        raise ShortDramaPlanError("模型没有返回有效的下一集JSON对象。")
+    try:
+        returned_number = int(generated.get("episode_number", next_number))
+    except (TypeError, ValueError) as exc:
+        raise ShortDramaPlanError("续写结果的集数编号无效。") from exc
+    if returned_number != next_number:
+        raise ShortDramaPlanError(f"模型返回第{returned_number}集，但本次要求第{next_number}集；原方案未修改。")
+    required = ("title", "logline", "plot_beats", "ending_hook", "full_script", "continuity_state", "storyboard")
+    missing = [key for key in required if key not in generated]
+    if missing:
+        raise ShortDramaPlanError("续写结果缺少字段：" + "、".join(missing))
+    state = generated.get("continuity_state")
+    if not isinstance(state, dict):
+        raise ShortDramaPlanError(f"第{next_number}集缺少连续性状态。")
+    for key in ("opening_state", "character_state_changes", "unresolved_threads", "ending_state", "next_episode_requirements"):
+        if key not in state:
+            raise ShortDramaPlanError(f"第{next_number}集连续性状态缺少字段 {key}。")
+    if not str(state.get("opening_state", "")).strip() or not str(state.get("ending_state", "")).strip():
+        raise ShortDramaPlanError(f"第{next_number}集必须填写开集承接状态和集末状态。")
+    if not all(isinstance(state.get(key), list) for key in ("character_state_changes", "unresolved_threads", "next_episode_requirements")):
+        raise ShortDramaPlanError(f"第{next_number}集的人物变化、未解线索和下一集承接要求必须使用列表。")
+    if not isinstance(generated.get("storyboard"), list) or not generated["storyboard"]:
+        raise ShortDramaPlanError(f"第{next_number}集没有分镜。")
+    generated["episode_number"] = next_number
+    new_shots = []
+    for index, shot in enumerate(generated["storyboard"], 1):
+        if not isinstance(shot, dict) or not shot.get("scene") or not shot.get("action"):
+            raise ShortDramaPlanError(f"第{next_number}集第{index}镜缺少场景或动作。")
+        shot["episode_number"] = next_number
+        shot["index"] = index
+        new_shots.append(shot)
+    result = json.loads(json.dumps(source, ensure_ascii=False))
+    result["episodes"].append(generated)
+    result["episode_count"] = next_number
+    result["storyboard"].extend(new_shots)
+    result["full_script"] = str(result.get("full_script", "")).rstrip() + f"\n\n第{next_number}集：{generated.get('title', '')}\n" + str(generated.get("full_script", ""))
+    result["continuity_ledger"] = build_episode_continuity_ledger(result)
+    result["next_episode_generated_at"] = __import__("datetime").datetime.now().isoformat(timespec="seconds")
+    return validate_short_drama(result)

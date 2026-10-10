@@ -3,6 +3,7 @@ import unittest
 from ad_studio.short_drama import (
     ShortDramaPlanError, build_short_drama_prompt, generate_short_drama,
     audit_short_drama, build_episode_continuity_ledger, short_drama_production_rows, validate_short_drama,
+    generate_next_short_drama_episode,
 )
 
 
@@ -178,6 +179,57 @@ class ShortDramaTests(unittest.TestCase):
         self.assertEqual(seen["route"], "AI短剧编导")
         self.assertEqual(seen["function"], "AI短剧编导")
         self.assertEqual(len(result["storyboard"]), 1)
+
+
+    def test_next_episode_uses_handoff_context_and_preserves_previous_episode(self):
+        plan = sample_plan()
+        plan["format_mode"] = "continuous_series"
+        plan["episode_count"] = 1
+        plan["episodes"] = [{
+            "episode_number": 1, "title": "匿名便条", "logline": "小林发现线索",
+            "plot_beats": ["开场", "发现线索", "悬念"], "ending_hook": "匿名便条",
+            "full_script": "第一集完整剧本",
+            "continuity_state": {"opening_state": "小林准备出门", "character_state_changes": ["小林发现便条"],
+                "unresolved_threads": ["便条是谁留下的"], "ending_state": "小林拿着匿名便条",
+                "next_episode_requirements": ["解释便条来源，便条不能消失"]},
+            "storyboard": [dict(plan["storyboard"][0])],
+        }]
+        plan["storyboard"][0]["episode_number"] = 1
+        seen = {}
+        class FakeRouter:
+            def resolve_route(self, function): return "short-drama-profile"
+            def complete_json(self, profile, prompt, function=None):
+                seen["prompt"] = prompt
+                return {"episode_number": 2, "title": "便条的来历", "logline": "小林追查便条",
+                    "plot_beats": ["承接便条", "追查来源", "揭开部分真相"], "ending_hook": "新线索",
+                    "full_script": "第二集完整剧本",
+                    "continuity_state": {"opening_state": "小林仍拿着第一集的匿名便条",
+                        "character_state_changes": ["小林开始信任同事"], "unresolved_threads": ["新线索指向旧档案"],
+                        "ending_state": "便条来源得到部分解释", "next_episode_requirements": ["继续追查旧档案"]},
+                    "storyboard": [dict(plan["storyboard"][0])]}
+        updated = generate_next_short_drama_episode(FakeRouter(), plan, {})
+        self.assertIn("便条是谁留下的", seen["prompt"])
+        self.assertIn("小林拿着匿名便条", seen["prompt"])
+        self.assertEqual(updated["episode_count"], 2)
+        self.assertEqual([e["episode_number"] for e in updated["episodes"]], [1, 2])
+        self.assertEqual(updated["episodes"][0]["full_script"], "第一集完整剧本")
+        self.assertEqual(updated["storyboard"][-1]["episode_number"], 2)
+        self.assertEqual(updated["continuity_ledger"][1]["opening_state"], "小林仍拿着第一集的匿名便条")
+
+    def test_next_episode_rejects_wrong_episode_number(self):
+        plan = sample_plan()
+        plan["format_mode"] = "continuous_series"
+        plan["episode_count"] = 1
+        plan["episodes"] = [{"episode_number": 1, "title": "第一集", "logline": "开场",
+            "plot_beats": ["开场", "冲突", "悬念"], "ending_hook": "钩子", "full_script": "剧本",
+            "continuity_state": {"opening_state": "开场", "character_state_changes": [], "unresolved_threads": [],
+                "ending_state": "结尾", "next_episode_requirements": ["承接"]},
+            "storyboard": [dict(plan["storyboard"][0])]}]
+        class FakeRouter:
+            def resolve_route(self, function): return "profile"
+            def complete_json(self, profile, prompt, function=None): return {"episode_number": 3}
+        with self.assertRaisesRegex(ShortDramaPlanError, "要求第2集"):
+            generate_next_short_drama_episode(FakeRouter(), plan, {})
 
 
 if __name__ == "__main__":
