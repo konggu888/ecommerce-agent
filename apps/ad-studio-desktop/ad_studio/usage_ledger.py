@@ -191,14 +191,22 @@ class UsageLedger:
     def project_summary(self, project_id: str) -> dict[str, Any]:
         rows = [x for x in self._load() if x.get("project_id") == project_id]
         success = [x for x in rows if x.get("status") == "success"]
+        # A failed stage can still incur provider cost (for example, a model
+        # returned billable tokens but malformed JSON). Include every recorded
+        # non-zero estimate in cost totals; success/failure counts remain separate.
+        estimated_cost = round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in rows), 6)
+        categories = sorted({x.get("category", "model") for x in rows if float(x.get("estimated_cost_rmb", 0) or 0) != 0})
         return {
             "project_id": project_id,
             "entries": len(rows),
             "success": len(success),
             "failed": len(rows) - len(success),
             "tokens": sum(int(x.get("total_tokens", 0) or 0) for x in rows),
-            "actual_cost_rmb": round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in success), 6),
-            "by_category": {category: round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in success if x.get("category") == category), 6) for category in sorted({x.get("category", "model") for x in success})},
+            "estimated_cost_rmb": estimated_cost,
+            # Kept for existing project/UI compatibility; it is an estimate,
+            # not a verified provider invoice total.
+            "actual_cost_rmb": estimated_cost,
+            "by_category": {category: round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in rows if x.get("category", "model") == category), 6) for category in categories},
         }
 
     def summary(self) -> dict[str, Any]:
