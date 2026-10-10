@@ -1976,7 +1976,7 @@ class App(tk.Tk):
         ).pack(fill='x', padx=16)
         ttk.Label(
             mode_dialog,
-            text='模式说明：single_episode=单集；continuous_series=连续多集；anthology_series=共享人物/世界观的系列剧',
+            text='模式说明：单集短剧讲完一个完整故事；连续多集短剧前后剧情承接；系列短剧共享人物与世界观、每集相对独立',
             wraplength=480,
         ).pack(anchor='w', padx=16, pady=6)
         ttk.Label(mode_dialog, text='总集数（多集模式填写 2—50；单集模式自动按1集处理）').pack(anchor='w', padx=16, pady=(4, 2))
