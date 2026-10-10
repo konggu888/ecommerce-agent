@@ -2497,7 +2497,10 @@ class App(tk.Tk):
             msg=f'生成镜头：{len(done)} 个\n最终成片：{len(outputs)} 个\n失败镜头：{len(failed)} 个'
             if failed: msg+='\n\n失败明细：\n'+'\n'.join(failed[:8])
             self.detail.set(msg.replace('\n','｜'))
-            messagebox.showinfo('一键生成完成',msg)
+            if failed:
+                messagebox.showwarning('一键生成结果',msg)
+            else:
+                messagebox.showinfo('一键生成结果',msg)
         except Exception as exc:
             try:
                 self._restore_variant_selection(original_index)
