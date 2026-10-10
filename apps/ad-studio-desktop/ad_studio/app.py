@@ -12,6 +12,7 @@ from .capability import CapabilityRouter
 from .production import ProductionStore
 from .product_parser import parse_product_url, save_product, save_product_library, load_product_library, merge_product_library, ProductInfo
 from .creative_engine import CreativeEngine, validate_plan, validate_task_type_plan, TASK_TYPE_POLICIES
+from .short_drama import generate_short_drama
 from .model_router import ModelRouter, ModelProfile, FUNCTIONS, audit_ad_variant_set, build_creative_test_plan, audit_creative_factual_consistency, audit_storyboard_fact_consistency, audit_visual_fact_consistency
 from .browser_skill import _find_agent_browser
 from .ffmpeg import available as ffmpeg_available, has_nvenc
@@ -138,7 +139,7 @@ class App(tk.Tk):
         ttk.Label(setup,text='素材来源').grid(row=5,column=0,sticky='w'); self.footage_mode=tk.StringVar(value='AI生成视频'); ttk.Combobox(setup,textvariable=self.footage_mode,values=['AI生成视频','用户拍摄素材'],state='readonly',width=16).grid(row=4,column=1,sticky='w',pady=(4,2))
         self.footage_folder=tk.StringVar(value=''); ttk.Entry(setup,textvariable=self.footage_folder,width=36).grid(row=5,column=2,sticky='w',padx=4); ttk.Button(setup,text='选择素材文件夹',command=self.choose_footage_folder).grid(row=4,column=3,sticky='e')
         ttk.Label(setup,text='用户拍摄素材：输入链接后 AI 分析产品 → 指定文件夹放入你拍好的视频 → AI 思考剪辑方案 → 本地 FFmpeg 出片（不调用视频生成服务）',foreground='#666').grid(row=6,column=0,columnspan=5,sticky='w',pady=(2,0))
-        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='📹 实拍分析报告',command=self.footage_analysis_report).grid(row=2,column=5,sticky='e',padx=8); ttk.Button(setup,text='📋 补素材任务',command=self.footage_gap_tasks_report).grid(row=2,column=6,sticky='e',padx=8); ttk.Button(setup,text='🤖 执行AI补镜头',command=self.generate_hybrid_gap_shots).grid(row=2,column=10,sticky='e',padx=8); ttk.Button(setup,text='🔍 AI补镜头复核',command=self.review_hybrid_gap_shots).grid(row=2,column=11,sticky='e',padx=8); ttk.Button(setup,text='🔄 重新分析实拍素材',command=self.reanalyze_footage).grid(row=2,column=7,sticky='e',padx=8); ttk.Button(setup,text='🕘 分析历史',command=self.footage_reanalysis_history_report).grid(row=2,column=8,sticky='e',padx=8); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='📚 商品资料库',command=self.product_library_settings).grid(row=0,column=5,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='🧪 创意版本矩阵',command=self.variant_matrix_report).grid(row=2,column=9,sticky='e',padx=8); ttk.Button(setup,text='🧠 创意方案分析',command=self.creative_variant_analysis_report).grid(row=2,column=12,sticky='e',padx=8); ttk.Button(setup,text='🧪 创意测试方案',command=self.creative_test_plan_report).grid(row=2,column=14,sticky='e',padx=8); ttk.Button(setup,text='🛡 创意事实检查',command=self.creative_fact_check_report).grid(row=2,column=15,sticky='e',padx=8); ttk.Button(setup,text='🎬 分镜事实复核',command=self.storyboard_fact_check_report).grid(row=2,column=16,sticky='e',padx=8); ttk.Button(setup,text='🎥 成片视觉复核',command=self.visual_fact_check_report).grid(row=2,column=17,sticky='e',padx=8); ttk.Button(setup,text='📥 真实投放数据（可选）',command=self.variant_performance_entry).grid(row=2,column=13,sticky='e',padx=8); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
+        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='🎭 AI短剧编导',command=self.short_drama_director).grid(row=0,column=6,sticky='e',padx=8); ttk.Button(setup,text='📹 实拍分析报告',command=self.footage_analysis_report).grid(row=2,column=5,sticky='e',padx=8); ttk.Button(setup,text='📋 补素材任务',command=self.footage_gap_tasks_report).grid(row=2,column=6,sticky='e',padx=8); ttk.Button(setup,text='🤖 执行AI补镜头',command=self.generate_hybrid_gap_shots).grid(row=2,column=10,sticky='e',padx=8); ttk.Button(setup,text='🔍 AI补镜头复核',command=self.review_hybrid_gap_shots).grid(row=2,column=11,sticky='e',padx=8); ttk.Button(setup,text='🔄 重新分析实拍素材',command=self.reanalyze_footage).grid(row=2,column=7,sticky='e',padx=8); ttk.Button(setup,text='🕘 分析历史',command=self.footage_reanalysis_history_report).grid(row=2,column=8,sticky='e',padx=8); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='📚 商品资料库',command=self.product_library_settings).grid(row=0,column=5,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='🧪 创意版本矩阵',command=self.variant_matrix_report).grid(row=2,column=9,sticky='e',padx=8); ttk.Button(setup,text='🧠 创意方案分析',command=self.creative_variant_analysis_report).grid(row=2,column=12,sticky='e',padx=8); ttk.Button(setup,text='🧪 创意测试方案',command=self.creative_test_plan_report).grid(row=2,column=14,sticky='e',padx=8); ttk.Button(setup,text='🛡 创意事实检查',command=self.creative_fact_check_report).grid(row=2,column=15,sticky='e',padx=8); ttk.Button(setup,text='🎬 分镜事实复核',command=self.storyboard_fact_check_report).grid(row=2,column=16,sticky='e',padx=8); ttk.Button(setup,text='🎥 成片视觉复核',command=self.visual_fact_check_report).grid(row=2,column=17,sticky='e',padx=8); ttk.Button(setup,text='📥 真实投放数据（可选）',command=self.variant_performance_entry).grid(row=2,column=13,sticky='e',padx=8); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
         main=ttk.Panedwindow(self,orient='horizontal'); main.pack(fill='both',expand=True,padx=16,pady=8)
         left=ttk.Frame(main,padding=8); right=ttk.Frame(main,padding=8); main.add(left,weight=3); main.add(right,weight=2)
         ttk.Label(left,text='② 分镜生产链',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
@@ -1908,3 +1909,51 @@ class App(tk.Tk):
     def save(self):
         if not self.project:return messagebox.showinfo('提示','当前没有项目可保存。')
         self.store.save(self.project); self.detail.set(f'项目已保存：{self.project.id}')
+
+    @ui_action
+    def short_drama_director(self):
+        """Create a separate story-first short-drama plan without overwriting the ad plan."""
+        if not self._ui_execution_gate(): return
+        if not self.project:
+            return messagebox.showinfo('提示','请先输入商品链接并创建/打开一个商品项目，再启动 AI 短剧编导。')
+        product = dict(self.project.product_info or {})
+        if not product:
+            return messagebox.showerror('商品资料缺失','当前项目没有可用的商品资料，请重新创建项目或补充商品资料。')
+        if not messagebox.askyesno(
+            '启动 AI 短剧编导',
+            'AI 将根据当前商品资料独立设计短剧题材、人物关系、剧情冲突/反转、完整剧本和可执行分镜。\\n\\n'
+            '本步骤会调用“AI短剧编导”路由模型；模型费用按该模型配置计费。\\n'
+            '这里只生成并保存创作方案，不会自动调用付费素材/视频生成服务，也不会覆盖原广告方案。\\n\\n是否继续？'
+        ):
+            return
+        try:
+            constraints = self._creative_constraints()
+            constraints['creative_mode'] = 'AI短剧编导'
+            plan = generate_short_drama(
+                self.model_router, product, constraints,
+                existing_creative_plan=self.project.creative_plan,
+            )
+            plan['created_at'] = __import__('datetime').datetime.now().isoformat(timespec='seconds')
+            self.project.creative_plan['short_drama'] = plan
+            self.store.save(self.project)
+            win = tk.Toplevel(self)
+            win.title('AI短剧编导｜创作方案')
+            win.geometry('920x720')
+            win.transient(self)
+            head = ttk.Frame(win, padding=12); head.pack(fill='x')
+            ttk.Label(head, text=f"题材：{plan.get('genre', '待确认')}", font=('Microsoft YaHei UI', 16, 'bold')).pack(anchor='w')
+            ttk.Label(head, text=plan.get('logline', ''), wraplength=870).pack(anchor='w', pady=(5, 0))
+            text_frame = ttk.Frame(win, padding=(12, 0, 12, 12)); text_frame.pack(fill='both', expand=True)
+            view = tk.Text(text_frame, wrap='word', font=('Microsoft YaHei UI', 10))
+            scroll = ttk.Scrollbar(text_frame, orient='vertical', command=view.yview)
+            view.configure(yscrollcommand=scroll.set)
+            scroll.pack(side='right', fill='y'); view.pack(side='left', fill='both', expand=True)
+            view.insert('1.0', json.dumps(plan, ensure_ascii=False, indent=2))
+            view.configure(state='disabled')
+            footer = ttk.Frame(win, padding=12); footer.pack(fill='x')
+            ttk.Label(footer, text=f"已保存到项目：{self.project.id}；分镜数：{len(plan.get('storyboard', []))}。当前只完成短剧策划，尚未触发镜头素材生成。").pack(side='left')
+            ttk.Button(footer, text='关闭', command=win.destroy).pack(side='right')
+            self.detail.set(f"AI短剧方案已保存｜题材：{plan.get('genre', '待确认')}｜分镜：{len(plan.get('storyboard', []))}｜未覆盖原广告方案")
+            messagebox.showinfo('短剧方案已保存', 'AI短剧创作方案已保存到当前项目。原广告方案和现有分镜未被替换。')
+        except Exception as exc:
+            messagebox.showerror('AI短剧编导失败', str(exc))
