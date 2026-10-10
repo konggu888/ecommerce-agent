@@ -318,6 +318,37 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(shot.video_path, str(output))
             self.assertEqual(shot.status, "生成失败（已保留上一版本）")
 
+    def test_failed_standalone_cloud_asset_attempt_is_recorded_as_estimated_cost(self):
+        from ad_studio.providers import UnconfiguredProvider
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 1, "真人口播")
+            shot = project.shots[0]
+
+            class Provider:
+                provider_name = "独立素材测试Provider"
+                cost_per_asset_rmb = 0.18
+
+                def generate_asset(self, request):
+                    raise TimeoutError("asset generation timed out")
+
+            cloud = type("Decision", (), {"target": "cloud"})()
+            with patch("ad_studio.production.CapabilityRouter") as router, \
+                 patch("ad_studio.production.load_asset_provider", side_effect=[Provider(), UnconfiguredProvider()]):
+                router.return_value.decide_asset.return_value = cloud
+                with self.assertRaisesRegex(TimeoutError, "timed out"):
+                    store.generate_missing_asset(project, shot, "演员", "青年男演员", root / "asset-provider.json")
+
+            summary = store.ledger.project_summary(project.id)
+            self.assertEqual(summary["entries"], 1)
+            self.assertEqual(summary["failed"], 1)
+            self.assertEqual(summary["success"], 0)
+            self.assertAlmostEqual(summary["estimated_cost_rmb"], 0.18, places=6)
+            entry = next(x for x in store.ledger.all_entries() if x["project_id"] == project.id)
+            self.assertEqual(entry["status"], "failed")
+            self.assertIn("是否实际计费需以供应商账单核对", entry["error"])
+
     def test_failed_cloud_asset_attempt_is_recorded_as_estimated_cost(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
