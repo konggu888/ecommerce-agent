@@ -1045,3 +1045,6 @@ estimate_asset_generation 使用 AssetGenerator 的 CapabilityRouter 结果决�
 - `App.final_delivery_center()` 在创建窗口前调用 `_run_final_delivery_recheck()`；该检查失败时必须捕获异常、更新主界面状态、显示原因和建议并返回，不能把异常直接交给 Tk 事件循环。
 - 窗口内“一键重新检查”使用独立异常处理：状态明确标为“检查失败”，问题区显示原因，弹出带父窗口的错误提示；失败不应伪装成“可以交付”，也不应清空或覆盖历史记录。
 - `test_desktop.py` 以 AST 契约检查初始检查、重试失败反馈与可读提示。该测试不替代 Windows 实际交互验收。
+
+## 2026-10-11：批量生成结果提示与失败状态一致
+`App.batch_generate_variants()` 汇总结果后按 `failed` 选择提示级别：存在任一失败项时用 `messagebox.showwarning('一键生成结果', msg)`；无失败项时用 `showinfo`。不再在有失败项时显示“一键生成完成”的成功式标题。回归测试验证两条提示分支均存在且旧成功式提示已移除。
