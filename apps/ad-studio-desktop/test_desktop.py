@@ -538,6 +538,18 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertIn("2", app.project.creative_plan["variant_shot_cache"])
             self.assertIn("1", app.project.creative_plan["variant_footage_gap_tasks"])
 
+    def test_batch_generation_uses_warning_dialog_when_any_step_fails(self):
+        app_path = Path(__file__).parent / "ad_studio" / "app.py"
+        source = app_path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        method = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "batch_generate_variants")
+        method_source = ast.get_source_segment(source, method)
+        self.assertIn("if failed:", method_source)
+        self.assertIn("messagebox.showwarning('一键生成结果',msg)", method_source)
+        self.assertIn("messagebox.showinfo('一键生成结果',msg)", method_source)
+        self.assertNotIn("messagebox.showinfo('一键生成完成',msg)", method_source)
+
     def test_batch_generation_captures_original_variant_before_preflight(self):
         # 回归：预算预审会切换方案，原始方案必须在预审前锁定。
         import inspect
