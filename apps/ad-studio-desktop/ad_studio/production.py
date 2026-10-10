@@ -290,7 +290,7 @@ class ProductionStore:
             result=provider.generate(GenerationRequest(
                 prompt=prompt,
                 output=temp,
-                duration=3,
+                duration=max(1, int(getattr(shot, 'duration_seconds', 3) or 3)),
                 reference_assets=asset_ids,
                 reference_asset_paths=asset_paths,
             ))

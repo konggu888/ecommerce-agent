@@ -35,6 +35,9 @@ SHORT_DRAMA_SCHEMA = {
         "dialogue": "台词/旁白",
         "product_integration": "商品如何自然进入剧情；不适用时说明",
         "asset_needs": ["演员/场景/商品素材/实拍素材需求"],
+        "actor_requirements": ["具体人物/演员标签"],
+        "scene_requirements": ["具体场景标签"],
+        "product_asset_requirements": ["需要展示的商品素材标签"],
         "shot_type": "景别与镜头运动",
         "duration_seconds": "integer",
         "generation_prompt": "可执行的镜头生成提示"
@@ -105,7 +108,7 @@ def validate_short_drama(raw: dict[str, Any]) -> dict[str, Any]:
             shot["duration_seconds"] = max(1, int(shot.get("duration_seconds", 4)))
         except (TypeError, ValueError) as exc:
             raise ShortDramaPlanError(f"第{index}个短剧分镜时长无效。") from exc
-        for key in ("characters", "asset_needs"):
+        for key in ("characters", "asset_needs", "actor_requirements", "scene_requirements", "product_asset_requirements"):
             if not isinstance(shot.get(key), list):
                 shot[key] = []
     for key in ("characters", "plot_beats", "product_truths", "risk_notes", "alternative_directions"):
@@ -126,3 +129,51 @@ def generate_short_drama(model_router, product: dict[str, Any], constraints: dic
             raise
         result = model_router.complete_json(profile, prompt)
     return validate_short_drama(result)
+
+
+def short_drama_production_rows(plan: dict[str, Any], product_name: str) -> list[dict[str, Any]]:
+    """Translate a validated drama storyboard into the existing production data contract."""
+    validated = validate_short_drama(dict(plan))
+    rows: list[dict[str, Any]] = []
+    for index, shot in enumerate(validated["storyboard"], 1):
+        actor_tags = [str(x).strip() for x in shot.get("actor_requirements", []) if str(x).strip()]
+        scene_tags = [str(x).strip() for x in shot.get("scene_requirements", []) if str(x).strip()]
+        product_tags = [str(x).strip() for x in shot.get("product_asset_requirements", []) if str(x).strip()]
+        if not actor_tags:
+            actor_tags = [str(x).strip() for x in shot.get("characters", []) if str(x).strip()]
+        if not scene_tags:
+            scene_tags = [str(shot.get("location") or shot.get("scene") or "").strip()]
+            scene_tags = [x for x in scene_tags if x]
+        integration = str(shot.get("product_integration", "")).strip()
+        if integration and integration not in {"不适用", "暂不出现", "无"} and not product_tags:
+            product_tags = [str(product_name).strip()] if str(product_name).strip() else []
+        title = str(shot.get("scene") or f"短剧镜头{index}")
+        action = str(shot.get("action", "")).strip()
+        location = str(shot.get("location", "")).strip()
+        shot_type = str(shot.get("shot_type", "")).strip()
+        prompt = str(shot.get("generation_prompt", "")).strip()
+        visual = "；".join(part for part in (
+            f"地点：{location}" if location else "",
+            f"动作：{action}" if action else "",
+            f"景别/运动：{shot_type}" if shot_type else "",
+            f"商品融入：{integration}" if integration else "",
+            f"生成要求：{prompt}" if prompt else "",
+        ) if part)
+        rows.append({
+            "index": int(shot.get("index", index)),
+            "title": title,
+            "visual": visual,
+            "script": str(shot.get("dialogue", "")).strip(),
+            "duration_seconds": max(1, int(shot.get("duration_seconds", 4))),
+            "asset_resolution": {
+                "actor_tags": actor_tags,
+                "scene_tags": scene_tags,
+                "product_tags": product_tags,
+                "generation_if_missing": True,
+            },
+            "director_mode": "short_drama",
+            "story_scene": title,
+            "story_action": action,
+            "product_integration": integration,
+        })
+    return rows
