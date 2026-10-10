@@ -242,13 +242,33 @@ class ProductionStore:
             if not found and item['generate_if_missing']:
                 if generator.configured(kind):
                     item['source']='自动生成中'
+                    generation_returned = False
                     try:
                         result=generator.generate(kind,project.product_name+'-'+kind,shot.visual+'；需求：'+'、'.join(tags),tags,shot.id)
-                        library._write(library.all()+[result.asset])
-                        item.update({'asset':result.asset.id,'source':'已生成并入库','cost_rmb':result.cost_rmb})
+                        generation_returned = True
+                        # Record the completed provider generation before local library writes,
+                        # so a disk/library error cannot make a billable asset look free.
                         self._record_actual_cost(project, shot=shot, category='asset', amount_rmb=result.cost_rmb, provider=result.provider, quantity=1, unit_cost_rmb=result.cost_rmb, function=f'{kind}素材生成')
                         shot.actual_cost_rmb=round(float(shot.actual_cost_rmb or 0)+float(result.cost_rmb or 0),4)
+                        library._write(library.all()+[result.asset])
+                        item.update({'asset':result.asset.id,'source':'已生成并入库','cost_rmb':result.cost_rmb})
                     except Exception as exc:
+                        # A failed remote request can still be billable. Keep a conservative
+                        # estimate in the ledger when the router selected cloud and a price exists.
+                        if not generation_returned:
+                            try:
+                                route = generator.capability.decide_asset(kind)
+                                price = float(generator.price(kind) or 0.0)
+                                if route.target == 'cloud' and price > 0:
+                                    self._record_actual_cost(
+                                        project, shot=shot, category='asset', amount_rmb=price,
+                                        provider=str(generator._cfg(kind).get('provider') or 'Generic Asset REST'),
+                                        quantity=1, unit_cost_rmb=price, function=f'{kind}素材生成',
+                                        status='failed',
+                                        error=f'云端素材生成请求失败；是否实际计费需以供应商账单核对：{exc}',
+                                    )
+                            except Exception as ledger_exc:
+                                item['cost_recording_error'] = str(ledger_exc)
                         item.update({'source':'自动生成失败','error':str(exc)})
                 else:
                     item['source']='未配置生成服务'
