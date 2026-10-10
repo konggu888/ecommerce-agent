@@ -319,3 +319,8 @@ undefined
 
 ### 本轮 CI 失败与夹具修正
 首轮 CI 在 `test_reviewed_gap_is_inserted_once_and_reindexed` 失败，原因是旧测试使用固定路径 `/tmp/generated.mp4`，未创建真实测试文件。已将测试改为临时目录创建非空文件，并增加 Provider 与生成费用断言；修复提交后仍须等待最新 HEAD 的 CI 完成。
+
+## 最新推进记录：恢复流程同步修复方案缓存
+- 审查发现项目恢复只修复 `project.shots`，而每个方案还保存独立 `variant_shot_cache`。缓存中的失效路径可能在后续切换方案时重新出现。
+- 已扩展 `ProductionStore.recover_project()`，当前镜头与所有方案缓存都用安全的非空普通文件检查；失效路径清空、状态统一标记待重新生成/重新选择素材。
+- 已扩展 A30 回归测试覆盖缓存快照。最新 HEAD 的 CI、文档同步和部署预览待最终核验。
