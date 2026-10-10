@@ -188,3 +188,5 @@ CI 还会运行前端语法、Python 语法、Typecheck、Engine 和 Risk Contro
 
 ## 最新工作单元：成本账本异常保护
 成本账本 apps/ad-studio-desktop/ad_studio/usage_ledger.py 曾在解析异常时静默返回空列表，可能让后续写入覆盖原历史；直接写账本文件也可能因中断留下截断 JSON。现已加入异常账本隔离（保留原始文件）、原子写入和 UI 警告，并补充回归测试。接手者应先实时核验 PR #18 最新 head、CI、doc-sync、部署预览；不要从本段推断最新 CI 已通过。当前未实现跨进程写锁，且 Windows 现场、真实 Provider/计费、剪映与 B1–B3 继续暂缓；PR #18 不得合并。
+
+补充 UI 细节：成本账本异常警告多条提示使用真实换行符显示；最终接手验收应核对最新 HEAD 的 CI/docs-sync，而不是继承旧结果。
