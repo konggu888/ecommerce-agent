@@ -1599,6 +1599,43 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertNotIn("\\n", provider.prompt)
 
 
+    def test_a55_ledger_failure_does_not_turn_successful_video_into_provider_failure(self):
+        class SuccessfulProvider:
+            provider_name = "测试 Provider"
+            cost_per_shot_rmb = 0.72
+            def generate(self, request):
+                request.output.write_bytes(b"generated-video")
+                return request.output
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            old_output = store.render_path(project, shot)
+            old_output.parent.mkdir(parents=True, exist_ok=True)
+            old_output.write_bytes(b"previous-good-video")
+            shot.video_path = str(old_output)
+            store.save(project)
+            mark_regenerate(project, 0)
+
+            def fail_cost_record(*args, **kwargs):
+                raise OSError("账本只读")
+
+            store._record_actual_cost = fail_cost_record
+            output = store._render_with_provider(project, shot, SuccessfulProvider())
+
+            self.assertEqual(output.read_bytes(), b"generated-video")
+            self.assertEqual(shot.video_path, str(output))
+            self.assertEqual(shot.status, "已生成（成本待核对）")
+            self.assertTrue(any(
+                item.get("stage") == "视频已生成但成本记账待核对"
+                for item in project.creative_plan.get("recovery", {}).get("history", [])
+            ))
+            restored = store.load(project.id)
+            self.assertEqual(restored.shots[0].video_path, str(output))
+            self.assertEqual(restored.shots[0].status, "已生成（成本待核对）")
+
     def test_a52_failed_video_attempt_is_auditable_without_double_counting_actual_cost(self):
         class FailingProvider:
             provider_name = "测试 Provider"

@@ -331,65 +331,48 @@ class ProductionStore:
         return self._render_with_provider(project, shot, provider)
 
     def _render_with_provider(self, project: Project, shot: Shot, provider):
-        out=self.render_path(project,shot)
-        # 先写临时文件，只有 Provider 完整成功后才替换正式版本。
-        # 任何素材解析/生成失败都必须恢复上一份可用视频。
-        temp=out.with_suffix('.part.mp4')
+        out = self.render_path(project, shot)
+        temp = out.with_suffix(".part.mp4")
         if temp.exists():
             temp.unlink()
-        previous_path=shot.video_path or getattr(shot, "previous_video_path", None)
-        prompt='\n'.join([f'标题：{shot.title}',f'画面：{shot.visual}',f'文案：{shot.script}'])
-        shot.status='生成中…'
-        shot.provider=getattr(provider,'provider_name','Generic REST')
-        shot.generated_from_request=prompt
+        previous_path = shot.video_path or getattr(shot, "previous_video_path", None)
+        prompt = '\\n'.join([f"标题：{shot.title}", f"画面：{shot.visual}", f"文案：{shot.script}"])
+        shot.status = "生成中…"
+        shot.provider = getattr(provider, "provider_name", "Generic REST")
+        shot.generated_from_request = prompt
         provider_call_started = False
-        success_cost_recorded = False
         try:
-            # 保存状态与素材解析也纳入恢复边界；resolve_assets 可能调用素材生成器。
             self.save(project)
-            self.resolve_assets(project,shot)
-            library=LocalLibrary(self.library_root)
-            asset_ids=[x for x in [shot.actor_id,shot.scene_id,*shot.product_asset_ids] if x]
-            asset_map={a.id:a for a in library.all()}
-            asset_paths=[asset_map[x].path for x in asset_ids if x in asset_map and asset_map[x].path and Path(asset_map[x].path).exists()]
+            self.resolve_assets(project, shot)
+            library = LocalLibrary(self.library_root)
+            asset_ids = [x for x in [shot.actor_id, shot.scene_id, *shot.product_asset_ids] if x]
+            asset_map = {asset.id: asset for asset in library.all()}
+            asset_paths = [
+                asset_map[x].path for x in asset_ids
+                if x in asset_map and asset_map[x].path and Path(asset_map[x].path).exists()
+            ]
             request = GenerationRequest(
                 prompt=prompt,
                 output=temp,
-                duration=max(1, int(getattr(shot, 'duration_seconds', 3) or 3)),
+                duration=max(1, int(getattr(shot, "duration_seconds", 3) or 3)),
                 reference_assets=asset_ids,
                 reference_asset_paths=asset_paths,
             )
             provider_call_started = True
-            result=provider.generate(request)
-            result=Path(result)
-            if not result.exists() or result.stat().st_size == 0:
-                raise RuntimeError('视频 Provider 返回成功，但生成文件不存在或为空。')
-            # 不先 unlink 目标文件；替换失败时避免提前删掉旧输出。
+            result = Path(provider.generate(request))
+            if not result.is_file() or result.stat().st_size <= 0:
+                raise RuntimeError("视频 Provider 返回成功，但生成文件不存在或为空。")
             result.replace(out)
-            video_cost=round(float(getattr(provider,'cost_per_shot_rmb',0.0)),4)
-            shot.actual_cost_rmb=round(float(shot.actual_cost_rmb or 0.0)+video_cost,4)
-            self._record_actual_cost(
-                project,
-                shot=shot,
-                category="video",
-                amount_rmb=video_cost,
-                provider=getattr(provider,'provider_name','Generic REST'),
-                quantity=1,
-                unit_cost_rmb=video_cost,
-                function="视频镜头生成",
-            )
-            success_cost_recorded = True
-            self.mark_ready(project,shot,out)
-            return out
         except Exception as exc:
-            if temp.exists():
-                temp.unlink()
-            previous_is_valid = bool(previous_path and Path(previous_path).is_file() and Path(previous_path).stat().st_size > 0)
+            temp.unlink(missing_ok=True)
+            previous_is_valid = bool(
+                previous_path and Path(previous_path).is_file() and Path(previous_path).stat().st_size > 0
+            )
             shot.video_path = str(previous_path) if previous_is_valid else None
             shot.previous_video_path = None
-            shot.status = '生成失败（已保留上一版本）' if previous_is_valid else '生成失败'
-            shot.provider=getattr(provider,'provider_name',shot.provider)
-            if provider_call_started and not success_cost_recorded:
+            shot.status = "生成失败（已保留上一版本）" if previous_is_valid else "生成失败"
+            shot.provider = getattr(provider, "provider_name", shot.provider)
+            if provider_call_started:
                 try:
                     self._record_failed_video_attempt(project, shot, provider, str(exc))
                 except Exception as ledger_exc:
@@ -403,7 +386,46 @@ class ProductionStore:
                         "created_at": datetime.datetime.now().isoformat(timespec="seconds"),
                     })
             self.save(project)
-            raise RuntimeError(f'镜头 {shot.index} v{shot.version} 生成失败：{exc}') from exc
+            raise RuntimeError(f"镜头 {shot.index} v{shot.version} 生成失败：{exc}") from exc
+
+        # Media generation succeeded. Do not route accounting errors through provider failure recovery.
+        shot.video_path = str(out)
+        shot.previous_video_path = None
+        shot.status = "已生成"
+        try:
+            video_cost = normalize_cost_estimate_rmb(getattr(provider, "cost_per_shot_rmb", 0.0))
+            self._record_actual_cost(
+                project,
+                shot=shot,
+                category="video",
+                amount_rmb=video_cost,
+                provider=getattr(provider, "provider_name", "Generic REST"),
+                quantity=1,
+                unit_cost_rmb=video_cost,
+                function="视频镜头生成",
+            )
+            shot.actual_cost_rmb = round(float(shot.actual_cost_rmb or 0.0) + video_cost, 4)
+            self.mark_ready(project, shot, out)
+        except Exception as ledger_exc:
+            recovery = project.creative_plan.setdefault("recovery", {})
+            recovery.setdefault("history", []).append({
+                "stage": "视频已生成但成本记账待核对",
+                "error": str(ledger_exc),
+                "provider": str(getattr(provider, "provider_name", "Generic REST")),
+                "shot_id": shot.id,
+                "output_path": str(out),
+                "quoted_cost_rmb": getattr(provider, "cost_per_shot_rmb", None),
+                "retryable": False,
+                "status": "需处理",
+                "next_action": "先核对 usage-ledger.json 是否已写入成功记录，再人工修复项目成本汇总；禁止直接重试记账以免重复计费。",
+                "created_at": datetime.datetime.now().isoformat(timespec="seconds"),
+            })
+            shot.status = "已生成（成本待核对）"
+            try:
+                self.save(project)
+            except Exception:
+                pass
+        return out
 
     def render_footage_shot(self, project: Project, shot: Shot):
         """从用户拍摄素材中裁剪出本镜头；临时输出成功后才替换正式版本。"""

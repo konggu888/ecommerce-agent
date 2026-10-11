@@ -1022,3 +1022,7 @@ normalize_cost_estimate_rmb() 将 Provider 的每镜头预估价规范为有限�
 
 ### A54：活动视频文件非空校验
 `recover_project()` 将活动视频路径缺失、非文件或大小为零统一视为无效输出。若 `previous_video_path` 有效则恢复上一版；否则清除活动路径并加入 `missing_media`。恢复结果以文件可用性为准，不以路径字符串存在为准。
+
+
+### A55：Provider 成功与成本记账分离
+_render_with_provider() 将媒体生成/原子替换与成功成本记账分为两个异常边界。Provider 产出有效视频并替换到版本路径后，成本账本异常不得进入 Provider 失败恢复分支，也不得把活动路径回滚成旧版。此时保留新输出，标记“已生成（成本待核对）”，持久化 recovery history，指示先检查 usage-ledger.json 是否已有成功行再人工修复成本汇总，避免重复记账。
