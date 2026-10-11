@@ -1136,3 +1136,9 @@ A61 唯一失败项是 test_handoff_mentions_a61_legacy_cost_migration 的文案
 - 扩展 `SHORT_DRAMA_SCHEMA.alternative_directions`，新增冲突来源、人物关键选择、反转机制、商品角色和受众吸引点字段。
 - `generate_short_drama()` 对新生成结果强制要求至少两个方向、完整字段，并拒绝核心叙事机制字段完全重复的方向。
 - 该确定性检查可拦截完全相同的机制签名，但不宣称能识别所有语义相似内容；后续全面验收时需进行真实模型样例评审。
+
+
+### A72：人物动机与关系动力
+- 扩展人物 schema，加入 motivation、fear_or_secret、relationship_dynamics、decision_pressure。
+- 新生成方案强制检查完整人物动机字段；旧方案通过 audit 产生 warning，不强制阻止读取。
+- 回归测试覆盖生成时缺字段拒绝与审查时缺字段警告。

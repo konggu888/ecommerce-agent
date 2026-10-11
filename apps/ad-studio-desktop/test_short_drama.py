@@ -17,7 +17,9 @@ def sample_plan():
         "premise": "日常问题引发连续误会",
         "world": "现代城市公寓与通勤路上",
         "characters": [{"name": "小林", "role": "主角", "goal": "准时出门",
-                        "relationship": "同事", "arc": "从慌乱到从容"}],
+                        "motivation": "不想再次让同事失望", "fear_or_secret": "害怕被认为不可靠",
+                        "relationship": "同事", "relationship_dynamics": "同事依赖其准时交接，但此前已有一次迟到",
+                        "decision_pressure": "距离约定时间只剩十分钟", "arc": "从慌乱回避转向主动建立准备习惯"}],
         "plot_beats": ["意外开场", "误会升级", "商品自然解决问题", "轻松收尾"],
         "conflict_and_reversal": "主角以为问题无法解决，后来发现关键在准备方式",
         "story_engine": {
@@ -83,6 +85,21 @@ class ShortDramaTests(unittest.TestCase):
         self.assertIn("constraints.drama_business_mode", prompt)
         general_prompt = build_short_drama_prompt({}, {"drama_business_mode": "general"})
         self.assertIn("允许完全不带商品", general_prompt)
+
+    def test_generation_rejects_character_without_motivation_and_relationship_dynamics(self):
+        plan = sample_plan()
+        del plan["characters"][0]["motivation"]
+        class FakeRouter:
+            def resolve_route(self, function): return "profile"
+            def complete_json(self, profile, prompt, function=None): return plan
+        with self.assertRaisesRegex(ShortDramaPlanError, "人物缺少完整动机/关系字段"):
+            generate_short_drama(FakeRouter(), {"name": "商品"}, {"drama_business_mode": "product_placement"})
+
+    def test_audit_warns_when_character_motivation_is_missing(self):
+        plan = sample_plan()
+        del plan["characters"][0]["motivation"]
+        report = audit_short_drama(plan)
+        self.assertIn("CHARACTER_MOTIVATION_INCOMPLETE", {item["code"] for item in report["issues"]})
 
     def test_generation_rejects_duplicate_story_direction_mechanisms(self):
         plan = sample_plan()

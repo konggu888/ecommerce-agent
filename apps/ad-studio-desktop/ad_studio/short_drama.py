@@ -33,8 +33,12 @@ SHORT_DRAMA_SCHEMA = {
         "name": "人物名",
         "role": "人物作用",
         "goal": "人物目标",
-        "relationship": "人物关系",
-        "arc": "人物变化"
+        "motivation": "目标背后的深层动机",
+        "fear_or_secret": "人物害怕失去的东西或影响选择的秘密；没有则明确说明",
+        "relationship": "与其他人物的关系",
+        "relationship_dynamics": "关系中的利益冲突、依赖、误解或权力变化",
+        "decision_pressure": "迫使人物作出选择的具体压力",
+        "arc": "人物如何因事件和选择而改变"
     }],
     "plot_beats": ["开场钩子", "矛盾升级", "转折/反转", "结局"],
     "conflict_and_reversal": "核心冲突与反转逻辑",
@@ -116,7 +120,7 @@ def build_short_drama_prompt(product: dict[str, Any], constraints: dict[str, Any
          "2.2 禁止用没有因果的巧合硬推剧情、只靠误会反复拖延、角色突然降智、结尾突然说教或硬塞购买口号。\n"
          "2.3 商品植入/转化/商品短剧广告：商品只能在剧情逻辑允许时成为解决问题或引发选择的真实工具，不能凭空解决与其功能无关的冲突；商品卖点必须通过可拍摄的行为展示，不得只靠角色夸赞。\n"
          "2.4 至少提供两个故事方向，且每个方向必须分别输出 conflict_source、protagonist_choice、reversal_mechanism、product_role、audience_hook 和 conversion_path。方向必须在冲突来源、人物关键选择或反转机制上有实质区别；不要仅更换场景、人物姓名、题材标签或营销话术。各方向必须能单独扩展成完整故事，并说明商品角色（不适用时如实写不适用）。\n"
-         "2. 设计完整的人物目标与关系、场景、冲突、节奏、转折和结尾；故事要有因果，不是卖点罗列。\n"
+         "2. 每个主要人物必须说明目标、目标背后的动机、恐惧/秘密、人物关系动态、决策压力和人物弧光；人物关系要产生可观察的利益冲突、依赖或变化，不能只写“朋友/同事”等标签。重要行动必须能追溯到人物目标、动机或压力。设计完整的场景、冲突、节奏、转折和结尾；故事要有因果，不是卖点罗列。\n"
         "3. 商品是否出现必须服从所选创作目标：通用模式允许不出现；商品植入/转化模式应按目标呈现。任何模式都不得篡改商品外观、结构、核心功能、使用方式、规格、功效或其他事实。\n"
         "4. 未提供或无法验证的商品信息必须标为待确认，不得编造认证、销量、价格、效果或用户证言。\n"
         "5. 输出完整剧本和可执行分镜。每个分镜必须说明动作、台词、场景、人物、商品融入方式、素材需求和生成提示。\n"
@@ -324,6 +328,11 @@ def generate_short_drama(model_router, product: dict[str, Any], constraints: dic
         signatures.append(signature)
     if len(set(signatures)) < 2:
         raise ShortDramaPlanError("备选故事方向的冲突来源、人物选择和反转机制完全重复；请重新生成有实质区别的方向。")
+    characters = validated.get("characters", [])
+    character_fields = ("name", "role", "goal", "motivation", "fear_or_secret", "relationship", "relationship_dynamics", "decision_pressure", "arc")
+    for index, character in enumerate(characters, 1):
+        if not isinstance(character, dict) or any(not str(character.get(key, "")).strip() for key in character_fields):
+            raise ShortDramaPlanError(f"新生成短剧的第{index}个人物缺少完整动机/关系字段；请补齐目标、动机、恐惧或秘密、关系动态、决策压力和人物弧光。")
     requested_mode = str(constraints.get("short_drama_mode", "single_episode"))
     requested_count = int(constraints.get("episode_count", 1))
     requested_business_mode = str(constraints.get("drama_business_mode", "product_placement"))
@@ -722,6 +731,13 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
         for item in checked.get("characters", [])
         if isinstance(item, dict) and str(item.get("name", "")).strip()
     }
+    for index, character in enumerate(checked.get("characters", []), 1):
+        if not isinstance(character, dict):
+            add("warning", "CHARACTER_PROFILE_INCOMPLETE", f"第{index}个人物设定格式无效。")
+            continue
+        for field in ("goal", "motivation", "fear_or_secret", "relationship", "relationship_dynamics", "decision_pressure", "arc"):
+            if not str(character.get(field, "")).strip():
+                add("warning", "CHARACTER_MOTIVATION_INCOMPLETE", f"人物“{character.get('name', f'第{index}人')}”缺少 {field}，请复核其行动动机与关系因果。")
     seen_scene_locations: dict[str, str] = {}
     total_seconds = 0
     for number, shot in enumerate(checked.get("storyboard", []), 1):
