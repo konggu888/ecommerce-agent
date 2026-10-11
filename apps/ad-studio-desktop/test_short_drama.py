@@ -483,7 +483,7 @@ class ShortDramaTests(unittest.TestCase):
         self.assertNotIn("PRODUCT_UNKNOWN_FACT_USED", {item["code"] for item in report["issues"]})
     def test_audit_warns_for_selling_point_not_in_shot_text(self):
         plan = sample_plan()
-        plan["drama_business_mode"] = "product_short_drama_ad"
+        plan["drama_business_mode"] = "product_placement"
         plan["product_analysis"] = {"selling_points": ["foldable storage"]}
         for shot in plan["storyboard"]:
             shot["product_integration"] = "product sits on a table"
