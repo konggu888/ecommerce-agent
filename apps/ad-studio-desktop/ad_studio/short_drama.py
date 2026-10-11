@@ -883,3 +883,92 @@ def generate_next_short_drama_episode(model_router, plan: dict[str, Any],
     result["continuity_ledger"] = build_episode_continuity_ledger(result)
     result["next_episode_generated_at"] = __import__("datetime").datetime.now().isoformat(timespec="seconds")
     return validate_short_drama(result)
+
+
+def analyze_episode_continuity_impact(model_router, plan: dict[str, Any], episode_number: int) -> dict[str, Any]:
+    """Ask the director model to identify downstream episode risks without rewriting any episode."""
+    source = validate_short_drama(json.loads(json.dumps(plan, ensure_ascii=False)))
+    episodes = source.get("episodes", [])
+    if not isinstance(episodes, list) or len(episodes) < 2:
+        raise ShortDramaPlanError("剧情影响分析至少需要包含两集的短剧方案。")
+    try:
+        selected_number = int(episode_number)
+    except (TypeError, ValueError) as exc:
+        raise ShortDramaPlanError("请选择有效的集数。") from exc
+    selected = next((e for e in episodes if isinstance(e, dict) and int(e.get("episode_number", 0) or 0) == selected_number), None)
+    if selected is None:
+        raise ShortDramaPlanError(f"方案中不存在第{selected_number}集。")
+    downstream = [e for e in episodes if isinstance(e, dict) and int(e.get("episode_number", 0) or 0) > selected_number]
+    if not downstream:
+        raise ShortDramaPlanError(f"第{selected_number}集之后没有后续集数，无需进行后续剧情影响分析。")
+    payload = {
+        "format_mode": source.get("format_mode"),
+        "series_bible": source.get("series_bible", {}),
+        "selected_episode": selected,
+        "downstream_episodes": downstream,
+        "continuity_ledger": source.get("continuity_ledger") or build_episode_continuity_ledger(source),
+        "product_fact_lock": source.get("product_fact_lock", {}),
+        "required_output": {
+            "source_episode_number": selected_number,
+            "overall_risk": "low / medium / high",
+            "summary": "总体影响摘要",
+            "affected_episodes": [{
+                "episode_number": "必须是实际存在且晚于 source_episode_number 的集数",
+                "risk": "low / medium / high",
+                "affected_elements": ["受影响的人物状态/线索/道具/地点/商品事实/因果"],
+                "evidence": ["引用具体的原剧情字段或内容说明原因"],
+                "recommended_actions": ["建议如何同步调整，不要直接改写剧本"]
+            }],
+            "unaffected_reasoning": ["为什么其他后续集数暂时看起来不受影响"],
+            "human_review_required": True
+        }
+    }
+    prompt = (
+        "你是负责整季连续性的短剧总编剧。请分析指定集数的剧情变化可能对后续集造成的影响。"
+        "你只能分析现有内容，不得编造未提供的剧情事实；每个受影响集必须引用具体字段作为依据。"
+        "区分明确冲突、可能风险和无证据猜测；不要直接改写或覆盖任何集的剧本/分镜。"
+        "只输出合法JSON。human_review_required 必须为 true。\n输入：\n"
+        + json.dumps(payload, ensure_ascii=False, indent=2)
+    )
+    profile = model_router.resolve_route("AI短剧编导")
+    try:
+        generated = model_router.complete_json(profile, prompt, function="AI短剧编导")
+    except TypeError as exc:
+        if "unexpected keyword argument 'function'" not in str(exc):
+            raise
+        generated = model_router.complete_json(profile, prompt)
+    if isinstance(generated, dict) and isinstance(generated.get("report"), dict):
+        generated = generated["report"]
+    if not isinstance(generated, dict):
+        raise ShortDramaPlanError("模型没有返回有效的剧情影响分析JSON。")
+    if int(generated.get("source_episode_number", -1) or -1) != selected_number:
+        raise ShortDramaPlanError("剧情影响报告的源集编号与所选集数不一致。")
+    if generated.get("overall_risk") not in {"low", "medium", "high"}:
+        raise ShortDramaPlanError("剧情影响报告缺少有效的 overall_risk（low/medium/high）。")
+    if not str(generated.get("summary", "")).strip():
+        raise ShortDramaPlanError("剧情影响报告缺少总体摘要。")
+    valid_downstream = {int(e.get("episode_number", 0) or 0) for e in downstream}
+    affected = generated.get("affected_episodes")
+    if not isinstance(affected, list):
+        raise ShortDramaPlanError("剧情影响报告的 affected_episodes 必须是列表。")
+    for item in affected:
+        if not isinstance(item, dict):
+            raise ShortDramaPlanError("受影响集报告必须是对象。")
+        try:
+            number = int(item.get("episode_number", 0) or 0)
+        except (TypeError, ValueError) as exc:
+            raise ShortDramaPlanError("受影响集编号无效。") from exc
+        if number not in valid_downstream:
+            raise ShortDramaPlanError(f"模型报告了不存在或非后续集数：第{number}集。")
+        if item.get("risk") not in {"low", "medium", "high"}:
+            raise ShortDramaPlanError(f"第{number}集缺少有效风险等级。")
+        for key in ("affected_elements", "evidence", "recommended_actions"):
+            if not isinstance(item.get(key), list):
+                raise ShortDramaPlanError(f"第{number}集的 {key} 必须是列表。")
+    if not isinstance(generated.get("unaffected_reasoning", []), list):
+        raise ShortDramaPlanError("unaffected_reasoning 必须是列表。")
+    generated["source_episode_number"] = selected_number
+    generated["human_review_required"] = True
+    generated["analysis_kind"] = "downstream_continuity_impact"
+    generated["analyzed_at"] = __import__("datetime").datetime.now().isoformat(timespec="seconds")
+    return generated

@@ -1110,3 +1110,10 @@ A61 唯一失败项是 test_handoff_mentions_a61_legacy_cost_migration 的文案
 - `audit_short_drama()` 对持久化的视觉核验记录重新检查证据路径、允许的图片/视频扩展名、文件存在性与非零大小；不再把旧 `passed` 状态和非空字符串当作充分证据。
 - 回归夹具必须提供商品短剧模式所需的 `product_analysis`、`genre_decision`、`product_fact_lock` 和每镜头真实性约束，再分别验证失效路径会告警、有效临时图片不会触发证据失效告警。
 - 这只是证据文件有效性检查，不对图像内容作真实性认证。
+
+
+### A68：AI 短剧后续剧情影响分析
+- 新增 `analyze_episode_continuity_impact()`：将所选集、后续集、series bible 与连续性台账传给 AI 短剧编导路由，要求逐项给出受影响集、风险、原文依据与建议动作。
+- 校验报告源集编号、风险等级、受影响集必须真实存在且晚于源集、列表字段结构；无效输出拒绝保存。
+- 桌面台账窗口提供“分析后续剧情影响”入口；报告存入 `short_drama.continuity_impact_reports` 并展示，不自动修改分集剧本或分镜。
+- 该功能为模型辅助分析，不保证穷尽语义矛盾，需人工复核。

@@ -2,7 +2,7 @@ import unittest
 import json
 
 from ad_studio.short_drama import (
-    ShortDramaPlanError, build_short_drama_prompt, generate_short_drama, product_visual_correction_suggestion,
+    ShortDramaPlanError, build_short_drama_prompt, generate_short_drama, analyze_episode_continuity_impact, product_visual_correction_suggestion,
     audit_short_drama, build_episode_continuity_ledger, short_drama_production_rows, validate_short_drama,
     generate_next_short_drama_episode, record_product_visual_verification, compare_product_visual_shot,
 )
@@ -181,6 +181,73 @@ class ShortDramaTests(unittest.TestCase):
         self.assertEqual(seen["function"], "AI短剧编导")
         self.assertEqual(len(result["storyboard"]), 1)
 
+
+    def test_continuity_impact_analysis_reports_only_existing_downstream_episodes(self):
+        plan = sample_plan()
+        plan["format_mode"] = "continuous_series"
+        plan["episode_count"] = 3
+        state = lambda opening, ending, requirements: {
+            "opening_state": opening, "character_state_changes": [], "unresolved_threads": [],
+            "ending_state": ending, "next_episode_requirements": requirements,
+        }
+        plan["episodes"] = [
+            {"episode_number": 1, "title": "起因", "full_script": "第一集", "plot_beats": ["起因"], "ending_hook": "线索出现",
+             "continuity_state": state("主角出门", "主角拿到便条", ["第二集必须解释便条"]) , "storyboard": [dict(plan["storyboard"][0])]},
+            {"episode_number": 2, "title": "追查", "full_script": "第二集", "plot_beats": ["追查"], "ending_hook": "发现旧档案",
+             "continuity_state": state("主角拿着便条", "发现档案", ["第三集继续查档案"]), "storyboard": [dict(plan["storyboard"][0])]},
+            {"episode_number": 3, "title": "揭晓", "full_script": "第三集", "plot_beats": ["揭晓"], "ending_hook": "结局",
+             "continuity_state": state("主角查看档案", "真相揭晓", []), "storyboard": [dict(plan["storyboard"][0])]},
+        ]
+        plan["storyboard"] = []
+        for episode in plan["episodes"]:
+            for shot in episode["storyboard"]:
+                shot["episode_number"] = episode["episode_number"]
+                plan["storyboard"].append(shot)
+        plan["continuity_ledger"] = build_episode_continuity_ledger(plan)
+        seen = {}
+        class FakeRouter:
+            def resolve_route(self, function):
+                seen["route"] = function
+                return "profile"
+            def complete_json(self, profile, prompt, function=None):
+                seen["prompt"] = prompt
+                return {
+                    "source_episode_number": 1, "overall_risk": "high", "summary": "便条变化会影响后续追查",
+                    "affected_episodes": [{"episode_number": 2, "risk": "high",
+                        "affected_elements": ["便条"], "evidence": ["第二集开场依赖便条"],
+                        "recommended_actions": ["同步修改第二集开场"]}],
+                    "unaffected_reasoning": ["第三集是否受影响需先检查第二集修改结果"],
+                }
+        report = analyze_episode_continuity_impact(FakeRouter(), plan, 1)
+        self.assertEqual(report["source_episode_number"], 1)
+        self.assertTrue(report["human_review_required"])
+        self.assertEqual(report["affected_episodes"][0]["episode_number"], 2)
+        self.assertEqual(seen["route"], "AI短剧编导")
+        self.assertIn("不要直接改写", seen["prompt"])
+
+    def test_continuity_impact_analysis_rejects_non_downstream_episode(self):
+        plan = sample_plan()
+        plan["format_mode"] = "continuous_series"
+        plan["episode_count"] = 2
+        state = {"opening_state": "A", "character_state_changes": [], "unresolved_threads": [],
+                 "ending_state": "B", "next_episode_requirements": []}
+        plan["episodes"] = [
+            {"episode_number": 1, "continuity_state": dict(state), "storyboard": [dict(plan["storyboard"][0])]},
+            {"episode_number": 2, "continuity_state": dict(state), "storyboard": [dict(plan["storyboard"][0])]},
+        ]
+        plan["storyboard"] = []
+        for episode in plan["episodes"]:
+            shot = dict(episode["storyboard"][0])
+            shot["episode_number"] = episode["episode_number"]
+            plan["storyboard"].append(shot)
+        class FakeRouter:
+            def resolve_route(self, function): return "profile"
+            def complete_json(self, profile, prompt, function=None):
+                return {"source_episode_number": 1, "overall_risk": "medium", "summary": "风险",
+                        "affected_episodes": [{"episode_number": 99, "risk": "high", "affected_elements": [],
+                            "evidence": [], "recommended_actions": []}], "unaffected_reasoning": []}
+        with self.assertRaisesRegex(ShortDramaPlanError, "不存在或非后续集数"):
+            analyze_episode_continuity_impact(FakeRouter(), plan, 1)
 
     def test_next_episode_uses_handoff_context_and_preserves_previous_episode(self):
         plan = sample_plan()

@@ -12,7 +12,7 @@ from .capability import CapabilityRouter
 from .production import ProductionStore, generation_failure_ui_state, normalize_cost_estimate_rmb
 from .product_parser import parse_product_url, save_product, save_product_library, load_product_library, merge_product_library, ProductInfo
 from .creative_engine import CreativeEngine, validate_plan, validate_task_type_plan, TASK_TYPE_POLICIES
-from .short_drama import audit_short_drama, build_episode_continuity_ledger, generate_short_drama, generate_next_short_drama_episode, short_drama_production_rows, record_product_visual_verification, compare_product_visual_shot, prepare_product_drama_shot_regeneration, product_visual_correction_suggestion, resolve_product_drama_shot_number
+from .short_drama import audit_short_drama, build_episode_continuity_ledger, generate_short_drama, generate_next_short_drama_episode, analyze_episode_continuity_impact, short_drama_production_rows, record_product_visual_verification, compare_product_visual_shot, prepare_product_drama_shot_regeneration, product_visual_correction_suggestion, resolve_product_drama_shot_number
 from .model_router import ModelRouter, ModelProfile, FUNCTIONS, audit_ad_variant_set, build_creative_test_plan, audit_creative_factual_consistency, audit_storyboard_fact_consistency, audit_visual_fact_consistency
 from .browser_skill import _find_agent_browser
 from .ffmpeg import available as ffmpeg_available, has_nvenc
@@ -2226,9 +2226,72 @@ class App(tk.Tk):
             if not ledger:
                 view.insert('end', '当前方案没有可展示的分集连续性记录。请重新生成多集方案，或检查创作方案数据。')
             view.configure(state='disabled')
-            ttk.Button(win, text='关闭', command=win.destroy).pack(anchor='e', padx=14, pady=(0, 12))
+            actions = ttk.Frame(win, padding=(12, 0, 12, 12))
+            actions.pack(fill='x')
+            ttk.Button(actions, text='分析后续剧情影响', command=lambda: self.analyze_short_drama_continuity_impact(plan, win)).pack(side='left')
+            ttk.Button(actions, text='关闭', command=win.destroy).pack(side='right')
         except Exception as exc:
             messagebox.showerror('连续性台账打开失败', str(exc))
+
+    @ui_action
+    def analyze_short_drama_continuity_impact(self, plan, parent_window=None):
+        """Analyze downstream episode risks and display/save the report without rewriting scripts."""
+        if not self._ui_execution_gate(): return
+        try:
+            from tkinter import simpledialog
+            episodes = plan.get('episodes', []) if isinstance(plan, dict) else []
+            numbers = [int(item.get('episode_number', i + 1)) for i, item in enumerate(episodes) if isinstance(item, dict)]
+            eligible = [number for number in numbers if any(later > number for later in numbers)]
+            if not eligible:
+                messagebox.showinfo('剧情影响分析', '至少需要两集，且所选集之后还存在后续集数。', parent=parent_window or self)
+                return
+            selected = simpledialog.askinteger(
+                '分析后续剧情影响',
+                '输入要检查的集数。系统只分析该集对后续集的潜在影响，不会自动改写任何剧本。\n可选集数：' + '、'.join(map(str, eligible)),
+                minvalue=min(eligible), maxvalue=max(eligible), parent=parent_window or self,
+            )
+            if selected is None:
+                return
+            if selected not in eligible:
+                messagebox.showinfo('剧情影响分析', '所选集数之后没有后续集，请选择：' + '、'.join(map(str, eligible)), parent=parent_window or self)
+                return
+            report = analyze_episode_continuity_impact(self.model_router, plan, selected)
+            reports = plan.setdefault('continuity_impact_reports', [])
+            reports.append(report)
+            if self.project and isinstance(self.project.creative_plan, dict):
+                self.project.creative_plan['short_drama'] = plan
+                self.store.save(self.project)
+            win = tk.Toplevel(parent_window or self)
+            win.title(f'AI短剧｜第{selected}集后续影响分析')
+            win.geometry('820x620')
+            win.transient(parent_window or self)
+            ttk.Label(win, text=f'第{selected}集后续剧情影响：{str(report.get("overall_risk", "unknown")).upper()} 风险',
+                      font=('Microsoft YaHei UI', 14, 'bold')).pack(anchor='w', padx=14, pady=(12, 4))
+            ttk.Label(win, text=str(report.get('summary', '')), wraplength=780).pack(anchor='w', padx=14, pady=(0, 8))
+            view_frame = ttk.Frame(win, padding=(12, 0, 12, 8))
+            view_frame.pack(fill='both', expand=True)
+            view = tk.Text(view_frame, wrap='word', font=('Microsoft YaHei UI', 10))
+            scroll = ttk.Scrollbar(view_frame, orient='vertical', command=view.yview)
+            view.configure(yscrollcommand=scroll.set)
+            scroll.pack(side='right', fill='y')
+            view.pack(side='left', fill='both', expand=True)
+            for item in report.get('affected_episodes', []):
+                view.insert('end', f"第{item.get('episode_number', '?')}集｜风险：{item.get('risk', 'unknown')}\n")
+                for key, label in (('affected_elements', '受影响内容'), ('evidence', '依据'), ('recommended_actions', '建议动作')):
+                    view.insert('end', f"{label}：\n")
+                    for value in item.get(key, []):
+                        view.insert('end', f"  • {value}\n")
+                view.insert('end', '\n')
+            unaffected = report.get('unaffected_reasoning', [])
+            if unaffected:
+                view.insert('end', '暂未发现影响的后续集：\n')
+                for value in unaffected:
+                    view.insert('end', f"  • {value}\n")
+            view.insert('end', '\n注意：这是模型辅助分析，不会自动修改剧本。请人工确认风险和建议。')
+            view.configure(state='disabled')
+            ttk.Button(win, text='关闭', command=win.destroy).pack(anchor='e', padx=14, pady=(0, 12))
+        except Exception as exc:
+            messagebox.showerror('剧情影响分析失败', f'原有分集剧本未被自动改写。\n\n{exc}', parent=parent_window or self)
 
     @ui_action
     def show_short_drama_audit(self, plan):
