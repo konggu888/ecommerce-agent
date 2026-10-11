@@ -284,3 +284,11 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 ## A76
 - Added warning code `PRODUCT_SELLING_POINT_NOT_SHOWN` when confirmed selling points are absent from storyboard action, product integration, dialogue, and generation prompt text.
 - This is a text coverage check, not visual verification. Recheck CI and docs-sync for the new SHA.
+
+
+## 2026-10-11 接手进度：A77
+
+- 基线：A76 文档同步提交 `95b57fcb32860c02c0deece035684b4004ba07f6`；当时 CI 与 docs-sync 均成功，PR #31 未合并。
+- 本轮目标：短剧关键因果事件、故事转折与伏笔兑现是否真正落到可拍摄分镜；增加提示词字段 `narrative_function` / `story_event_reference` 与审查警告。
+- 约束：文本匹配仅为遗漏筛查，不可宣称完成真实语义判断、生成画面核验或 Windows 真机验收。
+- 继续步骤：运行短剧专项测试与完整 CI，检查 docs-sync；失败必须读日志修复后再确认最新 HEAD。

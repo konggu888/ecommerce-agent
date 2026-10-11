@@ -1077,3 +1077,9 @@ A61 的自动化 CI 发现 handoff 测试查找“历史成本迁移”，但文
 
 ### A76 Test fixture note
 The selling-point coverage regression test uses `product_placement` mode to isolate text coverage behavior. It does not replace the existing schema validation tests for `product_short_drama_ad` mode.
+
+
+### A77 · 短剧关键事件与分镜落地审查（2026-10-11）
+- 新生成提示要求分镜声明 `narrative_function` 与 `story_event_reference`，把因果事件、关键选择、转折和伏笔兑现落到可拍摄动作。
+- 生产前审查新增 `CAUSAL_EVENT_NOT_SHOWN`、`TURNING_POINT_NOT_STORYBOARDED`、`SETUP_PAYOFF_NOT_STORYBOARDED` 警告。
+- 这些检查基于结构和文本匹配，只用于发现遗漏；不能证明演员表演合理、反转语义成立或画面真实拍到了事件，仍需人工/模型复核。

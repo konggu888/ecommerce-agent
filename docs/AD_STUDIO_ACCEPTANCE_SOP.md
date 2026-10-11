@@ -1004,3 +1004,11 @@ AI 必须执行：
 2. Confirm the report describes missing text coverage only, not a factual determination that the product lacks the feature.
 3. Run desktop short-drama tests, full CI, and docs-sync against the final commit SHA.
 4. Visual proof and product truth still require manual review.
+
+
+### A77 专项补充：关键事件到分镜的可追溯性
+
+- 检查新增分镜字段 `narrative_function` 与 `story_event_reference` 是否被提示词要求。
+- 用独立测试夹具制造因果事件、转折、伏笔兑现未落到镜头文字的情况，并分别断言对应 warning code。
+- 检查引用越界仍由既有因果链审查发现；文本覆盖警告不得阻止旧方案打开。
+- 运行短剧专项测试、完整 CI、文档同步检查。文本匹配只能作为筛查证据，不能证明语义真实成立或成片画面符合剧本。

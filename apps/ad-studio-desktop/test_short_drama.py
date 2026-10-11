@@ -73,6 +73,30 @@ def sample_plan():
 
 
 class ShortDramaTests(unittest.TestCase):
+    def test_audit_warns_when_causal_event_is_not_shown_in_referenced_shot(self):
+        plan = sample_plan()
+        plan["causal_chain"][0]["event"] = "主角突然打开红色保险箱"
+        report = audit_short_drama(plan)
+        self.assertIn("CAUSAL_EVENT_NOT_SHOWN", {item["code"] for item in report["issues"]})
+
+    def test_audit_warns_when_turning_point_is_not_in_shots(self):
+        plan = sample_plan()
+        plan["story_engine"]["turning_point"] = "主角发现邻居一直在跟踪自己"
+        report = audit_short_drama(plan)
+        self.assertIn("TURNING_POINT_NOT_STORYBOARDED", {item["code"] for item in report["issues"]})
+
+    def test_audit_warns_when_setup_payoff_is_not_in_shots(self):
+        plan = sample_plan()
+        plan["story_engine"]["setup_and_payoff"] = "开场墙上的地图最终揭示密室入口"
+        report = audit_short_drama(plan)
+        self.assertIn("SETUP_PAYOFF_NOT_STORYBOARDED", {item["code"] for item in report["issues"]})
+
+    def test_prompt_requires_story_event_references_and_shootable_turning_point(self):
+        prompt = build_short_drama_prompt({"name": "商品"}, {"drama_business_mode": "product_placement"})
+        self.assertIn("narrative_function", prompt)
+        self.assertIn("story_event_reference", prompt)
+        self.assertIn("前置线索", prompt)
+
     def test_validates_story_first_plan(self):
         plan = validate_short_drama(sample_plan())
         self.assertEqual(plan["storyboard"][0]["duration_seconds"], 4)

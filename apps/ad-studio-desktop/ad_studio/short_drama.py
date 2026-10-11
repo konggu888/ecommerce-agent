@@ -84,7 +84,7 @@ SHORT_DRAMA_SCHEMA = {
         "product_asset_requirements": ["需要展示的商品素材标签"],
         "shot_type": "景别与镜头运动",
         "duration_seconds": "integer",
-        "generation_prompt": "可执行的镜头生成提示"
+        "generation_prompt": "可执行的镜头生成提示", "narrative_function": "本镜在剧情中的作用", "story_event_reference": ["对应 causal_chain.step 编号"]
     }],
     "product_truths": ["剧情必须遵守的商品事实"],
     "risk_notes": ["待确认信息、广告表达风险或制作风险"],
@@ -135,7 +135,7 @@ def build_short_drama_prompt(product: dict[str, Any], constraints: dict[str, Any
          "设计完整的场景、冲突、节奏、转折和结尾；故事要有因果，不是卖点罗列。\n"
         "3. 商品是否出现必须服从所选创作目标：通用模式允许不出现；商品植入/转化模式应按目标呈现。任何模式都不得篡改商品外观、结构、核心功能、使用方式、规格、功效或其他事实。\n"
         "4. 未提供或无法验证的商品信息必须标为待确认，不得编造认证、销量、价格、效果或用户证言。\n"
-        "5. 输出完整剧本和可执行分镜。每个分镜必须说明动作、台词、场景、人物、商品融入方式、素材需求和生成提示。\n"
+        "5. 输出完整剧本和可执行分镜。每个分镜必须说明动作、台词、场景、人物、商品融入方式、素材需求和生成提示；新增 narrative_function（本镜在剧情中的作用）和 story_event_reference（对应的 causal_chain.step 编号列表），把关键选择、因果事件、转折和伏笔兑现明确落到可拍摄动作中。反转必须有可定位的前置线索；人物行为必须能从人物目标/动机/关系压力及当时已知信息中解释。\n"
         "6. 提供至少两个故事方向备选，机制应有实质差异，不只是换标题。\n"
         "7. 本次只做创作方案，不要调用素材生成或视频生成，不要假称已经生成成片。\n"
         "8. 只输出符合给定结构的合法JSON，不要输出Markdown。\n"
@@ -791,6 +791,32 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
         for field in ("goal", "motivation", "fear_or_secret", "relationship", "relationship_dynamics", "decision_pressure", "arc"):
             if not str(character.get(field, "")).strip():
                 add("warning", "CHARACTER_MOTIVATION_INCOMPLETE", f"人物“{character.get('name', f'第{index}人')}”缺少 {field}，请复核其行动动机与关系因果。")
+    # A77: check whether important causal events are represented by referenced, shootable shots.
+    # Deterministic text coverage is not proof of acting quality or semantic foreshadowing.
+    shot_texts: list[str] = []
+    for shot in storyboard:
+        shot_texts.append(" ".join(str(shot.get(key, "")) for key in (
+            "action", "dialogue", "product_integration", "generation_prompt",
+            "narrative_function", "story_event_reference"
+        )).casefold())
+    if isinstance(causal_chain, list):
+        for step_index, step in enumerate(causal_chain, 1):
+            if not isinstance(step, dict):
+                continue
+            event = str(step.get("event", "")).strip()
+            refs = step.get("storyboard_indices", [])
+            valid_refs = [ref for ref in refs if isinstance(ref, int) and not isinstance(ref, bool) and 1 <= ref <= len(storyboard)] if isinstance(refs, list) else []
+            if event and valid_refs:
+                referenced_text = " ".join(shot_texts[ref - 1] for ref in valid_refs)
+                if event.casefold() not in referenced_text:
+                    add("warning", "CAUSAL_EVENT_NOT_SHOWN", f"因果链第{step_index}步“{event}”虽引用了分镜，但事件描述没有直接出现在对应镜头动作/台词/生成提示中；请补成可拍摄证据或修正引用。")
+    turning_point = str((story_engine or {}).get("turning_point", "")).strip() if isinstance(story_engine, dict) else ""
+    if turning_point and turning_point.casefold() not in " ".join(shot_texts):
+        add("warning", "TURNING_POINT_NOT_STORYBOARDED", "故事引擎的关键转折未在任何分镜动作、台词或生成提示中直接体现；请补出角色发现/选择/行动的可拍摄镜头。")
+    setup_payoff = str((story_engine or {}).get("setup_and_payoff", "")).strip() if isinstance(story_engine, dict) else ""
+    if setup_payoff and setup_payoff.casefold() not in " ".join(shot_texts):
+        add("warning", "SETUP_PAYOFF_NOT_STORYBOARDED", "伏笔与兑现设计未在分镜文本中直接体现；请分别标明前置线索与兑现动作，避免反转只存在于梗概。")
+
     seen_scene_locations: dict[str, str] = {}
     total_seconds = 0
     for number, shot in enumerate(checked.get("storyboard", []), 1):

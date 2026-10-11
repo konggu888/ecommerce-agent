@@ -1062,3 +1062,10 @@ A61（旧成本迁移）、A62（接手文案断言）、A63（迁移基线持�
 - [x] Emit `PRODUCT_SELLING_POINT_NOT_SHOWN` when no shot text directly represents a point.
 - [x] Add a negative regression test. Text coverage does not establish that the rendered visual truly demonstrates the feature.
 - [ ] Verify full CI and docs-sync for the new HEAD.
+
+
+### A77 · 短剧关键剧情事件与分镜落地（开发中）
+- [ ] 新生成提示要求分镜声明叙事功能与关联因果事件编号。
+- [ ] 专项测试覆盖因果事件未落镜头、转折未落镜头、伏笔兑现未落镜头。
+- [ ] 最新 HEAD 的短剧专项测试、完整 CI 与 docs-sync 全部通过。
+- [ ] 人工复核文本匹配误报/漏报边界；不将其当作语义验收。

@@ -611,3 +611,12 @@ A55 重构意外重新引入提示词双重转义，已按 CI 失败证据修复
 ## A76: Selling-point storyboard coverage
 - Added deterministic text coverage checks to warn when confirmed selling points are not represented in any storyboard action, product integration, dialogue, or generation prompt.
 - Text coverage is not visual verification; manual review remains necessary.
+
+
+### A77 · 短剧关键剧情事件到分镜的一致性审查
+
+新增目标：让主角关键选择、因果事件、转折与伏笔兑现不仅存在于故事梗概/故事引擎中，还要明确落到可拍摄分镜。
+
+- 新生成提示要求镜头输出叙事功能与因果链事件引用。
+- 生产前审查检测因果事件未在引用镜头中体现、关键转折未进入分镜、伏笔兑现未进入分镜。
+- 这些规则仅是确定性文本覆盖筛查；人物动机合理性、反转是否有充分前置线索，仍需语义审查与真实镜头复核。

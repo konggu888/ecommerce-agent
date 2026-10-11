@@ -1175,3 +1175,13 @@ A61 唯一失败项是 test_handoff_mentions_a61_legacy_cost_migration 的文案
 
 ### A76 Test note
 Selling-point coverage tests use product_placement mode to isolate the new text check.
+
+
+## 18.1 A77 短剧事件到分镜的一致性
+
+短剧生成提示要求每个镜头输出 `narrative_function` 与 `story_event_reference`，用于表达镜头叙事职责及其关联的因果链步骤。生产前 `audit_short_drama()` 对因果链引用镜头、故事转折、伏笔兑现执行文本覆盖警告：
+- `CAUSAL_EVENT_NOT_SHOWN`：因果事件没有直接体现在其引用镜头的动作/台词/生成提示中。
+- `TURNING_POINT_NOT_STORYBOARDED`：关键转折没有落入分镜文字。
+- `SETUP_PAYOFF_NOT_STORYBOARDED`：伏笔与兑现仅存在于故事引擎文字、未落入分镜文字。
+
+这些检查是确定性字符串覆盖检查，可能因同义表达产生误报/漏报，不是语义质量认证。旧方案缺少新增镜头字段仍可打开；警告需结合剧本和分镜人工复核。
