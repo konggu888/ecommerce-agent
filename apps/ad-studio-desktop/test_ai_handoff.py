@@ -47,18 +47,18 @@ class AIHandoffTests(unittest.TestCase):
 
 
     def test_handoff_mentions_a36_vision_guided_single_shot_repair(self):
-        text = (ROOT.parent.parent / "docs" / "AD_STUDIO_AI_HANDOFF.md").read_text(encoding="utf-8")
+        text = (ROOT / "docs" / "AD_STUDIO_AI_HANDOFF.md").read_text(encoding="utf-8")
         self.assertIn("A36", text)
         self.assertIn("可编辑修正草稿", text)
         self.assertIn("不得将仅有文档同步成功视为全量 CI 通过", text)
 
     def test_handoff_mentions_a37_draft_line_break_regression(self):
-        text = (ROOT.parent.parent / "docs" / "AD_STUDIO_AI_HANDOFF.md").read_text(encoding="utf-8")
+        text = (ROOT / "docs" / "AD_STUDIO_AI_HANDOFF.md").read_text(encoding="utf-8")
         self.assertIn("A37", text)
         self.assertIn("真实换行", text)
 
     def test_session_handoff_exists_and_warns_against_ci_overclaim(self):
-        handoff = ROOT / "SESSION_HANDOFF.md"
+        handoff = ROOT / "apps" / "ad-studio-desktop" / "SESSION_HANDOFF.md"
         self.assertTrue(handoff.is_file(), "SESSION_HANDOFF.md must exist for cross-session continuation")
         text = handoff.read_text(encoding="utf-8")
         self.assertIn("完整 CI", text)
@@ -66,7 +66,7 @@ class AIHandoffTests(unittest.TestCase):
         self.assertIn("PR 保持 open/unmerged", text)
 
     def test_session_handoff_records_feature_branch_ci_requirement(self):
-        handoff = (ROOT / "SESSION_HANDOFF.md").read_text(encoding="utf-8")
+        handoff = (ROOT / "apps" / "ad-studio-desktop" / "SESSION_HANDOFF.md").read_text(encoding="utf-8")
         self.assertIn("A39", handoff)
         self.assertIn("所有分支", handoff)
         self.assertIn("完整 CI", handoff)

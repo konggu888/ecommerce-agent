@@ -936,3 +936,7 @@ A33 自动化验收分别覆盖电商短视频、商品主图视频、广告投�
 
 ### A39：CI 分支覆盖
 `.github/workflows/ci.yml` 的 push 触发器覆盖所有分支，确保开发分支 push 也运行桌面语法检查、桌面单测、类型检查和引擎测试。每次仍需按当前 HEAD SHA 查询结果，不得拿旧 SHA 的成功结果代替。
+
+
+### A40：接手测试路径基准
+`test_ai_handoff.py` 的 `ROOT` 指向仓库根目录。读取根级 `docs/` 文件使用 `ROOT / "docs" / ...`；桌面项目文件使用 `ROOT / "apps" / "ad-studio-desktop" / ...`。不要重复叠加 `parent.parent`，否则 CI 会定位到仓库外。

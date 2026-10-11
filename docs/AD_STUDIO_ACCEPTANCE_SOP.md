@@ -770,3 +770,9 @@ AI 必须执行：
 1. 每轮提交后查询当前 HEAD 的 GitHub Checks 和 Actions。
 2. 确认完整 CI 工作流 `CI / typecheck-and-test` 在当前 SHA 上完成；docs-sync、Netlify 的 neutral 状态不算完整 CI 通过。
 3. 若未触发，检查工作流事件过滤条件；若失败，先修复再继续推进。
+
+
+## A40｜CI 失败的处理
+1. 读取当前 HEAD 的失败 job 日志，不以“语法检查通过”代替完整测试。
+2. 若测试路径错误，按测试中 `ROOT` 的实际定义修复引用路径。
+3. 将修复和文档同步提交到同一提交，再等待当前 SHA 的完整 CI 与 docs-sync 结果。

@@ -901,3 +901,7 @@ AI 接手专项测试除验证项目目标、架构、测试入口和安全边�
 
 ## A39：功能分支 CI
 - 完整 CI 的 push 触发范围已扩展到所有分支，避免只在 main 分支 push 时运行；当前分支提交的 CI 仍须以对应 SHA 的真实工作流结果为准。
+
+
+## A40：接手文档测试路径
+- 接手文档自动化测试以仓库根目录为基准，分别定位 `docs/AD_STUDIO_AI_HANDOFF.md` 和 `apps/ad-studio-desktop/SESSION_HANDOFF.md`；CI 运行失败时先读取日志并修复路径/断言。

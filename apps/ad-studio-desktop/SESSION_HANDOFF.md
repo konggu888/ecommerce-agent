@@ -35,3 +35,7 @@
 
 ## A39：CI 触发范围
 CI 的 push 触发器现覆盖所有分支；每次提交后仍须查询当前 SHA 的 checks，等待完整 `typecheck-and-test` 工作流结束。此项改动本身的完整 CI 结果待当前提交的工作流返回。
+
+
+## A40：本轮 CI 失败与修复要求
+上一轮完整 CI 已实际触发：语法检查通过，但桌面单测因 `test_ai_handoff.py` 对仓库根目录的相对路径写错而失败。根因已定位为把 `ROOT.parent.parent / "docs"` 用在 `ROOT=Path(__file__).resolve().parents[2]` 的场景。当前修复统一使用 `ROOT / "docs" / ...` 和 `ROOT / "apps" / "ad-studio-desktop" / ...`。必须等新的完整 CI 结束确认，不能提前标绿。
