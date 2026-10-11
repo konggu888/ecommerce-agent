@@ -910,3 +910,7 @@ A33 自动化验收分别覆盖电商短视频、商品主图视频、广告投�
 - `compare_product_visual_shot()` 校验创作模式、镜头编号、参考图/生成文件路径；对视频要求 FFmpeg/FFprobe 并在临时目录抽取开头/中段/后段帧。临时帧会在调用结束后清理。
 - 对比结果写入目标分镜：`visual_comparison_result`、`visual_verification_reference_images`、`visual_verification_evidence`、`visual_verification_method`。任何 AI 结果都不能自动变为 passed；疑似差异标记 failed，其余标记 needs_review。
 - UI 在模型调用前提示费用可能产生，并在完成后刷新复核窗口。自动问题定位和仅重生成问题镜头仍未实现。
+
+## 2026-10-11：AI 接手测试同步当前验收阶段
+
+`test_ai_handoff.py` 继续验证长期接手入口的关键章节，并同步断言验收计划包含 A34（AI 辅助商品画面对比）与 A35（问题镜头定位和仅重生成）。这只验证文档入口一致，不代表 A34/A35 的全部能力已验收通过。
