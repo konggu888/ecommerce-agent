@@ -1375,12 +1375,16 @@ class DesktopCoreTests(unittest.TestCase):
 
             mark_regenerate(project, 0)
             shot.status = "生成中…"
-            part = store.render_path(project, shot).with_suffix(".part.mp4")
+            render_output = store.render_path(project, shot)
+            part = render_output.with_suffix(".part.mp4")
+            split_part = render_output.with_name(f"{render_output.stem}.part01.mp4")
             part.parent.mkdir(parents=True, exist_ok=True)
             part.write_bytes(b"partial-video")
+            split_part.write_bytes(b"partial-split-video")
             store.save(project)
 
             result = store.recover_project(project)
+            self.assertEqual(result["removed_temp_files"], 2)
             self.assertEqual(result["restored_previous_versions"], [shot.id])
             self.assertEqual(shot.video_path, str(old_output))
             self.assertIsNone(shot.previous_video_path)
@@ -1466,6 +1470,35 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertFalse(output.with_suffix(".part.mp4").exists())
             restored = store.load(project.id)
             self.assertEqual(restored.shots[0].video_path, str(output))
+
+
+    def test_a49_missing_footage_source_cleans_stale_split_parts_and_keeps_old_video(self):
+        from ad_studio.footage import FootageError
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            old_output = store.render_path(project, shot)
+            old_output.parent.mkdir(parents=True, exist_ok=True)
+            old_output.write_bytes(b"previous-good-video")
+            shot.video_path = str(old_output)
+            shot.clip_source = "filmed"
+            shot.source_file = str(root / "missing-source.mp4")
+            store.save(project)
+
+            mark_regenerate(project, 0)
+            output = store.render_path(project, shot)
+            stale_part = output.with_name(f"{output.stem}.part01.mp4")
+            stale_part.write_bytes(b"stale-split")
+            with self.assertRaises(FootageError):
+                store.render_footage_shot(project, shot)
+
+            self.assertFalse(stale_part.exists())
+            self.assertEqual(shot.video_path, str(old_output))
+            self.assertEqual(old_output.read_bytes(), b"previous-good-video")
+            self.assertEqual(shot.status, "素材裁剪失败（已保留上一版本）")
 
 
 

@@ -56,7 +56,7 @@ class ProductionStore:
         removed_parts = 0
         render_root = self.root / "renders" / project.id
         if render_root.exists():
-            for part in render_root.rglob("*.part.mp4"):
+            for part in render_root.rglob("*.part*.mp4"):
                 part.unlink(missing_ok=True)
                 removed_parts += 1
         missing_media = []
@@ -352,6 +352,9 @@ class ProductionStore:
         if temp.exists():
             temp.unlink()
         if not shot.source_file or not Path(shot.source_file).exists():
+            # A previous interrupted multi-range trim may leave .part01/.part02 files.
+            for part in out.parent.glob(f"{out.stem}.part*.mp4"):
+                part.unlink(missing_ok=True)
             previous_is_valid = bool(previous_path and Path(previous_path).is_file() and Path(previous_path).stat().st_size > 0)
             shot.video_path = str(previous_path) if previous_is_valid else None
             shot.previous_video_path = None
