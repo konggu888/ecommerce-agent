@@ -558,3 +558,15 @@ class ProductionStore:
             shots, gate, media_check, episode_number=episode_number,
         )
         return out
+
+
+def generation_failure_ui_state(shot: Shot) -> dict[str, Any]:
+    """Return a truthful UI status after a generation failure, preserving a playable old output."""
+    status = str(getattr(shot, "status", "") or "")
+    video_path = str(getattr(shot, "video_path", None) or "").strip()
+    has_previous_marker = "已保留上一版本" in status or "已恢复上一版本" in status
+    if has_previous_marker and video_path:
+        path = Path(video_path).expanduser()
+        if path.is_file() and path.stat().st_size > 0:
+            return {"status": status, "previous_version_available": True, "video_path": str(path)}
+    return {"status": "生成失败", "previous_version_available": False, "video_path": ""}

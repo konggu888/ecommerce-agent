@@ -9,7 +9,7 @@ from .engine import FORMS, new_project, mark_regenerate, estimate_cost, estimate
 from .gpu import detect_gpu
 from .hardware import detect_hardware, format_hardware
 from .capability import CapabilityRouter
-from .production import ProductionStore
+from .production import ProductionStore, generation_failure_ui_state
 from .product_parser import parse_product_url, save_product, save_product_library, load_product_library, merge_product_library, ProductInfo
 from .creative_engine import CreativeEngine, validate_plan, validate_task_type_plan, TASK_TYPE_POLICIES
 from .short_drama import audit_short_drama, build_episode_continuity_ledger, generate_short_drama, generate_next_short_drama_episode, short_drama_production_rows, record_product_visual_verification, compare_product_visual_shot, prepare_product_drama_shot_regeneration, product_visual_correction_suggestion, resolve_product_drama_shot_number
@@ -1606,9 +1606,14 @@ class App(tk.Tk):
                 out=self.store.render_shot(self.project,s,config_root=ROOT)
                 self.refresh_shots(); self.cost.set(f'项目实际成本 ¥{self.project.actual_cost_rmb:.4f} · 预估 ¥{self.project.cost_estimate.get("总计",0):.2f}'); self.detail.set(f'镜头 {s.index} 已由{mode}生成 v{s.version}：{out} · 项目实际累计 ¥{self.project.actual_cost_rmb:.4f}')
         except Exception as e:
-            s.status='生成失败'; self.store.save(self.project); self.refresh_shots()
-            self.detail.set(f'镜头 {s.index} 生成失败：{e}')
-            messagebox.showerror('镜头生成失败',str(e))
+            failure_state = generation_failure_ui_state(s)
+            s.status = failure_state["status"]
+            self.store.save(self.project); self.refresh_shots()
+            message = f'镜头 {s.index} 生成失败：{e}'
+            if failure_state["previous_version_available"]:
+                message += f'\n上一版仍可使用并已恢复：{failure_state["video_path"]}'
+            self.detail.set(message)
+            messagebox.showerror('镜头生成失败', message)
 
     @ui_action
     def regen_shot(self):

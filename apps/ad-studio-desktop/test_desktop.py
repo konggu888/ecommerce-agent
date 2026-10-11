@@ -4,7 +4,7 @@ from pathlib import Path
 
 from ad_studio.engine import detect_platform, estimate_cost, new_project, mark_regenerate
 from ad_studio.library import LocalLibrary
-from ad_studio.production import ProductionStore
+from ad_studio.production import ProductionStore, generation_failure_ui_state
 from ad_studio.product_parser import ProductInfo, save_product_library, load_product_library, merge_product_library
 from ad_studio.model_router import ModelRouter, ModelProfile, build_stage_prompt
 
@@ -1340,6 +1340,26 @@ class DesktopCoreTests(unittest.TestCase):
             restored = store.load(project.id)
             self.assertEqual(restored.shots[0].video_path, str(old_output))
             self.assertEqual(restored.shots[0].status, "生成失败（已保留上一版本）")
+
+    def test_a45_ui_failure_state_keeps_recovered_previous_video_status(self):
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as td:
+            old_video = Path(td) / "old-v1.mp4"
+            old_video.write_bytes(b"playable-old-video")
+            shot = SimpleNamespace(
+                status="生成失败（已保留上一版本）",
+                video_path=str(old_video),
+            )
+            state = generation_failure_ui_state(shot)
+            self.assertEqual(state["status"], "生成失败（已保留上一版本）")
+            self.assertTrue(state["previous_version_available"])
+            self.assertEqual(state["video_path"], str(old_video))
+
+            shot.video_path = str(Path(td) / "missing.mp4")
+            state = generation_failure_ui_state(shot)
+            self.assertEqual(state["status"], "生成失败")
+            self.assertFalse(state["previous_version_available"])
+            self.assertEqual(state["video_path"], "")
 
     def test_a43_project_recovery_restores_previous_video_after_interrupted_regeneration(self):
         with tempfile.TemporaryDirectory() as td:
