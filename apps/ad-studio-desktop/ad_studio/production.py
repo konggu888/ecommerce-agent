@@ -163,6 +163,37 @@ class ProductionStore:
         project.actual_cost_summary = self.ledger.project_summary(project.id)
         self.save(project)
 
+    def _record_failed_video_attempt(self, project: Project, shot: Shot, provider: Any, error: str):
+        """Log a failed provider attempt without treating its quote as actual spend."""
+        try:
+            quoted_rate = float(getattr(provider, "cost_per_shot_rmb", 0.0) or 0.0)
+        except (TypeError, ValueError, OverflowError):
+            quoted_rate = 0.0
+        if not math.isfinite(quoted_rate) or quoted_rate < 0:
+            quoted_rate = 0.0
+        provider_name = str(getattr(provider, "provider_name", "Generic REST") or "Generic REST")
+        self.ledger.record(
+            function="视频镜头生成",
+            model_id="",
+            model_name=provider_name,
+            provider=provider_name,
+            model="",
+            status="failed",
+            estimated_cost_rmb=0.0,
+            project_id=project.id,
+            shot_id=shot.id,
+            category="video",
+            quantity=1,
+            unit_cost_rmb=round(quoted_rate, 6),
+            error=error,
+        )
+        # Failed rows remain auditable without counting an unconfirmed charge
+        # as actual spend; actual totals remain success-only.
+        project.actual_cost_summary = self.ledger.project_summary(project.id)
+        project.cost_estimate.setdefault("actual", {})
+        project.cost_estimate["actual"] = project.actual_cost_summary
+        project.cost_estimate["actual_cost_rmb"] = project.actual_cost_summary["actual_cost_rmb"]
+
     def mark_ready(self, project: Project, shot: Shot, output: Path):
         shot.video_path=str(output)
         shot.previous_video_path = None
@@ -299,6 +330,8 @@ class ProductionStore:
         shot.status='生成中…'
         shot.provider=getattr(provider,'provider_name','Generic REST')
         shot.generated_from_request=prompt
+        provider_call_started = False
+        success_cost_recorded = False
         try:
             # 保存状态与素材解析也纳入恢复边界；resolve_assets 可能调用素材生成器。
             self.save(project)
@@ -307,13 +340,15 @@ class ProductionStore:
             asset_ids=[x for x in [shot.actor_id,shot.scene_id,*shot.product_asset_ids] if x]
             asset_map={a.id:a for a in library.all()}
             asset_paths=[asset_map[x].path for x in asset_ids if x in asset_map and asset_map[x].path and Path(asset_map[x].path).exists()]
-            result=provider.generate(GenerationRequest(
+            request = GenerationRequest(
                 prompt=prompt,
                 output=temp,
                 duration=max(1, int(getattr(shot, 'duration_seconds', 3) or 3)),
                 reference_assets=asset_ids,
                 reference_asset_paths=asset_paths,
-            ))
+            )
+            provider_call_started = True
+            result=provider.generate(request)
             result=Path(result)
             if not result.exists() or result.stat().st_size == 0:
                 raise RuntimeError('视频 Provider 返回成功，但生成文件不存在或为空。')
@@ -331,6 +366,7 @@ class ProductionStore:
                 unit_cost_rmb=video_cost,
                 function="视频镜头生成",
             )
+            success_cost_recorded = True
             self.mark_ready(project,shot,out)
             return out
         except Exception as exc:
@@ -341,6 +377,19 @@ class ProductionStore:
             shot.previous_video_path = None
             shot.status = '生成失败（已保留上一版本）' if previous_is_valid else '生成失败'
             shot.provider=getattr(provider,'provider_name',shot.provider)
+            if provider_call_started and not success_cost_recorded:
+                try:
+                    self._record_failed_video_attempt(project, shot, provider, str(exc))
+                except Exception as ledger_exc:
+                    project.creative_plan.setdefault("recovery", {}).setdefault("history", []).append({
+                        "stage": "视频失败尝试记账",
+                        "error": str(ledger_exc),
+                        "original_error": str(exc),
+                        "retryable": True,
+                        "status": "需处理",
+                        "next_action": "检查本地 usage-ledger.json 写入权限与磁盘空间",
+                        "created_at": datetime.datetime.now().isoformat(timespec="seconds"),
+                    })
             self.save(project)
             raise RuntimeError(f'镜头 {shot.index} v{shot.version} 生成失败：{exc}') from exc
 

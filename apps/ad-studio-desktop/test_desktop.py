@@ -1539,6 +1539,57 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertNotIn("\\n", provider.prompt)
 
 
+    def test_a52_failed_video_attempt_is_auditable_without_double_counting_actual_cost(self):
+        class FailingProvider:
+            provider_name = "测试 Provider"
+            cost_per_shot_rmb = 0.72
+            def generate(self, request):
+                raise RuntimeError("模拟失败后重试")
+
+        class SuccessfulProvider:
+            provider_name = "测试 Provider"
+            cost_per_shot_rmb = 0.72
+            def generate(self, request):
+                request.output.write_bytes(b"generated-video")
+                return request.output
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            old_output = store.render_path(project, shot)
+            old_output.parent.mkdir(parents=True, exist_ok=True)
+            old_output.write_bytes(b"previous-good-video")
+            shot.video_path = str(old_output)
+            shot.status = "已生成"
+            store.save(project)
+
+            mark_regenerate(project, 0)
+            with self.assertRaisesRegex(RuntimeError, "模拟失败后重试"):
+                store._render_with_provider(project, shot, FailingProvider())
+
+            after_failure = store.ledger.project_summary(project.id)
+            self.assertEqual(after_failure["actual_cost_rmb"], 0)
+            self.assertEqual(after_failure["failed"], 1)
+            failed_rows = [
+                row for row in store.ledger.recent(20)
+                if row.get("project_id") == project.id and row.get("status") == "failed"
+            ]
+            self.assertEqual(len(failed_rows), 1)
+            self.assertEqual(failed_rows[0]["category"], "video")
+            self.assertEqual(failed_rows[0]["estimated_cost_rmb"], 0)
+            self.assertEqual(failed_rows[0]["unit_cost_rmb"], 0.72)
+
+            mark_regenerate(project, 0)
+            store._render_with_provider(project, shot, SuccessfulProvider())
+            final_summary = store.ledger.project_summary(project.id)
+            self.assertEqual(final_summary["actual_cost_rmb"], 0.72)
+            self.assertEqual(final_summary["success"], 1)
+            self.assertEqual(final_summary["failed"], 1)
+            self.assertAlmostEqual(project.actual_cost_rmb, 0.72)
+
+
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.

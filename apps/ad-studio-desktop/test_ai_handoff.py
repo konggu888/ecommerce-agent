@@ -99,5 +99,10 @@ class AIHandoffTests(unittest.TestCase):
         self.assertIn("A50", text)
         self.assertIn("真实换行", text)
 
+    def test_handoff_mentions_a52_failed_attempt_cost_accounting(self):
+        text = (ROOT / "docs" / "AD_STUDIO_AI_HANDOFF.md").read_text(encoding="utf-8")
+        self.assertIn("A52", text)
+        self.assertIn("失败报价不计入实际花费", text)
+
 if __name__ == "__main__":
     unittest.main()
