@@ -1697,6 +1697,61 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertAlmostEqual(project.actual_cost_rmb, 0.72)
 
 
+    def test_a57_project_recovery_reconciles_actual_cost_from_ledger(self):
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td))
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            project.actual_cost_rmb = 99.0
+            shot.actual_cost_rmb = 99.0
+            store.ledger.record(
+                function="视频镜头生成", model_id="", model_name="测试", provider="测试", model="",
+                status="success", estimated_cost_rmb=0.72, project_id=project.id, shot_id=shot.id,
+                category="video", quantity=1, unit_cost_rmb=0.72,
+            )
+            store.ledger.record(
+                function="演员素材生成", model_id="", model_name="测试", provider="测试", model="",
+                status="success", estimated_cost_rmb=0.25, project_id=project.id, shot_id=shot.id,
+                category="asset", quantity=1, unit_cost_rmb=0.25,
+            )
+            store.ledger.record(
+                function="视频镜头生成", model_id="", model_name="测试", provider="测试", model="",
+                status="failed", estimated_cost_rmb=0.0, project_id=project.id, shot_id=shot.id,
+                category="video", quantity=1, unit_cost_rmb=0.72, error="模拟失败",
+            )
+            store.save(project)
+            result = store.recover_project(project)
+            self.assertTrue(result["cost_reconciled"])
+            self.assertAlmostEqual(project.actual_cost_rmb, 0.97)
+            self.assertAlmostEqual(shot.actual_cost_rmb, 0.97)
+            self.assertAlmostEqual(project.actual_cost_summary["actual_cost_rmb"], 0.97)
+            restored = store.load(project.id)
+            self.assertAlmostEqual(restored.actual_cost_rmb, 0.97)
+            self.assertAlmostEqual(restored.shots[0].actual_cost_rmb, 0.97)
+
+    def test_a57_project_recovery_preserves_legacy_cost_when_no_ledger_rows_exist(self):
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td))
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            project.actual_cost_rmb = 2.5
+            project.shots[0].actual_cost_rmb = 1.2
+            store.save(project)
+            result = store.recover_project(project)
+            self.assertFalse(result["cost_reconciled"])
+            self.assertAlmostEqual(project.actual_cost_rmb, 2.5)
+            self.assertAlmostEqual(project.shots[0].actual_cost_rmb, 1.2)
+
+    def test_a57_open_existing_project_runs_recovery_before_display(self):
+        source = (Path(__file__).resolve().parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        start = source.index("def load_project(self):")
+        end = source.index("def product_library_settings", start)
+        body = source[start:end]
+        recovery_at = body.index("self.store.recover_project(project)")
+        assignment_at = body.index("self.project=project")
+        self.assertLess(recovery_at, assignment_at)
+        self.assertIn("已记账实际", body)
+
+
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.

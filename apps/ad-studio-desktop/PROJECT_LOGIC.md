@@ -1033,3 +1033,10 @@ _render_with_provider() 将媒体生成/原子替换与成功成本记账分为�
 
 ### A57：生成成功但成本待核对时 UI 不得报出正常实际累计
 `generate_shot()` 在渲染完成后必须检查镜头最终状态。若为“已生成（成本待核对）”，只展示待核对提示与预估费用，不展示正常的项目实际累计金额；提醒先核对 `usage-ledger.json` 与恢复记录，避免重复记账。正常成功路径保持原有实际成本显示。
+
+
+### A57：项目打开恢复入口与账本对账
+- “打开已有项目”现在先调用 ProductionStore.recover_project，再刷新项目 UI，并显示清理临时文件、恢复旧版、待重新生成素材数量。
+- recover_project 在保存前从 UsageLedger 同步项目实际成本和有成功账本记录的镜头成本；失败行不计入 actual_cost_rmb。
+- 没有任何账本条目的旧项目保留旧成本字段，避免升级时将历史值归零。
+- UsageLedger 删除了被同名方法覆盖的重复 project_summary 定义，新增 shot_actual_cost 查询，保证项目与镜头成本的恢复来源一致。

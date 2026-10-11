@@ -1693,7 +1693,11 @@ class App(tk.Tk):
             if not sel:return
             project=self.store.load(files[sel[0]].stem)
             if not project:return messagebox.showerror('打开失败','项目文件无法读取。')
-            self.project=project; self.model_router.set_project_context(project.id); self.active_variant_index=int((project.creative_plan or {}).get('variant_index',1) or 1); self.url.set(''); self.level.set(project.level); self.form.set(project.form); self.refresh_shots(); c=project.cost_estimate; self.cost.set(f"项目预估 ¥{c.get('总计',0):.2f} · 云端 ¥{c.get('云端',0):.2f} · 已保存 {len(project.shots)} 个镜头" if c else f'已保存 {len(project.shots)} 个镜头'); self.detail.set(f'已恢复项目：{project.product_name} · {project.platform} · {project.form}'); win.destroy()
+            try:
+                recovery_result = self.store.recover_project(project)
+            except Exception as exc:
+                return messagebox.showerror('项目恢复检查失败', f'项目已读取，但恢复检查未完成：{exc}')
+            self.project=project; self.model_router.set_project_context(project.id); self.active_variant_index=int((project.creative_plan or {}).get('variant_index',1) or 1); self.url.set(''); self.level.set(project.level); self.form.set(project.form); self.refresh_shots(); c=project.cost_estimate; self.cost.set(f"项目预估 ¥{c.get('总计',0):.2f} · 云端 ¥{c.get('云端',0):.2f} · 已记账实际 ¥{project.actual_cost_rmb:.2f} · 已保存 {len(project.shots)} 个镜头" if c else f'已记账实际 ¥{project.actual_cost_rmb:.2f} · 已保存 {len(project.shots)} 个镜头'); self.detail.set(f'已恢复项目：{project.product_name} · {project.platform} · {project.form}；恢复检查：清理临时文件 {recovery_result.get("removed_temp_files",0)} 个，恢复旧版 {len(recovery_result.get("restored_previous_versions",[]))} 个，待重新生成素材 {len(recovery_result.get("missing_media",[]))} 项'); win.destroy()
         ttk.Button(frm,text='打开',command=open_selected).pack(anchor='e')
 
     @ui_action

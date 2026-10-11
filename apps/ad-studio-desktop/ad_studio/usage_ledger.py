@@ -130,20 +130,6 @@ class UsageLedger:
             error=error,
         )
 
-    def project_summary(self, project_id: str) -> dict[str, Any]:
-        rows = [x for x in self._load() if x.get("project_id") == project_id]
-        success = [x for x in rows if x.get("status") == "success"]
-        by_category: dict[str, float] = {}
-        for row in success:
-            key = str(row.get("category") or "other")
-            by_category[key] = by_category.get(key, 0.0) + float(row.get("estimated_cost_rmb", 0) or 0)
-        return {
-            "project_id": project_id,
-            "entries": len(rows),
-            "actual_cost_rmb": round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in success), 6),
-            "by_category": {k: round(v, 6) for k, v in by_category.items()},
-        }
-
     def recent(self, limit: int = 100) -> list[dict[str, Any]]:
         return self._load()[-max(1, int(limit)):][::-1]
 
@@ -159,6 +145,18 @@ class UsageLedger:
             "actual_cost_rmb": round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in success), 6),
             "by_category": {category: round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in success if x.get("category") == category), 6) for category in sorted({x.get("category", "model") for x in success})},
         }
+
+    def shot_actual_cost(self, project_id: str, shot_id: str) -> float | None:
+        """Return success-only actual cost for a shot, or None when no ledger history exists."""
+        rows = [
+            row for row in self._load()
+            if row.get("project_id") == project_id
+            and row.get("shot_id") == shot_id
+            and row.get("status") == "success"
+        ]
+        if not rows:
+            return None
+        return round(sum(float(row.get("estimated_cost_rmb", 0) or 0) for row in rows), 6)
 
     def summary(self) -> dict[str, Any]:
         rows = self._load()

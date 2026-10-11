@@ -111,12 +111,13 @@ class ProductionStore:
                 item["delivery_status"] = "不可交付"
                 item["recovery_reason"] = "最终输出文件缺失或为空"
                 invalid_outputs.append(output_path)
+        cost_reconciled = self._sync_actual_cost(project)
         now = datetime.datetime.now().isoformat(timespec="seconds")
         recovery.update({
             "status": "可继续",
             "stage": "恢复完成",
             "next_action": "从未完成阶段继续任务",
-            "last_recovery": {"removed_temp_files": removed_parts, "missing_media": missing_media, "restored_previous_versions": restored_previous_versions, "invalid_outputs": invalid_outputs, "updated_at": now},
+            "last_recovery": {"removed_temp_files": removed_parts, "missing_media": missing_media, "restored_previous_versions": restored_previous_versions, "invalid_outputs": invalid_outputs, "cost_reconciled": cost_reconciled, "actual_cost_rmb": project.actual_cost_rmb, "updated_at": now},
             "updated_at": now,
         })
         self.save(project)
@@ -159,9 +160,20 @@ class ProductionStore:
 
     def _sync_actual_cost(self, project: Project):
         summary = self.ledger.project_summary(project.id)
+        # If a ledger exists, it is the source of truth after an interrupted save.
+        # Keep legacy totals intact for projects that predate the ledger entirely.
+        reconciled = bool(summary.get("entries", 0))
+        if reconciled:
+            project.actual_cost_rmb = summary["actual_cost_rmb"]
+            project.actual_cost_summary = summary
+            for shot in project.shots:
+                shot_cost = self.ledger.shot_actual_cost(project.id, shot.id)
+                if shot_cost is not None:
+                    shot.actual_cost_rmb = shot_cost
         project.cost_estimate.setdefault("actual", {})
         project.cost_estimate["actual"] = summary
         project.cost_estimate["actual_cost_rmb"] = summary["actual_cost_rmb"]
+        return reconciled
 
     def _record_actual_cost(self, project: Project, *, shot: Shot | None, category: str, amount_rmb: float, provider: str, quantity: float = 1.0, unit_cost_rmb: float = 0.0, function: str = "生成任务"):
         amount = round(float(amount_rmb or 0), 6)

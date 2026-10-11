@@ -109,5 +109,10 @@ class AIHandoffTests(unittest.TestCase):
         self.assertIn("A56", text)
         self.assertIn("真实换行", text)
 
+    def test_handoff_mentions_a57_project_recovery_ui_and_cost_reconciliation(self):
+        text = (ROOT / "docs" / "AD_STUDIO_AI_HANDOFF.md").read_text(encoding="utf-8")
+        self.assertIn("A57", text)
+        self.assertIn("打开已有项目", text)
+
 if __name__ == "__main__":
     unittest.main()
