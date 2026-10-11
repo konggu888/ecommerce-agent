@@ -311,17 +311,43 @@ class ShortDramaTests(unittest.TestCase):
         report = audit_short_drama(plan, {"name": "商品"})
         self.assertIn("PRODUCT_VISUAL_NOT_VERIFIED", {issue["code"] for issue in report["issues"]})
 
-    def test_manual_product_visual_review_persists_evidence(self):
+    def test_manual_product_visual_review_persists_real_evidence(self):
+        import tempfile
+        from pathlib import Path
+
         plan = sample_plan()
         plan["drama_business_mode"] = "product_short_drama_ad"
-        reviewed = record_product_visual_verification(
-            plan, 1, "passed", "C:/renders/shot-01.png", "外观、结构、功能及正确用法均与商品资料一致"
-        )
-        shot = reviewed["storyboard"][0]
-        self.assertEqual(shot["visual_verification"], "passed")
-        self.assertEqual(shot["visual_verification_evidence"], "C:/renders/shot-01.png")
-        self.assertEqual(shot["visual_verification_method"], "manual")
-        self.assertIn("外观、结构", shot["visual_verification_note"])
+        with tempfile.TemporaryDirectory() as folder:
+            evidence = Path(folder) / "shot-01.png"
+            evidence.write_bytes(b"image evidence")
+            reviewed = record_product_visual_verification(
+                plan, 1, "passed", str(evidence), "外观、结构、功能及正确用法均与商品资料一致"
+            )
+            shot = reviewed["storyboard"][0]
+            self.assertEqual(shot["visual_verification"], "passed")
+            self.assertEqual(shot["visual_verification_evidence"], str(evidence.resolve()))
+            self.assertEqual(shot["visual_verification_method"], "manual")
+            self.assertIn("外观、结构", shot["visual_verification_note"])
+
+    def test_manual_product_visual_review_rejects_missing_empty_or_unsupported_evidence(self):
+        import tempfile
+        from pathlib import Path
+
+        plan = sample_plan()
+        plan["drama_business_mode"] = "product_short_drama_ad"
+        with tempfile.TemporaryDirectory() as folder:
+            empty = Path(folder) / "empty.png"
+            empty.touch()
+            unsupported = Path(folder) / "notes.txt"
+            unsupported.write_text("not visual evidence", encoding="utf-8")
+            with self.assertRaisesRegex(ShortDramaPlanError, "不存在、为空或无法读取"):
+                record_product_visual_verification(
+                    plan, 1, "passed", str(Path(folder) / "missing.png"), "已对照商品检查"
+                )
+            with self.assertRaisesRegex(ShortDramaPlanError, "不存在、为空或无法读取"):
+                record_product_visual_verification(plan, 1, "passed", str(empty), "已对照商品检查")
+            with self.assertRaisesRegex(ShortDramaPlanError, "受支持的图片或视频"):
+                record_product_visual_verification(plan, 1, "passed", str(unsupported), "已对照商品检查")
 
 
     def test_ai_visual_comparison_flags_mismatch_without_auto_approval(self):
