@@ -760,6 +760,11 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
     elif not isinstance(hook_design.get("retention_devices"), list) or len([x for x in hook_design.get("retention_devices", []) if str(x).strip()]) < 2:
         add("warning", "RETENTION_DESIGN_WEAK", "留存设计少于两个可识别的装置，需人工检查观众继续观看的理由。")
 
+    character_names = {
+        str(item.get("name", "")).strip()
+        for item in checked.get("characters", [])
+        if isinstance(item, dict) and str(item.get("name", "")).strip()
+    }
     causal_chain = checked.get("causal_chain")
     causal_fields = ("event", "caused_by", "character_choice", "consequence", "state_change", "script_evidence")
     audit_script = str(checked.get("full_script", ""))

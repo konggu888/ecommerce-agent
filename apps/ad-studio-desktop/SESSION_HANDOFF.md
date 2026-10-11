@@ -320,5 +320,5 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 ## 最近推进｜A80 与 A81
 - A80：因果链人物关系变化说明及其分镜落地审查；修复初始化顺序后，SHA `ecd7259205cd77b99516e958d89d7022a9f2ab3b` 的完整 CI 与 docs-sync 通过。
 - A81（本轮）：新增 `state_continuity`，将因果事件造成的人物状态/信息/承诺/误解/关系后果追踪到后续分镜；覆盖未说明、未知人物、未展示、引用镜头顺序/位置等 warning。
-- 本轮改动必须同提交更新代码、测试、HELP、PROJECT_LOGIC、SESSION_HANDOFF、验收计划、验收 SOP、未来功能备忘。
-- 目前尚未完成本轮提交及其 CI 验证；必须以提交后的最新 HEAD 为准。PR #31 保持 open，不得合并。
+- 首轮 CI 在三项 A81 测试中发现角色名集合初始化顺序错误；已将角色集合初始化前移到因果链审查之前，修复提交必须重新跑全量 CI 与 docs-sync。
+- 代码、测试、HELP、PROJECT_LOGIC、SESSION_HANDOFF、验收计划、验收 SOP、未来功能备忘需在同一修复提交同步更新。PR #31 保持 open，不得合并。
