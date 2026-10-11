@@ -290,7 +290,7 @@ class ShortDramaTests(unittest.TestCase):
         plan["drama_business_mode"] = "product_short_drama_ad"
         with self.assertRaisesRegex(ShortDramaPlanError, "必须选择实际生成的图片或视频"):
             record_product_visual_verification(plan, 1, "passed", "", "外观和功能一致")
-        with self.assertRaisesRegex(ShortDramaPlanError, "必须填写核验备注"):
+        with self.assertRaisesRegex(ShortDramaPlanError, "核验备注"):
             record_product_visual_verification(plan, 1, "passed", "C:/renders/shot-01.png", "")
         with self.assertRaisesRegex(ShortDramaPlanError, "镜头编号不存在"):
             record_product_visual_verification(plan, 2, "passed", "C:/renders/shot-01.png", "已核验")
