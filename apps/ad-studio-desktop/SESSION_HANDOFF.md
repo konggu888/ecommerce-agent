@@ -129,3 +129,11 @@ SHA 2450e2d5b74bba26cd76ac3ef3ef5639499523f2 的完整 CI 暴露 1 个 handoff �
 
 ## A50：视频提示词换行回归（待本轮 CI）
 检查 A47 的生成异常边界重构时发现 prompt 被改成字面量反斜杠+n，已修复并新增捕获 Provider 请求的测试。A49 在 SHA 953e40694aa2a28b2d164fc49800c639b45bebb8 的完整 CI 与 docs-sync 已通过；A50 的新 SHA 仍待完整 CI/doc-sync。
+
+
+## 最新 CI 基准（A47–A50）
+- 代码 SHA：`58de7ce984cf9df73bad2c99444d75a0624059c3`
+- 完整 CI：success，覆盖桌面 Python 语法、桌面核心测试、TypeScript、Engine 和 Risk Controller：https://github.com/konggu888/ecommerce-agent/actions/runs/38121500267
+- docs-sync：success：https://github.com/konggu888/ecommerce-agent/actions/runs/38121500259
+- A47–A50 自动化阶段通过；Windows 真机、真实 Provider、真实素材和实际扣款仍暂缓。
+- 以上是代码基准提交的结果。任何新的提交都必须重新查询最新 HEAD 和对应工作流。

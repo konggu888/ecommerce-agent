@@ -843,3 +843,7 @@ AI 必须执行：
 1. 使用捕获请求的测试 Provider 生成单镜头，读取实际传入的 prompt。
 2. 确认标题、画面、文案之间是三个独立文本行，不能出现字面量反斜杠+n。
 3. 运行桌面核心测试、完整 CI 与 docs-sync；真实 Provider 效果仍需另行验收。
+
+
+## A47–A50｜自动化阶段结果
+代码 SHA `58de7ce984cf9df73bad2c99444d75a0624059c3` 的完整 CI 与 docs-sync 均成功（CI https://github.com/konggu888/ecommerce-agent/actions/runs/38121500267；docs-sync https://github.com/konggu888/ecommerce-agent/actions/runs/38121500259）。可将这些阶段的自动化检查记录为通过，但不得据此标记 Windows 真机、真实 Provider、真实素材或实际扣款验收完成。

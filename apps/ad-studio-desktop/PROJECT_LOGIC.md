@@ -1000,3 +1000,8 @@ production.py 的 generation_failure_ui_state() 统一检查后端失败状态�
 
 ### A50：生成提示词换行格式
 A47 重构视频生成异常边界时，提示词拼接被误改成字面量反斜杠+n。现恢复为真实换行符，并增加测试捕获 Provider 收到的完整 prompt，断言标题、画面、文案分行且不存在字面量反斜杠+n。
+
+
+## A50：视频提示词换行回归验收
+
+`_render_with_provider()` 的提示词分隔符已确认是 Python 的真实换行符 `'\\n'`，不是字面量反斜杠+n。捕获 Provider 请求的回归测试与完整 CI、docs-sync 在代码 SHA `58de7ce984cf9df73bad2c99444d75a0624059c3` 上通过。后续代码提交仍需重新运行完整检查。

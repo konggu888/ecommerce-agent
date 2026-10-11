@@ -127,3 +127,7 @@ handoff 路径问题已修复；随后仅剩 1 个文案断言不一致，已对
 
 ## A50：视频提示词换行回归（待 CI）
 A47 的异常边界重构意外将 prompt 拼接改成字面量反斜杠+n；已恢复真实换行并增加捕获 Provider 请求文本的回归测试。A49 在 SHA 953e40694aa2a28b2d164fc49800c639b45bebb8 的完整 CI 与 docs-sync 均成功；A50 新 SHA 的完整 CI/doc-sync 必须重新查询。
+
+
+## A50：视频提示词换行回归结果
+提示词中的标题、画面、文案已恢复为真实换行；新增捕获 Provider 请求内容的回归。代码 SHA `58de7ce984cf9df73bad2c99444d75a0624059c3` 的完整 CI 与 docs-sync 均成功（CI https://github.com/konggu888/ecommerce-agent/actions/runs/38121500267；docs-sync https://github.com/konggu888/ecommerce-agent/actions/runs/38121500259）。真实 Provider 的实际提示词效果仍待现场验收。
