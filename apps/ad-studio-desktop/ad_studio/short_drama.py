@@ -76,8 +76,13 @@ SHORT_DRAMA_SCHEMA = {
     "risk_notes": ["待确认信息、广告表达风险或制作风险"],
     "alternative_directions": [{
         "title": "备选方向",
-        "mechanism": "不同的故事机制",
-        "conversion_path": "商业转化路径"
+        "mechanism": "故事的核心叙事机制",
+        "conflict_source": "主要冲突来自哪里",
+        "protagonist_choice": "主角必须做出的关键选择",
+        "reversal_mechanism": "反转如何由前面线索与选择自然产生",
+        "product_role": "商品在该方向中的剧情作用；通用模式可说明不适用",
+        "audience_hook": "目标受众为什么会关心这个故事",
+        "conversion_path": "商业转化路径；通用模式可说明不适用"
     }]
 }
 
@@ -110,7 +115,7 @@ def build_short_drama_prompt(product: dict[str, Any], constraints: dict[str, Any
          "2.1 同时输出 hook_design，包含 opening_question、retention_devices（至少2项）、payoff。开场尽快制造具体问题/意外/选择；每个主要情节都必须改变人物处境或观众认知。\n"
          "2.2 禁止用没有因果的巧合硬推剧情、只靠误会反复拖延、角色突然降智、结尾突然说教或硬塞购买口号。\n"
          "2.3 商品植入/转化/商品短剧广告：商品只能在剧情逻辑允许时成为解决问题或引发选择的真实工具，不能凭空解决与其功能无关的冲突；商品卖点必须通过可拍摄的行为展示，不得只靠角色夸赞。\n"
-         "2.4 至少提供两个故事方向时，方向之间必须在冲突来源、人物选择或反转机制上有实质区别；不要仅更换场景、人物姓名或题材标签。\n"
+         "2.4 至少提供两个故事方向，且每个方向必须分别输出 conflict_source、protagonist_choice、reversal_mechanism、product_role、audience_hook 和 conversion_path。方向必须在冲突来源、人物关键选择或反转机制上有实质区别；不要仅更换场景、人物姓名、题材标签或营销话术。各方向必须能单独扩展成完整故事，并说明商品角色（不适用时如实写不适用）。\n"
          "2. 设计完整的人物目标与关系、场景、冲突、节奏、转折和结尾；故事要有因果，不是卖点罗列。\n"
         "3. 商品是否出现必须服从所选创作目标：通用模式允许不出现；商品植入/转化模式应按目标呈现。任何模式都不得篡改商品外观、结构、核心功能、使用方式、规格、功效或其他事实。\n"
         "4. 未提供或无法验证的商品信息必须标为待确认，不得编造认证、销量、价格、效果或用户证言。\n"
@@ -307,6 +312,18 @@ def generate_short_drama(model_router, product: dict[str, Any], constraints: dic
     retention = hook_design.get("retention_devices")
     if not isinstance(retention, list) or len([item for item in retention if str(item).strip()]) < 2:
         raise ShortDramaPlanError("新生成的短剧留存设计不足：hook_design.retention_devices 至少需要2项。")
+    directions = validated.get("alternative_directions", [])
+    if len(directions) < 2:
+        raise ShortDramaPlanError("新生成方案至少需要两个故事方向，才能比较不同的叙事机制。")
+    direction_fields = ("title", "mechanism", "conflict_source", "protagonist_choice", "reversal_mechanism", "product_role", "audience_hook", "conversion_path")
+    signatures = []
+    for index, direction in enumerate(directions, 1):
+        if not isinstance(direction, dict) or any(not str(direction.get(key, "")).strip() for key in direction_fields):
+            raise ShortDramaPlanError(f"第{index}个备选故事方向缺少完整字段（冲突来源、人物选择、反转机制、商品角色、受众吸引点及转化路径）。")
+        signature = tuple(" ".join(str(direction.get(key, "")).lower().split()) for key in ("conflict_source", "protagonist_choice", "reversal_mechanism"))
+        signatures.append(signature)
+    if len(set(signatures)) < 2:
+        raise ShortDramaPlanError("备选故事方向的冲突来源、人物选择和反转机制完全重复；请重新生成有实质区别的方向。")
     requested_mode = str(constraints.get("short_drama_mode", "single_episode"))
     requested_count = int(constraints.get("episode_count", 1))
     requested_business_mode = str(constraints.get("drama_business_mode", "product_placement"))

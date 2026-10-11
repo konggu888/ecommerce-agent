@@ -49,8 +49,12 @@ def sample_plan():
         "product_truths": ["仅使用已确认商品信息"],
         "risk_notes": ["商品具体参数待确认"],
         "alternative_directions": [
-            {"title": "反转喜剧", "mechanism": "误会反转", "conversion_path": "演示后引导了解"},
-            {"title": "温情日常", "mechanism": "关系变化", "conversion_path": "情境共鸣后介绍"}
+            {"title": "反转喜剧", "mechanism": "误会反转", "conflict_source": "物品丢失导致误会",
+             "protagonist_choice": "承认自己放错物品还是责怪他人", "reversal_mechanism": "早期线索揭示物品一直在身边",
+             "product_role": "作为整理工具帮助定位", "audience_hook": "限时寻找造成紧张感", "conversion_path": "演示后引导了解"},
+            {"title": "温情日常", "mechanism": "关系变化", "conflict_source": "家人之间长期缺乏沟通",
+             "protagonist_choice": "主动沟通还是继续回避", "reversal_mechanism": "旧物触发记忆并改变双方理解",
+             "product_role": "作为共同整理回忆的道具", "audience_hook": "关系修复引发情感共鸣", "conversion_path": "情境共鸣后介绍"}
         ]
     }
 
@@ -79,6 +83,26 @@ class ShortDramaTests(unittest.TestCase):
         self.assertIn("constraints.drama_business_mode", prompt)
         general_prompt = build_short_drama_prompt({}, {"drama_business_mode": "general"})
         self.assertIn("允许完全不带商品", general_prompt)
+
+    def test_generation_rejects_duplicate_story_direction_mechanisms(self):
+        plan = sample_plan()
+        plan["alternative_directions"][1]["conflict_source"] = plan["alternative_directions"][0]["conflict_source"]
+        plan["alternative_directions"][1]["protagonist_choice"] = plan["alternative_directions"][0]["protagonist_choice"]
+        plan["alternative_directions"][1]["reversal_mechanism"] = plan["alternative_directions"][0]["reversal_mechanism"]
+        class FakeRouter:
+            def resolve_route(self, function): return "profile"
+            def complete_json(self, profile, prompt, function=None): return plan
+        with self.assertRaisesRegex(ShortDramaPlanError, "完全重复"):
+            generate_short_drama(FakeRouter(), {"name": "商品"}, {"drama_business_mode": "product_placement"})
+
+    def test_generation_requires_distinct_story_direction_fields(self):
+        plan = sample_plan()
+        del plan["alternative_directions"][0]["audience_hook"]
+        class FakeRouter:
+            def resolve_route(self, function): return "profile"
+            def complete_json(self, profile, prompt, function=None): return plan
+        with self.assertRaisesRegex(ShortDramaPlanError, "缺少完整字段"):
+            generate_short_drama(FakeRouter(), {"name": "商品"}, {"drama_business_mode": "product_placement"})
 
     def test_generation_rejects_short_drama_without_causal_story_engine(self):
         plan = sample_plan()
