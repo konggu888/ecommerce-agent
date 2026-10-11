@@ -1056,3 +1056,10 @@ _render_with_provider() 将媒体生成/原子替换与成功成本记账分为�
 
 ### A59：成本总额单一事实源
 _record_actual_cost() 在成功写入 ledger 后，读取 project_summary() 并将其 actual_cost_rmb 同步覆盖到 project.actual_cost_rmb、cost_estimate.actual 和 cost_estimate.actual_cost_rmb。禁止用旧项目快照的数值加上本次金额，以免账本已有记录时出现双计。只有 status=success 的 ledger rows 计入实际花费。
+
+
+### A61：旧成本迁移与镜头账本单一事实源
+- 若项目没有任何正数成功账本实际成本，但项目/镜头快照仍有历史金额，第一次成功记账前先迁移历史金额。
+- 按镜头写入历史镜头金额，项目总额高于镜头合计的未分配差额写入项目级 legacy 记录；如果镜头合计更高，则保留镜头合计，避免历史镜头成本被清掉。
+- UsageLedger.record_many() 一次构造全部行并原子替换账本文件，避免迁移中断造成部分写入和重复迁移。
+- 成功成本写入后，项目总成本与镜头成本都按成功账本记录汇总；移除资产/视频路径中先于账本的镜头成本预增量。

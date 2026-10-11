@@ -76,6 +76,47 @@ class UsageLedger:
         self.path.write_text(json.dumps(rows[-2000:], ensure_ascii=False, indent=2), encoding="utf-8")
         return item
 
+    def record_many(self, records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        """Append several ledger rows with one atomic file replacement."""
+        if not records:
+            return []
+        rows = self._load()
+        items = []
+        for values in records:
+            item = {
+                "id": uuid.uuid4().hex[:12],
+                "time": datetime.now().isoformat(timespec="seconds"),
+                "function": str(values.get("function", "")),
+                "category": str(values.get("category", "other") or "other"),
+                "project_id": str(values.get("project_id", "") or ""),
+                "shot_id": str(values.get("shot_id", "") or ""),
+                "asset_kind": str(values.get("asset_kind", "") or ""),
+                "quantity": float(values.get("quantity", 1.0) or 1.0),
+                "unit_cost_rmb": round(float(values.get("unit_cost_rmb", 0) or 0), 6),
+                "model_id": str(values.get("model_id", "") or ""),
+                "model_name": str(values.get("model_name", "") or ""),
+                "provider": str(values.get("provider", "") or ""),
+                "model": str(values.get("model", "") or ""),
+                "status": str(values.get("status", "success") or "success"),
+                "prompt_tokens": int(values.get("prompt_tokens", 0) or 0),
+                "completion_tokens": int(values.get("completion_tokens", 0) or 0),
+                "total_tokens": int(values.get("total_tokens", 0) or 0),
+                "estimated_cost_rmb": round(float(values.get("estimated_cost_rmb", 0) or 0), 6),
+                "duration_ms": int(values.get("duration_ms", 0) or 0),
+                "error": str(values.get("error", "") or ""),
+            }
+            items.append(item)
+        rows.extend(items)
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        temp_path = self.path.with_name(f".{self.path.name}.{uuid.uuid4().hex}.tmp")
+        try:
+            temp_path.write_text(json.dumps(rows[-2000:], ensure_ascii=False, indent=2), encoding="utf-8")
+            temp_path.replace(self.path)
+        except Exception:
+            temp_path.unlink(missing_ok=True)
+            raise
+        return items
+
     def record_asset(
         self,
         *,

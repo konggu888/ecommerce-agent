@@ -1800,6 +1800,55 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(project.cost_estimate["actual"]["by_category"], {"video": 2.5})
 
 
+    def test_a61_legacy_costs_migrate_once_before_first_successful_charge(self):
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td))
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            project.actual_cost_rmb = 2.5
+            project.actual_cost_summary = {"actual_cost_rmb": 2.5, "by_category": {"video": 2.5}}
+            shot = project.shots[0]
+            shot.actual_cost_rmb = 1.2
+            store.ledger.record(
+                function="失败尝试", model_id="", model_name="测试", provider="测试", model="",
+                status="failed", estimated_cost_rmb=0.0, project_id=project.id, shot_id=shot.id,
+                category="video", quantity=1, unit_cost_rmb=0.72, error="失败报价不是实际支出",
+            )
+
+            store._record_actual_cost(
+                project, shot=shot, category="asset", amount_rmb=0.72,
+                provider="测试", quantity=1, unit_cost_rmb=0.72, function="商品素材生成",
+            )
+            summary = store.ledger.project_summary(project.id)
+            self.assertAlmostEqual(summary["actual_cost_rmb"], 3.22)
+            self.assertAlmostEqual(project.actual_cost_rmb, 3.22)
+            self.assertAlmostEqual(shot.actual_cost_rmb, 1.92)
+
+            store._record_actual_cost(
+                project, shot=shot, category="asset", amount_rmb=0.50,
+                provider="测试", quantity=1, unit_cost_rmb=0.50, function="场景素材生成",
+            )
+            summary = store.ledger.project_summary(project.id)
+            self.assertAlmostEqual(summary["actual_cost_rmb"], 3.72)
+            self.assertAlmostEqual(shot.actual_cost_rmb, 2.42)
+            migrated = [
+                row for row in store.ledger.recent(50)
+                if row.get("project_id") == project.id and row.get("function") == "历史实际成本迁移"
+            ]
+            self.assertEqual(len(migrated), 2)
+            self.assertAlmostEqual(sum(row["estimated_cost_rmb"] for row in migrated), 2.5)
+
+    def test_a61_record_many_migration_keeps_ledger_rows_atomic(self):
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td))
+            before = store.ledger.recent(20)
+            with self.assertRaises((TypeError, ValueError, OverflowError)):
+                store.ledger.record_many([
+                    {"function": "迁移有效行", "project_id": "p", "estimated_cost_rmb": 1.0},
+                    {"function": "迁移无效行", "project_id": "p", "quantity": "not-a-number"},
+                ])
+            self.assertEqual(store.ledger.recent(20), before)
+
+
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.

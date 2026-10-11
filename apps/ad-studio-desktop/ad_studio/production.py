@@ -183,8 +183,77 @@ class ProductionStore:
         project.cost_estimate["actual_cost_rmb"] = summary["actual_cost_rmb"]
         return reconciled
 
+    def _ensure_legacy_cost_migrated(self, project: Project) -> bool:
+        """Move legacy snapshot totals into the ledger once, before its first positive actual charge."""
+        summary = self.ledger.project_summary(project.id)
+        if float(summary.get("actual_cost_rmb", 0) or 0) > 0:
+            return False
+
+        def safe_amount(value: Any) -> float:
+            try:
+                amount = float(value or 0)
+            except (TypeError, ValueError, OverflowError):
+                return 0.0
+            return amount if math.isfinite(amount) and amount > 0 else 0.0
+
+        old_summary = project.actual_cost_summary if isinstance(project.actual_cost_summary, dict) else {}
+        project_total = max(
+            safe_amount(project.actual_cost_rmb),
+            safe_amount(old_summary.get("actual_cost_rmb", 0)),
+        )
+        shot_amounts = []
+        for shot in project.shots:
+            amount = safe_amount(getattr(shot, "actual_cost_rmb", 0))
+            if amount > 0:
+                shot_amounts.append((shot, amount))
+        shot_total = round(sum(amount for _, amount in shot_amounts), 6)
+        total_to_preserve = max(project_total, shot_total)
+        if total_to_preserve <= 0:
+            return False
+
+        records = []
+        for shot, amount in shot_amounts:
+            records.append({
+                "function": "历史实际成本迁移",
+                "model_id": "",
+                "model_name": "历史记录",
+                "provider": "本地迁移",
+                "model": "",
+                "status": "success",
+                "estimated_cost_rmb": amount,
+                "project_id": project.id,
+                "shot_id": shot.id,
+                "category": "legacy",
+                "quantity": 1,
+                "unit_cost_rmb": amount,
+                "error": "从旧项目镜头成本快照迁移；不是新扣款",
+            })
+        residual = round(max(0.0, total_to_preserve - shot_total), 6)
+        if residual > 0:
+            records.append({
+                "function": "历史实际成本迁移",
+                "model_id": "",
+                "model_name": "历史记录",
+                "provider": "本地迁移",
+                "model": "",
+                "status": "success",
+                "estimated_cost_rmb": residual,
+                "project_id": project.id,
+                "shot_id": "",
+                "category": "legacy",
+                "quantity": 1,
+                "unit_cost_rmb": residual,
+                "error": "从旧项目总成本快照迁移未分配金额；不是新扣款",
+            })
+        if not records:
+            return False
+        # One atomic write makes the migration idempotent even if the process exits.
+        self.ledger.record_many(records)
+        return True
+
     def _record_actual_cost(self, project: Project, *, shot: Shot | None, category: str, amount_rmb: float, provider: str, quantity: float = 1.0, unit_cost_rmb: float = 0.0, function: str = "生成任务"):
         amount = round(float(amount_rmb or 0), 6)
+        self._ensure_legacy_cost_migrated(project)
         self.ledger.record(
             function=function, model_id="", model_name="", provider=provider, model="",
             status="success", estimated_cost_rmb=amount,
@@ -195,6 +264,10 @@ class ProductionStore:
         # The usage ledger is authoritative; never increment a possibly stale project total.
         project.actual_cost_summary = summary
         project.actual_cost_rmb = round(float(summary.get("actual_cost_rmb", 0) or 0), 6)
+        if shot:
+            shot_actual = self.ledger.shot_actual_cost(project.id, shot.id)
+            if shot_actual is not None:
+                shot.actual_cost_rmb = shot_actual
         project.cost_estimate.setdefault("actual", {})
         project.cost_estimate["actual"] = summary
         project.cost_estimate["actual_cost_rmb"] = project.actual_cost_rmb
@@ -306,7 +379,6 @@ class ProductionStore:
         elif kind=='场景': shot.scene_id=item.id
         elif kind=='商品素材': shot.product_asset_ids.append(item.id)
         shot.asset_source='ai_generated'
-        shot.actual_cost_rmb=round(shot.actual_cost_rmb+cost,4)
         self._record_actual_cost(
             project,
             shot=shot,
@@ -429,7 +501,6 @@ class ProductionStore:
                 unit_cost_rmb=video_cost,
                 function="视频镜头生成",
             )
-            shot.actual_cost_rmb = round(float(shot.actual_cost_rmb or 0.0) + video_cost, 4)
             self.mark_ready(project, shot, out)
         except Exception as ledger_exc:
             recovery = project.creative_plan.setdefault("recovery", {})
