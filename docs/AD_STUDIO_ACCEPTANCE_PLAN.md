@@ -799,3 +799,8 @@
 ## A38｜跨会话接手信息完整性
 - [ ] 新会话先读取 `apps/ad-studio-desktop/SESSION_HANDOFF.md`，核实 HEAD/PR/CI 与文件一致。
 - [ ] handoff 清楚区分文档同步、完整 CI、自动化测试、Windows 真机和真实 Provider 验收状态。
+
+
+## A39｜功能分支 CI 覆盖
+- [ ] 验证开发分支 push 会触发完整 CI，而不只有文档同步/部署检查。
+- [ ] 对当前 HEAD 确认 `typecheck-and-test` 运行结束且结论 success；失败则修复后重新跑。

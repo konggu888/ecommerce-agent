@@ -79,3 +79,7 @@ A37 修复修正草稿中换行符被显示为字面量的问题，并增加真�
 
 ## A38：会话接手
 项目内 `apps/ad-studio-desktop/SESSION_HANDOFF.md` 是每次新会话继续工作前的首读文件；每轮提交后都要更新其 HEAD、CI 状态和下一步，且不能将 docs-sync 误报为完整 CI。
+
+
+## A39：分支 CI
+CI push 事件现在覆盖所有分支。接手者必须检查当前 SHA 上的完整 `typecheck-and-test`，不能只看文档同步工作流。

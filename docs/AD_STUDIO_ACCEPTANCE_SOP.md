@@ -764,3 +764,9 @@ AI 必须执行：
 2. 重新查询 GitHub 最新 HEAD、PR 状态和该 SHA 的 checks；不能仅沿用 handoff 里旧状态。
 3. 更新 handoff 的当前 SHA、最新工作流、已完成内容、未完成内容与下一步。
 4. 未执行的测试必须标记“未执行”；docs-sync 不能替代完整 CI。
+
+
+## A39｜功能分支 CI 核验
+1. 每轮提交后查询当前 HEAD 的 GitHub Checks 和 Actions。
+2. 确认完整 CI 工作流 `CI / typecheck-and-test` 在当前 SHA 上完成；docs-sync、Netlify 的 neutral 状态不算完整 CI 通过。
+3. 若未触发，检查工作流事件过滤条件；若失败，先修复再继续推进。

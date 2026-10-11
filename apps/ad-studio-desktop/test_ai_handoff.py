@@ -65,5 +65,11 @@ class AIHandoffTests(unittest.TestCase):
         self.assertIn("不得把 docs-sync", text)
         self.assertIn("PR 保持 open/unmerged", text)
 
+    def test_session_handoff_records_feature_branch_ci_requirement(self):
+        handoff = (ROOT / "SESSION_HANDOFF.md").read_text(encoding="utf-8")
+        self.assertIn("A39", handoff)
+        self.assertIn("所有分支", handoff)
+        self.assertIn("完整 CI", handoff)
+
 if __name__ == "__main__":
     unittest.main()

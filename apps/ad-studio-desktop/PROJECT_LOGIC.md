@@ -932,3 +932,7 @@ A33 自动化验收分别覆盖电商短视频、商品主图视频、广告投�
 
 ### A38：跨会话接手文件
 `apps/ad-studio-desktop/SESSION_HANDOFF.md` 是每次继续推进前的首读入口，必须根据真实 GitHub HEAD、PR 和工作流结果更新；不得把文档同步检查当成全量 CI，也不得将未执行的测试写成通过。
+
+
+### A39：CI 分支覆盖
+`.github/workflows/ci.yml` 的 push 触发器覆盖所有分支，确保开发分支 push 也运行桌面语法检查、桌面单测、类型检查和引擎测试。每次仍需按当前 HEAD SHA 查询结果，不得拿旧 SHA 的成功结果代替。

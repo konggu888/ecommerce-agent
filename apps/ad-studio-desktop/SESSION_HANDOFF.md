@@ -6,9 +6,9 @@
 - 仓库：`konggu888/ecommerce-agent`
 - 项目：`apps/ad-studio-desktop`（本地 Python/Tkinter 桌面程序，不是 Web 应用）
 - 工作分支：`feat/product-drama-visual-review`
-- 当前 HEAD：`b19d8fc7f918e620f16f5dd57deef74bf39fc4da`
+- 本轮开始时接手基准 HEAD：`c117704d5e689916e2abd9a7f36ef27d86252211`（提交后 HEAD 会变化；每次都必须重新查询，不能把此值当成最新 SHA）。
 - PR：[#31](https://github.com/konggu888/ecommerce-agent/pull/31)，保持 open、未合并；没有用户明确许可不得合并。
-- 最新当前 HEAD 的文档同步检查：成功。完整 CI 当前 HEAD **尚未取得结果**；不要把 docs-sync 或 Netlify 状态写成完整 CI 通过。
+- 此前 HEAD 的文档同步检查成功；完整 CI 当前提交尚未取得结果。已将 `.github/workflows/ci.yml` 的 push 触发范围改为所有分支，以确保功能分支提交也运行完整 CI。不要把 docs-sync 或 Netlify 状态写成完整 CI 通过。
 
 ## 最近完成
 1. 商品短剧支持人工视觉核验，证据绑定具体生成图片/视频文件。
@@ -31,3 +31,7 @@
 - 单元测试未执行 ≠ 测试通过。
 - AI 视觉比对不是商品真实性认证；最终需人工核验。
 - 当前实现不是已经验收的商业成片流程；真实机器/Provider 验收仍待后续。
+
+
+## A39：CI 触发范围
+CI 的 push 触发器现覆盖所有分支；每次提交后仍须查询当前 SHA 的 checks，等待完整 `typecheck-and-test` 工作流结束。此项改动本身的完整 CI 结果待当前提交的工作流返回。
