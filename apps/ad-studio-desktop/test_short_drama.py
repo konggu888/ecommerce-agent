@@ -22,6 +22,17 @@ def sample_plan():
                         "decision_pressure": "距离约定时间只剩十分钟", "arc": "从慌乱回避转向主动建立准备习惯"}],
         "plot_beats": ["意外开场", "误会升级", "商品自然解决问题", "轻松收尾"],
         "conflict_and_reversal": "主角以为问题无法解决，后来发现关键在准备方式",
+        "causal_chain": [
+            {"step": 1, "event": "主角发现钥匙不在固定位置", "caused_by": "开场初始条件：前一晚匆忙回家后随手放置物品",
+             "character_choice": "先翻找玄关而不回想昨晚的行动", "consequence": "时间被消耗且没有找到钥匙",
+             "state_change": "剩余出门时间缩短，主角压力增加"},
+            {"step": 2, "event": "主角沿回家路线回忆并检查收纳处", "caused_by": "第一步翻找失败，时间压力迫使其改变策略",
+             "character_choice": "停止盲目翻找，按昨晚行动顺序排查", "consequence": "发现自己临时更换过放置位置",
+             "state_change": "人物从慌乱转为有依据地行动，并获得新线索"},
+            {"step": 3, "event": "主角找到钥匙并决定建立固定归位习惯", "caused_by": "第二步发现临时放置是反复丢失的原因",
+             "character_choice": "主动设置固定收纳点", "consequence": "及时出门并减少同类问题再次发生",
+             "state_change": "主角获得掌控感，同事对其可靠性的担忧缓解"}
+        ],
         "story_engine": {
             "protagonist_goal": "准时出门并带齐必需物品",
             "opposing_force": "重要物品失踪且出门时间逼近",
@@ -86,6 +97,30 @@ class ShortDramaTests(unittest.TestCase):
         general_prompt = build_short_drama_prompt({}, {"drama_business_mode": "general"})
         self.assertIn("允许完全不带商品", general_prompt)
 
+    def test_generation_rejects_missing_causal_chain(self):
+        plan = sample_plan()
+        plan.pop("causal_chain")
+        class FakeRouter:
+            def resolve_route(self, function): return "profile"
+            def complete_json(self, profile, prompt, function=None): return plan
+        with self.assertRaisesRegex(ShortDramaPlanError, "至少3步 causal_chain"):
+            generate_short_drama(FakeRouter(), {"name": "商品"}, {"drama_business_mode": "product_placement"})
+
+    def test_generation_rejects_causal_step_without_consequence(self):
+        plan = sample_plan()
+        del plan["causal_chain"][1]["consequence"]
+        class FakeRouter:
+            def resolve_route(self, function): return "profile"
+            def complete_json(self, profile, prompt, function=None): return plan
+        with self.assertRaisesRegex(ShortDramaPlanError, "因果链第2步缺少"):
+            generate_short_drama(FakeRouter(), {"name": "商品"}, {"drama_business_mode": "product_placement"})
+
+    def test_audit_warns_when_causal_chain_is_missing(self):
+        plan = sample_plan()
+        plan.pop("causal_chain")
+        report = audit_short_drama(plan)
+        self.assertIn("CAUSAL_CHAIN_INCOMPLETE", {item["code"] for item in report["issues"]})
+
     def test_generation_rejects_character_without_motivation_and_relationship_dynamics(self):
         plan = sample_plan()
         del plan["characters"][0]["motivation"]
@@ -141,7 +176,7 @@ class ShortDramaTests(unittest.TestCase):
 
     def test_generation_prompt_requires_causal_conflict_hook_and_payoff(self):
         prompt = build_short_drama_prompt({"name": "商品"}, {"drama_business_mode": "product_placement"})
-        for term in ("story_engine", "hook_design", "逐级升级的冲突", "伏笔", "不得只靠角色夸赞"):
+        for term in ("story_engine", "hook_design", "causal_chain", "因果步骤", "逐级升级的冲突", "伏笔", "不得只靠角色夸赞"):
             self.assertIn(term, prompt)
 
     def test_builds_existing_production_contract(self):

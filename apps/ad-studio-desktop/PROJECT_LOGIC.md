@@ -1142,3 +1142,9 @@ A61 唯一失败项是 test_handoff_mentions_a61_legacy_cost_migration 的文案
 - 扩展人物 schema，加入 motivation、fear_or_secret、relationship_dynamics、decision_pressure。
 - 新生成方案强制检查完整人物动机字段；旧方案通过 audit 产生 warning，不强制阻止读取。
 - 回归测试覆盖生成时缺字段拒绝与审查时缺字段警告。
+
+
+### A73：剧情事件因果链
+- 新增 causal_chain 结构，记录 event、caused_by、character_choice、consequence、state_change。
+- 新生成结果强制要求至少3步、字段完整、步骤编号连续；旧方案通过审查 warning 提醒，不阻断读取。
+- 增加缺少因果链、步骤缺少后果、旧方案审查警告的回归测试。

@@ -42,6 +42,14 @@ SHORT_DRAMA_SCHEMA = {
     }],
     "plot_beats": ["开场钩子", "矛盾升级", "转折/反转", "结局"],
     "conflict_and_reversal": "核心冲突与反转逻辑",
+    "causal_chain": [{
+        "step": "integer",
+        "event": "本步发生的具体事件",
+        "caused_by": "直接导致本事件的前置行动、决定或新信息；开场可写初始条件",
+        "character_choice": "人物在本步作出的选择；若无主动选择，说明原因",
+        "consequence": "本事件直接造成的后果",
+        "state_change": "本步结束后人物处境、关系、信息或资源发生的可观察变化"
+    }],
     "story_engine": {
         "protagonist_goal": "主角本集具体、可观察的目标",
         "opposing_force": "阻碍目标的具体人物/环境/误解/规则",
@@ -120,7 +128,9 @@ def build_short_drama_prompt(product: dict[str, Any], constraints: dict[str, Any
          "2.2 禁止用没有因果的巧合硬推剧情、只靠误会反复拖延、角色突然降智、结尾突然说教或硬塞购买口号。\n"
          "2.3 商品植入/转化/商品短剧广告：商品只能在剧情逻辑允许时成为解决问题或引发选择的真实工具，不能凭空解决与其功能无关的冲突；商品卖点必须通过可拍摄的行为展示，不得只靠角色夸赞。\n"
          "2.4 至少提供两个故事方向，且每个方向必须分别输出 conflict_source、protagonist_choice、reversal_mechanism、product_role、audience_hook 和 conversion_path。方向必须在冲突来源、人物关键选择或反转机制上有实质区别；不要仅更换场景、人物姓名、题材标签或营销话术。各方向必须能单独扩展成完整故事，并说明商品角色（不适用时如实写不适用）。\n"
-         "2. 每个主要人物必须说明目标、目标背后的动机、恐惧/秘密、人物关系动态、决策压力和人物弧光；人物关系要产生可观察的利益冲突、依赖或变化，不能只写“朋友/同事”等标签。重要行动必须能追溯到人物目标、动机或压力。设计完整的场景、冲突、节奏、转折和结尾；故事要有因果，不是卖点罗列。\n"
+         "2. 每个主要人物必须说明目标、目标背后的动机、恐惧/秘密、人物关系动态、决策压力和人物弧光；人物关系要产生可观察的利益冲突、依赖或变化，不能只写“朋友/同事”等标签。重要行动必须能追溯到人物目标、动机或压力。\n"
+         "2.5 必须输出 causal_chain，按实际剧情顺序列出至少3个因果步骤。每步写明 event、caused_by、character_choice、consequence、state_change。除开场初始条件外，每个重要事件必须指出具体前因；前因要在剧本/分镜中可找到，后果必须改变人物处境、关系、信息或可用资源。若是意外事件，必须说明合理来源及其后续影响，不得用巧合直接解决主冲突。因果链必须与 plot_beats、full_script 和 storyboard 一致。\n"
+         "设计完整的场景、冲突、节奏、转折和结尾；故事要有因果，不是卖点罗列。\n"
         "3. 商品是否出现必须服从所选创作目标：通用模式允许不出现；商品植入/转化模式应按目标呈现。任何模式都不得篡改商品外观、结构、核心功能、使用方式、规格、功效或其他事实。\n"
         "4. 未提供或无法验证的商品信息必须标为待确认，不得编造认证、销量、价格、效果或用户证言。\n"
         "5. 输出完整剧本和可执行分镜。每个分镜必须说明动作、台词、场景、人物、商品融入方式、素材需求和生成提示。\n"
@@ -316,6 +326,20 @@ def generate_short_drama(model_router, product: dict[str, Any], constraints: dic
     retention = hook_design.get("retention_devices")
     if not isinstance(retention, list) or len([item for item in retention if str(item).strip()]) < 2:
         raise ShortDramaPlanError("新生成的短剧留存设计不足：hook_design.retention_devices 至少需要2项。")
+    causal_chain = validated.get("causal_chain")
+    causal_fields = ("event", "caused_by", "character_choice", "consequence", "state_change")
+    if not isinstance(causal_chain, list) or len(causal_chain) < 3:
+        raise ShortDramaPlanError("新生成短剧必须提供至少3步 causal_chain 因果链。")
+    for index, step in enumerate(causal_chain, 1):
+        if not isinstance(step, dict) or any(not str(step.get(key, "")).strip() for key in causal_fields):
+            raise ShortDramaPlanError(f"因果链第{index}步缺少事件、前因、人物选择、后果或状态变化。")
+        if step.get("step") is not None:
+            try:
+                step["step"] = int(step["step"])
+            except (TypeError, ValueError) as exc:
+                raise ShortDramaPlanError(f"因果链第{index}步编号无效。") from exc
+    if [step.get("step", index) for index, step in enumerate(causal_chain, 1)] != list(range(1, len(causal_chain) + 1)):
+        raise ShortDramaPlanError("因果链步骤必须按从1开始的顺序连续编号。")
     directions = validated.get("alternative_directions", [])
     if len(directions) < 2:
         raise ShortDramaPlanError("新生成方案至少需要两个故事方向，才能比较不同的叙事机制。")
@@ -723,6 +747,14 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
     elif not isinstance(hook_design.get("retention_devices"), list) or len([x for x in hook_design.get("retention_devices", []) if str(x).strip()]) < 2:
         add("warning", "RETENTION_DESIGN_WEAK", "留存设计少于两个可识别的装置，需人工检查观众继续观看的理由。")
 
+    causal_chain = checked.get("causal_chain")
+    causal_fields = ("event", "caused_by", "character_choice", "consequence", "state_change")
+    if not isinstance(causal_chain, list) or len(causal_chain) < 3:
+        add("warning", "CAUSAL_CHAIN_INCOMPLETE", "缺少至少三步的显式剧情因果链；请人工核对重要事件是否有前因、选择、后果和状态变化。")
+    else:
+        for index, step in enumerate(causal_chain, 1):
+            if not isinstance(step, dict) or any(not str(step.get(key, "")).strip() for key in causal_fields):
+                add("warning", "CAUSAL_STEP_INCOMPLETE", f"因果链第{index}步缺少前因/选择/后果/状态变化说明。")
     if len(checked.get("alternative_directions", [])) < 2:
         add("warning", "ALT_DIRECTIONS", "备选故事方向少于两个；尚未满足多方向创作要求。")
 
