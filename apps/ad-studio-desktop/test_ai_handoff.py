@@ -52,5 +52,10 @@ class AIHandoffTests(unittest.TestCase):
         self.assertIn("可编辑修正草稿", text)
         self.assertIn("不得将仅有文档同步成功视为全量 CI 通过", text)
 
+    def test_handoff_mentions_a37_draft_line_break_regression(self):
+        text = (ROOT.parent.parent / "docs" / "AD_STUDIO_AI_HANDOFF.md").read_text(encoding="utf-8")
+        self.assertIn("A37", text)
+        self.assertIn("真实换行", text)
+
 if __name__ == "__main__":
     unittest.main()

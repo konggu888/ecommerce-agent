@@ -454,6 +454,7 @@ class ShortDramaTests(unittest.TestCase):
         }
         draft = product_visual_correction_suggestion(plan, 1)
         self.assertIn("标签颜色与参考图疑似不一致", draft)
+        self.assertIn("\n待检查问题：标签颜色偏蓝", draft)
         self.assertIn("标签颜色偏蓝", draft)
         self.assertIn("瓶盖结构不清晰", draft)
         self.assertEqual(product_visual_correction_suggestion(plan, 99), "")

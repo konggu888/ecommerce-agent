@@ -924,3 +924,7 @@ A33 自动化验收分别覆盖电商短视频、商品主图视频、广告投�
 
 ### A36：视觉问题驱动的单镜头修复
 `product_visual_correction_suggestion()` 只从当前商品短剧镜头已保存的 `visual_comparison_result.result` 提取摘要和问题，生成供用户编辑的修正草稿；不把模型结果当作事实或自动批准。`regen_shot()` 仍先询问用户，再做成本确认；只有确认后才更新所选镜头版本。`prepare_product_drama_shot_regeneration()` 拒绝 NaN/无穷/负费用和无效旧版本号，防止污染历史记录。
+
+
+### A37：修正草稿格式回归
+`product_visual_correction_suggestion()` 使用真实换行符连接摘要与问题，避免 Tk 输入框显示字面量 `\\n`。测试需断言每条问题位于新行，避免只检查子字符串而漏掉格式缺陷。

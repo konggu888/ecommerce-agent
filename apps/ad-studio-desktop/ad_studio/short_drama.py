@@ -436,7 +436,7 @@ def product_visual_correction_suggestion(plan: dict[str, Any], shot_number: int)
                 lines.append("待检查问题：" + text)
     if len(lines) == 1 and result.get("mismatch_detected") is True:
         lines.append("AI提示商品画面可能与参考图不一致；请逐项检查商品身份、外观、结构、功能和正确使用方式。")
-    return "\\n".join(lines) if len(lines) > 1 else ""
+    return "\n".join(lines) if len(lines) > 1 else ""
 
 
 def record_product_visual_verification(
