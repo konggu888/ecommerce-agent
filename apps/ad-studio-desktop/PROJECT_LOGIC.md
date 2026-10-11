@@ -1171,3 +1171,7 @@ A61 唯一失败项是 test_handoff_mentions_a61_legacy_cost_migration 的文案
 - 对商品植入/转化/商品短剧广告，逐项检查已确认卖点是否在至少一个分镜动作、商品融入、台词或生成提示中被直接体现。
 - 缺少对应分镜文字时产生 `PRODUCT_SELLING_POINT_NOT_SHOWN` 警告。
 - 新增负向回归测试。文本命中不等于画面真实呈现，也不能认证商品功能。
+
+
+### A76 Test note
+Selling-point coverage tests use product_placement mode to isolate the new text check.

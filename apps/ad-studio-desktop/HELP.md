@@ -1073,3 +1073,7 @@ A61 的自动化 CI 发现 handoff 测试查找“历史成本迁移”，但文
 
 ## A76：商品卖点与可拍摄动作对齐
 商品植入、商品转化和 AI 短剧商品广告会逐项检查 `product_analysis.selling_points` 中的已确认卖点，是否至少在一个分镜的动作、商品融入、台词或生成提示中有直接文字体现。未体现时产生 `PRODUCT_SELLING_POINT_NOT_SHOWN` 警告，提醒补充可拍摄的真实行为证据，或确认本片无需展示该卖点。文本命中不代表画面已成功呈现，也不能认证商品功能。
+
+
+### A76 Test fixture note
+The selling-point coverage regression test uses `product_placement` mode to isolate text coverage behavior. It does not replace the existing schema validation tests for `product_short_drama_ad` mode.
