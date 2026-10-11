@@ -1,6 +1,6 @@
 from pathlib import Path
 import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
+from tkinter import ttk, filedialog, messagebox, simpledialog
 import shutil
 import subprocess
 import json
@@ -12,7 +12,7 @@ from .capability import CapabilityRouter
 from .production import ProductionStore
 from .product_parser import parse_product_url, save_product, save_product_library, load_product_library, merge_product_library, ProductInfo
 from .creative_engine import CreativeEngine, validate_plan, validate_task_type_plan, TASK_TYPE_POLICIES
-from .short_drama import audit_short_drama, build_episode_continuity_ledger, generate_short_drama, generate_next_short_drama_episode, short_drama_production_rows
+from .short_drama import audit_short_drama, build_episode_continuity_ledger, generate_short_drama, generate_next_short_drama_episode, short_drama_production_rows, record_product_visual_verification
 from .model_router import ModelRouter, ModelProfile, FUNCTIONS, audit_ad_variant_set, build_creative_test_plan, audit_creative_factual_consistency, audit_storyboard_fact_consistency, audit_visual_fact_consistency
 from .browser_skill import _find_agent_browser
 from .ffmpeg import available as ffmpeg_available, has_nvenc
@@ -2199,9 +2199,60 @@ class App(tk.Tk):
             scroll.pack(side='right', fill='y'); view.pack(side='left', fill='both', expand=True)
             view.insert('1.0', json.dumps(report, ensure_ascii=False, indent=2))
             view.configure(state='disabled')
-            ttk.Button(win, text='关闭', command=win.destroy).pack(anchor='e', padx=12, pady=10)
+            actions = ttk.Frame(win)
+            actions.pack(fill='x', padx=12, pady=(0, 10))
+            if plan.get('drama_business_mode') == 'product_short_drama_ad':
+                ttk.Button(actions, text='记录商品画面人工核验', command=lambda: self.record_short_drama_product_visual_review(plan, win)).pack(side='left')
+            ttk.Button(actions, text='关闭', command=win.destroy).pack(side='right')
         except Exception as exc:
             messagebox.showerror('短剧复核失败', str(exc))
+
+    @ui_action
+    def record_short_drama_product_visual_review(self, plan, parent_window=None):
+        """Record a user-reviewed generated shot with a concrete local evidence file."""
+        if not self._ui_execution_gate(): return
+        if not self.project:
+            return messagebox.showerror('无法记录核验', '请先打开保存了该短剧方案的项目。')
+        try:
+            shots = plan.get('storyboard', [])
+            if not shots:
+                return messagebox.showinfo('没有分镜', '当前方案没有可核验的分镜。')
+            shot_number = simpledialog.askinteger('选择镜头', f'请输入要核验的镜头编号（1–{len(shots)}）：', minvalue=1, maxvalue=len(shots), parent=parent_window or self)
+            if shot_number is None: return
+            evidence_path = filedialog.askopenfilename(
+                parent=parent_window or self,
+                title='选择该镜头实际生成的图片或视频作为核验依据',
+                filetypes=[('图片或视频', '*.png *.jpg *.jpeg *.webp *.mp4 *.mov *.mkv'), ('所有文件', '*.*')],
+            )
+            if not evidence_path:
+                self.detail.set('已取消商品画面核验；没有更改核验状态。')
+                return
+            status = simpledialog.askstring(
+                '核验结论', '请输入核验结论：passed（通过）、needs_review（需复核）或 failed（不通过）',
+                parent=parent_window or self,
+            )
+            status = str(status or '').strip().lower()
+            if status not in {'passed', 'needs_review', 'failed'}:
+                return messagebox.showwarning('核验状态无效', '请填写 passed、needs_review 或 failed；本次未保存。')
+            note = simpledialog.askstring(
+                '核验备注', '请记录商品外观、结构、核心功能和正确使用方式的检查结果：',
+                parent=parent_window or self,
+            )
+            if not str(note or '').strip():
+                return messagebox.showwarning('缺少核验备注', '必须填写核验备注；本次未保存。')
+            updated = record_product_visual_verification(plan, shot_number, status, evidence_path, note)
+            self.project.creative_plan['short_drama'] = updated
+            self.project.creative_plan.pop('short_drama_audit', None)
+            self.store.save(self.project)
+            plan.clear()
+            plan.update(updated)
+            self.detail.set(f'第{shot_number}镜商品画面人工核验已记录：{status}')
+            messagebox.showinfo('核验已保存', f'已保存第{shot_number}镜的人工核验状态、证据路径和备注。\n重新打开“短剧质量/事实复核”可查看更新结果。')
+            if parent_window and parent_window.winfo_exists():
+                parent_window.destroy()
+            self.show_short_drama_audit(plan)
+        except Exception as exc:
+            messagebox.showerror('记录商品画面核验失败', str(exc))
 
     @ui_action
     def create_short_drama_production_project(self, plan, window=None):
