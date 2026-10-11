@@ -894,9 +894,338 @@ A33 自动化验收分别覆盖电商短视频、商品主图视频、广告投�
 - 该模式的每个分镜必须有 `product_fidelity_constraints`；`visual_verification` 只能是 `not_checked`、`passed`、`needs_review` 或 `failed`。新方案默认为 `not_checked`，规则复核不能伪装成画面级视觉验证。
 - 桌面 UI 显示独立目标、题材选择理由、商品剧情作用、已确认/未知事实摘要。预算和付费素材/视频生成流程仍沿用既有独立项目流程。
 - 短剧质量/事实复核窗口新增“记录商品画面人工核验”入口。`record_product_visual_verification()` 要求镜头编号、实际生成图片/视频的本地证据路径、结论和人工备注，并将证据路径、`visual_verification_method=manual` 与备注写入对应分镜；通过状态只有在证据路径、方法和备注齐全时才不触发 `PRODUCT_VISUAL_NOT_VERIFIED`。新生成方案仍强制重置为 `not_checked`。
-- 该步骤仅记录用户人工检查结果，不执行图像理解或自动真实性判断；尚未完成：自动比对参考商品图、商品外观/结构/功能自动核验、失败镜头自动定位及单镜头重生成；Windows 真机/真实 Provider 验收继续暂缓。
+- 新增 `compare_product_visual_shot()`：通过 `ModelRouter.resolve_route('商品画面视觉核验')` 调用启用视觉输入的模型，接收多张商品参考图和镜头生成画面；视频输入通过 FFmpeg/FFprobe 在本地抽取最多三个帧。模型按商品身份、外观、结构、可见功能和正确用法返回差异摘要，并保存模型 ID、对比结果、参考图和生成画面路径。明显不匹配标记 `failed`；其他结果一律 `needs_review`，不允许 AI 自动批准。
+- 桌面 UI 在质量/事实复核窗口提供“AI 对比商品参考图”，执行前明确提示模型调用可能产生费用；需要选择参考图片和目标镜头文件。模型输出只作筛查，最终通过仍要求人工证据记录。
+- 仍未完成：基于对比结果自动定位可修复的具体问题、只重新生成对应镜头并保留原镜头版本；Windows 真机/真实 Provider 验收继续暂缓。
 
 
 ## 17.7.1 商品画面状态初始化
 
 新生成的商品广告分镜统一使用 not_checked 状态。视觉状态必须基于后续真实画面检查，不能仅由剧本模型输出决定。自动视觉比对和局部重生成仍待开发。
+
+
+## 2026-10-11：AI 辅助商品画面对比
+
+- 新增 `商品画面视觉核验` 独立模型路由，沿用模型池的视觉能力开关；图片 MIME 类型按扩展名正确标注。
+- `compare_product_visual_shot()` 校验创作模式、镜头编号、参考图/生成文件路径；对视频要求 FFmpeg/FFprobe 并在临时目录抽取开头/中段/后段帧。临时帧会在调用结束后清理。
+- 对比结果写入目标分镜：`visual_comparison_result`、`visual_verification_reference_images`、`visual_verification_evidence`、`visual_verification_method`。任何 AI 结果都不能自动变为 passed；疑似差异标记 failed，其余标记 needs_review。
+- UI 在模型调用前提示费用可能产生，并在完成后刷新复核窗口。自动问题定位和仅重生成问题镜头仍未实现。
+
+## 2026-10-11：AI 接手测试同步当前验收阶段
+
+`test_ai_handoff.py` 继续验证长期接手入口的关键章节，并同步断言验收计划包含 A34（AI 辅助商品画面对比）与 A35（问题镜头定位和仅重生成）。这只验证文档入口一致，不代表 A34/A35 的全部能力已验收通过。
+
+## 2026-10-11：A35 单镜头局部修复（实现待 CI 验收）
+- 商品短剧项目要求填写修正说明并确认单镜头预计费用；取消不改版本、不调用 Provider。
+- 仅当前镜头增加版本；旧版本、旧核验状态/证据/模型结果保存在 regeneration_history。
+- 新版本核验状态重置为 not_checked，清除旧 AI 对比结果；其他镜头不变。
+- 当前只准备局部重生成，用户仍需使用现有“生成本镜头”按钮；最新 CI、Windows 真机和真实 Provider 验收待完成。
+
+
+### A36：视觉问题驱动的单镜头修复
+`product_visual_correction_suggestion()` 只从当前商品短剧镜头已保存的 `visual_comparison_result.result` 提取摘要和问题，生成供用户编辑的修正草稿；不把模型结果当作事实或自动批准。`regen_shot()` 仍先询问用户，再做成本确认；只有确认后才更新所选镜头版本。`prepare_product_drama_shot_regeneration()` 拒绝 NaN/无穷/负费用和无效旧版本号，防止污染历史记录。
+
+
+### A37：修正草稿格式回归
+`product_visual_correction_suggestion()` 使用真实换行符连接摘要与问题，避免 Tk 输入框显示字面量 `\\n`。测试需断言每条问题位于新行，避免只检查子字符串而漏掉格式缺陷。
+
+
+### A38：跨会话接手文件
+`apps/ad-studio-desktop/SESSION_HANDOFF.md` 是每次继续推进前的首读入口，必须根据真实 GitHub HEAD、PR 和工作流结果更新；不得把文档同步检查当成全量 CI，也不得将未执行的测试写成通过。
+
+
+### A39：CI 分支覆盖
+`.github/workflows/ci.yml` 的 push 触发器覆盖所有分支，确保开发分支 push 也运行桌面语法检查、桌面单测、类型检查和引擎测试。每次仍需按当前 HEAD SHA 查询结果，不得拿旧 SHA 的成功结果代替。
+
+
+### A40：接手测试路径基准
+`test_ai_handoff.py` 的 `ROOT` 指向仓库根目录。读取根级 `docs/` 文件使用 `ROOT / "docs" / ...`；桌面项目文件使用 `ROOT / "apps" / "ad-studio-desktop" / ...`。不要重复叠加 `parent.parent`，否则 CI 会定位到仓库外。
+
+
+### A41：接手文档断言维护
+自动化测试对 handoff 文案的断言应与实际文档表达一致，并准确保护“不把 docs-sync/Netlify 当成全量 CI”的约束；变更断言后必须重跑完整 CI。
+
+
+### A42：CI 结果必须绑定 SHA
+完整 CI 和 docs-sync 已在 `443f713cd3721eab528eb9bb17faf599d55ef3ce` 成功。后续新提交不会自动继承该结果；必须查询最新 SHA 的 workflow run 与每个 job 的结论。
+
+
+### A43：镜头重生成的失败恢复
+- `Shot.previous_video_path` 持久化保存上一次可用输出路径。 `mark_regenerate()` 只把路径移到该字段，不删除旧文件。
+- 视频 Provider 生成失败或用户实拍素材裁剪失败时，若旧文件仍存在且非空，恢复为 `video_path`，清空暂存指针并明确标记失败；新版本未成功时不覆盖旧文件。
+- 项目恢复会清理 `.part.mp4` 临时文件；若发现生成中断且旧视频仍有效，则恢复旧路径并写入 `restored_previous_versions` 结果。旧项目 JSON 没有该字段时由 dataclass 默认值兼容。
+- A43 的自动化回归覆盖 Provider 失败后重新加载项目，以及项目中断后的恢复；当前 SHA 的 CI 结果仍需单独查询。
+
+
+### A44：项目镜头与短剧分镜的稳定映射
+- 新建短剧制作项目时，将 `row['index']` 保存到 `Shot.short_drama_shot_number`，作为根级 `creative_plan.short_drama.storyboard` 的稳定 1-based 编号。
+- 项目镜头显示序号可能因人工纳入的补镜头而改变，不能再直接用 `Shot.index` 作为短剧 storyboard 下标。
+- 旧项目没有稳定编号时，按标题和集数唯一匹配；重复标题或无匹配必须 fail closed，不得猜一个镜头重生成。
+- 新增 A44 回归覆盖插入后索引偏移、旧项目唯一匹配和歧义拒绝。
+
+
+### A45：失败状态 UI 不得覆盖恢复结果
+production.py 的 generation_failure_ui_state() 统一检查后端失败状态、旧版视频路径与文件大小。只有状态明确标记“已保留上一版本/已恢复上一版本”且文件真实存在非空时，app.py 才保留该状态并提示旧版路径；否则回落到“生成失败”。这防止 UI 吞掉 ProductionStore 已恢复旧版的结果，也不把状态文本单独当作文件有效的证明。
+
+
+### A46：编辑镜头复用安全版本切换
+
+- 编辑窗口保存标题、画面、文案、演员和场景后，不得直接执行 `video_path=None` 与 `version+=1`，因为这会绕过 `previous_video_path` 保护。
+- UI 统一调用 `mark_regenerate(project, shot_index)`：保存上一版路径、增加版本号、清空活动路径并标记待生成；随后持久化项目。
+- 该路径与 Provider/实拍裁剪失败恢复共用 A43 机制。自动化测试检查 UI 编辑入口确实调用该转换，防止以后重新引入破坏性赋值。
+
+
+### A47：扩展镜头生成失败恢复边界
+
+- `_render_with_provider()` 在任何可能失败的素材解析之前捕获旧视频路径，并把项目保存、素材解析、视频 Provider 调用与输出替换放入同一异常恢复边界。
+- 素材解析失败时恢复旧视频路径、清除暂存指针、标记“生成失败（已保留上一版本）”，清理临时输出并持久化。
+- 输出替换不再先执行 `out.unlink()`；使用 `Path.replace()`，避免替换失败时先删掉当前目标文件。
+- 新增 A47 回归测试：素材解析异常时 Provider 不会被调用，旧视频路径/内容和项目重载结果均保留。
+
+
+### A48：实拍镜头采用临时输出与原子替换
+
+- `render_footage_shot()` 不再直接把 FFmpeg 输出写入正式镜头路径；单段和多段拼接统一先写 `.part.mp4` 临时文件。
+- 仅当临时输出存在且非空时，才通过 `Path.replace()` 替换正式输出。
+- 裁剪或拼接失败时清理临时文件与分段文件，恢复仍有效的旧视频路径并持久化失败状态。
+- 新增 A48 回归测试，模拟裁剪异常并验证现有输出内容没有被破坏。
+
+
+### A49：多段实拍临时文件恢复
+
+- `recover_project()` 的清理模式覆盖 `.part.mp4` 与 `.partNN.mp4`，防止进程在多段裁剪期间中断后残留分段文件。
+- 实拍素材源缺失时，在报错前清理当前镜头遗留的分段临时文件；如果上一版仍有效，恢复旧路径并保留旧文件。
+- 回归测试覆盖恢复时同时删除完整输出临时文件与分段临时文件，以及素材源缺失后的旧版保护。
+
+
+### A50：生成提示词换行格式
+A47 重构视频生成异常边界时，提示词拼接被误改成字面量反斜杠+n。现恢复为真实换行符，并增加测试捕获 Provider 收到的完整 prompt，断言标题、画面、文案分行且不存在字面量反斜杠+n。
+
+
+## A50：视频提示词换行回归验收
+
+`_render_with_provider()` 的提示词分隔符已确认是 Python 的真实换行符 `'\\n'`，不是字面量反斜杠+n。捕获 Provider 请求的回归测试与完整 CI、docs-sync 在代码 SHA `58de7ce984cf9df73bad2c99444d75a0624059c3` 上通过。后续代码提交仍需重新运行完整检查。
+
+
+### A51：单镜头费用确认前置校验
+normalize_cost_estimate_rmb() 将 Provider 的每镜头预估价规范为有限非负数，拒绝无法转换的值、NaN、正负无穷和负数。商品短剧局部重生成先完成此校验，再展示费用确认框；该校验不触发 Provider、不写入版本状态，也不记录虚构的实际费用。
+
+
+### A52：失败尝试审计与实际成本去重
+- Provider 调用开始后若失败，写入一条 status=failed 的 video ledger 记录，绑定项目 ID、镜头 ID、Provider、错误和报价单价。
+- 失败记录的 estimated_cost_rmb 为 0，报价只放在 unit_cost_rmb，不把未确认扣款的报价混入实际成本；成功仍沿用原有成功记账入口。
+- 成功重试会新增独立 success 记录；项目实际花费只汇总 success，不把失败重试重复计入。若账本写入失败，恢复历史记录需处理的错误和下一步动作。
+- A52 回归验证一次失败 + 一次成功重试只产生一条失败记录、一条成功记录，实际成本只计成功那一次。
+
+### A53：恢复指针必须指向有效视频
+`recover_project()` 对 `previous_video_path` 统一检查文件存在且大小大于零。缺失文件与零字节文件都属于不可恢复旧版：清除 `video_path` 和 `previous_video_path`，标记待重新生成，并写入 `missing_media`。不能仅因路径存在就声称恢复成功。
+
+### A54：活动视频文件非空校验
+`recover_project()` 将活动视频路径缺失、非文件或大小为零统一视为无效输出。若 `previous_video_path` 有效则恢复上一版；否则清除活动路径并加入 `missing_media`。恢复结果以文件可用性为准，不以路径字符串存在为准。
+
+
+### A55：Provider 成功与成本记账分离
+_render_with_provider() 将媒体生成/原子替换与成功成本记账分为两个异常边界。Provider 产出有效视频并替换到版本路径后，成本账本异常不得进入 Provider 失败恢复分支，也不得把活动路径回滚成旧版。此时保留新输出，标记“已生成（成本待核对）”，持久化 recovery history，指示先检查 usage-ledger.json 是否已有成功行再人工修复成本汇总，避免重复记账。
+
+
+### A56：提示词格式回归修复
+当前 CI 明确失败在 test_a50_video_prompt_uses_real_line_breaks：Provider 收到的是字面量反斜杠+n，不是真实换行。A55 的异常边界重构重新引入了双重转义；现恢复真实换行，继续保留 A50 自动化断言，避免仅依靠代码目视检查。
+
+### A57：生成成功但成本待核对时 UI 不得报出正常实际累计
+`generate_shot()` 在渲染完成后必须检查镜头最终状态。若为“已生成（成本待核对）”，只展示待核对提示与预估费用，不展示正常的项目实际累计金额；提醒先核对 `usage-ledger.json` 与恢复记录，避免重复记账。正常成功路径保持原有实际成本显示。
+
+
+### A57：项目打开恢复入口与账本对账
+- “打开已有项目”现在先调用 ProductionStore.recover_project，再刷新项目 UI，并显示清理临时文件、恢复旧版、待重新生成素材数量。
+- recover_project 在保存前从 UsageLedger 同步项目实际成本和有成功账本记录的镜头成本；失败行不计入 actual_cost_rmb。
+- 没有任何账本条目的旧项目保留旧成本字段，避免升级时将历史值归零。
+- UsageLedger 删除了被同名方法覆盖的重复 project_summary 定义，新增 shot_actual_cost 查询，保证项目与镜头成本的恢复来源一致。
+
+### A58：视觉核验先校验输入证据
+`compare_product_visual_shot()` 在模型路由前检查参考图的格式、存在性和非空状态，并验证生成画面是非空的支持格式图片或视频。PDF、未知二进制和零字节文件会 fail closed，不进入 FFprobe/模型调用，且不能改变原核验状态。
+
+### 最新自动化检查基准（A55–A58）
+完整 CI 在 SHA `8773905c7293c76309938e633e761206ca3447ca` 通过；A58 代码提交 `58e9b106a07151b0a9c1855f8d7599e8d9fc9a48` 的 docs-sync 通过。A55–A58 自动化阶段通过，但真实 Provider 账单/视觉模型、Windows 真机和商业成片仍需独立验收。
+
+
+### A60：失败账本不能清零历史成本
+- 项目恢复的成本重建条件改为至少存在一条成功账本记录，而不是任意账本条目。
+- 如果账本只有 failed 记录，失败行不代表真实扣款；保留旧项目与镜头成本，并把旧实际总额反映到 cost_estimate.actual_cost_rmb。
+- 新增 A60 回归覆盖失败-only 账本与旧成本兼容。
+
+
+### A59：成本总额单一事实源
+_record_actual_cost() 在成功写入 ledger 后，读取 project_summary() 并将其 actual_cost_rmb 同步覆盖到 project.actual_cost_rmb、cost_estimate.actual 和 cost_estimate.actual_cost_rmb。禁止用旧项目快照的数值加上本次金额，以免账本已有记录时出现双计。只有 status=success 的 ledger rows 计入实际花费。
+
+
+### A61：旧成本迁移与镜头账本单一事实源
+- 若项目没有任何正数成功账本实际成本，但项目/镜头快照仍有历史金额，第一次成功记账前先迁移历史金额。
+- 按镜头写入历史镜头金额，项目总额高于镜头合计的未分配差额写入项目级 legacy 记录；如果镜头合计更高，则保留镜头合计，避免历史镜头成本被清掉。
+- UsageLedger.record_many() 一次构造全部行并原子替换账本文件，避免迁移中断造成部分写入和重复迁移。
+- 成功成本写入后，项目总成本与镜头成本都按成功账本记录汇总；移除资产/视频路径中先于账本的镜头成本预增量。
+
+
+### A62：历史成本迁移文案断言修复
+A61 唯一失败项是 test_handoff_mentions_a61_legacy_cost_migration 的文案断言，测试期待“历史成本迁移”，接手文档写“历史实际成本迁移”。现把测试改为断言文档的精确术语，保留 A61 的原子迁移要求。
+
+
+### A61 接手文档要求
+新 AI 接手文档必须明确说明“历史成本迁移”行为：首次成功记账前，将旧项目镜头成本与项目总额的未分配差额批量迁移到账本；迁移完成后以成功账本为准。
+
+
+### A63：先保存迁移基线，再记本次费用
+- 历史成本迁移批量写入成功后，立即从 ledger 汇总同步 project.actual_cost_rmb、project.actual_cost_summary、cost_estimate.actual 与各镜头 actual_cost_rmb。
+- 如果随后的新费用 ledger.record 失败，历史迁移记录和已同步的旧成本仍在内存中，调用方保存时不会回退为过期快照。
+- 新增 A63 回归：模拟迁移成功、下一条费用记录失败，验证项目/镜头旧成本与迁移行仍被保留。
+
+
+### A64：素材生成结果与成本记账故障分离
+- resolve_assets 与 generate_missing_asset 都通过 _record_asset_cost 记录素材费用。
+- 只有素材生成/入库本身失败才标记“自动生成失败”；账本写入失败则保留 asset ID/库文件，标记“已生成并入库（成本待核对）”。
+- 成本结算失败写入 recovery.history，下一步明确要求核对 usage-ledger.json 与 Provider 账单，防止重复生成造成重复扣费。
+- A61-A63 自动化 CI 与 docs-sync 已通过；A64 当前 SHA 的完整 CI/doc-sync 待确认。
+
+
+### A65：账本写入原子性与历史完整性
+- `UsageLedger.record` 与 `record_many` 共用 `_write_rows_atomically`，先写同目录临时文件，再原子替换正式账本。
+- 替换失败时删除临时文件并保留原账本，避免磁盘写入异常破坏已有费用记录。
+- 账本不再静默截断为最后 2000 行；项目成本汇总必须基于完整本地历史。`recent(limit)` 仅限制读取展示，不裁剪持久化账本。
+- 回归覆盖单行写入原子失败和超过 2000 行后的成本总额完整性。
+
+
+### A66：人工视觉核验证据防空值
+- `record_product_visual_verification` 在写入状态前检查证据扩展名、文件存在性和非零大小，并保存解析后的绝对路径。
+- 只允许常见图片/视频格式；缺失、空文件或不支持格式会拒绝记录，不能把任意字符串当成可追溯证据。
+- 该验证仅证明文件可访问，不等于图像内容正确或商品真实性认证。
+- 回归覆盖缺失文件、零字节文件、不支持格式和有效文件路径。
+
+
+### A67：短剧质量审查复核持久化证据
+- `audit_short_drama()` 不再仅依赖存档的 `visual_verification=passed`、`method=manual` 和备注字段；每次审查都重新检查证据路径、扩展名、文件存在性及非零大小。
+- 证据文件已丢失、为空或格式不受支持时，输出 `PRODUCT_VISUAL_NOT_VERIFIED`，避免旧状态在证据失效后仍被视为通过。
+- 回归测试同时覆盖失效路径被拦截，以及有效临时图片证据被接受。此检查不判断图像内容，不构成商品真实性认证。
+
+
+### A67 回归补充：审查时重验人工证据
+- `audit_short_drama()` 对持久化的视觉核验记录重新检查证据路径、允许的图片/视频扩展名、文件存在性与非零大小；不再把旧 `passed` 状态和非空字符串当作充分证据。
+- 回归夹具必须提供商品短剧模式所需的 `product_analysis`、`genre_decision`、`product_fact_lock` 和每镜头真实性约束，再分别验证失效路径会告警、有效临时图片不会触发证据失效告警。
+- 这只是证据文件有效性检查，不对图像内容作真实性认证。
+
+
+### A68：AI 短剧后续剧情影响分析
+- 新增 `analyze_episode_continuity_impact()`：将所选集、后续集、series bible 与连续性台账传给 AI 短剧编导路由，要求逐项给出受影响集、风险、原文依据与建议动作。
+- 校验报告源集编号、风险等级、受影响集必须真实存在且晚于源集、列表字段结构；无效输出拒绝保存。
+- 桌面台账窗口提供“分析后续剧情影响”入口；报告存入 `short_drama.continuity_impact_reports` 并展示，不自动修改分集剧本或分镜。
+- 该功能为模型辅助分析，不保证穷尽语义矛盾，需人工复核。
+
+
+### A69：AI 编导故事引擎与留存设计（补充：新增字段仅在新生成入口强制校验，避免旧项目读取回归。）
+- `build_short_drama_prompt()` 明确要求主角目标、阻力、失败代价、冲突递进、关键转折、伏笔/兑现、情绪回报及开场留存设计。
+- `generate_short_drama()` 对新生成方案强制校验 `story_engine` 与 `hook_design`，要求至少三步冲突升级、至少两个留存装置；缺项即拒绝保存。
+- 兼容性：旧方案读取不强制具备新字段；新约束只用于新生成流程。
+- 结构检查不代表程序能自动判断剧情质量。
+
+
+### A70：短剧故事结构检查
+- `audit_short_drama()` 新增故事引擎、冲突升级、开场疑问/结尾兑现与留存装置的确定性检查。
+- 检查结果仅生成 warning，不自动判定剧情质量，也不阻止用户查看旧方案。
+- 新增缺字段和结构薄弱两组回归测试；后续统一验收阶段还要结合真实模型输出与人工剧情评审。
+
+
+### A71：备选故事方向差异化
+- 扩展 `SHORT_DRAMA_SCHEMA.alternative_directions`，新增冲突来源、人物关键选择、反转机制、商品角色和受众吸引点字段。
+- `generate_short_drama()` 对新生成结果强制要求至少两个方向、完整字段，并拒绝核心叙事机制字段完全重复的方向。
+- 该确定性检查可拦截完全相同的机制签名，但不宣称能识别所有语义相似内容；后续全面验收时需进行真实模型样例评审。
+
+
+### A72：人物动机与关系动力
+- 扩展人物 schema，加入 motivation、fear_or_secret、relationship_dynamics、decision_pressure。
+- 新生成方案强制检查完整人物动机字段；旧方案通过 audit 产生 warning，不强制阻止读取。
+- 回归测试覆盖生成时缺字段拒绝与审查时缺字段警告。
+
+
+### A73：剧情事件因果链
+- 新增 causal_chain 结构，记录 event、caused_by、character_choice、consequence、state_change。
+- 新生成结果强制要求至少3步、字段完整、步骤编号连续；旧方案通过审查 warning 提醒，不阻断读取。
+- 增加缺少因果链、步骤缺少后果、旧方案审查警告的回归测试。
+
+
+### A74：因果链与剧本/分镜证据对齐
+- 因果步骤新增 `script_evidence` 与 `storyboard_indices`。
+- 新生成流程要求剧本证据是 `full_script` 的原文子串，且分镜引用为真实存在的根级分镜位置；不满足则拒绝。
+- 旧方案审查新增剧本证据与分镜引用不一致的警告，兼容历史项目。
+- 新增生成拒绝与审查告警回归测试；这属于可追踪性校验，不能替代语义层面的人工验收。
+
+
+### A75：商品事实锁与剧情内容交叉审查
+- 商品广告短剧的已确认事实需与用户提供的商品资料进行直接文本比对；找不到依据时警告。
+- 未核实信息若被写进剧情/分镜且附近没有不确定性标记，产生 `PRODUCT_UNKNOWN_FACT_USED` 警告。
+- 新增回归测试；文本筛查不等于商品真实性认证或法律意见。
+
+
+### A75 测试夹具修复
+- 补齐商品事实锁新增回归测试所需的商品分析、题材选择、事实锁和分镜真实性约束字段，确保测试真正进入目标审查逻辑。
+
+
+### A76：商品卖点与可拍摄动作对齐
+- 对商品植入/转化/商品短剧广告，逐项检查已确认卖点是否在至少一个分镜动作、商品融入、台词或生成提示中被直接体现。
+- 缺少对应分镜文字时产生 `PRODUCT_SELLING_POINT_NOT_SHOWN` 警告。
+- 新增负向回归测试。文本命中不等于画面真实呈现，也不能认证商品功能。
+
+
+### A76 Test note
+Selling-point coverage tests use product_placement mode to isolate the new text check.
+
+
+## 18.1 A77 短剧事件到分镜的一致性
+
+短剧生成提示要求每个镜头输出 `narrative_function` 与 `story_event_reference`，用于表达镜头叙事职责及其关联的因果链步骤。生产前 `audit_short_drama()` 对因果链引用镜头、故事转折、伏笔兑现执行文本覆盖警告：
+- `CAUSAL_EVENT_NOT_SHOWN`：因果事件没有直接体现在其引用镜头的动作/台词/生成提示中。
+- `TURNING_POINT_NOT_STORYBOARDED`：关键转折没有落入分镜文字。
+- `SETUP_PAYOFF_NOT_STORYBOARDED`：伏笔与兑现仅存在于故事引擎文字、未落入分镜文字。
+
+这些检查是确定性字符串覆盖检查，可能因同义表达产生误报/漏报，不是语义质量认证。旧方案缺少新增镜头字段仍可打开；警告需结合剧本和分镜人工复核。
+
+
+## 18.2 A78 人物行动动机与信息掌握审查
+
+新生成短剧分镜要求使用 `character_action_basis` 为每位行动人物记录：`goal_or_motivation`、`known_information`、`knowledge_source`、`decision_pressure`、`choice_rationale`。审查器新增以下警告：
+- `CHARACTER_ACTION_BASIS_MISSING`：镜头中的人物缺少行动依据。
+- `CHARACTER_ACTION_BASIS_INCOMPLETE`：行动依据字段不完整。
+- `CHARACTER_KNOWLEDGE_SOURCE_UNTRACEABLE`：信息来源不能在完整剧本中逐字定位。
+- `CHARACTER_CHOICE_NOT_SHOWN`：因果链的人物选择没有体现在其引用镜头文本中。
+
+这是结构与字符串级可追溯性检查，不代表已自动理解人物心理、证明行动合理或完全排除信息穿越。旧方案继续兼容；警告需要人工/语义复核。
+
+
+A78 实现注意：人物行动依据审查必须在 `shot_texts` 构建完成后运行；测试应覆盖审查入口，防止因局部变量初始化顺序造成运行时错误。
+
+### A79：人物行动依据的角色引用完整性
+- 在 A78 的逐人物行动依据审查中，检查依据记录中的人物是否同时存在于当前镜头人物列表和全局人物设定表。
+- 新增 CHARACTER_ACTION_BASIS_NOT_IN_SHOT、CHARACTER_ACTION_BASIS_UNKNOWN_CHARACTER 两项 warning，兼容旧方案，不阻止读取。
+- 这是引用一致性检查，不等于动机合理性或剧情语义验证。
+
+### A80：人物关系变化与镜头后果对齐
+- 因果链增加 relationship_change，生成提示要求明确记录关系变化或说明无直接变化。
+- 多人物方案缺少关系变化说明时产生 RELATIONSHIP_CHANGE_UNSPECIFIED。
+- 关系变化描述未在引用镜头动作、台词、生成提示或叙事功能中体现时产生 RELATIONSHIP_CHANGE_NOT_SHOWN。
+- 旧方案保持可读；审查只做可追溯性/文本覆盖检查，不代表自动理解人物情感。
+
+### A80 回归修复
+首轮 CI 暴露人物关系审查在角色名集合初始化前引用局部变量的问题。修复后从 checked 方案直接读取人物列表数量，避免 UnboundLocalError；需以最新 SHA 的 CI 验证。
+
+
+## A81｜人物状态与剧情连续性审查
+在 `audit_short_drama()` 中逐个检查 `causal_chain[].state_continuity`：
+- `affected_characters` 必须是人物姓名列表，且名字存在于全局角色设定表。
+- `required_follow_through` 必须明确说明后续要体现的状态后果；如确实没有后续影响，写“无后续影响”等明确标记。
+- `storyboard_indices` 指向后续根级分镜；必须是有效位置且晚于本步因果事件镜头。
+- 对有后续影响的状态，引用镜头的动作、台词、生成提示或叙事功能中必须出现该要求的直接文本，否则给出 warning。
+- 新字段缺失只产生 warning，不阻止旧方案读取；检查为确定性结构/文本覆盖，不是语义推理。
+
+
+### A81 实现注意事项与故障修复
+`audit_short_drama()` 在进入因果链步骤循环前必须先建立 `character_names` 集合，供 A79 行动依据与 A81 状态连续性人物引用校验共同使用。不要在初始化前引用该集合。该顺序错误已由 CI 回归测试暴露，修复后仍须运行完整 CI 与文档同步检查。
+
+
+A81 测试夹具边界：因果链按步骤独立审查 state_continuity。测试“明确无后续影响”时必须给每一步都设置该对象，否则其他步骤仍应产生 STATE_CONTINUITY_UNSPECIFIED。

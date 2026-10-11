@@ -4,7 +4,7 @@ from pathlib import Path
 
 from ad_studio.engine import detect_platform, estimate_cost, new_project, mark_regenerate
 from ad_studio.library import LocalLibrary
-from ad_studio.production import ProductionStore
+from ad_studio.production import ProductionStore, generation_failure_ui_state, normalize_cost_estimate_rmb
 from ad_studio.product_parser import ProductInfo, save_product_library, load_product_library, merge_product_library
 from ad_studio.model_router import ModelRouter, ModelProfile, build_stage_prompt
 
@@ -1302,6 +1302,650 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertIn(phrase, agents)
         self.assertIn("当前已知限制", help_doc)
         self.assertIn("测试", logic)
+
+
+    def test_a43_regeneration_failure_restores_previous_good_video_and_persists_it(self):
+        class FailingProvider:
+            provider_name = "测试失败 Provider"
+            cost_per_shot_rmb = 0.72
+
+            def generate(self, request):
+                raise RuntimeError("模拟 Provider 超时")
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            old_output = store.render_path(project, shot)
+            old_output.parent.mkdir(parents=True, exist_ok=True)
+            old_output.write_bytes(b"previous-good-video")
+            shot.video_path = str(old_output)
+            shot.status = "已生成"
+            store.save(project)
+
+            mark_regenerate(project, 0)
+            self.assertIsNone(shot.video_path)
+            self.assertEqual(shot.previous_video_path, str(old_output))
+            store.save(project)
+
+            with self.assertRaisesRegex(RuntimeError, "模拟 Provider 超时"):
+                store._render_with_provider(project, shot, FailingProvider())
+
+            self.assertEqual(shot.video_path, str(old_output))
+            self.assertIsNone(shot.previous_video_path)
+            self.assertEqual(shot.status, "生成失败（已保留上一版本）")
+            self.assertEqual(old_output.read_bytes(), b"previous-good-video")
+            self.assertFalse(store.render_path(project, shot).with_suffix(".part.mp4").exists())
+            restored = store.load(project.id)
+            self.assertEqual(restored.shots[0].video_path, str(old_output))
+            self.assertEqual(restored.shots[0].status, "生成失败（已保留上一版本）")
+
+    def test_a45_ui_failure_state_keeps_recovered_previous_video_status(self):
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as td:
+            old_video = Path(td) / "old-v1.mp4"
+            old_video.write_bytes(b"playable-old-video")
+            shot = SimpleNamespace(
+                status="生成失败（已保留上一版本）",
+                video_path=str(old_video),
+            )
+            state = generation_failure_ui_state(shot)
+            self.assertEqual(state["status"], "生成失败（已保留上一版本）")
+            self.assertTrue(state["previous_version_available"])
+            self.assertEqual(state["video_path"], str(old_video))
+
+            shot.video_path = str(Path(td) / "missing.mp4")
+            state = generation_failure_ui_state(shot)
+            self.assertEqual(state["status"], "生成失败")
+            self.assertFalse(state["previous_version_available"])
+            self.assertEqual(state["video_path"], "")
+
+    def test_a43_project_recovery_restores_previous_video_after_interrupted_regeneration(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            old_output = store.render_path(project, shot)
+            old_output.parent.mkdir(parents=True, exist_ok=True)
+            old_output.write_bytes(b"previous-good-video")
+            shot.video_path = str(old_output)
+            store.save(project)
+
+            mark_regenerate(project, 0)
+            shot.status = "生成中…"
+            render_output = store.render_path(project, shot)
+            part = render_output.with_suffix(".part.mp4")
+            split_part = render_output.with_name(f"{render_output.stem}.part01.mp4")
+            part.parent.mkdir(parents=True, exist_ok=True)
+            part.write_bytes(b"partial-video")
+            split_part.write_bytes(b"partial-split-video")
+            store.save(project)
+
+            result = store.recover_project(project)
+            self.assertEqual(result["removed_temp_files"], 2)
+            self.assertEqual(result["restored_previous_versions"], [shot.id])
+            self.assertEqual(shot.video_path, str(old_output))
+            self.assertIsNone(shot.previous_video_path)
+            self.assertEqual(shot.status, "生成中断（已恢复上一版本）")
+            self.assertFalse(part.exists())
+            restored = store.load(project.id)
+            self.assertEqual(restored.shots[0].video_path, str(old_output))
+
+
+    def test_a53_recovery_rejects_zero_byte_previous_video(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            zero_byte_video = root / "zero-byte-v1.mp4"
+            zero_byte_video.write_bytes(b"")
+            shot.video_path = None
+            shot.previous_video_path = str(zero_byte_video)
+            shot.status = "生成中…"
+            store.save(project)
+            result = store.recover_project(project)
+            self.assertEqual(result["restored_previous_versions"], [])
+            self.assertIn(shot.id, result["missing_media"])
+            self.assertIsNone(shot.video_path)
+            self.assertIsNone(shot.previous_video_path)
+            self.assertEqual(shot.status, "待重新生成/重新选择素材")
+            restored = store.load(project.id)
+            self.assertIsNone(restored.shots[0].video_path)
+            self.assertIsNone(restored.shots[0].previous_video_path)
+
+
+    def test_a54_recovery_restores_valid_previous_video_when_active_video_is_zero_byte(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            active_zero = root / "active-v2.mp4"
+            active_zero.write_bytes(b"")
+            previous_good = root / "previous-v1.mp4"
+            previous_good.write_bytes(b"playable-previous-video")
+            shot.video_path = str(active_zero)
+            shot.previous_video_path = str(previous_good)
+            shot.status = "生成中…"
+            store.save(project)
+            result = store.recover_project(project)
+            self.assertEqual(result["restored_previous_versions"], [shot.id])
+            self.assertEqual(shot.video_path, str(previous_good))
+            self.assertIsNone(shot.previous_video_path)
+            self.assertEqual(shot.status, "生成中断（已恢复上一版本）")
+
+    def test_a54_recovery_clears_zero_byte_active_video_without_previous_video(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            active_zero = root / "active-v1.mp4"
+            active_zero.write_bytes(b"")
+            shot.video_path = str(active_zero)
+            shot.previous_video_path = None
+            shot.status = "生成中…"
+            store.save(project)
+            result = store.recover_project(project)
+            self.assertIn(shot.id, result["missing_media"])
+            self.assertIsNone(shot.video_path)
+            self.assertEqual(shot.status, "待重新生成/重新选择素材")
+
+    def test_a57_generate_shot_ui_surfaces_cost_reconciliation_state(self):
+        app_source = (Path(__file__).resolve().parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        start = app_source.index("def generate_shot(self):")
+        end = app_source.index("def regen_shot(self):", start)
+        block = app_source[start:end]
+        self.assertIn('if s.status == "已生成（成本待核对）":', block)
+        self.assertIn("项目实际成本待核对", block)
+        self.assertIn("usage-ledger.json", block)
+        self.assertNotIn("项目实际累计", block.split('if s.status == "已生成（成本待核对）":', 1)[1].split("else:", 1)[0])
+
+    def test_a46_edit_shot_routes_through_safe_regeneration_transition(self):
+        app_source = (Path(__file__).resolve().parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        start = app_source.index("def edit_shot(self):")
+        end = app_source.index("def load_project(self):", start)
+        edit_block = app_source[start:end]
+        self.assertIn("mark_regenerate(self.project,self.project.shots.index(s))", edit_block)
+        self.assertNotIn("s.video_path=None", edit_block)
+        self.assertNotIn("s.version+=1", edit_block)
+
+
+    def test_a47_asset_resolution_failure_restores_previous_video(self):
+        class FailingAssetStore(ProductionStore):
+            def resolve_assets(self, project, shot):
+                raise RuntimeError("模拟素材解析失败")
+
+        class UnusedProvider:
+            provider_name = "未调用 Provider"
+            cost_per_shot_rmb = 0.72
+            def generate(self, request):
+                raise AssertionError("素材解析失败后不应调用视频 Provider")
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = FailingAssetStore(root)
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            old_output = store.render_path(project, shot)
+            old_output.parent.mkdir(parents=True, exist_ok=True)
+            old_output.write_bytes(b"previous-good-video")
+            shot.video_path = str(old_output)
+            store.save(project)
+
+            mark_regenerate(project, 0)
+            store.save(project)
+            with self.assertRaisesRegex(RuntimeError, "模拟素材解析失败"):
+                store._render_with_provider(project, shot, UnusedProvider())
+
+            self.assertEqual(shot.video_path, str(old_output))
+            self.assertIsNone(shot.previous_video_path)
+            self.assertEqual(shot.status, "生成失败（已保留上一版本）")
+            self.assertEqual(old_output.read_bytes(), b"previous-good-video")
+            self.assertFalse(store.render_path(project, shot).with_suffix(".part.mp4").exists())
+            restored = store.load(project.id)
+            self.assertEqual(restored.shots[0].video_path, str(old_output))
+
+
+    def test_a48_footage_trim_failure_does_not_delete_existing_output(self):
+        from unittest.mock import patch
+        from ad_studio.footage import FootageError
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            output = store.render_path(project, shot)
+            output.parent.mkdir(parents=True, exist_ok=True)
+            output.write_bytes(b"previous-good-video")
+            source = root / "source.mp4"
+            source.write_bytes(b"dummy-source")
+            shot.video_path = str(output)
+            shot.clip_source = "filmed"
+            shot.source_file = str(source)
+            shot.source_duration = 2.0
+            store.save(project)
+
+            with patch("ad_studio.footage.trim_clip", side_effect=RuntimeError("模拟裁剪失败")):
+                with self.assertRaisesRegex(RuntimeError, "模拟裁剪失败"):
+                    store.render_footage_shot(project, shot)
+
+            self.assertEqual(output.read_bytes(), b"previous-good-video")
+            self.assertEqual(shot.video_path, str(output))
+            self.assertEqual(shot.status, "素材裁剪失败（已保留上一版本）")
+            self.assertFalse(output.with_suffix(".part.mp4").exists())
+            restored = store.load(project.id)
+            self.assertEqual(restored.shots[0].video_path, str(output))
+
+
+    def test_a49_missing_footage_source_cleans_stale_split_parts_and_keeps_old_video(self):
+        from ad_studio.footage import FootageError
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            old_output = store.render_path(project, shot)
+            old_output.parent.mkdir(parents=True, exist_ok=True)
+            old_output.write_bytes(b"previous-good-video")
+            shot.video_path = str(old_output)
+            shot.clip_source = "filmed"
+            shot.source_file = str(root / "missing-source.mp4")
+            store.save(project)
+
+            mark_regenerate(project, 0)
+            output = store.render_path(project, shot)
+            stale_part = output.with_name(f"{output.stem}.part01.mp4")
+            stale_part.write_bytes(b"stale-split")
+            with self.assertRaises(FootageError):
+                store.render_footage_shot(project, shot)
+
+            self.assertFalse(stale_part.exists())
+            self.assertEqual(shot.video_path, str(old_output))
+            self.assertEqual(old_output.read_bytes(), b"previous-good-video")
+            self.assertEqual(shot.status, "素材裁剪失败（已保留上一版本）")
+
+
+
+    def test_a51_cost_estimate_is_validated_before_confirmation(self):
+        self.assertEqual(normalize_cost_estimate_rmb("0.72"), 0.72)
+        self.assertEqual(normalize_cost_estimate_rmb(0), 0.0)
+        for invalid in ("not-a-number", float("nan"), float("inf"), float("-inf"), -0.01, None):
+            with self.subTest(invalid=invalid):
+                with self.assertRaises(ValueError):
+                    normalize_cost_estimate_rmb(invalid)
+
+    def test_a50_video_prompt_uses_real_line_breaks(self):
+        class CapturingProvider:
+            provider_name = "测试 Provider"
+            cost_per_shot_rmb = 0.0
+
+            def __init__(self):
+                self.prompt = None
+
+            def generate(self, request):
+                self.prompt = request.prompt
+                request.output.write_bytes(b"generated-video")
+                return request.output
+
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td))
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            shot.title = "开场镜头"
+            shot.visual = "画面主体在左侧"
+            shot.script = "突出真实卖点"
+            provider = CapturingProvider()
+            store._render_with_provider(project, shot, provider)
+            self.assertEqual(
+                provider.prompt,
+                "标题：开场镜头\n画面：画面主体在左侧\n文案：突出真实卖点",
+            )
+            self.assertNotIn("\\n", provider.prompt)
+
+
+    def test_a55_ledger_failure_does_not_turn_successful_video_into_provider_failure(self):
+        class SuccessfulProvider:
+            provider_name = "测试 Provider"
+            cost_per_shot_rmb = 0.72
+            def generate(self, request):
+                request.output.write_bytes(b"generated-video")
+                return request.output
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            old_output = store.render_path(project, shot)
+            old_output.parent.mkdir(parents=True, exist_ok=True)
+            old_output.write_bytes(b"previous-good-video")
+            shot.video_path = str(old_output)
+            store.save(project)
+            mark_regenerate(project, 0)
+
+            def fail_cost_record(*args, **kwargs):
+                raise OSError("账本只读")
+
+            store._record_actual_cost = fail_cost_record
+            output = store._render_with_provider(project, shot, SuccessfulProvider())
+
+            self.assertEqual(output.read_bytes(), b"generated-video")
+            self.assertEqual(shot.video_path, str(output))
+            self.assertEqual(shot.status, "已生成（成本待核对）")
+            self.assertTrue(any(
+                item.get("stage") == "视频已生成但成本记账待核对"
+                for item in project.creative_plan.get("recovery", {}).get("history", [])
+            ))
+            restored = store.load(project.id)
+            self.assertEqual(restored.shots[0].video_path, str(output))
+            self.assertEqual(restored.shots[0].status, "已生成（成本待核对）")
+
+    def test_a59_project_cost_total_comes_from_success_ledger_rows(self):
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td))
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            store.ledger.record(
+                function="已有成功任务", model_id="", model_name="", provider="测试",
+                model="", status="success", estimated_cost_rmb=0.40,
+                project_id=project.id, shot_id=shot.id, category="video",
+            )
+            store.ledger.record(
+                function="失败任务", model_id="", model_name="", provider="测试",
+                model="", status="failed", estimated_cost_rmb=0.0, unit_cost_rmb=0.72,
+                project_id=project.id, shot_id=shot.id, category="video",
+            )
+            project.actual_cost_rmb = 99.0
+            store._record_actual_cost(
+                project, shot=shot, category="video", amount_rmb=0.72,
+                provider="测试", quantity=1, unit_cost_rmb=0.72, function="本次成功任务",
+            )
+            summary = store.ledger.project_summary(project.id)
+            self.assertAlmostEqual(summary["actual_cost_rmb"], 1.12)
+            self.assertAlmostEqual(project.actual_cost_rmb, 1.12)
+            self.assertAlmostEqual(project.cost_estimate["actual_cost_rmb"], 1.12)
+            self.assertAlmostEqual(project.cost_estimate["actual"]["actual_cost_rmb"], 1.12)
+
+    def test_a52_failed_video_attempt_is_auditable_without_double_counting_actual_cost(self):
+        class FailingProvider:
+            provider_name = "测试 Provider"
+            cost_per_shot_rmb = 0.72
+            def generate(self, request):
+                raise RuntimeError("模拟失败后重试")
+
+        class SuccessfulProvider:
+            provider_name = "测试 Provider"
+            cost_per_shot_rmb = 0.72
+            def generate(self, request):
+                request.output.write_bytes(b"generated-video")
+                return request.output
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            old_output = store.render_path(project, shot)
+            old_output.parent.mkdir(parents=True, exist_ok=True)
+            old_output.write_bytes(b"previous-good-video")
+            shot.video_path = str(old_output)
+            shot.status = "已生成"
+            store.save(project)
+
+            mark_regenerate(project, 0)
+            with self.assertRaisesRegex(RuntimeError, "模拟失败后重试"):
+                store._render_with_provider(project, shot, FailingProvider())
+
+            after_failure = store.ledger.project_summary(project.id)
+            self.assertEqual(after_failure["actual_cost_rmb"], 0)
+            self.assertEqual(after_failure["failed"], 1)
+            failed_rows = [
+                row for row in store.ledger.recent(20)
+                if row.get("project_id") == project.id and row.get("status") == "failed"
+            ]
+            self.assertEqual(len(failed_rows), 1)
+            self.assertEqual(failed_rows[0]["category"], "video")
+            self.assertEqual(failed_rows[0]["estimated_cost_rmb"], 0)
+            self.assertEqual(failed_rows[0]["unit_cost_rmb"], 0.72)
+
+            mark_regenerate(project, 0)
+            store._render_with_provider(project, shot, SuccessfulProvider())
+            final_summary = store.ledger.project_summary(project.id)
+            self.assertEqual(final_summary["actual_cost_rmb"], 0.72)
+            self.assertEqual(final_summary["success"], 1)
+            self.assertEqual(final_summary["failed"], 1)
+            self.assertAlmostEqual(project.actual_cost_rmb, 0.72)
+
+
+    def test_a57_project_recovery_reconciles_actual_cost_from_ledger(self):
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td))
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            project.actual_cost_rmb = 99.0
+            shot.actual_cost_rmb = 99.0
+            store.ledger.record(
+                function="视频镜头生成", model_id="", model_name="测试", provider="测试", model="",
+                status="success", estimated_cost_rmb=0.72, project_id=project.id, shot_id=shot.id,
+                category="video", quantity=1, unit_cost_rmb=0.72,
+            )
+            store.ledger.record(
+                function="演员素材生成", model_id="", model_name="测试", provider="测试", model="",
+                status="success", estimated_cost_rmb=0.25, project_id=project.id, shot_id=shot.id,
+                category="asset", quantity=1, unit_cost_rmb=0.25,
+            )
+            store.ledger.record(
+                function="视频镜头生成", model_id="", model_name="测试", provider="测试", model="",
+                status="failed", estimated_cost_rmb=0.0, project_id=project.id, shot_id=shot.id,
+                category="video", quantity=1, unit_cost_rmb=0.72, error="模拟失败",
+            )
+            store.save(project)
+            result = store.recover_project(project)
+            self.assertTrue(result["cost_reconciled"])
+            self.assertAlmostEqual(project.actual_cost_rmb, 0.97)
+            self.assertAlmostEqual(shot.actual_cost_rmb, 0.97)
+            self.assertAlmostEqual(project.actual_cost_summary["actual_cost_rmb"], 0.97)
+            restored = store.load(project.id)
+            self.assertAlmostEqual(restored.actual_cost_rmb, 0.97)
+            self.assertAlmostEqual(restored.shots[0].actual_cost_rmb, 0.97)
+
+    def test_a57_project_recovery_preserves_legacy_cost_when_no_ledger_rows_exist(self):
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td))
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            project.actual_cost_rmb = 2.5
+            project.shots[0].actual_cost_rmb = 1.2
+            store.save(project)
+            result = store.recover_project(project)
+            self.assertFalse(result["cost_reconciled"])
+            self.assertAlmostEqual(project.actual_cost_rmb, 2.5)
+            self.assertAlmostEqual(project.shots[0].actual_cost_rmb, 1.2)
+
+    def test_a57_open_existing_project_runs_recovery_before_display(self):
+        source = (Path(__file__).resolve().parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        start = source.index("def load_project(self):")
+        end = source.index("def product_library_settings", start)
+        body = source[start:end]
+        recovery_at = body.index("self.store.recover_project(project)")
+        assignment_at = body.index("self.project=project")
+        self.assertLess(recovery_at, assignment_at)
+        self.assertIn("已记账实际", body)
+
+
+    def test_a60_failed_only_ledger_preserves_legacy_actual_cost(self):
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td))
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            project.actual_cost_rmb = 2.5
+            project.actual_cost_summary = {"actual_cost_rmb": 2.5, "by_category": {"video": 2.5}}
+            shot = project.shots[0]
+            shot.actual_cost_rmb = 1.2
+            store.ledger.record(
+                function="视频镜头生成", model_id="", model_name="测试", provider="测试", model="",
+                status="failed", estimated_cost_rmb=0.0, project_id=project.id, shot_id=shot.id,
+                category="video", quantity=1, unit_cost_rmb=0.72, error="模拟失败，无成功扣费确认",
+            )
+            store.save(project)
+            result = store.recover_project(project)
+            self.assertFalse(result["cost_reconciled"])
+            self.assertAlmostEqual(project.actual_cost_rmb, 2.5)
+            self.assertAlmostEqual(shot.actual_cost_rmb, 1.2)
+            self.assertAlmostEqual(project.cost_estimate["actual_cost_rmb"], 2.5)
+            self.assertEqual(project.cost_estimate["actual"]["by_category"], {"video": 2.5})
+
+
+    def test_a61_legacy_costs_migrate_once_before_first_successful_charge(self):
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td))
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            project.actual_cost_rmb = 2.5
+            project.actual_cost_summary = {"actual_cost_rmb": 2.5, "by_category": {"video": 2.5}}
+            shot = project.shots[0]
+            shot.actual_cost_rmb = 1.2
+            store.ledger.record(
+                function="失败尝试", model_id="", model_name="测试", provider="测试", model="",
+                status="failed", estimated_cost_rmb=0.0, project_id=project.id, shot_id=shot.id,
+                category="video", quantity=1, unit_cost_rmb=0.72, error="失败报价不是实际支出",
+            )
+
+            store._record_actual_cost(
+                project, shot=shot, category="asset", amount_rmb=0.72,
+                provider="测试", quantity=1, unit_cost_rmb=0.72, function="商品素材生成",
+            )
+            summary = store.ledger.project_summary(project.id)
+            self.assertAlmostEqual(summary["actual_cost_rmb"], 3.22)
+            self.assertAlmostEqual(project.actual_cost_rmb, 3.22)
+            self.assertAlmostEqual(shot.actual_cost_rmb, 1.92)
+
+            store._record_actual_cost(
+                project, shot=shot, category="asset", amount_rmb=0.50,
+                provider="测试", quantity=1, unit_cost_rmb=0.50, function="场景素材生成",
+            )
+            summary = store.ledger.project_summary(project.id)
+            self.assertAlmostEqual(summary["actual_cost_rmb"], 3.72)
+            self.assertAlmostEqual(shot.actual_cost_rmb, 2.42)
+            migrated = [
+                row for row in store.ledger.recent(50)
+                if row.get("project_id") == project.id and row.get("function") == "历史实际成本迁移"
+            ]
+            self.assertEqual(len(migrated), 2)
+            self.assertAlmostEqual(sum(row["estimated_cost_rmb"] for row in migrated), 2.5)
+
+    def test_a61_record_many_migration_keeps_ledger_rows_atomic(self):
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td))
+            before = store.ledger.recent(20)
+            with self.assertRaises((TypeError, ValueError, OverflowError)):
+                store.ledger.record_many([
+                    {"function": "迁移有效行", "project_id": "p", "estimated_cost_rmb": 1.0},
+                    {"function": "迁移无效行", "project_id": "p", "quantity": "not-a-number"},
+                ])
+            self.assertEqual(store.ledger.recent(20), before)
+
+
+    def test_a63_migrated_legacy_cost_survives_when_new_charge_record_fails(self):
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td))
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            project.actual_cost_rmb = 2.5
+            project.actual_cost_summary = {"actual_cost_rmb": 2.5, "by_category": {"video": 2.5}}
+            shot = project.shots[0]
+            shot.actual_cost_rmb = 1.2
+            store.ledger.record(
+                function="失败尝试", model_id="", model_name="测试", provider="测试", model="",
+                status="failed", estimated_cost_rmb=0.0, project_id=project.id, shot_id=shot.id,
+                category="video", quantity=1, unit_cost_rmb=0.72, error="失败报价不是实际支出",
+            )
+            store.save(project)
+
+            def fail_current_record(**kwargs):
+                raise OSError("模拟本次账本写入失败")
+            store.ledger.record = fail_current_record
+
+            with self.assertRaisesRegex(OSError, "模拟本次账本写入失败"):
+                store._record_actual_cost(
+                    project, shot=shot, category="asset", amount_rmb=0.72,
+                    provider="测试", quantity=1, unit_cost_rmb=0.72, function="商品素材生成",
+                )
+
+            self.assertAlmostEqual(project.actual_cost_rmb, 2.5)
+            self.assertAlmostEqual(shot.actual_cost_rmb, 1.2)
+            self.assertAlmostEqual(project.cost_estimate["actual_cost_rmb"], 2.5)
+            migrated = [
+                row for row in store.ledger.recent(20)
+                if row.get("project_id") == project.id and row.get("function") == "历史实际成本迁移"
+            ]
+            self.assertEqual(len(migrated), 2)
+            store.save(project)
+            restored = store.load(project.id)
+            self.assertAlmostEqual(restored.actual_cost_rmb, 2.5)
+            self.assertAlmostEqual(restored.shots[0].actual_cost_rmb, 1.2)
+
+
+    def test_a64_asset_cost_record_failure_keeps_generated_asset_and_marks_reconciliation(self):
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td))
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+
+            def fail_cost_record(*args, **kwargs):
+                raise OSError("模拟素材成本记账故障")
+            store._record_actual_cost = fail_cost_record
+
+            recorded, error = store._record_asset_cost(project, shot, "商品", 0.72, "测试 Provider")
+            self.assertFalse(recorded)
+            self.assertIn("模拟素材成本记账故障", error)
+            history = project.creative_plan.get("recovery", {}).get("history", [])
+            self.assertTrue(any(x.get("stage") == "商品素材已生成但成本结算未完成" for x in history))
+            self.assertIn("usage-ledger.json", history[-1].get("next_action", ""))
+
+    def test_a64_asset_generation_callers_distinguish_cost_failure_from_generation_failure(self):
+        source = (Path(__file__).resolve().parent / "ad_studio" / "production.py").read_text(encoding="utf-8")
+        resolve_start = source.index("def resolve_assets")
+        generate_start = source.index("def generate_missing_asset", resolve_start)
+        render_start = source.index("def render_shot", generate_start)
+        resolve_body = source[resolve_start:generate_start]
+        generate_body = source[generate_start:render_start]
+        self.assertIn("self._record_asset_cost", resolve_body)
+        self.assertIn("已生成并入库（成本待核对）", resolve_body)
+        self.assertIn("self._record_asset_cost", generate_body)
+        self.assertIn("成本待核对", generate_body)
+
+
+    def test_a65_single_ledger_record_uses_atomic_replace_and_preserves_old_file_on_failure(self):
+        from unittest.mock import patch
+        from pathlib import Path as PathType
+        with tempfile.TemporaryDirectory() as td:
+            ledger = ProductionStore(Path(td)).ledger
+            ledger.record(function="既有记录", model_id="", model_name="", provider="测试", model="", status="success",
+                          estimated_cost_rmb=1.25, project_id="p", category="video")
+            original = ledger.path.read_text(encoding="utf-8")
+            with patch.object(PathType, "replace", side_effect=OSError("模拟原子替换失败")):
+                with self.assertRaisesRegex(OSError, "模拟原子替换失败"):
+                    ledger.record(function="新记录", model_id="", model_name="", provider="测试", model="", status="success",
+                                  estimated_cost_rmb=0.72, project_id="p", category="video")
+            self.assertEqual(ledger.path.read_text(encoding="utf-8"), original)
+            self.assertEqual(len(ledger.recent(10)), 1)
+            self.assertEqual(ledger.recent(10)[0]["function"], "既有记录")
+
+    def test_a65_ledger_retains_more_than_2000_cost_history_rows(self):
+        with tempfile.TemporaryDirectory() as td:
+            ledger = ProductionStore(Path(td)).ledger
+            ledger.record_many([
+                {"function": f"历史记录-{i}", "model_id": "", "model_name": "", "provider": "测试", "model": "",
+                 "status": "success", "estimated_cost_rmb": 0.01, "project_id": "p", "category": "video"}
+                for i in range(2001)
+            ])
+            summary = ledger.project_summary("p")
+            self.assertEqual(summary["entries"], 2001)
+            self.assertAlmostEqual(summary["actual_cost_rmb"], 20.01)
+            self.assertEqual(len(ledger._load()), 2001)
 
 
 if __name__ == "__main__":

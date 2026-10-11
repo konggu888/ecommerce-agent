@@ -73,8 +73,53 @@ class UsageLedger:
         }
         rows = self._load()
         rows.append(item)
-        self.path.write_text(json.dumps(rows[-2000:], ensure_ascii=False, indent=2), encoding="utf-8")
+        self._write_rows_atomically(rows)
         return item
+
+    def record_many(self, records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        """Append several ledger rows with one atomic file replacement."""
+        if not records:
+            return []
+        rows = self._load()
+        items = []
+        for values in records:
+            item = {
+                "id": uuid.uuid4().hex[:12],
+                "time": datetime.now().isoformat(timespec="seconds"),
+                "function": str(values.get("function", "")),
+                "category": str(values.get("category", "other") or "other"),
+                "project_id": str(values.get("project_id", "") or ""),
+                "shot_id": str(values.get("shot_id", "") or ""),
+                "asset_kind": str(values.get("asset_kind", "") or ""),
+                "quantity": float(values.get("quantity", 1.0) or 1.0),
+                "unit_cost_rmb": round(float(values.get("unit_cost_rmb", 0) or 0), 6),
+                "model_id": str(values.get("model_id", "") or ""),
+                "model_name": str(values.get("model_name", "") or ""),
+                "provider": str(values.get("provider", "") or ""),
+                "model": str(values.get("model", "") or ""),
+                "status": str(values.get("status", "success") or "success"),
+                "prompt_tokens": int(values.get("prompt_tokens", 0) or 0),
+                "completion_tokens": int(values.get("completion_tokens", 0) or 0),
+                "total_tokens": int(values.get("total_tokens", 0) or 0),
+                "estimated_cost_rmb": round(float(values.get("estimated_cost_rmb", 0) or 0), 6),
+                "duration_ms": int(values.get("duration_ms", 0) or 0),
+                "error": str(values.get("error", "") or ""),
+            }
+            items.append(item)
+        rows.extend(items)
+        self._write_rows_atomically(rows)
+        return items
+
+    def _write_rows_atomically(self, rows: list[dict[str, Any]]) -> None:
+        """Persist the complete cost history via atomic replacement; never truncate older charges."""
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        temp_path = self.path.with_name(f".{self.path.name}.{uuid.uuid4().hex}.tmp")
+        try:
+            temp_path.write_text(json.dumps(rows, ensure_ascii=False, indent=2), encoding="utf-8")
+            temp_path.replace(self.path)
+        except Exception:
+            temp_path.unlink(missing_ok=True)
+            raise
 
     def record_asset(
         self,
@@ -130,20 +175,6 @@ class UsageLedger:
             error=error,
         )
 
-    def project_summary(self, project_id: str) -> dict[str, Any]:
-        rows = [x for x in self._load() if x.get("project_id") == project_id]
-        success = [x for x in rows if x.get("status") == "success"]
-        by_category: dict[str, float] = {}
-        for row in success:
-            key = str(row.get("category") or "other")
-            by_category[key] = by_category.get(key, 0.0) + float(row.get("estimated_cost_rmb", 0) or 0)
-        return {
-            "project_id": project_id,
-            "entries": len(rows),
-            "actual_cost_rmb": round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in success), 6),
-            "by_category": {k: round(v, 6) for k, v in by_category.items()},
-        }
-
     def recent(self, limit: int = 100) -> list[dict[str, Any]]:
         return self._load()[-max(1, int(limit)):][::-1]
 
@@ -159,6 +190,18 @@ class UsageLedger:
             "actual_cost_rmb": round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in success), 6),
             "by_category": {category: round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in success if x.get("category") == category), 6) for category in sorted({x.get("category", "model") for x in success})},
         }
+
+    def shot_actual_cost(self, project_id: str, shot_id: str) -> float | None:
+        """Return success-only actual cost for a shot, or None when no ledger history exists."""
+        rows = [
+            row for row in self._load()
+            if row.get("project_id") == project_id
+            and row.get("shot_id") == shot_id
+            and row.get("status") == "success"
+        ]
+        if not rows:
+            return None
+        return round(sum(float(row.get("estimated_cost_rmb", 0) or 0) for row in rows), 6)
 
     def summary(self) -> dict[str, Any]:
         rows = self._load()

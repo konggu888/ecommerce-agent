@@ -4,6 +4,7 @@ from dataclasses import dataclass, asdict
 from pathlib import Path
 from typing import Any
 import json
+import mimetypes
 import os
 import base64
 import urllib.request
@@ -27,6 +28,7 @@ FUNCTIONS = [
     "素材剪辑导演",
     "口播转写",
     "AI短剧编导",
+    "商品画面视觉核验",
 ]
 
 
@@ -503,7 +505,7 @@ class ModelRouter:
                 raw = base64.b64encode(p.read_bytes()).decode("ascii")
                 parts.append({
                     "type": "image_url",
-                    "image_url": {"url": f"data:image/jpeg;base64,{raw}", "detail": "low"},
+                    "image_url": {"url": f"data:{mimetypes.guess_type(p.name)[0] or 'image/jpeg'};base64,{raw}", "detail": "low"},
                 })
             user_content = parts
         payload = {

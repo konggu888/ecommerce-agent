@@ -9,10 +9,10 @@ from .engine import FORMS, new_project, mark_regenerate, estimate_cost, estimate
 from .gpu import detect_gpu
 from .hardware import detect_hardware, format_hardware
 from .capability import CapabilityRouter
-from .production import ProductionStore
+from .production import ProductionStore, generation_failure_ui_state, normalize_cost_estimate_rmb
 from .product_parser import parse_product_url, save_product, save_product_library, load_product_library, merge_product_library, ProductInfo
 from .creative_engine import CreativeEngine, validate_plan, validate_task_type_plan, TASK_TYPE_POLICIES
-from .short_drama import audit_short_drama, build_episode_continuity_ledger, generate_short_drama, generate_next_short_drama_episode, short_drama_production_rows, record_product_visual_verification
+from .short_drama import audit_short_drama, build_episode_continuity_ledger, generate_short_drama, generate_next_short_drama_episode, analyze_episode_continuity_impact, short_drama_production_rows, record_product_visual_verification, compare_product_visual_shot, prepare_product_drama_shot_regeneration, product_visual_correction_suggestion, resolve_product_drama_shot_number
 from .model_router import ModelRouter, ModelProfile, FUNCTIONS, audit_ad_variant_set, build_creative_test_plan, audit_creative_factual_consistency, audit_storyboard_fact_consistency, audit_visual_fact_consistency
 from .browser_skill import _find_agent_browser
 from .ffmpeg import available as ffmpeg_available, has_nvenc
@@ -1604,18 +1604,67 @@ class App(tk.Tk):
                 mode={'local':'本地','cloud':'云端','unavailable':'不可用'}.get(decision.target,decision.target)
                 self.detail.set(f'镜头 {s.index} 正在{mode}生成…')
                 out=self.store.render_shot(self.project,s,config_root=ROOT)
-                self.refresh_shots(); self.cost.set(f'项目实际成本 ¥{self.project.actual_cost_rmb:.4f} · 预估 ¥{self.project.cost_estimate.get("总计",0):.2f}'); self.detail.set(f'镜头 {s.index} 已由{mode}生成 v{s.version}：{out} · 项目实际累计 ¥{self.project.actual_cost_rmb:.4f}')
+                self.refresh_shots()
+                if s.status == "已生成（成本待核对）":
+                    self.cost.set(f'项目实际成本待核对 · 预估 ¥{self.project.cost_estimate.get("总计",0):.2f}')
+                    self.detail.set(f'镜头 {s.index} 已生成 v{s.version}：{out}。但成本账本写入异常，费用尚待核对。请先检查本地 usage-ledger.json 和项目恢复记录，不要直接重复记账。')
+                else:
+                    self.cost.set(f'项目实际成本 ¥{self.project.actual_cost_rmb:.4f} · 预估 ¥{self.project.cost_estimate.get("总计",0):.2f}')
+                    self.detail.set(f'镜头 {s.index} 已由{mode}生成 v{s.version}：{out} · 项目实际累计 ¥{self.project.actual_cost_rmb:.4f}')
         except Exception as e:
-            s.status='生成失败'; self.store.save(self.project); self.refresh_shots()
-            self.detail.set(f'镜头 {s.index} 生成失败：{e}')
-            messagebox.showerror('镜头生成失败',str(e))
+            failure_state = generation_failure_ui_state(s)
+            s.status = failure_state["status"]
+            self.store.save(self.project); self.refresh_shots()
+            message = f'镜头 {s.index} 生成失败：{e}'
+            if failure_state["previous_version_available"]:
+                message += f'\n上一版仍可使用并已恢复：{failure_state["video_path"]}'
+            self.detail.set(message)
+            messagebox.showerror('镜头生成失败', message)
 
     @ui_action
     def regen_shot(self):
         if not self._ui_execution_gate(): return
         s=self.selected()
         if not s:return messagebox.showinfo('提示','先选择要重新生成的镜头。')
-        old=s.version; mark_regenerate(self.project,self.project.shots.index(s)); self.store.save(self.project); self.refresh_shots(); self.detail.set(f'镜头 {s.index}：v{old} → v{s.version}。其他镜头版本保持不变。')
+        try:
+            creative = self.project.creative_plan or {}
+            drama = creative.get('short_drama') if creative.get('production_mode') == 'short_drama' else None
+            product_mode = isinstance(drama, dict) and drama.get('drama_business_mode') == 'product_short_drama_ad'
+            if product_mode:
+                from tkinter import simpledialog
+                shot_number = resolve_product_drama_shot_number(drama, s)
+                correction_draft = product_visual_correction_suggestion(drama, shot_number)
+                correction = simpledialog.askstring(
+                    '商品镜头修正要求',
+                    f'项目镜头 {s.index}（短剧分镜第 {shot_number} 镜）当前版本 v{s.version}。可编辑下方基于上次视觉核验结果整理的草稿；只会处理此镜头。',
+                    initialvalue=correction_draft,
+                    parent=self,
+                )
+                if not str(correction or '').strip():
+                    self.detail.set('已取消单镜头修复；没有修改镜头版本或调用生成服务。')
+                    return
+                provider = load_video_provider(ROOT / 'video-provider.json')
+                rate = normalize_cost_estimate_rmb(getattr(provider, 'cost_per_shot_rmb', 0.72))
+                if not messagebox.askyesno('确认单镜头重新生成', f'仅重新生成第 {shot_number} 镜（当前 v{s.version} → 新版本）。\n' f'预计视频生成费用：¥{rate:.2f}。\n' '旧版本、核验记录和其他镜头会保留；新版本必须重新核验。\n' '是否继续？', parent=self):
+                    self.detail.set('已取消单镜头重新生成；没有调用云端服务。')
+                    return
+                updated = prepare_product_drama_shot_regeneration(drama, shot_number, correction, previous_version=s.version, previous_video_path=getattr(s, 'video_path', None), estimated_cost_rmb=rate)
+                creative['short_drama'] = updated
+                creative.pop('short_drama_audit', None)
+                self.project.creative_plan = creative
+                s.visual = (str(s.visual or '').rstrip() + '\n商品画面修正要求（本次只修复当前镜头）： ' + correction.strip()).strip()
+                mark_regenerate(self.project,self.project.shots.index(s))
+                self.store.save(self.project)
+                self.refresh_shots()
+                self.detail.set(f'项目镜头 {s.index}（短剧分镜第 {shot_number} 镜）已准备重新生成：v{s.version-1} → v{s.version}。其他镜头未修改；新版本核验状态已重置。')
+                return
+            old=s.version
+            mark_regenerate(self.project,self.project.shots.index(s))
+            self.store.save(self.project)
+            self.refresh_shots()
+            self.detail.set(f'镜头 {s.index}：v{old} → v{s.version}。其他镜头版本保持不变。')
+        except Exception as exc:
+            messagebox.showerror('重新生成镜头失败', str(exc))
 
     @ui_action
     def edit_shot(self):
@@ -1630,7 +1679,7 @@ class App(tk.Tk):
         cur_actor=next((a.name for a in actors if a.id==s.actor_id),'自动匹配'); cur_scene=next((a.name for a in scenes if a.id==s.scene_id),'自动匹配'); av=tk.StringVar(value=cur_actor); sv=tk.StringVar(value=cur_scene)
         ttk.Label(frm,text='演员').pack(anchor='w'); ttk.Combobox(frm,textvariable=av,values=actor_names,state='readonly').pack(fill='x',pady=4); ttk.Label(frm,text='场景').pack(anchor='w'); ttk.Combobox(frm,textvariable=sv,values=scene_names,state='readonly').pack(fill='x',pady=4)
         def apply():
-            s.title=title.get().strip() or s.title; s.visual=visual.get('1.0','end').strip(); s.script=script.get('1.0','end').strip(); s.actor_id=actor_map.get(av.get()); s.scene_id=scene_map.get(sv.get()); s.status='需重生成'; s.video_path=None; s.version+=1; self.store.save(self.project); self.refresh_shots(); self.show_shot(); win.destroy()
+            s.title=title.get().strip() or s.title; s.visual=visual.get('1.0','end').strip(); s.script=script.get('1.0','end').strip(); s.actor_id=actor_map.get(av.get()); s.scene_id=scene_map.get(sv.get()); mark_regenerate(self.project,self.project.shots.index(s)); self.store.save(self.project); self.refresh_shots(); self.show_shot(); win.destroy()
         ttk.Button(frm,text='保存修改并生成新版本',command=apply).pack(anchor='e',pady=10)
 
     @ui_action
@@ -1644,7 +1693,11 @@ class App(tk.Tk):
             if not sel:return
             project=self.store.load(files[sel[0]].stem)
             if not project:return messagebox.showerror('打开失败','项目文件无法读取。')
-            self.project=project; self.model_router.set_project_context(project.id); self.active_variant_index=int((project.creative_plan or {}).get('variant_index',1) or 1); self.url.set(''); self.level.set(project.level); self.form.set(project.form); self.refresh_shots(); c=project.cost_estimate; self.cost.set(f"项目预估 ¥{c.get('总计',0):.2f} · 云端 ¥{c.get('云端',0):.2f} · 已保存 {len(project.shots)} 个镜头" if c else f'已保存 {len(project.shots)} 个镜头'); self.detail.set(f'已恢复项目：{project.product_name} · {project.platform} · {project.form}'); win.destroy()
+            try:
+                recovery_result = self.store.recover_project(project)
+            except Exception as exc:
+                return messagebox.showerror('项目恢复检查失败', f'项目已读取，但恢复检查未完成：{exc}')
+            self.project=project; self.model_router.set_project_context(project.id); self.active_variant_index=int((project.creative_plan or {}).get('variant_index',1) or 1); self.url.set(''); self.level.set(project.level); self.form.set(project.form); self.refresh_shots(); c=project.cost_estimate; self.cost.set(f"项目预估 ¥{c.get('总计',0):.2f} · 云端 ¥{c.get('云端',0):.2f} · 已记账实际 ¥{project.actual_cost_rmb:.2f} · 已保存 {len(project.shots)} 个镜头" if c else f'已记账实际 ¥{project.actual_cost_rmb:.2f} · 已保存 {len(project.shots)} 个镜头'); self.detail.set(f'已恢复项目：{project.product_name} · {project.platform} · {project.form}；恢复检查：清理临时文件 {recovery_result.get("removed_temp_files",0)} 个，恢复旧版 {len(recovery_result.get("restored_previous_versions",[]))} 个，待重新生成素材 {len(recovery_result.get("missing_media",[]))} 项'); win.destroy()
         ttk.Button(frm,text='打开',command=open_selected).pack(anchor='e')
 
     @ui_action
@@ -2173,9 +2226,72 @@ class App(tk.Tk):
             if not ledger:
                 view.insert('end', '当前方案没有可展示的分集连续性记录。请重新生成多集方案，或检查创作方案数据。')
             view.configure(state='disabled')
-            ttk.Button(win, text='关闭', command=win.destroy).pack(anchor='e', padx=14, pady=(0, 12))
+            actions = ttk.Frame(win, padding=(12, 0, 12, 12))
+            actions.pack(fill='x')
+            ttk.Button(actions, text='分析后续剧情影响', command=lambda: self.analyze_short_drama_continuity_impact(plan, win)).pack(side='left')
+            ttk.Button(actions, text='关闭', command=win.destroy).pack(side='right')
         except Exception as exc:
             messagebox.showerror('连续性台账打开失败', str(exc))
+
+    @ui_action
+    def analyze_short_drama_continuity_impact(self, plan, parent_window=None):
+        """Analyze downstream episode risks and display/save the report without rewriting scripts."""
+        if not self._ui_execution_gate(): return
+        try:
+            from tkinter import simpledialog
+            episodes = plan.get('episodes', []) if isinstance(plan, dict) else []
+            numbers = [int(item.get('episode_number', i + 1)) for i, item in enumerate(episodes) if isinstance(item, dict)]
+            eligible = [number for number in numbers if any(later > number for later in numbers)]
+            if not eligible:
+                messagebox.showinfo('剧情影响分析', '至少需要两集，且所选集之后还存在后续集数。', parent=parent_window or self)
+                return
+            selected = simpledialog.askinteger(
+                '分析后续剧情影响',
+                '输入要检查的集数。系统只分析该集对后续集的潜在影响，不会自动改写任何剧本。\n可选集数：' + '、'.join(map(str, eligible)),
+                minvalue=min(eligible), maxvalue=max(eligible), parent=parent_window or self,
+            )
+            if selected is None:
+                return
+            if selected not in eligible:
+                messagebox.showinfo('剧情影响分析', '所选集数之后没有后续集，请选择：' + '、'.join(map(str, eligible)), parent=parent_window or self)
+                return
+            report = analyze_episode_continuity_impact(self.model_router, plan, selected)
+            reports = plan.setdefault('continuity_impact_reports', [])
+            reports.append(report)
+            if self.project and isinstance(self.project.creative_plan, dict):
+                self.project.creative_plan['short_drama'] = plan
+                self.store.save(self.project)
+            win = tk.Toplevel(parent_window or self)
+            win.title(f'AI短剧｜第{selected}集后续影响分析')
+            win.geometry('820x620')
+            win.transient(parent_window or self)
+            ttk.Label(win, text=f'第{selected}集后续剧情影响：{str(report.get("overall_risk", "unknown")).upper()} 风险',
+                      font=('Microsoft YaHei UI', 14, 'bold')).pack(anchor='w', padx=14, pady=(12, 4))
+            ttk.Label(win, text=str(report.get('summary', '')), wraplength=780).pack(anchor='w', padx=14, pady=(0, 8))
+            view_frame = ttk.Frame(win, padding=(12, 0, 12, 8))
+            view_frame.pack(fill='both', expand=True)
+            view = tk.Text(view_frame, wrap='word', font=('Microsoft YaHei UI', 10))
+            scroll = ttk.Scrollbar(view_frame, orient='vertical', command=view.yview)
+            view.configure(yscrollcommand=scroll.set)
+            scroll.pack(side='right', fill='y')
+            view.pack(side='left', fill='both', expand=True)
+            for item in report.get('affected_episodes', []):
+                view.insert('end', f"第{item.get('episode_number', '?')}集｜风险：{item.get('risk', 'unknown')}\n")
+                for key, label in (('affected_elements', '受影响内容'), ('evidence', '依据'), ('recommended_actions', '建议动作')):
+                    view.insert('end', f"{label}：\n")
+                    for value in item.get(key, []):
+                        view.insert('end', f"  • {value}\n")
+                view.insert('end', '\n')
+            unaffected = report.get('unaffected_reasoning', [])
+            if unaffected:
+                view.insert('end', '暂未发现影响的后续集：\n')
+                for value in unaffected:
+                    view.insert('end', f"  • {value}\n")
+            view.insert('end', '\n注意：这是模型辅助分析，不会自动修改剧本。请人工确认风险和建议。')
+            view.configure(state='disabled')
+            ttk.Button(win, text='关闭', command=win.destroy).pack(anchor='e', padx=14, pady=(0, 12))
+        except Exception as exc:
+            messagebox.showerror('剧情影响分析失败', f'原有分集剧本未被自动改写。\n\n{exc}', parent=parent_window or self)
 
     @ui_action
     def show_short_drama_audit(self, plan):
@@ -2202,10 +2318,68 @@ class App(tk.Tk):
             actions = ttk.Frame(win)
             actions.pack(fill='x', padx=12, pady=(0, 10))
             if plan.get('drama_business_mode') == 'product_short_drama_ad':
+                ttk.Button(actions, text='AI 对比商品参考图', command=lambda: self.compare_short_drama_product_visual(plan, win)).pack(side='left', padx=(0, 6))
                 ttk.Button(actions, text='记录商品画面人工核验', command=lambda: self.record_short_drama_product_visual_review(plan, win)).pack(side='left')
             ttk.Button(actions, text='关闭', command=win.destroy).pack(side='right')
         except Exception as exc:
             messagebox.showerror('短剧复核失败', str(exc))
+
+    @ui_action
+    def compare_short_drama_product_visual(self, plan, parent_window=None):
+        """Run vision-assisted comparison, but never auto-approve a product shot."""
+        from tkinter import simpledialog
+        if not self._ui_execution_gate(): return
+        if not self.project:
+            return messagebox.showerror('无法进行视觉对比', '请先打开保存了该短剧方案的项目。')
+        try:
+            shots = plan.get('storyboard', [])
+            if not shots:
+                return messagebox.showinfo('没有分镜', '当前方案没有可对比的分镜。')
+            shot_number = simpledialog.askinteger('选择镜头', f'请输入要对比的镜头编号（1–{len(shots)}）：', minvalue=1, maxvalue=len(shots), parent=parent_window or self)
+            if shot_number is None: return
+            references = filedialog.askopenfilenames(
+                parent=parent_window or self,
+                title='选择商品参考图片（可多选）',
+                filetypes=[('图片', '*.png *.jpg *.jpeg *.webp *.bmp'), ('所有文件', '*.*')],
+            )
+            if not references:
+                self.detail.set('已取消视觉对比；没有更改核验状态。')
+                return
+            generated = filedialog.askopenfilename(
+                parent=parent_window or self,
+                title='选择该镜头生成的图片或视频',
+                filetypes=[('图片或视频', '*.png *.jpg *.jpeg *.webp *.bmp *.mp4 *.mov *.mkv *.avi'), ('所有文件', '*.*')],
+            )
+            if not generated:
+                self.detail.set('已取消视觉对比；没有更改核验状态。')
+                return
+            if not messagebox.askyesno(
+                '开始 AI 视觉对比',
+                '将调用“商品画面视觉核验”路由的视觉模型，对参考图和生成画面进行比较。'
+                '这可能产生模型调用费用；结果不会自动判定通过，仍需人工复核。是否继续？',
+                parent=parent_window or self,
+            ):
+                return
+            updated = compare_product_visual_shot(self.model_router, plan, shot_number, list(references), generated)
+            self.project.creative_plan['short_drama'] = updated
+            self.project.creative_plan.pop('short_drama_audit', None)
+            self.store.save(self.project)
+            plan.clear()
+            plan.update(updated)
+            result = updated['storyboard'][shot_number - 1].get('visual_comparison_result', {}).get('result', {})
+            self.detail.set(f'第{shot_number}镜 AI 视觉对比完成；状态为人工复核待定。')
+            messagebox.showinfo(
+                '视觉对比完成',
+                f"第{shot_number}镜对比完成。当前状态：{updated['storyboard'][shot_number - 1]['visual_verification']}。\n"
+                f"模型摘要：{result.get('summary', '无摘要')}\n"
+                'AI 结果不能自动批准商品真实性，请人工核对外观、结构、功能和正确用法。',
+                parent=parent_window or self,
+            )
+            if parent_window and parent_window.winfo_exists():
+                parent_window.destroy()
+            self.show_short_drama_audit(plan)
+        except Exception as exc:
+            messagebox.showerror('商品画面视觉对比失败', str(exc))
 
     @ui_action
     def record_short_drama_product_visual_review(self, plan, parent_window=None):
@@ -2340,6 +2514,7 @@ class App(tk.Tk):
                     status='待生成',
                     duration_seconds=row['duration_seconds'],
                     episode_number=int(row.get('episode_number', 1)),
+                    short_drama_shot_number=int(row['index']),
                 )
                 for row in rows
             ]

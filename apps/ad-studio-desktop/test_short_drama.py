@@ -1,9 +1,10 @@
 import unittest
+import json
 
 from ad_studio.short_drama import (
-    ShortDramaPlanError, build_short_drama_prompt, generate_short_drama,
+    ShortDramaPlanError, build_short_drama_prompt, generate_short_drama, analyze_episode_continuity_impact, product_visual_correction_suggestion,
     audit_short_drama, build_episode_continuity_ledger, short_drama_production_rows, validate_short_drama,
-    generate_next_short_drama_episode, record_product_visual_verification,
+    generate_next_short_drama_episode, record_product_visual_verification, compare_product_visual_shot,
 )
 
 
@@ -16,11 +17,38 @@ def sample_plan():
         "premise": "日常问题引发连续误会",
         "world": "现代城市公寓与通勤路上",
         "characters": [{"name": "小林", "role": "主角", "goal": "准时出门",
-                        "relationship": "同事", "arc": "从慌乱到从容"}],
+                        "motivation": "不想再次让同事失望", "fear_or_secret": "害怕被认为不可靠",
+                        "relationship": "同事", "relationship_dynamics": "同事依赖其准时交接，但此前已有一次迟到",
+                        "decision_pressure": "距离约定时间只剩十分钟", "arc": "从慌乱回避转向主动建立准备习惯"}],
         "plot_beats": ["意外开场", "误会升级", "商品自然解决问题", "轻松收尾"],
         "conflict_and_reversal": "主角以为问题无法解决，后来发现关键在准备方式",
+        "causal_chain": [
+            {"step": 1, "event": "主角发现钥匙不在固定位置", "caused_by": "开场初始条件：前一晚匆忙回家后随手放置物品",
+             "character_choice": "先翻找玄关而不回想昨晚的行动", "consequence": "时间被消耗且没有找到钥匙",
+             "state_change": "剩余出门时间缩短，主角压力增加", "script_evidence": "主角发现钥匙不在固定位置", "storyboard_indices": [1]},
+            {"step": 2, "event": "主角沿回家路线回忆并检查收纳处", "caused_by": "第一步翻找失败，时间压力迫使其改变策略",
+             "character_choice": "停止盲目翻找，按昨晚行动顺序排查", "consequence": "发现自己临时更换过放置位置",
+             "state_change": "人物从慌乱转为有依据地行动，并获得新线索", "script_evidence": "主角沿回家路线回忆并检查收纳处", "storyboard_indices": [1]},
+            {"step": 3, "event": "主角找到钥匙并决定建立固定归位习惯", "caused_by": "第二步发现临时放置是反复丢失的原因",
+             "character_choice": "主动设置固定收纳点", "consequence": "及时出门并减少同类问题再次发生",
+             "state_change": "主角获得掌控感，同事对其可靠性的担忧缓解", "script_evidence": "主角找到钥匙并决定建立固定归位习惯", "storyboard_indices": [1]}
+        ],
+        "story_engine": {
+            "protagonist_goal": "准时出门并带齐必需物品",
+            "opposing_force": "重要物品失踪且出门时间逼近",
+            "stakes": "错过约定并失去同事信任",
+            "escalation_steps": ["发现物品不在原处", "回想路线仍找不到", "发现误判来自临时更换收纳位置"],
+            "turning_point": "主角意识到问题源于每次随手放置",
+            "setup_and_payoff": "开场出现的空置收纳位在结尾成为固定归位点",
+            "emotional_payoff": "从慌乱转为掌控感"
+        },
+        "hook_design": {
+            "opening_question": "主角能否在出门前找到关键物品？",
+            "retention_devices": ["不断逼近的时间", "物品去向线索逐步揭开"],
+            "payoff": "开场疑问得到明确解决并展示新的习惯"
+        },
         "ending": "主角从容赴约",
-        "full_script": "场景一：主角匆忙寻找物品……",
+        "full_script": "主角发现钥匙不在固定位置。主角沿回家路线回忆并检查收纳处。主角找到钥匙并决定建立固定归位习惯。",
         "storyboard": [{
             "index": 1, "scene": "公寓玄关", "location": "现代公寓",
             "characters": ["小林"], "action": "主角翻找物品并看向时钟",
@@ -34,13 +62,168 @@ def sample_plan():
         "product_truths": ["仅使用已确认商品信息"],
         "risk_notes": ["商品具体参数待确认"],
         "alternative_directions": [
-            {"title": "反转喜剧", "mechanism": "误会反转", "conversion_path": "演示后引导了解"},
-            {"title": "温情日常", "mechanism": "关系变化", "conversion_path": "情境共鸣后介绍"}
+            {"title": "反转喜剧", "mechanism": "误会反转", "conflict_source": "物品丢失导致误会",
+             "protagonist_choice": "承认自己放错物品还是责怪他人", "reversal_mechanism": "早期线索揭示物品一直在身边",
+             "product_role": "作为整理工具帮助定位", "audience_hook": "限时寻找造成紧张感", "conversion_path": "演示后引导了解"},
+            {"title": "温情日常", "mechanism": "关系变化", "conflict_source": "家人之间长期缺乏沟通",
+             "protagonist_choice": "主动沟通还是继续回避", "reversal_mechanism": "旧物触发记忆并改变双方理解",
+             "product_role": "作为共同整理回忆的道具", "audience_hook": "关系修复引发情感共鸣", "conversion_path": "情境共鸣后介绍"}
         ]
     }
 
 
 class ShortDramaTests(unittest.TestCase):
+    def test_audit_warns_when_causal_event_is_not_shown_in_referenced_shot(self):
+        plan = sample_plan()
+        plan["causal_chain"][0]["event"] = "主角突然打开红色保险箱"
+        report = audit_short_drama(plan)
+        self.assertIn("CAUSAL_EVENT_NOT_SHOWN", {item["code"] for item in report["issues"]})
+
+    def test_audit_warns_when_turning_point_is_not_in_shots(self):
+        plan = sample_plan()
+        plan["story_engine"]["turning_point"] = "主角发现邻居一直在跟踪自己"
+        report = audit_short_drama(plan)
+        self.assertIn("TURNING_POINT_NOT_STORYBOARDED", {item["code"] for item in report["issues"]})
+
+    def test_audit_warns_when_setup_payoff_is_not_in_shots(self):
+        plan = sample_plan()
+        plan["story_engine"]["setup_and_payoff"] = "开场墙上的地图最终揭示密室入口"
+        report = audit_short_drama(plan)
+        self.assertIn("SETUP_PAYOFF_NOT_STORYBOARDED", {item["code"] for item in report["issues"]})
+
+    def test_audit_warns_when_relationship_change_is_not_specified(self):
+        plan = sample_plan()
+        plan["characters"].append({
+            "name": "小王", "role": "同事", "goal": "得到帮助",
+            "motivation": "希望合作顺利", "fear_or_secret": "担心被忽视",
+            "relationship": "同事", "relationship_dynamics": "彼此依赖但沟通不足",
+            "decision_pressure": "交接时间临近", "arc": "从怀疑转向合作"
+        })
+        report = audit_short_drama(plan)
+        self.assertIn("RELATIONSHIP_CHANGE_UNSPECIFIED", {item["code"] for item in report["issues"]})
+
+    def test_audit_warns_when_relationship_change_is_not_shown_in_referenced_shot(self):
+        plan = sample_plan()
+        plan["characters"].append({
+            "name": "小王", "role": "同事", "goal": "得到帮助",
+            "motivation": "希望合作顺利", "fear_or_secret": "担心被忽视",
+            "relationship": "同事", "relationship_dynamics": "彼此依赖但沟通不足",
+            "decision_pressure": "交接时间临近", "arc": "从怀疑转向合作"
+        })
+        plan["causal_chain"][0]["relationship_change"] = "小王开始信任小林"
+        report = audit_short_drama(plan)
+        self.assertIn("RELATIONSHIP_CHANGE_NOT_SHOWN", {item["code"] for item in report["issues"]})
+
+    def test_audit_warns_when_state_continuity_is_not_defined(self):
+        plan = sample_plan()
+        plan["causal_chain"][0].pop("state_continuity", None)
+        report = audit_short_drama(plan)
+        self.assertIn("STATE_CONTINUITY_UNSPECIFIED", {item["code"] for item in report["issues"]})
+
+    def test_audit_warns_when_state_continuity_references_unknown_character(self):
+        plan = sample_plan()
+        plan["causal_chain"][0]["state_continuity"] = {
+            "affected_characters": ["不存在的人物"],
+            "required_follow_through": "无后续影响",
+            "storyboard_indices": [],
+        }
+        report = audit_short_drama(plan)
+        self.assertIn("STATE_CONTINUITY_UNKNOWN_CHARACTER", {item["code"] for item in report["issues"]})
+
+    def test_audit_warns_when_follow_through_is_not_shown_in_later_shot(self):
+        plan = sample_plan()
+        plan["storyboard"].append({
+            "index": 3, "scene": "办公室", "location": "办公室", "characters": ["小林"],
+            "action": "小林继续寻找钥匙", "dialogue": "", "product_integration": "本镜不出现商品",
+            "shot_type": "中景", "duration_seconds": 4, "generation_prompt": "小林继续寻找钥匙",
+        })
+        plan["causal_chain"][0]["state_continuity"] = {
+            "affected_characters": ["小林"],
+            "required_follow_through": "小林把钥匙交给同事",
+            "storyboard_indices": [3],
+        }
+        report = audit_short_drama(plan)
+        self.assertIn("STATE_CONTINUITY_NOT_SHOWN", {item["code"] for item in report["issues"]})
+
+    def test_audit_accepts_explicit_no_downstream_state_effect(self):
+        plan = sample_plan()
+        for step in plan["causal_chain"]:
+            step["state_continuity"] = {
+                "affected_characters": ["小林"],
+                "required_follow_through": "无后续影响",
+                "storyboard_indices": [],
+            }
+        report = audit_short_drama(plan)
+        codes = {item["code"] for item in report["issues"]}
+        self.assertNotIn("STATE_CONTINUITY_UNSPECIFIED", codes)
+        self.assertNotIn("STATE_CONTINUITY_SHOTS_MISSING", codes)
+
+    def test_prompt_requires_story_event_references_and_shootable_turning_point(self):
+        prompt = build_short_drama_prompt({"name": "商品"}, {"drama_business_mode": "product_placement"})
+        self.assertIn("narrative_function", prompt)
+        self.assertIn("story_event_reference", prompt)
+        self.assertIn("relationship_change", prompt)
+        self.assertIn("state_continuity", prompt)
+        self.assertIn("required_follow_through", prompt)
+        self.assertIn("前置线索", prompt)
+
+    def test_audit_warns_when_action_basis_names_character_not_in_shot(self):
+        plan = sample_plan()
+        plan["storyboard"][0]["character_action_basis"] = [{
+            "character_name": "小林", "goal_or_motivation": "准时出门",
+            "known_information": "钥匙不在固定位置", "knowledge_source": "主角发现钥匙不在固定位置",
+            "decision_pressure": "时间紧迫", "choice_rationale": "先翻找玄关"
+        }, {
+            "character_name": "小王", "goal_or_motivation": "帮忙",
+            "known_information": "钥匙不在固定位置", "knowledge_source": "主角发现钥匙不在固定位置",
+            "decision_pressure": "时间紧迫", "choice_rationale": "查看门口"
+        }]
+        report = audit_short_drama(plan)
+        self.assertIn("CHARACTER_ACTION_BASIS_NOT_IN_SHOT", {item["code"] for item in report["issues"]})
+        self.assertIn("CHARACTER_ACTION_BASIS_UNKNOWN_CHARACTER", {item["code"] for item in report["issues"]})
+
+    def test_audit_warns_when_action_basis_omits_character_from_character_list(self):
+        plan = sample_plan()
+        plan["storyboard"][0]["character_action_basis"] = [{
+            "character_name": "小王", "goal_or_motivation": "帮忙",
+            "known_information": "钥匙不在固定位置", "knowledge_source": "主角发现钥匙不在固定位置",
+            "decision_pressure": "时间紧迫", "choice_rationale": "查看门口"
+        }]
+        report = audit_short_drama(plan)
+        codes = {item["code"] for item in report["issues"]}
+        self.assertIn("CHARACTER_ACTION_BASIS_NOT_IN_SHOT", codes)
+        self.assertIn("CHARACTER_ACTION_BASIS_UNKNOWN_CHARACTER", codes)
+
+    def test_audit_warns_when_character_action_has_no_basis(self):
+        plan = sample_plan()
+        report = audit_short_drama(plan)
+        self.assertIn("CHARACTER_ACTION_BASIS_MISSING", {item["code"] for item in report["issues"]})
+
+    def test_audit_warns_when_character_knowledge_source_is_not_script_evidence(self):
+        plan = sample_plan()
+        plan["storyboard"][0]["character_action_basis"] = [{
+            "character_name": "小林",
+            "goal_or_motivation": "准时出门",
+            "known_information": "钥匙被邻居拿走",
+            "knowledge_source": "邻居亲口承认偷走钥匙",
+            "decision_pressure": "马上迟到",
+            "choice_rationale": "直接去邻居家质问"
+        }]
+        report = audit_short_drama(plan)
+        self.assertIn("CHARACTER_KNOWLEDGE_SOURCE_UNTRACEABLE", {item["code"] for item in report["issues"]})
+
+    def test_audit_warns_when_causal_character_choice_is_not_in_referenced_shot(self):
+        plan = sample_plan()
+        plan["causal_chain"][0]["character_choice"] = "主角打电话向物业申请调取监控"
+        report = audit_short_drama(plan)
+        self.assertIn("CHARACTER_CHOICE_NOT_SHOWN", {item["code"] for item in report["issues"]})
+
+    def test_audit_warns_for_incomplete_character_action_basis(self):
+        plan = sample_plan()
+        plan["storyboard"][0]["character_action_basis"] = [{"character_name": "小林", "goal_or_motivation": "准时出门"}]
+        report = audit_short_drama(plan)
+        self.assertIn("CHARACTER_ACTION_BASIS_INCOMPLETE", {item["code"] for item in report["issues"]})
+
     def test_validates_story_first_plan(self):
         plan = validate_short_drama(sample_plan())
         self.assertEqual(plan["storyboard"][0]["duration_seconds"], 4)
@@ -65,6 +248,115 @@ class ShortDramaTests(unittest.TestCase):
         general_prompt = build_short_drama_prompt({}, {"drama_business_mode": "general"})
         self.assertIn("允许完全不带商品", general_prompt)
 
+    def test_generation_rejects_missing_causal_chain(self):
+        plan = sample_plan()
+        plan.pop("causal_chain")
+        class FakeRouter:
+            def resolve_route(self, function): return "profile"
+            def complete_json(self, profile, prompt, function=None): return plan
+        with self.assertRaisesRegex(ShortDramaPlanError, "至少3步 causal_chain"):
+            generate_short_drama(FakeRouter(), {"name": "商品"}, {"drama_business_mode": "product_placement"})
+
+    def test_generation_rejects_causal_evidence_not_in_script(self):
+        plan = sample_plan()
+        plan["causal_chain"][0]["script_evidence"] = "剧本里没有的事件"
+        class FakeRouter:
+            def resolve_route(self, function): return "profile"
+            def complete_json(self, profile, prompt, function=None): return plan
+        with self.assertRaisesRegex(ShortDramaPlanError, "不是 full_script 原文"):
+            generate_short_drama(FakeRouter(), {"name": "商品"}, {"drama_business_mode": "product_placement"})
+
+    def test_generation_rejects_causal_chain_with_invalid_storyboard_reference(self):
+        plan = sample_plan()
+        plan["causal_chain"][1]["storyboard_indices"] = [99]
+        class FakeRouter:
+            def resolve_route(self, function): return "profile"
+            def complete_json(self, profile, prompt, function=None): return plan
+        with self.assertRaisesRegex(ShortDramaPlanError, "不存在的分镜位置"):
+            generate_short_drama(FakeRouter(), {"name": "商品"}, {"drama_business_mode": "product_placement"})
+
+    def test_audit_flags_causal_script_and_storyboard_mismatch(self):
+        plan = sample_plan()
+        plan["causal_chain"][0]["script_evidence"] = "不存在于剧本的证据"
+        plan["causal_chain"][1]["storyboard_indices"] = [99]
+        report = audit_short_drama(plan)
+        codes = {item["code"] for item in report["issues"]}
+        self.assertIn("CAUSAL_SCRIPT_MISMATCH", codes)
+        self.assertIn("CAUSAL_STORYBOARD_MISMATCH", codes)
+
+    def test_generation_rejects_causal_step_without_consequence(self):
+        plan = sample_plan()
+        del plan["causal_chain"][1]["consequence"]
+        class FakeRouter:
+            def resolve_route(self, function): return "profile"
+            def complete_json(self, profile, prompt, function=None): return plan
+        with self.assertRaisesRegex(ShortDramaPlanError, "因果链第2步缺少"):
+            generate_short_drama(FakeRouter(), {"name": "商品"}, {"drama_business_mode": "product_placement"})
+
+    def test_audit_warns_when_causal_chain_is_missing(self):
+        plan = sample_plan()
+        plan.pop("causal_chain")
+        report = audit_short_drama(plan)
+        self.assertIn("CAUSAL_CHAIN_INCOMPLETE", {item["code"] for item in report["issues"]})
+
+    def test_generation_rejects_character_without_motivation_and_relationship_dynamics(self):
+        plan = sample_plan()
+        del plan["characters"][0]["motivation"]
+        class FakeRouter:
+            def resolve_route(self, function): return "profile"
+            def complete_json(self, profile, prompt, function=None): return plan
+        with self.assertRaisesRegex(ShortDramaPlanError, "人物缺少完整动机/关系字段"):
+            generate_short_drama(FakeRouter(), {"name": "商品"}, {"drama_business_mode": "product_placement"})
+
+    def test_audit_warns_when_character_motivation_is_missing(self):
+        plan = sample_plan()
+        del plan["characters"][0]["motivation"]
+        report = audit_short_drama(plan)
+        self.assertIn("CHARACTER_MOTIVATION_INCOMPLETE", {item["code"] for item in report["issues"]})
+
+    def test_generation_rejects_duplicate_story_direction_mechanisms(self):
+        plan = sample_plan()
+        plan["alternative_directions"][1]["conflict_source"] = plan["alternative_directions"][0]["conflict_source"]
+        plan["alternative_directions"][1]["protagonist_choice"] = plan["alternative_directions"][0]["protagonist_choice"]
+        plan["alternative_directions"][1]["reversal_mechanism"] = plan["alternative_directions"][0]["reversal_mechanism"]
+        class FakeRouter:
+            def resolve_route(self, function): return "profile"
+            def complete_json(self, profile, prompt, function=None): return plan
+        with self.assertRaisesRegex(ShortDramaPlanError, "完全重复"):
+            generate_short_drama(FakeRouter(), {"name": "商品"}, {"drama_business_mode": "product_placement"})
+
+    def test_generation_requires_distinct_story_direction_fields(self):
+        plan = sample_plan()
+        del plan["alternative_directions"][0]["audience_hook"]
+        class FakeRouter:
+            def resolve_route(self, function): return "profile"
+            def complete_json(self, profile, prompt, function=None): return plan
+        with self.assertRaisesRegex(ShortDramaPlanError, "缺少完整字段"):
+            generate_short_drama(FakeRouter(), {"name": "商品"}, {"drama_business_mode": "product_placement"})
+
+    def test_generation_rejects_short_drama_without_causal_story_engine(self):
+        plan = sample_plan()
+        plan.pop("story_engine")
+        class FakeRouter:
+            def resolve_route(self, function): return "profile"
+            def complete_json(self, profile, prompt, function=None): return plan
+        with self.assertRaisesRegex(ShortDramaPlanError, "story_engine"):
+            generate_short_drama(FakeRouter(), {"name": "商品"}, {"drama_business_mode": "product_placement"})
+
+    def test_generation_rejects_story_with_too_few_escalation_steps(self):
+        plan = sample_plan()
+        plan["story_engine"]["escalation_steps"] = ["只有一步"]
+        class FakeRouter:
+            def resolve_route(self, function): return "profile"
+            def complete_json(self, profile, prompt, function=None): return plan
+        with self.assertRaisesRegex(ShortDramaPlanError, "至少需要3个具体步骤"):
+            generate_short_drama(FakeRouter(), {"name": "商品"}, {"drama_business_mode": "product_placement"})
+
+    def test_generation_prompt_requires_causal_conflict_hook_and_payoff(self):
+        prompt = build_short_drama_prompt({"name": "商品"}, {"drama_business_mode": "product_placement"})
+        for term in ("story_engine", "hook_design", "causal_chain", "因果步骤", "逐级升级的冲突", "伏笔", "不得只靠角色夸赞"):
+            self.assertIn(term, prompt)
+
     def test_builds_existing_production_contract(self):
         rows = short_drama_production_rows(sample_plan(), "测试商品")
         self.assertEqual(rows[0]["duration_seconds"], 4)
@@ -72,6 +364,24 @@ class ShortDramaTests(unittest.TestCase):
         self.assertEqual(rows[0]["asset_resolution"]["scene_tags"], ["公寓玄关"])
         self.assertEqual(rows[0]["asset_resolution"]["product_tags"], [])
         self.assertEqual(rows[0]["director_mode"], "short_drama")
+
+    def test_audit_flags_missing_story_engine_and_hook_design(self):
+        plan = sample_plan()
+        plan.pop("story_engine")
+        plan.pop("hook_design")
+        result = audit_short_drama(plan)
+        codes = {issue["code"] for issue in result["issues"]}
+        self.assertIn("STORY_ENGINE_INCOMPLETE", codes)
+        self.assertIn("HOOK_DESIGN_INCOMPLETE", codes)
+
+    def test_audit_flags_weak_escalation_and_retention_design(self):
+        plan = sample_plan()
+        plan["story_engine"]["escalation_steps"] = ["一步"]
+        plan["hook_design"]["retention_devices"] = ["一种"]
+        result = audit_short_drama(plan)
+        codes = {issue["code"] for issue in result["issues"]}
+        self.assertIn("STORY_ESCALATION_WEAK", codes)
+        self.assertIn("RETENTION_DESIGN_WEAK", codes)
 
     def test_audit_flags_ad_claim_and_unknown_character(self):
         plan = sample_plan()
@@ -181,6 +491,73 @@ class ShortDramaTests(unittest.TestCase):
         self.assertEqual(len(result["storyboard"]), 1)
 
 
+    def test_continuity_impact_analysis_reports_only_existing_downstream_episodes(self):
+        plan = sample_plan()
+        plan["format_mode"] = "continuous_series"
+        plan["episode_count"] = 3
+        state = lambda opening, ending, requirements: {
+            "opening_state": opening, "character_state_changes": [], "unresolved_threads": [],
+            "ending_state": ending, "next_episode_requirements": requirements,
+        }
+        plan["episodes"] = [
+            {"episode_number": 1, "title": "起因", "full_script": "第一集", "plot_beats": ["起因"], "ending_hook": "线索出现",
+             "continuity_state": state("主角出门", "主角拿到便条", ["第二集必须解释便条"]) , "storyboard": [dict(plan["storyboard"][0])]},
+            {"episode_number": 2, "title": "追查", "full_script": "第二集", "plot_beats": ["追查"], "ending_hook": "发现旧档案",
+             "continuity_state": state("主角拿着便条", "发现档案", ["第三集继续查档案"]), "storyboard": [dict(plan["storyboard"][0])]},
+            {"episode_number": 3, "title": "揭晓", "full_script": "第三集", "plot_beats": ["揭晓"], "ending_hook": "结局",
+             "continuity_state": state("主角查看档案", "真相揭晓", []), "storyboard": [dict(plan["storyboard"][0])]},
+        ]
+        plan["storyboard"] = []
+        for episode in plan["episodes"]:
+            for shot in episode["storyboard"]:
+                shot["episode_number"] = episode["episode_number"]
+                plan["storyboard"].append(shot)
+        plan["continuity_ledger"] = build_episode_continuity_ledger(plan)
+        seen = {}
+        class FakeRouter:
+            def resolve_route(self, function):
+                seen["route"] = function
+                return "profile"
+            def complete_json(self, profile, prompt, function=None):
+                seen["prompt"] = prompt
+                return {
+                    "source_episode_number": 1, "overall_risk": "high", "summary": "便条变化会影响后续追查",
+                    "affected_episodes": [{"episode_number": 2, "risk": "high",
+                        "affected_elements": ["便条"], "evidence": ["第二集开场依赖便条"],
+                        "recommended_actions": ["同步修改第二集开场"]}],
+                    "unaffected_reasoning": ["第三集是否受影响需先检查第二集修改结果"],
+                }
+        report = analyze_episode_continuity_impact(FakeRouter(), plan, 1)
+        self.assertEqual(report["source_episode_number"], 1)
+        self.assertTrue(report["human_review_required"])
+        self.assertEqual(report["affected_episodes"][0]["episode_number"], 2)
+        self.assertEqual(seen["route"], "AI短剧编导")
+        self.assertIn("不要直接改写", seen["prompt"])
+
+    def test_continuity_impact_analysis_rejects_non_downstream_episode(self):
+        plan = sample_plan()
+        plan["format_mode"] = "continuous_series"
+        plan["episode_count"] = 2
+        state = {"opening_state": "A", "character_state_changes": [], "unresolved_threads": [],
+                 "ending_state": "B", "next_episode_requirements": []}
+        plan["episodes"] = [
+            {"episode_number": 1, "continuity_state": dict(state), "storyboard": [dict(plan["storyboard"][0])]},
+            {"episode_number": 2, "continuity_state": dict(state), "storyboard": [dict(plan["storyboard"][0])]},
+        ]
+        plan["storyboard"] = []
+        for episode in plan["episodes"]:
+            shot = dict(episode["storyboard"][0])
+            shot["episode_number"] = episode["episode_number"]
+            plan["storyboard"].append(shot)
+        class FakeRouter:
+            def resolve_route(self, function): return "profile"
+            def complete_json(self, profile, prompt, function=None):
+                return {"source_episode_number": 1, "overall_risk": "medium", "summary": "风险",
+                        "affected_episodes": [{"episode_number": 99, "risk": "high", "affected_elements": [],
+                            "evidence": [], "recommended_actions": []}], "unaffected_reasoning": []}
+        with self.assertRaisesRegex(ShortDramaPlanError, "不存在或非后续集数"):
+            analyze_episode_continuity_impact(FakeRouter(), plan, 1)
+
     def test_next_episode_uses_handoff_context_and_preserves_previous_episode(self):
         plan = sample_plan()
         plan["format_mode"] = "continuous_series"
@@ -231,6 +608,39 @@ class ShortDramaTests(unittest.TestCase):
         with self.assertRaisesRegex(ShortDramaPlanError, "要求第2集"):
             generate_next_short_drama_episode(FakeRouter(), plan, {})
 
+
+    def test_product_fact_lock_warns_when_confirmed_fact_has_no_source(self):
+        plan = sample_plan()
+        plan["drama_business_mode"] = "product_short_drama_ad"
+        plan["product_analysis"] = {"product_type": "用品", "target_audience": "普通用户", "selling_points": [], "usage_scenarios": [], "unknown_facts": ["续航24小时"]}
+        plan["genre_decision"] = {"selected_genre": "现实轻喜剧", "reasoning": "用于测试"}
+        plan["storyboard"][0]["product_fidelity_constraints"] = ["保持真实外观与功能"]
+        plan["product_fact_lock"] = {"confirmed_facts": ["耐热200度"], "unknown_or_unverified": ["续航24小时"], "appearance_structure_function_constraints": ["保持真实外观"]}
+        plan["full_script"] = "这款产品耐热200度，续航24小时。"
+        report = audit_short_drama(plan, {"name": "商品", "description": "普通收纳用品"})
+        codes = {item["code"] for item in report["issues"]}
+        self.assertIn("PRODUCT_CONFIRMED_FACT_UNSUPPORTED", codes)
+        self.assertIn("PRODUCT_UNKNOWN_FACT_USED", codes)
+
+    def test_product_fact_lock_allows_unknown_fact_marked_unverified(self):
+        plan = sample_plan()
+        plan["drama_business_mode"] = "product_short_drama_ad"
+        plan["product_analysis"] = {"product_type": "用品", "target_audience": "普通用户", "selling_points": [], "usage_scenarios": [], "unknown_facts": ["续航24小时"]}
+        plan["genre_decision"] = {"selected_genre": "现实轻喜剧", "reasoning": "用于测试"}
+        plan["storyboard"][0]["product_fidelity_constraints"] = ["保持真实外观与功能"]
+        plan["product_fact_lock"] = {"confirmed_facts": [], "unknown_or_unverified": ["续航24小时"], "appearance_structure_function_constraints": ["保持真实外观"]}
+        plan["full_script"] = "续航24小时尚未核实，不得作为宣传结论。"
+        report = audit_short_drama(plan, {"name": "商品", "description": "普通用品"})
+        self.assertNotIn("PRODUCT_UNKNOWN_FACT_USED", {item["code"] for item in report["issues"]})
+    def test_audit_warns_for_selling_point_not_in_shot_text(self):
+        plan = sample_plan()
+        plan["drama_business_mode"] = "product_placement"
+        plan["product_analysis"] = {"selling_points": ["foldable storage"]}
+        for shot in plan["storyboard"]:
+            shot["product_integration"] = "product sits on a table"
+            shot["action"] = "person enters the room and sits down"
+        report = audit_short_drama(plan, {"name": "storage item", "description": "daily use"})
+        self.assertIn("PRODUCT_SELLING_POINT_NOT_SHOWN", {item["code"] for item in report["issues"]})
 
     def test_product_short_drama_ad_requires_fidelity_constraints_and_explains_genre(self):
         plan = sample_plan()
@@ -310,17 +720,298 @@ class ShortDramaTests(unittest.TestCase):
         report = audit_short_drama(plan, {"name": "商品"})
         self.assertIn("PRODUCT_VISUAL_NOT_VERIFIED", {issue["code"] for issue in report["issues"]})
 
-    def test_manual_product_visual_review_persists_evidence(self):
+    def test_audit_rejects_stale_or_missing_manual_visual_evidence(self):
+        import tempfile
+        from pathlib import Path
+
         plan = sample_plan()
         plan["drama_business_mode"] = "product_short_drama_ad"
-        reviewed = record_product_visual_verification(
-            plan, 1, "passed", "C:/renders/shot-01.png", "外观、结构、功能及正确用法均与商品资料一致"
-        )
-        shot = reviewed["storyboard"][0]
-        self.assertEqual(shot["visual_verification"], "passed")
-        self.assertEqual(shot["visual_verification_evidence"], "C:/renders/shot-01.png")
-        self.assertEqual(shot["visual_verification_method"], "manual")
-        self.assertIn("外观、结构", shot["visual_verification_note"])
+        plan["product_analysis"] = {"product_type": "用品"}
+        plan["genre_decision"] = {"selected_genre": "古代", "reasoning": "测试用题材理由"}
+        plan["product_fact_lock"] = {
+            "confirmed_facts": ["外观以参考图为准"],
+            "unknown_or_unverified": ["未确认参数"],
+            "appearance_structure_function_constraints": ["不得改变商品外观、结构和功能"],
+        }
+        shot = plan["storyboard"][0]
+        shot["product_fidelity_constraints"] = ["保持外观、结构、功能及正确用法"]
+        shot.update({
+            "visual_verification": "passed",
+            "visual_verification_method": "manual",
+            "visual_verification_evidence": "C:/old-render/shot-01.png",
+            "visual_verification_note": "曾经人工核验",
+        })
+        report = audit_short_drama(plan, {"name": "商品"})
+        self.assertIn("PRODUCT_VISUAL_NOT_VERIFIED", {issue["code"] for issue in report["issues"]})
+
+        with tempfile.TemporaryDirectory() as folder:
+            evidence = Path(folder) / "shot-01.png"
+            evidence.write_bytes(b"real image evidence")
+            shot["visual_verification_evidence"] = str(evidence)
+            report = audit_short_drama(plan, {"name": "商品"})
+            self.assertNotIn("PRODUCT_VISUAL_NOT_VERIFIED", {issue["code"] for issue in report["issues"]})
+
+    def test_manual_product_visual_review_persists_real_evidence(self):
+        import tempfile
+        from pathlib import Path
+
+        plan = sample_plan()
+        plan["drama_business_mode"] = "product_short_drama_ad"
+        with tempfile.TemporaryDirectory() as folder:
+            evidence = Path(folder) / "shot-01.png"
+            evidence.write_bytes(b"image evidence")
+            reviewed = record_product_visual_verification(
+                plan, 1, "passed", str(evidence), "外观、结构、功能及正确用法均与商品资料一致"
+            )
+            shot = reviewed["storyboard"][0]
+            self.assertEqual(shot["visual_verification"], "passed")
+            self.assertEqual(shot["visual_verification_evidence"], str(evidence.resolve()))
+            self.assertEqual(shot["visual_verification_method"], "manual")
+            self.assertIn("外观、结构", shot["visual_verification_note"])
+
+    def test_manual_product_visual_review_rejects_missing_empty_or_unsupported_evidence(self):
+        import tempfile
+        from pathlib import Path
+
+        plan = sample_plan()
+        plan["drama_business_mode"] = "product_short_drama_ad"
+        with tempfile.TemporaryDirectory() as folder:
+            empty = Path(folder) / "empty.png"
+            empty.touch()
+            unsupported = Path(folder) / "notes.txt"
+            unsupported.write_text("not visual evidence", encoding="utf-8")
+            with self.assertRaisesRegex(ShortDramaPlanError, "不存在、为空或无法读取"):
+                record_product_visual_verification(
+                    plan, 1, "passed", str(Path(folder) / "missing.png"), "已对照商品检查"
+                )
+            with self.assertRaisesRegex(ShortDramaPlanError, "不存在、为空或无法读取"):
+                record_product_visual_verification(plan, 1, "passed", str(empty), "已对照商品检查")
+            with self.assertRaisesRegex(ShortDramaPlanError, "受支持的图片或视频"):
+                record_product_visual_verification(plan, 1, "passed", str(unsupported), "已对照商品检查")
+
+
+    def test_ai_visual_comparison_flags_mismatch_without_auto_approval(self):
+        import tempfile
+        from pathlib import Path
+
+        class VisionProfile:
+            id = "vision-test"
+            name = "vision-test"
+            vision_enabled = True
+
+        class FakeRouter:
+            def resolve_route(self, function):
+                self.function = function
+                return VisionProfile()
+
+            def complete_json(self, profile, prompt, function=None, image_paths=None):
+                self.image_paths = image_paths
+                return {
+                    "identity_match": True, "appearance_match": False,
+                    "structure_match": True, "function_match": None, "usage_match": True,
+                    "mismatch_detected": True, "confidence": 0.91,
+                    "issues": ["商品颜色疑似不一致"], "summary": "发现疑似颜色不一致，需人工确认",
+                }
+
+        with tempfile.TemporaryDirectory() as folder:
+            ref = Path(folder) / "reference.png"
+            generated = Path(folder) / "shot.png"
+            ref.write_bytes(b"fake-image-reference")
+            generated.write_bytes(b"fake-generated-image")
+            plan = sample_plan()
+            plan["drama_business_mode"] = "product_short_drama_ad"
+            router = FakeRouter()
+            result = compare_product_visual_shot(router, plan, 1, [str(ref)], str(generated))
+            shot = result["storyboard"][0]
+            self.assertEqual(router.function, "商品画面视觉核验")
+            self.assertEqual(shot["visual_verification"], "failed")
+            self.assertEqual(shot["visual_verification_method"], "ai_vision_assisted")
+            self.assertTrue(shot["visual_comparison_result"]["requires_human_review"])
+            self.assertEqual(shot["visual_verification_reference_images"], [str(ref)])
+
+    def test_ai_visual_comparison_never_auto_approves_a_match(self):
+        import tempfile
+        from pathlib import Path
+
+        class VisionProfile:
+            id = "vision-test"
+            name = "vision-test"
+            vision_enabled = True
+
+        class FakeRouter:
+            def resolve_route(self, function):
+                return VisionProfile()
+
+            def complete_json(self, profile, prompt, function=None, image_paths=None):
+                return {
+                    "identity_match": True, "appearance_match": True,
+                    "structure_match": True, "function_match": True, "usage_match": True,
+                    "mismatch_detected": False, "confidence": 0.99,
+                    "issues": [], "summary": "未发现明显差异",
+                }
+
+        with tempfile.TemporaryDirectory() as folder:
+            ref = Path(folder) / "reference.jpg"
+            generated = Path(folder) / "shot.jpg"
+            ref.write_bytes(b"fake-reference")
+            generated.write_bytes(b"fake-generated")
+            plan = sample_plan()
+            plan["drama_business_mode"] = "product_short_drama_ad"
+            result = compare_product_visual_shot(FakeRouter(), plan, 1, [str(ref)], str(generated))
+            self.assertEqual(result["storyboard"][0]["visual_verification"], "needs_review")
+            self.assertEqual(result["storyboard"][0]["visual_verification_method"], "ai_vision_assisted")
+
+    def test_ai_visual_comparison_rejects_missing_reference_and_wrong_mode(self):
+        import tempfile
+        from pathlib import Path
+
+        class FakeRouter:
+            pass
+
+        with tempfile.TemporaryDirectory() as folder:
+            generated = Path(folder) / "shot.png"
+            generated.write_bytes(b"fake-generated")
+            plan = sample_plan()
+            plan["drama_business_mode"] = "general_ai_drama"
+            with self.assertRaisesRegex(ShortDramaPlanError, "只适用于"):
+                compare_product_visual_shot(FakeRouter(), plan, 1, [str(generated)], str(generated))
+            plan["drama_business_mode"] = "product_short_drama_ad"
+            with self.assertRaisesRegex(ShortDramaPlanError, "至少选择一张"):
+                compare_product_visual_shot(FakeRouter(), plan, 1, [], str(generated))
+
+
+    def test_ai_visual_comparison_rejects_empty_and_unsupported_files(self):
+        import tempfile
+        from pathlib import Path
+
+        class FakeRouter:
+            pass
+
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            plan = sample_plan()
+            plan["drama_business_mode"] = "product_short_drama_ad"
+            empty_ref = root / "empty.png"
+            empty_ref.write_bytes(b"")
+            generated = root / "shot.png"
+            generated.write_bytes(b"image-bytes")
+            with self.assertRaisesRegex(ShortDramaPlanError, "为空"):
+                compare_product_visual_shot(FakeRouter(), plan, 1, [str(empty_ref)], str(generated))
+
+            unsupported_ref = root / "reference.pdf"
+            unsupported_ref.write_bytes(b"pdf-bytes")
+            with self.assertRaisesRegex(ShortDramaPlanError, "必须是"):
+                compare_product_visual_shot(FakeRouter(), plan, 1, [str(unsupported_ref)], str(generated))
+
+            empty_generated = root / "empty-output.png"
+            empty_generated.write_bytes(b"")
+            valid_ref = root / "reference.png"
+            valid_ref.write_bytes(b"reference-bytes")
+            with self.assertRaisesRegex(ShortDramaPlanError, "为空"):
+                compare_product_visual_shot(FakeRouter(), plan, 1, [str(valid_ref)], str(empty_generated))
+
+            unsupported_generated = root / "output.bin"
+            unsupported_generated.write_bytes(b"unknown-format")
+            with self.assertRaisesRegex(ShortDramaPlanError, "仅支持常见图片格式"):
+                compare_product_visual_shot(FakeRouter(), plan, 1, [str(valid_ref)], str(unsupported_generated))
+
+    def test_product_drama_regeneration_changes_only_selected_shot_and_preserves_history(self):
+        from ad_studio.short_drama import prepare_product_drama_shot_regeneration
+        plan = sample_plan()
+        plan["drama_business_mode"] = "product_short_drama_ad"
+        plan["storyboard"][0].update({"visual_verification":"failed","visual_verification_method":"ai_vision_assisted","visual_verification_evidence":"/tmp/old-shot.mp4","visual_verification_note":"颜色疑似不一致","visual_comparison_result":{"result":{"mismatch_detected":True}}})
+        second = json.dumps(plan["storyboard"][1], ensure_ascii=False, sort_keys=True) if len(plan["storyboard"]) > 1 else None
+        updated = prepare_product_drama_shot_regeneration(plan, 1, "商品颜色应与参考图一致，不改变瓶盖和标签结构", previous_version=3, previous_video_path="/tmp/old-shot.mp4", estimated_cost_rmb=0.72)
+        target = updated["storyboard"][0]
+        self.assertEqual(target["visual_verification"], "not_checked")
+        self.assertNotIn("visual_comparison_result", target)
+        self.assertEqual(target["regeneration_history"][0]["version"], 3)
+        self.assertEqual(target["regeneration_history"][0]["visual_verification"], "failed")
+        self.assertIn("商品颜色应与参考图一致", target["generation_prompt"])
+        self.assertEqual(plan["storyboard"][0]["visual_verification"], "failed")
+        if second is not None:
+            self.assertEqual(json.dumps(updated["storyboard"][1], ensure_ascii=False, sort_keys=True), second)
+
+    def test_product_drama_regeneration_rejects_wrong_mode_and_empty_correction(self):
+        from ad_studio.short_drama import prepare_product_drama_shot_regeneration
+        plan = sample_plan()
+        with self.assertRaisesRegex(ShortDramaPlanError, "只适用于"):
+            prepare_product_drama_shot_regeneration(plan, 1, "fix", previous_version=1)
+        plan["drama_business_mode"] = "product_short_drama_ad"
+        with self.assertRaisesRegex(ShortDramaPlanError, "修正要求"):
+            prepare_product_drama_shot_regeneration(plan, 1, " ", previous_version=1)
+
+
+
+    def test_product_visual_correction_suggestion_uses_review_findings_as_editable_draft(self):
+        plan = sample_plan()
+        plan["drama_business_mode"] = "product_short_drama_ad"
+        plan["storyboard"][0]["visual_comparison_result"] = {
+            "result": {
+                "summary": "标签颜色与参考图疑似不一致",
+                "mismatch_detected": True,
+                "issues": ["标签颜色偏蓝", {"description": "瓶盖结构不清晰"}],
+            }
+        }
+        draft = product_visual_correction_suggestion(plan, 1)
+        self.assertIn("标签颜色与参考图疑似不一致", draft)
+        self.assertIn("\n待检查问题：标签颜色偏蓝", draft)
+        self.assertIn("标签颜色偏蓝", draft)
+        self.assertIn("瓶盖结构不清晰", draft)
+        self.assertEqual(product_visual_correction_suggestion(plan, 99), "")
+        plan["drama_business_mode"] = "product_placement"
+        self.assertEqual(product_visual_correction_suggestion(plan, 1), "")
+
+    def test_product_drama_regeneration_rejects_non_finite_cost_and_invalid_version(self):
+        from ad_studio.short_drama import prepare_product_drama_shot_regeneration
+        plan = sample_plan()
+        plan["drama_business_mode"] = "product_short_drama_ad"
+        with self.assertRaisesRegex(ShortDramaPlanError, "有限的非负数"):
+            prepare_product_drama_shot_regeneration(
+                plan, 1, "保持商品结构", previous_version=1, estimated_cost_rmb=float("nan")
+            )
+        with self.assertRaisesRegex(ShortDramaPlanError, "正整数"):
+            prepare_product_drama_shot_regeneration(
+                plan, 1, "保持商品结构", previous_version=0, estimated_cost_rmb=0.72
+            )
+
+
+    def test_product_drama_shot_mapping_uses_stable_storyboard_index_after_insertions(self):
+        from ad_studio.short_drama import resolve_product_drama_shot_number
+        plan = {
+            "drama_business_mode": "product_short_drama_ad",
+            "episode_count": 1,
+            "storyboard": [{"scene": "卧室"}, {"scene": "厨房"}],
+        }
+        # Project index has shifted after an extra reviewed shot was inserted.
+        project_shot = {
+            "index": 4,
+            "title": "卧室",
+            "episode_number": 1,
+            "short_drama_shot_number": 1,
+        }
+        self.assertEqual(resolve_product_drama_shot_number(plan, project_shot), 1)
+
+    def test_product_drama_legacy_shot_mapping_uses_unique_title_and_episode(self):
+        from ad_studio.short_drama import resolve_product_drama_shot_number
+        plan = {
+            "drama_business_mode": "product_short_drama_ad",
+            "episode_count": 1,
+            "storyboard": [{"scene": "卧室"}, {"scene": "厨房"}],
+        }
+        legacy_shot = {"index": 3, "title": "厨房", "episode_number": 1}
+        self.assertEqual(resolve_product_drama_shot_number(plan, legacy_shot), 2)
+
+    def test_product_drama_ambiguous_legacy_mapping_fails_closed(self):
+        from ad_studio.short_drama import resolve_product_drama_shot_number
+        plan = {
+            "drama_business_mode": "product_short_drama_ad",
+            "episode_count": 1,
+            "storyboard": [{"scene": "卧室"}, {"scene": "卧室"}],
+        }
+        legacy_shot = {"index": 4, "title": "卧室", "episode_number": 1}
+        with self.assertRaisesRegex(ShortDramaPlanError, "无法唯一定位|标题在短剧分镜中重复"):
+            resolve_product_drama_shot_number(plan, legacy_shot)
 
 
 if __name__ == "__main__":

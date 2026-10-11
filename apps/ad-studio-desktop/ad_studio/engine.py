@@ -34,7 +34,13 @@ def new_project(url,level,form):
 
 def mark_regenerate(project,index):
     s=project.shots[index]
-    s.version+=1; s.status='需重生成'; s.video_path=None
+    # Keep the last known-good media path so a failed or interrupted replacement
+    # can restore the previous output instead of losing the project's playable shot.
+    if s.video_path:
+        s.previous_video_path = s.video_path
+    s.version+=1
+    s.status='需重生成'
+    s.video_path=None
     return s
 
 

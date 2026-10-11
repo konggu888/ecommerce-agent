@@ -4,6 +4,7 @@ import json
 import shutil
 import subprocess
 import datetime
+import math
 from .models import Project, Shot, accept_hybrid_generated_shot
 from .ffmpeg import make_clip, concat
 from .providers import GenerationRequest, load_video_provider, load_asset_provider
@@ -56,12 +57,39 @@ class ProductionStore:
         removed_parts = 0
         render_root = self.root / "renders" / project.id
         if render_root.exists():
-            for part in render_root.rglob("*.part.mp4"):
+            for part in render_root.rglob("*.part*.mp4"):
                 part.unlink(missing_ok=True)
                 removed_parts += 1
         missing_media = []
+        restored_previous_versions = []
         for shot in project.shots:
-            if shot.video_path and not Path(shot.video_path).exists():
+            previous_path = str(getattr(shot, "previous_video_path", None) or "").strip()
+            active_file = Path(shot.video_path) if shot.video_path else None
+            active_missing = (
+                active_file is None
+                or not active_file.is_file()
+                or active_file.stat().st_size <= 0
+            )
+            if previous_path and active_missing:
+                previous_file = Path(previous_path)
+                previous_is_valid = previous_file.is_file() and previous_file.stat().st_size > 0
+                if previous_is_valid:
+                    # A process may have stopped after version increment but before a new
+                    # render completed. Restore the last known-good output after restart.
+                    shot.video_path = previous_path
+                    shot.previous_video_path = None
+                    shot.status = "生成中断（已恢复上一版本）"
+                    restored_previous_versions.append(shot.id)
+                else:
+                    # A stale pointer to a missing or zero-byte file is not recoverable.
+                    shot.previous_video_path = None
+                    shot.video_path = None
+                    shot.status = "待重新生成/重新选择素材"
+                    missing_media.append(shot.id)
+            elif shot.video_path and (
+                not Path(shot.video_path).is_file()
+                or Path(shot.video_path).stat().st_size <= 0
+            ):
                 missing_media.append(shot.id)
                 shot.video_path = None
                 shot.status = "待重新生成/重新选择素材"
@@ -83,12 +111,13 @@ class ProductionStore:
                 item["delivery_status"] = "不可交付"
                 item["recovery_reason"] = "最终输出文件缺失或为空"
                 invalid_outputs.append(output_path)
+        cost_reconciled = self._sync_actual_cost(project)
         now = datetime.datetime.now().isoformat(timespec="seconds")
         recovery.update({
             "status": "可继续",
             "stage": "恢复完成",
             "next_action": "从未完成阶段继续任务",
-            "last_recovery": {"removed_temp_files": removed_parts, "missing_media": missing_media, "invalid_outputs": invalid_outputs, "updated_at": now},
+            "last_recovery": {"removed_temp_files": removed_parts, "missing_media": missing_media, "restored_previous_versions": restored_previous_versions, "invalid_outputs": invalid_outputs, "cost_reconciled": cost_reconciled, "actual_cost_rmb": project.actual_cost_rmb, "updated_at": now},
             "updated_at": now,
         })
         self.save(project)
@@ -131,24 +160,167 @@ class ProductionStore:
 
     def _sync_actual_cost(self, project: Project):
         summary = self.ledger.project_summary(project.id)
+        # If a ledger exists, it is the source of truth after an interrupted save.
+        # Keep legacy totals intact for projects that predate the ledger entirely.
+        # Failed-only history is not evidence of actual spend. If no successful
+        # ledger entry exists, preserve legacy totals rather than resetting them to zero.
+        reconciled = bool(summary.get("success", 0))
+        if reconciled:
+            project.actual_cost_rmb = summary["actual_cost_rmb"]
+            project.actual_cost_summary = summary
+            for shot in project.shots:
+                shot_cost = self.ledger.shot_actual_cost(project.id, shot.id)
+                if shot_cost is not None:
+                    shot.actual_cost_rmb = shot_cost
+        else:
+            summary = dict(summary)
+            summary["actual_cost_rmb"] = round(float(project.actual_cost_rmb or 0.0), 6)
+            legacy_by_category = (project.actual_cost_summary or {}).get("by_category", {})
+            if legacy_by_category:
+                summary["by_category"] = legacy_by_category
         project.cost_estimate.setdefault("actual", {})
         project.cost_estimate["actual"] = summary
         project.cost_estimate["actual_cost_rmb"] = summary["actual_cost_rmb"]
+        return reconciled
+
+    def _ensure_legacy_cost_migrated(self, project: Project) -> bool:
+        """Move legacy snapshot totals into the ledger once, before its first positive actual charge."""
+        summary = self.ledger.project_summary(project.id)
+        if float(summary.get("actual_cost_rmb", 0) or 0) > 0:
+            return False
+
+        def safe_amount(value: Any) -> float:
+            try:
+                amount = float(value or 0)
+            except (TypeError, ValueError, OverflowError):
+                return 0.0
+            return amount if math.isfinite(amount) and amount > 0 else 0.0
+
+        old_summary = project.actual_cost_summary if isinstance(project.actual_cost_summary, dict) else {}
+        project_total = max(
+            safe_amount(project.actual_cost_rmb),
+            safe_amount(old_summary.get("actual_cost_rmb", 0)),
+        )
+        shot_amounts = []
+        for shot in project.shots:
+            amount = safe_amount(getattr(shot, "actual_cost_rmb", 0))
+            if amount > 0:
+                shot_amounts.append((shot, amount))
+        shot_total = round(sum(amount for _, amount in shot_amounts), 6)
+        total_to_preserve = max(project_total, shot_total)
+        if total_to_preserve <= 0:
+            return False
+
+        records = []
+        for shot, amount in shot_amounts:
+            records.append({
+                "function": "历史实际成本迁移",
+                "model_id": "",
+                "model_name": "历史记录",
+                "provider": "本地迁移",
+                "model": "",
+                "status": "success",
+                "estimated_cost_rmb": amount,
+                "project_id": project.id,
+                "shot_id": shot.id,
+                "category": "legacy",
+                "quantity": 1,
+                "unit_cost_rmb": amount,
+                "error": "从旧项目镜头成本快照迁移；不是新扣款",
+            })
+        residual = round(max(0.0, total_to_preserve - shot_total), 6)
+        if residual > 0:
+            records.append({
+                "function": "历史实际成本迁移",
+                "model_id": "",
+                "model_name": "历史记录",
+                "provider": "本地迁移",
+                "model": "",
+                "status": "success",
+                "estimated_cost_rmb": residual,
+                "project_id": project.id,
+                "shot_id": "",
+                "category": "legacy",
+                "quantity": 1,
+                "unit_cost_rmb": residual,
+                "error": "从旧项目总成本快照迁移未分配金额；不是新扣款",
+            })
+        if not records:
+            return False
+        # One atomic write makes the migration idempotent even if the process exits.
+        self.ledger.record_many(records)
+        # Persist the migrated baseline in memory immediately. If the next charge
+        # cannot be written, the caller can still save the preserved historical total.
+        migrated_summary = self.ledger.project_summary(project.id)
+        project.actual_cost_rmb = round(float(migrated_summary.get("actual_cost_rmb", 0) or 0), 6)
+        project.actual_cost_summary = migrated_summary
+        project.cost_estimate.setdefault("actual", {})
+        project.cost_estimate["actual"] = migrated_summary
+        project.cost_estimate["actual_cost_rmb"] = project.actual_cost_rmb
+        for shot in project.shots:
+            shot_cost = self.ledger.shot_actual_cost(project.id, shot.id)
+            if shot_cost is not None:
+                shot.actual_cost_rmb = shot_cost
+        return True
 
     def _record_actual_cost(self, project: Project, *, shot: Shot | None, category: str, amount_rmb: float, provider: str, quantity: float = 1.0, unit_cost_rmb: float = 0.0, function: str = "生成任务"):
         amount = round(float(amount_rmb or 0), 6)
+        self._ensure_legacy_cost_migrated(project)
         self.ledger.record(
             function=function, model_id="", model_name="", provider=provider, model="",
             status="success", estimated_cost_rmb=amount,
             project_id=project.id, shot_id=shot.id if shot else "",
             category=category, quantity=quantity, unit_cost_rmb=unit_cost_rmb,
         )
-        project.actual_cost_rmb = round(float(project.actual_cost_rmb or 0) + amount, 6)
-        project.actual_cost_summary = self.ledger.project_summary(project.id)
+        summary = self.ledger.project_summary(project.id)
+        # The usage ledger is authoritative; never increment a possibly stale project total.
+        project.actual_cost_summary = summary
+        project.actual_cost_rmb = round(float(summary.get("actual_cost_rmb", 0) or 0), 6)
+        if shot:
+            shot_actual = self.ledger.shot_actual_cost(project.id, shot.id)
+            if shot_actual is not None:
+                shot.actual_cost_rmb = shot_actual
+        project.cost_estimate.setdefault("actual", {})
+        project.cost_estimate["actual"] = summary
+        project.cost_estimate["actual_cost_rmb"] = project.actual_cost_rmb
         self.save(project)
 
+    def _record_failed_video_attempt(self, project: Project, shot: Shot, provider: Any, error: str):
+        """Log a failed provider attempt without treating its quote as actual spend."""
+        try:
+            quoted_rate = float(getattr(provider, "cost_per_shot_rmb", 0.0) or 0.0)
+        except (TypeError, ValueError, OverflowError):
+            quoted_rate = 0.0
+        if not math.isfinite(quoted_rate) or quoted_rate < 0:
+            quoted_rate = 0.0
+        provider_name = str(getattr(provider, "provider_name", "Generic REST") or "Generic REST")
+        self.ledger.record(
+            function="视频镜头生成",
+            model_id="",
+            model_name=provider_name,
+            provider=provider_name,
+            model="",
+            status="failed",
+            estimated_cost_rmb=0.0,
+            project_id=project.id,
+            shot_id=shot.id,
+            category="video",
+            quantity=1,
+            unit_cost_rmb=round(quoted_rate, 6),
+            error=error,
+        )
+        # Failed rows remain auditable without counting an unconfirmed charge
+        # as actual spend; actual totals remain success-only.
+        project.actual_cost_summary = self.ledger.project_summary(project.id)
+        project.cost_estimate.setdefault("actual", {})
+        project.cost_estimate["actual"] = project.actual_cost_summary
+        project.cost_estimate["actual_cost_rmb"] = project.actual_cost_summary["actual_cost_rmb"]
+
     def mark_ready(self, project: Project, shot: Shot, output: Path):
-        shot.video_path=str(output); shot.status='已生成'; self.save(project)
+        shot.video_path=str(output)
+        shot.previous_video_path = None
+        shot.status='已生成'
+        self.save(project)
 
     def accept_hybrid_generated_task(self, project: Project, task: dict):
         """人工明确通过后，把混合生成素材纳入项目分镜并持久化。"""
@@ -158,6 +330,41 @@ class ProductionStore:
         project.shots = shots
         self.save(project)
         return next((shot for shot in shots if str(shot.id) == str(task.get("accepted_shot_id"))), None)
+
+    def _record_asset_cost(self, project: Project, shot: Shot, kind: str, amount_rmb: float, provider: str):
+        """Keep successfully generated assets available when their cost write needs reconciliation."""
+        try:
+            self._record_actual_cost(
+                project,
+                shot=shot,
+                category="asset",
+                amount_rmb=amount_rmb,
+                provider=provider,
+                quantity=1,
+                unit_cost_rmb=amount_rmb,
+                function=f"{kind}素材生成",
+            )
+            return True, ""
+        except Exception as exc:
+            try:
+                self.record_recovery_failure(
+                    project,
+                    stage=f"{kind}素材已生成但成本结算未完成",
+                    error=str(exc),
+                    next_action="核对 usage-ledger.json 与 Provider 账单；保留已生成素材，不要直接重复生成",
+                    retryable=True,
+                )
+            except Exception as recovery_exc:
+                project.creative_plan.setdefault("recovery", {}).setdefault("history", []).append({
+                    "stage": f"{kind}素材已生成但成本结算未完成",
+                    "error": str(exc),
+                    "recovery_error": str(recovery_exc),
+                    "retryable": True,
+                    "status": "需处理",
+                    "next_action": "检查本地项目文件与 usage-ledger.json 写入权限、磁盘空间，并核对 Provider 账单",
+                    "created_at": datetime.datetime.now().isoformat(timespec="seconds"),
+                })
+            return False, str(exc)
 
     def resolve_assets(self, project: Project, shot: Shot):
         """本地优先；缺失时返回明确的生成需求。真正生成由对应生成器执行。"""
@@ -177,7 +384,13 @@ class ProductionStore:
                         result=generator.generate(kind,project.product_name+'-'+kind,shot.visual+'；需求：'+'、'.join(tags),tags,shot.id)
                         library._write(library.all()+[result.asset])
                         item.update({'asset':result.asset.id,'source':'已生成并入库','cost_rmb':result.cost_rmb})
-                        self._record_actual_cost(project, shot=shot, category='asset', amount_rmb=result.cost_rmb, provider=result.provider, quantity=1, unit_cost_rmb=result.cost_rmb, function=f'{kind}素材生成')
+                        cost_recorded, cost_error = self._record_asset_cost(project, shot, kind, result.cost_rmb, result.provider)
+                        if not cost_recorded:
+                            item.update({
+                                'source': '已生成并入库（成本待核对）',
+                                'cost_status': 'pending',
+                                'cost_error': cost_error,
+                            })
                     except Exception as exc:
                         item.update({'source':'自动生成失败','error':str(exc)})
                 else:
@@ -219,19 +432,11 @@ class ProductionStore:
         elif kind=='场景': shot.scene_id=item.id
         elif kind=='商品素材': shot.product_asset_ids.append(item.id)
         shot.asset_source='ai_generated'
-        shot.actual_cost_rmb=round(shot.actual_cost_rmb+cost,4)
-        self._record_actual_cost(
-            project,
-            shot=shot,
-            category="asset",
-            amount_rmb=cost,
-            provider=provider_name,
-            quantity=1,
-            unit_cost_rmb=cost,
-            function=f"{kind}素材生成",
-        )
+        cost_recorded, cost_error = self._record_asset_cost(project, shot, kind, cost, provider_name)
         shot.provider = provider_name
-        shot.status=f'{kind}已生成并入库'
+        shot.status = f'{kind}已生成并入库' if cost_recorded else f'{kind}已生成并入库（成本待核对）'
+        if not cost_recorded:
+            shot.generated_from_request = f"{shot.generated_from_request or ''}\n成本待核对：{cost_error}".strip()
         self.save(project)
         return item
 
@@ -269,85 +474,147 @@ class ProductionStore:
         return self._render_with_provider(project, shot, provider)
 
     def _render_with_provider(self, project: Project, shot: Shot, provider):
-        out=self.render_path(project,shot)
-        # 先写临时文件，只有 Provider 完整成功后才替换正式版本。
-        # 这样重新生成 v2 失败时，v1 仍保持可用，不会污染当前镜头。
-        temp=out.with_suffix('.part.mp4')
+        out = self.render_path(project, shot)
+        temp = out.with_suffix(".part.mp4")
         if temp.exists():
             temp.unlink()
-        resolution=self.resolve_assets(project,shot)
-        library=LocalLibrary(self.library_root)
-        asset_ids=[x for x in [shot.actor_id,shot.scene_id,*shot.product_asset_ids] if x]
-        asset_map={a.id:a for a in library.all()}
-        asset_paths=[asset_map[x].path for x in asset_ids if x in asset_map and asset_map[x].path and Path(asset_map[x].path).exists()]
-        prompt='\n'.join([f'标题：{shot.title}',f'画面：{shot.visual}',f'文案：{shot.script}'])
-        previous_path=shot.video_path
-        shot.status='生成中…'
-        shot.provider=getattr(provider,'provider_name','Generic REST')
-        shot.generated_from_request=prompt
-        self.save(project)
+        previous_path = shot.video_path or getattr(shot, "previous_video_path", None)
+        prompt = '\n'.join([f"标题：{shot.title}", f"画面：{shot.visual}", f"文案：{shot.script}"])
+        shot.status = "生成中…"
+        shot.provider = getattr(provider, "provider_name", "Generic REST")
+        shot.generated_from_request = prompt
+        provider_call_started = False
         try:
-            result=provider.generate(GenerationRequest(
+            self.save(project)
+            self.resolve_assets(project, shot)
+            library = LocalLibrary(self.library_root)
+            asset_ids = [x for x in [shot.actor_id, shot.scene_id, *shot.product_asset_ids] if x]
+            asset_map = {asset.id: asset for asset in library.all()}
+            asset_paths = [
+                asset_map[x].path for x in asset_ids
+                if x in asset_map and asset_map[x].path and Path(asset_map[x].path).exists()
+            ]
+            request = GenerationRequest(
                 prompt=prompt,
                 output=temp,
-                duration=max(1, int(getattr(shot, 'duration_seconds', 3) or 3)),
+                duration=max(1, int(getattr(shot, "duration_seconds", 3) or 3)),
                 reference_assets=asset_ids,
                 reference_asset_paths=asset_paths,
-            ))
-            result=Path(result)
-            if not result.exists() or result.stat().st_size == 0:
-                raise RuntimeError('视频 Provider 返回成功，但生成文件不存在或为空。')
-            if out.exists():
-                out.unlink()
+            )
+            provider_call_started = True
+            result = Path(provider.generate(request))
+            if not result.is_file() or result.stat().st_size <= 0:
+                raise RuntimeError("视频 Provider 返回成功，但生成文件不存在或为空。")
             result.replace(out)
-            video_cost=round(float(getattr(provider,'cost_per_shot_rmb',0.0)),4)
-            shot.actual_cost_rmb=round(float(shot.actual_cost_rmb or 0.0)+video_cost,4)
+        except Exception as exc:
+            temp.unlink(missing_ok=True)
+            previous_is_valid = bool(
+                previous_path and Path(previous_path).is_file() and Path(previous_path).stat().st_size > 0
+            )
+            shot.video_path = str(previous_path) if previous_is_valid else None
+            shot.previous_video_path = None
+            shot.status = "生成失败（已保留上一版本）" if previous_is_valid else "生成失败"
+            shot.provider = getattr(provider, "provider_name", shot.provider)
+            if provider_call_started:
+                try:
+                    self._record_failed_video_attempt(project, shot, provider, str(exc))
+                except Exception as ledger_exc:
+                    project.creative_plan.setdefault("recovery", {}).setdefault("history", []).append({
+                        "stage": "视频失败尝试记账",
+                        "error": str(ledger_exc),
+                        "original_error": str(exc),
+                        "retryable": True,
+                        "status": "需处理",
+                        "next_action": "检查本地 usage-ledger.json 写入权限与磁盘空间",
+                        "created_at": datetime.datetime.now().isoformat(timespec="seconds"),
+                    })
+            self.save(project)
+            raise RuntimeError(f"镜头 {shot.index} v{shot.version} 生成失败：{exc}") from exc
+
+        # Media generation succeeded. Do not route accounting errors through provider failure recovery.
+        shot.video_path = str(out)
+        shot.previous_video_path = None
+        shot.status = "已生成"
+        try:
+            video_cost = normalize_cost_estimate_rmb(getattr(provider, "cost_per_shot_rmb", 0.0))
             self._record_actual_cost(
                 project,
                 shot=shot,
                 category="video",
                 amount_rmb=video_cost,
-                provider=getattr(provider,'provider_name','Generic REST'),
+                provider=getattr(provider, "provider_name", "Generic REST"),
                 quantity=1,
                 unit_cost_rmb=video_cost,
                 function="视频镜头生成",
             )
-            self.mark_ready(project,shot,out)
-            return out
-        except Exception as exc:
-            if temp.exists():
-                temp.unlink()
-            shot.video_path=previous_path
-            shot.status='生成失败（已保留上一版本）' if previous_path else '生成失败'
-            shot.provider=getattr(provider,'provider_name',shot.provider)
-            self.save(project)
-            raise RuntimeError(f'镜头 {shot.index} v{shot.version} 生成失败：{exc}') from exc
+            self.mark_ready(project, shot, out)
+        except Exception as ledger_exc:
+            recovery = project.creative_plan.setdefault("recovery", {})
+            recovery.setdefault("history", []).append({
+                "stage": "视频已生成但成本记账待核对",
+                "error": str(ledger_exc),
+                "provider": str(getattr(provider, "provider_name", "Generic REST")),
+                "shot_id": shot.id,
+                "output_path": str(out),
+                "quoted_cost_rmb": getattr(provider, "cost_per_shot_rmb", None),
+                "retryable": False,
+                "status": "需处理",
+                "next_action": "先核对 usage-ledger.json 是否已写入成功记录，再人工修复项目成本汇总；禁止直接重试记账以免重复计费。",
+                "created_at": datetime.datetime.now().isoformat(timespec="seconds"),
+            })
+            shot.status = "已生成（成本待核对）"
+            try:
+                self.save(project)
+            except Exception:
+                pass
+        return out
 
     def render_footage_shot(self, project: Project, shot: Shot):
-        """从用户拍摄素材中裁剪出本镜头（本地 FFmpeg，不调用生成服务）。"""
+        """从用户拍摄素材中裁剪出本镜头；临时输出成功后才替换正式版本。"""
         from .footage import trim_clip, FootageError
-        if not shot.source_file or not Path(shot.source_file).exists():
-            raise FootageError(f'素材文件不存在：{shot.source_file}。请检查素材文件夹。')
+        previous_path = shot.video_path or getattr(shot, "previous_video_path", None)
         out = self.render_path(project, shot)
+        temp = out.with_suffix(".part.mp4")
+        if temp.exists():
+            temp.unlink()
+        if not shot.source_file or not Path(shot.source_file).exists():
+            # A previous interrupted multi-range trim may leave .part01/.part02 files.
+            for part in out.parent.glob(f"{out.stem}.part*.mp4"):
+                part.unlink(missing_ok=True)
+            previous_is_valid = bool(previous_path and Path(previous_path).is_file() and Path(previous_path).stat().st_size > 0)
+            shot.video_path = str(previous_path) if previous_is_valid else None
+            shot.previous_video_path = None
+            shot.status = '素材裁剪失败（已保留上一版本）' if previous_is_valid else '素材裁剪失败'
+            self.save(project)
+            raise FootageError(f'素材文件不存在：{shot.source_file}。请检查素材文件夹。')
         shot.status = '素材裁剪中…'
         shot.provider = '本地素材剪辑'
         self.save(project)
         try:
-            ranges = getattr(shot, 'source_ranges', None) or []
+            ranges = getattr(shot, "source_ranges", None) or []
             if len(ranges) <= 1:
-                trim_clip(Path(shot.source_file), out, float(shot.source_start or 0.0), shot.source_duration)
+                trim_clip(Path(shot.source_file), temp, float(shot.source_start or 0.0), shot.source_duration)
             else:
                 parts = []
                 for idx, pair in enumerate(ranges, 1):
-                    part = out.with_name(f'{out.stem}.part{idx:02d}.mp4')
+                    part = out.with_name(f"{out.stem}.part{idx:02d}.mp4")
                     trim_clip(Path(shot.source_file), part, float(pair[0]), float(pair[1]) - float(pair[0]))
                     parts.append(part)
-                concat(parts, out)
+                concat(parts, temp)
                 for part in parts:
-                    if part.exists():
-                        part.unlink()
-        except Exception as exc:
-            shot.status = '素材裁剪失败'
+                    part.unlink(missing_ok=True)
+            if not temp.is_file() or temp.stat().st_size <= 0:
+                raise FootageError("实拍素材裁剪未生成有效的视频文件。")
+            # 临时文件与目标位于同一目录；原成片仅在新输出完整后原子替换。
+            temp.replace(out)
+        except Exception:
+            temp.unlink(missing_ok=True)
+            for part in out.parent.glob(f"{out.stem}.part*.mp4"):
+                part.unlink(missing_ok=True)
+            previous_is_valid = bool(previous_path and Path(previous_path).is_file() and Path(previous_path).stat().st_size > 0)
+            shot.video_path = str(previous_path) if previous_is_valid else None
+            shot.previous_video_path = None
+            shot.status = '素材裁剪失败（已保留上一版本）' if previous_is_valid else '素材裁剪失败'
             self.save(project)
             raise
         self.mark_ready(project, shot, out)
@@ -525,3 +792,26 @@ class ProductionStore:
             shots, gate, media_check, episode_number=episode_number,
         )
         return out
+
+
+def generation_failure_ui_state(shot: Shot) -> dict[str, Any]:
+    """Return a truthful UI status after a generation failure, preserving a playable old output."""
+    status = str(getattr(shot, "status", "") or "")
+    video_path = str(getattr(shot, "video_path", None) or "").strip()
+    has_previous_marker = "已保留上一版本" in status or "已恢复上一版本" in status
+    if has_previous_marker and video_path:
+        path = Path(video_path).expanduser()
+        if path.is_file() and path.stat().st_size > 0:
+            return {"status": status, "previous_version_available": True, "video_path": str(path)}
+    return {"status": "生成失败", "previous_version_available": False, "video_path": ""}
+
+
+def normalize_cost_estimate_rmb(value: Any) -> float:
+    """Validate a provider's per-shot estimate before showing a cost confirmation dialog."""
+    try:
+        amount = float(value)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValueError("预计生成费用无效；请先检查视频生成设置。") from exc
+    if not math.isfinite(amount) or amount < 0:
+        raise ValueError("预计生成费用必须是有限的非负数；请先检查视频生成设置。")
+    return round(amount, 4)
