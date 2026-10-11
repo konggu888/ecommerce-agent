@@ -311,6 +311,29 @@ class ShortDramaTests(unittest.TestCase):
         report = audit_short_drama(plan, {"name": "商品"})
         self.assertIn("PRODUCT_VISUAL_NOT_VERIFIED", {issue["code"] for issue in report["issues"]})
 
+    def test_audit_rejects_stale_or_missing_manual_visual_evidence(self):
+        import tempfile
+        from pathlib import Path
+
+        plan = sample_plan()
+        plan["drama_business_mode"] = "product_short_drama_ad"
+        shot = plan["storyboard"][0]
+        shot.update({
+            "visual_verification": "passed",
+            "visual_verification_method": "manual",
+            "visual_verification_evidence": "C:/old-render/shot-01.png",
+            "visual_verification_note": "曾经人工核验",
+        })
+        report = audit_short_drama(plan, {"name": "商品"})
+        self.assertIn("PRODUCT_VISUAL_NOT_VERIFIED", {issue["code"] for issue in report["issues"]})
+
+        with tempfile.TemporaryDirectory() as folder:
+            evidence = Path(folder) / "shot-01.png"
+            evidence.write_bytes(b"real image evidence")
+            shot["visual_verification_evidence"] = str(evidence)
+            report = audit_short_drama(plan, {"name": "商品"})
+            self.assertNotIn("PRODUCT_VISUAL_NOT_VERIFIED", {issue["code"] for issue in report["issues"]})
+
     def test_manual_product_visual_review_persists_real_evidence(self):
         import tempfile
         from pathlib import Path
