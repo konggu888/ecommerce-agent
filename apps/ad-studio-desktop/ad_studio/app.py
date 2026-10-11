@@ -12,7 +12,7 @@ from .capability import CapabilityRouter
 from .production import ProductionStore
 from .product_parser import parse_product_url, save_product, save_product_library, load_product_library, merge_product_library, ProductInfo
 from .creative_engine import CreativeEngine, validate_plan, validate_task_type_plan, TASK_TYPE_POLICIES
-from .short_drama import audit_short_drama, build_episode_continuity_ledger, generate_short_drama, generate_next_short_drama_episode, short_drama_production_rows, record_product_visual_verification
+from .short_drama import audit_short_drama, build_episode_continuity_ledger, generate_short_drama, generate_next_short_drama_episode, short_drama_production_rows, record_product_visual_verification, compare_product_visual_shot
 from .model_router import ModelRouter, ModelProfile, FUNCTIONS, audit_ad_variant_set, build_creative_test_plan, audit_creative_factual_consistency, audit_storyboard_fact_consistency, audit_visual_fact_consistency
 from .browser_skill import _find_agent_browser
 from .ffmpeg import available as ffmpeg_available, has_nvenc
@@ -2202,10 +2202,68 @@ class App(tk.Tk):
             actions = ttk.Frame(win)
             actions.pack(fill='x', padx=12, pady=(0, 10))
             if plan.get('drama_business_mode') == 'product_short_drama_ad':
+                ttk.Button(actions, text='AI 对比商品参考图', command=lambda: self.compare_short_drama_product_visual(plan, win)).pack(side='left', padx=(0, 6))
                 ttk.Button(actions, text='记录商品画面人工核验', command=lambda: self.record_short_drama_product_visual_review(plan, win)).pack(side='left')
             ttk.Button(actions, text='关闭', command=win.destroy).pack(side='right')
         except Exception as exc:
             messagebox.showerror('短剧复核失败', str(exc))
+
+    @ui_action
+    def compare_short_drama_product_visual(self, plan, parent_window=None):
+        """Run vision-assisted comparison, but never auto-approve a product shot."""
+        from tkinter import simpledialog
+        if not self._ui_execution_gate(): return
+        if not self.project:
+            return messagebox.showerror('无法进行视觉对比', '请先打开保存了该短剧方案的项目。')
+        try:
+            shots = plan.get('storyboard', [])
+            if not shots:
+                return messagebox.showinfo('没有分镜', '当前方案没有可对比的分镜。')
+            shot_number = simpledialog.askinteger('选择镜头', f'请输入要对比的镜头编号（1–{len(shots)}）：', minvalue=1, maxvalue=len(shots), parent=parent_window or self)
+            if shot_number is None: return
+            references = filedialog.askopenfilenames(
+                parent=parent_window or self,
+                title='选择商品参考图片（可多选）',
+                filetypes=[('图片', '*.png *.jpg *.jpeg *.webp *.bmp'), ('所有文件', '*.*')],
+            )
+            if not references:
+                self.detail.set('已取消视觉对比；没有更改核验状态。')
+                return
+            generated = filedialog.askopenfilename(
+                parent=parent_window or self,
+                title='选择该镜头生成的图片或视频',
+                filetypes=[('图片或视频', '*.png *.jpg *.jpeg *.webp *.bmp *.mp4 *.mov *.mkv *.avi'), ('所有文件', '*.*')],
+            )
+            if not generated:
+                self.detail.set('已取消视觉对比；没有更改核验状态。')
+                return
+            if not messagebox.askyesno(
+                '开始 AI 视觉对比',
+                '将调用“商品画面视觉核验”路由的视觉模型，对参考图和生成画面进行比较。'
+                '这可能产生模型调用费用；结果不会自动判定通过，仍需人工复核。是否继续？',
+                parent=parent_window or self,
+            ):
+                return
+            updated = compare_product_visual_shot(self.model_router, plan, shot_number, list(references), generated)
+            self.project.creative_plan['short_drama'] = updated
+            self.project.creative_plan.pop('short_drama_audit', None)
+            self.store.save(self.project)
+            plan.clear()
+            plan.update(updated)
+            result = updated['storyboard'][shot_number - 1].get('visual_comparison_result', {}).get('result', {})
+            self.detail.set(f'第{shot_number}镜 AI 视觉对比完成；状态为人工复核待定。')
+            messagebox.showinfo(
+                '视觉对比完成',
+                f"第{shot_number}镜对比完成。当前状态：{updated['storyboard'][shot_number - 1]['visual_verification']}。\n"
+                f"模型摘要：{result.get('summary', '无摘要')}\n"
+                'AI 结果不能自动批准商品真实性，请人工核对外观、结构、功能和正确用法。',
+                parent=parent_window or self,
+            )
+            if parent_window and parent_window.winfo_exists():
+                parent_window.destroy()
+            self.show_short_drama_audit(plan)
+        except Exception as exc:
+            messagebox.showerror('商品画面视觉对比失败', str(exc))
 
     @ui_action
     def record_short_drama_product_visual_review(self, plan, parent_window=None):
