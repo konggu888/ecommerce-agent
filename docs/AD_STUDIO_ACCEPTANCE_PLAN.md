@@ -1055,3 +1055,10 @@ A61（旧成本迁移）、A62（接手文案断言）、A63（迁移基线持�
 - [x] 增加自动化回归测试；文本检查不能替代人工语义核验。
 - [ ] 以本次最新 SHA 确认完整 CI 与 docs-sync。
 - [ ] Windows 真机、真实商品素材/Provider 和实际扣款另行验收。
+
+
+## A76: Selling-point storyboard coverage
+- [x] Check each confirmed selling point against storyboard action, product integration, dialogue, and generation prompt text.
+- [x] Emit `PRODUCT_SELLING_POINT_NOT_SHOWN` when no shot text directly represents a point.
+- [x] Add a negative regression test. Text coverage does not establish that the rendered visual truly demonstrates the feature.
+- [ ] Verify full CI and docs-sync for the new HEAD.

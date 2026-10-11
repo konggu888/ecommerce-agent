@@ -997,3 +997,10 @@ AI 必须执行：
 3. 在未知信息附近明确写出“尚未核实，不得作为宣传结论”，确认不再触发该项告警。
 4. 确认报告使用警告措辞，不直接断言商品事实为假。
 5. 运行短剧回归、完整 CI 与 docs-sync 并记录最新 SHA；真实商品真实性仍需人工核验。
+
+
+## A76: Selling-point storyboard coverage
+1. Add a confirmed selling point that is absent from every storyboard action, product integration, dialogue, and generation prompt; verify `PRODUCT_SELLING_POINT_NOT_SHOWN` appears.
+2. Confirm the report describes missing text coverage only, not a factual determination that the product lacks the feature.
+3. Run desktop short-drama tests, full CI, and docs-sync against the final commit SHA.
+4. Visual proof and product truth still require manual review.

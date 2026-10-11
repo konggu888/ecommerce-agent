@@ -606,3 +606,8 @@ A55 重构意外重新引入提示词双重转义，已按 CI 失败证据修复
 - 商品广告短剧的已确认事实缺少商品资料直接文本依据时得到人工复核警告。
 - 未核实事实若被写成肯定宣传内容，且附近没有不确定性提示，也会得到警告。
 - 已新增回归测试；文本匹配不能认证商品真实性，仍需人工核实。
+
+
+## A76: Selling-point storyboard coverage
+- Added deterministic text coverage checks to warn when confirmed selling points are not represented in any storyboard action, product integration, dialogue, or generation prompt.
+- Text coverage is not visual verification; manual review remains necessary.

@@ -279,3 +279,8 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - 已确认商品事实缺少商品资料中的直接文本依据时产生警告。
 - 未核实信息被写成肯定主张且附近没有明确不确定性标记时产生警告。
 - 已增加回归测试；规则是文本风险筛查，不是事实认证。下一步继续推进人物选择、反转与商品真实功能的一致性检查。
+
+
+## A76
+- Added warning code `PRODUCT_SELLING_POINT_NOT_SHOWN` when confirmed selling points are absent from storyboard action, product integration, dialogue, and generation prompt text.
+- This is a text coverage check, not visual verification. Recheck CI and docs-sync for the new SHA.

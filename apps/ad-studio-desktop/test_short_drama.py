@@ -481,6 +481,16 @@ class ShortDramaTests(unittest.TestCase):
         plan["full_script"] = "续航24小时尚未核实，不得作为宣传结论。"
         report = audit_short_drama(plan, {"name": "商品", "description": "普通用品"})
         self.assertNotIn("PRODUCT_UNKNOWN_FACT_USED", {item["code"] for item in report["issues"]})
+    def test_audit_warns_for_selling_point_not_in_shot_text(self):
+        plan = sample_plan()
+        plan["drama_business_mode"] = "product_short_drama_ad"
+        plan["product_analysis"] = {"selling_points": ["foldable storage"]}
+        for shot in plan["storyboard"]:
+            shot["product_integration"] = "product sits on a table"
+            shot["action"] = "person enters the room and sits down"
+        report = audit_short_drama(plan, {"name": "storage item", "description": "daily use"})
+        self.assertIn("PRODUCT_SELLING_POINT_NOT_SHOWN", {item["code"] for item in report["issues"]})
+
     def test_product_short_drama_ad_requires_fidelity_constraints_and_explains_genre(self):
         plan = sample_plan()
         plan["drama_business_mode"] = "product_short_drama_ad"

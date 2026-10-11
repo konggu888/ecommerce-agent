@@ -920,6 +920,16 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
                     context = script_text[max(0, position - 18):position + len(claim) + 18]
                     if not any(marker in context for marker in uncertainty_markers):
                         add("warning", "PRODUCT_UNKNOWN_FACT_USED", f"未核实商品信息“{claim}”出现在剧本/分镜内容中，附近未发现明确的不确定性标记，请人工核实。")
+    # A76: check whether confirmed selling points appear as observable storyboard content.
+    if checked.get("drama_business_mode") in {"product_placement", "product_conversion", "product_short_drama_ad"}:
+        analysis = checked.get("product_analysis", {})
+        points = analysis.get("selling_points", []) if isinstance(analysis, dict) else []
+        shot_texts = [" ".join(str(shot.get(key, "")) for key in ("action", "product_integration", "dialogue", "generation_prompt")) for shot in checked.get("storyboard", []) if isinstance(shot, dict)]
+        if isinstance(points, list):
+            for point in points:
+                claim = str(point).strip()
+                if claim and not any(claim in text for text in shot_texts):
+                    add("warning", "PRODUCT_SELLING_POINT_NOT_SHOWN", f"已确认卖点“{claim}”尚未在任何分镜动作、商品融入、台词或生成提示中被直接体现；请补充可拍摄的真实行为证据，或确认本片无需展示该卖点。")
     for truth in checked.get("product_truths", []):
         claim = str(truth).strip()
         if claim and trusted_text and claim not in trusted_text:
