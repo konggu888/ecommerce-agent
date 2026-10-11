@@ -791,6 +791,14 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
         for field in ("goal", "motivation", "fear_or_secret", "relationship", "relationship_dynamics", "decision_pressure", "arc"):
             if not str(character.get(field, "")).strip():
                 add("warning", "CHARACTER_MOTIVATION_INCOMPLETE", f"人物“{character.get('name', f'第{index}人')}”缺少 {field}，请复核其行动动机与关系因果。")
+    # A77: check whether important causal events are represented by referenced, shootable shots.
+    # Deterministic text coverage is not proof of acting quality or semantic foreshadowing.
+    shot_texts: list[str] = []
+    for shot in storyboard:
+        shot_texts.append(" ".join(str(shot.get(key, "")) for key in (
+            "action", "dialogue", "product_integration", "generation_prompt",
+            "narrative_function", "story_event_reference"
+        )).casefold())
     # A78: trace character actions to motivation, available knowledge and pressure.
     full_script_for_character_audit = str(checked.get("full_script", ""))
     for shot_index, shot in enumerate(storyboard, 1):
@@ -826,14 +834,6 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
                 if choice.casefold() not in referenced_text:
                     add("warning", "CHARACTER_CHOICE_NOT_SHOWN", f"因果链第{step_index}步的人物选择“{choice}”没有直接体现在引用镜头中；请补充可拍摄的选择动作或修正镜头引用。")
 
-    # A77: check whether important causal events are represented by referenced, shootable shots.
-    # Deterministic text coverage is not proof of acting quality or semantic foreshadowing.
-    shot_texts: list[str] = []
-    for shot in storyboard:
-        shot_texts.append(" ".join(str(shot.get(key, "")) for key in (
-            "action", "dialogue", "product_integration", "generation_prompt",
-            "narrative_function", "story_event_reference"
-        )).casefold())
     if isinstance(causal_chain, list):
         for step_index, step in enumerate(causal_chain, 1):
             if not isinstance(step, dict):

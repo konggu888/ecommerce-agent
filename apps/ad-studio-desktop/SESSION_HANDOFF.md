@@ -300,3 +300,5 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - 本轮目标：要求分镜逐人物说明行动依据，并检查人物所依赖的信息来源能否在完整剧本定位、关键选择是否落实到引用镜头。
 - 新增检查代码：`CHARACTER_ACTION_BASIS_MISSING`、`CHARACTER_ACTION_BASIS_INCOMPLETE`、`CHARACTER_KNOWLEDGE_SOURCE_UNTRACEABLE`、`CHARACTER_CHOICE_NOT_SHOWN`。
 - 限制：仅结构/文本审查；不能声称完成心理语义判定、真实生成画面核验或 Windows 真机验收。
+
+- A78 首轮 CI 暴露审查代码执行顺序问题（`shot_texts` 未初始化）；已调整到文本索引构建后运行，并同步帮助/逻辑文档，需以修复后最新 CI 为准。

@@ -1196,3 +1196,6 @@ Selling-point coverage tests use product_placement mode to isolate the new text 
 - `CHARACTER_CHOICE_NOT_SHOWN`：因果链的人物选择没有体现在其引用镜头文本中。
 
 这是结构与字符串级可追溯性检查，不代表已自动理解人物心理、证明行动合理或完全排除信息穿越。旧方案继续兼容；警告需要人工/语义复核。
+
+
+A78 实现注意：人物行动依据审查必须在 `shot_texts` 构建完成后运行；测试应覆盖审查入口，防止因局部变量初始化顺序造成运行时错误。

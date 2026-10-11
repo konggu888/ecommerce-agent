@@ -1089,3 +1089,7 @@ The selling-point coverage regression test uses `product_placement` mode to isol
 - 新生成分镜要求为每个行动人物记录目标/动机、已知信息、剧本内信息来源、决策压力和选择理由（`character_action_basis`）。
 - 预生产审查新增 `CHARACTER_ACTION_BASIS_MISSING`、`CHARACTER_ACTION_BASIS_INCOMPLETE`、`CHARACTER_KNOWLEDGE_SOURCE_UNTRACEABLE`、`CHARACTER_CHOICE_NOT_SHOWN` 警告。
 - 检查只验证记录是否存在、信息来源是否能在剧本中定位，以及选择是否被引用镜头文字覆盖；不能自动证明人物心理真实或信息因果语义成立。
+
+
+### A78 测试修正补记
+- CI 首轮发现人物行动依据审查调用了尚未构建的镜头文本索引；已将审查块移动到镜头文本索引构建之后，避免运行时 NameError。
