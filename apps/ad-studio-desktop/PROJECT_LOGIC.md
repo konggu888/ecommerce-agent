@@ -886,9 +886,16 @@ A33 自动化验收分别覆盖电商短视频、商品主图视频、广告投�
 - 代码/CI测试不代表剧情语义完全无矛盾或 Windows 真机验收完成。
 
 
-## 17.7.1 防止模型自报商品画面核验通过
+## 17.6 AI短剧形式商品广告（第一阶段）
 
-- `generate_short_drama()` 在确认请求目标为 `product_short_drama_ad` 后，强制把所有新生成分镜的 `visual_verification` 设为 `not_checked`。
-- 不信任模型返回的 `passed`、`needs_review` 或 `failed` 作为生成时的核验事实；生成模型没有观察到最终生成画面的证据，不能自我认证。
-- 回归测试模拟模型返回 `passed`，断言保存方案仍为 `not_checked` 且生产前审查继续提示尚未视觉核验。
-- 这是状态可信度修复，不是视觉核验实现；真正的参考商品图比对、人工确认 UI 与问题镜头局部重生成仍未完成。
+- 在 `drama_business_mode` 中新增独立枚举 `product_short_drama_ad`，不替代 `general`、`product_placement` 或 `product_conversion`，也不影响原广告创意工作流。
+- 提示词要求先分析商品类型、目标人群、已确认卖点、使用场景和未知信息，再自主选择题材/时代并说明理由。
+- 方案必须有 `product_analysis`、`genre_decision`、`product_fact_lock`；商品事实分为已确认与未知/待核实。禁止虚构参数、认证、效果、价格、销量、材料和功能。
+- 该模式的每个分镜必须有 `product_fidelity_constraints`；`visual_verification` 只能是 `not_checked`、`passed`、`needs_review` 或 `failed`。新方案默认为 `not_checked`，规则复核不能伪装成画面级视觉验证。
+- 桌面 UI 显示独立目标、题材选择理由、商品剧情作用、已确认/未知事实摘要。预算和付费素材/视频生成流程仍沿用既有独立项目流程。
+- 尚未完成：真实生成画面与参考商品图的视觉比较、商品外观/结构/功能自动核验、失败镜头自动定位及单镜头重生成；Windows 真机/真实 Provider 验收继续暂缓。
+
+
+## 17.7.1 商品画面状态初始化
+
+新生成的商品广告分镜统一使用 not_checked 状态。视觉状态必须基于后续真实画面检查，不能仅由剧本模型输出决定。自动视觉比对和局部重生成仍待开发。

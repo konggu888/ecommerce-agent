@@ -15,7 +15,10 @@ SHORT_DRAMA_SCHEMA = {
     "series_bible": {"series_arc": "全剧主线", "character_state": "人物长期状态与关系", "continuity_rules": ["跨集必须保持的事实"]},
     "episodes": [{"episode_number": "integer", "title": "集名", "logline": "本集梗概", "plot_beats": ["本集节拍"], "ending_hook": "本集结尾/悬念", "full_script": "本集完整剧本", "continuity_state": {"opening_state": "本集开始时承接的剧情/人物状态", "character_state_changes": ["本集人物状态或关系的变化"], "unresolved_threads": ["本集结束后仍未解决的悬念/冲突"], "ending_state": "本集结束时可供后续承接的事实状态", "next_episode_requirements": ["下一集必须承接的事件/事实；最终集可为空列表"]}, "storyboard": ["本集分镜，字段与根级 storyboard 相同"]}],
     "continuity_ledger": [{"episode_number": "integer", "opening_state": "承接状态", "character_state_changes": ["人物状态变化"], "unresolved_threads": ["未解决线索"], "ending_state": "集末状态", "next_episode_requirements": ["下一集承接要求"]}],
-    "drama_business_mode": "通用AI短剧/商品植入短剧/商品转化短剧",
+    "drama_business_mode": "通用AI短剧/商品植入短剧/商品转化短剧/AI短剧形式商品广告",
+    "product_analysis": {"product_type": "商品类型", "target_audience": "目标人群", "selling_points": ["已确认卖点"], "usage_scenarios": ["使用场景"], "unknown_facts": ["未知或待确认信息"]},
+    "genre_decision": {"selected_genre": "自主选择的题材", "reasoning": "选择理由", "world_style": "时代与世界设定", "story_product_role": "商品在剧情中的自然作用"},
+    "product_fact_lock": {"confirmed_facts": ["已确认事实"], "unknown_or_unverified": ["未核实事实"], "appearance_structure_function_constraints": ["外观/结构/功能约束"], "reference_assets_required": ["参考商品素材要求"], "do_not_change": ["不可改变项"]},
     "genre": "AI根据创作目标、人群、卖点和场景自主判断的短剧题材",
     "genre_reasoning": "为什么该题材适合这个商品与目标受众",
     "logline": "一句话故事梗概",
@@ -40,6 +43,8 @@ SHORT_DRAMA_SCHEMA = {
         "action": "可执行的画面动作",
         "dialogue": "台词/旁白",
         "product_integration": "商品如何自然进入剧情；不适用时说明",
+        "product_fidelity_constraints": ["商品外观/结构/功能/正确使用方式不可改变的约束；普通短剧模式可为空"],
+        "visual_verification": "not_checked / passed / needs_review / failed；not_checked 表示尚未进行画面级核验",
         "asset_needs": ["演员/场景/商品素材/实拍素材需求"],
         "actor_requirements": ["具体人物/演员标签"],
         "scene_requirements": ["具体场景标签"],
@@ -77,6 +82,10 @@ def build_short_drama_prompt(product: dict[str, Any], constraints: dict[str, Any
         "0. 先严格识别 constraints.drama_business_mode：general=通用AI短剧，允许完全不带商品；product_placement=商品植入短剧，商品自然参与剧情但不能挤压故事；product_conversion=商品转化短剧，剧情服务于指定商品的目标人群与转化目标。不得把三种模式混为一谈。\n"
         "0.1 通用AI短剧不要求必须出现商品；如果没有商品资料，不得编造商品，分镜 product_integration 应写明“不适用”或“本镜不出现商品”。若用户提供商品，也只在剧情合理且用户选择允许时使用。\n"
         "0.2 商品植入/商品转化模式必须有指定商品资料；商品植入应自然，商品转化需明确剧情节点、真实卖点展示和转化路径，但不得夸大效果或虚构事实。\n"
+        "0.3 product_short_drama_ad 是独立的AI短剧形式商品广告目标，不能与普通商品植入/商品转化混同。先分析商品类型、目标人群、已确认卖点、使用场景和未知信息，再自主决定题材/时代（例如古代或现代）并说明理由，让商品自然成为剧情机制的一部分。\\n"
+        "0.4 product_short_drama_ad 必须输出 product_analysis、genre_decision、product_fact_lock。将事实分为已确认与未知/未核实；禁止编造参数、认证、效果、价格、销量、材料或功能。未知信息只能标待确认，不得当作事实使用。\\n"
+        "0.5 每个 product_short_drama_ad 分镜都必须有 product_fidelity_constraints，明确本镜商品外观、颜色/款式、结构、关键部件、核心功能和正确使用方式哪些必须保持不变；需要时指定参考商品图片/素材。不得为了古代/奇幻剧情把真实商品改成不同款式、改变结构或赋予不存在的功能。\\n"
+        "0.6 每个商品广告分镜增加 visual_verification 字段，初始值必须明确为 not_checked；结构/文字复核不能冒充生成画面视觉核验。生成画面后需由后续视觉检查或人工确认，发现问题只重生成问题镜头。\\n"
         "1. 题材必须根据创作目标、商品事实（如适用）、目标人群、使用场景和传播目标推导，不得机械套用固定题材清单。\n"
         "2. 设计完整的人物目标与关系、场景、冲突、节奏、转折和结尾；故事要有因果，不是卖点罗列。\n"
         "3. 商品是否出现必须服从所选创作目标：通用模式允许不出现；商品植入/转化模式应按目标呈现。任何模式都不得篡改商品外观、结构、核心功能、使用方式、规格、功效或其他事实。\n"
@@ -155,8 +164,8 @@ def validate_short_drama(raw: dict[str, Any]) -> dict[str, Any]:
                 for i, e in enumerate(episodes, 1)
             )
     raw.setdefault("drama_business_mode", "product_placement")
-    if raw.get("drama_business_mode") not in {"general", "product_placement", "product_conversion"}:
-        raise ShortDramaPlanError("短剧商业模式无效，必须是通用AI短剧、商品植入短剧或商品转化短剧。")
+    if raw.get("drama_business_mode") not in {"general", "product_placement", "product_conversion", "product_short_drama_ad"}:
+        raise ShortDramaPlanError("短剧创作目标无效。")
     raw.setdefault("format_mode", "single_episode")
     raw.setdefault("episode_count", 1)
     raw.setdefault("series_bible", {})
@@ -197,6 +206,23 @@ def validate_short_drama(raw: dict[str, Any]) -> dict[str, Any]:
                 if not isinstance(state.get(field), list):
                     raise ShortDramaPlanError(f"第{number}集连续性字段 {field} 必须是列表。")
         raw["continuity_ledger"] = build_episode_continuity_ledger(raw)
+    if raw.get("drama_business_mode") == "product_short_drama_ad":
+        for field in ("product_analysis", "genre_decision", "product_fact_lock"):
+            if not isinstance(raw.get(field), dict) or not raw[field]:
+                raise ShortDramaPlanError(f"AI短剧形式商品广告缺少必需的商品真实性字段：{field}。")
+        decision = raw["genre_decision"]
+        if not str(decision.get("selected_genre", raw.get("genre", ""))).strip() or not str(decision.get("reasoning", raw.get("genre_reasoning", ""))).strip():
+            raise ShortDramaPlanError("AI短剧形式商品广告必须说明题材选择及理由。")
+        lock = raw["product_fact_lock"]
+        if not isinstance(lock.get("confirmed_facts", []), list) or not isinstance(lock.get("unknown_or_unverified", []), list):
+            raise ShortDramaPlanError("商品事实锁定中的已确认/未知事实必须使用列表。")
+        for index, shot in enumerate(raw["storyboard"], 1):
+            constraints = shot.get("product_fidelity_constraints")
+            if not isinstance(constraints, list) or not any(str(item).strip() for item in constraints):
+                raise ShortDramaPlanError(f"AI短剧形式商品广告第{index}镜缺少商品外观/结构/功能真实性约束。")
+            shot.setdefault("visual_verification", "not_checked")
+            if shot["visual_verification"] not in {"not_checked", "passed", "needs_review", "failed"}:
+                raise ShortDramaPlanError(f"第{index}镜 visual_verification 状态无效。")
     if not isinstance(raw["characters"], list) or not raw["characters"]:
         raise ShortDramaPlanError("短剧必须至少设计一个人物。")
     if not isinstance(raw["storyboard"], list) or not raw["storyboard"]:
@@ -246,6 +272,8 @@ def generate_short_drama(model_router, product: dict[str, Any], constraints: dic
     requested_mode = str(constraints.get("short_drama_mode", "single_episode"))
     requested_count = int(constraints.get("episode_count", 1))
     requested_business_mode = str(constraints.get("drama_business_mode", "product_placement"))
+    if requested_business_mode == "product_short_drama_ad" and not product:
+        raise ShortDramaPlanError("AI短剧形式商品广告必须提供商品资料，才能分析商品并锁定真实外观、结构和功能。")
     if validated.get("drama_business_mode") != requested_business_mode:
         raise ShortDramaPlanError(
             f"模型返回的短剧商业模式为 {validated.get('drama_business_mode')}，与所选模式 {requested_business_mode} 不一致；请重新生成，避免创作目标错位。"
@@ -345,6 +373,13 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
             add("warning", "GENERATION_PROMPT", f"第{number}镜缺少可执行的生成提示。")
         if not str(shot.get("product_integration", "")).strip():
             add("warning", "PRODUCT_INTEGRATION", f"第{number}镜未说明商品是否出现及如何融入剧情。")
+        if checked.get("drama_business_mode") == "product_short_drama_ad":
+            fidelity = shot.get("product_fidelity_constraints")
+            if not isinstance(fidelity, list) or not any(str(item).strip() for item in fidelity):
+                add("error", "PRODUCT_FIDELITY_CONSTRAINTS", f"第{number}镜缺少商品外观/结构/功能锁定约束。")
+            status = str(shot.get("visual_verification", "not_checked"))
+            if status != "passed":
+                add("warning", "PRODUCT_VISUAL_NOT_VERIFIED", f"第{number}镜商品画面视觉核验状态为“{status}”；文字规则检查不能证明生成画面真实还原商品。")
         shot_characters = [str(x).strip() for x in shot.get("characters", []) if str(x).strip()]
         for name in shot_characters:
             if character_names and name not in character_names:
