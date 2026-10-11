@@ -100,7 +100,7 @@ class ShortDramaTests(unittest.TestCase):
 
     def test_generation_prompt_requires_causal_conflict_hook_and_payoff(self):
         prompt = build_short_drama_prompt({"name": "商品"}, {"drama_business_mode": "product_placement"})
-        for term in ("story_engine", "hook_design", "冲突升级", "伏笔", "不得只靠角色夸赞"):
+        for term in ("story_engine", "hook_design", "逐级升级的冲突", "伏笔", "不得只靠角色夸赞"):
             self.assertIn(term, prompt)
 
     def test_builds_existing_production_contract(self):
