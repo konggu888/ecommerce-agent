@@ -1454,6 +1454,16 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertIsNone(shot.video_path)
             self.assertEqual(shot.status, "待重新生成/重新选择素材")
 
+    def test_a57_generate_shot_ui_surfaces_cost_reconciliation_state(self):
+        app_source = (Path(__file__).resolve().parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        start = app_source.index("def generate_shot(self):")
+        end = app_source.index("def regen_shot(self):", start)
+        block = app_source[start:end]
+        self.assertIn('if s.status == "已生成（成本待核对）":', block)
+        self.assertIn("项目实际成本待核对", block)
+        self.assertIn("usage-ledger.json", block)
+        self.assertNotIn("项目实际累计", block.split('if s.status == "已生成（成本待核对）":', 1)[1].split("else:", 1)[0])
+
     def test_a46_edit_shot_routes_through_safe_regeneration_transition(self):
         app_source = (Path(__file__).resolve().parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
         start = app_source.index("def edit_shot(self):")

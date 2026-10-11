@@ -888,3 +888,10 @@ AI 必须执行：
 2. 检查 production.py 中提示词分隔符为真实换行转义，而非双重转义。
 3. 运行既有 test_a50_video_prompt_uses_real_line_breaks，并等待完整 CI 与 docs-sync 成功。
 4. 真实 Provider 提示词效果仍需现场验收。
+
+## A57｜成本待核对 UI 验收
+1. 模拟 Provider 返回有效视频，同时让成本记账入口抛出异常。
+2. 确认项目保存新视频路径与“已生成（成本待核对）”状态。
+3. 检查 `generate_shot()` 成功返回后的界面分支：成本待核对时显示专门警告，不显示正常“项目实际累计”；提示先检查 `usage-ledger.json` 和恢复记录。
+4. 正常成本记账成功时，原有实际累计显示应保留。
+5. 运行完整桌面测试、当前 SHA 的完整 CI 与 docs-sync；真实 Provider 账单对账另行验收。

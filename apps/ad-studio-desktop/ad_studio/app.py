@@ -1604,7 +1604,13 @@ class App(tk.Tk):
                 mode={'local':'本地','cloud':'云端','unavailable':'不可用'}.get(decision.target,decision.target)
                 self.detail.set(f'镜头 {s.index} 正在{mode}生成…')
                 out=self.store.render_shot(self.project,s,config_root=ROOT)
-                self.refresh_shots(); self.cost.set(f'项目实际成本 ¥{self.project.actual_cost_rmb:.4f} · 预估 ¥{self.project.cost_estimate.get("总计",0):.2f}'); self.detail.set(f'镜头 {s.index} 已由{mode}生成 v{s.version}：{out} · 项目实际累计 ¥{self.project.actual_cost_rmb:.4f}')
+                self.refresh_shots()
+                if s.status == "已生成（成本待核对）":
+                    self.cost.set(f'项目实际成本待核对 · 预估 ¥{self.project.cost_estimate.get("总计",0):.2f}')
+                    self.detail.set(f'镜头 {s.index} 已生成 v{s.version}：{out}。但成本账本写入异常，费用尚待核对。请先检查本地 usage-ledger.json 和项目恢复记录，不要直接重复记账。')
+                else:
+                    self.cost.set(f'项目实际成本 ¥{self.project.actual_cost_rmb:.4f} · 预估 ¥{self.project.cost_estimate.get("总计",0):.2f}')
+                    self.detail.set(f'镜头 {s.index} 已由{mode}生成 v{s.version}：{out} · 项目实际累计 ¥{self.project.actual_cost_rmb:.4f}')
         except Exception as e:
             failure_state = generation_failure_ui_state(s)
             s.status = failure_state["status"]
