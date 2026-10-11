@@ -25,13 +25,13 @@ def sample_plan():
         "causal_chain": [
             {"step": 1, "event": "主角发现钥匙不在固定位置", "caused_by": "开场初始条件：前一晚匆忙回家后随手放置物品",
              "character_choice": "先翻找玄关而不回想昨晚的行动", "consequence": "时间被消耗且没有找到钥匙",
-             "state_change": "剩余出门时间缩短，主角压力增加"},
+             "state_change": "剩余出门时间缩短，主角压力增加", "script_evidence": "主角发现钥匙不在固定位置", "storyboard_indices": [1]},
             {"step": 2, "event": "主角沿回家路线回忆并检查收纳处", "caused_by": "第一步翻找失败，时间压力迫使其改变策略",
              "character_choice": "停止盲目翻找，按昨晚行动顺序排查", "consequence": "发现自己临时更换过放置位置",
-             "state_change": "人物从慌乱转为有依据地行动，并获得新线索"},
+             "state_change": "人物从慌乱转为有依据地行动，并获得新线索", "script_evidence": "主角沿回家路线回忆并检查收纳处", "storyboard_indices": [1]},
             {"step": 3, "event": "主角找到钥匙并决定建立固定归位习惯", "caused_by": "第二步发现临时放置是反复丢失的原因",
              "character_choice": "主动设置固定收纳点", "consequence": "及时出门并减少同类问题再次发生",
-             "state_change": "主角获得掌控感，同事对其可靠性的担忧缓解"}
+             "state_change": "主角获得掌控感，同事对其可靠性的担忧缓解", "script_evidence": "主角找到钥匙并决定建立固定归位习惯", "storyboard_indices": [1]}
         ],
         "story_engine": {
             "protagonist_goal": "准时出门并带齐必需物品",
@@ -48,7 +48,7 @@ def sample_plan():
             "payoff": "开场疑问得到明确解决并展示新的习惯"
         },
         "ending": "主角从容赴约",
-        "full_script": "场景一：主角匆忙寻找物品……",
+        "full_script": "主角发现钥匙不在固定位置。主角沿回家路线回忆并检查收纳处。主角找到钥匙并决定建立固定归位习惯。",
         "storyboard": [{
             "index": 1, "scene": "公寓玄关", "location": "现代公寓",
             "characters": ["小林"], "action": "主角翻找物品并看向时钟",
@@ -105,6 +105,33 @@ class ShortDramaTests(unittest.TestCase):
             def complete_json(self, profile, prompt, function=None): return plan
         with self.assertRaisesRegex(ShortDramaPlanError, "至少3步 causal_chain"):
             generate_short_drama(FakeRouter(), {"name": "商品"}, {"drama_business_mode": "product_placement"})
+
+    def test_generation_rejects_causal_evidence_not_in_script(self):
+        plan = sample_plan()
+        plan["causal_chain"][0]["script_evidence"] = "剧本里没有的事件"
+        class FakeRouter:
+            def resolve_route(self, function): return "profile"
+            def complete_json(self, profile, prompt, function=None): return plan
+        with self.assertRaisesRegex(ShortDramaPlanError, "不是 full_script 原文"):
+            generate_short_drama(FakeRouter(), {"name": "商品"}, {"drama_business_mode": "product_placement"})
+
+    def test_generation_rejects_causal_chain_with_invalid_storyboard_reference(self):
+        plan = sample_plan()
+        plan["causal_chain"][1]["storyboard_indices"] = [99]
+        class FakeRouter:
+            def resolve_route(self, function): return "profile"
+            def complete_json(self, profile, prompt, function=None): return plan
+        with self.assertRaisesRegex(ShortDramaPlanError, "不存在的分镜位置"):
+            generate_short_drama(FakeRouter(), {"name": "商品"}, {"drama_business_mode": "product_placement"})
+
+    def test_audit_flags_causal_script_and_storyboard_mismatch(self):
+        plan = sample_plan()
+        plan["causal_chain"][0]["script_evidence"] = "不存在于剧本的证据"
+        plan["causal_chain"][1]["storyboard_indices"] = [99]
+        report = audit_short_drama(plan)
+        codes = {item["code"] for item in report["issues"]}
+        self.assertIn("CAUSAL_SCRIPT_MISMATCH", codes)
+        self.assertIn("CAUSAL_STORYBOARD_MISMATCH", codes)
 
     def test_generation_rejects_causal_step_without_consequence(self):
         plan = sample_plan()

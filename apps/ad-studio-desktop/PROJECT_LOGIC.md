@@ -1148,3 +1148,10 @@ A61 唯一失败项是 test_handoff_mentions_a61_legacy_cost_migration 的文案
 - 新增 causal_chain 结构，记录 event、caused_by、character_choice、consequence、state_change。
 - 新生成结果强制要求至少3步、字段完整、步骤编号连续；旧方案通过审查 warning 提醒，不阻断读取。
 - 增加缺少因果链、步骤缺少后果、旧方案审查警告的回归测试。
+
+
+### A74：因果链与剧本/分镜证据对齐
+- 因果步骤新增 `script_evidence` 与 `storyboard_indices`。
+- 新生成流程要求剧本证据是 `full_script` 的原文子串，且分镜引用为真实存在的根级分镜位置；不满足则拒绝。
+- 旧方案审查新增剧本证据与分镜引用不一致的警告，兼容历史项目。
+- 新增生成拒绝与审查告警回归测试；这属于可追踪性校验，不能替代语义层面的人工验收。
