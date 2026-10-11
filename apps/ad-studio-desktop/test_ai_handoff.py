@@ -135,5 +135,10 @@ class AIHandoffTests(unittest.TestCase):
         self.assertIn("A63", text)
         self.assertIn("历史成本", text)
 
+    def test_handoff_mentions_a64_asset_cost_reconciliation(self):
+        text = (ROOT / "docs" / "AD_STUDIO_AI_HANDOFF.md").read_text(encoding="utf-8")
+        self.assertIn("A64", text)
+        self.assertIn("成本待核对", text)
+
 if __name__ == "__main__":
     unittest.main()

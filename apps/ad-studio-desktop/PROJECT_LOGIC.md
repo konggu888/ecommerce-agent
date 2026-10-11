@@ -1077,3 +1077,10 @@ A61 唯一失败项是 test_handoff_mentions_a61_legacy_cost_migration 的文案
 - 历史成本迁移批量写入成功后，立即从 ledger 汇总同步 project.actual_cost_rmb、project.actual_cost_summary、cost_estimate.actual 与各镜头 actual_cost_rmb。
 - 如果随后的新费用 ledger.record 失败，历史迁移记录和已同步的旧成本仍在内存中，调用方保存时不会回退为过期快照。
 - 新增 A63 回归：模拟迁移成功、下一条费用记录失败，验证项目/镜头旧成本与迁移行仍被保留。
+
+
+### A64：素材生成结果与成本记账故障分离
+- resolve_assets 与 generate_missing_asset 都通过 _record_asset_cost 记录素材费用。
+- 只有素材生成/入库本身失败才标记“自动生成失败”；账本写入失败则保留 asset ID/库文件，标记“已生成并入库（成本待核对）”。
+- 成本结算失败写入 recovery.history，下一步明确要求核对 usage-ledger.json 与 Provider 账单，防止重复生成造成重复扣费。
+- A61-A63 自动化 CI 与 docs-sync 已通过；A64 当前 SHA 的完整 CI/doc-sync 待确认。

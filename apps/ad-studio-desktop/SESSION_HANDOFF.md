@@ -207,3 +207,7 @@ SHA `a760909be7927025a83a1f3fc5ae219acbd80ac0` 的完整 CI 因 `test_handoff_me
 
 ## A63：迁移基线持久化保护（待本轮 CI）
 A63 在旧成本迁移批量写入成功后，立即同步项目与镜头实际成本快照。若后续新费用写入失败，历史成本仍可保存并重载。新增 A63 回归，当前 SHA 的完整 CI/doc-sync 尚待确认。
+
+
+## A64：素材成本账本故障保护（待本轮 CI）
+A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-sync 通过。A64 为 resolve_assets 和 generate_missing_asset 共用成本记账安全入口；账本失败时保留已生成素材，标记成本待核对并记录恢复动作。当前 SHA 的完整 CI/doc-sync 尚待确认。

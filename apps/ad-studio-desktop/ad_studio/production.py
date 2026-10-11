@@ -331,6 +331,41 @@ class ProductionStore:
         self.save(project)
         return next((shot for shot in shots if str(shot.id) == str(task.get("accepted_shot_id"))), None)
 
+    def _record_asset_cost(self, project: Project, shot: Shot, kind: str, amount_rmb: float, provider: str):
+        """Keep successfully generated assets available when their cost write needs reconciliation."""
+        try:
+            self._record_actual_cost(
+                project,
+                shot=shot,
+                category="asset",
+                amount_rmb=amount_rmb,
+                provider=provider,
+                quantity=1,
+                unit_cost_rmb=amount_rmb,
+                function=f"{kind}素材生成",
+            )
+            return True, ""
+        except Exception as exc:
+            try:
+                self.record_recovery_failure(
+                    project,
+                    stage=f"{kind}素材已生成但成本结算未完成",
+                    error=str(exc),
+                    next_action="核对 usage-ledger.json 与 Provider 账单；保留已生成素材，不要直接重复生成",
+                    retryable=True,
+                )
+            except Exception as recovery_exc:
+                project.creative_plan.setdefault("recovery", {}).setdefault("history", []).append({
+                    "stage": f"{kind}素材已生成但成本结算未完成",
+                    "error": str(exc),
+                    "recovery_error": str(recovery_exc),
+                    "retryable": True,
+                    "status": "需处理",
+                    "next_action": "检查本地项目文件与 usage-ledger.json 写入权限、磁盘空间，并核对 Provider 账单",
+                    "created_at": datetime.datetime.now().isoformat(timespec="seconds"),
+                })
+            return False, str(exc)
+
     def resolve_assets(self, project: Project, shot: Shot):
         """本地优先；缺失时返回明确的生成需求。真正生成由对应生成器执行。"""
         library=LocalLibrary(self.library_root)
@@ -349,7 +384,13 @@ class ProductionStore:
                         result=generator.generate(kind,project.product_name+'-'+kind,shot.visual+'；需求：'+'、'.join(tags),tags,shot.id)
                         library._write(library.all()+[result.asset])
                         item.update({'asset':result.asset.id,'source':'已生成并入库','cost_rmb':result.cost_rmb})
-                        self._record_actual_cost(project, shot=shot, category='asset', amount_rmb=result.cost_rmb, provider=result.provider, quantity=1, unit_cost_rmb=result.cost_rmb, function=f'{kind}素材生成')
+                        cost_recorded, cost_error = self._record_asset_cost(project, shot, kind, result.cost_rmb, result.provider)
+                        if not cost_recorded:
+                            item.update({
+                                'source': '已生成并入库（成本待核对）',
+                                'cost_status': 'pending',
+                                'cost_error': cost_error,
+                            })
                     except Exception as exc:
                         item.update({'source':'自动生成失败','error':str(exc)})
                 else:
@@ -391,18 +432,11 @@ class ProductionStore:
         elif kind=='场景': shot.scene_id=item.id
         elif kind=='商品素材': shot.product_asset_ids.append(item.id)
         shot.asset_source='ai_generated'
-        self._record_actual_cost(
-            project,
-            shot=shot,
-            category="asset",
-            amount_rmb=cost,
-            provider=provider_name,
-            quantity=1,
-            unit_cost_rmb=cost,
-            function=f"{kind}素材生成",
-        )
+        cost_recorded, cost_error = self._record_asset_cost(project, shot, kind, cost, provider_name)
         shot.provider = provider_name
-        shot.status=f'{kind}已生成并入库'
+        shot.status = f'{kind}已生成并入库' if cost_recorded else f'{kind}已生成并入库（成本待核对）'
+        if not cost_recorded:
+            shot.generated_from_request = f"{shot.generated_from_request or ''}\n成本待核对：{cost_error}".strip()
         self.save(project)
         return item
 

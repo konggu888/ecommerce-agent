@@ -956,3 +956,11 @@ AI 必须执行：
 3. 确认项目和镜头内存成本、cost_estimate.actual_cost_rmb 仍等于历史金额，且迁移 ledger 行保留。
 4. 保存并重载项目，确认旧成本没有回退或清零。
 5. 运行完整 CI 与 docs-sync。
+
+
+## A64｜素材成本账本故障验收
+1. 模拟素材生成与入库成功，然后让 _record_actual_cost 抛出账本写入异常。
+2. 确认素材仍保留在库中，镜头素材 ID 不被清空，状态显示“已生成并入库（成本待核对）”而非“自动生成失败”。
+3. 确认 recovery.history 记录了素材成本结算未完成，下一步要求核对 usage-ledger.json 与 Provider 账单。
+4. 确认 resolve_assets 与 generate_missing_asset 两条入口都走同一安全处理。
+5. 运行完整 CI 与 docs-sync；真实供应商扣款仍另行对账。

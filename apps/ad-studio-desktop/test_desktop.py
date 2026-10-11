@@ -1888,6 +1888,36 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertAlmostEqual(restored.shots[0].actual_cost_rmb, 1.2)
 
 
+    def test_a64_asset_cost_record_failure_keeps_generated_asset_and_marks_reconciliation(self):
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td))
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+
+            def fail_cost_record(*args, **kwargs):
+                raise OSError("模拟素材成本记账故障")
+            store._record_actual_cost = fail_cost_record
+
+            recorded, error = store._record_asset_cost(project, shot, "商品", 0.72, "测试 Provider")
+            self.assertFalse(recorded)
+            self.assertIn("模拟素材成本记账故障", error)
+            history = project.creative_plan.get("recovery", {}).get("history", [])
+            self.assertTrue(any(x.get("stage") == "商品素材已生成但成本结算未完成" for x in history))
+            self.assertIn("usage-ledger.json", history[-1].get("next_action", ""))
+
+    def test_a64_asset_generation_callers_distinguish_cost_failure_from_generation_failure(self):
+        source = (Path(__file__).resolve().parent / "ad_studio" / "production.py").read_text(encoding="utf-8")
+        resolve_start = source.index("def resolve_assets")
+        generate_start = source.index("def generate_missing_asset", resolve_start)
+        render_start = source.index("def render_shot", generate_start)
+        resolve_body = source[resolve_start:generate_start]
+        generate_body = source[generate_start:render_start]
+        self.assertIn("self._record_asset_cost", resolve_body)
+        self.assertIn("已生成并入库（成本待核对）", resolve_body)
+        self.assertIn("self._record_asset_cost", generate_body)
+        self.assertIn("成本待核对", generate_body)
+
+
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.
