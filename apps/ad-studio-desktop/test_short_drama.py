@@ -3,7 +3,7 @@ import unittest
 from ad_studio.short_drama import (
     ShortDramaPlanError, build_short_drama_prompt, generate_short_drama,
     audit_short_drama, build_episode_continuity_ledger, short_drama_production_rows, validate_short_drama,
-    generate_next_short_drama_episode,
+    generate_next_short_drama_episode, record_product_visual_verification,
 )
 
 
@@ -283,6 +283,44 @@ class ShortDramaTests(unittest.TestCase):
                 return plan
         result = generate_short_drama(FakeRouter(), {"name": "商品"}, {"drama_business_mode": "product_short_drama_ad"})
         self.assertEqual(result["storyboard"][0]["visual_verification"], "not_checked")
+
+
+    def test_manual_product_visual_review_requires_evidence_and_note(self):
+        plan = sample_plan()
+        plan["drama_business_mode"] = "product_short_drama_ad"
+        with self.assertRaisesRegex(ShortDramaPlanError, "必须选择实际生成的图片或视频"):
+            record_product_visual_verification(plan, 1, "passed", "", "外观和功能一致")
+        with self.assertRaisesRegex(ShortDramaPlanError, "核验备注"):
+            record_product_visual_verification(plan, 1, "passed", "C:/renders/shot-01.png", "")
+        with self.assertRaisesRegex(ShortDramaPlanError, "镜头编号不存在"):
+            record_product_visual_verification(plan, 2, "passed", "C:/renders/shot-01.png", "已核验")
+
+    def test_passed_visual_status_without_manual_evidence_is_still_flagged(self):
+        plan = sample_plan()
+        plan["drama_business_mode"] = "product_short_drama_ad"
+        plan["product_analysis"] = {"product_type": "用品"}
+        plan["genre_decision"] = {"selected_genre": "古代", "reasoning": "适合故事"}
+        plan["product_fact_lock"] = {
+            "confirmed_facts": ["外观以参考图为准"],
+            "unknown_or_unverified": ["未确认参数"],
+            "appearance_structure_function_constraints": ["不得改变商品外观、结构和功能"],
+        }
+        plan["storyboard"][0]["product_fidelity_constraints"] = ["保持外观、结构、功能及正确用法"]
+        plan["storyboard"][0]["visual_verification"] = "passed"
+        report = audit_short_drama(plan, {"name": "商品"})
+        self.assertIn("PRODUCT_VISUAL_NOT_VERIFIED", {issue["code"] for issue in report["issues"]})
+
+    def test_manual_product_visual_review_persists_evidence(self):
+        plan = sample_plan()
+        plan["drama_business_mode"] = "product_short_drama_ad"
+        reviewed = record_product_visual_verification(
+            plan, 1, "passed", "C:/renders/shot-01.png", "外观、结构、功能及正确用法均与商品资料一致"
+        )
+        shot = reviewed["storyboard"][0]
+        self.assertEqual(shot["visual_verification"], "passed")
+        self.assertEqual(shot["visual_verification_evidence"], "C:/renders/shot-01.png")
+        self.assertEqual(shot["visual_verification_method"], "manual")
+        self.assertIn("外观、结构", shot["visual_verification_note"])
 
 
 if __name__ == "__main__":

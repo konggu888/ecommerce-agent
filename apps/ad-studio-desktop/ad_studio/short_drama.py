@@ -348,6 +348,31 @@ def short_drama_production_rows(plan: dict[str, Any], product_name: str) -> list
     return rows
 
 
+def record_product_visual_verification(
+    plan: dict[str, Any], shot_number: int, status: str, evidence_path: str, reviewer_note: str
+) -> dict[str, Any]:
+    """Record an explicit human visual review tied to a concrete local image/video file."""
+    allowed = {"passed", "needs_review", "failed"}
+    if status not in allowed:
+        raise ShortDramaPlanError("人工画面核验状态必须是 passed、needs_review 或 failed。")
+    if not str(evidence_path).strip():
+        raise ShortDramaPlanError("记录商品画面核验必须选择实际生成的图片或视频作为证据。")
+    if not str(reviewer_note).strip():
+        raise ShortDramaPlanError("请填写核验备注，说明外观、结构、功能或使用方式的检查结果。")
+    updated = json.loads(json.dumps(plan, ensure_ascii=False))
+    shots = updated.get("storyboard", [])
+    if not isinstance(shots, list) or shot_number < 1 or shot_number > len(shots):
+        raise ShortDramaPlanError("指定镜头编号不存在。")
+    if updated.get("drama_business_mode") != "product_short_drama_ad":
+        raise ShortDramaPlanError("人工商品视觉核验只适用于“AI短剧形式商品广告”模式。")
+    shot = shots[shot_number - 1]
+    shot["visual_verification"] = status
+    shot["visual_verification_evidence"] = str(evidence_path).strip()
+    shot["visual_verification_method"] = "manual"
+    shot["visual_verification_note"] = str(reviewer_note).strip()
+    return updated
+
+
 def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | None = None) -> dict[str, Any]:
     """Run deterministic pre-production checks; warnings require human review, not blind approval."""
     checked = validate_short_drama(json.loads(json.dumps(plan, ensure_ascii=False)))
@@ -378,8 +403,16 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
             if not isinstance(fidelity, list) or not any(str(item).strip() for item in fidelity):
                 add("error", "PRODUCT_FIDELITY_CONSTRAINTS", f"第{number}镜缺少商品外观/结构/功能锁定约束。")
             status = str(shot.get("visual_verification", "not_checked"))
-            if status != "passed":
-                add("warning", "PRODUCT_VISUAL_NOT_VERIFIED", f"第{number}镜商品画面视觉核验状态为“{status}”；文字规则检查不能证明生成画面真实还原商品。")
+            has_manual_evidence = (
+                str(shot.get("visual_verification_evidence", "")).strip()
+                and shot.get("visual_verification_method") == "manual"
+                and str(shot.get("visual_verification_note", "")).strip()
+            )
+            if status != "passed" or not has_manual_evidence:
+                detail = f"状态为“{status}”"
+                if status == "passed" and not has_manual_evidence:
+                    detail = "模型/数据标记为 passed，但缺少人工核验的证据文件、核验方式或备注"
+                add("warning", "PRODUCT_VISUAL_NOT_VERIFIED", f"第{number}镜商品画面{detail}；只有关联实际生成画面并保存人工核验记录后，才能计为通过。")
         shot_characters = [str(x).strip() for x in shot.get("characters", []) if str(x).strip()]
         for name in shot_characters:
             if character_names and name not in character_names:

@@ -893,7 +893,8 @@ A33 自动化验收分别覆盖电商短视频、商品主图视频、广告投�
 - 方案必须有 `product_analysis`、`genre_decision`、`product_fact_lock`；商品事实分为已确认与未知/待核实。禁止虚构参数、认证、效果、价格、销量、材料和功能。
 - 该模式的每个分镜必须有 `product_fidelity_constraints`；`visual_verification` 只能是 `not_checked`、`passed`、`needs_review` 或 `failed`。新方案默认为 `not_checked`，规则复核不能伪装成画面级视觉验证。
 - 桌面 UI 显示独立目标、题材选择理由、商品剧情作用、已确认/未知事实摘要。预算和付费素材/视频生成流程仍沿用既有独立项目流程。
-- 尚未完成：真实生成画面与参考商品图的视觉比较、商品外观/结构/功能自动核验、失败镜头自动定位及单镜头重生成；Windows 真机/真实 Provider 验收继续暂缓。
+- 短剧质量/事实复核窗口新增“记录商品画面人工核验”入口。`record_product_visual_verification()` 要求镜头编号、实际生成图片/视频的本地证据路径、结论和人工备注，并将证据路径、`visual_verification_method=manual` 与备注写入对应分镜；通过状态只有在证据路径、方法和备注齐全时才不触发 `PRODUCT_VISUAL_NOT_VERIFIED`。新生成方案仍强制重置为 `not_checked`。
+- 该步骤仅记录用户人工检查结果，不执行图像理解或自动真实性判断；尚未完成：自动比对参考商品图、商品外观/结构/功能自动核验、失败镜头自动定位及单镜头重生成；Windows 真机/真实 Provider 验收继续暂缓。
 
 
 ## 17.7.1 商品画面状态初始化
