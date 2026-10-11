@@ -155,3 +155,7 @@ A52 为视频 Provider 失败调用增加本地账本记录；失败报价不计
 
 ## A55：Provider 成功后账本故障保护
 A51 费用预估校验、A52 失败尝试账本、A53 零字节旧版拒绝和 A54 活动视频零字节校验均已在验收计划记录的 SHA 上通过完整 CI/doc-sync。A55 将 Provider 有效输出安装与成本记账分离；账本异常时保留已生成视频、标记“成本待核对”并写恢复记录，不误报 Provider 失败。A55 当前 SHA 的 CI/doc-sync 需重新确认。
+
+
+## A56：提示词换行回归修复（待本轮 CI）
+SHA 18b958a269757781af4f062211d2a54485658e6e 的 CI 因 test_a50_video_prompt_uses_real_line_breaks 失败，确认 A55 重构把分隔符再次改成字面量反斜杠+n。已恢复真实换行；新 SHA 的完整 CI/doc-sync 尚待确认。

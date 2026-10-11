@@ -1026,3 +1026,7 @@ normalize_cost_estimate_rmb() 将 Provider 的每镜头预估价规范为有限�
 
 ### A55：Provider 成功与成本记账分离
 _render_with_provider() 将媒体生成/原子替换与成功成本记账分为两个异常边界。Provider 产出有效视频并替换到版本路径后，成本账本异常不得进入 Provider 失败恢复分支，也不得把活动路径回滚成旧版。此时保留新输出，标记“已生成（成本待核对）”，持久化 recovery history，指示先检查 usage-ledger.json 是否已有成功行再人工修复成本汇总，避免重复记账。
+
+
+### A56：提示词格式回归修复
+当前 CI 明确失败在 test_a50_video_prompt_uses_real_line_breaks：Provider 收到的是字面量反斜杠+n，不是真实换行。A55 的异常边界重构重新引入了双重转义；现恢复真实换行，继续保留 A50 自动化断言，避免仅依靠代码目视检查。
