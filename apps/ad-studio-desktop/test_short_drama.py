@@ -2,7 +2,7 @@ import unittest
 import json
 
 from ad_studio.short_drama import (
-    ShortDramaPlanError, build_short_drama_prompt, generate_short_drama,
+    ShortDramaPlanError, build_short_drama_prompt, generate_short_drama, product_visual_correction_suggestion,
     audit_short_drama, build_episode_continuity_ledger, short_drama_production_rows, validate_short_drama,
     generate_next_short_drama_episode, record_product_visual_verification, compare_product_visual_shot,
 )
@@ -440,6 +440,38 @@ class ShortDramaTests(unittest.TestCase):
         with self.assertRaisesRegex(ShortDramaPlanError, "修正要求"):
             prepare_product_drama_shot_regeneration(plan, 1, " ", previous_version=1)
 
+
+
+    def test_product_visual_correction_suggestion_uses_review_findings_as_editable_draft(self):
+        plan = sample_plan()
+        plan["drama_business_mode"] = "product_short_drama_ad"
+        plan["storyboard"][0]["visual_comparison_result"] = {
+            "result": {
+                "summary": "标签颜色与参考图疑似不一致",
+                "mismatch_detected": True,
+                "issues": ["标签颜色偏蓝", {"description": "瓶盖结构不清晰"}],
+            }
+        }
+        draft = product_visual_correction_suggestion(plan, 1)
+        self.assertIn("标签颜色与参考图疑似不一致", draft)
+        self.assertIn("标签颜色偏蓝", draft)
+        self.assertIn("瓶盖结构不清晰", draft)
+        self.assertEqual(product_visual_correction_suggestion(plan, 99), "")
+        plan["drama_business_mode"] = "product_placement"
+        self.assertEqual(product_visual_correction_suggestion(plan, 1), "")
+
+    def test_product_drama_regeneration_rejects_non_finite_cost_and_invalid_version(self):
+        from ad_studio.short_drama import prepare_product_drama_shot_regeneration
+        plan = sample_plan()
+        plan["drama_business_mode"] = "product_short_drama_ad"
+        with self.assertRaisesRegex(ShortDramaPlanError, "有限的非负数"):
+            prepare_product_drama_shot_regeneration(
+                plan, 1, "保持商品结构", previous_version=1, estimated_cost_rmb=float("nan")
+            )
+        with self.assertRaisesRegex(ShortDramaPlanError, "正整数"):
+            prepare_product_drama_shot_regeneration(
+                plan, 1, "保持商品结构", previous_version=0, estimated_cost_rmb=0.72
+            )
 
 
 if __name__ == "__main__":

@@ -6,6 +6,7 @@ existing ad creative plan or silently trigger paid asset/video generation.
 from __future__ import annotations
 
 import json
+import math
 import shutil
 import subprocess
 import tempfile
@@ -371,16 +372,23 @@ def prepare_product_drama_shot_regeneration(
     shots = plan.get("storyboard", [])
     if not isinstance(shots, list) or shot_number < 1 or shot_number > len(shots):
         raise ShortDramaPlanError("指定镜头编号不存在。")
-    if float(estimated_cost_rmb) < 0:
-        raise ShortDramaPlanError("预计生成费用不能为负数。")
+    try:
+        estimated_cost = float(estimated_cost_rmb)
+        old_version = int(previous_version)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ShortDramaPlanError("预计生成费用或旧版本号无效。") from exc
+    if not math.isfinite(estimated_cost) or estimated_cost < 0:
+        raise ShortDramaPlanError("预计生成费用必须是有限的非负数。")
+    if old_version < 1:
+        raise ShortDramaPlanError("旧版本号必须是正整数。")
     updated = json.loads(json.dumps(plan, ensure_ascii=False))
     shot = updated["storyboard"][shot_number - 1]
     history = list(shot.get("regeneration_history", []) or [])
     history.append({
-        "version": int(previous_version),
+        "version": old_version,
         "video_path": str(previous_video_path or ""),
         "correction_note": note,
-        "estimated_cost_rmb": round(float(estimated_cost_rmb), 4),
+        "estimated_cost_rmb": round(estimated_cost, 4),
         "visual_verification": shot.get("visual_verification", "not_checked"),
         "visual_verification_method": shot.get("visual_verification_method", ""),
         "visual_verification_evidence": shot.get("visual_verification_evidence", ""),
@@ -398,6 +406,37 @@ def prepare_product_drama_shot_regeneration(
     shot["visual_verification_note"] = ""
     shot.pop("visual_comparison_result", None)
     return updated
+
+
+def product_visual_correction_suggestion(plan: dict[str, Any], shot_number: int) -> str:
+    """Build an editable correction draft from the latest vision-review result."""
+    if plan.get("drama_business_mode") != "product_short_drama_ad":
+        return ""
+    shots = plan.get("storyboard", [])
+    if not isinstance(shots, list) or shot_number < 1 or shot_number > len(shots):
+        return ""
+    comparison = shots[shot_number - 1].get("visual_comparison_result")
+    if not isinstance(comparison, dict):
+        return ""
+    result = comparison.get("result")
+    if not isinstance(result, dict):
+        return ""
+    lines = ["基于上次AI视觉核验结果整理的修正草稿（请对照参考图确认，可自行编辑）："]
+    summary = str(result.get("summary", "")).strip()
+    if summary:
+        lines.append("核验摘要：" + summary)
+    issues = result.get("issues", [])
+    if isinstance(issues, list):
+        for item in issues:
+            if isinstance(item, dict):
+                text = str(item.get("description") or item.get("message") or item.get("issue") or "").strip()
+            else:
+                text = str(item).strip()
+            if text:
+                lines.append("待检查问题：" + text)
+    if len(lines) == 1 and result.get("mismatch_detected") is True:
+        lines.append("AI提示商品画面可能与参考图不一致；请逐项检查商品身份、外观、结构、功能和正确使用方式。")
+    return "\\n".join(lines) if len(lines) > 1 else ""
 
 
 def record_product_visual_verification(

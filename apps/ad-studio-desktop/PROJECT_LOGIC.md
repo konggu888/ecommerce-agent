@@ -920,3 +920,7 @@ A33 自动化验收分别覆盖电商短视频、商品主图视频、广告投�
 - 仅当前镜头增加版本；旧版本、旧核验状态/证据/模型结果保存在 regeneration_history。
 - 新版本核验状态重置为 not_checked，清除旧 AI 对比结果；其他镜头不变。
 - 当前只准备局部重生成，用户仍需使用现有“生成本镜头”按钮；最新 CI、Windows 真机和真实 Provider 验收待完成。
+
+
+### A36：视觉问题驱动的单镜头修复
+`product_visual_correction_suggestion()` 只从当前商品短剧镜头已保存的 `visual_comparison_result.result` 提取摘要和问题，生成供用户编辑的修正草稿；不把模型结果当作事实或自动批准。`regen_shot()` 仍先询问用户，再做成本确认；只有确认后才更新所选镜头版本。`prepare_product_drama_shot_regeneration()` 拒绝 NaN/无穷/负费用和无效旧版本号，防止污染历史记录。

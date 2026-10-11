@@ -12,7 +12,7 @@ from .capability import CapabilityRouter
 from .production import ProductionStore
 from .product_parser import parse_product_url, save_product, save_product_library, load_product_library, merge_product_library, ProductInfo
 from .creative_engine import CreativeEngine, validate_plan, validate_task_type_plan, TASK_TYPE_POLICIES
-from .short_drama import audit_short_drama, build_episode_continuity_ledger, generate_short_drama, generate_next_short_drama_episode, short_drama_production_rows, record_product_visual_verification, compare_product_visual_shot, prepare_product_drama_shot_regeneration
+from .short_drama import audit_short_drama, build_episode_continuity_ledger, generate_short_drama, generate_next_short_drama_episode, short_drama_production_rows, record_product_visual_verification, compare_product_visual_shot, prepare_product_drama_shot_regeneration, product_visual_correction_suggestion
 from .model_router import ModelRouter, ModelProfile, FUNCTIONS, audit_ad_variant_set, build_creative_test_plan, audit_creative_factual_consistency, audit_storyboard_fact_consistency, audit_visual_fact_consistency
 from .browser_skill import _find_agent_browser
 from .ffmpeg import available as ffmpeg_available, has_nvenc
@@ -1622,7 +1622,13 @@ class App(tk.Tk):
             if product_mode:
                 from tkinter import simpledialog
                 shot_number = int(s.index)
-                correction = simpledialog.askstring('商品镜头修正要求', f'第 {shot_number} 镜当前版本 v{s.version}。请描述视觉核验发现的问题及修正要求；只会处理此镜头。', parent=self)
+                correction_draft = product_visual_correction_suggestion(drama, shot_number)
+                correction = simpledialog.askstring(
+                    '商品镜头修正要求',
+                    f'第 {shot_number} 镜当前版本 v{s.version}。可编辑下方基于上次视觉核验结果整理的草稿；只会处理此镜头。',
+                    initialvalue=correction_draft,
+                    parent=self,
+                )
                 if not str(correction or '').strip():
                     self.detail.set('已取消单镜头修复；没有修改镜头版本或调用生成服务。')
                     return
