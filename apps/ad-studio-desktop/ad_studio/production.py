@@ -64,7 +64,12 @@ class ProductionStore:
         restored_previous_versions = []
         for shot in project.shots:
             previous_path = str(getattr(shot, "previous_video_path", None) or "").strip()
-            active_missing = not shot.video_path or not Path(shot.video_path).is_file()
+            active_file = Path(shot.video_path) if shot.video_path else None
+            active_missing = (
+                active_file is None
+                or not active_file.is_file()
+                or active_file.stat().st_size <= 0
+            )
             if previous_path and active_missing:
                 previous_file = Path(previous_path)
                 previous_is_valid = previous_file.is_file() and previous_file.stat().st_size > 0
@@ -81,7 +86,10 @@ class ProductionStore:
                     shot.video_path = None
                     shot.status = "待重新生成/重新选择素材"
                     missing_media.append(shot.id)
-            elif shot.video_path and not Path(shot.video_path).exists():
+            elif shot.video_path and (
+                not Path(shot.video_path).is_file()
+                or Path(shot.video_path).stat().st_size <= 0
+            ):
                 missing_media.append(shot.id)
                 shot.video_path = None
                 shot.status = "待重新生成/重新选择素材"

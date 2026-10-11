@@ -1417,6 +1417,43 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertIsNone(restored.shots[0].previous_video_path)
 
 
+    def test_a54_recovery_restores_valid_previous_video_when_active_video_is_zero_byte(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            active_zero = root / "active-v2.mp4"
+            active_zero.write_bytes(b"")
+            previous_good = root / "previous-v1.mp4"
+            previous_good.write_bytes(b"playable-previous-video")
+            shot.video_path = str(active_zero)
+            shot.previous_video_path = str(previous_good)
+            shot.status = "生成中…"
+            store.save(project)
+            result = store.recover_project(project)
+            self.assertEqual(result["restored_previous_versions"], [shot.id])
+            self.assertEqual(shot.video_path, str(previous_good))
+            self.assertIsNone(shot.previous_video_path)
+            self.assertEqual(shot.status, "生成中断（已恢复上一版本）")
+
+    def test_a54_recovery_clears_zero_byte_active_video_without_previous_video(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            active_zero = root / "active-v1.mp4"
+            active_zero.write_bytes(b"")
+            shot.video_path = str(active_zero)
+            shot.previous_video_path = None
+            shot.status = "生成中…"
+            store.save(project)
+            result = store.recover_project(project)
+            self.assertIn(shot.id, result["missing_media"])
+            self.assertIsNone(shot.video_path)
+            self.assertEqual(shot.status, "待重新生成/重新选择素材")
+
     def test_a46_edit_shot_routes_through_safe_regeneration_transition(self):
         app_source = (Path(__file__).resolve().parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
         start = app_source.index("def edit_shot(self):")

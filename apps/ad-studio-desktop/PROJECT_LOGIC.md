@@ -1019,3 +1019,6 @@ normalize_cost_estimate_rmb() 将 Provider 的每镜头预估价规范为有限�
 
 ### A53：恢复指针必须指向有效视频
 `recover_project()` 对 `previous_video_path` 统一检查文件存在且大小大于零。缺失文件与零字节文件都属于不可恢复旧版：清除 `video_path` 和 `previous_video_path`，标记待重新生成，并写入 `missing_media`。不能仅因路径存在就声称恢复成功。
+
+### A54：活动视频文件非空校验
+`recover_project()` 将活动视频路径缺失、非文件或大小为零统一视为无效输出。若 `previous_video_path` 有效则恢复上一版；否则清除活动路径并加入 `missing_media`。恢复结果以文件可用性为准，不以路径字符串存在为准。
