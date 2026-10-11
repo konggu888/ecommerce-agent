@@ -475,5 +475,43 @@ class ShortDramaTests(unittest.TestCase):
             )
 
 
+    def test_product_drama_shot_mapping_uses_stable_storyboard_index_after_insertions(self):
+        from ad_studio.short_drama import resolve_product_drama_shot_number
+        plan = {
+            "drama_business_mode": "product_short_drama_ad",
+            "episode_count": 1,
+            "storyboard": [{"scene": "卧室"}, {"scene": "厨房"}],
+        }
+        # Project index has shifted after an extra reviewed shot was inserted.
+        project_shot = {
+            "index": 4,
+            "title": "卧室",
+            "episode_number": 1,
+            "short_drama_shot_number": 1,
+        }
+        self.assertEqual(resolve_product_drama_shot_number(plan, project_shot), 1)
+
+    def test_product_drama_legacy_shot_mapping_uses_unique_title_and_episode(self):
+        from ad_studio.short_drama import resolve_product_drama_shot_number
+        plan = {
+            "drama_business_mode": "product_short_drama_ad",
+            "episode_count": 1,
+            "storyboard": [{"scene": "卧室"}, {"scene": "厨房"}],
+        }
+        legacy_shot = {"index": 3, "title": "厨房", "episode_number": 1}
+        self.assertEqual(resolve_product_drama_shot_number(plan, legacy_shot), 2)
+
+    def test_product_drama_ambiguous_legacy_mapping_fails_closed(self):
+        from ad_studio.short_drama import resolve_product_drama_shot_number
+        plan = {
+            "drama_business_mode": "product_short_drama_ad",
+            "episode_count": 1,
+            "storyboard": [{"scene": "卧室"}, {"scene": "卧室"}],
+        }
+        legacy_shot = {"index": 4, "title": "卧室", "episode_number": 1}
+        with self.assertRaisesRegex(ShortDramaPlanError, "无法唯一定位|标题在短剧分镜中重复"):
+            resolve_product_drama_shot_number(plan, legacy_shot)
+
+
 if __name__ == "__main__":
     unittest.main()

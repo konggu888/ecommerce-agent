@@ -408,6 +408,58 @@ def prepare_product_drama_shot_regeneration(
     return updated
 
 
+def resolve_product_drama_shot_number(plan: dict[str, Any], shot_reference: Any) -> int:
+    """Resolve a project Shot to its stable 1-based storyboard position.
+
+    Project display indexes can change when reviewed supplemental shots are inserted.
+    New projects persist the original storyboard index; legacy projects fall back to
+    a unique title + episode match and fail closed when that match is ambiguous.
+    """
+    if plan.get("drama_business_mode") != "product_short_drama_ad":
+        raise ShortDramaPlanError("镜头映射只适用于“AI短剧形式商品广告”模式。")
+    storyboard = plan.get("storyboard", [])
+    if not isinstance(storyboard, list) or not storyboard:
+        raise ShortDramaPlanError("商品短剧没有有效分镜，无法安全定位镜头。")
+
+    def field(name: str, default: Any = None) -> Any:
+        return shot_reference.get(name, default) if isinstance(shot_reference, dict) else getattr(shot_reference, name, default)
+
+    stable = field("short_drama_shot_number")
+    if stable not in (None, ""):
+        try:
+            number = int(stable)
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise ShortDramaPlanError("保存的短剧分镜映射编号无效；为避免改错镜头，已停止。") from exc
+        if number < 1 or number > len(storyboard):
+            raise ShortDramaPlanError("保存的短剧分镜映射已失效；为避免改错镜头，已停止。")
+        return number
+
+    title = str(field("title", "") or "").strip()
+    try:
+        episode = int(field("episode_number", 1) or 1)
+        episode_count = int(plan.get("episode_count") or len(plan.get("episodes", []) or []) or 1)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ShortDramaPlanError("镜头标题或分集编号无效，无法安全定位。") from exc
+
+    matches = []
+    for number, item in enumerate(storyboard, 1):
+        if not isinstance(item, dict):
+            continue
+        try:
+            item_episode = int(item.get("episode_number", 1) or 1)
+        except (TypeError, ValueError, OverflowError):
+            continue
+        scene = str(item.get("scene") or f"短剧镜头{number}").strip()
+        expected_title = f"第{item_episode}集｜{scene}" if episode_count > 1 else scene
+        if item_episode == episode and expected_title == title:
+            matches.append(number)
+    if len(matches) == 1:
+        return matches[0]
+    if len(matches) > 1:
+        raise ShortDramaPlanError("该镜头标题在短剧分镜中重复，无法唯一定位；请先检查分镜映射，未修改任何镜头。")
+    raise ShortDramaPlanError("无法将当前项目镜头唯一映射到短剧分镜；为避免修错镜头，未修改任何内容。")
+
+
 def product_visual_correction_suggestion(plan: dict[str, Any], shot_number: int) -> str:
     """Build an editable correction draft from the latest vision-review result."""
     if plan.get("drama_business_mode") != "product_short_drama_ad":

@@ -12,7 +12,7 @@ from .capability import CapabilityRouter
 from .production import ProductionStore
 from .product_parser import parse_product_url, save_product, save_product_library, load_product_library, merge_product_library, ProductInfo
 from .creative_engine import CreativeEngine, validate_plan, validate_task_type_plan, TASK_TYPE_POLICIES
-from .short_drama import audit_short_drama, build_episode_continuity_ledger, generate_short_drama, generate_next_short_drama_episode, short_drama_production_rows, record_product_visual_verification, compare_product_visual_shot, prepare_product_drama_shot_regeneration, product_visual_correction_suggestion
+from .short_drama import audit_short_drama, build_episode_continuity_ledger, generate_short_drama, generate_next_short_drama_episode, short_drama_production_rows, record_product_visual_verification, compare_product_visual_shot, prepare_product_drama_shot_regeneration, product_visual_correction_suggestion, resolve_product_drama_shot_number
 from .model_router import ModelRouter, ModelProfile, FUNCTIONS, audit_ad_variant_set, build_creative_test_plan, audit_creative_factual_consistency, audit_storyboard_fact_consistency, audit_visual_fact_consistency
 from .browser_skill import _find_agent_browser
 from .ffmpeg import available as ffmpeg_available, has_nvenc
@@ -1621,11 +1621,11 @@ class App(tk.Tk):
             product_mode = isinstance(drama, dict) and drama.get('drama_business_mode') == 'product_short_drama_ad'
             if product_mode:
                 from tkinter import simpledialog
-                shot_number = int(s.index)
+                shot_number = resolve_product_drama_shot_number(drama, s)
                 correction_draft = product_visual_correction_suggestion(drama, shot_number)
                 correction = simpledialog.askstring(
                     '商品镜头修正要求',
-                    f'第 {shot_number} 镜当前版本 v{s.version}。可编辑下方基于上次视觉核验结果整理的草稿；只会处理此镜头。',
+                    f'项目镜头 {s.index}（短剧分镜第 {shot_number} 镜）当前版本 v{s.version}。可编辑下方基于上次视觉核验结果整理的草稿；只会处理此镜头。',
                     initialvalue=correction_draft,
                     parent=self,
                 )
@@ -1645,7 +1645,7 @@ class App(tk.Tk):
                 mark_regenerate(self.project,self.project.shots.index(s))
                 self.store.save(self.project)
                 self.refresh_shots()
-                self.detail.set(f'商品短剧第 {shot_number} 镜已准备重新生成：v{s.version-1} → v{s.version}。其他镜头未修改；新版本核验状态已重置。')
+                self.detail.set(f'项目镜头 {s.index}（短剧分镜第 {shot_number} 镜）已准备重新生成：v{s.version-1} → v{s.version}。其他镜头未修改；新版本核验状态已重置。')
                 return
             old=s.version
             mark_regenerate(self.project,self.project.shots.index(s))
@@ -2436,6 +2436,7 @@ class App(tk.Tk):
                     status='待生成',
                     duration_seconds=row['duration_seconds'],
                     episode_number=int(row.get('episode_number', 1)),
+                    short_drama_shot_number=int(row['index']),
                 )
                 for row in rows
             ]

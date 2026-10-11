@@ -54,6 +54,8 @@ class Shot:
     storyboard_review: str='不需要'
     duration_seconds: int=3
     episode_number: int=1
+    # Stable 1-based index into creative_plan.short_drama.storyboard.
+    short_drama_shot_number: Optional[int]=None
 
 @dataclass
 class Project:

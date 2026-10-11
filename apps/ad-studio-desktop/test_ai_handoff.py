@@ -82,5 +82,10 @@ class AIHandoffTests(unittest.TestCase):
         self.assertIn("A43", text)
         self.assertIn("恢复旧视频", text)
 
+    def test_handoff_mentions_a44_stable_short_drama_shot_mapping(self):
+        text = (ROOT / "docs" / "AD_STUDIO_AI_HANDOFF.md").read_text(encoding="utf-8")
+        self.assertIn("A44", text)
+        self.assertIn("标题/集数回退", text)
+
 if __name__ == "__main__":
     unittest.main()
