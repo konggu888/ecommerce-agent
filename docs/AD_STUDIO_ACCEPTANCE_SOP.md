@@ -944,3 +944,7 @@ AI 必须执行：
 1. 对照 CI 失败日志、test_ai_handoff.py 与 AI 接手文档。
 2. 确认测试断言使用文档的准确术语“历史实际成本迁移”。
 3. 重新运行完整 CI 与 docs-sync，不能用文档同步成功代替完整测试。
+
+
+### A61 handoff 文案断言修复
+若 `test_handoff_mentions_a61_legacy_cost_migration` 失败，必须在根级 AI 接手文档明确写出“历史成本迁移”及其防止旧成本丢失/重复迁移的机制；保留测试，不删除断言。随后重新运行完整 CI 与 docs-sync。
