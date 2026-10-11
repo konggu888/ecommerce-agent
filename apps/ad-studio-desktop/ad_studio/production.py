@@ -294,7 +294,7 @@ class ProductionStore:
         if temp.exists():
             temp.unlink()
         previous_path=shot.video_path or getattr(shot, "previous_video_path", None)
-        prompt='\\n'.join([f'标题：{shot.title}',f'画面：{shot.visual}',f'文案：{shot.script}'])
+        prompt='\n'.join([f'标题：{shot.title}',f'画面：{shot.visual}',f'文案：{shot.script}'])
         shot.status='生成中…'
         shot.provider=getattr(provider,'provider_name','Generic REST')
         shot.generated_from_request=prompt

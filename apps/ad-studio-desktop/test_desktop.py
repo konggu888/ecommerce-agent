@@ -1502,6 +1502,35 @@ class DesktopCoreTests(unittest.TestCase):
 
 
 
+    def test_a50_video_prompt_uses_real_line_breaks(self):
+        class CapturingProvider:
+            provider_name = "测试 Provider"
+            cost_per_shot_rmb = 0.0
+
+            def __init__(self):
+                self.prompt = None
+
+            def generate(self, request):
+                self.prompt = request.prompt
+                request.output.write_bytes(b"generated-video")
+                return request.output
+
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td))
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            shot.title = "开场镜头"
+            shot.visual = "画面主体在左侧"
+            shot.script = "突出真实卖点"
+            provider = CapturingProvider()
+            store._render_with_provider(project, shot, provider)
+            self.assertEqual(
+                provider.prompt,
+                "标题：开场镜头\n画面：画面主体在左侧\n文案：突出真实卖点",
+            )
+            self.assertNotIn("\\n", provider.prompt)
+
+
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.

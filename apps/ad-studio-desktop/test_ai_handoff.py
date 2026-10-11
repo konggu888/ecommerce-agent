@@ -94,5 +94,10 @@ class AIHandoffTests(unittest.TestCase):
         self.assertIn("编辑镜头", text)
         self.assertIn("旧版视频", text)
 
+    def test_handoff_mentions_a50_prompt_line_break_regression(self):
+        text = (ROOT / "docs" / "AD_STUDIO_AI_HANDOFF.md").read_text(encoding="utf-8")
+        self.assertIn("A50", text)
+        self.assertIn("真实换行", text)
+
 if __name__ == "__main__":
     unittest.main()

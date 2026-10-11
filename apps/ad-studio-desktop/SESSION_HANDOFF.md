@@ -125,3 +125,7 @@ SHA 2450e2d5b74bba26cd76ac3ef3ef5639499523f2 的完整 CI 暴露 1 个 handoff �
 
 ## A49：多段实拍中断清理（待当前 SHA CI）
 项目恢复清理规则已扩展到多段裁剪产生的 `.partNN.mp4`；素材源缺失时也会清理遗留分段文件，并保留有效旧视频。新增中断恢复与素材缺失回归测试。当前提交后需按最新 SHA 查询完整 CI 和 docs-sync。
+
+
+## A50：视频提示词换行回归（待本轮 CI）
+检查 A47 的生成异常边界重构时发现 prompt 被改成字面量反斜杠+n，已修复并新增捕获 Provider 请求的测试。A49 在 SHA 953e40694aa2a28b2d164fc49800c639b45bebb8 的完整 CI 与 docs-sync 已通过；A50 的新 SHA 仍待完整 CI/doc-sync。
