@@ -75,3 +75,7 @@ CI 还会运行前端语法、Python 语法、Typecheck、Engine 和 Risk Contro
 
 ## A37 接手提醒
 A37 修复修正草稿中换行符被显示为字面量的问题，并增加真实换行断言。检查当前 head 的 docs-sync 与完整 CI；不可将 docs-sync 单独视为完整测试通过。
+
+
+## A38：会话接手
+项目内 `apps/ad-studio-desktop/SESSION_HANDOFF.md` 是每次新会话继续工作前的首读文件；每轮提交后都要更新其 HEAD、CI 状态和下一步，且不能将 docs-sync 误报为完整 CI。

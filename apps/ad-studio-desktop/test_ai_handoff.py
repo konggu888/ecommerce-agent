@@ -57,5 +57,13 @@ class AIHandoffTests(unittest.TestCase):
         self.assertIn("A37", text)
         self.assertIn("真实换行", text)
 
+    def test_session_handoff_exists_and_warns_against_ci_overclaim(self):
+        handoff = ROOT / "SESSION_HANDOFF.md"
+        self.assertTrue(handoff.is_file(), "SESSION_HANDOFF.md must exist for cross-session continuation")
+        text = handoff.read_text(encoding="utf-8")
+        self.assertIn("完整 CI", text)
+        self.assertIn("不得把 docs-sync", text)
+        self.assertIn("PR 保持 open/unmerged", text)
+
 if __name__ == "__main__":
     unittest.main()
