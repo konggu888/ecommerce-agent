@@ -191,8 +191,13 @@ class ProductionStore:
             project_id=project.id, shot_id=shot.id if shot else "",
             category=category, quantity=quantity, unit_cost_rmb=unit_cost_rmb,
         )
-        project.actual_cost_rmb = round(float(project.actual_cost_rmb or 0) + amount, 6)
-        project.actual_cost_summary = self.ledger.project_summary(project.id)
+        summary = self.ledger.project_summary(project.id)
+        # The usage ledger is authoritative; never increment a possibly stale project total.
+        project.actual_cost_summary = summary
+        project.actual_cost_rmb = round(float(summary.get("actual_cost_rmb", 0) or 0), 6)
+        project.cost_estimate.setdefault("actual", {})
+        project.cost_estimate["actual"] = summary
+        project.cost_estimate["actual_cost_rmb"] = project.actual_cost_rmb
         self.save(project)
 
     def _record_failed_video_attempt(self, project: Project, shot: Shot, provider: Any, error: str):

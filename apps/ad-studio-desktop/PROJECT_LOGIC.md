@@ -1052,3 +1052,7 @@ _render_with_provider() 将媒体生成/原子替换与成功成本记账分为�
 - 项目恢复的成本重建条件改为至少存在一条成功账本记录，而不是任意账本条目。
 - 如果账本只有 failed 记录，失败行不代表真实扣款；保留旧项目与镜头成本，并把旧实际总额反映到 cost_estimate.actual_cost_rmb。
 - 新增 A60 回归覆盖失败-only 账本与旧成本兼容。
+
+
+### A59：成本总额单一事实源
+_record_actual_cost() 在成功写入 ledger 后，读取 project_summary() 并将其 actual_cost_rmb 同步覆盖到 project.actual_cost_rmb、cost_estimate.actual 和 cost_estimate.actual_cost_rmb。禁止用旧项目快照的数值加上本次金额，以免账本已有记录时出现双计。只有 status=success 的 ledger rows 计入实际花费。

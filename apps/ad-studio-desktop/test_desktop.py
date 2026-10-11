@@ -1646,6 +1646,32 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(restored.shots[0].video_path, str(output))
             self.assertEqual(restored.shots[0].status, "已生成（成本待核对）")
 
+    def test_a59_project_cost_total_comes_from_success_ledger_rows(self):
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td))
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            store.ledger.record(
+                function="已有成功任务", model_id="", model_name="", provider="测试",
+                model="", status="success", estimated_cost_rmb=0.40,
+                project_id=project.id, shot_id=shot.id, category="video",
+            )
+            store.ledger.record(
+                function="失败任务", model_id="", model_name="", provider="测试",
+                model="", status="failed", estimated_cost_rmb=0.0, unit_cost_rmb=0.72,
+                project_id=project.id, shot_id=shot.id, category="video",
+            )
+            project.actual_cost_rmb = 99.0
+            store._record_actual_cost(
+                project, shot=shot, category="video", amount_rmb=0.72,
+                provider="测试", quantity=1, unit_cost_rmb=0.72, function="本次成功任务",
+            )
+            summary = store.ledger.project_summary(project.id)
+            self.assertAlmostEqual(summary["actual_cost_rmb"], 1.12)
+            self.assertAlmostEqual(project.actual_cost_rmb, 1.12)
+            self.assertAlmostEqual(project.cost_estimate["actual_cost_rmb"], 1.12)
+            self.assertAlmostEqual(project.cost_estimate["actual"]["actual_cost_rmb"], 1.12)
+
     def test_a52_failed_video_attempt_is_auditable_without_double_counting_actual_cost(self):
         class FailingProvider:
             provider_name = "测试 Provider"

@@ -923,3 +923,10 @@ AI 必须执行：
 2. 执行项目恢复，确认 project.actual_cost_rmb、shot.actual_cost_rmb 和费用展示不被清零。
 3. 确认失败行估算金额不被计入实际成本。
 4. 运行完整 CI 与 docs-sync 后确认自动化阶段通过。
+
+
+## A59｜项目成本汇总去重验收
+1. 在账本预置一条成功记录和一条失败记录；失败行的 unit_cost_rmb 可以大于零，但 estimated_cost_rmb 应为零。
+2. 故意把项目 actual_cost_rmb 设置成过期的大数，再成功写入新成本记录。
+3. 确认项目总成本等于 ledger 中所有成功记录的合计，而不是旧项目总额加本次金额；失败行不计入实际花费。
+4. 确认 cost_estimate.actual 和 cost_estimate.actual_cost_rmb 同步更新；运行完整桌面测试、CI 与 docs-sync。
