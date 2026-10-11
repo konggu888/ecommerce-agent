@@ -1971,9 +1971,9 @@ class App(tk.Tk):
         ttk.Label(mode_dialog, text='短剧创作目标').pack(anchor='w', padx=16, pady=(14, 4))
         ttk.Combobox(
             mode_dialog, textvariable=business_mode_var, state='readonly',
-            values=('通用AI短剧（可以完全不带商品）', '商品植入短剧（商品自然融入剧情）', '商品转化短剧（剧情服务于商品转化）', 'AI短剧形式商品广告（AI选题材并锁定商品真实性）'),
+            values=('通用AI短剧（可以完全不带商品）', '商品植入短剧（商品自然融入剧情）', '商品转化短剧（剧情服务于商品转化）'),
         ).pack(fill='x', padx=16)
-        ttk.Label(mode_dialog, text='通用AI短剧可以不提供商品；其余模式需要商品资料。AI短剧形式商品广告会先分析商品并自主选择题材，逐镜锁定外观、结构、功能和正确用法。', wraplength=520).pack(anchor='w', padx=16, pady=(3, 8))
+        ttk.Label(mode_dialog, text='通用AI短剧可以不提供商品；后两种模式需要商品资料。', wraplength=520).pack(anchor='w', padx=16, pady=(3, 8))
         ttk.Label(mode_dialog, text='分集结构').pack(anchor='w', padx=16, pady=(2, 4))
         ttk.Combobox(
             mode_dialog, textvariable=mode_var, state='readonly',
@@ -1999,13 +1999,12 @@ class App(tk.Tk):
                 '通用AI短剧（可以完全不带商品）': 'general',
                 '商品植入短剧（商品自然融入剧情）': 'product_placement',
                 '商品转化短剧（剧情服务于商品转化）': 'product_conversion',
-                'AI短剧形式商品广告（AI选题材并锁定商品真实性）': 'product_short_drama_ad',
             }.get(selected_business_label)
             if not selected['mode']:
                 messagebox.showerror('模式无效', '请选择单集短剧、连续多集短剧或系列短剧。', parent=mode_dialog)
                 return
             if selected['business_mode'] != 'general' and not product:
-                messagebox.showerror('商品资料缺失', '当前商业短剧模式需要先补充商品资料；如暂时不提供商品，请选择“通用AI短剧”。', parent=mode_dialog)
+                messagebox.showerror('商品资料缺失', '商品植入短剧和商品转化短剧需要先补充商品资料；如暂时不提供商品，请选择“通用AI短剧”。', parent=mode_dialog)
                 return
             try:
                 selected['count'] = 1 if selected['mode'] == 'single_episode' else int(count_var.get().strip())
@@ -2025,12 +2024,12 @@ class App(tk.Tk):
         mode = selected['mode']
         episode_count = selected['count']
         business_mode = selected['business_mode']
-        business_label = {'general': '通用AI短剧', 'product_placement': '商品植入短剧', 'product_conversion': '商品转化短剧', 'product_short_drama_ad': 'AI短剧形式商品广告'}[business_mode]
+        business_label = {'general': '通用AI短剧', 'product_placement': '商品植入短剧', 'product_conversion': '商品转化短剧'}[business_mode]
         mode_label = {'single_episode': '单集短剧', 'continuous_series': '连续多集短剧', 'anthology_series': '系列短剧'}[mode]
         if not messagebox.askyesno(
             '启动 AI 短剧编导',
             f'创作目标：{business_label}\\n分集结构：{mode_label}\\n计划集数：{episode_count}\\n\\n'
-            'AI 将按创作目标设计人物关系、剧情冲突/反转、剧本和分集分镜；通用AI短剧允许完全不出现商品。AI短剧形式商品广告会单独分析商品、选择适合题材并逐镜记录商品真实性约束。\\n'
+            'AI 将按创作目标设计人物关系、剧情冲突/反转、剧本和分集分镜；通用AI短剧允许完全不出现商品。\\n'
             '本步骤会调用“AI短剧编导”路由模型；模型费用按该模型配置计费。\\n'
             '这里只生成并保存创作方案，不会自动调用付费素材/视频生成服务，也不会覆盖原广告方案。\\n\\n是否继续？'
         ):
@@ -2055,15 +2054,6 @@ class App(tk.Tk):
             head = ttk.Frame(win, padding=12); head.pack(fill='x')
             ttk.Label(head, text=f"题材：{plan.get('genre', '待确认')}｜模式：{plan.get('format_mode', mode)}｜集数：{plan.get('episode_count', episode_count)}", font=('Microsoft YaHei UI', 16, 'bold')).pack(anchor='w')
             ttk.Label(head, text=plan.get('logline', ''), wraplength=870).pack(anchor='w', pady=(5, 0))
-            if plan.get('drama_business_mode') == 'product_short_drama_ad':
-                decision = plan.get('genre_decision', {})
-                lock = plan.get('product_fact_lock', {})
-                summary = (f"题材选择理由：{decision.get('reasoning', plan.get('genre_reasoning', '待确认'))}\\n"
-                           f"商品在剧情中的作用：{decision.get('story_product_role', '待确认')}\\n"
-                           f"已确认事实：{', '.join(map(str, lock.get('confirmed_facts', []))) or '暂无；请先核实'}\\n"
-                           f"未知/待确认：{', '.join(map(str, lock.get('unknown_or_unverified', []))) or '无显式标记'}\\n"
-                           "注意：逐镜约束是生成要求，不代表生成画面已经通过视觉核验。")
-                ttk.Label(head, text=summary, wraplength=870, justify='left', foreground='#8a4b08').pack(anchor='w', pady=(6, 0))
             text_frame = ttk.Frame(win, padding=(12, 0, 12, 12)); text_frame.pack(fill='both', expand=True)
             view = tk.Text(text_frame, wrap='word', font=('Microsoft YaHei UI', 10))
             scroll = ttk.Scrollbar(text_frame, orient='vertical', command=view.yview)
