@@ -940,3 +940,7 @@ A33 自动化验收分别覆盖电商短视频、商品主图视频、广告投�
 
 ### A40：接手测试路径基准
 `test_ai_handoff.py` 的 `ROOT` 指向仓库根目录。读取根级 `docs/` 文件使用 `ROOT / "docs" / ...`；桌面项目文件使用 `ROOT / "apps" / "ad-studio-desktop" / ...`。不要重复叠加 `parent.parent`，否则 CI 会定位到仓库外。
+
+
+### A41：接手文档断言维护
+自动化测试对 handoff 文案的断言应与实际文档表达一致，并准确保护“不把 docs-sync/Netlify 当成全量 CI”的约束；变更断言后必须重跑完整 CI。

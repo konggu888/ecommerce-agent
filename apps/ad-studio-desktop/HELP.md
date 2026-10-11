@@ -905,3 +905,7 @@ AI 接手专项测试除验证项目目标、架构、测试入口和安全边�
 
 ## A40：接手文档测试路径
 - 接手文档自动化测试以仓库根目录为基准，分别定位 `docs/AD_STUDIO_AI_HANDOFF.md` 和 `apps/ad-studio-desktop/SESSION_HANDOFF.md`；CI 运行失败时先读取日志并修复路径/断言。
+
+
+## A41：接手断言文案对齐
+- CI 发现 handoff 测试期望文案与实际接手文档不一致；测试现对齐真实文案“不要把 docs-sync 或 Netlify 状态写成完整 CI 通过”。

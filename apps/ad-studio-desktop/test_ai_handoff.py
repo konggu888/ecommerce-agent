@@ -62,7 +62,7 @@ class AIHandoffTests(unittest.TestCase):
         self.assertTrue(handoff.is_file(), "SESSION_HANDOFF.md must exist for cross-session continuation")
         text = handoff.read_text(encoding="utf-8")
         self.assertIn("完整 CI", text)
-        self.assertIn("不得把 docs-sync", text)
+        self.assertIn("不要把 docs-sync", text)
         self.assertIn("PR 保持 open/unmerged", text)
 
     def test_session_handoff_records_feature_branch_ci_requirement(self):
