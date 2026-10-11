@@ -317,7 +317,15 @@ class ShortDramaTests(unittest.TestCase):
 
         plan = sample_plan()
         plan["drama_business_mode"] = "product_short_drama_ad"
+        plan["product_analysis"] = {"product_type": "用品"}
+        plan["genre_decision"] = {"selected_genre": "古代", "reasoning": "测试用题材理由"}
+        plan["product_fact_lock"] = {
+            "confirmed_facts": ["外观以参考图为准"],
+            "unknown_or_unverified": ["未确认参数"],
+            "appearance_structure_function_constraints": ["不得改变商品外观、结构和功能"],
+        }
         shot = plan["storyboard"][0]
+        shot["product_fidelity_constraints"] = ["保持外观、结构、功能及正确用法"]
         shot.update({
             "visual_verification": "passed",
             "visual_verification_method": "manual",

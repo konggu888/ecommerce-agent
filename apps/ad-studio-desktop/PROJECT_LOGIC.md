@@ -1104,3 +1104,9 @@ A61 唯一失败项是 test_handoff_mentions_a61_legacy_cost_migration 的文案
 - `audit_short_drama()` 不再仅依赖存档的 `visual_verification=passed`、`method=manual` 和备注字段；每次审查都重新检查证据路径、扩展名、文件存在性及非零大小。
 - 证据文件已丢失、为空或格式不受支持时，输出 `PRODUCT_VISUAL_NOT_VERIFIED`，避免旧状态在证据失效后仍被视为通过。
 - 回归测试同时覆盖失效路径被拦截，以及有效临时图片证据被接受。此检查不判断图像内容，不构成商品真实性认证。
+
+
+### A67 回归补充：审查时重验人工证据
+- `audit_short_drama()` 对持久化的视觉核验记录重新检查证据路径、允许的图片/视频扩展名、文件存在性与非零大小；不再把旧 `passed` 状态和非空字符串当作充分证据。
+- 回归夹具必须提供商品短剧模式所需的 `product_analysis`、`genre_decision`、`product_fact_lock` 和每镜头真实性约束，再分别验证失效路径会告警、有效临时图片不会触发证据失效告警。
+- 这只是证据文件有效性检查，不对图像内容作真实性认证。
