@@ -232,5 +232,41 @@ class ShortDramaTests(unittest.TestCase):
             generate_next_short_drama_episode(FakeRouter(), plan, {})
 
 
+    def test_product_short_drama_ad_requires_fidelity_constraints_and_explains_genre(self):
+        plan = sample_plan()
+        plan["drama_business_mode"] = "product_short_drama_ad"
+        plan["product_analysis"] = {"product_type": "便携收纳用品", "target_audience": "通勤人群", "selling_points": ["便携"], "usage_scenarios": ["通勤"], "unknown_facts": ["材质待确认"]}
+        plan["genre_decision"] = {"selected_genre": "古代轻喜剧", "reasoning": "用古代出行收纳难题演绎便携价值", "world_style": "架空古代市集", "story_product_role": "主角解决出行收纳问题的真实用品"}
+        plan["product_fact_lock"] = {"confirmed_facts": ["便携"], "unknown_or_unverified": ["材质待确认"], "appearance_structure_function_constraints": ["保持参考图外观与结构", "只展示已确认的真实用途"], "reference_assets_required": ["商品正面/侧面参考图"], "do_not_change": ["不得改色改款", "不得添加不存在的功能"]}
+        plan["storyboard"][0]["product_fidelity_constraints"] = ["商品外观和结构必须与参考素材一致", "不得添加未确认功能"]
+        plan["storyboard"][0]["visual_verification"] = "not_checked"
+        validated = validate_short_drama(plan)
+        self.assertEqual(validated["genre_decision"]["selected_genre"], "古代轻喜剧")
+        report = audit_short_drama(validated, {"name": "便携收纳用品", "description": "便携"})
+        self.assertIn("PRODUCT_VISUAL_NOT_VERIFIED", {item["code"] for item in report["issues"]})
+
+    def test_product_short_drama_ad_rejects_missing_fidelity_lock(self):
+        plan = sample_plan()
+        plan["drama_business_mode"] = "product_short_drama_ad"
+        plan["product_analysis"] = {"product_type": "用品"}
+        plan["genre_decision"] = {"selected_genre": "古代", "reasoning": "故事适配"}
+        plan["product_fact_lock"] = {"confirmed_facts": [], "unknown_or_unverified": []}
+        with self.assertRaisesRegex(ShortDramaPlanError, "商品外观/结构/功能真实性约束"):
+            validate_short_drama(plan)
+
+    def test_product_short_drama_ad_requires_product_material(self):
+        class FakeRouter:
+            def resolve_route(self, function): return "profile"
+            def complete_json(self, profile, prompt, function=None):
+                plan = sample_plan()
+                plan["drama_business_mode"] = "product_short_drama_ad"
+                plan["product_analysis"] = {"product_type": "用品"}
+                plan["genre_decision"] = {"selected_genre": "古代", "reasoning": "适配"}
+                plan["product_fact_lock"] = {"confirmed_facts": [], "unknown_or_unverified": []}
+                plan["storyboard"][0]["product_fidelity_constraints"] = ["保持真实外观"]
+                return plan
+        with self.assertRaisesRegex(ShortDramaPlanError, "必须提供商品资料"):
+            generate_short_drama(FakeRouter(), {}, {"drama_business_mode": "product_short_drama_ad"})
+
 if __name__ == "__main__":
     unittest.main()

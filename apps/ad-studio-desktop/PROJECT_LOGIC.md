@@ -884,3 +884,13 @@ A33 自动化验收分别覆盖电商短视频、商品主图视频、广告投�
 - 成功后以副本追加 episode、根级 storyboard 和 full_script，重建连续性台账，再对整份方案运行 validate_short_drama()；旧集不重写。
 - 桌面 UI 提供“续写下一集”按钮。用户确认后才调用编导模型；校验成功才保存。此操作不调用素材/视频 Provider，不跳过已有成本/预算确认。
 - 代码/CI测试不代表剧情语义完全无矛盾或 Windows 真机验收完成。
+
+
+## 17.6 AI短剧形式商品广告（第一阶段）
+
+- 在 `drama_business_mode` 中新增独立枚举 `product_short_drama_ad`，不替代 `general`、`product_placement` 或 `product_conversion`，也不影响原广告创意工作流。
+- 提示词要求先分析商品类型、目标人群、已确认卖点、使用场景和未知信息，再自主选择题材/时代并说明理由。
+- 方案必须有 `product_analysis`、`genre_decision`、`product_fact_lock`；商品事实分为已确认与未知/待核实。禁止虚构参数、认证、效果、价格、销量、材料和功能。
+- 该模式的每个分镜必须有 `product_fidelity_constraints`；`visual_verification` 只能是 `not_checked`、`passed`、`needs_review` 或 `failed`。新方案默认为 `not_checked`，规则复核不能伪装成画面级视觉验证。
+- 桌面 UI 显示独立目标、题材选择理由、商品剧情作用、已确认/未知事实摘要。预算和付费素材/视频生成流程仍沿用既有独立项目流程。
+- 尚未完成：真实生成画面与参考商品图的视觉比较、商品外观/结构/功能自动核验、失败镜头自动定位及单镜头重生成；Windows 真机/真实 Provider 验收继续暂缓。
