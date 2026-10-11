@@ -981,3 +981,11 @@ AI 必须执行：
 4. 运行 `python3 -m unittest discover -s apps/ad-studio-desktop -p 'test_*.py'` 与完整 GitHub CI、docs-sync。
 5. 记录当前 HEAD SHA 与每个工作流结论；不能以旧 SHA 的 CI 或 docs-sync 结果代替。
 6. Windows 真机/真实视觉 Provider 与真实商品画面核验仍单独验收；证据文件存在不等于商品真实性已通过。
+
+
+## A67：审查持久化人工核验证据是否仍有效
+1. 创建一份商品短剧方案，将镜头设为人工核验 `passed`，但证据路径指向不存在文件；运行 `audit_short_drama()`，确认出现 `PRODUCT_VISUAL_NOT_VERIFIED`。
+2. 使用受支持扩展名且非空的临时图片作为证据，再运行审查，确认该证据检查不产生 `PRODUCT_VISUAL_NOT_VERIFIED`。
+3. 删除/清空证据文件后重新审查，确认旧的通过状态不会掩盖证据失效。
+4. 运行桌面短剧回归测试及完整 GitHub CI、docs-sync，并记录最终 HEAD SHA。
+5. 该步骤只验收证据文件有效性，不替代人工对照商品外观、结构、功能和正确用法；真实素材及 Windows 真机验收仍单独执行。
