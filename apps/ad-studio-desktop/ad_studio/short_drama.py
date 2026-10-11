@@ -403,8 +403,16 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
             if not isinstance(fidelity, list) or not any(str(item).strip() for item in fidelity):
                 add("error", "PRODUCT_FIDELITY_CONSTRAINTS", f"第{number}镜缺少商品外观/结构/功能锁定约束。")
             status = str(shot.get("visual_verification", "not_checked"))
-            if status != "passed":
-                add("warning", "PRODUCT_VISUAL_NOT_VERIFIED", f"第{number}镜商品画面视觉核验状态为“{status}”；文字规则检查不能证明生成画面真实还原商品。")
+            has_manual_evidence = (
+                str(shot.get("visual_verification_evidence", "")).strip()
+                and shot.get("visual_verification_method") == "manual"
+                and str(shot.get("visual_verification_note", "")).strip()
+            )
+            if status != "passed" or not has_manual_evidence:
+                detail = f"状态为“{status}”"
+                if status == "passed" and not has_manual_evidence:
+                    detail = "模型/数据标记为 passed，但缺少人工核验的证据文件、核验方式或备注"
+                add("warning", "PRODUCT_VISUAL_NOT_VERIFIED", f"第{number}镜商品画面{detail}；只有关联实际生成画面并保存人工核验记录后，才能计为通过。")
         shot_characters = [str(x).strip() for x in shot.get("characters", []) if str(x).strip()]
         for name in shot_characters:
             if character_names and name not in character_names:
