@@ -633,3 +633,5 @@ A78 的行动依据记录现在还要与当前镜头人物列表及全局角色�
 
 ### A80：人物关系变化与因果后果
 因果链增加 relationship_change，要求描述人物之间信任、误解、利益、依赖或权力关系的可观察变化；若没有直接变化，也要说明。多人物方案缺少说明或关系变化没有落到引用分镜时分别产生 RELATIONSHIP_CHANGE_UNSPECIFIED、RELATIONSHIP_CHANGE_NOT_SHOWN。文本检查不能证明关系变化自然合理，后续仍需人工/模型语义评审。
+
+A80 首轮 CI 暴露关系审查执行顺序错误，已改为直接读取已校验方案的 characters 列表数量。最终状态以修复后 SHA 的完整 CI/doc-sync 结果为准。

@@ -1210,3 +1210,6 @@ A78 实现注意：人物行动依据审查必须在 `shot_texts` 构建完成�
 - 多人物方案缺少关系变化说明时产生 RELATIONSHIP_CHANGE_UNSPECIFIED。
 - 关系变化描述未在引用镜头动作、台词、生成提示或叙事功能中体现时产生 RELATIONSHIP_CHANGE_NOT_SHOWN。
 - 旧方案保持可读；审查只做可追溯性/文本覆盖检查，不代表自动理解人物情感。
+
+### A80 回归修复
+首轮 CI 暴露人物关系审查在角色名集合初始化前引用局部变量的问题。修复后从 checked 方案直接读取人物列表数量，避免 UnboundLocalError；需以最新 SHA 的 CI 验证。

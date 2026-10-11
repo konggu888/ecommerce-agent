@@ -771,7 +771,7 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
                 add("warning", "CAUSAL_STEP_INCOMPLETE", f"因果链第{index}步缺少前因/选择/后果/状态变化或剧本证据。")
                 continue
             relationship_change = str(step.get("relationship_change", "")).strip()
-            if len(character_names) >= 2 and not relationship_change:
+            if len(checked.get("characters", [])) >= 2 and not relationship_change:
                 add("warning", "RELATIONSHIP_CHANGE_UNSPECIFIED", f"因果链第{index}步没有说明人物关系是否发生变化；请写明可观察变化，或明确说明本步无直接关系变化及原因。")
             if relationship_change:
                 shot_refs_for_relationship = step.get("storyboard_indices")

@@ -313,3 +313,5 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - 新增 relationship_change 字段及两项 warning，回归覆盖缺少关系变化说明、关系变化未落实到引用镜头。
 - 该字段在审查阶段保持兼容；旧方案缺少字段时仅在多人物方案给出警告。
 - 必须以本轮最终 HEAD 的 CI 与 docs-sync 结果为准。
+
+- A80 首轮 CI 失败原因：关系审查执行时引用了尚未构建的 character_names；修复为读取 checked["characters"]，并同步文档。必须继续确认修复 SHA 的 CI。

@@ -1099,3 +1099,6 @@ The selling-point coverage regression test uses `product_placement` mode to isol
 
 ### A80：人物关系变化与剧情后果审查
 因果链 schema 与生成提示新增 relationship_change，要求逐步说明人物之间信任、误解、利益、依赖或权力关系的可观察变化；若无变化需明确说明。对于多人物方案，未说明关系变化会产生 RELATIONSHIP_CHANGE_UNSPECIFIED；关系变化未出现在该步骤引用镜头的动作、台词或生成提示中，会产生 RELATIONSHIP_CHANGE_NOT_SHOWN。此为结构/文本覆盖筛查，不证明情感转变合理。
+
+### A80 回归修复
+首轮 CI 发现关系审查代码在人物名称集合构建前引用了该变量，导致审查器运行时异常。现改为直接读取已校验方案中的人物列表，避免执行顺序依赖；以修复后最新 SHA 的完整 CI 结果为准。
