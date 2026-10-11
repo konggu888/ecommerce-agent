@@ -1084,3 +1084,10 @@ A61 唯一失败项是 test_handoff_mentions_a61_legacy_cost_migration 的文案
 - 只有素材生成/入库本身失败才标记“自动生成失败”；账本写入失败则保留 asset ID/库文件，标记“已生成并入库（成本待核对）”。
 - 成本结算失败写入 recovery.history，下一步明确要求核对 usage-ledger.json 与 Provider 账单，防止重复生成造成重复扣费。
 - A61-A63 自动化 CI 与 docs-sync 已通过；A64 当前 SHA 的完整 CI/doc-sync 待确认。
+
+
+### A65：账本写入原子性与历史完整性
+- `UsageLedger.record` 与 `record_many` 共用 `_write_rows_atomically`，先写同目录临时文件，再原子替换正式账本。
+- 替换失败时删除临时文件并保留原账本，避免磁盘写入异常破坏已有费用记录。
+- 账本不再静默截断为最后 2000 行；项目成本汇总必须基于完整本地历史。`recent(limit)` 仅限制读取展示，不裁剪持久化账本。
+- 回归覆盖单行写入原子失败和超过 2000 行后的成本总额完整性。

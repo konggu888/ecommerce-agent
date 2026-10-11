@@ -964,3 +964,11 @@ AI 必须执行：
 3. 确认 recovery.history 记录了素材成本结算未完成，下一步要求核对 usage-ledger.json 与 Provider 账单。
 4. 确认 resolve_assets 与 generate_missing_asset 两条入口都走同一安全处理。
 5. 运行完整 CI 与 docs-sync；真实供应商扣款仍另行对账。
+
+
+## A65｜用量账本持久化故障验收
+1. 先写入一条成功成本记录并保存原始账本内容。
+2. 模拟临时文件替换失败，确认正式账本内容逐字节保持不变，临时文件清理完成，新记录未被误报成功。
+3. 批量写入至少 2001 条成功记录，确认持久化行数和 project_summary 成本总额完整，不发生固定上限截断。
+4. 确认 recent(limit) 只限制展示结果，不影响底层历史与成本汇总。
+5. 运行完整 CI 与 docs-sync；该自动化验收不代替真实 Provider 账单对账。

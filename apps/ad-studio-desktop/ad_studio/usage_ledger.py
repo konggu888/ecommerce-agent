@@ -73,7 +73,7 @@ class UsageLedger:
         }
         rows = self._load()
         rows.append(item)
-        self.path.write_text(json.dumps(rows[-2000:], ensure_ascii=False, indent=2), encoding="utf-8")
+        self._write_rows_atomically(rows)
         return item
 
     def record_many(self, records: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -107,15 +107,19 @@ class UsageLedger:
             }
             items.append(item)
         rows.extend(items)
+        self._write_rows_atomically(rows)
+        return items
+
+    def _write_rows_atomically(self, rows: list[dict[str, Any]]) -> None:
+        """Persist the complete cost history via atomic replacement; never truncate older charges."""
         self.path.parent.mkdir(parents=True, exist_ok=True)
         temp_path = self.path.with_name(f".{self.path.name}.{uuid.uuid4().hex}.tmp")
         try:
-            temp_path.write_text(json.dumps(rows[-2000:], ensure_ascii=False, indent=2), encoding="utf-8")
+            temp_path.write_text(json.dumps(rows, ensure_ascii=False, indent=2), encoding="utf-8")
             temp_path.replace(self.path)
         except Exception:
             temp_path.unlink(missing_ok=True)
             raise
-        return items
 
     def record_asset(
         self,

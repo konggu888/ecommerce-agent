@@ -1918,6 +1918,36 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertIn("成本待核对", generate_body)
 
 
+    def test_a65_single_ledger_record_uses_atomic_replace_and_preserves_old_file_on_failure(self):
+        from unittest.mock import patch
+        from pathlib import Path as PathType
+        with tempfile.TemporaryDirectory() as td:
+            ledger = ProductionStore(Path(td)).ledger
+            ledger.record(function="既有记录", model_id="", model_name="", provider="测试", model="", status="success",
+                          estimated_cost_rmb=1.25, project_id="p", category="video")
+            original = ledger.path.read_text(encoding="utf-8")
+            with patch.object(PathType, "replace", side_effect=OSError("模拟原子替换失败")):
+                with self.assertRaisesRegex(OSError, "模拟原子替换失败"):
+                    ledger.record(function="新记录", model_id="", model_name="", provider="测试", model="", status="success",
+                                  estimated_cost_rmb=0.72, project_id="p", category="video")
+            self.assertEqual(ledger.path.read_text(encoding="utf-8"), original)
+            self.assertEqual(len(ledger.recent(10)), 1)
+            self.assertEqual(ledger.recent(10)[0]["function"], "既有记录")
+
+    def test_a65_ledger_retains_more_than_2000_cost_history_rows(self):
+        with tempfile.TemporaryDirectory() as td:
+            ledger = ProductionStore(Path(td)).ledger
+            ledger.record_many([
+                {"function": f"历史记录-{i}", "model_id": "", "model_name": "", "provider": "测试", "model": "",
+                 "status": "success", "estimated_cost_rmb": 0.01, "project_id": "p", "category": "video"}
+                for i in range(2001)
+            ])
+            summary = ledger.project_summary("p")
+            self.assertEqual(summary["entries"], 2001)
+            self.assertAlmostEqual(summary["actual_cost_rmb"], 20.01)
+            self.assertEqual(len(ledger._load()), 2001)
+
+
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.
