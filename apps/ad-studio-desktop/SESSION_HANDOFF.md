@@ -6,7 +6,7 @@
 - 仓库：`konggu888/ecommerce-agent`
 - 项目：`apps/ad-studio-desktop`（本地 Python/Tkinter 桌面程序，不是 Web 应用）
 - 工作分支：`feat/product-drama-visual-review`
-- 最近一次完整 CI 验证通过的基准 SHA：`ecd7259205cd77b99516e958d89d7022a9f2ab3b`（A80 修复后 CI 与 docs-sync 均通过；后续提交必须重新验证最新 SHA）。
+- 最近一次完整 CI 与 docs-sync 均验证通过的 SHA：`d976c34a48ff20af65648983be7855589ba2deca`（CI run `38162555687`、docs-sync run `38162555622` 均 success；后续提交必须重新验证最新 SHA）。
 - PR：[#31](https://github.com/konggu888/ecommerce-agent/pull/31)，保持 open、未合并；没有用户明确许可不得合并。
 - `443f713cd3721eab528eb9bb17faf599d55ef3ce` 的完整 CI 已成功：前端语法、桌面 Python 语法、桌面单测、TypeScript 检查、引擎测试和风险控制器测试均通过；同一 SHA 的 docs-sync 也成功。已将 `.github/workflows/ci.yml` 的 push 触发范围改为所有分支。任何后续提交都必须按最新 SHA 重新核实，不能把此基准结果直接套用到新 SHA。
 
@@ -320,5 +320,5 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 ## 最近推进｜A80 与 A81
 - A80：因果链人物关系变化说明及其分镜落地审查；修复初始化顺序后，SHA `ecd7259205cd77b99516e958d89d7022a9f2ab3b` 的完整 CI 与 docs-sync 通过。
 - A81（本轮）：新增 `state_continuity`，将因果事件造成的人物状态/信息/承诺/误解/关系后果追踪到后续分镜；覆盖未说明、未知人物、未展示、引用镜头顺序/位置等 warning。
-- 首轮 CI 在三项 A81 测试中发现角色名集合初始化顺序错误；已将角色集合初始化前移到因果链审查之前，修复提交必须重新跑全量 CI 与 docs-sync。
-- 代码、测试、HELP、PROJECT_LOGIC、SESSION_HANDOFF、验收计划、验收 SOP、未来功能备忘需在同一修复提交同步更新。PR #31 保持 open，不得合并。
+- CI 首轮发现角色名集合初始化顺序错误，已修复；第二轮发现“无后续影响”测试夹具只覆盖单一步骤，已改为逐步声明状态连续性。
+- 最终验证 SHA `d976c34a48ff20af65648983be7855589ba2deca`：完整 CI run `38162555687` success；docs-sync run `38162555622` success。PR #31 保持 open、未合并。
