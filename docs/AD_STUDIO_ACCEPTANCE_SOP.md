@@ -847,3 +847,10 @@ AI 必须执行：
 
 ## A47–A50｜自动化阶段结果
 代码 SHA `58de7ce984cf9df73bad2c99444d75a0624059c3` 的完整 CI 与 docs-sync 均成功（CI https://github.com/konggu888/ecommerce-agent/actions/runs/38121500267；docs-sync https://github.com/konggu888/ecommerce-agent/actions/runs/38121500259）。可将这些阶段的自动化检查记录为通过，但不得据此标记 Windows 真机、真实 Provider、真实素材或实际扣款验收完成。
+
+
+## A51｜费用预估前置校验验收
+1. 使用有效报价 0、0.72 和字符串形式的合法数字，确认规范化后可用于显示。
+2. 使用非数字、NaN、正负无穷、负数和空值，确认在费用确认弹窗之前抛出明确错误。
+3. 确认校验失败不会调用 Provider、不会增加镜头版本、不会修改核验历史。
+4. 运行桌面完整测试、当前 SHA 完整 CI 与 docs-sync；真实 Provider 报价仍需现场验证。

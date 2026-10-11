@@ -131,3 +131,7 @@ A47 的异常边界重构意外将 prompt 拼接改成字面量反斜杠+n；已
 
 ## A50：视频提示词换行回归结果
 提示词中的标题、画面、文案已恢复为真实换行；新增捕获 Provider 请求内容的回归。代码 SHA `58de7ce984cf9df73bad2c99444d75a0624059c3` 的完整 CI 与 docs-sync 均成功（CI https://github.com/konggu888/ecommerce-agent/actions/runs/38121500267；docs-sync https://github.com/konggu888/ecommerce-agent/actions/runs/38121500259）。真实 Provider 的实际提示词效果仍待现场验收。
+
+
+## A51：费用确认前置校验
+新增局部重生成报价校验，拒绝非数字、NaN/无穷、负数和空值，避免显示无效费用。必须查询本次最新 SHA 的 CI/doc-sync 后再标记自动化验收通过。

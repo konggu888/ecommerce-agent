@@ -4,7 +4,7 @@ from pathlib import Path
 
 from ad_studio.engine import detect_platform, estimate_cost, new_project, mark_regenerate
 from ad_studio.library import LocalLibrary
-from ad_studio.production import ProductionStore, generation_failure_ui_state
+from ad_studio.production import ProductionStore, generation_failure_ui_state, normalize_cost_estimate_rmb
 from ad_studio.product_parser import ProductInfo, save_product_library, load_product_library, merge_product_library
 from ad_studio.model_router import ModelRouter, ModelProfile, build_stage_prompt
 
@@ -1501,6 +1501,14 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(shot.status, "素材裁剪失败（已保留上一版本）")
 
 
+
+    def test_a51_cost_estimate_is_validated_before_confirmation(self):
+        self.assertEqual(normalize_cost_estimate_rmb("0.72"), 0.72)
+        self.assertEqual(normalize_cost_estimate_rmb(0), 0.0)
+        for invalid in ("not-a-number", float("nan"), float("inf"), float("-inf"), -0.01, None):
+            with self.subTest(invalid=invalid):
+                with self.assertRaises(ValueError):
+                    normalize_cost_estimate_rmb(invalid)
 
     def test_a50_video_prompt_uses_real_line_breaks(self):
         class CapturingProvider:

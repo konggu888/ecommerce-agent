@@ -137,3 +137,7 @@ SHA 2450e2d5b74bba26cd76ac3ef3ef5639499523f2 的完整 CI 暴露 1 个 handoff �
 - docs-sync：success：https://github.com/konggu888/ecommerce-agent/actions/runs/38121500259
 - A47–A50 自动化阶段通过；Windows 真机、真实 Provider、真实素材和实际扣款仍暂缓。
 - 以上是代码基准提交的结果。任何新的提交都必须重新查询最新 HEAD 和对应工作流。
+
+
+## A51：费用预估前置校验
+A47–A50 的自动化 CI 与 docs-sync 已在代码 SHA `58de7ce984cf9df73bad2c99444d75a0624059c3` 的完整工作流中通过。A51 新增局部重生成费用弹窗前报价校验；必须检查本次提交的新 SHA 和工作流，不能把之前的绿灯直接沿用。

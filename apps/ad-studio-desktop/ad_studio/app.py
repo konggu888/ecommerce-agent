@@ -9,7 +9,7 @@ from .engine import FORMS, new_project, mark_regenerate, estimate_cost, estimate
 from .gpu import detect_gpu
 from .hardware import detect_hardware, format_hardware
 from .capability import CapabilityRouter
-from .production import ProductionStore, generation_failure_ui_state
+from .production import ProductionStore, generation_failure_ui_state, normalize_cost_estimate_rmb
 from .product_parser import parse_product_url, save_product, save_product_library, load_product_library, merge_product_library, ProductInfo
 from .creative_engine import CreativeEngine, validate_plan, validate_task_type_plan, TASK_TYPE_POLICIES
 from .short_drama import audit_short_drama, build_episode_continuity_ledger, generate_short_drama, generate_next_short_drama_episode, short_drama_production_rows, record_product_visual_verification, compare_product_visual_shot, prepare_product_drama_shot_regeneration, product_visual_correction_suggestion, resolve_product_drama_shot_number
@@ -1638,7 +1638,7 @@ class App(tk.Tk):
                     self.detail.set('已取消单镜头修复；没有修改镜头版本或调用生成服务。')
                     return
                 provider = load_video_provider(ROOT / 'video-provider.json')
-                rate = float(getattr(provider, 'cost_per_shot_rmb', 0.72))
+                rate = normalize_cost_estimate_rmb(getattr(provider, 'cost_per_shot_rmb', 0.72))
                 if not messagebox.askyesno('确认单镜头重新生成', f'仅重新生成第 {shot_number} 镜（当前 v{s.version} → 新版本）。\n' f'预计视频生成费用：¥{rate:.2f}。\n' '旧版本、核验记录和其他镜头会保留；新版本必须重新核验。\n' '是否继续？', parent=self):
                     self.detail.set('已取消单镜头重新生成；没有调用云端服务。')
                     return

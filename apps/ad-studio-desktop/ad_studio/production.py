@@ -4,6 +4,7 @@ import json
 import shutil
 import subprocess
 import datetime
+import math
 from .models import Project, Shot, accept_hybrid_generated_shot
 from .ffmpeg import make_clip, concat
 from .providers import GenerationRequest, load_video_provider, load_asset_provider
@@ -578,3 +579,14 @@ def generation_failure_ui_state(shot: Shot) -> dict[str, Any]:
         if path.is_file() and path.stat().st_size > 0:
             return {"status": status, "previous_version_available": True, "video_path": str(path)}
     return {"status": "生成失败", "previous_version_available": False, "video_path": ""}
+
+
+def normalize_cost_estimate_rmb(value: Any) -> float:
+    """Validate a provider's per-shot estimate before showing a cost confirmation dialog."""
+    try:
+        amount = float(value)
+    except (TypeError, ValueError, OverflowError) as exc:
+        raise ValueError("预计生成费用无效；请先检查视频生成设置。") from exc
+    if not math.isfinite(amount) or amount < 0:
+        raise ValueError("预计生成费用必须是有限的非负数；请先检查视频生成设置。")
+    return round(amount, 4)
