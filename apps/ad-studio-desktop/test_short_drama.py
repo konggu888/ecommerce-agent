@@ -461,7 +461,10 @@ class ShortDramaTests(unittest.TestCase):
     def test_product_fact_lock_warns_when_confirmed_fact_has_no_source(self):
         plan = sample_plan()
         plan["drama_business_mode"] = "product_short_drama_ad"
-        plan["product_fact_lock"] = {"confirmed_facts": ["耐热200度"], "unknown_or_unverified": ["续航24小时"]}
+        plan["product_analysis"] = {"product_type": "用品", "target_audience": "普通用户", "selling_points": [], "usage_scenarios": [], "unknown_facts": ["续航24小时"]}
+        plan["genre_decision"] = {"selected_genre": "现实轻喜剧", "reasoning": "用于测试"}
+        plan["storyboard"][0]["product_fidelity_constraints"] = ["保持真实外观与功能"]
+        plan["product_fact_lock"] = {"confirmed_facts": ["耐热200度"], "unknown_or_unverified": ["续航24小时"], "appearance_structure_function_constraints": ["保持真实外观"]}
         plan["full_script"] = "这款产品耐热200度，续航24小时。"
         report = audit_short_drama(plan, {"name": "商品", "description": "普通收纳用品"})
         codes = {item["code"] for item in report["issues"]}
@@ -471,7 +474,10 @@ class ShortDramaTests(unittest.TestCase):
     def test_product_fact_lock_allows_unknown_fact_marked_unverified(self):
         plan = sample_plan()
         plan["drama_business_mode"] = "product_short_drama_ad"
-        plan["product_fact_lock"] = {"confirmed_facts": [], "unknown_or_unverified": ["续航24小时"]}
+        plan["product_analysis"] = {"product_type": "用品", "target_audience": "普通用户", "selling_points": [], "usage_scenarios": [], "unknown_facts": ["续航24小时"]}
+        plan["genre_decision"] = {"selected_genre": "现实轻喜剧", "reasoning": "用于测试"}
+        plan["storyboard"][0]["product_fidelity_constraints"] = ["保持真实外观与功能"]
+        plan["product_fact_lock"] = {"confirmed_facts": [], "unknown_or_unverified": ["续航24小时"], "appearance_structure_function_constraints": ["保持真实外观"]}
         plan["full_script"] = "续航24小时尚未核实，不得作为宣传结论。"
         report = audit_short_drama(plan, {"name": "商品", "description": "普通用品"})
         self.assertNotIn("PRODUCT_UNKNOWN_FACT_USED", {item["code"] for item in report["issues"]})
