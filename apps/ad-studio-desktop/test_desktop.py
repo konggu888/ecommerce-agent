@@ -1394,6 +1394,29 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(restored.shots[0].video_path, str(old_output))
 
 
+    def test_a53_recovery_rejects_zero_byte_previous_video(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            zero_byte_video = root / "zero-byte-v1.mp4"
+            zero_byte_video.write_bytes(b"")
+            shot.video_path = None
+            shot.previous_video_path = str(zero_byte_video)
+            shot.status = "生成中…"
+            store.save(project)
+            result = store.recover_project(project)
+            self.assertEqual(result["restored_previous_versions"], [])
+            self.assertIn(shot.id, result["missing_media"])
+            self.assertIsNone(shot.video_path)
+            self.assertIsNone(shot.previous_video_path)
+            self.assertEqual(shot.status, "待重新生成/重新选择素材")
+            restored = store.load(project.id)
+            self.assertIsNone(restored.shots[0].video_path)
+            self.assertIsNone(restored.shots[0].previous_video_path)
+
+
     def test_a46_edit_shot_routes_through_safe_regeneration_transition(self):
         app_source = (Path(__file__).resolve().parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
         start = app_source.index("def edit_shot(self):")

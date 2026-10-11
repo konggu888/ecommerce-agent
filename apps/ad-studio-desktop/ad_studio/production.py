@@ -65,18 +65,22 @@ class ProductionStore:
         for shot in project.shots:
             previous_path = str(getattr(shot, "previous_video_path", None) or "").strip()
             active_missing = not shot.video_path or not Path(shot.video_path).is_file()
-            if previous_path and active_missing and Path(previous_path).is_file() and Path(previous_path).stat().st_size > 0:
-                # A process may have stopped after version increment but before a new
-                # render completed. Restore the last known-good output after restart.
-                shot.video_path = previous_path
-                shot.previous_video_path = None
-                shot.status = "生成中断（已恢复上一版本）"
-                restored_previous_versions.append(shot.id)
-            elif previous_path and active_missing and not Path(previous_path).is_file():
-                shot.previous_video_path = None
-                shot.video_path = None
-                shot.status = "待重新生成/重新选择素材"
-                missing_media.append(shot.id)
+            if previous_path and active_missing:
+                previous_file = Path(previous_path)
+                previous_is_valid = previous_file.is_file() and previous_file.stat().st_size > 0
+                if previous_is_valid:
+                    # A process may have stopped after version increment but before a new
+                    # render completed. Restore the last known-good output after restart.
+                    shot.video_path = previous_path
+                    shot.previous_video_path = None
+                    shot.status = "生成中断（已恢复上一版本）"
+                    restored_previous_versions.append(shot.id)
+                else:
+                    # A stale pointer to a missing or zero-byte file is not recoverable.
+                    shot.previous_video_path = None
+                    shot.video_path = None
+                    shot.status = "待重新生成/重新选择素材"
+                    missing_media.append(shot.id)
             elif shot.video_path and not Path(shot.video_path).exists():
                 missing_media.append(shot.id)
                 shot.video_path = None

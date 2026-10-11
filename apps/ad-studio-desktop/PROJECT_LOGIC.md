@@ -1016,3 +1016,6 @@ normalize_cost_estimate_rmb() 将 Provider 的每镜头预估价规范为有限�
 - 失败记录的 estimated_cost_rmb 为 0，报价只放在 unit_cost_rmb，不把未确认扣款的报价混入实际成本；成功仍沿用原有成功记账入口。
 - 成功重试会新增独立 success 记录；项目实际花费只汇总 success，不把失败重试重复计入。若账本写入失败，恢复历史记录需处理的错误和下一步动作。
 - A52 回归验证一次失败 + 一次成功重试只产生一条失败记录、一条成功记录，实际成本只计成功那一次。
+
+### A53：恢复指针必须指向有效视频
+`recover_project()` 对 `previous_video_path` 统一检查文件存在且大小大于零。缺失文件与零字节文件都属于不可恢复旧版：清除 `video_path` 和 `previous_video_path`，标记待重新生成，并写入 `missing_media`。不能仅因路径存在就声称恢复成功。
