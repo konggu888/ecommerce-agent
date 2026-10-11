@@ -458,6 +458,23 @@ class ShortDramaTests(unittest.TestCase):
             generate_next_short_drama_episode(FakeRouter(), plan, {})
 
 
+    def test_product_fact_lock_warns_when_confirmed_fact_has_no_source(self):
+        plan = sample_plan()
+        plan["drama_business_mode"] = "product_short_drama_ad"
+        plan["product_fact_lock"] = {"confirmed_facts": ["耐热200度"], "unknown_or_unverified": ["续航24小时"]}
+        plan["full_script"] = "这款产品耐热200度，续航24小时。"
+        report = audit_short_drama(plan, {"name": "商品", "description": "普通收纳用品"})
+        codes = {item["code"] for item in report["issues"]}
+        self.assertIn("PRODUCT_CONFIRMED_FACT_UNSUPPORTED", codes)
+        self.assertIn("PRODUCT_UNKNOWN_FACT_USED", codes)
+
+    def test_product_fact_lock_allows_unknown_fact_marked_unverified(self):
+        plan = sample_plan()
+        plan["drama_business_mode"] = "product_short_drama_ad"
+        plan["product_fact_lock"] = {"confirmed_facts": [], "unknown_or_unverified": ["续航24小时"]}
+        plan["full_script"] = "续航24小时尚未核实，不得作为宣传结论。"
+        report = audit_short_drama(plan, {"name": "商品", "description": "普通用品"})
+        self.assertNotIn("PRODUCT_UNKNOWN_FACT_USED", {item["code"] for item in report["issues"]})
     def test_product_short_drama_ad_requires_fidelity_constraints_and_explains_genre(self):
         plan = sample_plan()
         plan["drama_business_mode"] = "product_short_drama_ad"

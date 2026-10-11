@@ -896,6 +896,30 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
             return [str(value).strip()]
         return []
     trusted_text = " ".join(flatten(material))
+    # A75: cross-check the product fact lock against source material and script claims.
+    fact_lock = checked.get("product_fact_lock", {})
+    if isinstance(fact_lock, dict):
+        confirmed_facts = fact_lock.get("confirmed_facts", [])
+        unknown_facts = fact_lock.get("unknown_or_unverified", [])
+        if isinstance(confirmed_facts, list):
+            for fact in confirmed_facts:
+                claim = str(fact).strip()
+                if claim and trusted_text and claim not in trusted_text:
+                    add("warning", "PRODUCT_CONFIRMED_FACT_UNSUPPORTED", f"已确认商品事实“{claim}”未在当前商品资料中找到直接文本依据，请人工核实。")
+                elif claim and not trusted_text:
+                    add("warning", "PRODUCT_FACT_SOURCE_MISSING", "事实锁中存在已确认商品事实，但当前没有可供比对的商品资料。")
+                    break
+        if isinstance(unknown_facts, list):
+            uncertainty_markers = ("待确认", "未确认", "未核实", "未知", "不确定", "不可声称", "不得宣称", "尚无资料")
+            for fact in unknown_facts:
+                claim = str(fact).strip()
+                if not claim:
+                    continue
+                position = script_text.find(claim)
+                if position >= 0:
+                    context = script_text[max(0, position - 18):position + len(claim) + 18]
+                    if not any(marker in context for marker in uncertainty_markers):
+                        add("warning", "PRODUCT_UNKNOWN_FACT_USED", f"未核实商品信息“{claim}”出现在剧本/分镜内容中，附近未发现明确的不确定性标记，请人工核实。")
     for truth in checked.get("product_truths", []):
         claim = str(truth).strip()
         if claim and trusted_text and claim not in trusted_text:
