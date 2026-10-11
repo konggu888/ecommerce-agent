@@ -535,20 +535,23 @@ def compare_product_visual_shot(
     shots = plan.get("storyboard", [])
     if not isinstance(shots, list) or shot_number < 1 or shot_number > len(shots):
         raise ShortDramaPlanError("指定镜头编号不存在。")
+    image_exts = {".png", ".jpg", ".jpeg", ".webp", ".bmp"}
+    video_exts = {".mp4", ".mov", ".m4v", ".mkv", ".webm", ".avi", ".mpeg", ".mpg"}
     refs = [Path(p).expanduser() for p in reference_image_paths if str(p).strip()]
     if not refs:
         raise ShortDramaPlanError("请至少选择一张商品参考图片。")
-    if any(not p.is_file() for p in refs):
-        raise ShortDramaPlanError("有商品参考图片不存在或无法读取。")
+    if any(not p.is_file() or p.stat().st_size <= 0 for p in refs):
+        raise ShortDramaPlanError("有商品参考图片不存在、为空或无法读取。")
+    if any(p.suffix.lower() not in image_exts for p in refs):
+        raise ShortDramaPlanError("商品参考文件必须是 PNG、JPG、JPEG、WEBP 或 BMP 图片。")
     generated = Path(generated_visual_path).expanduser()
-    if not generated.is_file():
-        raise ShortDramaPlanError("生成画面文件不存在或无法读取。")
-    image_exts = {".png", ".jpg", ".jpeg", ".webp", ".bmp"}
+    if not generated.is_file() or generated.stat().st_size <= 0:
+        raise ShortDramaPlanError("生成画面文件不存在、为空或无法读取。")
     frame_paths: list[Path] = []
     temp_dir = None
     if generated.suffix.lower() in image_exts:
         frame_paths = [generated]
-    else:
+    elif generated.suffix.lower() in video_exts:
         ffmpeg = shutil.which("ffmpeg")
         ffprobe = shutil.which("ffprobe")
         if not ffmpeg or not ffprobe:
@@ -581,6 +584,8 @@ def compare_product_visual_shot(
         if not frame_paths:
             temp_dir.cleanup()
             raise ShortDramaPlanError("未能从视频中提取可用于核验的画面帧。")
+    else:
+        raise ShortDramaPlanError("生成画面仅支持常见图片格式或 MP4/MOV/M4V/MKV/WEBM/AVI/MPEG 视频。")
     try:
         profile = model_router.resolve_route("商品画面视觉核验")
         if not getattr(profile, "vision_enabled", False):

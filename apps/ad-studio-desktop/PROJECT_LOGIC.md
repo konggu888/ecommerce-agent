@@ -1040,3 +1040,6 @@ _render_with_provider() 将媒体生成/原子替换与成功成本记账分为�
 - recover_project 在保存前从 UsageLedger 同步项目实际成本和有成功账本记录的镜头成本；失败行不计入 actual_cost_rmb。
 - 没有任何账本条目的旧项目保留旧成本字段，避免升级时将历史值归零。
 - UsageLedger 删除了被同名方法覆盖的重复 project_summary 定义，新增 shot_actual_cost 查询，保证项目与镜头成本的恢复来源一致。
+
+### A58：视觉核验先校验输入证据
+`compare_product_visual_shot()` 在模型路由前检查参考图的格式、存在性和非空状态，并验证生成画面是非空的支持格式图片或视频。PDF、未知二进制和零字节文件会 fail closed，不进入 FFprobe/模型调用，且不能改变原核验状态。

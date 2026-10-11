@@ -414,6 +414,41 @@ class ShortDramaTests(unittest.TestCase):
                 compare_product_visual_shot(FakeRouter(), plan, 1, [], str(generated))
 
 
+    def test_ai_visual_comparison_rejects_empty_and_unsupported_files(self):
+        import tempfile
+        from pathlib import Path
+
+        class FakeRouter:
+            pass
+
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            plan = sample_plan()
+            plan["drama_business_mode"] = "product_short_drama_ad"
+            empty_ref = root / "empty.png"
+            empty_ref.write_bytes(b"")
+            generated = root / "shot.png"
+            generated.write_bytes(b"image-bytes")
+            with self.assertRaisesRegex(ShortDramaPlanError, "为空"):
+                compare_product_visual_shot(FakeRouter(), plan, 1, [str(empty_ref)], str(generated))
+
+            unsupported_ref = root / "reference.pdf"
+            unsupported_ref.write_bytes(b"pdf-bytes")
+            with self.assertRaisesRegex(ShortDramaPlanError, "必须是"):
+                compare_product_visual_shot(FakeRouter(), plan, 1, [str(unsupported_ref)], str(generated))
+
+            empty_generated = root / "empty-output.png"
+            empty_generated.write_bytes(b"")
+            valid_ref = root / "reference.png"
+            valid_ref.write_bytes(b"reference-bytes")
+            with self.assertRaisesRegex(ShortDramaPlanError, "为空"):
+                compare_product_visual_shot(FakeRouter(), plan, 1, [str(valid_ref)], str(empty_generated))
+
+            unsupported_generated = root / "output.bin"
+            unsupported_generated.write_bytes(b"unknown-format")
+            with self.assertRaisesRegex(ShortDramaPlanError, "仅支持常见图片格式"):
+                compare_product_visual_shot(FakeRouter(), plan, 1, [str(valid_ref)], str(unsupported_generated))
+
     def test_product_drama_regeneration_changes_only_selected_shot_and_preserves_history(self):
         from ad_studio.short_drama import prepare_product_drama_shot_regeneration
         plan = sample_plan()
