@@ -894,7 +894,9 @@ A33 自动化验收分别覆盖电商短视频、商品主图视频、广告投�
 - 该模式的每个分镜必须有 `product_fidelity_constraints`；`visual_verification` 只能是 `not_checked`、`passed`、`needs_review` 或 `failed`。新方案默认为 `not_checked`，规则复核不能伪装成画面级视觉验证。
 - 桌面 UI 显示独立目标、题材选择理由、商品剧情作用、已确认/未知事实摘要。预算和付费素材/视频生成流程仍沿用既有独立项目流程。
 - 短剧质量/事实复核窗口新增“记录商品画面人工核验”入口。`record_product_visual_verification()` 要求镜头编号、实际生成图片/视频的本地证据路径、结论和人工备注，并将证据路径、`visual_verification_method=manual` 与备注写入对应分镜；通过状态只有在证据路径、方法和备注齐全时才不触发 `PRODUCT_VISUAL_NOT_VERIFIED`。新生成方案仍强制重置为 `not_checked`。
-- 新增 `compare_product_visual_shot()`：通过 `ModelRouter.resolve_route('商品画面视觉核验')` 调用启用视觉输入的模型，接收多张商品参考图和镜头生成画面；视频输入通过 FFmpeg/FFprobe 在本地抽取最多三个帧。模型按商品身份、外观、结构、可见功能和正确用法返回差异摘要，并保存模型 ID、对比结果、参考图和生成画面路径。明显不匹配标记 `failed`；其他结果一律 `needs_review`，不允许 AI 自动批准。\n- 桌面 UI 在质量/事实复核窗口提供“AI 对比商品参考图”，执行前明确提示模型调用可能产生费用；需要选择参考图片和目标镜头文件。模型输出只作筛查，最终通过仍要求人工证据记录。\n- 仍未完成：基于对比结果自动定位可修复的具体问题、只重新生成对应镜头并保留原镜头版本；Windows 真机/真实 Provider 验收继续暂缓。
+- 新增 `compare_product_visual_shot()`：通过 `ModelRouter.resolve_route('商品画面视觉核验')` 调用启用视觉输入的模型，接收多张商品参考图和镜头生成画面；视频输入通过 FFmpeg/FFprobe 在本地抽取最多三个帧。模型按商品身份、外观、结构、可见功能和正确用法返回差异摘要，并保存模型 ID、对比结果、参考图和生成画面路径。明显不匹配标记 `failed`；其他结果一律 `needs_review`，不允许 AI 自动批准。
+- 桌面 UI 在质量/事实复核窗口提供“AI 对比商品参考图”，执行前明确提示模型调用可能产生费用；需要选择参考图片和目标镜头文件。模型输出只作筛查，最终通过仍要求人工证据记录。
+- 仍未完成：基于对比结果自动定位可修复的具体问题、只重新生成对应镜头并保留原镜头版本；Windows 真机/真实 Provider 验收继续暂缓。
 
 
 ## 17.7.1 商品画面状态初始化
@@ -904,4 +906,7 @@ A33 自动化验收分别覆盖电商短视频、商品主图视频、广告投�
 
 ## 2026-10-11：AI 辅助商品画面对比
 
-- 新增 `商品画面视觉核验` 独立模型路由，沿用模型池的视觉能力开关；图片 MIME 类型按扩展名正确标注。\n- `compare_product_visual_shot()` 校验创作模式、镜头编号、参考图/生成文件路径；对视频要求 FFmpeg/FFprobe 并在临时目录抽取开头/中段/后段帧。临时帧会在调用结束后清理。\n- 对比结果写入目标分镜：`visual_comparison_result`、`visual_verification_reference_images`、`visual_verification_evidence`、`visual_verification_method`。任何 AI 结果都不能自动变为 passed；疑似差异标记 failed，其余标记 needs_review。\n- UI 在模型调用前提示费用可能产生，并在完成后刷新复核窗口。自动问题定位和仅重生成问题镜头仍未实现。
+- 新增 `商品画面视觉核验` 独立模型路由，沿用模型池的视觉能力开关；图片 MIME 类型按扩展名正确标注。
+- `compare_product_visual_shot()` 校验创作模式、镜头编号、参考图/生成文件路径；对视频要求 FFmpeg/FFprobe 并在临时目录抽取开头/中段/后段帧。临时帧会在调用结束后清理。
+- 对比结果写入目标分镜：`visual_comparison_result`、`visual_verification_reference_images`、`visual_verification_evidence`、`visual_verification_method`。任何 AI 结果都不能自动变为 passed；疑似差异标记 failed，其余标记 needs_review。
+- UI 在模型调用前提示费用可能产生，并在完成后刷新复核窗口。自动问题定位和仅重生成问题镜头仍未实现。
