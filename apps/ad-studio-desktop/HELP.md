@@ -1096,3 +1096,6 @@ The selling-point coverage regression test uses `product_placement` mode to isol
 
 ### A79：分镜人物与行动依据绑定一致性
 行动依据审查现在还会检查每条 character_action_basis 是否确实属于当前镜头人物列表，并且人物已在角色设定表中定义。错误绑定分别产生 CHARACTER_ACTION_BASIS_NOT_IN_SHOT 与 CHARACTER_ACTION_BASIS_UNKNOWN_CHARACTER 警告。该检查用于发现人物/镜头引用错配，不代表已验证人物动机或表演语义。
+
+### A80：人物关系变化与剧情后果审查
+因果链 schema 与生成提示新增 relationship_change，要求逐步说明人物之间信任、误解、利益、依赖或权力关系的可观察变化；若无变化需明确说明。对于多人物方案，未说明关系变化会产生 RELATIONSHIP_CHANGE_UNSPECIFIED；关系变化未出现在该步骤引用镜头的动作、台词或生成提示中，会产生 RELATIONSHIP_CHANGE_NOT_SHOWN。此为结构/文本覆盖筛查，不证明情感转变合理。

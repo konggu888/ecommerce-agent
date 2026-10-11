@@ -630,3 +630,6 @@ A55 重构意外重新引入提示词双重转义，已按 CI 失败证据修复
 
 ### A79：人物行动依据与角色绑定一致性
 A78 的行动依据记录现在还要与当前镜头人物列表及全局角色设定表匹配。发现依据挂到未出镜人物或未定义人物时，审查器分别输出 CHARACTER_ACTION_BASIS_NOT_IN_SHOT、CHARACTER_ACTION_BASIS_UNKNOWN_CHARACTER。此检查只保证引用一致，不证明人物心理与剧情逻辑成立。
+
+### A80：人物关系变化与因果后果
+因果链增加 relationship_change，要求描述人物之间信任、误解、利益、依赖或权力关系的可观察变化；若没有直接变化，也要说明。多人物方案缺少说明或关系变化没有落到引用分镜时分别产生 RELATIONSHIP_CHANGE_UNSPECIFIED、RELATIONSHIP_CHANGE_NOT_SHOWN。文本检查不能证明关系变化自然合理，后续仍需人工/模型语义评审。

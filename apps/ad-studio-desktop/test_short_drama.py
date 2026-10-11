@@ -91,10 +91,34 @@ class ShortDramaTests(unittest.TestCase):
         report = audit_short_drama(plan)
         self.assertIn("SETUP_PAYOFF_NOT_STORYBOARDED", {item["code"] for item in report["issues"]})
 
+    def test_audit_warns_when_relationship_change_is_not_specified(self):
+        plan = sample_plan()
+        plan["characters"].append({
+            "name": "小王", "role": "同事", "goal": "得到帮助",
+            "motivation": "希望合作顺利", "fear_or_secret": "担心被忽视",
+            "relationship": "同事", "relationship_dynamics": "彼此依赖但沟通不足",
+            "decision_pressure": "交接时间临近", "arc": "从怀疑转向合作"
+        })
+        report = audit_short_drama(plan)
+        self.assertIn("RELATIONSHIP_CHANGE_UNSPECIFIED", {item["code"] for item in report["issues"]})
+
+    def test_audit_warns_when_relationship_change_is_not_shown_in_referenced_shot(self):
+        plan = sample_plan()
+        plan["characters"].append({
+            "name": "小王", "role": "同事", "goal": "得到帮助",
+            "motivation": "希望合作顺利", "fear_or_secret": "担心被忽视",
+            "relationship": "同事", "relationship_dynamics": "彼此依赖但沟通不足",
+            "decision_pressure": "交接时间临近", "arc": "从怀疑转向合作"
+        })
+        plan["causal_chain"][0]["relationship_change"] = "小王开始信任小林"
+        report = audit_short_drama(plan)
+        self.assertIn("RELATIONSHIP_CHANGE_NOT_SHOWN", {item["code"] for item in report["issues"]})
+
     def test_prompt_requires_story_event_references_and_shootable_turning_point(self):
         prompt = build_short_drama_prompt({"name": "商品"}, {"drama_business_mode": "product_placement"})
         self.assertIn("narrative_function", prompt)
         self.assertIn("story_event_reference", prompt)
+        self.assertIn("relationship_change", prompt)
         self.assertIn("前置线索", prompt)
 
     def test_audit_warns_when_action_basis_names_character_not_in_shot(self):

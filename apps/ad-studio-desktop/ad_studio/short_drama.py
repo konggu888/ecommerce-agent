@@ -49,6 +49,7 @@ SHORT_DRAMA_SCHEMA = {
         "character_choice": "人物在本步作出的选择；若无主动选择，说明原因",
         "consequence": "本事件直接造成的后果",
         "state_change": "本步结束后人物处境、关系、信息或资源发生的可观察变化",
+        "relationship_change": "本步对人物之间信任、利益、误解、依赖或权力关系的可观察影响；若无变化，明确写无变化及原因",
         "script_evidence": "完整剧本中能逐字找到的本步剧情证据片段",
         "storyboard_indices": ["integer，引用根级 storyboard 的从1开始位置"]
     }],
@@ -131,7 +132,7 @@ def build_short_drama_prompt(product: dict[str, Any], constraints: dict[str, Any
          "2.3 商品植入/转化/商品短剧广告：商品只能在剧情逻辑允许时成为解决问题或引发选择的真实工具，不能凭空解决与其功能无关的冲突；商品卖点必须通过可拍摄的行为展示，不得只靠角色夸赞。\n"
          "2.4 至少提供两个故事方向，且每个方向必须分别输出 conflict_source、protagonist_choice、reversal_mechanism、product_role、audience_hook 和 conversion_path。方向必须在冲突来源、人物关键选择或反转机制上有实质区别；不要仅更换场景、人物姓名、题材标签或营销话术。各方向必须能单独扩展成完整故事，并说明商品角色（不适用时如实写不适用）。\n"
          "2. 每个主要人物必须说明目标、目标背后的动机、恐惧/秘密、人物关系动态、决策压力和人物弧光；人物关系要产生可观察的利益冲突、依赖或变化，不能只写“朋友/同事”等标签。重要行动必须能追溯到人物目标、动机或压力。\n"
-         "2.5 必须输出 causal_chain，按实际剧情顺序列出至少3个因果步骤。每步写明 event、caused_by、character_choice、consequence、state_change，还必须提供 script_evidence（从 full_script 原文逐字摘取、能定位本步事件的片段）和 storyboard_indices（根级 storyboard 中对应镜头的从1开始位置列表）。每步至少引用一个真实存在的分镜位置；script_evidence 必须是 full_script 的原文子串，不能写概述或编造引用。除开场初始条件外，每个重要事件必须指出具体前因；前因要在剧本/分镜中可找到，后果必须改变人物处境、关系、信息或可用资源。若是意外事件，必须说明合理来源及其后续影响，不得用巧合直接解决主冲突。因果链必须与 plot_beats、full_script 和 storyboard 一致。\n"
+         "2.5 必须输出 causal_chain，按实际剧情顺序列出至少3个因果步骤。每步写明 event、caused_by、character_choice、consequence、state_change、relationship_change（人物关系的具体变化；若本步无变化，明确写“无直接关系变化”及原因），还必须提供 script_evidence（从 full_script 原文逐字摘取、能定位本步事件的片段）和 storyboard_indices（根级 storyboard 中对应镜头的从1开始位置列表）。每步至少引用一个真实存在的分镜位置；script_evidence 必须是 full_script 的原文子串，不能写概述或编造引用。除开场初始条件外，每个重要事件必须指出具体前因；前因要在剧本/分镜中可找到，后果必须改变人物处境、关系、信息或可用资源。若是意外事件，必须说明合理来源及其后续影响，不得用巧合直接解决主冲突。因果链必须与 plot_beats、full_script 和 storyboard 一致。\n"
          "设计完整的场景、冲突、节奏、转折和结尾；故事要有因果，不是卖点罗列。\n"
         "3. 商品是否出现必须服从所选创作目标：通用模式允许不出现；商品植入/转化模式应按目标呈现。任何模式都不得篡改商品外观、结构、核心功能、使用方式、规格、功效或其他事实。\n"
         "4. 未提供或无法验证的商品信息必须标为待确认，不得编造认证、销量、价格、效果或用户证言。\n"
@@ -769,6 +770,25 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
             if not isinstance(step, dict) or any(not str(step.get(key, "")).strip() for key in causal_fields):
                 add("warning", "CAUSAL_STEP_INCOMPLETE", f"因果链第{index}步缺少前因/选择/后果/状态变化或剧本证据。")
                 continue
+            relationship_change = str(step.get("relationship_change", "")).strip()
+            if len(character_names) >= 2 and not relationship_change:
+                add("warning", "RELATIONSHIP_CHANGE_UNSPECIFIED", f"因果链第{index}步没有说明人物关系是否发生变化；请写明可观察变化，或明确说明本步无直接关系变化及原因。")
+            if relationship_change:
+                shot_refs_for_relationship = step.get("storyboard_indices")
+                valid_relationship_refs = (
+                    [ref for ref in shot_refs_for_relationship if isinstance(ref, int) and not isinstance(ref, bool) and 1 <= ref <= len(storyboard)]
+                    if isinstance(shot_refs_for_relationship, list) else []
+                )
+                relationship_shot_text = " ".join(
+                    " ".join(str(storyboard[ref - 1].get(key, "")) for key in (
+                        "action", "dialogue", "generation_prompt", "narrative_function", "story_event_reference"
+                    )).casefold()
+                    for ref in valid_relationship_refs
+                    if isinstance(storyboard[ref - 1], dict)
+                )
+                no_change_markers = ("无直接关系变化", "关系无变化", "没有关系变化", "关系保持不变")
+                if not any(marker in relationship_change for marker in no_change_markers) and relationship_change.casefold() not in relationship_shot_text:
+                    add("warning", "RELATIONSHIP_CHANGE_NOT_SHOWN", f"因果链第{index}步描述的人物关系变化“{relationship_change}”未在其引用分镜的动作、台词或生成提示中直接体现；请补充可拍摄互动，或修正镜头引用。")
             if str(step.get("script_evidence", "")) not in audit_script:
                 add("warning", "CAUSAL_SCRIPT_MISMATCH", f"因果链第{index}步的剧本证据无法在 full_script 原文中定位。")
             shot_refs = step.get("storyboard_indices")

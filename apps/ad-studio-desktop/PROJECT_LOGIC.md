@@ -1204,3 +1204,9 @@ A78 实现注意：人物行动依据审查必须在 `shot_texts` 构建完成�
 - 在 A78 的逐人物行动依据审查中，检查依据记录中的人物是否同时存在于当前镜头人物列表和全局人物设定表。
 - 新增 CHARACTER_ACTION_BASIS_NOT_IN_SHOT、CHARACTER_ACTION_BASIS_UNKNOWN_CHARACTER 两项 warning，兼容旧方案，不阻止读取。
 - 这是引用一致性检查，不等于动机合理性或剧情语义验证。
+
+### A80：人物关系变化与镜头后果对齐
+- 因果链增加 relationship_change，生成提示要求明确记录关系变化或说明无直接变化。
+- 多人物方案缺少关系变化说明时产生 RELATIONSHIP_CHANGE_UNSPECIFIED。
+- 关系变化描述未在引用镜头动作、台词、生成提示或叙事功能中体现时产生 RELATIONSHIP_CHANGE_NOT_SHOWN。
+- 旧方案保持可读；审查只做可追溯性/文本覆盖检查，不代表自动理解人物情感。
