@@ -1213,3 +1213,12 @@ A78 实现注意：人物行动依据审查必须在 `shot_texts` 构建完成�
 
 ### A80 回归修复
 首轮 CI 暴露人物关系审查在角色名集合初始化前引用局部变量的问题。修复后从 checked 方案直接读取人物列表数量，避免 UnboundLocalError；需以最新 SHA 的 CI 验证。
+
+
+## A81｜人物状态与剧情连续性审查
+在 `audit_short_drama()` 中逐个检查 `causal_chain[].state_continuity`：
+- `affected_characters` 必须是人物姓名列表，且名字存在于全局角色设定表。
+- `required_follow_through` 必须明确说明后续要体现的状态后果；如确实没有后续影响，写“无后续影响”等明确标记。
+- `storyboard_indices` 指向后续根级分镜；必须是有效位置且晚于本步因果事件镜头。
+- 对有后续影响的状态，引用镜头的动作、台词、生成提示或叙事功能中必须出现该要求的直接文本，否则给出 warning。
+- 新字段缺失只产生 warning，不阻止旧方案读取；检查为确定性结构/文本覆盖，不是语义推理。

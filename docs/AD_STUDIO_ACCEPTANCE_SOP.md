@@ -1037,3 +1037,13 @@ AI 必须执行：
 
 ### A80 故障处理补充
 首轮 CI 若出现 character_names 未初始化的运行时异常，检查关系审查代码是否位于角色名集合构建之前；修复后必须重跑完整 CI 和 docs-sync，并记录新 SHA。
+
+
+### A81 专项补充：人物状态后果是否延续到后续镜头
+1. 删除某一步的 `state_continuity`，确认出现 `STATE_CONTINUITY_UNSPECIFIED`。
+2. 在 `affected_characters` 中填写未定义人物，确认出现 `STATE_CONTINUITY_UNKNOWN_CHARACTER`。
+3. 声明一个具体的后续影响，但后续镜头文本未体现该影响，确认出现 `STATE_CONTINUITY_NOT_SHOWN`。
+4. 声明“无后续影响”且承接镜头列表为空，确认不因缺少承接镜头产生警告。
+5. 使用无效/越序镜头位置，确认产生对应 warning。
+6. 运行短剧专项测试、完整 CI 和 docs-sync，并记录最新 SHA。
+7. 该规则只检查结构与文本覆盖，不等于人物状态/剧情语义真实性验收。

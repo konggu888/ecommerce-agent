@@ -114,11 +114,56 @@ class ShortDramaTests(unittest.TestCase):
         report = audit_short_drama(plan)
         self.assertIn("RELATIONSHIP_CHANGE_NOT_SHOWN", {item["code"] for item in report["issues"]})
 
+    def test_audit_warns_when_state_continuity_is_not_defined(self):
+        plan = sample_plan()
+        plan["causal_chain"][0].pop("state_continuity", None)
+        report = audit_short_drama(plan)
+        self.assertIn("STATE_CONTINUITY_UNSPECIFIED", {item["code"] for item in report["issues"]})
+
+    def test_audit_warns_when_state_continuity_references_unknown_character(self):
+        plan = sample_plan()
+        plan["causal_chain"][0]["state_continuity"] = {
+            "affected_characters": ["不存在的人物"],
+            "required_follow_through": "无后续影响",
+            "storyboard_indices": [],
+        }
+        report = audit_short_drama(plan)
+        self.assertIn("STATE_CONTINUITY_UNKNOWN_CHARACTER", {item["code"] for item in report["issues"]})
+
+    def test_audit_warns_when_follow_through_is_not_shown_in_later_shot(self):
+        plan = sample_plan()
+        plan["storyboard"].append({
+            "index": 3, "scene": "办公室", "location": "办公室", "characters": ["小林"],
+            "action": "小林继续寻找钥匙", "dialogue": "", "product_integration": "本镜不出现商品",
+            "shot_type": "中景", "duration_seconds": 4, "generation_prompt": "小林继续寻找钥匙",
+        })
+        plan["causal_chain"][0]["state_continuity"] = {
+            "affected_characters": ["小林"],
+            "required_follow_through": "小林把钥匙交给同事",
+            "storyboard_indices": [3],
+        }
+        report = audit_short_drama(plan)
+        self.assertIn("STATE_CONTINUITY_NOT_SHOWN", {item["code"] for item in report["issues"]})
+
+    def test_audit_accepts_explicit_no_downstream_state_effect(self):
+        plan = sample_plan()
+        plan["causal_chain"][0]["state_continuity"] = {
+            "affected_characters": ["小林"],
+            "required_follow_through": "无后续影响",
+            "storyboard_indices": [],
+        }
+        report = audit_short_drama(plan)
+        codes = {item["code"] for item in report["issues"]}
+        self.assertNotIn("STATE_CONTINUITY_UNSPECIFIED", codes)
+        self.assertNotIn("STATE_CONTINUITY_SHOTS_MISSING", codes)
+
     def test_prompt_requires_story_event_references_and_shootable_turning_point(self):
         prompt = build_short_drama_prompt({"name": "商品"}, {"drama_business_mode": "product_placement"})
         self.assertIn("narrative_function", prompt)
         self.assertIn("story_event_reference", prompt)
         self.assertIn("relationship_change", prompt)
+        self.assertIn("state_continuity", prompt)
+        self.assertIn("required_follow_through", prompt)
         self.assertIn("前置线索", prompt)
 
     def test_audit_warns_when_action_basis_names_character_not_in_shot(self):
