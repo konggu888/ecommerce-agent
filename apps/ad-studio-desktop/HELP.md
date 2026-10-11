@@ -1065,3 +1065,7 @@ A61 的自动化 CI 发现 handoff 测试查找“历史成本迁移”，但文
 
 ## A75：商品事实锁与剧情内容交叉审查
 商品广告短剧审查器会将 `product_fact_lock.confirmed_facts` 与商品资料进行文本比对；找不到直接依据时产生 `PRODUCT_CONFIRMED_FACT_UNSUPPORTED` 警告。`unknown_or_unverified` 中的未知信息若出现在剧本/分镜内容中，且附近没有“待确认/未核实/不得宣称”等不确定性标记，会产生 `PRODUCT_UNKNOWN_FACT_USED` 警告。文本匹配不能证明资料真实，也不能完全理解语义，仍需人工核实。
+
+
+## A75 测试夹具修复
+商品事实锁的回归测试使用完整的 `product_short_drama_ad` 方案字段（商品分析、题材选择、事实锁与分镜商品约束），避免测试因输入结构不完整而在目标规则执行前失败。
