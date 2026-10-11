@@ -42,7 +42,9 @@ A32 是既有 AI 接手能力阶段；当前工作以 A34 验收计划为准。�
 
 桌面核心测试：python3 -m unittest discover -s apps/ad-studio-desktop -p 'test_*.py'
 
-A32 专项自动化验收：apps/ad-studio-desktop/test_ai_handoff.py\n\nA34 专项回归：apps/ad-studio-desktop/test_short_drama.py 中的 `test_ai_visual_comparison_*` 测试
+A32 专项自动化验收：apps/ad-studio-desktop/test_ai_handoff.py
+
+A34 专项回归：apps/ad-studio-desktop/test_short_drama.py 中的 `test_ai_visual_comparison_*` 测试
 
 文档同步检查：python tools/check_ad_studio_docs.py --base <base-ref> --head <head-ref>
 
