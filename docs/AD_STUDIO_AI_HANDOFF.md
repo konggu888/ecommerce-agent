@@ -21,7 +21,7 @@
 
 以 docs/AD_STUDIO_ACCEPTANCE_PLAN.md 的正式顺序为准：
 
-**已完成：A0–A31；当前阶段：A32 · AI 接手能力；下一阶段：A33 · 完整用户流程。**
+**A0–A33：既有阶段记录；当前扩展验收：A34 · AI 辅助商品画面对比；下一阶段：A35 · 问题镜头定位与仅重生成。**
 
 不要把历史文档中的旧“下一阶段”文字当成当前状态；以本文件和验收计划中最新的 A31/A32 记录为准。
 
@@ -29,7 +29,7 @@
 
 唯一阶段顺序入口：docs/AD_STUDIO_ACCEPTANCE_PLAN.md
 
-当前正在验收 A32，验收重点是一个没有任何本项目聊天历史的新 AI，能否独立找到：
+A32 是既有 AI 接手能力阶段；当前工作以 A34 验收计划为准。接手入口仍应让没有任何本项目聊天历史的新 AI 独立找到：
 1. 项目目标
 2. 架构
 3. 当前进度
@@ -42,7 +42,7 @@
 
 桌面核心测试：python3 -m unittest discover -s apps/ad-studio-desktop -p 'test_*.py'
 
-A32 专项自动化验收：apps/ad-studio-desktop/test_ai_handoff.py
+A32 专项自动化验收：apps/ad-studio-desktop/test_ai_handoff.py\n\nA34 专项回归：apps/ad-studio-desktop/test_short_drama.py 中的 `test_ai_visual_comparison_*` 测试
 
 文档同步检查：python tools/check_ad_studio_docs.py --base <base-ref> --head <head-ref>
 
