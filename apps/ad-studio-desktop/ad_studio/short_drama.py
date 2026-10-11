@@ -508,9 +508,20 @@ def record_product_visual_verification(
         raise ShortDramaPlanError("指定镜头编号不存在。")
     if updated.get("drama_business_mode") != "product_short_drama_ad":
         raise ShortDramaPlanError("人工商品视觉核验只适用于“AI短剧形式商品广告”模式。")
+    evidence = Path(str(evidence_path).strip()).expanduser()
+    image_exts = {".png", ".jpg", ".jpeg", ".webp", ".bmp"}
+    video_exts = {".mp4", ".mov", ".m4v", ".mkv", ".webm", ".avi", ".mpeg", ".mpg"}
+    if evidence.suffix.lower() not in image_exts | video_exts:
+        raise ShortDramaPlanError("人工核验证据必须是受支持的图片或视频文件。")
+    try:
+        evidence_is_valid = evidence.is_file() and evidence.stat().st_size > 0
+    except OSError:
+        evidence_is_valid = False
+    if not evidence_is_valid:
+        raise ShortDramaPlanError("人工核验证据文件不存在、为空或无法读取；请选择实际生成的图片或视频。")
     shot = shots[shot_number - 1]
     shot["visual_verification"] = status
-    shot["visual_verification_evidence"] = str(evidence_path).strip()
+    shot["visual_verification_evidence"] = str(evidence.resolve())
     shot["visual_verification_method"] = "manual"
     shot["visual_verification_note"] = str(reviewer_note).strip()
     return updated
