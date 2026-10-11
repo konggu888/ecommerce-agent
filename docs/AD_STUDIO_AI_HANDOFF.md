@@ -170,3 +170,7 @@ A55 的 Provider/成本异常边界重构再次引入了字面量反斜杠+n。S
 - 商品视觉输入校验代码提交 `58e9b106a07151b0a9c1855f8d7599e8d9fc9a48` 的 docs-sync：success，运行 `38122132231`：https://github.com/konggu888/ecommerce-agent/actions/runs/38122132231
 - A55–A58 自动化阶段通过；真实 Provider/账单、Windows 真机、真实素材与商业成片验收仍未完成。
 - PR #31 保持 open/unmerged。后续任何代码变更仍需重新查询最新 SHA 的完整 CI 与 docs-sync。
+
+
+## A60：失败-only 账本保护（待 CI）
+A57 成本重建初版把“存在任何账本行”当作可重建依据，可能让仅有失败行的旧项目成本归零。现改为至少存在成功记录才重建；失败-only 项目保留原有项目/镜头成本与分类摘要。新增 A60 回归测试，本次 SHA 的完整 CI/doc-sync 待确认。

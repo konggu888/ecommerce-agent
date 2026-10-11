@@ -916,3 +916,10 @@ AI 必须执行：
 - 商品视觉输入校验代码提交 `58e9b106a07151b0a9c1855f8d7599e8d9fc9a48` 的 docs-sync：success，运行 `38122132231`：https://github.com/konggu888/ecommerce-agent/actions/runs/38122132231
 - A55–A58 自动化阶段通过；真实 Provider/账单、Windows 真机、真实素材与商业成片验收仍未完成。
 - PR #31 保持 open/unmerged。后续任何代码变更仍需重新查询最新 SHA 的完整 CI 与 docs-sync。
+
+
+## A60｜失败-only 账本成本兼容验收
+1. 准备项目/镜头有历史实际成本，但用量账本仅有 status=failed 行。
+2. 执行项目恢复，确认 project.actual_cost_rmb、shot.actual_cost_rmb 和费用展示不被清零。
+3. 确认失败行估算金额不被计入实际成本。
+4. 运行完整 CI 与 docs-sync 后确认自动化阶段通过。

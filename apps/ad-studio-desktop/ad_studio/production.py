@@ -162,7 +162,9 @@ class ProductionStore:
         summary = self.ledger.project_summary(project.id)
         # If a ledger exists, it is the source of truth after an interrupted save.
         # Keep legacy totals intact for projects that predate the ledger entirely.
-        reconciled = bool(summary.get("entries", 0))
+        # Failed-only history is not evidence of actual spend. If no successful
+        # ledger entry exists, preserve legacy totals rather than resetting them to zero.
+        reconciled = bool(summary.get("success", 0))
         if reconciled:
             project.actual_cost_rmb = summary["actual_cost_rmb"]
             project.actual_cost_summary = summary
@@ -170,6 +172,12 @@ class ProductionStore:
                 shot_cost = self.ledger.shot_actual_cost(project.id, shot.id)
                 if shot_cost is not None:
                     shot.actual_cost_rmb = shot_cost
+        else:
+            summary = dict(summary)
+            summary["actual_cost_rmb"] = round(float(project.actual_cost_rmb or 0.0), 6)
+            legacy_by_category = (project.actual_cost_summary or {}).get("by_category", {})
+            if legacy_by_category:
+                summary["by_category"] = legacy_by_category
         project.cost_estimate.setdefault("actual", {})
         project.cost_estimate["actual"] = summary
         project.cost_estimate["actual_cost_rmb"] = summary["actual_cost_rmb"]

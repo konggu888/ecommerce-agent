@@ -1752,6 +1752,28 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertIn("已记账实际", body)
 
 
+    def test_a60_failed_only_ledger_preserves_legacy_actual_cost(self):
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td))
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            project.actual_cost_rmb = 2.5
+            project.actual_cost_summary = {"actual_cost_rmb": 2.5, "by_category": {"video": 2.5}}
+            shot = project.shots[0]
+            shot.actual_cost_rmb = 1.2
+            store.ledger.record(
+                function="视频镜头生成", model_id="", model_name="测试", provider="测试", model="",
+                status="failed", estimated_cost_rmb=0.0, project_id=project.id, shot_id=shot.id,
+                category="video", quantity=1, unit_cost_rmb=0.72, error="模拟失败，无成功扣费确认",
+            )
+            store.save(project)
+            result = store.recover_project(project)
+            self.assertFalse(result["cost_reconciled"])
+            self.assertAlmostEqual(project.actual_cost_rmb, 2.5)
+            self.assertAlmostEqual(shot.actual_cost_rmb, 1.2)
+            self.assertAlmostEqual(project.cost_estimate["actual_cost_rmb"], 2.5)
+            self.assertEqual(project.cost_estimate["actual"]["by_category"], {"video": 2.5})
+
+
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.

@@ -962,3 +962,11 @@
 - 商品视觉输入校验代码提交 `58e9b106a07151b0a9c1855f8d7599e8d9fc9a48` 的 docs-sync：success，运行 `38122132231`：https://github.com/konggu888/ecommerce-agent/actions/runs/38122132231
 - A55–A58 自动化阶段通过；真实 Provider/账单、Windows 真机、真实素材与商业成片验收仍未完成。
 - PR #31 保持 open/unmerged。后续任何代码变更仍需重新查询最新 SHA 的完整 CI 与 docs-sync。
+
+
+## A60｜失败-only 账本兼容
+- [x] 仅有失败账本行时不把旧项目实际成本重置为 0。
+- [x] 失败行的估算值不计入实际成本。
+- [x] 保留旧项目已有的分类成本摘要，并同步到当前费用展示字段。
+- [x] 增加失败-only 账本回归测试。
+- [ ] 当前 SHA 的完整 CI 与 docs-sync 通过后再确认自动化验收。
