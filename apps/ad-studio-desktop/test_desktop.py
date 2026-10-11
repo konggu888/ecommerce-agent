@@ -1436,6 +1436,38 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(restored.shots[0].video_path, str(old_output))
 
 
+    def test_a48_footage_trim_failure_does_not_delete_existing_output(self):
+        from unittest.mock import patch
+        from ad_studio.footage import FootageError
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            output = store.render_path(project, shot)
+            output.parent.mkdir(parents=True, exist_ok=True)
+            output.write_bytes(b"previous-good-video")
+            source = root / "source.mp4"
+            source.write_bytes(b"dummy-source")
+            shot.video_path = str(output)
+            shot.clip_source = "filmed"
+            shot.source_file = str(source)
+            shot.source_duration = 2.0
+            store.save(project)
+
+            with patch("ad_studio.footage.trim_clip", side_effect=RuntimeError("模拟裁剪失败")):
+                with self.assertRaisesRegex(RuntimeError, "模拟裁剪失败"):
+                    store.render_footage_shot(project, shot)
+
+            self.assertEqual(output.read_bytes(), b"previous-good-video")
+            self.assertEqual(shot.video_path, str(output))
+            self.assertEqual(shot.status, "素材裁剪失败（已保留上一版本）")
+            self.assertFalse(output.with_suffix(".part.mp4").exists())
+            restored = store.load(project.id)
+            self.assertEqual(restored.shots[0].video_path, str(output))
+
+
 
 if __name__ == "__main__":
     unittest.main()

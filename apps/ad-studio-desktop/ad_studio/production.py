@@ -344,10 +344,13 @@ class ProductionStore:
             raise RuntimeError(f'镜头 {shot.index} v{shot.version} 生成失败：{exc}') from exc
 
     def render_footage_shot(self, project: Project, shot: Shot):
-        """从用户拍摄素材中裁剪出本镜头（本地 FFmpeg，不调用生成服务）。"""
+        """从用户拍摄素材中裁剪出本镜头；临时输出成功后才替换正式版本。"""
         from .footage import trim_clip, FootageError
         previous_path = shot.video_path or getattr(shot, "previous_video_path", None)
         out = self.render_path(project, shot)
+        temp = out.with_suffix(".part.mp4")
+        if temp.exists():
+            temp.unlink()
         if not shot.source_file or not Path(shot.source_file).exists():
             previous_is_valid = bool(previous_path and Path(previous_path).is_file() and Path(previous_path).stat().st_size > 0)
             shot.video_path = str(previous_path) if previous_is_valid else None
@@ -359,23 +362,25 @@ class ProductionStore:
         shot.provider = '本地素材剪辑'
         self.save(project)
         try:
-            ranges = getattr(shot, 'source_ranges', None) or []
+            ranges = getattr(shot, "source_ranges", None) or []
             if len(ranges) <= 1:
-                trim_clip(Path(shot.source_file), out, float(shot.source_start or 0.0), shot.source_duration)
+                trim_clip(Path(shot.source_file), temp, float(shot.source_start or 0.0), shot.source_duration)
             else:
                 parts = []
                 for idx, pair in enumerate(ranges, 1):
-                    part = out.with_name(f'{out.stem}.part{idx:02d}.mp4')
+                    part = out.with_name(f"{out.stem}.part{idx:02d}.mp4")
                     trim_clip(Path(shot.source_file), part, float(pair[0]), float(pair[1]) - float(pair[0]))
                     parts.append(part)
-                concat(parts, out)
+                concat(parts, temp)
                 for part in parts:
-                    if part.exists():
-                        part.unlink()
+                    part.unlink(missing_ok=True)
+            if not temp.is_file() or temp.stat().st_size <= 0:
+                raise FootageError("实拍素材裁剪未生成有效的视频文件。")
+            # 临时文件与目标位于同一目录；原成片仅在新输出完整后原子替换。
+            temp.replace(out)
         except Exception:
-            if out.exists():
-                out.unlink()
-            for part in out.parent.glob(f'{out.stem}.part*.mp4'):
+            temp.unlink(missing_ok=True)
+            for part in out.parent.glob(f"{out.stem}.part*.mp4"):
                 part.unlink(missing_ok=True)
             previous_is_valid = bool(previous_path and Path(previous_path).is_file() and Path(previous_path).stat().st_size > 0)
             shot.video_path = str(previous_path) if previous_is_valid else None
