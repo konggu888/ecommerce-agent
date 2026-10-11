@@ -1400,6 +1400,42 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertNotIn("s.version+=1", edit_block)
 
 
+    def test_a47_asset_resolution_failure_restores_previous_video(self):
+        class FailingAssetStore(ProductionStore):
+            def resolve_assets(self, project, shot):
+                raise RuntimeError("模拟素材解析失败")
+
+        class UnusedProvider:
+            provider_name = "未调用 Provider"
+            cost_per_shot_rmb = 0.72
+            def generate(self, request):
+                raise AssertionError("素材解析失败后不应调用视频 Provider")
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = FailingAssetStore(root)
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            old_output = store.render_path(project, shot)
+            old_output.parent.mkdir(parents=True, exist_ok=True)
+            old_output.write_bytes(b"previous-good-video")
+            shot.video_path = str(old_output)
+            store.save(project)
+
+            mark_regenerate(project, 0)
+            store.save(project)
+            with self.assertRaisesRegex(RuntimeError, "模拟素材解析失败"):
+                store._render_with_provider(project, shot, UnusedProvider())
+
+            self.assertEqual(shot.video_path, str(old_output))
+            self.assertIsNone(shot.previous_video_path)
+            self.assertEqual(shot.status, "生成失败（已保留上一版本）")
+            self.assertEqual(old_output.read_bytes(), b"previous-good-video")
+            self.assertFalse(store.render_path(project, shot).with_suffix(".part.mp4").exists())
+            restored = store.load(project.id)
+            self.assertEqual(restored.shots[0].video_path, str(old_output))
+
+
 
 if __name__ == "__main__":
     unittest.main()

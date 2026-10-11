@@ -289,22 +289,23 @@ class ProductionStore:
     def _render_with_provider(self, project: Project, shot: Shot, provider):
         out=self.render_path(project,shot)
         # 先写临时文件，只有 Provider 完整成功后才替换正式版本。
-        # 这样重新生成 v2 失败时，v1 仍保持可用，不会污染当前镜头。
+        # 任何素材解析/生成失败都必须恢复上一份可用视频。
         temp=out.with_suffix('.part.mp4')
         if temp.exists():
             temp.unlink()
-        resolution=self.resolve_assets(project,shot)
-        library=LocalLibrary(self.library_root)
-        asset_ids=[x for x in [shot.actor_id,shot.scene_id,*shot.product_asset_ids] if x]
-        asset_map={a.id:a for a in library.all()}
-        asset_paths=[asset_map[x].path for x in asset_ids if x in asset_map and asset_map[x].path and Path(asset_map[x].path).exists()]
-        prompt='\n'.join([f'标题：{shot.title}',f'画面：{shot.visual}',f'文案：{shot.script}'])
         previous_path=shot.video_path or getattr(shot, "previous_video_path", None)
+        prompt='\\n'.join([f'标题：{shot.title}',f'画面：{shot.visual}',f'文案：{shot.script}'])
         shot.status='生成中…'
         shot.provider=getattr(provider,'provider_name','Generic REST')
         shot.generated_from_request=prompt
-        self.save(project)
         try:
+            # 保存状态与素材解析也纳入恢复边界；resolve_assets 可能调用素材生成器。
+            self.save(project)
+            self.resolve_assets(project,shot)
+            library=LocalLibrary(self.library_root)
+            asset_ids=[x for x in [shot.actor_id,shot.scene_id,*shot.product_asset_ids] if x]
+            asset_map={a.id:a for a in library.all()}
+            asset_paths=[asset_map[x].path for x in asset_ids if x in asset_map and asset_map[x].path and Path(asset_map[x].path).exists()]
             result=provider.generate(GenerationRequest(
                 prompt=prompt,
                 output=temp,
@@ -315,8 +316,7 @@ class ProductionStore:
             result=Path(result)
             if not result.exists() or result.stat().st_size == 0:
                 raise RuntimeError('视频 Provider 返回成功，但生成文件不存在或为空。')
-            if out.exists():
-                out.unlink()
+            # 不先 unlink 目标文件；替换失败时避免提前删掉旧输出。
             result.replace(out)
             video_cost=round(float(getattr(provider,'cost_per_shot_rmb',0.0)),4)
             shot.actual_cost_rmb=round(float(shot.actual_cost_rmb or 0.0)+video_cost,4)
