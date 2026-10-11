@@ -20,6 +20,20 @@ def sample_plan():
                         "relationship": "同事", "arc": "从慌乱到从容"}],
         "plot_beats": ["意外开场", "误会升级", "商品自然解决问题", "轻松收尾"],
         "conflict_and_reversal": "主角以为问题无法解决，后来发现关键在准备方式",
+        "story_engine": {
+            "protagonist_goal": "准时出门并带齐必需物品",
+            "opposing_force": "重要物品失踪且出门时间逼近",
+            "stakes": "错过约定并失去同事信任",
+            "escalation_steps": ["发现物品不在原处", "回想路线仍找不到", "发现误判来自临时更换收纳位置"],
+            "turning_point": "主角意识到问题源于每次随手放置",
+            "setup_and_payoff": "开场出现的空置收纳位在结尾成为固定归位点",
+            "emotional_payoff": "从慌乱转为掌控感"
+        },
+        "hook_design": {
+            "opening_question": "主角能否在出门前找到关键物品？",
+            "retention_devices": ["不断逼近的时间", "物品去向线索逐步揭开"],
+            "payoff": "开场疑问得到明确解决并展示新的习惯"
+        },
         "ending": "主角从容赴约",
         "full_script": "场景一：主角匆忙寻找物品……",
         "storyboard": [{
@@ -65,6 +79,29 @@ class ShortDramaTests(unittest.TestCase):
         self.assertIn("constraints.drama_business_mode", prompt)
         general_prompt = build_short_drama_prompt({}, {"drama_business_mode": "general"})
         self.assertIn("允许完全不带商品", general_prompt)
+
+    def test_generation_rejects_short_drama_without_causal_story_engine(self):
+        plan = sample_plan()
+        plan.pop("story_engine")
+        class FakeRouter:
+            def resolve_route(self, function): return "profile"
+            def complete_json(self, profile, prompt, function=None): return plan
+        with self.assertRaisesRegex(ShortDramaPlanError, "story_engine"):
+            generate_short_drama(FakeRouter(), {"name": "商品"}, {"drama_business_mode": "product_placement"})
+
+    def test_generation_rejects_story_with_too_few_escalation_steps(self):
+        plan = sample_plan()
+        plan["story_engine"]["escalation_steps"] = ["只有一步"]
+        class FakeRouter:
+            def resolve_route(self, function): return "profile"
+            def complete_json(self, profile, prompt, function=None): return plan
+        with self.assertRaisesRegex(ShortDramaPlanError, "至少需要3个具体步骤"):
+            generate_short_drama(FakeRouter(), {"name": "商品"}, {"drama_business_mode": "product_placement"})
+
+    def test_generation_prompt_requires_causal_conflict_hook_and_payoff(self):
+        prompt = build_short_drama_prompt({"name": "商品"}, {"drama_business_mode": "product_placement"})
+        for term in ("story_engine", "hook_design", "冲突升级", "伏笔", "不得只靠角色夸赞"):
+            self.assertIn(term, prompt)
 
     def test_builds_existing_production_contract(self):
         rows = short_drama_production_rows(sample_plan(), "测试商品")

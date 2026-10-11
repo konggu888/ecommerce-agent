@@ -38,6 +38,20 @@ SHORT_DRAMA_SCHEMA = {
     }],
     "plot_beats": ["开场钩子", "矛盾升级", "转折/反转", "结局"],
     "conflict_and_reversal": "核心冲突与反转逻辑",
+    "story_engine": {
+        "protagonist_goal": "主角本集具体、可观察的目标",
+        "opposing_force": "阻碍目标的具体人物/环境/误解/规则",
+        "stakes": "失败会失去什么或造成什么代价",
+        "escalation_steps": ["冲突如何逐步升级，至少三步且因果递进"],
+        "turning_point": "改变主角判断或行动方向的关键转折",
+        "setup_and_payoff": "前面埋下什么线索，结尾如何兑现",
+        "emotional_payoff": "观众最终获得的情绪回报"
+    },
+    "hook_design": {
+        "opening_question": "开场建立的观众疑问",
+        "retention_devices": ["推动观众继续看的信息差/未解问题"],
+        "payoff": "结尾对开场疑问的回应"
+    },
     "ending": "结尾及情绪落点",
     "full_script": "完整短剧剧本，包含场景、动作和台词",
     "storyboard": [{
@@ -92,7 +106,12 @@ def build_short_drama_prompt(product: dict[str, Any], constraints: dict[str, Any
         "0.5 每个 product_short_drama_ad 分镜都必须有 product_fidelity_constraints，明确本镜商品外观、颜色/款式、结构、关键部件、核心功能和正确使用方式哪些必须保持不变；需要时指定参考商品图片/素材。不得为了古代/奇幻剧情把真实商品改成不同款式、改变结构或赋予不存在的功能。\n"
         "0.6 每个商品广告分镜增加 visual_verification 字段，初始值必须明确为 not_checked；结构/文字复核不能冒充生成画面视觉核验。生成画面后需由后续视觉检查或人工确认，发现问题只重生成问题镜头。\n"
         "1. 题材必须根据创作目标、商品事实（如适用）、目标人群、使用场景和传播目标推导，不得机械套用固定题材清单。\n"
-        "2. 设计完整的人物目标与关系、场景、冲突、节奏、转折和结尾；故事要有因果，不是卖点罗列。\n"
+        "2. 必须建立清晰的故事引擎：主角可观察的目标、具体阻力、失败代价、逐级升级的冲突、改变局势的转折、前后呼应的伏笔与兑现，以及情绪回报。输出 story_engine 对象，包含 protagonist_goal、opposing_force、stakes、escalation_steps（至少3项且因果递进）、turning_point、setup_and_payoff、emotional_payoff。\\n"
+         "2.1 同时输出 hook_design，包含 opening_question、retention_devices（至少2项）、payoff。开场尽快制造具体问题/意外/选择；每个主要情节都必须改变人物处境或观众认知。\\n"
+         "2.2 禁止用没有因果的巧合硬推剧情、只靠误会反复拖延、角色突然降智、结尾突然说教或硬塞购买口号。\\n"
+         "2.3 商品植入/转化/商品短剧广告：商品只能在剧情逻辑允许时成为解决问题或引发选择的真实工具，不能凭空解决与其功能无关的冲突；商品卖点必须通过可拍摄的行为展示，不得只靠角色夸赞。\\n"
+         "2.4 至少提供两个故事方向时，方向之间必须在冲突来源、人物选择或反转机制上有实质区别；不要仅更换场景、人物姓名或题材标签。\\n"
+         "2. 设计完整的人物目标与关系、场景、冲突、节奏、转折和结尾；故事要有因果，不是卖点罗列。\n"
         "3. 商品是否出现必须服从所选创作目标：通用模式允许不出现；商品植入/转化模式应按目标呈现。任何模式都不得篡改商品外观、结构、核心功能、使用方式、规格、功效或其他事实。\n"
         "4. 未提供或无法验证的商品信息必须标为待确认，不得编造认证、销量、价格、效果或用户证言。\n"
         "5. 输出完整剧本和可执行分镜。每个分镜必须说明动作、台词、场景、人物、商品融入方式、素材需求和生成提示。\n"
@@ -274,6 +293,20 @@ def generate_short_drama(model_router, product: dict[str, Any], constraints: dic
             raise
         result = model_router.complete_json(profile, prompt)
     validated = validate_short_drama(result)
+    # Enforce stronger structure on new generations while keeping saved legacy plans readable.
+    story_engine = validated.get("story_engine")
+    hook_design = validated.get("hook_design")
+    required_engine = ("protagonist_goal", "opposing_force", "stakes", "turning_point", "setup_and_payoff", "emotional_payoff")
+    if not isinstance(story_engine, dict) or any(not str(story_engine.get(key, "")).strip() for key in required_engine):
+        raise ShortDramaPlanError("新生成的短剧缺少完整 story_engine（主角目标、阻力、代价、转折、伏笔兑现、情绪回报）；请重新生成。")
+    escalation = story_engine.get("escalation_steps")
+    if not isinstance(escalation, list) or len([item for item in escalation if str(item).strip()]) < 3:
+        raise ShortDramaPlanError("新生成的短剧冲突升级不足：story_engine.escalation_steps 至少需要3个具体步骤。")
+    if not isinstance(hook_design, dict) or not str(hook_design.get("opening_question", "")).strip() or not str(hook_design.get("payoff", "")).strip():
+        raise ShortDramaPlanError("新生成的短剧缺少 hook_design 开场疑问或结尾兑现。")
+    retention = hook_design.get("retention_devices")
+    if not isinstance(retention, list) or len([item for item in retention if str(item).strip()]) < 2:
+        raise ShortDramaPlanError("新生成的短剧留存设计不足：hook_design.retention_devices 至少需要2项。")
     requested_mode = str(constraints.get("short_drama_mode", "single_episode"))
     requested_count = int(constraints.get("episode_count", 1))
     requested_business_mode = str(constraints.get("drama_business_mode", "product_placement"))
