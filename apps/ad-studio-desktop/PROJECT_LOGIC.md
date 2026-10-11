@@ -900,4 +900,8 @@ A33 自动化验收分别覆盖电商短视频、商品主图视频、广告投�
 ## 17.7.1 商品画面状态初始化
 
 新生成的商品广告分镜统一使用 not_checked 状态。视觉状态必须基于后续真实画面检查，不能仅由剧本模型输出决定。自动视觉比对和局部重生成仍待开发。
-\n\n## 2026-10-11：AI 辅助商品画面对比\n\n- 新增 `商品画面视觉核验` 独立模型路由，沿用模型池的视觉能力开关；图片 MIME 类型按扩展名正确标注。\n- `compare_product_visual_shot()` 校验创作模式、镜头编号、参考图/生成文件路径；对视频要求 FFmpeg/FFprobe 并在临时目录抽取开头/中段/后段帧。临时帧会在调用结束后清理。\n- 对比结果写入目标分镜：`visual_comparison_result`、`visual_verification_reference_images`、`visual_verification_evidence`、`visual_verification_method`。任何 AI 结果都不能自动变为 passed；疑似差异标记 failed，其余标记 needs_review。\n- UI 在模型调用前提示费用可能产生，并在完成后刷新复核窗口。自动问题定位和仅重生成问题镜头仍未实现。
+
+
+## 2026-10-11：AI 辅助商品画面对比
+
+- 新增 `商品画面视觉核验` 独立模型路由，沿用模型池的视觉能力开关；图片 MIME 类型按扩展名正确标注。\n- `compare_product_visual_shot()` 校验创作模式、镜头编号、参考图/生成文件路径；对视频要求 FFmpeg/FFprobe 并在临时目录抽取开头/中段/后段帧。临时帧会在调用结束后清理。\n- 对比结果写入目标分镜：`visual_comparison_result`、`visual_verification_reference_images`、`visual_verification_evidence`、`visual_verification_method`。任何 AI 结果都不能自动变为 passed；疑似差异标记 failed，其余标记 needs_review。\n- UI 在模型调用前提示费用可能产生，并在完成后刷新复核窗口。自动问题定位和仅重生成问题镜头仍未实现。
