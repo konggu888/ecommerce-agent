@@ -3,7 +3,7 @@ import unittest
 from ad_studio.short_drama import (
     ShortDramaPlanError, build_short_drama_prompt, generate_short_drama,
     audit_short_drama, build_episode_continuity_ledger, short_drama_production_rows, validate_short_drama,
-    generate_next_short_drama_episode, record_product_visual_verification,
+    generate_next_short_drama_episode, record_product_visual_verification, compare_product_visual_shot,
 )
 
 
@@ -321,6 +321,97 @@ class ShortDramaTests(unittest.TestCase):
         self.assertEqual(shot["visual_verification_evidence"], "C:/renders/shot-01.png")
         self.assertEqual(shot["visual_verification_method"], "manual")
         self.assertIn("外观、结构", shot["visual_verification_note"])
+
+
+    def test_ai_visual_comparison_flags_mismatch_without_auto_approval(self):
+        import tempfile
+        from pathlib import Path
+
+        class VisionProfile:
+            id = "vision-test"
+            name = "vision-test"
+            vision_enabled = True
+
+        class FakeRouter:
+            def resolve_route(self, function):
+                self.function = function
+                return VisionProfile()
+
+            def complete_json(self, profile, prompt, function=None, image_paths=None):
+                self.image_paths = image_paths
+                return {
+                    "identity_match": True, "appearance_match": False,
+                    "structure_match": True, "function_match": None, "usage_match": True,
+                    "mismatch_detected": True, "confidence": 0.91,
+                    "issues": ["商品颜色疑似不一致"], "summary": "发现疑似颜色不一致，需人工确认",
+                }
+
+        with tempfile.TemporaryDirectory() as folder:
+            ref = Path(folder) / "reference.png"
+            generated = Path(folder) / "shot.png"
+            ref.write_bytes(b"fake-image-reference")
+            generated.write_bytes(b"fake-generated-image")
+            plan = sample_plan()
+            plan["drama_business_mode"] = "product_short_drama_ad"
+            router = FakeRouter()
+            result = compare_product_visual_shot(router, plan, 1, [str(ref)], str(generated))
+            shot = result["storyboard"][0]
+            self.assertEqual(router.function, "商品画面视觉核验")
+            self.assertEqual(shot["visual_verification"], "failed")
+            self.assertEqual(shot["visual_verification_method"], "ai_vision_assisted")
+            self.assertTrue(shot["visual_comparison_result"]["requires_human_review"])
+            self.assertEqual(shot["visual_verification_reference_images"], [str(ref)])
+
+    def test_ai_visual_comparison_never_auto_approves_a_match(self):
+        import tempfile
+        from pathlib import Path
+
+        class VisionProfile:
+            id = "vision-test"
+            name = "vision-test"
+            vision_enabled = True
+
+        class FakeRouter:
+            def resolve_route(self, function):
+                return VisionProfile()
+
+            def complete_json(self, profile, prompt, function=None, image_paths=None):
+                return {
+                    "identity_match": True, "appearance_match": True,
+                    "structure_match": True, "function_match": True, "usage_match": True,
+                    "mismatch_detected": False, "confidence": 0.99,
+                    "issues": [], "summary": "未发现明显差异",
+                }
+
+        with tempfile.TemporaryDirectory() as folder:
+            ref = Path(folder) / "reference.jpg"
+            generated = Path(folder) / "shot.jpg"
+            ref.write_bytes(b"fake-reference")
+            generated.write_bytes(b"fake-generated")
+            plan = sample_plan()
+            plan["drama_business_mode"] = "product_short_drama_ad"
+            result = compare_product_visual_shot(FakeRouter(), plan, 1, [str(ref)], str(generated))
+            self.assertEqual(result["storyboard"][0]["visual_verification"], "needs_review")
+            self.assertEqual(result["storyboard"][0]["visual_verification_method"], "ai_vision_assisted")
+
+    def test_ai_visual_comparison_rejects_missing_reference_and_wrong_mode(self):
+        import tempfile
+        from pathlib import Path
+
+        class FakeRouter:
+            pass
+
+        with tempfile.TemporaryDirectory() as folder:
+            generated = Path(folder) / "shot.png"
+            generated.write_bytes(b"fake-generated")
+            plan = sample_plan()
+            plan["drama_business_mode"] = "general_ai_drama"
+            with self.assertRaisesRegex(ShortDramaPlanError, "只适用于"):
+                compare_product_visual_shot(FakeRouter(), plan, 1, [str(generated)], str(generated))
+            plan["drama_business_mode"] = "product_short_drama_ad"
+            with self.assertRaisesRegex(ShortDramaPlanError, "至少选择一张"):
+                compare_product_visual_shot(FakeRouter(), plan, 1, [], str(generated))
+
 
 
 if __name__ == "__main__":
