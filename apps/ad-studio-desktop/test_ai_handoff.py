@@ -71,5 +71,11 @@ class AIHandoffTests(unittest.TestCase):
         self.assertIn("所有分支", handoff)
         self.assertIn("完整 CI", handoff)
 
+    def test_handoff_records_latest_successful_ci_baseline_sha(self):
+        handoff = (ROOT / "apps" / "ad-studio-desktop" / "SESSION_HANDOFF.md").read_text(encoding="utf-8")
+        self.assertIn("A42", handoff)
+        self.assertIn("443f713cd3721eab528eb9bb17faf599d55ef3ce", handoff)
+        self.assertIn("若当前 HEAD 与此 SHA 不同", handoff)
+
 if __name__ == "__main__":
     unittest.main()

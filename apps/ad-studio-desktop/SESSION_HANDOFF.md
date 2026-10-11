@@ -6,9 +6,9 @@
 - 仓库：`konggu888/ecommerce-agent`
 - 项目：`apps/ad-studio-desktop`（本地 Python/Tkinter 桌面程序，不是 Web 应用）
 - 工作分支：`feat/product-drama-visual-review`
-- 本轮开始时接手基准 HEAD：`c117704d5e689916e2abd9a7f36ef27d86252211`（提交后 HEAD 会变化；每次都必须重新查询，不能把此值当成最新 SHA）。
+- 最近一次完整 CI 验证通过的基准 SHA：`443f713cd3721eab528eb9bb17faf599d55ef3ce`（当前分支若有新提交，必须重新查询并验证最新 SHA）。
 - PR：[#31](https://github.com/konggu888/ecommerce-agent/pull/31)，保持 open、未合并；没有用户明确许可不得合并。
-- 此前 HEAD 的文档同步检查成功；完整 CI 当前提交尚未取得结果。已将 `.github/workflows/ci.yml` 的 push 触发范围改为所有分支，以确保功能分支提交也运行完整 CI。不要把 docs-sync 或 Netlify 状态写成完整 CI 通过。
+- `443f713cd3721eab528eb9bb17faf599d55ef3ce` 的完整 CI 已成功：前端语法、桌面 Python 语法、桌面单测、TypeScript 检查、引擎测试和风险控制器测试均通过；同一 SHA 的 docs-sync 也成功。已将 `.github/workflows/ci.yml` 的 push 触发范围改为所有分支。任何后续提交都必须按最新 SHA 重新核实，不能把此基准结果直接套用到新 SHA。
 
 ## 最近完成
 1. 商品短剧支持人工视觉核验，证据绑定具体生成图片/视频文件。
@@ -37,9 +37,13 @@
 CI 的 push 触发器现覆盖所有分支；每次提交后仍须查询当前 SHA 的 checks，等待完整 `typecheck-and-test` 工作流结束。此项改动本身的完整 CI 结果待当前提交的工作流返回。
 
 
-## A40：本轮 CI 失败与修复要求
-上一轮完整 CI 已实际触发：语法检查通过，但桌面单测因 `test_ai_handoff.py` 对仓库根目录的相对路径写错而失败。根因已定位为把 `ROOT.parent.parent / "docs"` 用在 `ROOT=Path(__file__).resolve().parents[2]` 的场景。当前修复统一使用 `ROOT / "docs" / ...` 和 `ROOT / "apps" / "ad-studio-desktop" / ...`。必须等新的完整 CI 结束确认，不能提前标绿。
+## A40：已解决的 CI 路径失败
+完整 CI 曾因 `test_ai_handoff.py` 的仓库根目录相对路径错误失败；现已修复为 `ROOT / "docs" / ...` 和 `ROOT / "apps" / "ad-studio-desktop" / ...`，并在 SHA `443f713cd3721eab528eb9bb17faf599d55ef3ce` 上完整 CI 成功。
 
 
-## A41：最新失败与处理
-最近完整 CI 中，路径修复后 187 项桌面测试只剩 1 个断言失败：测试查找“不得把 docs-sync”，实际文案是“不要把 docs-sync”。已将断言与文案对齐，保留防止夸报 CI 的检查；需等待下一轮完整 CI。
+## A41：已解决的文案断言
+路径修复后曾剩下一个断言短语与文档不一致；已将测试改为匹配实际文案“不要把 docs-sync”，并在 SHA `443f713cd3721eab528eb9bb17faf599d55ef3ce` 上完整 CI 成功。
+
+
+## A42：最新完整 CI 结果
+完整 CI `38120824822` 在基准 SHA `443f713cd3721eab528eb9bb17faf599d55ef3ce` 结论为 success；docs-sync `38120824802` 也为 success。该结果覆盖：前端语法检查、桌面 Python 语法检查、桌面单元测试、TypeScript 类型检查、引擎测试和风险控制器测试。若当前 HEAD 与此 SHA 不同，必须重新查询当前 HEAD 的结果。
