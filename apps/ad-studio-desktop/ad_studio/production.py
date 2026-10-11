@@ -249,6 +249,18 @@ class ProductionStore:
             return False
         # One atomic write makes the migration idempotent even if the process exits.
         self.ledger.record_many(records)
+        # Persist the migrated baseline in memory immediately. If the next charge
+        # cannot be written, the caller can still save the preserved historical total.
+        migrated_summary = self.ledger.project_summary(project.id)
+        project.actual_cost_rmb = round(float(migrated_summary.get("actual_cost_rmb", 0) or 0), 6)
+        project.actual_cost_summary = migrated_summary
+        project.cost_estimate.setdefault("actual", {})
+        project.cost_estimate["actual"] = migrated_summary
+        project.cost_estimate["actual_cost_rmb"] = project.actual_cost_rmb
+        for shot in project.shots:
+            shot_cost = self.ledger.shot_actual_cost(project.id, shot.id)
+            if shot_cost is not None:
+                shot.actual_cost_rmb = shot_cost
         return True
 
     def _record_actual_cost(self, project: Project, *, shot: Shot | None, category: str, amount_rmb: float, provider: str, quantity: float = 1.0, unit_cost_rmb: float = 0.0, function: str = "生成任务"):

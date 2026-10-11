@@ -1071,3 +1071,9 @@ A61 唯一失败项是 test_handoff_mentions_a61_legacy_cost_migration 的文案
 
 ### A61 接手文档要求
 新 AI 接手文档必须明确说明“历史成本迁移”行为：首次成功记账前，将旧项目镜头成本与项目总额的未分配差额批量迁移到账本；迁移完成后以成功账本为准。
+
+
+### A63：先保存迁移基线，再记本次费用
+- 历史成本迁移批量写入成功后，立即从 ledger 汇总同步 project.actual_cost_rmb、project.actual_cost_summary、cost_estimate.actual 与各镜头 actual_cost_rmb。
+- 如果随后的新费用 ledger.record 失败，历史迁移记录和已同步的旧成本仍在内存中，调用方保存时不会回退为过期快照。
+- 新增 A63 回归：模拟迁移成功、下一条费用记录失败，验证项目/镜头旧成本与迁移行仍被保留。

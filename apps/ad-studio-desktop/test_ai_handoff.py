@@ -130,5 +130,10 @@ class AIHandoffTests(unittest.TestCase):
         self.assertIn("A61", text)
         self.assertIn("历史实际成本迁移", text)
 
+    def test_handoff_mentions_a63_legacy_cost_snapshot_preservation(self):
+        text = (ROOT / "docs" / "AD_STUDIO_AI_HANDOFF.md").read_text(encoding="utf-8")
+        self.assertIn("A63", text)
+        self.assertIn("历史成本", text)
+
 if __name__ == "__main__":
     unittest.main()
