@@ -292,3 +292,11 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - 本轮目标：短剧关键因果事件、故事转折与伏笔兑现是否真正落到可拍摄分镜；增加提示词字段 `narrative_function` / `story_event_reference` 与审查警告。
 - 约束：文本匹配仅为遗漏筛查，不可宣称完成真实语义判断、生成画面核验或 Windows 真机验收。
 - 继续步骤：运行短剧专项测试与完整 CI，检查 docs-sync；失败必须读日志修复后再确认最新 HEAD。
+
+
+## 2026-10-11 接手进度：A78
+
+- 基线：A77 提交 `60a76cb12bc11ba914dd4d3eeed43379f933a453`；CI 与 docs-sync 均通过，PR #31 未合并。
+- 本轮目标：要求分镜逐人物说明行动依据，并检查人物所依赖的信息来源能否在完整剧本定位、关键选择是否落实到引用镜头。
+- 新增检查代码：`CHARACTER_ACTION_BASIS_MISSING`、`CHARACTER_ACTION_BASIS_INCOMPLETE`、`CHARACTER_KNOWLEDGE_SOURCE_UNTRACEABLE`、`CHARACTER_CHOICE_NOT_SHOWN`。
+- 限制：仅结构/文本审查；不能声称完成心理语义判定、真实生成画面核验或 Windows 真机验收。

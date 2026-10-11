@@ -97,6 +97,36 @@ class ShortDramaTests(unittest.TestCase):
         self.assertIn("story_event_reference", prompt)
         self.assertIn("前置线索", prompt)
 
+    def test_audit_warns_when_character_action_has_no_basis(self):
+        plan = sample_plan()
+        report = audit_short_drama(plan)
+        self.assertIn("CHARACTER_ACTION_BASIS_MISSING", {item["code"] for item in report["issues"]})
+
+    def test_audit_warns_when_character_knowledge_source_is_not_script_evidence(self):
+        plan = sample_plan()
+        plan["storyboard"][0]["character_action_basis"] = [{
+            "character_name": "小林",
+            "goal_or_motivation": "准时出门",
+            "known_information": "钥匙被邻居拿走",
+            "knowledge_source": "邻居亲口承认偷走钥匙",
+            "decision_pressure": "马上迟到",
+            "choice_rationale": "直接去邻居家质问"
+        }]
+        report = audit_short_drama(plan)
+        self.assertIn("CHARACTER_KNOWLEDGE_SOURCE_UNTRACEABLE", {item["code"] for item in report["issues"]})
+
+    def test_audit_warns_when_causal_character_choice_is_not_in_referenced_shot(self):
+        plan = sample_plan()
+        plan["causal_chain"][0]["character_choice"] = "主角打电话向物业申请调取监控"
+        report = audit_short_drama(plan)
+        self.assertIn("CHARACTER_CHOICE_NOT_SHOWN", {item["code"] for item in report["issues"]})
+
+    def test_audit_warns_for_incomplete_character_action_basis(self):
+        plan = sample_plan()
+        plan["storyboard"][0]["character_action_basis"] = [{"character_name": "小林", "goal_or_motivation": "准时出门"}]
+        report = audit_short_drama(plan)
+        self.assertIn("CHARACTER_ACTION_BASIS_INCOMPLETE", {item["code"] for item in report["issues"]})
+
     def test_validates_story_first_plan(self):
         plan = validate_short_drama(sample_plan())
         self.assertEqual(plan["storyboard"][0]["duration_seconds"], 4)

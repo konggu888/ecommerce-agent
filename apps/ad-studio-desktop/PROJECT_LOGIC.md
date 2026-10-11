@@ -1185,3 +1185,14 @@ Selling-point coverage tests use product_placement mode to isolate the new text 
 - `SETUP_PAYOFF_NOT_STORYBOARDED`：伏笔与兑现仅存在于故事引擎文字、未落入分镜文字。
 
 这些检查是确定性字符串覆盖检查，可能因同义表达产生误报/漏报，不是语义质量认证。旧方案缺少新增镜头字段仍可打开；警告需结合剧本和分镜人工复核。
+
+
+## 18.2 A78 人物行动动机与信息掌握审查
+
+新生成短剧分镜要求使用 `character_action_basis` 为每位行动人物记录：`goal_or_motivation`、`known_information`、`knowledge_source`、`decision_pressure`、`choice_rationale`。审查器新增以下警告：
+- `CHARACTER_ACTION_BASIS_MISSING`：镜头中的人物缺少行动依据。
+- `CHARACTER_ACTION_BASIS_INCOMPLETE`：行动依据字段不完整。
+- `CHARACTER_KNOWLEDGE_SOURCE_UNTRACEABLE`：信息来源不能在完整剧本中逐字定位。
+- `CHARACTER_CHOICE_NOT_SHOWN`：因果链的人物选择没有体现在其引用镜头文本中。
+
+这是结构与字符串级可追溯性检查，不代表已自动理解人物心理、证明行动合理或完全排除信息穿越。旧方案继续兼容；警告需要人工/语义复核。

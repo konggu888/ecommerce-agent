@@ -1083,3 +1083,9 @@ The selling-point coverage regression test uses `product_placement` mode to isol
 - 新生成提示要求分镜声明 `narrative_function` 与 `story_event_reference`，把因果事件、关键选择、转折和伏笔兑现落到可拍摄动作。
 - 生产前审查新增 `CAUSAL_EVENT_NOT_SHOWN`、`TURNING_POINT_NOT_STORYBOARDED`、`SETUP_PAYOFF_NOT_STORYBOARDED` 警告。
 - 这些检查基于结构和文本匹配，只用于发现遗漏；不能证明演员表演合理、反转语义成立或画面真实拍到了事件，仍需人工/模型复核。
+
+
+### A78 · 人物行动依据与信息来源审查（2026-10-11）
+- 新生成分镜要求为每个行动人物记录目标/动机、已知信息、剧本内信息来源、决策压力和选择理由（`character_action_basis`）。
+- 预生产审查新增 `CHARACTER_ACTION_BASIS_MISSING`、`CHARACTER_ACTION_BASIS_INCOMPLETE`、`CHARACTER_KNOWLEDGE_SOURCE_UNTRACEABLE`、`CHARACTER_CHOICE_NOT_SHOWN` 警告。
+- 检查只验证记录是否存在、信息来源是否能在剧本中定位，以及选择是否被引用镜头文字覆盖；不能自动证明人物心理真实或信息因果语义成立。

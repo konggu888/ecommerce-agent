@@ -84,7 +84,7 @@ SHORT_DRAMA_SCHEMA = {
         "product_asset_requirements": ["需要展示的商品素材标签"],
         "shot_type": "景别与镜头运动",
         "duration_seconds": "integer",
-        "generation_prompt": "可执行的镜头生成提示", "narrative_function": "本镜在剧情中的作用", "story_event_reference": ["对应 causal_chain.step 编号"]
+        "generation_prompt": "可执行的镜头生成提示", "narrative_function": "本镜在剧情中的作用", "story_event_reference": ["对应 causal_chain.step 编号"], "character_action_basis": [{"character_name": "行动人物姓名", "goal_or_motivation": "本次行动对应的目标/动机", "known_information": "人物行动时已经掌握的信息", "knowledge_source": "full_script 中可定位的信息来源原文", "decision_pressure": "促使人物现在行动的压力", "choice_rationale": "人物为何作出该选择及可观察动作"}]
     }],
     "product_truths": ["剧情必须遵守的商品事实"],
     "risk_notes": ["待确认信息、广告表达风险或制作风险"],
@@ -135,7 +135,7 @@ def build_short_drama_prompt(product: dict[str, Any], constraints: dict[str, Any
          "设计完整的场景、冲突、节奏、转折和结尾；故事要有因果，不是卖点罗列。\n"
         "3. 商品是否出现必须服从所选创作目标：通用模式允许不出现；商品植入/转化模式应按目标呈现。任何模式都不得篡改商品外观、结构、核心功能、使用方式、规格、功效或其他事实。\n"
         "4. 未提供或无法验证的商品信息必须标为待确认，不得编造认证、销量、价格、效果或用户证言。\n"
-        "5. 输出完整剧本和可执行分镜。每个分镜必须说明动作、台词、场景、人物、商品融入方式、素材需求和生成提示；新增 narrative_function（本镜在剧情中的作用）和 story_event_reference（对应的 causal_chain.step 编号列表），把关键选择、因果事件、转折和伏笔兑现明确落到可拍摄动作中。反转必须有可定位的前置线索；人物行为必须能从人物目标/动机/关系压力及当时已知信息中解释。\n"
+        "5. 输出完整剧本和可执行分镜。每个分镜必须说明动作、台词、场景、人物、商品融入方式、素材需求和生成提示；新增 narrative_function（本镜在剧情中的作用）、story_event_reference（对应的 causal_chain.step 编号列表）和 character_action_basis（逐个列出本镜每个行动人物的 goal_or_motivation、known_information、knowledge_source、decision_pressure、choice_rationale）。knowledge_source 必须是 full_script 中可逐字定位的信息来源原文；人物不能使用其当时尚未获知的信息。关键选择必须落实为可拍摄动作，人物行动应与人物目标、动机、关系压力及当时已知信息相容。反转必须有可定位的前置线索。\n"
         "6. 提供至少两个故事方向备选，机制应有实质差异，不只是换标题。\n"
         "7. 本次只做创作方案，不要调用素材生成或视频生成，不要假称已经生成成片。\n"
         "8. 只输出符合给定结构的合法JSON，不要输出Markdown。\n"
@@ -791,6 +791,41 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
         for field in ("goal", "motivation", "fear_or_secret", "relationship", "relationship_dynamics", "decision_pressure", "arc"):
             if not str(character.get(field, "")).strip():
                 add("warning", "CHARACTER_MOTIVATION_INCOMPLETE", f"人物“{character.get('name', f'第{index}人')}”缺少 {field}，请复核其行动动机与关系因果。")
+    # A78: trace character actions to motivation, available knowledge and pressure.
+    full_script_for_character_audit = str(checked.get("full_script", ""))
+    for shot_index, shot in enumerate(storyboard, 1):
+        shot_characters = [str(x).strip() for x in shot.get("characters", []) if str(x).strip()]
+        bases = shot.get("character_action_basis", [])
+        if not isinstance(bases, list):
+            bases = []
+        bases_by_name = {
+            str(item.get("character_name", "")).strip(): item
+            for item in bases if isinstance(item, dict) and str(item.get("character_name", "")).strip()
+        }
+        for character_name in shot_characters:
+            basis = bases_by_name.get(character_name)
+            if basis is None:
+                add("warning", "CHARACTER_ACTION_BASIS_MISSING", f"第{shot_index}镜人物“{character_name}”缺少行动依据记录；请说明其目标/动机、已知信息、决策压力和选择理由。")
+                continue
+            required_basis = ("goal_or_motivation", "known_information", "knowledge_source", "decision_pressure", "choice_rationale")
+            missing_basis = [field for field in required_basis if not str(basis.get(field, "")).strip()]
+            if missing_basis:
+                add("warning", "CHARACTER_ACTION_BASIS_INCOMPLETE", f"第{shot_index}镜人物“{character_name}”的行动依据缺少：{', '.join(missing_basis)}。")
+            knowledge_source = str(basis.get("knowledge_source", "")).strip()
+            if knowledge_source and knowledge_source not in full_script_for_character_audit:
+                add("warning", "CHARACTER_KNOWLEDGE_SOURCE_UNTRACEABLE", f"第{shot_index}镜人物“{character_name}”所依赖的信息来源无法在 full_script 原文中定位；请核实人物是否提前知道了不应知道的信息。")
+    if isinstance(causal_chain, list):
+        for step_index, step in enumerate(causal_chain, 1):
+            if not isinstance(step, dict):
+                continue
+            choice = str(step.get("character_choice", "")).strip()
+            refs = step.get("storyboard_indices", [])
+            valid_refs = [ref for ref in refs if isinstance(ref, int) and not isinstance(ref, bool) and 1 <= ref <= len(storyboard)] if isinstance(refs, list) else []
+            if choice and valid_refs:
+                referenced_text = " ".join(shot_texts[ref - 1] for ref in valid_refs)
+                if choice.casefold() not in referenced_text:
+                    add("warning", "CHARACTER_CHOICE_NOT_SHOWN", f"因果链第{step_index}步的人物选择“{choice}”没有直接体现在引用镜头中；请补充可拍摄的选择动作或修正镜头引用。")
+
     # A77: check whether important causal events are represented by referenced, shootable shots.
     # Deterministic text coverage is not proof of acting quality or semantic foreshadowing.
     shot_texts: list[str] = []
