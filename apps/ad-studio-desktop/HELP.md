@@ -1110,3 +1110,6 @@ The selling-point coverage regression test uses `product_placement` mode to isol
 
 ### A81 自动化测试修复记录
 首轮全量 CI 检测到状态连续性审查在角色名集合初始化之前读取了该集合，已将角色名集合初始化提前到因果链逐步检查之前。修复必须以最新提交的完整 CI 与 docs-sync 结果为准。
+
+
+A81 测试夹具补充：明确验证“无后续影响”时，因果链每一步都必须提供 state_continuity；只为单一步骤声明不会覆盖其他步骤缺失字段的 warning。

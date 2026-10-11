@@ -147,11 +147,12 @@ class ShortDramaTests(unittest.TestCase):
 
     def test_audit_accepts_explicit_no_downstream_state_effect(self):
         plan = sample_plan()
-        plan["causal_chain"][0]["state_continuity"] = {
-            "affected_characters": ["小林"],
-            "required_follow_through": "无后续影响",
-            "storyboard_indices": [],
-        }
+        for step in plan["causal_chain"]:
+            step["state_continuity"] = {
+                "affected_characters": ["小林"],
+                "required_follow_through": "无后续影响",
+                "storyboard_indices": [],
+            }
         report = audit_short_drama(plan)
         codes = {item["code"] for item in report["issues"]}
         self.assertNotIn("STATE_CONTINUITY_UNSPECIFIED", codes)
