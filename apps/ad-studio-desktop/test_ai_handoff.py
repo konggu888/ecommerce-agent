@@ -38,6 +38,8 @@ class AIHandoffTests(unittest.TestCase):
         self.assertIn("验收入口与 AI 接手地图", logic)
         self.assertIn("## A32 · AI接手能力", plan)
         self.assertIn("## A33 · 完整用户流程", plan)
+        self.assertIn("## A34 · AI辅助商品画面对比", plan)
+        self.assertIn("## A35 · 问题镜头定位与仅重生成", plan)
 
         for required in (HANDOFF, AGENTS, LOGIC, HELP, PLAN):
             self.assertTrue(required.exists(), required)
