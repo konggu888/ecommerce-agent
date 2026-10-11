@@ -268,5 +268,22 @@ class ShortDramaTests(unittest.TestCase):
         with self.assertRaisesRegex(ShortDramaPlanError, "必须提供商品资料"):
             generate_short_drama(FakeRouter(), {}, {"drama_business_mode": "product_short_drama_ad"})
 
+
+    def test_product_ad_visual_status_is_reset_on_generation(self):
+        class FakeRouter:
+            def resolve_route(self, function): return "profile"
+            def complete_json(self, profile, prompt, function=None):
+                plan = sample_plan()
+                plan["drama_business_mode"] = "product_short_drama_ad"
+                plan["product_analysis"] = {"product_type": "用品"}
+                plan["genre_decision"] = {"selected_genre": "古代", "reasoning": "适合故事"}
+                plan["product_fact_lock"] = {"confirmed_facts": [], "unknown_or_unverified": []}
+                plan["storyboard"][0]["product_fidelity_constraints"] = ["保持真实外观"]
+                plan["storyboard"][0]["visual_verification"] = "passed"
+                return plan
+        result = generate_short_drama(FakeRouter(), {"name": "商品"}, {"drama_business_mode": "product_short_drama_ad"})
+        self.assertEqual(result["storyboard"][0]["visual_verification"], "not_checked")
+
+
 if __name__ == "__main__":
     unittest.main()

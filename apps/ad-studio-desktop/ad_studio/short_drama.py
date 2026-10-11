@@ -278,6 +278,13 @@ def generate_short_drama(model_router, product: dict[str, Any], constraints: dic
         raise ShortDramaPlanError(
             f"模型返回的短剧商业模式为 {validated.get('drama_business_mode')}，与所选模式 {requested_business_mode} 不一致；请重新生成，避免创作目标错位。"
         )
+    # A language model cannot certify that an image faithfully depicts the real product.
+    # Reset each new product-ad shot to an explicitly unchecked state, even if the
+    # model returned "passed"; only a later visual review may change this state.
+    if requested_business_mode == "product_short_drama_ad":
+        for shot in validated.get("storyboard", []):
+            shot["visual_verification"] = "not_checked"
+
     if validated.get("format_mode") != requested_mode:
         raise ShortDramaPlanError(
             f"模型返回的短剧模式为 {validated.get('format_mode')}，与所选模式 {requested_mode} 不一致；请重新生成，避免把多集需求误当成单集。"
