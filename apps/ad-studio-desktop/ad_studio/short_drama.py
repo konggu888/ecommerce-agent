@@ -810,6 +810,12 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
             str(item.get("character_name", "")).strip(): item
             for item in bases if isinstance(item, dict) and str(item.get("character_name", "")).strip()
         }
+        # A79: action-basis records must map to declared characters in this exact shot.
+        for basis_name in bases_by_name:
+            if basis_name not in shot_characters:
+                add("warning", "CHARACTER_ACTION_BASIS_NOT_IN_SHOT", f"第{shot_index}镜行动依据记录了“{basis_name}”，但该人物不在本镜人物列表中；请检查人物/镜头绑定。")
+            if basis_name not in character_names:
+                add("warning", "CHARACTER_ACTION_BASIS_UNKNOWN_CHARACTER", f"第{shot_index}镜行动依据引用了人物“{basis_name}”，但人物设定表中没有该人物。")
         for character_name in shot_characters:
             basis = bases_by_name.get(character_name)
             if basis is None:

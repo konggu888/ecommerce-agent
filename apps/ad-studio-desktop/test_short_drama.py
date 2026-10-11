@@ -97,6 +97,33 @@ class ShortDramaTests(unittest.TestCase):
         self.assertIn("story_event_reference", prompt)
         self.assertIn("前置线索", prompt)
 
+    def test_audit_warns_when_action_basis_names_character_not_in_shot(self):
+        plan = sample_plan()
+        plan["storyboard"][0]["character_action_basis"] = [{
+            "character_name": "小林", "goal_or_motivation": "准时出门",
+            "known_information": "钥匙不在固定位置", "knowledge_source": "主角发现钥匙不在固定位置",
+            "decision_pressure": "时间紧迫", "choice_rationale": "先翻找玄关"
+        }, {
+            "character_name": "小王", "goal_or_motivation": "帮忙",
+            "known_information": "钥匙不在固定位置", "knowledge_source": "主角发现钥匙不在固定位置",
+            "decision_pressure": "时间紧迫", "choice_rationale": "查看门口"
+        }]
+        report = audit_short_drama(plan)
+        self.assertIn("CHARACTER_ACTION_BASIS_NOT_IN_SHOT", {item["code"] for item in report["issues"]})
+        self.assertIn("CHARACTER_ACTION_BASIS_UNKNOWN_CHARACTER", {item["code"] for item in report["issues"]})
+
+    def test_audit_warns_when_action_basis_omits_character_from_character_list(self):
+        plan = sample_plan()
+        plan["storyboard"][0]["character_action_basis"] = [{
+            "character_name": "小王", "goal_or_motivation": "帮忙",
+            "known_information": "钥匙不在固定位置", "knowledge_source": "主角发现钥匙不在固定位置",
+            "decision_pressure": "时间紧迫", "choice_rationale": "查看门口"
+        }]
+        report = audit_short_drama(plan)
+        codes = {item["code"] for item in report["issues"]}
+        self.assertIn("CHARACTER_ACTION_BASIS_NOT_IN_SHOT", codes)
+        self.assertIn("CHARACTER_ACTION_BASIS_UNKNOWN_CHARACTER", codes)
+
     def test_audit_warns_when_character_action_has_no_basis(self):
         plan = sample_plan()
         report = audit_short_drama(plan)

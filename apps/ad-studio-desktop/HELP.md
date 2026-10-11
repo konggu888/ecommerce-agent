@@ -1093,3 +1093,6 @@ The selling-point coverage regression test uses `product_placement` mode to isol
 
 ### A78 测试修正补记
 - CI 首轮发现人物行动依据审查调用了尚未构建的镜头文本索引；已将审查块移动到镜头文本索引构建之后，避免运行时 NameError。
+
+### A79：分镜人物与行动依据绑定一致性
+行动依据审查现在还会检查每条 character_action_basis 是否确实属于当前镜头人物列表，并且人物已在角色设定表中定义。错误绑定分别产生 CHARACTER_ACTION_BASIS_NOT_IN_SHOT 与 CHARACTER_ACTION_BASIS_UNKNOWN_CHARACTER 警告。该检查用于发现人物/镜头引用错配，不代表已验证人物动机或表演语义。

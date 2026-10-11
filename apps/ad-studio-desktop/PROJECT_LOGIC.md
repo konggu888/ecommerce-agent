@@ -1199,3 +1199,8 @@ Selling-point coverage tests use product_placement mode to isolate the new text 
 
 
 A78 实现注意：人物行动依据审查必须在 `shot_texts` 构建完成后运行；测试应覆盖审查入口，防止因局部变量初始化顺序造成运行时错误。
+
+### A79：人物行动依据的角色引用完整性
+- 在 A78 的逐人物行动依据审查中，检查依据记录中的人物是否同时存在于当前镜头人物列表和全局人物设定表。
+- 新增 CHARACTER_ACTION_BASIS_NOT_IN_SHOT、CHARACTER_ACTION_BASIS_UNKNOWN_CHARACTER 两项 warning，兼容旧方案，不阻止读取。
+- 这是引用一致性检查，不等于动机合理性或剧情语义验证。
