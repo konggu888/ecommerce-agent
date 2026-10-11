@@ -86,10 +86,10 @@ def build_short_drama_prompt(product: dict[str, Any], constraints: dict[str, Any
         "0. 先严格识别 constraints.drama_business_mode：general=通用AI短剧，允许完全不带商品；product_placement=商品植入短剧，商品自然参与剧情但不能挤压故事；product_conversion=商品转化短剧，剧情服务于指定商品的目标人群与转化目标。不得把三种模式混为一谈。\n"
         "0.1 通用AI短剧不要求必须出现商品；如果没有商品资料，不得编造商品，分镜 product_integration 应写明“不适用”或“本镜不出现商品”。若用户提供商品，也只在剧情合理且用户选择允许时使用。\n"
         "0.2 商品植入/商品转化模式必须有指定商品资料；商品植入应自然，商品转化需明确剧情节点、真实卖点展示和转化路径，但不得夸大效果或虚构事实。\n"
-        "0.3 product_short_drama_ad 是独立的AI短剧形式商品广告目标，不能与普通商品植入/商品转化混同。先分析商品类型、目标人群、已确认卖点、使用场景和未知信息，再自主决定题材/时代（例如古代或现代）并说明理由，让商品自然成为剧情机制的一部分。\\n"
-        "0.4 product_short_drama_ad 必须输出 product_analysis、genre_decision、product_fact_lock。将事实分为已确认与未知/未核实；禁止编造参数、认证、效果、价格、销量、材料或功能。未知信息只能标待确认，不得当作事实使用。\\n"
-        "0.5 每个 product_short_drama_ad 分镜都必须有 product_fidelity_constraints，明确本镜商品外观、颜色/款式、结构、关键部件、核心功能和正确使用方式哪些必须保持不变；需要时指定参考商品图片/素材。不得为了古代/奇幻剧情把真实商品改成不同款式、改变结构或赋予不存在的功能。\\n"
-        "0.6 每个商品广告分镜增加 visual_verification 字段，初始值必须明确为 not_checked；结构/文字复核不能冒充生成画面视觉核验。生成画面后需由后续视觉检查或人工确认，发现问题只重生成问题镜头。\\n"
+        "0.3 product_short_drama_ad 是独立的AI短剧形式商品广告目标，不能与普通商品植入/商品转化混同。先分析商品类型、目标人群、已确认卖点、使用场景和未知信息，再自主决定题材/时代（例如古代或现代）并说明理由，让商品自然成为剧情机制的一部分。\n"
+        "0.4 product_short_drama_ad 必须输出 product_analysis、genre_decision、product_fact_lock。将事实分为已确认与未知/未核实；禁止编造参数、认证、效果、价格、销量、材料或功能。未知信息只能标待确认，不得当作事实使用。\n"
+        "0.5 每个 product_short_drama_ad 分镜都必须有 product_fidelity_constraints，明确本镜商品外观、颜色/款式、结构、关键部件、核心功能和正确使用方式哪些必须保持不变；需要时指定参考商品图片/素材。不得为了古代/奇幻剧情把真实商品改成不同款式、改变结构或赋予不存在的功能。\n"
+        "0.6 每个商品广告分镜增加 visual_verification 字段，初始值必须明确为 not_checked；结构/文字复核不能冒充生成画面视觉核验。生成画面后需由后续视觉检查或人工确认，发现问题只重生成问题镜头。\n"
         "1. 题材必须根据创作目标、商品事实（如适用）、目标人群、使用场景和传播目标推导，不得机械套用固定题材清单。\n"
         "2. 设计完整的人物目标与关系、场景、冲突、节奏、转折和结尾；故事要有因果，不是卖点罗列。\n"
         "3. 商品是否出现必须服从所选创作目标：通用模式允许不出现；商品植入/转化模式应按目标呈现。任何模式都不得篡改商品外观、结构、核心功能、使用方式、规格、功效或其他事实。\n"
@@ -101,7 +101,7 @@ def build_short_drama_prompt(product: dict[str, Any], constraints: dict[str, Any
         "9. 如果 constraints.short_drama_mode 为 continuous_series 或 anthology_series，必须输出指定数量的 episodes；每集有独立剧本、分镜和结尾钩子。根级 storyboard 必须按集顺序汇总全部分镜，每个镜头带 episode_number；不要把多集缩成一集。\n"
         "10. continuous_series 必须跨集承接人物状态、因果和悬念；anthology_series 共用人物/世界观但每集有相对独立的故事。单集模式 episodes 可以只含一集。\n"
 
-        "10.1 每集必须输出 continuity_state：opening_state（开集承接状态）、character_state_changes（人物/关系变化列表）、unresolved_threads（集末未解决线索列表）、ending_state（集末确定状态）、next_episode_requirements（下一集必须承接的要求；最终集可为空列表）。连续剧第N集 opening_state 必须承接第N-1集 ending_state 和 next_episode_requirements，不能重置人物记忆或忽略未解决悬念。\\n"
+        "10.1 每集必须输出 continuity_state：opening_state（开集承接状态）、character_state_changes（人物/关系变化列表）、unresolved_threads（集末未解决线索列表）、ending_state（集末确定状态）、next_episode_requirements（下一集必须承接的要求；最终集可为空列表）。连续剧第N集 opening_state 必须承接第N-1集 ending_state 和 next_episode_requirements，不能重置人物记忆或忽略未解决悬念。\n"
         "11. 每个镜头必须带 episode_number；同一角色的外貌、身份、关键服装和关系在 series_bible 中保持稳定。\n"
         "12. 输出必须包含 drama_business_mode，且与 constraints.drama_business_mode 一致；人物、场景、商品素材需求要与所选模式匹配。\n\n输入与约束：\n"
         + json.dumps(payload, ensure_ascii=False, indent=2)
@@ -163,8 +163,8 @@ def validate_short_drama(raw: dict[str, Any]) -> dict[str, Any]:
         raw.setdefault("format_mode", "single_episode" if len(episodes) == 1 else "continuous_series")
         raw.setdefault("series_bible", {})
         if not raw.get("full_script"):
-            raw["full_script"] = "\\n\\n".join(
-                f"第{e.get('episode_number', i)}集：{e.get('title', '')}\\n{e.get('full_script', '')}"
+            raw["full_script"] = "\n\n".join(
+                f"第{e.get('episode_number', i)}集：{e.get('title', '')}\n{e.get('full_script', '')}"
                 for i, e in enumerate(episodes, 1)
             )
     raw.setdefault("drama_business_mode", "product_placement")
@@ -352,6 +352,54 @@ def short_drama_production_rows(plan: dict[str, Any], product_name: str) -> list
     return rows
 
 
+
+def prepare_product_drama_shot_regeneration(
+    plan: dict[str, Any],
+    shot_number: int,
+    correction_note: str,
+    *,
+    previous_version: int,
+    previous_video_path: str | None = None,
+    estimated_cost_rmb: float = 0.0,
+) -> dict[str, Any]:
+    """Prepare one product-drama shot for regeneration without calling a provider."""
+    if plan.get("drama_business_mode") != "product_short_drama_ad":
+        raise ShortDramaPlanError("局部商品镜头修复只适用于“AI短剧形式商品广告”模式。")
+    note = str(correction_note or "").strip()
+    if not note:
+        raise ShortDramaPlanError("请写明该镜头的问题和修正要求。")
+    shots = plan.get("storyboard", [])
+    if not isinstance(shots, list) or shot_number < 1 or shot_number > len(shots):
+        raise ShortDramaPlanError("指定镜头编号不存在。")
+    if float(estimated_cost_rmb) < 0:
+        raise ShortDramaPlanError("预计生成费用不能为负数。")
+    updated = json.loads(json.dumps(plan, ensure_ascii=False))
+    shot = updated["storyboard"][shot_number - 1]
+    history = list(shot.get("regeneration_history", []) or [])
+    history.append({
+        "version": int(previous_version),
+        "video_path": str(previous_video_path or ""),
+        "correction_note": note,
+        "estimated_cost_rmb": round(float(estimated_cost_rmb), 4),
+        "visual_verification": shot.get("visual_verification", "not_checked"),
+        "visual_verification_method": shot.get("visual_verification_method", ""),
+        "visual_verification_evidence": shot.get("visual_verification_evidence", ""),
+        "visual_verification_note": shot.get("visual_verification_note", ""),
+        "visual_comparison_result": shot.get("visual_comparison_result"),
+    })
+    shot["regeneration_history"] = history
+    shot["last_regeneration_correction"] = note
+    old_prompt = str(shot.get("generation_prompt", "")).strip()
+    shot["generation_prompt"] = (old_prompt + "\n商品画面修正要求（本次只修复当前镜头）： " + note).strip()
+    shot["visual_verification"] = "not_checked"
+    shot["visual_verification_method"] = ""
+    shot["visual_verification_evidence"] = ""
+    shot["visual_verification_reference_images"] = []
+    shot["visual_verification_note"] = ""
+    shot.pop("visual_comparison_result", None)
+    return updated
+
+
 def record_product_visual_verification(
     plan: dict[str, Any], shot_number: int, status: str, evidence_path: str, reviewer_note: str
 ) -> dict[str, Any]:
@@ -454,10 +502,10 @@ def compare_product_visual_shot(
             "你是商品广告画面真实性复核助手。请对照商品参考图片与后续生成画面帧，"
             "重点检查商品身份、颜色/外观、结构/部件、可见功能表现、正确使用方式是否一致。"
             "不要把光线、背景、角度变化直接认定为商品变化；看不清或证据不足时必须标记不确定。"
-            "不要臆测图片中看不到的参数或内部结构。此结果仅供人工复核，不可视为最终认证。\\n"
-            f"镜头描述：{shot.get('description', shot.get('visual', '未提供'))}\\n"
-            f"商品事实锁定：{json.dumps(product_facts, ensure_ascii=False)}\\n"
-            f"分镜约束：{json.dumps(shot.get('product_fidelity_constraints', []), ensure_ascii=False)}\\n"
+            "不要臆测图片中看不到的参数或内部结构。此结果仅供人工复核，不可视为最终认证。\n"
+            f"镜头描述：{shot.get('description', shot.get('visual', '未提供'))}\n"
+            f"商品事实锁定：{json.dumps(product_facts, ensure_ascii=False)}\n"
+            f"分镜约束：{json.dumps(shot.get('product_fidelity_constraints', []), ensure_ascii=False)}\n"
             "请严格返回 JSON：identity_match (true/false/null), appearance_match (true/false/null), "
             "structure_match (true/false/null), function_match (true/false/null), usage_match (true/false/null), "
             "mismatch_detected (boolean), confidence (0到1), issues (字符串数组), summary (字符串)。"
@@ -557,7 +605,7 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
     ]
     for shot in checked.get("storyboard", []):
         content_parts.extend(str(shot.get(key, "")) for key in ("action", "dialogue", "product_integration", "generation_prompt"))
-    script_text = "\\n".join(content_parts)
+    script_text = "\n".join(content_parts)
     ledger = checked.get("continuity_ledger", [])
     if checked.get("format_mode") != "single_episode":
         if not isinstance(ledger, list) or len(ledger) != checked.get("episode_count"):

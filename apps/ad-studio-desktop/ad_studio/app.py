@@ -12,7 +12,7 @@ from .capability import CapabilityRouter
 from .production import ProductionStore
 from .product_parser import parse_product_url, save_product, save_product_library, load_product_library, merge_product_library, ProductInfo
 from .creative_engine import CreativeEngine, validate_plan, validate_task_type_plan, TASK_TYPE_POLICIES
-from .short_drama import audit_short_drama, build_episode_continuity_ledger, generate_short_drama, generate_next_short_drama_episode, short_drama_production_rows, record_product_visual_verification, compare_product_visual_shot
+from .short_drama import audit_short_drama, build_episode_continuity_ledger, generate_short_drama, generate_next_short_drama_episode, short_drama_production_rows, record_product_visual_verification, compare_product_visual_shot, prepare_product_drama_shot_regeneration
 from .model_router import ModelRouter, ModelProfile, FUNCTIONS, audit_ad_variant_set, build_creative_test_plan, audit_creative_factual_consistency, audit_storyboard_fact_consistency, audit_visual_fact_consistency
 from .browser_skill import _find_agent_browser
 from .ffmpeg import available as ffmpeg_available, has_nvenc
@@ -1615,7 +1615,39 @@ class App(tk.Tk):
         if not self._ui_execution_gate(): return
         s=self.selected()
         if not s:return messagebox.showinfo('提示','先选择要重新生成的镜头。')
-        old=s.version; mark_regenerate(self.project,self.project.shots.index(s)); self.store.save(self.project); self.refresh_shots(); self.detail.set(f'镜头 {s.index}：v{old} → v{s.version}。其他镜头版本保持不变。')
+        try:
+            creative = self.project.creative_plan or {}
+            drama = creative.get('short_drama') if creative.get('production_mode') == 'short_drama' else None
+            product_mode = isinstance(drama, dict) and drama.get('drama_business_mode') == 'product_short_drama_ad'
+            if product_mode:
+                from tkinter import simpledialog
+                shot_number = int(s.index)
+                correction = simpledialog.askstring('商品镜头修正要求', f'第 {shot_number} 镜当前版本 v{s.version}。请描述视觉核验发现的问题及修正要求；只会处理此镜头。', parent=self)
+                if not str(correction or '').strip():
+                    self.detail.set('已取消单镜头修复；没有修改镜头版本或调用生成服务。')
+                    return
+                provider = load_video_provider(ROOT / 'video-provider.json')
+                rate = float(getattr(provider, 'cost_per_shot_rmb', 0.72))
+                if not messagebox.askyesno('确认单镜头重新生成', f'仅重新生成第 {shot_number} 镜（当前 v{s.version} → 新版本）。\n' f'预计视频生成费用：¥{rate:.2f}。\n' '旧版本、核验记录和其他镜头会保留；新版本必须重新核验。\n' '是否继续？', parent=self):
+                    self.detail.set('已取消单镜头重新生成；没有调用云端服务。')
+                    return
+                updated = prepare_product_drama_shot_regeneration(drama, shot_number, correction, previous_version=s.version, previous_video_path=getattr(s, 'video_path', None), estimated_cost_rmb=rate)
+                creative['short_drama'] = updated
+                creative.pop('short_drama_audit', None)
+                self.project.creative_plan = creative
+                s.visual = (str(s.visual or '').rstrip() + '\n商品画面修正要求（本次只修复当前镜头）： ' + correction.strip()).strip()
+                mark_regenerate(self.project,self.project.shots.index(s))
+                self.store.save(self.project)
+                self.refresh_shots()
+                self.detail.set(f'商品短剧第 {shot_number} 镜已准备重新生成：v{s.version-1} → v{s.version}。其他镜头未修改；新版本核验状态已重置。')
+                return
+            old=s.version
+            mark_regenerate(self.project,self.project.shots.index(s))
+            self.store.save(self.project)
+            self.refresh_shots()
+            self.detail.set(f'镜头 {s.index}：v{old} → v{s.version}。其他镜头版本保持不变。')
+        except Exception as exc:
+            messagebox.showerror('重新生成镜头失败', str(exc))
 
     @ui_action
     def edit_shot(self):

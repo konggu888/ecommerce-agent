@@ -21,7 +21,7 @@
 
 以 docs/AD_STUDIO_ACCEPTANCE_PLAN.md 的正式顺序为准：
 
-**A0–A33：既有阶段记录；当前扩展验收：A34 · AI 辅助商品画面对比；下一阶段：A35 · 问题镜头定位与仅重生成。**
+**A0–A33：既有阶段记录；A34：AI 辅助商品画面对比（待最新 CI 验收）；A35：单镜头局部修复第一阶段已实现，待专项测试/CI 验收。**
 
 不要把历史文档中的旧“下一阶段”文字当成当前状态；以本文件和验收计划中最新的 A31/A32 记录为准。
 
@@ -29,7 +29,7 @@
 
 唯一阶段顺序入口：docs/AD_STUDIO_ACCEPTANCE_PLAN.md
 
-A32 是既有 AI 接手能力阶段；当前工作以 A34 验收计划为准。接手入口仍应让没有任何本项目聊天历史的新 AI 独立找到：
+A32 是既有 AI 接手能力阶段；当前工作先核验 A34 提示词/测试和最新 CI，再验收 A35 单镜头局部修复。接手入口仍应让没有任何本项目聊天历史的新 AI 独立找到：
 1. 项目目标
 2. 架构
 3. 当前进度
@@ -44,7 +44,7 @@ A32 是既有 AI 接手能力阶段；当前工作以 A34 验收计划为准。�
 
 A32 专项自动化验收：apps/ad-studio-desktop/test_ai_handoff.py
 
-A34 专项回归：apps/ad-studio-desktop/test_short_drama.py 中的 `test_ai_visual_comparison_*` 测试
+A34 专项回归：apps/ad-studio-desktop/test_short_drama.py 中的 `test_ai_visual_comparison_*`；A35 局部重生成专项回归：`test_product_drama_regeneration_*`
 
 文档同步检查：python tools/check_ad_studio_docs.py --base <base-ref> --head <head-ref>
 

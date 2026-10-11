@@ -1,4 +1,5 @@
 import unittest
+import json
 
 from ad_studio.short_drama import (
     ShortDramaPlanError, build_short_drama_prompt, generate_short_drama,
@@ -411,6 +412,33 @@ class ShortDramaTests(unittest.TestCase):
             plan["drama_business_mode"] = "product_short_drama_ad"
             with self.assertRaisesRegex(ShortDramaPlanError, "至少选择一张"):
                 compare_product_visual_shot(FakeRouter(), plan, 1, [], str(generated))
+
+
+    def test_product_drama_regeneration_changes_only_selected_shot_and_preserves_history(self):
+        from ad_studio.short_drama import prepare_product_drama_shot_regeneration
+        plan = sample_plan()
+        plan["drama_business_mode"] = "product_short_drama_ad"
+        plan["storyboard"][0].update({"visual_verification":"failed","visual_verification_method":"ai_vision_assisted","visual_verification_evidence":"/tmp/old-shot.mp4","visual_verification_note":"颜色疑似不一致","visual_comparison_result":{"result":{"mismatch_detected":True}}})
+        second = json.dumps(plan["storyboard"][1], ensure_ascii=False, sort_keys=True) if len(plan["storyboard"]) > 1 else None
+        updated = prepare_product_drama_shot_regeneration(plan, 1, "商品颜色应与参考图一致，不改变瓶盖和标签结构", previous_version=3, previous_video_path="/tmp/old-shot.mp4", estimated_cost_rmb=0.72)
+        target = updated["storyboard"][0]
+        self.assertEqual(target["visual_verification"], "not_checked")
+        self.assertNotIn("visual_comparison_result", target)
+        self.assertEqual(target["regeneration_history"][0]["version"], 3)
+        self.assertEqual(target["regeneration_history"][0]["visual_verification"], "failed")
+        self.assertIn("商品颜色应与参考图一致", target["generation_prompt"])
+        self.assertEqual(plan["storyboard"][0]["visual_verification"], "failed")
+        if second is not None:
+            self.assertEqual(json.dumps(updated["storyboard"][1], ensure_ascii=False, sort_keys=True), second)
+
+    def test_product_drama_regeneration_rejects_wrong_mode_and_empty_correction(self):
+        from ad_studio.short_drama import prepare_product_drama_shot_regeneration
+        plan = sample_plan()
+        with self.assertRaisesRegex(ShortDramaPlanError, "只适用于"):
+            prepare_product_drama_shot_regeneration(plan, 1, "fix", previous_version=1)
+        plan["drama_business_mode"] = "product_short_drama_ad"
+        with self.assertRaisesRegex(ShortDramaPlanError, "修正要求"):
+            prepare_product_drama_shot_regeneration(plan, 1, " ", previous_version=1)
 
 
 

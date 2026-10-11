@@ -29,7 +29,7 @@ class AIHandoffTests(unittest.TestCase):
         for section in required_handoff_sections:
             self.assertIn(section, handoff)
 
-        self.assertIn("当前扩展验收：A34 · AI 辅助商品画面对比；下一阶段：A35", handoff)
+        self.assertIn("A34：AI 辅助商品画面对比（待最新 CI 验收）；A35：单镜头局部修复第一阶段已实现", handoff)
         for entry in ("AGENTS.md", "PROJECT_LOGIC.md", "HELP.md", "AD_STUDIO_ACCEPTANCE_PLAN.md", "test_ai_handoff.py"):
             self.assertIn(entry, handoff)
 
