@@ -463,3 +463,7 @@ AI 应根据商品、人群、卖点、使用场景和广告目标，自主判�
 
 ## 最新自动化检查基准
 完整 CI 和 docs-sync 已在 SHA `443f713cd3721eab528eb9bb17faf599d55ef3ce` 成功；该结果不替代 Windows 真机、真实 Provider、实际扣款和商业成片验收。
+
+
+## A43：单镜头重生成的旧版本保护（待 CI）
+发现 `mark_regenerate()` 清空活动视频路径后，Provider 的失败恢复无法再从 `shot.video_path` 找到旧版本。新增 `previous_video_path` 持久化字段；失败/中断时恢复旧视频并清理临时文件。实现已提交待当前 SHA 的 CI 验收，真实 Provider 与 Windows 验收仍暂缓。

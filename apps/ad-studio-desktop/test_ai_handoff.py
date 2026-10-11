@@ -77,5 +77,10 @@ class AIHandoffTests(unittest.TestCase):
         self.assertIn("443f713cd3721eab528eb9bb17faf599d55ef3ce", handoff)
         self.assertIn("若当前 HEAD 与此 SHA 不同", handoff)
 
+    def test_handoff_mentions_a43_regeneration_failure_recovery(self):
+        text = (ROOT / "docs" / "AD_STUDIO_AI_HANDOFF.md").read_text(encoding="utf-8")
+        self.assertIn("A43", text)
+        self.assertIn("恢复旧视频", text)
+
 if __name__ == "__main__":
     unittest.main()

@@ -948,3 +948,10 @@ A33 自动化验收分别覆盖电商短视频、商品主图视频、广告投�
 
 ### A42：CI 结果必须绑定 SHA
 完整 CI 和 docs-sync 已在 `443f713cd3721eab528eb9bb17faf599d55ef3ce` 成功。后续新提交不会自动继承该结果；必须查询最新 SHA 的 workflow run 与每个 job 的结论。
+
+
+### A43：镜头重生成的失败恢复
+- `Shot.previous_video_path` 持久化保存上一次可用输出路径。 `mark_regenerate()` 只把路径移到该字段，不删除旧文件。
+- 视频 Provider 生成失败或用户实拍素材裁剪失败时，若旧文件仍存在且非空，恢复为 `video_path`，清空暂存指针并明确标记失败；新版本未成功时不覆盖旧文件。
+- 项目恢复会清理 `.part.mp4` 临时文件；若发现生成中断且旧视频仍有效，则恢复旧路径并写入 `restored_previous_versions` 结果。旧项目 JSON 没有该字段时由 dataclass 默认值兼容。
+- A43 的自动化回归覆盖 Provider 失败后重新加载项目，以及项目中断后的恢复；当前 SHA 的 CI 结果仍需单独查询。

@@ -1304,6 +1304,72 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertIn("测试", logic)
 
 
+    def test_a43_regeneration_failure_restores_previous_good_video_and_persists_it(self):
+        class FailingProvider:
+            provider_name = "测试失败 Provider"
+            cost_per_shot_rmb = 0.72
+
+            def generate(self, request):
+                raise RuntimeError("模拟 Provider 超时")
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            old_output = store.render_path(project, shot)
+            old_output.parent.mkdir(parents=True, exist_ok=True)
+            old_output.write_bytes(b"previous-good-video")
+            shot.video_path = str(old_output)
+            shot.status = "已生成"
+            store.save(project)
+
+            mark_regenerate(project, 0)
+            self.assertIsNone(shot.video_path)
+            self.assertEqual(shot.previous_video_path, str(old_output))
+            store.save(project)
+
+            with self.assertRaisesRegex(RuntimeError, "模拟 Provider 超时"):
+                store._render_with_provider(project, shot, FailingProvider())
+
+            self.assertEqual(shot.video_path, str(old_output))
+            self.assertIsNone(shot.previous_video_path)
+            self.assertEqual(shot.status, "生成失败（已保留上一版本）")
+            self.assertEqual(old_output.read_bytes(), b"previous-good-video")
+            self.assertFalse(store.render_path(project, shot).with_suffix(".part.mp4").exists())
+            restored = store.load(project.id)
+            self.assertEqual(restored.shots[0].video_path, str(old_output))
+            self.assertEqual(restored.shots[0].status, "生成失败（已保留上一版本）")
+
+    def test_a43_project_recovery_restores_previous_video_after_interrupted_regeneration(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root)
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            old_output = store.render_path(project, shot)
+            old_output.parent.mkdir(parents=True, exist_ok=True)
+            old_output.write_bytes(b"previous-good-video")
+            shot.video_path = str(old_output)
+            store.save(project)
+
+            mark_regenerate(project, 0)
+            shot.status = "生成中…"
+            part = store.render_path(project, shot).with_suffix(".part.mp4")
+            part.parent.mkdir(parents=True, exist_ok=True)
+            part.write_bytes(b"partial-video")
+            store.save(project)
+
+            result = store.recover_project(project)
+            self.assertEqual(result["restored_previous_versions"], [shot.id])
+            self.assertEqual(shot.video_path, str(old_output))
+            self.assertIsNone(shot.previous_video_path)
+            self.assertEqual(shot.status, "生成中断（已恢复上一版本）")
+            self.assertFalse(part.exists())
+            restored = store.load(project.id)
+            self.assertEqual(restored.shots[0].video_path, str(old_output))
+
+
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.

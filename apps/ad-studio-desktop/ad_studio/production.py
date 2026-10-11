@@ -60,8 +60,23 @@ class ProductionStore:
                 part.unlink(missing_ok=True)
                 removed_parts += 1
         missing_media = []
+        restored_previous_versions = []
         for shot in project.shots:
-            if shot.video_path and not Path(shot.video_path).exists():
+            previous_path = str(getattr(shot, "previous_video_path", None) or "").strip()
+            active_missing = not shot.video_path or not Path(shot.video_path).is_file()
+            if previous_path and active_missing and Path(previous_path).is_file() and Path(previous_path).stat().st_size > 0:
+                # A process may have stopped after version increment but before a new
+                # render completed. Restore the last known-good output after restart.
+                shot.video_path = previous_path
+                shot.previous_video_path = None
+                shot.status = "生成中断（已恢复上一版本）"
+                restored_previous_versions.append(shot.id)
+            elif previous_path and active_missing and not Path(previous_path).is_file():
+                shot.previous_video_path = None
+                shot.video_path = None
+                shot.status = "待重新生成/重新选择素材"
+                missing_media.append(shot.id)
+            elif shot.video_path and not Path(shot.video_path).exists():
                 missing_media.append(shot.id)
                 shot.video_path = None
                 shot.status = "待重新生成/重新选择素材"
@@ -88,7 +103,7 @@ class ProductionStore:
             "status": "可继续",
             "stage": "恢复完成",
             "next_action": "从未完成阶段继续任务",
-            "last_recovery": {"removed_temp_files": removed_parts, "missing_media": missing_media, "invalid_outputs": invalid_outputs, "updated_at": now},
+            "last_recovery": {"removed_temp_files": removed_parts, "missing_media": missing_media, "restored_previous_versions": restored_previous_versions, "invalid_outputs": invalid_outputs, "updated_at": now},
             "updated_at": now,
         })
         self.save(project)
@@ -148,7 +163,10 @@ class ProductionStore:
         self.save(project)
 
     def mark_ready(self, project: Project, shot: Shot, output: Path):
-        shot.video_path=str(output); shot.status='已生成'; self.save(project)
+        shot.video_path=str(output)
+        shot.previous_video_path = None
+        shot.status='已生成'
+        self.save(project)
 
     def accept_hybrid_generated_task(self, project: Project, task: dict):
         """人工明确通过后，把混合生成素材纳入项目分镜并持久化。"""
@@ -281,7 +299,7 @@ class ProductionStore:
         asset_map={a.id:a for a in library.all()}
         asset_paths=[asset_map[x].path for x in asset_ids if x in asset_map and asset_map[x].path and Path(asset_map[x].path).exists()]
         prompt='\n'.join([f'标题：{shot.title}',f'画面：{shot.visual}',f'文案：{shot.script}'])
-        previous_path=shot.video_path
+        previous_path=shot.video_path or getattr(shot, "previous_video_path", None)
         shot.status='生成中…'
         shot.provider=getattr(provider,'provider_name','Generic REST')
         shot.generated_from_request=prompt
@@ -317,8 +335,10 @@ class ProductionStore:
         except Exception as exc:
             if temp.exists():
                 temp.unlink()
-            shot.video_path=previous_path
-            shot.status='生成失败（已保留上一版本）' if previous_path else '生成失败'
+            previous_is_valid = bool(previous_path and Path(previous_path).is_file() and Path(previous_path).stat().st_size > 0)
+            shot.video_path = str(previous_path) if previous_is_valid else None
+            shot.previous_video_path = None
+            shot.status = '生成失败（已保留上一版本）' if previous_is_valid else '生成失败'
             shot.provider=getattr(provider,'provider_name',shot.provider)
             self.save(project)
             raise RuntimeError(f'镜头 {shot.index} v{shot.version} 生成失败：{exc}') from exc
@@ -326,9 +346,15 @@ class ProductionStore:
     def render_footage_shot(self, project: Project, shot: Shot):
         """从用户拍摄素材中裁剪出本镜头（本地 FFmpeg，不调用生成服务）。"""
         from .footage import trim_clip, FootageError
-        if not shot.source_file or not Path(shot.source_file).exists():
-            raise FootageError(f'素材文件不存在：{shot.source_file}。请检查素材文件夹。')
+        previous_path = shot.video_path or getattr(shot, "previous_video_path", None)
         out = self.render_path(project, shot)
+        if not shot.source_file or not Path(shot.source_file).exists():
+            previous_is_valid = bool(previous_path and Path(previous_path).is_file() and Path(previous_path).stat().st_size > 0)
+            shot.video_path = str(previous_path) if previous_is_valid else None
+            shot.previous_video_path = None
+            shot.status = '素材裁剪失败（已保留上一版本）' if previous_is_valid else '素材裁剪失败'
+            self.save(project)
+            raise FootageError(f'素材文件不存在：{shot.source_file}。请检查素材文件夹。')
         shot.status = '素材裁剪中…'
         shot.provider = '本地素材剪辑'
         self.save(project)
@@ -346,8 +372,15 @@ class ProductionStore:
                 for part in parts:
                     if part.exists():
                         part.unlink()
-        except Exception as exc:
-            shot.status = '素材裁剪失败'
+        except Exception:
+            if out.exists():
+                out.unlink()
+            for part in out.parent.glob(f'{out.stem}.part*.mp4'):
+                part.unlink(missing_ok=True)
+            previous_is_valid = bool(previous_path and Path(previous_path).is_file() and Path(previous_path).stat().st_size > 0)
+            shot.video_path = str(previous_path) if previous_is_valid else None
+            shot.previous_video_path = None
+            shot.status = '素材裁剪失败（已保留上一版本）' if previous_is_valid else '素材裁剪失败'
             self.save(project)
             raise
         self.mark_ready(project, shot, out)
