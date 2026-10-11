@@ -851,3 +851,9 @@
 - [x] 新增回归断言，确保编辑 UI 不直接清空 `video_path` 或自行递增 `version`。
 - [ ] 当前提交的完整 CI 和 docs-sync 均成功后再确认自动化验收。
 - [ ] Windows 真机与真实 Provider 验收继续按用户要求暂缓。
+
+
+### A46 CI 失败处理记录
+- 当前 SHA `2450e2d5b74bba26cd76ac3ef3ef5639499523f2` 的完整 CI 因 `test_handoff_mentions_a46_edit_path_preserves_previous_video` 的文案断言失败（198 项中 1 项失败），不是功能测试失败。
+- 根因：测试要求接手文档明确出现“旧版视频”，原文只写“旧视频路径”。已修正文档表达，保留断言，不删除测试。
+- 本次文档修复提交后的完整 CI 与 docs-sync 仍待确认。
