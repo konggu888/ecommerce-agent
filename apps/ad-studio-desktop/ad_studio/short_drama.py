@@ -6,6 +6,10 @@ existing ad creative plan or silently trigger paid asset/video generation.
 from __future__ import annotations
 
 import json
+import shutil
+import subprocess
+import tempfile
+from pathlib import Path
 from typing import Any
 
 
@@ -371,6 +375,119 @@ def record_product_visual_verification(
     shot["visual_verification_method"] = "manual"
     shot["visual_verification_note"] = str(reviewer_note).strip()
     return updated
+
+
+
+def compare_product_visual_shot(
+    model_router: Any,
+    plan: dict[str, Any],
+    shot_number: int,
+    reference_image_paths: list[str],
+    generated_visual_path: str,
+) -> dict[str, Any]:
+    """Compare product reference images with a generated shot using a vision model.
+
+    The model can flag likely mismatches, but it can never automatically certify
+    product fidelity. Non-mismatch results remain needs_review for human approval.
+    Video evidence is sampled into temporary JPEG frames through FFmpeg.
+    """
+    if plan.get("drama_business_mode") != "product_short_drama_ad":
+        raise ShortDramaPlanError("自动商品画面对比只适用于“AI短剧形式商品广告”模式。")
+    shots = plan.get("storyboard", [])
+    if not isinstance(shots, list) or shot_number < 1 or shot_number > len(shots):
+        raise ShortDramaPlanError("指定镜头编号不存在。")
+    refs = [Path(p).expanduser() for p in reference_image_paths if str(p).strip()]
+    if not refs:
+        raise ShortDramaPlanError("请至少选择一张商品参考图片。")
+    if any(not p.is_file() for p in refs):
+        raise ShortDramaPlanError("有商品参考图片不存在或无法读取。")
+    generated = Path(generated_visual_path).expanduser()
+    if not generated.is_file():
+        raise ShortDramaPlanError("生成画面文件不存在或无法读取。")
+    image_exts = {".png", ".jpg", ".jpeg", ".webp", ".bmp"}
+    frame_paths: list[Path] = []
+    temp_dir = None
+    if generated.suffix.lower() in image_exts:
+        frame_paths = [generated]
+    else:
+        ffmpeg = shutil.which("ffmpeg")
+        ffprobe = shutil.which("ffprobe")
+        if not ffmpeg or not ffprobe:
+            raise ShortDramaPlanError("对比视频需要安装 FFmpeg 和 FFprobe，并加入系统 PATH。")
+        try:
+            probe = subprocess.run(
+                [ffprobe, "-v", "error", "-show_entries", "format=duration",
+                 "-of", "default=noprint_wrappers=1:nokey=1", str(generated)],
+                capture_output=True, text=True, timeout=15, check=True,
+            )
+            duration = max(0.1, float(probe.stdout.strip()))
+        except Exception as exc:
+            raise ShortDramaPlanError(f"无法读取视频时长：{exc}") from exc
+        temp_dir = tempfile.TemporaryDirectory(prefix="ad-studio-product-visual-")
+        temp_root = Path(temp_dir.name)
+        timestamps = sorted({0.0, duration * 0.5, max(0.0, duration * 0.85)})
+        for idx, timestamp in enumerate(timestamps, start=1):
+            frame = temp_root / f"frame-{idx}.jpg"
+            try:
+                subprocess.run(
+                    [ffmpeg, "-y", "-ss", f"{timestamp:.3f}", "-i", str(generated),
+                     "-frames:v", "1", "-q:v", "3", str(frame)],
+                    capture_output=True, text=True, timeout=30, check=True,
+                )
+            except Exception as exc:
+                temp_dir.cleanup()
+                raise ShortDramaPlanError(f"无法从视频提取第 {idx} 个核验帧：{exc}") from exc
+            if frame.is_file() and frame.stat().st_size:
+                frame_paths.append(frame)
+        if not frame_paths:
+            temp_dir.cleanup()
+            raise ShortDramaPlanError("未能从视频中提取可用于核验的画面帧。")
+    try:
+        profile = model_router.resolve_route("商品画面视觉核验")
+        if not getattr(profile, "vision_enabled", False):
+            raise ShortDramaPlanError(
+                f"当前模型「{profile.name}」未启用视觉输入。请在模型设置中启用图片/视频帧分析。"
+            )
+        shot = shots[shot_number - 1]
+        product_facts = plan.get("product_fact_lock", {})
+        prompt = (
+            "你是商品广告画面真实性复核助手。请对照商品参考图片与后续生成画面帧，"
+            "重点检查商品身份、颜色/外观、结构/部件、可见功能表现、正确使用方式是否一致。"
+            "不要把光线、背景、角度变化直接认定为商品变化；看不清或证据不足时必须标记不确定。"
+            "不要臆测图片中看不到的参数或内部结构。此结果仅供人工复核，不可视为最终认证。\\n"
+            f"镜头描述：{shot.get('description', shot.get('visual', '未提供'))}\\n"
+            f"商品事实锁定：{json.dumps(product_facts, ensure_ascii=False)}\\n"
+            f"分镜约束：{json.dumps(shot.get('product_fidelity_constraints', []), ensure_ascii=False)}\\n"
+            "请严格返回 JSON：identity_match (true/false/null), appearance_match (true/false/null), "
+            "structure_match (true/false/null), function_match (true/false/null), usage_match (true/false/null), "
+            "mismatch_detected (boolean), confidence (0到1), issues (字符串数组), summary (字符串)。"
+        )
+        response = model_router.complete_json(
+            profile, prompt, function="商品画面视觉核验",
+            image_paths=[str(p) for p in refs[:8] + frame_paths[:8]],
+        )
+        updated = json.loads(json.dumps(plan, ensure_ascii=False))
+        target = updated["storyboard"][shot_number - 1]
+        mismatch = response.get("mismatch_detected") is True or any(
+            response.get(key) is False for key in (
+                "identity_match", "appearance_match", "structure_match", "function_match", "usage_match"
+            )
+        )
+        target["visual_verification"] = "failed" if mismatch else "needs_review"
+        target["visual_verification_method"] = "ai_vision_assisted"
+        target["visual_verification_evidence"] = str(generated)
+        target["visual_verification_reference_images"] = [str(p) for p in refs]
+        target["visual_verification_note"] = str(response.get("summary", "AI 视觉对比已完成，仍需人工复核。"))
+        target["visual_comparison_result"] = {
+            "model_id": getattr(profile, "id", ""),
+            "result": response,
+            "sampled_frame_count": len(frame_paths),
+            "requires_human_review": True,
+        }
+        return updated
+    finally:
+        if temp_dir is not None:
+            temp_dir.cleanup()
 
 
 def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | None = None) -> dict[str, Any]:
