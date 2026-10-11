@@ -348,6 +348,31 @@ def short_drama_production_rows(plan: dict[str, Any], product_name: str) -> list
     return rows
 
 
+def record_product_visual_verification(
+    plan: dict[str, Any], shot_number: int, status: str, evidence_path: str, reviewer_note: str
+) -> dict[str, Any]:
+    """Record an explicit human visual review tied to a concrete local image/video file."""
+    allowed = {"passed", "needs_review", "failed"}
+    if status not in allowed:
+        raise ShortDramaPlanError("人工画面核验状态必须是 passed、needs_review 或 failed。")
+    if not str(evidence_path).strip():
+        raise ShortDramaPlanError("记录商品画面核验必须选择实际生成的图片或视频作为证据。")
+    if not str(reviewer_note).strip():
+        raise ShortDramaPlanError("请填写核验备注，说明外观、结构、功能或使用方式的检查结果。")
+    updated = json.loads(json.dumps(plan, ensure_ascii=False))
+    shots = updated.get("storyboard", [])
+    if not isinstance(shots, list) or shot_number < 1 or shot_number > len(shots):
+        raise ShortDramaPlanError("指定镜头编号不存在。")
+    if updated.get("drama_business_mode") != "product_short_drama_ad":
+        raise ShortDramaPlanError("人工商品视觉核验只适用于“AI短剧形式商品广告”模式。")
+    shot = shots[shot_number - 1]
+    shot["visual_verification"] = status
+    shot["visual_verification_evidence"] = str(evidence_path).strip()
+    shot["visual_verification_method"] = "manual"
+    shot["visual_verification_note"] = str(reviewer_note).strip()
+    return updated
+
+
 def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | None = None) -> dict[str, Any]:
     """Run deterministic pre-production checks; warnings require human review, not blind approval."""
     checked = validate_short_drama(json.loads(json.dumps(plan, ensure_ascii=False)))
