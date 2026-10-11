@@ -1,6 +1,6 @@
 from pathlib import Path
 import tkinter as tk
-from tkinter import ttk, filedialog, messagebox, simpledialog
+from tkinter import ttk, filedialog, messagebox
 import shutil
 import subprocess
 import json
@@ -2210,6 +2210,7 @@ class App(tk.Tk):
     @ui_action
     def record_short_drama_product_visual_review(self, plan, parent_window=None):
         """Record a user-reviewed generated shot with a concrete local evidence file."""
+        from tkinter import simpledialog
         if not self._ui_execution_gate(): return
         if not self.project:
             return messagebox.showerror('无法记录核验', '请先打开保存了该短剧方案的项目。')
