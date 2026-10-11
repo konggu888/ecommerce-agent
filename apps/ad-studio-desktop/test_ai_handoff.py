@@ -87,5 +87,12 @@ class AIHandoffTests(unittest.TestCase):
         self.assertIn("A44", text)
         self.assertIn("标题/集数回退", text)
 
+
+    def test_handoff_mentions_a46_edit_path_preserves_previous_video(self):
+        text = (ROOT / "docs" / "AD_STUDIO_AI_HANDOFF.md").read_text(encoding="utf-8")
+        self.assertIn("A46", text)
+        self.assertIn("编辑镜头", text)
+        self.assertIn("旧版视频", text)
+
 if __name__ == "__main__":
     unittest.main()

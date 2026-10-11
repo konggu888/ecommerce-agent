@@ -107,3 +107,7 @@ handoff 路径问题已修复；随后仅剩 1 个文案断言不一致，已对
 
 ## A45：失败恢复 UI 状态对齐
 `ProductionStore` 在失败后恢复上一版时，UI 必须保留“已保留上一版本”状态；只有恢复标记、存在的路径和非空文件同时满足才显示旧版可用。A45 增加 `generation_failure_ui_state()` 回归测试，最新 SHA 的 CI 与 docs-sync 需重新确认。
+
+
+## A46：编辑镜头路径旧版保护
+编辑窗口此前绕过安全版本切换，直接清空活动视频路径并递增版本。现改为调用 `mark_regenerate()`，让旧视频路径进入 `previous_video_path`，以便失败/中断恢复。新增测试检查 UI 编辑回调不再执行破坏性赋值。此项须以本次新 SHA 的 CI 与 docs-sync 为准。

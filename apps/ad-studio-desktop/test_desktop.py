@@ -1390,6 +1390,17 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(restored.shots[0].video_path, str(old_output))
 
 
+    def test_a46_edit_shot_routes_through_safe_regeneration_transition(self):
+        app_source = (Path(__file__).resolve().parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        start = app_source.index("def edit_shot(self):")
+        end = app_source.index("def load_project(self):", start)
+        edit_block = app_source[start:end]
+        self.assertIn("mark_regenerate(self.project,self.project.shots.index(s))", edit_block)
+        self.assertNotIn("s.video_path=None", edit_block)
+        self.assertNotIn("s.version+=1", edit_block)
+
+
+
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.
