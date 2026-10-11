@@ -685,6 +685,18 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
     def add(level: str, code: str, message: str) -> None:
         issues.append({"level": level, "code": code, "message": message})
 
+    story_engine = checked.get("story_engine")
+    engine_required = ("protagonist_goal", "opposing_force", "stakes", "turning_point", "setup_and_payoff", "emotional_payoff")
+    if not isinstance(story_engine, dict) or any(not str(story_engine.get(key, "")).strip() for key in engine_required):
+        add("warning", "STORY_ENGINE_INCOMPLETE", "缺少完整故事引擎字段（主角目标、阻力、代价、转折、伏笔兑现、情绪回报）；剧情质量需要人工复核。")
+    elif not isinstance(story_engine.get("escalation_steps"), list) or len([x for x in story_engine.get("escalation_steps", []) if str(x).strip()]) < 3:
+        add("warning", "STORY_ESCALATION_WEAK", "冲突升级步骤少于三项，或未形成可检查的递进结构。")
+    hook_design = checked.get("hook_design")
+    if not isinstance(hook_design, dict) or not str(hook_design.get("opening_question", "")).strip() or not str(hook_design.get("payoff", "")).strip():
+        add("warning", "HOOK_DESIGN_INCOMPLETE", "缺少开场疑问或结尾兑现设计，需检查开场是否吸引观众并在结尾回应。")
+    elif not isinstance(hook_design.get("retention_devices"), list) or len([x for x in hook_design.get("retention_devices", []) if str(x).strip()]) < 2:
+        add("warning", "RETENTION_DESIGN_WEAK", "留存设计少于两个可识别的装置，需人工检查观众继续观看的理由。")
+
     if len(checked.get("alternative_directions", [])) < 2:
         add("warning", "ALT_DIRECTIONS", "备选故事方向少于两个；尚未满足多方向创作要求。")
 

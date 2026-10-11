@@ -111,6 +111,24 @@ class ShortDramaTests(unittest.TestCase):
         self.assertEqual(rows[0]["asset_resolution"]["product_tags"], [])
         self.assertEqual(rows[0]["director_mode"], "short_drama")
 
+    def test_audit_flags_missing_story_engine_and_hook_design(self):
+        plan = sample_plan()
+        plan.pop("story_engine")
+        plan.pop("hook_design")
+        result = audit_short_drama(plan)
+        codes = {issue["code"] for issue in result["issues"]}
+        self.assertIn("STORY_ENGINE_INCOMPLETE", codes)
+        self.assertIn("HOOK_DESIGN_INCOMPLETE", codes)
+
+    def test_audit_flags_weak_escalation_and_retention_design(self):
+        plan = sample_plan()
+        plan["story_engine"]["escalation_steps"] = ["一步"]
+        plan["hook_design"]["retention_devices"] = ["一种"]
+        result = audit_short_drama(plan)
+        codes = {issue["code"] for issue in result["issues"]}
+        self.assertIn("STORY_ESCALATION_WEAK", codes)
+        self.assertIn("RETENTION_DESIGN_WEAK", codes)
+
     def test_audit_flags_ad_claim_and_unknown_character(self):
         plan = sample_plan()
         plan["full_script"] = "本产品保证有效，绝对安全。"
