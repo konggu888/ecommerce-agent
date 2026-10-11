@@ -909,3 +909,10 @@ AI 必须执行：
 2. 为生成画面准备零字节图片、未知 `.bin` 文件和有效支持格式文件；确认无效文件得到明确错误，不调用视觉模型。
 3. 验证错误输入时原始分镜的核验状态和结果没有变化。
 4. 运行短剧单测、桌面完整 CI 与 docs-sync；真实视觉模型、视频抽帧效果和 Windows 真机仍需独立验收。
+
+## 最新自动化验收基准（2026-10-11）
+- 当前代码与文档基准 SHA：`8773905c7293c76309938e633e761206ca3447ca`。
+- 完整 CI：success，运行 `38122183446`：https://github.com/konggu888/ecommerce-agent/actions/runs/38122183446
+- 商品视觉输入校验代码提交 `58e9b106a07151b0a9c1855f8d7599e8d9fc9a48` 的 docs-sync：success，运行 `38122132231`：https://github.com/konggu888/ecommerce-agent/actions/runs/38122132231
+- A55–A58 自动化阶段通过；真实 Provider/账单、Windows 真机、真实素材与商业成片验收仍未完成。
+- PR #31 保持 open/unmerged。后续任何代码变更仍需重新查询最新 SHA 的完整 CI 与 docs-sync。

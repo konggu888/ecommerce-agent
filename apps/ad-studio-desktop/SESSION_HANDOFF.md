@@ -169,3 +169,10 @@ A55 已把有效新视频与成本记账异常分离，A56 修复了提示词换
 
 ## A58：视觉核验输入格式保护（待验收）
 A57 的项目打开恢复与成本对账已在 SHA `ba07c8d1a03440f1b4e40371011f1ea5c2234339` 的完整 CI 与 docs-sync 中通过。继续审查商品视觉核验时发现参考图/生成文件只检查存在性，空文件和不支持格式可能进入 FFmpeg/模型路由。现增加格式及非空校验，并加入短剧回归和 handoff 文档断言。本次提交仍须重新检查 CI/doc-sync。
+
+## 最新自动化验收基准（2026-10-11）
+- 当前代码与文档基准 SHA：`8773905c7293c76309938e633e761206ca3447ca`。
+- 完整 CI：success，运行 `38122183446`：https://github.com/konggu888/ecommerce-agent/actions/runs/38122183446
+- 商品视觉输入校验代码提交 `58e9b106a07151b0a9c1855f8d7599e8d9fc9a48` 的 docs-sync：success，运行 `38122132231`：https://github.com/konggu888/ecommerce-agent/actions/runs/38122132231
+- A55–A58 自动化阶段通过；真实 Provider/账单、Windows 真机、真实素材与商业成片验收仍未完成。
+- PR #31 保持 open/unmerged。后续任何代码变更仍需重新查询最新 SHA 的完整 CI 与 docs-sync。

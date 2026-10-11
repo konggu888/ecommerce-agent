@@ -163,3 +163,10 @@ A55 的 Provider/成本异常边界重构再次引入了字面量反斜杠+n。S
 
 ## A58：商品画面对比输入证据校验（待当前 SHA CI）
 视觉对比现在在模型调用前拒绝空参考图、非图片参考文件、空生成文件及不支持的文件格式（未知生成格式）。支持常见图片和明确的视频扩展名；失败输入不会调用模型，也不应修改核验状态。新增回归测试，必须按最新 SHA 检查完整 CI 与 docs-sync。
+
+## 最新自动化验收基准（2026-10-11）
+- 当前代码与文档基准 SHA：`8773905c7293c76309938e633e761206ca3447ca`。
+- 完整 CI：success，运行 `38122183446`：https://github.com/konggu888/ecommerce-agent/actions/runs/38122183446
+- 商品视觉输入校验代码提交 `58e9b106a07151b0a9c1855f8d7599e8d9fc9a48` 的 docs-sync：success，运行 `38122132231`：https://github.com/konggu888/ecommerce-agent/actions/runs/38122132231
+- A55–A58 自动化阶段通过；真实 Provider/账单、Windows 真机、真实素材与商业成片验收仍未完成。
+- PR #31 保持 open/unmerged。后续任何代码变更仍需重新查询最新 SHA 的完整 CI 与 docs-sync。
