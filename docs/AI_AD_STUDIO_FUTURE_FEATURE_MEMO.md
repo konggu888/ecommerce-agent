@@ -563,3 +563,9 @@ A55 重构意外重新引入提示词双重转义，已按 CI 失败证据修复
 - 将 usage ledger 的成功记录合计作为项目实际成本总额的唯一来源，避免项目快照过期时重复累加。
 - 同步 cost_estimate.actual 和 actual_cost_rmb；失败尝试只保留审计报价，不计入实际花费。
 - 增加旧项目总额过期时的回归测试；真实账单对账仍需后续验证。
+
+
+## A59/A60 状态更新
+- A59：项目成本总额改为成功账本汇总单一事实源，完整 CI/doc-sync 在 SHA cd6c853c5931af77d64b89bb0435cc31895034d7 通过。
+- A60：失败-only 账本兼容通过完整 CI/doc-sync，代码 SHA 1620ddfb3ee695e555cac3535c19ccab7a1830fa。
+- 真实 Provider 账单核对与 Windows 真机仍未验收。

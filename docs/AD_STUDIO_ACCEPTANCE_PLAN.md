@@ -969,12 +969,20 @@
 - [x] 失败行的估算值不计入实际成本。
 - [x] 保留旧项目已有的分类成本摘要，并同步到当前费用展示字段。
 - [x] 增加失败-only 账本回归测试。
-- [ ] 当前 SHA 的完整 CI 与 docs-sync 通过后再确认自动化验收。
+- [x] 完整 CI 与 docs-sync 在 SHA `1620ddfb3ee695e555cac3535c19ccab7a1830fa` 均成功。
 
 
 ## A59｜项目成本汇总单一事实源
 - [x] 成本写入后用 UsageLedger 的成功记录汇总覆盖项目总额，不再对可能过期的项目快照做累加。
 - [x] 同步更新 cost_estimate.actual 与 actual_cost_rmb，避免界面/导出读取到旧成本。
 - [x] 回归覆盖旧项目总额过期、已有成功记录与失败报价不计入实际成本的情况。
-- [ ] 当前提交完整 CI 与 docs-sync 通过后再确认自动化验收。
+- [x] 完整 CI 与 docs-sync 在 SHA `cd6c853c5931af77d64b89bb0435cc31895034d7` 均成功。
 - [ ] 真实 Provider 账单对账与 Windows 真机仍暂缓。
+
+
+## 最新自动化验收基准（2026-10-11）
+- 当前代码与文档基准 SHA：`cd6c853c5931af77d64b89bb0435cc31895034d7`。
+- 完整 CI：success，运行 `38122328825`：https://github.com/konggu888/ecommerce-agent/actions/runs/38122328825
+- docs-sync：success，运行 `38122328836`：https://github.com/konggu888/ecommerce-agent/actions/runs/38122328836
+- A59 成本汇总单一事实源与 A60 失败-only 账本兼容均已通过自动化验收；真实 Provider 账单对账与 Windows 真机仍暂缓。
+- PR #31 保持 open/unmerged；任何新提交都必须重新核对最新 SHA 的完整 CI 与 docs-sync。

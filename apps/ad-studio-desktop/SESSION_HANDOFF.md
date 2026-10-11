@@ -184,3 +184,10 @@ A60 修复失败-only 账本可能把旧项目实际成本清零的问题：至�
 
 ## A59：项目成本汇总去重
 A56 提示词换行修复、A57 成本待核对 UI、A57 打开项目恢复/成本对账和 A58 视觉核验输入校验均已在验收计划所列 SHA 的完整 CI/doc-sync 中通过；最新基准 SHA `e2c1642fcc599bf6e7320460ff1216276e9f16e6` 的完整 CI 与 docs-sync 也均成功。A59 将本地 usage ledger 的成功记录汇总作为项目实际成本总额唯一来源，并同步 project cost_estimate；当前提交需重新查询完整 CI/doc-sync。
+
+
+## 最新自动化验收基准（2026-10-11）
+- 当前 HEAD：`cd6c853c5931af77d64b89bb0435cc31895034d7`。
+- 完整 CI success：`38122328825`；docs-sync success：`38122328836`。
+- A59 项目成本汇总去重与 A60 失败-only 账本兼容已通过自动化测试。
+- PR #31 继续 open/unmerged。真实 Provider 账单对账、Windows 真机、真实素材和商业成片仍未验收。
