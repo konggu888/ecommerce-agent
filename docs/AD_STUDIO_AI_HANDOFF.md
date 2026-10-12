@@ -221,3 +221,10 @@ A61-A63 自动化 CI 与 docs-sync 已通过。A64 将素材生成成功与成�
 - A83 增加 `narrative_obligations`，追踪人物承诺、误解与行动后果，并核验来源证据、人物引用、镜头顺序和后续文本覆盖。
 - A83 变更后的完整 CI/doc-sync 尚待 GitHub Actions 对最终新 SHA 执行；不可沿用 A82 的通过记录。
 - 本规则是结构/文本审查，不是完整语义理解或真实画面验收；Windows 真机、真实 Provider 与真实扣款继续暂缓。
+
+
+## A82/A83 自动化验证记录（2026-10-13）
+- A82 代码基线 SHA `8756b773c3b2ee3bf08b80bf3b31992b7081a606` 的完整 CI（run `38306392896`）与 docs-sync（run `38306392892`）通过。
+- A83 代码基线 SHA `f57c0eb02249439ea42cc3d46dd2d94e87bab1c1` 的完整 CI push run `38307672489`、PR CI run `38307795562`、docs-sync push run `38307672505`、PR docs-sync run `38307795710` 均 success。
+- PR #32 已创建且保持 open/unmerged；任何合并操作都必须等待用户明确要求。
+- 真实剧情语义、Windows 真机、真实 Provider 与真实扣款未由上述自动化检查覆盖。

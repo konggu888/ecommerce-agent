@@ -330,8 +330,10 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - 规则区分剧情内获得的信息（来源镜头必须有效且早于行动镜头）与故事开始前已知的信息；旧方案缺少字段时只产生 warning。
 - PR #31 已于 2026-10-11 合并，不要重复合并；A82 后续提交位于 `feat/product-drama-visual-review` 分支。
 
-## A83｜人物承诺、误解与行动结果一致性（本轮）
-- 目标：结构化追踪会影响后续剧情的承诺、误解和行动后果，并检查来源证据、人物引用、镜头先后与后续兑现/澄清/结果展示。
-- 代码与测试已在提交 `425cfc8d15c5f01bd5e6ff98ebe1a36a7e388aa4` 更新；文档正在同步到后续提交。
-- 新提交后的完整 CI 与 docs-sync 必须以最新 HEAD 为准；不得沿用 A82 的绿灯。
-- 真实剧情语义、人物心理、画面表演、Windows 真机和真实 Provider 仍需后续统一验收。
+## A83｜人物承诺、误解与行动结果一致性（自动化阶段通过）
+- 最终代码提交：`f57c0eb02249439ea42cc3d46dd2d94e87bab1c1`。
+- 完整 CI push run `38307672489` success；PR CI run `38307795562` success。
+- docs-sync push run `38307672505` success；PR docs-sync run `38307795710` success。
+- A83 已加入 `narrative_obligations`，并覆盖承诺兑现/未兑现、误解与行动后果的来源证据、人物引用、镜头先后和后续文本覆盖回归。
+- PR #32 已创建，状态 open/unmerged；不要自动合并。
+- 仍需统一验收真实剧情语义、人物心理、画面表演、Windows 真机、真实 Provider 和真实扣款。
