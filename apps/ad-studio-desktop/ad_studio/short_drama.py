@@ -1254,7 +1254,8 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
                 add("warning", "CROSS_CHARACTER_DEPENDENCY_DUPLICATE", f"第{episode_number}集人物间依赖重复声明：{key[2] or dep_type}。")
             seen_dependency_keys.add(key)
             refs = dependency.get("storyboard_indices", [])
-            shots = state.get("storyboard", []) if isinstance(state, dict) else []
+            episode_shots = episode.get("storyboard", []) if isinstance(episode, dict) else []
+            shots = episode_shots if isinstance(episode_shots, list) else []
             if not isinstance(shots, list): shots = []
             if not isinstance(refs, list) or not refs or any(not isinstance(ref, int) or isinstance(ref, bool) or ref < 1 or ref > len(shots) for ref in refs):
                 add("warning", "CROSS_CHARACTER_DEPENDENCY_SHOTS_INVALID", f"第{episode_number}集第{dep_index}条人物间依赖必须引用有效的本集分镜。")
