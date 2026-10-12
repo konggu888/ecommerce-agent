@@ -1375,7 +1375,7 @@ class ShortDramaTests(unittest.TestCase):
         def run(rule, claim_b):
             episode = {"episode_number": 1, "full_script": "小林认为钥匙在玄关，小王谈到钥匙位置。",
                 "storyboard": [{"index": 1, "action": "小林认为钥匙在玄关，小王谈到钥匙位置。", "dialogue": ""}],
-                "continuity_state": {"cross_character_dependencies": [{
+                "continuity_state": {"opening_state": "人物处于初始状态", "character_state_changes": [], "unresolved_threads": [], "ending_state": "本集状态已记录", "next_episode_requirements": [], "cross_character_dependencies": [{
                     "character_a": "小林", "character_b": "小王", "dependency_key": "key_location",
                     "dependency_type": "knowledge_alignment", "consistency_rule": rule,
                     "character_a_claim": "知道钥匙在玄关", "character_b_claim": claim_b,
@@ -1389,7 +1389,7 @@ class ShortDramaTests(unittest.TestCase):
         plan = sample_plan()
         episode = {"episode_number": 1, "full_script": "小林没有告诉小王钥匙的位置。",
             "storyboard": [{"index": 1, "action": "小林没有告诉小王钥匙的位置。", "dialogue": ""}],
-            "continuity_state": {"cross_character_dependencies": [{
+            "continuity_state": {"opening_state": "人物处于初始状态", "character_state_changes": [], "unresolved_threads": [], "ending_state": "本集状态已记录", "next_episode_requirements": [], "cross_character_dependencies": [{
                 "character_a": "小林", "character_b": "不存在的人物", "dependency_key": "x",
                 "dependency_type": "knowledge_alignment", "consistency_rule": "asymmetric_knowledge",
                 "character_a_claim": "知道位置", "character_b_claim": "不知道位置",
