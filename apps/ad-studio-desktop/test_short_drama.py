@@ -537,6 +537,33 @@ class ShortDramaTests(unittest.TestCase):
         self.assertIn("CHARACTER_STATE_REACTION_MISSING", codes)
         self.assertIn("CHARACTER_STATE_CONSEQUENCE_NOT_LATER", codes)
 
+    def test_a87_accepts_observable_performance_for_changed_state(self):
+        plan = self._a86_changed_state_plan()
+        record = plan["episodes"][1]["continuity_state"]["character_state_ledger"][0]
+        plan["episodes"][1]["storyboard"][2]["action"] = "小林皱眉后退一步，抬手挡住小王，问他为什么藏起证据。"
+        record["observable_manifestation"] = "小林皱眉后退一步，抬手挡住小王，问他为什么藏起证据"
+        record["observable_storyboard_indices"] = [3]
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertNotIn("CHARACTER_STATE_MANIFESTATION_MISSING", codes)
+        self.assertNotIn("CHARACTER_STATE_MANIFESTATION_NOT_SHOWN", codes)
+        self.assertNotIn("CHARACTER_STATE_MANIFESTATION_TOO_ABSTRACT", codes)
+
+    def test_a87_warns_when_state_change_has_only_abstract_emotion_label(self):
+        plan = self._a86_changed_state_plan()
+        record = plan["episodes"][1]["continuity_state"]["character_state_ledger"][0]
+        record["observable_manifestation"] = "小林感到怀疑，态度改变"
+        record["observable_storyboard_indices"] = [2]
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("CHARACTER_STATE_MANIFESTATION_TOO_ABSTRACT", codes)
+
+    def test_a87_warns_when_observable_manifestation_is_not_in_referenced_shot(self):
+        plan = self._a86_changed_state_plan()
+        record = plan["episodes"][1]["continuity_state"]["character_state_ledger"][0]
+        record["observable_manifestation"] = "小林转身离开并锁上门"
+        record["observable_storyboard_indices"] = [3]
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("CHARACTER_STATE_MANIFESTATION_NOT_SHOWN", codes)
+
     def test_a86_prompt_requires_causal_closure_for_changed_states(self):
         prompt = build_short_drama_prompt({}, {"drama_business_mode": "general"})
         for field in ("trigger_event", "trigger_storyboard_indices", "change_storyboard_indices",

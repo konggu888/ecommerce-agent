@@ -1285,3 +1285,7 @@ A81 测试夹具边界：因果链按步骤独立审查 state_continuity。测�
 
 ### A86｜人物状态变化因果闭环
 A86 在 A85 状态台账基础上增加触发事件、状态改变镜头、人物反应与后续影响字段；仅对 `status=changed` 的记录执行强检查。触发镜头必须早于状态改变镜头，反应及后续影响必须在变化之后，证据须能在剧本或对应镜头文本中定位。旧方案无台账时兼容。新增警告码：`CHARACTER_STATE_TRIGGER_MISSING`、`CHARACTER_STATE_TRIGGER_NOT_BEFORE_CHANGE`、`CHARACTER_STATE_CHANGE_SHOTS_MISSING`、`CHARACTER_STATE_REACTION_MISSING`、`CHARACTER_STATE_REACTION_NOT_LATER`、`CHARACTER_STATE_CONSEQUENCE_MISSING`、`CHARACTER_STATE_CONSEQUENCE_NOT_LATER`，以及对应分镜引用无效码。
+
+
+### A87｜人物状态到分镜表演的可观察性
+A87 在 A86 因果闭环上新增可观察表演字段与审查：`observable_manifestation`、`observable_storyboard_indices`。缺少描述/引用、证据无法在指定分镜或剧本中定位、只写抽象心理状态时分别发出 warning。检查对象是动作/台词/表情/互动的文本可定位性，不宣称理解表演质量或视觉事实。旧方案不提供可选状态台账时兼容。

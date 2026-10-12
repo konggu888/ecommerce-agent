@@ -18,7 +18,7 @@ SHORT_DRAMA_SCHEMA = {
     "format_mode": "single_episode / continuous_series / anthology_series",
     "episode_count": "integer",
     "series_bible": {"series_arc": "全剧主线", "character_state": "人物长期状态与关系", "continuity_rules": ["跨集必须保持的事实"]},
-    "episodes": [{"episode_number": "integer", "title": "集名", "logline": "本集梗概", "plot_beats": ["本集节拍"], "ending_hook": "本集结尾/悬念", "full_script": "本集完整剧本", "continuity_state": {"opening_state": "本集开始时承接的剧情/人物状态", "character_state_changes": ["本集人物状态或关系的变化"], "character_state_ledger": [{"character_name": "人物姓名", "dimension": "心理/知识/秘密/承诺/关系等状态维度；关系可用关系:人物A-人物B", "state_description": "本集结束时该维度的明确状态", "status": "established / changed / persisting / resolved", "must_persist": "boolean；true 表示下一集仍需保持或明确转变", "evidence": "剧本或分镜中可定位的状态证据", "storyboard_indices": ["本集分镜从1开始的位置"], "transition_evidence": "状态变化时解释变化原因的可定位证据", "trigger_event": "直接触发状态变化的具体事件/信息", "trigger_storyboard_indices": ["触发事件所在的本集分镜位置"], "change_storyboard_indices": ["状态实际改变发生的本集分镜位置"], "reaction_evidence": "人物对触发事件的可定位反应", "reaction_storyboard_indices": ["反应所在的本集分镜位置"], "downstream_consequence_evidence": "状态变化影响后续行动/选择的可定位证据", "downstream_storyboard_indices": ["后续影响所在的本集分镜位置"]}], "unresolved_threads": ["本集结束后仍未解决的悬念/冲突"], "ending_state": "本集结束时可供后续承接的事实状态", "next_episode_requirements": ["下一集必须承接的事件/事实；最终集可为空列表"]}, "storyboard": ["本集分镜，字段与根级 storyboard 相同"]}],
+    "episodes": [{"episode_number": "integer", "title": "集名", "logline": "本集梗概", "plot_beats": ["本集节拍"], "ending_hook": "本集结尾/悬念", "full_script": "本集完整剧本", "continuity_state": {"opening_state": "本集开始时承接的剧情/人物状态", "character_state_changes": ["本集人物状态或关系的变化"], "character_state_ledger": [{"character_name": "人物姓名", "dimension": "心理/知识/秘密/承诺/关系等状态维度；关系可用关系:人物A-人物B", "state_description": "本集结束时该维度的明确状态", "status": "established / changed / persisting / resolved", "must_persist": "boolean；true 表示下一集仍需保持或明确转变", "evidence": "剧本或分镜中可定位的状态证据", "storyboard_indices": ["本集分镜从1开始的位置"], "transition_evidence": "状态变化时解释变化原因的可定位证据", "trigger_event": "直接触发状态变化的具体事件/信息", "trigger_storyboard_indices": ["触发事件所在的本集分镜位置"], "change_storyboard_indices": ["状态实际改变发生的本集分镜位置"], "reaction_evidence": "人物对触发事件的可定位反应", "reaction_storyboard_indices": ["反应所在的本集分镜位置"], "downstream_consequence_evidence": "状态变化影响后续行动/选择的可定位证据", "downstream_storyboard_indices": ["后续影响所在的本集分镜位置"], "observable_manifestation": "人物状态变化在镜头中可观察到的具体动作/台词/表情或互动，不要只写心理标签", "observable_storyboard_indices": ["直接表现该状态变化的本集分镜位置"]}], "unresolved_threads": ["本集结束后仍未解决的悬念/冲突"], "ending_state": "本集结束时可供后续承接的事实状态", "next_episode_requirements": ["下一集必须承接的事件/事实；最终集可为空列表"]}, "storyboard": ["本集分镜，字段与根级 storyboard 相同"]}],
     "continuity_ledger": [{"episode_number": "integer", "opening_state": "承接状态", "character_state_changes": ["人物状态变化"], "unresolved_threads": ["未解决线索"], "ending_state": "集末状态", "next_episode_requirements": ["下一集承接要求"]}],
     "drama_business_mode": "通用AI短剧/商品植入短剧/商品转化短剧/AI短剧形式商品广告",
     "product_analysis": {"product_type": "商品类型", "target_audience": "目标人群", "selling_points": ["已确认卖点"], "usage_scenarios": ["使用场景"], "unknown_facts": ["未知或待确认信息"]},
@@ -155,7 +155,8 @@ def build_short_drama_prompt(product: dict[str, Any], constraints: dict[str, Any
         "6. 提供至少两个故事方向备选，机制应有实质差异，不只是换标题。\n"
         "7. 本次只做创作方案，不要调用素材生成或视频生成，不要假称已经生成成片。\n"
         "7.1 A86人物状态变化必须形成“触发事件/信息→状态实际改变→人物反应→后续行动或剧情后果”的可核对闭环。对 status=changed 的台账项，填写 trigger_event、trigger_storyboard_indices、change_storyboard_indices、reaction_evidence/reaction_storyboard_indices、downstream_consequence_evidence/downstream_storyboard_indices；触发镜头必须早于状态改变镜头，反应和后续影响必须出现在改变之后。每段证据必须能在本集剧本或所引用分镜中定位；不得用“他想通了”等无事件依据的概述代替触发事件。旧方案可不提供人物状态台账。\n"
-        "8. 只输出符合给定结构的合法JSON，不要输出Markdown。\n"
+        "7.2 A87人物状态变化必须落实为可拍摄、可观察的动作/台词/表情或互动。对 status=changed 的台账项，填写 observable_manifestation 和 observable_storyboard_indices；不能只写“愤怒、怀疑、原谅、信任”等抽象心理标签。所引用镜头的 action/dialogue/generation_prompt/narrative_function/story_event_reference 中必须能直接定位所写的可观察表现，且引用有效；若只有状态结论、没有可观察行为，发出审查警告。文本检查不能替代生成画面的人工/视觉核验。旧方案可不提供可选人物状态台账。\n"
+        +"8. 只输出符合给定结构的合法JSON，不要输出Markdown。\n"
         "9. 如果 constraints.short_drama_mode 为 continuous_series 或 anthology_series，必须输出指定数量的 episodes；每集有独立剧本、分镜和结尾钩子。根级 storyboard 必须按集顺序汇总全部分镜，每个镜头带 episode_number；不要把多集缩成一集。\n"
         "10. continuous_series 必须跨集承接人物状态、因果和悬念；anthology_series 共用人物/世界观但每集有相对独立的故事。单集模式 episodes 可以只含一集。\n"
 
@@ -1201,6 +1202,21 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
                     add("warning", "CHARACTER_STATE_REACTION_MISSING", f"第{episode_number}集人物“{name}”的状态变化缺少可定位的人物反应及其分镜引用。")
                 elif change_refs and min(reaction_refs) <= max(change_refs):
                     add("warning", "CHARACTER_STATE_REACTION_NOT_LATER", f"第{episode_number}集人物“{name}”的反应镜头必须位于状态改变镜头之后。")
+                # A87: require a concrete, observable performance cue, not only an abstract emotion label.
+                manifestation = str(record.get("observable_manifestation", "")).strip()
+                manifestation_refs = _state_refs("observable_storyboard_indices", "CHARACTER_STATE_MANIFESTATION_SHOTS_INVALID")
+                abstract_only_markers = ("感到愤怒", "感到怀疑", "感到信任", "感到原谅", "内心愤怒", "内心怀疑", "态度改变", "心态改变", "不再信任", "开始信任", "原谅了对方")
+                manifestation_is_abstract = manifestation and any(
+                    marker in manifestation for marker in abstract_only_markers
+                ) and not any(
+                    marker in manifestation for marker in ("说", "问", "喊", "退", "躲", "握", "放下", "转身", "推开", "递", "拒绝", "点头", "摇头", "皱眉", "避开", "停下", "看向", "移开", "哭", "笑", "沉默", "拿起", "交出", "删除", "关闭", "打开", "后退", "靠近", "拥抱", "拍", "抓住", "挡住", "藏起", "离开", "行动")
+                )
+                if not manifestation or not manifestation_refs:
+                    add("warning", "CHARACTER_STATE_MANIFESTATION_MISSING", f"第{episode_number}集人物“{name}”的状态标记 changed，但缺少可观察的表演描述或对应分镜引用。")
+                elif not _evidence_located(manifestation, manifestation_refs):
+                    add("warning", "CHARACTER_STATE_MANIFESTATION_NOT_SHOWN", f"第{episode_number}集人物“{name}”声明的可观察表现无法在指定分镜/剧本中定位；请把状态变化落实到动作、台词、表情或互动。")
+                if manifestation_is_abstract:
+                    add("warning", "CHARACTER_STATE_MANIFESTATION_TOO_ABSTRACT", f"第{episode_number}集人物“{name}”只写了抽象心理状态，未说明观众能看到或听到的行为。")
                 if not consequence_evidence or not consequence_refs or not _evidence_located(consequence_evidence, consequence_refs):
                     add("warning", "CHARACTER_STATE_CONSEQUENCE_MISSING", f"第{episode_number}集人物“{name}”的状态变化缺少可定位的后续行动/剧情后果及其分镜引用。")
                 elif change_refs and min(consequence_refs) <= max(change_refs):

@@ -1106,3 +1106,11 @@ SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 的完整 CI 与 docs-sync 在 pu
 3. 分别删除触发证据、将触发镜头放到变化之后、删除反应证据、将后续影响放到变化之前，确认对应警告。
 4. 检查无可选人物状态台账的旧方案仍兼容。
 5. 执行短剧专项测试、完整 CI 与 docs-sync；记录最新 SHA 和结果。不得将字符串/顺序检查当作真正的心理因果理解。
+
+
+### A87 专项验收：人物状态是否落实到分镜表演
+1. 给 changed 状态补充可观察表现和镜头引用，确认有效案例通过。
+2. 改成仅有抽象情绪标签，确认 `CHARACTER_STATE_MANIFESTATION_TOO_ABSTRACT`。
+3. 将描述替换为引用镜头中不存在的动作，确认 `CHARACTER_STATE_MANIFESTATION_NOT_SHOWN`。
+4. 删除表现字段或镜头引用，确认 `CHARACTER_STATE_MANIFESTATION_MISSING`。
+5. 检查旧方案兼容，运行短剧专项测试、完整 CI 与 docs-sync，并记录最终 SHA。真实视频表演仍需独立视觉/人工核验。

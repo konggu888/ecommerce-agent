@@ -1164,3 +1164,12 @@ A61（旧成本迁移）、A62（接手文案断言）、A63（迁移基线持�
 - [ ] 让反应证据无法定位，确认 `CHARACTER_STATE_REACTION_MISSING`；把后续影响放在变化之前，确认 `CHARACTER_STATE_CONSEQUENCE_NOT_LATER`。
 - [ ] 验证旧方案不使用可选状态台账时仍可审查。
 - [ ] 运行短剧专项测试、完整 CI 与 docs-sync，并记录最终 SHA。文本闭环检查不替代人工剧情/画面核验。
+
+
+## A87｜人物状态到可观察表演验收
+- [ ] `status=changed` 时提供 `observable_manifestation` 与 `observable_storyboard_indices`。
+- [ ] 有效动作/台词/表情/互动能够在指定分镜文本中定位，不产生表现缺失/未体现警告。
+- [ ] 仅写抽象心理状态（例如“感到怀疑，态度改变”）应触发 `CHARACTER_STATE_MANIFESTATION_TOO_ABSTRACT`。
+- [ ] 描述的行为与所引用镜头不匹配，应触发 `CHARACTER_STATE_MANIFESTATION_NOT_SHOWN`。
+- [ ] 无描述/引用时触发 `CHARACTER_STATE_MANIFESTATION_MISSING`；检查旧方案兼容。
+- [ ] 通过 CI/docs-sync 后，另行对真实生成画面进行人工/视觉核验；不得把文本检查当作画面验收。

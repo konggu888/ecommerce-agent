@@ -374,3 +374,10 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - 新增 changed 状态的触发事件→变化→人物反应→后续影响字段和时序校验。
 - 已添加有效闭环、缺少触发、触发晚于变化、反应/后果缺失或顺序错误等回归测试；需以最新 SHA 的 CI/docs-sync 结果确认。
 - PR #32 仍保持 open/unmerged；Windows 真机、真实 Provider、真实扣款/账单与剪映现场验收继续暂缓。
+
+
+## A87｜人物状态到分镜表演（接手记录）
+- 对 `status=changed` 增加 `observable_manifestation` 与 `observable_storyboard_indices`，检查状态变化是否被具体动作、台词、表情或互动体现，而不只是心理标签。
+- 新增测试：有效可观察表演、仅有抽象情绪标签、表演描述无法在引用镜头中定位。
+- 本节记录的是实现目标；提交后必须以最终 SHA 的 CI 和 docs-sync 结果更新验证状态。
+- PR #32 保持 open/unmerged；Windows 真机、真实 Provider、真实扣款/账单和剪映现场验收仍暂缓。
