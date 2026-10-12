@@ -1067,3 +1067,14 @@ AI 必须执行：
 6. 移除旧方案的 `narrative_obligations`，确认只产生兼容性 warning，不阻止读取。
 7. 运行短剧专项测试、完整 CI、docs-sync，并记录同一最新 SHA。
 8. 这些规则只做结构、顺序和文本覆盖检查，不证明承诺可信、误解合理或行动后果具备真实语义因果。
+
+
+### A84 专项：跨集承诺、误解和行动后果连续性
+1. 建立至少两集的 continuous_series 方案，根级 storyboard 中每镜都有正确的 `episode_number`。
+2. 在第1集来源镜头创建一项 `cross_episode_required=true`、状态为 `open` 的事项，并让来源集 `continuity_state` 与第2集开场状态显式承接它；确认不出现 A84 warning。
+3. 删除第1集的 `unresolved_threads`、`next_episode_requirements` 和相关 `ending_state` 文本，确认出现 `NARRATIVE_OBLIGATION_NOT_IN_EPISODE_HANDOFF`。
+4. 删除第2集开场状态/未解线索中的对应内容，确认出现 `NARRATIVE_OBLIGATION_NOT_CARRIED_FORWARD`。
+5. 把后续镜头引用改成第1集镜头，确认出现 `NARRATIVE_OBLIGATION_CROSS_EPISODE_FOLLOW_THROUGH_MISSING`。
+6. 移除 `cross_episode_required` 或设置为 false，确认不对旧方案强制跨集承接。
+7. 运行短剧专项测试、完整 CI、docs-sync，并记录最终 SHA 与各工作流结果。Windows 真机、真实 Provider、实际扣款仍按用户既定安排暂缓。
+8. A84 的文本命中不证明人物真实记得/理解事项，仍需人工或语义复核。

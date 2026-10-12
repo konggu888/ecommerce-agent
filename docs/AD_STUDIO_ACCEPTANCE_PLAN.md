@@ -1123,3 +1123,14 @@ A61（旧成本迁移）、A62（接手文案断言）、A63（迁移基线持�
 - [x] 旧方案缺少新列表时只产生 warning，不阻止读取。
 - [x] SHA `f57c0eb02249439ea42cc3d46dd2d94e87bab1c1` 的完整 CI push run `38307672489`、PR CI run `38307795562`、docs-sync push run `38307672505`、PR docs-sync run `38307795710` 均通过。
 - [ ] 人物心理、承诺可信度、误解合理性与真实表演仍需人工/模型语义评审。
+
+
+## A84｜跨集剧情承接事项一致性
+- [ ] 在连续剧模式下，标记 `cross_episode_required=true` 的承诺/误解/行动后果必须映射到来源集之后的分镜。
+- [ ] 对仍为 `open` 的事项，来源集的 `continuity_state` 必须在未解线索、下一集要求或集末状态中保留该事项；下一集开场状态或未解线索必须继续承接。
+- [ ] 构造有效承接案例，确认不出现 A84 四类 warning。
+- [ ] 删除来源集承接信息或下一集承接文本，确认分别出现 `NARRATIVE_OBLIGATION_NOT_IN_EPISODE_HANDOFF` 和 `NARRATIVE_OBLIGATION_NOT_CARRIED_FORWARD`。
+- [ ] 将后续镜头引用改成来源集内镜头，确认出现 `NARRATIVE_OBLIGATION_CROSS_EPISODE_FOLLOW_THROUGH_MISSING`。
+- [ ] 验证单集/旧方案未声明 `cross_episode_required` 时不触发 A84 专项警告。
+- [ ] 运行短剧专项测试、完整 CI 和 docs-sync；所有结果必须对应最新 SHA。
+- [ ] 本项只验证显式字段、集数映射和文本承接，不代表自然语言语义或实际画面已验收。

@@ -337,3 +337,12 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - A83 已加入 `narrative_obligations`，并覆盖承诺兑现/未兑现、误解与行动后果的来源证据、人物引用、镜头先后和后续文本覆盖回归。
 - PR #32 已创建，状态 open/unmerged；不要自动合并。
 - 仍需统一验收真实剧情语义、人物心理、画面表演、Windows 真机、真实 Provider 和真实扣款。
+
+
+## 当前接手状态覆盖（2026-10-13；以本节为准）
+- 当前工作分支：`feat/product-drama-visual-review`。
+- PR #32 继续保持 open/unmerged；未获用户明确许可不得合并。PR 链接：https://github.com/konggu888/ecommerce-agent/pull/32
+- A83 已完成并在最终 SHA `dc24957d5d773bd87bce648b00ea40c412a15da8` 上通过完整 CI 与 docs-sync（CI push `38307988335`、CI PR `38307994797`、docs-sync push `38307988310`、docs-sync PR `38307994904` 均 success）。
+- A84 已增加跨集承诺/误解/行动后果的显式承接检查与 3 项回归测试；当前代码提交为 `3f5da4c93560baac87c716c8303953fae33cbde2`。此提交及后续文档提交的完整 CI 与 docs-sync 必须重新核验，不能沿用 A83 的绿灯。
+- A84 专项：`cross_episode_required=true` 时要求事项引用来源集之后的镜头；仍为 open 的事项必须进入来源集承接状态，并在下一集开场状态/未解线索中延续。未声明该字段的旧方案兼容。
+- 仍暂缓：Windows 真机、真实 Provider、真实扣款/账单核对、剪映现场验收。不得将自动化文本审查称为商业成片或语义验收。

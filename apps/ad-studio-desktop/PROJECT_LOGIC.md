@@ -1253,3 +1253,10 @@ A81 测试夹具边界：因果链按步骤独立审查 state_continuity。测�
 
 ### A83 验证记录
 代码与回归测试 SHA `f57c0eb02249439ea42cc3d46dd2d94e87bab1c1` 的完整 CI push/PR 和 docs-sync push/PR 均通过。后续若修改代码或文档，仍须按最新 HEAD 重新检查 CI/doc-sync；文本覆盖警告不代表语义或画面已被证明。
+
+### A84：跨集剧情承接事项与连续性台账对照
+- `narrative_obligations` 新增可选布尔字段 `cross_episode_required`；仅为 `true` 的事项启用跨集强校验，旧方案兼容。
+- 根据根级 storyboard 的 `episode_number` 将来源镜头和后续引用映射到具体集；跨集事项必须引用来源集之后的镜头。
+- 对状态为 `open` 的跨集事项，检查来源集的 `continuity_state`（`unresolved_threads`、`next_episode_requirements` 或 `ending_state`）和下一集的 `opening_state` / `unresolved_threads` 是否以明确文本承接事项描述或预期结果。
+- 新 warning codes：`NARRATIVE_OBLIGATION_CROSS_EPISODE_TARGET_MISSING`、`NARRATIVE_OBLIGATION_CROSS_EPISODE_FOLLOW_THROUGH_MISSING`、`NARRATIVE_OBLIGATION_NOT_IN_EPISODE_HANDOFF`、`NARRATIVE_OBLIGATION_NOT_CARRIED_FORWARD`。
+- 这仍是确定性结构/文本匹配，不等于剧情语义审查。新增回归覆盖有效跨集承接、承接断裂、后续镜头仍引用本集的错误情况。代码 SHA `3f5da4c93560baac87c716c8303953fae33cbde2` 的最新 CI/doc-sync 尚待核实。

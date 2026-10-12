@@ -228,3 +228,7 @@ A61-A63 自动化 CI 与 docs-sync 已通过。A64 将素材生成成功与成�
 - A83 代码基线 SHA `f57c0eb02249439ea42cc3d46dd2d94e87bab1c1` 的完整 CI push run `38307672489`、PR CI run `38307795562`、docs-sync push run `38307672505`、PR docs-sync run `38307795710` 均 success。
 - PR #32 已创建且保持 open/unmerged；任何合并操作都必须等待用户明确要求。
 - 真实剧情语义、Windows 真机、真实 Provider 与真实扣款未由上述自动化检查覆盖。
+
+
+### A84：跨集剧情承接一致性
+A84 在 A83 的 `narrative_obligations` 上增加可选 `cross_episode_required` 标记。对显式要求跨集延续的事项，按根级 storyboard 的 episode_number 检查后续引用是否确实落在后续集；若状态仍为 open，还需核对来源集的未解线索/下一集要求/集末状态和下一集开场状态/未解线索。新增 warning code：`NARRATIVE_OBLIGATION_CROSS_EPISODE_TARGET_MISSING`、`NARRATIVE_OBLIGATION_CROSS_EPISODE_FOLLOW_THROUGH_MISSING`、`NARRATIVE_OBLIGATION_NOT_IN_EPISODE_HANDOFF`、`NARRATIVE_OBLIGATION_NOT_CARRIED_FORWARD`。未声明字段的旧方案兼容。该检查是结构/字符串匹配，不证明语义合理性。代码 SHA `3f5da4c93560baac87c716c8303953fae33cbde2` 的 CI/doc-sync 尚待最新结果。
