@@ -150,8 +150,7 @@ def build_short_drama_prompt(product: dict[str, Any], constraints: dict[str, Any
         "3. 商品是否出现必须服从所选创作目标：通用模式允许不出现；商品植入/转化模式应按目标呈现。任何模式都不得篡改商品外观、结构、核心功能、使用方式、规格、功效或其他事实。\n"
         "4. 未提供或无法验证的商品信息必须标为待确认，不得编造认证、销量、价格、效果或用户证言。\n"
         "5. 输出完整剧本和可执行分镜。每个分镜必须说明动作、台词、场景、人物、商品融入方式、素材需求和生成提示；新增 narrative_function（本镜在剧情中的作用）、story_event_reference（对应的 causal_chain.step 编号列表）和 character_action_basis（逐个列出本镜每个行动人物的 goal_or_motivation、known_information、knowledge_source、knowledge_origin、knowledge_source_storyboard_indices、decision_pressure、choice_rationale）。knowledge_source 必须是 full_script 中可逐字定位的信息来源原文；knowledge_origin 必须是 storyboard 或 preexisting：若信息在本剧分镜中首次获得，knowledge_source_storyboard_indices 必须引用本镜之前真实发生的信息揭示镜头，且来源原文必须出现在引用镜头的动作/台词/生成提示中；若属于故事开始前已知的信息，knowledge_source_storyboard_indices 必须为空列表。禁止引用本镜之后才揭示的信息作为当前行动依据。人物不能使用其当时尚未获知的信息。关键选择必须落实为可拍摄动作，人物行动应与人物目标、动机、关系压力及当时已知信息相容。反转必须有可定位的前置线索。\n"
-        "5.1 输出 narrative_obligations 列表，追踪会影响后续剧情的承诺、误解和行动后果；每项增加 cross_episode_required 布尔值，只有确实需要跨集承接时才设为 true。\n" +
-        "5.1a 每项必须说明 kind（commitment/misunderstanding/action_consequence）、character_name、obligation、origin_storyboard_index、origin_evidence、expected_follow_through、follow_through_storyboard_indices、status（open/resolved/intentionally_abandoned）及必要时的 resolution_rationale。来源证据必须出现在来源镜头文本中；后续引用必须有效且晚于来源镜头；跨集未解决事项还必须同步到来源集 continuity_state 的未解线索/下一集要求/集末状态及下一集开场状态/未解线索。旧方案兼容，缺少列表只产生审查警告。\n"
+        "5.1 输出 narrative_obligations 列表，追踪会影响后续剧情的承诺、误解和行动后果。每项必须说明 kind（commitment/misunderstanding/action_consequence）、character_name、obligation、origin_storyboard_index、origin_evidence、expected_follow_through、follow_through_storyboard_indices、status（open/resolved/intentionally_abandoned）及必要时的 resolution_rationale。来源证据必须出现在来源镜头文本中；后续引用必须是有效且晚于来源镜头的位置；承诺需兑现或明确保持未兑现，误解需延续到人物澄清/发现错误的镜头，行动后果需在后续可拍摄动作/状态中体现。无后续影响的事项不必列入。旧方案兼容，缺少该列表只产生审查警告。\n"
         "6. 提供至少两个故事方向备选，机制应有实质差异，不只是换标题。\n"
         "7. 本次只做创作方案，不要调用素材生成或视频生成，不要假称已经生成成片。\n"
         "8. 只输出符合给定结构的合法JSON，不要输出Markdown。\n"
@@ -1022,74 +1021,6 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
             follow_text = " ".join(shot_texts[ref - 1] for ref in valid_follow_refs)
             if expected.casefold() not in follow_text:
                 add("warning", "NARRATIVE_OBLIGATION_FOLLOW_THROUGH_NOT_SHOWN", f"第{obligation_index}项剧情承接事项要求后续体现“{expected}”，但引用镜头中未找到对应文本。")
-
-    # A84: cross-episode obligation handoff checks. Only explicit opt-in items are
-    # required to cross episode boundaries, preserving compatibility with older plans.
-    episode_rows = checked.get("episodes", [])
-    episode_by_number: dict[int, dict[str, Any]] = {}
-    if isinstance(episode_rows, list):
-        for position, episode in enumerate(episode_rows, 1):
-            if not isinstance(episode, dict):
-                continue
-            try:
-                episode_number = int(episode.get("episode_number", position))
-            except (TypeError, ValueError):
-                continue
-            episode_by_number[episode_number] = episode
-    shot_episode_numbers: dict[int, int] = {}
-    for shot_index, shot in enumerate(storyboard, 1):
-        if not isinstance(shot, dict):
-            continue
-        try:
-            shot_episode_numbers[shot_index] = int(shot.get("episode_number", 1) or 1)
-        except (TypeError, ValueError):
-            shot_episode_numbers[shot_index] = 1
-    for obligation_index, item in enumerate(obligations, 1):
-        if not isinstance(item, dict) or item.get("cross_episode_required") is not True:
-            continue
-        origin_index = item.get("origin_storyboard_index")
-        if not isinstance(origin_index, int) or isinstance(origin_index, bool) or origin_index not in shot_episode_numbers:
-            continue
-        origin_episode = shot_episode_numbers[origin_index]
-        later_episode_numbers = sorted(number for number in episode_by_number if number > origin_episode)
-        if not later_episode_numbers:
-            add("warning", "NARRATIVE_OBLIGATION_CROSS_EPISODE_TARGET_MISSING", f"第{obligation_index}项剧情承接事项标记为跨集承接，但来源在第{origin_episode}集之后没有可承接的后续集。")
-            continue
-        follow_refs = item.get("follow_through_storyboard_indices", [])
-        later_follow_refs = [
-            ref for ref in follow_refs
-            if isinstance(ref, int) and not isinstance(ref, bool)
-            and ref in shot_episode_numbers and shot_episode_numbers[ref] > origin_episode
-        ] if isinstance(follow_refs, list) else []
-        if not later_follow_refs:
-            add("warning", "NARRATIVE_OBLIGATION_CROSS_EPISODE_FOLLOW_THROUGH_MISSING", f"第{obligation_index}项剧情承接事项要求跨集延续，但没有引用来源集之后的分镜。")
-        if str(item.get("status", "")).strip() != "open":
-            continue
-        obligation_text = str(item.get("obligation", "")).strip().casefold()
-        expected_text = str(item.get("expected_follow_through", "")).strip().casefold()
-        origin_episode_row = episode_by_number.get(origin_episode, {})
-        origin_state = origin_episode_row.get("continuity_state", {}) if isinstance(origin_episode_row, dict) else {}
-        if not isinstance(origin_state, dict):
-            origin_state = {}
-        origin_handoff_values = [str(origin_state.get("ending_state", ""))]
-        for field in ("unresolved_threads", "next_episode_requirements"):
-            value = origin_state.get(field, [])
-            if isinstance(value, list):
-                origin_handoff_values.extend(str(entry) for entry in value)
-        origin_handoff_text = " ".join(origin_handoff_values).casefold()
-        if not ((obligation_text and obligation_text in origin_handoff_text) or (expected_text and expected_text in origin_handoff_text)):
-            add("warning", "NARRATIVE_OBLIGATION_NOT_IN_EPISODE_HANDOFF", f"第{obligation_index}项仍未解决的跨集事项没有写入第{origin_episode}集的未解线索/下一集承接要求/集末状态。")
-        next_episode = episode_by_number.get(later_episode_numbers[0], {})
-        next_state = next_episode.get("continuity_state", {}) if isinstance(next_episode, dict) else {}
-        if not isinstance(next_state, dict):
-            next_state = {}
-        next_values = [str(next_state.get("opening_state", ""))]
-        unresolved = next_state.get("unresolved_threads", [])
-        if isinstance(unresolved, list):
-            next_values.extend(str(entry) for entry in unresolved)
-        next_handoff_text = " ".join(next_values).casefold()
-        if not ((obligation_text and obligation_text in next_handoff_text) or (expected_text and expected_text in next_handoff_text)):
-            add("warning", "NARRATIVE_OBLIGATION_NOT_CARRIED_FORWARD", f"第{obligation_index}项仍未解决的跨集事项没有在第{later_episode_numbers[0]}集开场状态或未解线索中继续出现。")
 
     seen_scene_locations: dict[str, str] = {}
     total_seconds = 0
