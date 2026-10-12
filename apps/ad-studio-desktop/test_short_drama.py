@@ -349,6 +349,75 @@ class ShortDramaTests(unittest.TestCase):
         self.assertIn("NARRATIVE_OBLIGATION_UNKNOWN_CHARACTER", codes)
         self.assertIn("NARRATIVE_OBLIGATION_FOLLOW_SHOTS_NOT_LATER", codes)
 
+    def _a84_multiepisode_plan(self):
+        plan = sample_plan()
+        first = dict(plan["storyboard"][0])
+        first["episode_number"] = 1
+        first["action"] = "小林答应继续追查匿名便条来源。"
+        second = dict(plan["storyboard"][0])
+        second["episode_number"] = 2
+        second["action"] = "小林继续追查匿名便条来源，并打开旧档案。"
+        state1 = {
+            "opening_state": "小林收到匿名便条",
+            "character_state_changes": ["小林决定追查"],
+            "unresolved_threads": ["小林答应继续追查匿名便条来源"],
+            "ending_state": "小林答应继续追查匿名便条来源",
+            "next_episode_requirements": ["小林答应继续追查匿名便条来源"],
+        }
+        state2 = {
+            "opening_state": "小林答应继续追查匿名便条来源",
+            "character_state_changes": ["小林打开旧档案"],
+            "unresolved_threads": ["便条来源仍未查明"],
+            "ending_state": "小林打开旧档案",
+            "next_episode_requirements": [],
+        }
+        plan.update({
+            "format_mode": "continuous_series", "episode_count": 2,
+            "episodes": [
+                {"episode_number": 1, "title": "便条", "full_script": "小林收到便条并答应追查。",
+                 "plot_beats": ["收到便条"], "ending_hook": "决定追查", "continuity_state": state1,
+                 "storyboard": [dict(first)]},
+                {"episode_number": 2, "title": "旧档案", "full_script": "小林继续追查并打开旧档案。",
+                 "plot_beats": ["追查"], "ending_hook": "打开旧档案", "continuity_state": state2,
+                 "storyboard": [dict(second)]},
+            ],
+            "storyboard": [first, second],
+            "narrative_obligations": [{
+                "kind": "commitment", "character_name": "小林",
+                "obligation": "小林答应继续追查匿名便条来源",
+                "origin_storyboard_index": 1, "origin_evidence": "答应继续追查匿名便条来源",
+                "expected_follow_through": "小林继续追查匿名便条来源",
+                "follow_through_storyboard_indices": [2], "status": "open",
+                "cross_episode_required": True,
+            }],
+        })
+        return plan
+
+    def test_a84_accepts_open_obligation_carried_across_episode_boundary(self):
+        plan = self._a84_multiepisode_plan()
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertNotIn("NARRATIVE_OBLIGATION_CROSS_EPISODE_TARGET_MISSING", codes)
+        self.assertNotIn("NARRATIVE_OBLIGATION_CROSS_EPISODE_FOLLOW_THROUGH_MISSING", codes)
+        self.assertNotIn("NARRATIVE_OBLIGATION_NOT_IN_EPISODE_HANDOFF", codes)
+        self.assertNotIn("NARRATIVE_OBLIGATION_NOT_CARRIED_FORWARD", codes)
+
+    def test_a84_warns_when_open_obligation_is_not_carried_to_next_episode(self):
+        plan = self._a84_multiepisode_plan()
+        plan["episodes"][0]["continuity_state"]["unresolved_threads"] = []
+        plan["episodes"][0]["continuity_state"]["next_episode_requirements"] = []
+        plan["episodes"][0]["continuity_state"]["ending_state"] = "小林回家休息"
+        plan["episodes"][1]["continuity_state"]["opening_state"] = "小林开始新的一天"
+        plan["episodes"][1]["continuity_state"]["unresolved_threads"] = []
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("NARRATIVE_OBLIGATION_NOT_IN_EPISODE_HANDOFF", codes)
+        self.assertIn("NARRATIVE_OBLIGATION_NOT_CARRIED_FORWARD", codes)
+
+    def test_a84_requires_later_episode_shot_for_cross_episode_obligation(self):
+        plan = self._a84_multiepisode_plan()
+        plan["narrative_obligations"][0]["follow_through_storyboard_indices"] = [1]
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("NARRATIVE_OBLIGATION_CROSS_EPISODE_FOLLOW_THROUGH_MISSING", codes)
+
     def test_a83_prompt_requires_tracking_commitments_misunderstandings_and_consequences(self):
         prompt = build_short_drama_prompt({}, {"drama_business_mode": "general"})
         self.assertIn("narrative_obligations", prompt)
