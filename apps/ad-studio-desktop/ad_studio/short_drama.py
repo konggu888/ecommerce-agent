@@ -1228,55 +1228,63 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
                 state_map[key] = record
         episode_character_states[episode_number] = state_map
 
-        # A88: audit explicitly declared cross-character dependencies without
-        # assuming different beliefs are automatically contradictory.
-        dependencies = state.get("cross_character_dependencies", []) if isinstance(state, dict) else []
-        if not isinstance(dependencies, list):
-            add("warning", "CROSS_CHARACTER_DEPENDENCIES_INVALID", f"第{episode_number}集 cross_character_dependencies 必须是列表。")
-            dependencies = []
-        seen_dependency_keys: set[tuple[str, str, str]] = set()
-        for dep_index, dependency in enumerate(dependencies, 1):
-            if not isinstance(dependency, dict):
-                add("warning", "CROSS_CHARACTER_DEPENDENCY_INVALID", f"第{episode_number}集第{dep_index}条人物间状态依赖不是对象。")
-                continue
-            char_a = str(dependency.get("character_a", "")).strip()
-            char_b = str(dependency.get("character_b", "")).strip()
-            dep_type = str(dependency.get("dependency_type", "")).strip()
-            consistency = str(dependency.get("consistency_rule", "")).strip()
-            valid_rules = {"same_understanding", "asymmetric_knowledge", "different_beliefs_allowed"}
-            valid_types = {"knowledge_alignment", "relationship_alignment", "belief_alignment", "commitment_alignment"}
-            if not char_a or not char_b or char_a == char_b or char_a not in character_names or char_b not in character_names:
-                add("warning", "CROSS_CHARACTER_DEPENDENCY_CHARACTERS_INVALID", f"第{episode_number}集第{dep_index}条人物间依赖必须引用两个不同且已定义的人物。")
-            if dep_type not in valid_types or consistency not in valid_rules:
-                add("warning", "CROSS_CHARACTER_DEPENDENCY_RULE_INVALID", f"第{episode_number}集第{dep_index}条人物间依赖的 dependency_type 或 consistency_rule 无效。")
-            key = (char_a, char_b, str(dependency.get("dependency_key", "")).strip())
-            if key in seen_dependency_keys:
-                add("warning", "CROSS_CHARACTER_DEPENDENCY_DUPLICATE", f"第{episode_number}集人物间依赖重复声明：{key[2] or dep_type}。")
-            seen_dependency_keys.add(key)
-            refs = dependency.get("storyboard_indices", [])
-            episode_shots = episode.get("storyboard", []) if isinstance(episode, dict) else []
-            shots = episode_shots if isinstance(episode_shots, list) else []
-            if not isinstance(shots, list): shots = []
-            if not isinstance(refs, list) or not refs or any(not isinstance(ref, int) or isinstance(ref, bool) or ref < 1 or ref > len(shots) for ref in refs):
-                add("warning", "CROSS_CHARACTER_DEPENDENCY_SHOTS_INVALID", f"第{episode_number}集第{dep_index}条人物间依赖必须引用有效的本集分镜。")
-                valid_refs = []
-            else: valid_refs = sorted(set(refs))
-            evidence = str(dependency.get("evidence", "")).strip()
-            episode = episode_by_number.get(episode_number, {})
-            episode_script = str(episode.get("full_script", "")) if isinstance(episode, dict) else ""
-            located = bool(evidence) and (evidence.casefold() in episode_script.casefold() or any(
-                evidence.casefold() in " ".join(str(shots[ref - 1].get(field, "")) for field in ("action", "dialogue", "generation_prompt", "narrative_function")).casefold()
-                for ref in valid_refs if isinstance(shots[ref - 1], dict)))
-            if not located:
-                add("warning", "CROSS_CHARACTER_DEPENDENCY_EVIDENCE_MISSING", f"第{episode_number}集第{dep_index}条人物间依赖缺少可定位证据。")
-            claim_a = str(dependency.get("character_a_claim", "")).strip()
-            claim_b = str(dependency.get("character_b_claim", "")).strip()
-            if not claim_a or not claim_b:
-                add("warning", "CROSS_CHARACTER_DEPENDENCY_CLAIMS_MISSING", f"第{episode_number}集第{dep_index}条人物间依赖必须分别记录双方状态。")
-            elif consistency == "same_understanding" and claim_a.casefold() != claim_b.casefold():
-                add("warning", "CROSS_CHARACTER_DEPENDENCY_CONTRADICTION", f"第{episode_number}集人物“{char_a}”与“{char_b}”被声明为理解一致，但双方状态陈述不一致；请核实是否为有意误解。")
-            if consistency == "asymmetric_knowledge" and not str(dependency.get("asymmetry_rationale", "")).strip():
-                add("warning", "CROSS_CHARACTER_ASYMMETRY_UNEXPLAINED", f"第{episode_number}集人物间知识不对称缺少原因说明。")
+    # A88 checks are independent of the optional character_state_ledger (A85).
+    for episode_number, episode in sorted(episode_by_number.items()):
+        if not isinstance(episode, dict):
+            continue
+        continuity_state = episode.get("continuity_state", {})
+        if not isinstance(continuity_state, dict):
+            continue
+            # A88: audit explicitly declared cross-character dependencies without
+            # assuming different beliefs are automatically contradictory.
+            dependencies = continuity_state.get("cross_character_dependencies", []) if isinstance(continuity_state, dict) else []
+            if not isinstance(dependencies, list):
+                add("warning", "CROSS_CHARACTER_DEPENDENCIES_INVALID", f"第{episode_number}集 cross_character_dependencies 必须是列表。")
+                dependencies = []
+            seen_dependency_keys: set[tuple[str, str, str]] = set()
+            for dep_index, dependency in enumerate(dependencies, 1):
+                if not isinstance(dependency, dict):
+                    add("warning", "CROSS_CHARACTER_DEPENDENCY_INVALID", f"第{episode_number}集第{dep_index}条人物间状态依赖不是对象。")
+                    continue
+                char_a = str(dependency.get("character_a", "")).strip()
+                char_b = str(dependency.get("character_b", "")).strip()
+                dep_type = str(dependency.get("dependency_type", "")).strip()
+                consistency = str(dependency.get("consistency_rule", "")).strip()
+                valid_rules = {"same_understanding", "asymmetric_knowledge", "different_beliefs_allowed"}
+                valid_types = {"knowledge_alignment", "relationship_alignment", "belief_alignment", "commitment_alignment"}
+                if not char_a or not char_b or char_a == char_b or char_a not in character_names or char_b not in character_names:
+                    add("warning", "CROSS_CHARACTER_DEPENDENCY_CHARACTERS_INVALID", f"第{episode_number}集第{dep_index}条人物间依赖必须引用两个不同且已定义的人物。")
+                if dep_type not in valid_types or consistency not in valid_rules:
+                    add("warning", "CROSS_CHARACTER_DEPENDENCY_RULE_INVALID", f"第{episode_number}集第{dep_index}条人物间依赖的 dependency_type 或 consistency_rule 无效。")
+                key = (char_a, char_b, str(dependency.get("dependency_key", "")).strip())
+                if key in seen_dependency_keys:
+                    add("warning", "CROSS_CHARACTER_DEPENDENCY_DUPLICATE", f"第{episode_number}集人物间依赖重复声明：{key[2] or dep_type}。")
+                seen_dependency_keys.add(key)
+                refs = dependency.get("storyboard_indices", [])
+                episode_shots = episode.get("storyboard", []) if isinstance(episode, dict) else []
+                shots = episode_shots if isinstance(episode_shots, list) else []
+                if not isinstance(shots, list): shots = []
+                if not isinstance(refs, list) or not refs or any(not isinstance(ref, int) or isinstance(ref, bool) or ref < 1 or ref > len(shots) for ref in refs):
+                    add("warning", "CROSS_CHARACTER_DEPENDENCY_SHOTS_INVALID", f"第{episode_number}集第{dep_index}条人物间依赖必须引用有效的本集分镜。")
+                    valid_refs = []
+                else: valid_refs = sorted(set(refs))
+                evidence = str(dependency.get("evidence", "")).strip()
+                episode = episode_by_number.get(episode_number, {})
+                episode_script = str(episode.get("full_script", "")) if isinstance(episode, dict) else ""
+                located = bool(evidence) and (evidence.casefold() in episode_script.casefold() or any(
+                    evidence.casefold() in " ".join(str(shots[ref - 1].get(field, "")) for field in ("action", "dialogue", "generation_prompt", "narrative_function")).casefold()
+                    for ref in valid_refs if isinstance(shots[ref - 1], dict)))
+                if not located:
+                    add("warning", "CROSS_CHARACTER_DEPENDENCY_EVIDENCE_MISSING", f"第{episode_number}集第{dep_index}条人物间依赖缺少可定位证据。")
+                claim_a = str(dependency.get("character_a_claim", "")).strip()
+                claim_b = str(dependency.get("character_b_claim", "")).strip()
+                if not claim_a or not claim_b:
+                    add("warning", "CROSS_CHARACTER_DEPENDENCY_CLAIMS_MISSING", f"第{episode_number}集第{dep_index}条人物间依赖必须分别记录双方状态。")
+                elif consistency == "same_understanding" and claim_a.casefold() != claim_b.casefold():
+                    add("warning", "CROSS_CHARACTER_DEPENDENCY_CONTRADICTION", f"第{episode_number}集人物“{char_a}”与“{char_b}”被声明为理解一致，但双方状态陈述不一致；请核实是否为有意误解。")
+                if consistency == "asymmetric_knowledge" and not str(dependency.get("asymmetry_rationale", "")).strip():
+                    add("warning", "CROSS_CHARACTER_ASYMMETRY_UNEXPLAINED", f"第{episode_number}集人物间知识不对称缺少原因说明。")
+
     ordered_episode_numbers = sorted(episode_by_number)
     if checked.get("format_mode") == "continuous_series":
         for position, episode_number in enumerate(ordered_episode_numbers[:-1]):
