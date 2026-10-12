@@ -54,6 +54,17 @@ SHORT_DRAMA_SCHEMA = {
         "script_evidence": "完整剧本中能逐字找到的本步剧情证据片段",
         "storyboard_indices": ["integer，引用根级 storyboard 的从1开始位置"]
     }],
+    "narrative_obligations": [{
+        "kind": "commitment / misunderstanding / action_consequence",
+        "character_name": "承担承诺、误解或行动后果的人物",
+        "obligation": "需要持续追踪的承诺、误解或行动结果",
+        "origin_storyboard_index": "integer，首次建立该事项的根级分镜位置（从1开始）",
+        "origin_evidence": "来源镜头中可逐字定位的动作/台词/提示文本",
+        "expected_follow_through": "后续应兑现、澄清或持续体现的具体可拍摄结果",
+        "follow_through_storyboard_indices": ["后续承接镜头位置列表"],
+        "status": "open / resolved / intentionally_abandoned",
+        "resolution_rationale": "已解决或有意放弃时的剧情依据；未解决时说明仍待处理"
+    }],
     "story_engine": {
         "protagonist_goal": "主角本集具体、可观察的目标",
         "opposing_force": "阻碍目标的具体人物/环境/误解/规则",
@@ -138,6 +149,7 @@ def build_short_drama_prompt(product: dict[str, Any], constraints: dict[str, Any
         "3. 商品是否出现必须服从所选创作目标：通用模式允许不出现；商品植入/转化模式应按目标呈现。任何模式都不得篡改商品外观、结构、核心功能、使用方式、规格、功效或其他事实。\n"
         "4. 未提供或无法验证的商品信息必须标为待确认，不得编造认证、销量、价格、效果或用户证言。\n"
         "5. 输出完整剧本和可执行分镜。每个分镜必须说明动作、台词、场景、人物、商品融入方式、素材需求和生成提示；新增 narrative_function（本镜在剧情中的作用）、story_event_reference（对应的 causal_chain.step 编号列表）和 character_action_basis（逐个列出本镜每个行动人物的 goal_or_motivation、known_information、knowledge_source、knowledge_origin、knowledge_source_storyboard_indices、decision_pressure、choice_rationale）。knowledge_source 必须是 full_script 中可逐字定位的信息来源原文；knowledge_origin 必须是 storyboard 或 preexisting：若信息在本剧分镜中首次获得，knowledge_source_storyboard_indices 必须引用本镜之前真实发生的信息揭示镜头，且来源原文必须出现在引用镜头的动作/台词/生成提示中；若属于故事开始前已知的信息，knowledge_source_storyboard_indices 必须为空列表。禁止引用本镜之后才揭示的信息作为当前行动依据。人物不能使用其当时尚未获知的信息。关键选择必须落实为可拍摄动作，人物行动应与人物目标、动机、关系压力及当时已知信息相容。反转必须有可定位的前置线索。\n"
+        "5.1 输出 narrative_obligations 列表，追踪会影响后续剧情的承诺、误解和行动后果。每项必须说明 kind（commitment/misunderstanding/action_consequence）、character_name、obligation、origin_storyboard_index、origin_evidence、expected_follow_through、follow_through_storyboard_indices、status（open/resolved/intentionally_abandoned）及必要时的 resolution_rationale。来源证据必须出现在来源镜头文本中；后续引用必须是有效且晚于来源镜头的位置；承诺需兑现或明确保持未兑现，误解需延续到人物澄清/发现错误的镜头，行动后果需在后续可拍摄动作/状态中体现。无后续影响的事项不必列入。旧方案兼容，缺少该列表只产生审查警告。\n"
         "6. 提供至少两个故事方向备选，机制应有实质差异，不只是换标题。\n"
         "7. 本次只做创作方案，不要调用素材生成或视频生成，不要假称已经生成成片。\n"
         "8. 只输出符合给定结构的合法JSON，不要输出Markdown。\n"
@@ -947,6 +959,67 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
     setup_payoff = str((story_engine or {}).get("setup_and_payoff", "")).strip() if isinstance(story_engine, dict) else ""
     if setup_payoff and setup_payoff.casefold() not in " ".join(shot_texts):
         add("warning", "SETUP_PAYOFF_NOT_STORYBOARDED", "伏笔与兑现设计未在分镜文本中直接体现；请分别标明前置线索与兑现动作，避免反转只存在于梗概。")
+
+    # A83: track promises, misunderstandings and action consequences through later shots.
+    obligations = checked.get("narrative_obligations")
+    if not isinstance(obligations, list):
+        add("warning", "NARRATIVE_OBLIGATIONS_UNSPECIFIED", "未提供 narrative_obligations；请追踪会影响后续剧情的承诺、误解与行动后果，旧方案仍可读取。")
+        obligations = []
+    valid_obligation_kinds = {"commitment", "misunderstanding", "action_consequence"}
+    valid_obligation_statuses = {"open", "resolved", "intentionally_abandoned"}
+    for obligation_index, item in enumerate(obligations, 1):
+        if not isinstance(item, dict):
+            add("warning", "NARRATIVE_OBLIGATION_INVALID", f"第{obligation_index}项剧情承接事项不是对象。")
+            continue
+        kind = str(item.get("kind", "")).strip()
+        character_name = str(item.get("character_name", "")).strip()
+        description = str(item.get("obligation", "")).strip()
+        origin_evidence = str(item.get("origin_evidence", "")).strip()
+        expected = str(item.get("expected_follow_through", "")).strip()
+        status = str(item.get("status", "")).strip()
+        origin_index = item.get("origin_storyboard_index")
+        follow_refs = item.get("follow_through_storyboard_indices")
+        if kind not in valid_obligation_kinds:
+            add("warning", "NARRATIVE_OBLIGATION_KIND_INVALID", f"第{obligation_index}项剧情承接事项类型无效；应为 commitment、misunderstanding 或 action_consequence。")
+        if not character_name or character_name not in character_names:
+            add("warning", "NARRATIVE_OBLIGATION_UNKNOWN_CHARACTER", f"第{obligation_index}项剧情承接事项缺少有效人物，或人物“{character_name}”未在角色设定表中定义。")
+        if not description:
+            add("warning", "NARRATIVE_OBLIGATION_DESCRIPTION_MISSING", f"第{obligation_index}项剧情承接事项缺少 obligation 描述。")
+        if not origin_evidence:
+            add("warning", "NARRATIVE_OBLIGATION_ORIGIN_EVIDENCE_MISSING", f"第{obligation_index}项剧情承接事项缺少来源证据。")
+        valid_origin = isinstance(origin_index, int) and not isinstance(origin_index, bool) and 1 <= origin_index <= len(storyboard)
+        if not valid_origin:
+            add("warning", "NARRATIVE_OBLIGATION_ORIGIN_INVALID", f"第{obligation_index}项剧情承接事项引用了无效的来源分镜位置。")
+        elif origin_evidence:
+            origin_shot = storyboard[origin_index - 1]
+            origin_text = " ".join(str(origin_shot.get(key, "")) for key in (
+                "action", "dialogue", "generation_prompt", "narrative_function", "story_event_reference"
+            )).casefold() if isinstance(origin_shot, dict) else ""
+            if origin_evidence.casefold() not in origin_text:
+                add("warning", "NARRATIVE_OBLIGATION_ORIGIN_NOT_SHOWN", f"第{obligation_index}项剧情承接事项的来源证据未在第{origin_index}镜动作、台词或提示文本中找到。")
+        if status not in valid_obligation_statuses:
+            add("warning", "NARRATIVE_OBLIGATION_STATUS_INVALID", f"第{obligation_index}项剧情承接事项状态无效；应为 open、resolved 或 intentionally_abandoned。")
+        if not isinstance(follow_refs, list):
+            add("warning", "NARRATIVE_OBLIGATION_FOLLOW_SHOTS_INVALID", f"第{obligation_index}项剧情承接事项的后续镜头引用必须是列表。")
+            follow_refs = []
+        valid_follow_refs = [
+            ref for ref in follow_refs
+            if isinstance(ref, int) and not isinstance(ref, bool) and 1 <= ref <= len(storyboard)
+        ]
+        if len(valid_follow_refs) != len(follow_refs):
+            add("warning", "NARRATIVE_OBLIGATION_FOLLOW_SHOTS_INVALID", f"第{obligation_index}项剧情承接事项引用了不存在的后续分镜位置。")
+        if valid_origin and any(ref <= origin_index for ref in valid_follow_refs):
+            add("warning", "NARRATIVE_OBLIGATION_FOLLOW_SHOTS_NOT_LATER", f"第{obligation_index}项剧情承接事项的后续镜头必须严格晚于来源镜头。")
+        if not expected:
+            add("warning", "NARRATIVE_OBLIGATION_FOLLOW_THROUGH_MISSING", f"第{obligation_index}项剧情承接事项没有说明后续应兑现、澄清或体现的具体结果。")
+        if status == "intentionally_abandoned" and not str(item.get("resolution_rationale", "")).strip():
+            add("warning", "NARRATIVE_OBLIGATION_ABANDONMENT_UNEXPLAINED", f"第{obligation_index}项剧情承接事项标记为有意放弃，但没有说明剧情依据。")
+        if status in {"open", "resolved"} and not valid_follow_refs:
+            add("warning", "NARRATIVE_OBLIGATION_FOLLOW_SHOTS_MISSING", f"第{obligation_index}项剧情承接事项仍需后续承接，但没有引用有效的后续镜头。")
+        if expected and valid_follow_refs:
+            follow_text = " ".join(shot_texts[ref - 1] for ref in valid_follow_refs)
+            if expected.casefold() not in follow_text:
+                add("warning", "NARRATIVE_OBLIGATION_FOLLOW_THROUGH_NOT_SHOWN", f"第{obligation_index}项剧情承接事项要求后续体现“{expected}”，但引用镜头中未找到对应文本。")
 
     seen_scene_locations: dict[str, str] = {}
     total_seconds = 0

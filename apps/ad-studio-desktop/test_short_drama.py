@@ -277,6 +277,75 @@ class ShortDramaTests(unittest.TestCase):
         report = audit_short_drama(plan)
         self.assertIn("CHARACTER_ACTION_BASIS_INCOMPLETE", {item["code"] for item in report["issues"]})
 
+    def test_a83_accepts_commitment_with_visible_later_fulfillment(self):
+        plan = sample_plan()
+        plan["storyboard"][0]["action"] = "小林当面答应小王：我会在今晚归还钥匙。"
+        plan["storyboard"][0]["dialogue"] = "我会在今晚归还钥匙。"
+        later = dict(plan["storyboard"][0])
+        later["action"] = "小林把钥匙交还给小王，并说：我答应过今晚归还。"
+        later["dialogue"] = "我答应过今晚归还。"
+        plan["storyboard"].append(later)
+        plan["narrative_obligations"] = [{
+            "kind": "commitment", "character_name": "小林",
+            "obligation": "小林承诺今晚归还钥匙",
+            "origin_storyboard_index": 1, "origin_evidence": "我会在今晚归还钥匙",
+            "expected_follow_through": "小林把钥匙交还给小王",
+            "follow_through_storyboard_indices": [2], "status": "resolved",
+            "resolution_rationale": "第2镜展示了归还动作"
+        }]
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertNotIn("NARRATIVE_OBLIGATION_ORIGIN_NOT_SHOWN", codes)
+        self.assertNotIn("NARRATIVE_OBLIGATION_FOLLOW_THROUGH_NOT_SHOWN", codes)
+        self.assertNotIn("NARRATIVE_OBLIGATION_FOLLOW_SHOTS_NOT_LATER", codes)
+
+    def test_a83_warns_when_promise_is_not_followed_through(self):
+        plan = sample_plan()
+        plan["storyboard"][0]["action"] = "小林当面答应小王：我会在今晚归还钥匙。"
+        later = dict(plan["storyboard"][0])
+        later["action"] = "小林匆忙走进电梯，没有提到钥匙。"
+        plan["storyboard"].append(later)
+        plan["narrative_obligations"] = [{
+            "kind": "commitment", "character_name": "小林",
+            "obligation": "小林承诺今晚归还钥匙",
+            "origin_storyboard_index": 1, "origin_evidence": "我会在今晚归还钥匙",
+            "expected_follow_through": "小林把钥匙交还给小王",
+            "follow_through_storyboard_indices": [2], "status": "resolved"
+        }]
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("NARRATIVE_OBLIGATION_FOLLOW_THROUGH_NOT_SHOWN", codes)
+
+    def test_a83_warns_on_invalid_or_nonchronological_obligation_references(self):
+        plan = sample_plan()
+        plan["storyboard"][0]["action"] = "小林误以为小王拿走钥匙，并开始质问小王。"
+        plan["narrative_obligations"] = [{
+            "kind": "misunderstanding", "character_name": "小林",
+            "obligation": "小林误以为小王拿走钥匙",
+            "origin_storyboard_index": 99, "origin_evidence": "误以为小王拿走钥匙",
+            "expected_follow_through": "小林发现钥匙其实在自己的包里",
+            "follow_through_storyboard_indices": [1], "status": "open"
+        }]
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("NARRATIVE_OBLIGATION_ORIGIN_INVALID", codes)
+        self.assertIn("NARRATIVE_OBLIGATION_FOLLOW_SHOTS_NOT_LATER", codes)
+
+    def test_a83_warns_when_obligation_references_unknown_character(self):
+        plan = sample_plan()
+        plan["narrative_obligations"] = [{
+            "kind": "action_consequence", "character_name": "不存在的人物",
+            "obligation": "行动造成钥匙遗失", "origin_storyboard_index": 1,
+            "origin_evidence": "主角翻找物品", "expected_follow_through": "主角继续寻找钥匙",
+            "follow_through_storyboard_indices": [1], "status": "open"
+        }]
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("NARRATIVE_OBLIGATION_UNKNOWN_CHARACTER", codes)
+        self.assertIn("NARRATIVE_OBLIGATION_FOLLOW_SHOTS_NOT_LATER", codes)
+
+    def test_a83_prompt_requires_tracking_commitments_misunderstandings_and_consequences(self):
+        prompt = build_short_drama_prompt({}, {"drama_business_mode": "general"})
+        self.assertIn("narrative_obligations", prompt)
+        self.assertIn("承诺、误解和行动后果", prompt)
+        self.assertIn("follow_through_storyboard_indices", prompt)
+
     def test_validates_story_first_plan(self):
         plan = validate_short_drama(sample_plan())
         self.assertEqual(plan["storyboard"][0]["duration_seconds"], 4)
