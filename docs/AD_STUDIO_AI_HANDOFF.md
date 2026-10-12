@@ -231,4 +231,8 @@ A61-A63 自动化 CI 与 docs-sync 已通过。A64 将素材生成成功与成�
 
 
 ### A84：跨集剧情承接一致性
-A84 在 A83 的 `narrative_obligations` 上增加可选 `cross_episode_required` 标记。对显式要求跨集延续的事项，按根级 storyboard 的 episode_number 检查后续引用是否确实落在后续集；若状态仍为 open，还需核对来源集的未解线索/下一集要求/集末状态和下一集开场状态/未解线索。新增 warning code：`NARRATIVE_OBLIGATION_CROSS_EPISODE_TARGET_MISSING`、`NARRATIVE_OBLIGATION_CROSS_EPISODE_FOLLOW_THROUGH_MISSING`、`NARRATIVE_OBLIGATION_NOT_IN_EPISODE_HANDOFF`、`NARRATIVE_OBLIGATION_NOT_CARRIED_FORWARD`。未声明字段的旧方案兼容。该检查是结构/字符串匹配，不证明语义合理性。代码 SHA `3f5da4c93560baac87c716c8303953fae33cbde2` 的 CI/doc-sync 尚待最新结果。
+A84 在 A83 的 `narrative_obligations` 上增加可选 `cross_episode_required` 标记。对显式要求跨集延续的事项，按根级 storyboard 的 episode_number 检查后续引用是否确实落在后续集；若状态仍为 open，还需核对来源集的未解线索/下一集要求/集末状态和下一集开场状态/未解线索。新增 warning code：`NARRATIVE_OBLIGATION_CROSS_EPISODE_TARGET_MISSING`、`NARRATIVE_OBLIGATION_CROSS_EPISODE_FOLLOW_THROUGH_MISSING`、`NARRATIVE_OBLIGATION_NOT_IN_EPISODE_HANDOFF`、`NARRATIVE_OBLIGATION_NOT_CARRIED_FORWARD`。未声明字段的旧方案兼容。该检查是结构/字符串匹配，不证明语义合理性。代码 SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 的 CI/doc-sync 尚待最新结果。
+
+
+### A84 自动化验证结果（2026-10-13）
+A84 代码/测试/HELP/PROJECT_LOGIC 同提交 SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 已通过完整 CI 和 docs-sync 的 push 与 PR 工作流：CI `38308777852`、`38308783208`；docs-sync `38308777939`、`38308783195`。这不证明人物心理/剧情语义自然，也不替代真实画面核验。

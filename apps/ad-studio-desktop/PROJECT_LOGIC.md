@@ -1259,8 +1259,12 @@ A81 测试夹具边界：因果链按步骤独立审查 state_continuity。测�
 - 根据根级 storyboard 的 `episode_number` 将来源镜头和后续引用映射到具体集；跨集事项必须引用来源集之后的镜头。
 - 对状态为 `open` 的跨集事项，检查来源集的 `continuity_state`（`unresolved_threads`、`next_episode_requirements` 或 `ending_state`）和下一集的 `opening_state` / `unresolved_threads` 是否以明确文本承接事项描述或预期结果。
 - 新 warning codes：`NARRATIVE_OBLIGATION_CROSS_EPISODE_TARGET_MISSING`、`NARRATIVE_OBLIGATION_CROSS_EPISODE_FOLLOW_THROUGH_MISSING`、`NARRATIVE_OBLIGATION_NOT_IN_EPISODE_HANDOFF`、`NARRATIVE_OBLIGATION_NOT_CARRIED_FORWARD`。
-- 这仍是确定性结构/文本匹配，不等于剧情语义审查。新增回归覆盖有效跨集承接、承接断裂、后续镜头仍引用本集的错误情况。代码 SHA `3f5da4c93560baac87c716c8303953fae33cbde2` 的最新 CI/doc-sync 尚待核实。
+- 这仍是确定性结构/文本匹配，不等于剧情语义审查。新增回归覆盖有效跨集承接、承接断裂、后续镜头仍引用本集的错误情况。代码 SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 的最新 CI/doc-sync 尚待核实。
 
 
 ### A84 补充：跨集标记类型
 `cross_episode_required` 是可选布尔字段。字段缺失视为旧方案/仅本集事项；字段存在但不是布尔值时输出 `NARRATIVE_OBLIGATION_CROSS_EPISODE_FLAG_INVALID`，不把字符串等值隐式转换为 true。回归测试覆盖错误类型。
+
+
+### A84 自动化验收记录（2026-10-13）
+代码与回归测试 SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 的完整 CI push/PR 和 docs-sync push/PR 均通过：`38308777852`、`38308783208`、`38308777939`、`38308783195`。结构/文本匹配不等于剧情语义、真实画面或商业成片验收。

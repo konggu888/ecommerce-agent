@@ -1130,8 +1130,12 @@ A81 测试夹具补充：明确验证“无后续影响”时，因果链每一�
 SHA `f57c0eb02249439ea42cc3d46dd2d94e87bab1c1` 的完整 CI 与 docs-sync 均通过（push 与 PR 触发各一组成功记录）。自动化通过不替代真实剧情语义、Windows 真机、真实 Provider 或真实扣款验收。
 
 ## A84｜跨集剧情承接台账一致性
-短剧的 `narrative_obligations` 可为需要跨集延续的事项设置 `cross_episode_required: true`。审查器会检查：来源集之后是否存在后续集、后续镜头引用是否真正落在后续集，以及仍未解决的事项是否同时出现在来源集的未解线索/下一集承接要求/集末状态与下一集开场状态/未解线索中。未设置该字段的旧方案保持兼容；本项只做显式字段与文本覆盖检查，不证明剧情语义自然或承诺已经被真实演出。当前代码提交 `3f5da4c93560baac87c716c8303953fae33cbde2` 后续必须等待最新 SHA 的完整 CI 与 docs-sync。
+短剧的 `narrative_obligations` 可为需要跨集延续的事项设置 `cross_episode_required: true`。审查器会检查：来源集之后是否存在后续集、后续镜头引用是否真正落在后续集，以及仍未解决的事项是否同时出现在来源集的未解线索/下一集承接要求/集末状态与下一集开场状态/未解线索中。未设置该字段的旧方案保持兼容；本项只做显式字段与文本覆盖检查，不证明剧情语义自然或承诺已经被真实演出。当前代码提交 `00ad0d00a9747ca9ef666981b4e592bef6bde543` 后续必须等待最新 SHA 的完整 CI 与 docs-sync。
 
 
 ### A84 补充校验
 `cross_episode_required` 若存在必须是布尔值；字符串 "true"/"false" 不会被静默接受，会触发 `NARRATIVE_OBLIGATION_CROSS_EPISODE_FLAG_INVALID`。新增非布尔值回归测试。本次代码与 HELP/PROJECT_LOGIC 同提交更新，最终 CI/doc-sync 以最新 HEAD 的 Actions 结果为准。
+
+
+### A84 自动化验收记录（2026-10-13）
+A84 代码、回归测试及 HELP/PROJECT_LOGIC 同步提交 SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 已通过完整 CI 与 docs-sync：CI push run `38308777852`、CI PR run `38308783208`、docs-sync push run `38308777939`、docs-sync PR run `38308783195` 均 success。此结论仅覆盖自动化检查，不替代剧情语义、Windows 真机或真实素材验收。
