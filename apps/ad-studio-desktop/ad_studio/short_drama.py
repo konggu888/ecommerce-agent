@@ -1045,7 +1045,13 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
         except (TypeError, ValueError):
             shot_episode_numbers[shot_index] = 1
     for obligation_index, item in enumerate(obligations, 1):
-        if not isinstance(item, dict) or item.get("cross_episode_required") is not True:
+        if not isinstance(item, dict):
+            continue
+        cross_episode_required = item.get("cross_episode_required", False)
+        if not isinstance(cross_episode_required, bool):
+            add("warning", "NARRATIVE_OBLIGATION_CROSS_EPISODE_FLAG_INVALID", f"第{obligation_index}项剧情承接事项的 cross_episode_required 必须是布尔值。")
+            continue
+        if not cross_episode_required:
             continue
         origin_index = item.get("origin_storyboard_index")
         if not isinstance(origin_index, int) or isinstance(origin_index, bool) or origin_index not in shot_episode_numbers:

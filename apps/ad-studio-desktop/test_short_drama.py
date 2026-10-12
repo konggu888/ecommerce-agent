@@ -412,6 +412,12 @@ class ShortDramaTests(unittest.TestCase):
         self.assertIn("NARRATIVE_OBLIGATION_NOT_IN_EPISODE_HANDOFF", codes)
         self.assertIn("NARRATIVE_OBLIGATION_NOT_CARRIED_FORWARD", codes)
 
+    def test_a84_warns_when_cross_episode_flag_is_not_boolean(self):
+        plan = self._a84_multiepisode_plan()
+        plan["narrative_obligations"][0]["cross_episode_required"] = "true"
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("NARRATIVE_OBLIGATION_CROSS_EPISODE_FLAG_INVALID", codes)
+
     def test_a84_requires_later_episode_shot_for_cross_episode_obligation(self):
         plan = self._a84_multiepisode_plan()
         plan["narrative_obligations"][0]["follow_through_storyboard_indices"] = [1]

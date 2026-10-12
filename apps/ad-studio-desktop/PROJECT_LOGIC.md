@@ -1260,3 +1260,7 @@ A81 测试夹具边界：因果链按步骤独立审查 state_continuity。测�
 - 对状态为 `open` 的跨集事项，检查来源集的 `continuity_state`（`unresolved_threads`、`next_episode_requirements` 或 `ending_state`）和下一集的 `opening_state` / `unresolved_threads` 是否以明确文本承接事项描述或预期结果。
 - 新 warning codes：`NARRATIVE_OBLIGATION_CROSS_EPISODE_TARGET_MISSING`、`NARRATIVE_OBLIGATION_CROSS_EPISODE_FOLLOW_THROUGH_MISSING`、`NARRATIVE_OBLIGATION_NOT_IN_EPISODE_HANDOFF`、`NARRATIVE_OBLIGATION_NOT_CARRIED_FORWARD`。
 - 这仍是确定性结构/文本匹配，不等于剧情语义审查。新增回归覆盖有效跨集承接、承接断裂、后续镜头仍引用本集的错误情况。代码 SHA `3f5da4c93560baac87c716c8303953fae33cbde2` 的最新 CI/doc-sync 尚待核实。
+
+
+### A84 补充：跨集标记类型
+`cross_episode_required` 是可选布尔字段。字段缺失视为旧方案/仅本集事项；字段存在但不是布尔值时输出 `NARRATIVE_OBLIGATION_CROSS_EPISODE_FLAG_INVALID`，不把字符串等值隐式转换为 true。回归测试覆盖错误类型。
