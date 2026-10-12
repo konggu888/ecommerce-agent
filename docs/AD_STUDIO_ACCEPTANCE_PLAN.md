@@ -1154,3 +1154,13 @@ A61（旧成本迁移）、A62（接手文案断言）、A63（迁移基线持�
 
 ### A85 自动化验证记录
 代码/测试 SHA `6128fabc3c530c6072dfe72e05a956fe7733065f` 的完整 CI push `38309397555`、PR `38309402963` 与 docs-sync push `38309397567`、PR `38309403129` 均 success。文档记录更新后须再检查最终 HEAD。
+
+
+## A86｜人物状态变化因果闭环验收
+- [ ] 为 changed 状态填写 `trigger_event`、`trigger_storyboard_indices`、`change_storyboard_indices`、`reaction_evidence`/`reaction_storyboard_indices`、`downstream_consequence_evidence`/`downstream_storyboard_indices`。
+- [ ] 正常顺序应不产生触发缺失、时序、反应或后果警告。
+- [ ] 删除触发事件/引用，确认 `CHARACTER_STATE_TRIGGER_MISSING`。
+- [ ] 将触发镜头置于变化镜头之后，确认 `CHARACTER_STATE_TRIGGER_NOT_BEFORE_CHANGE`。
+- [ ] 让反应证据无法定位，确认 `CHARACTER_STATE_REACTION_MISSING`；把后续影响放在变化之前，确认 `CHARACTER_STATE_CONSEQUENCE_NOT_LATER`。
+- [ ] 验证旧方案不使用可选状态台账时仍可审查。
+- [ ] 运行短剧专项测试、完整 CI 与 docs-sync，并记录最终 SHA。文本闭环检查不替代人工剧情/画面核验。

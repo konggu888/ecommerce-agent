@@ -1281,3 +1281,7 @@ A81 测试夹具边界：因果链按步骤独立审查 state_continuity。测�
 
 ### A85 自动化验证记录
 代码/测试 SHA `6128fabc3c530c6072dfe72e05a956fe7733065f` 的完整 CI push/PR（`38309397555`、`38309402963`）及 docs-sync push/PR（`38309397567`、`38309403129`）均成功。人物状态文本一致性仍需语义/人工复核。
+
+
+### A86｜人物状态变化因果闭环
+A86 在 A85 状态台账基础上增加触发事件、状态改变镜头、人物反应与后续影响字段；仅对 `status=changed` 的记录执行强检查。触发镜头必须早于状态改变镜头，反应及后续影响必须在变化之后，证据须能在剧本或对应镜头文本中定位。旧方案无台账时兼容。新增警告码：`CHARACTER_STATE_TRIGGER_MISSING`、`CHARACTER_STATE_TRIGGER_NOT_BEFORE_CHANGE`、`CHARACTER_STATE_CHANGE_SHOTS_MISSING`、`CHARACTER_STATE_REACTION_MISSING`、`CHARACTER_STATE_REACTION_NOT_LATER`、`CHARACTER_STATE_CONSEQUENCE_MISSING`、`CHARACTER_STATE_CONSEQUENCE_NOT_LATER`，以及对应分镜引用无效码。

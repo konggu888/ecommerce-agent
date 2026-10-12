@@ -479,6 +479,70 @@ class ShortDramaTests(unittest.TestCase):
         self.assertIn("CHARACTER_STATE_PERSIST_FLAG_INVALID", codes)
         self.assertIn("CHARACTER_STATE_EVIDENCE_UNTRACEABLE", codes)
 
+    def _a86_changed_state_plan(self):
+        plan = self._a85_multiepisode_state_plan()
+        episode = plan["episodes"][1]
+        episode["full_script"] = "小林看到小王藏起关键证据，因此不再信任小王。小林当面质问小王。此后小林拒绝与小王分享调查资料。"
+        shots = episode["storyboard"]
+        shots[0]["action"] = "小林看到小王藏起关键证据。"
+        change_shot = dict(shots[0])
+        change_shot["action"] = "小林意识到小王隐瞒事实，不再信任小王。"
+        reaction_shot = dict(shots[0])
+        reaction_shot["action"] = "小林当面质问小王为什么藏起关键证据。"
+        consequence_shot = dict(shots[0])
+        consequence_shot["action"] = "小林拒绝与小王分享调查资料。"
+        episode["storyboard"] = [shots[0], change_shot, reaction_shot, consequence_shot]
+        record = episode["continuity_state"]["character_state_ledger"][0]
+        record.update({
+            "state_description": "小林不再信任小王", "status": "changed",
+            "transition_evidence": "小林看到小王藏起关键证据，因此不再信任小王",
+            "trigger_event": "小林看到小王藏起关键证据", "trigger_storyboard_indices": [1],
+            "change_storyboard_indices": [2],
+            "reaction_evidence": "小林当面质问小王为什么藏起关键证据", "reaction_storyboard_indices": [3],
+            "downstream_consequence_evidence": "小林拒绝与小王分享调查资料", "downstream_storyboard_indices": [4],
+            "evidence": "小林意识到小王隐瞒事实，不再信任小王", "storyboard_indices": [2],
+        })
+        return plan
+
+    def test_a86_accepts_ordered_character_state_causal_chain(self):
+        codes = {item["code"] for item in audit_short_drama(self._a86_changed_state_plan())["issues"]}
+        for code in ("CHARACTER_STATE_TRIGGER_MISSING", "CHARACTER_STATE_TRIGGER_NOT_BEFORE_CHANGE",
+                     "CHARACTER_STATE_REACTION_MISSING", "CHARACTER_STATE_REACTION_NOT_LATER",
+                     "CHARACTER_STATE_CONSEQUENCE_MISSING", "CHARACTER_STATE_CONSEQUENCE_NOT_LATER"):
+            self.assertNotIn(code, codes)
+
+    def test_a86_warns_when_changed_state_has_no_trigger(self):
+        plan = self._a86_changed_state_plan()
+        record = plan["episodes"][1]["continuity_state"]["character_state_ledger"][0]
+        record.pop("trigger_event")
+        record["trigger_storyboard_indices"] = []
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("CHARACTER_STATE_TRIGGER_MISSING", codes)
+
+    def test_a86_warns_when_trigger_follows_state_change(self):
+        plan = self._a86_changed_state_plan()
+        record = plan["episodes"][1]["continuity_state"]["character_state_ledger"][0]
+        record["trigger_storyboard_indices"] = [3]
+        record["change_storyboard_indices"] = [2]
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("CHARACTER_STATE_TRIGGER_NOT_BEFORE_CHANGE", codes)
+
+    def test_a86_warns_when_reaction_or_consequence_is_missing_or_out_of_order(self):
+        plan = self._a86_changed_state_plan()
+        record = plan["episodes"][1]["continuity_state"]["character_state_ledger"][0]
+        record["reaction_evidence"] = "这句反应在剧本和分镜里不存在"
+        record["reaction_storyboard_indices"] = [2]
+        record["downstream_storyboard_indices"] = [2]
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("CHARACTER_STATE_REACTION_MISSING", codes)
+        self.assertIn("CHARACTER_STATE_CONSEQUENCE_NOT_LATER", codes)
+
+    def test_a86_prompt_requires_causal_closure_for_changed_states(self):
+        prompt = build_short_drama_prompt({}, {"drama_business_mode": "general"})
+        for field in ("trigger_event", "trigger_storyboard_indices", "change_storyboard_indices",
+                      "reaction_evidence", "downstream_consequence_evidence"):
+            self.assertIn(field, prompt)
+
     def test_a83_prompt_requires_tracking_commitments_misunderstandings_and_consequences(self):
         prompt = build_short_drama_prompt({}, {"drama_business_mode": "general"})
         self.assertIn("narrative_obligations", prompt)

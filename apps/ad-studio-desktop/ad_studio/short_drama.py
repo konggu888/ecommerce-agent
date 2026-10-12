@@ -18,7 +18,7 @@ SHORT_DRAMA_SCHEMA = {
     "format_mode": "single_episode / continuous_series / anthology_series",
     "episode_count": "integer",
     "series_bible": {"series_arc": "全剧主线", "character_state": "人物长期状态与关系", "continuity_rules": ["跨集必须保持的事实"]},
-    "episodes": [{"episode_number": "integer", "title": "集名", "logline": "本集梗概", "plot_beats": ["本集节拍"], "ending_hook": "本集结尾/悬念", "full_script": "本集完整剧本", "continuity_state": {"opening_state": "本集开始时承接的剧情/人物状态", "character_state_changes": ["本集人物状态或关系的变化"], "character_state_ledger": [{"character_name": "人物姓名", "dimension": "心理/知识/秘密/承诺/关系等状态维度；关系可用关系:人物A-人物B", "state_description": "本集结束时该维度的明确状态", "status": "established / changed / persisting / resolved", "must_persist": "boolean；true 表示下一集仍需保持或明确转变", "evidence": "剧本或分镜中可定位的状态证据", "storyboard_indices": ["本集分镜从1开始的位置"], "transition_evidence": "状态变化时解释变化原因的可定位证据"}], "unresolved_threads": ["本集结束后仍未解决的悬念/冲突"], "ending_state": "本集结束时可供后续承接的事实状态", "next_episode_requirements": ["下一集必须承接的事件/事实；最终集可为空列表"]}, "storyboard": ["本集分镜，字段与根级 storyboard 相同"]}],
+    "episodes": [{"episode_number": "integer", "title": "集名", "logline": "本集梗概", "plot_beats": ["本集节拍"], "ending_hook": "本集结尾/悬念", "full_script": "本集完整剧本", "continuity_state": {"opening_state": "本集开始时承接的剧情/人物状态", "character_state_changes": ["本集人物状态或关系的变化"], "character_state_ledger": [{"character_name": "人物姓名", "dimension": "心理/知识/秘密/承诺/关系等状态维度；关系可用关系:人物A-人物B", "state_description": "本集结束时该维度的明确状态", "status": "established / changed / persisting / resolved", "must_persist": "boolean；true 表示下一集仍需保持或明确转变", "evidence": "剧本或分镜中可定位的状态证据", "storyboard_indices": ["本集分镜从1开始的位置"], "transition_evidence": "状态变化时解释变化原因的可定位证据", "trigger_event": "直接触发状态变化的具体事件/信息", "trigger_storyboard_indices": ["触发事件所在的本集分镜位置"], "change_storyboard_indices": ["状态实际改变发生的本集分镜位置"], "reaction_evidence": "人物对触发事件的可定位反应", "reaction_storyboard_indices": ["反应所在的本集分镜位置"], "downstream_consequence_evidence": "状态变化影响后续行动/选择的可定位证据", "downstream_storyboard_indices": ["后续影响所在的本集分镜位置"]}], "unresolved_threads": ["本集结束后仍未解决的悬念/冲突"], "ending_state": "本集结束时可供后续承接的事实状态", "next_episode_requirements": ["下一集必须承接的事件/事实；最终集可为空列表"]}, "storyboard": ["本集分镜，字段与根级 storyboard 相同"]}],
     "continuity_ledger": [{"episode_number": "integer", "opening_state": "承接状态", "character_state_changes": ["人物状态变化"], "unresolved_threads": ["未解决线索"], "ending_state": "集末状态", "next_episode_requirements": ["下一集承接要求"]}],
     "drama_business_mode": "通用AI短剧/商品植入短剧/商品转化短剧/AI短剧形式商品广告",
     "product_analysis": {"product_type": "商品类型", "target_audience": "目标人群", "selling_points": ["已确认卖点"], "usage_scenarios": ["使用场景"], "unknown_facts": ["未知或待确认信息"]},
@@ -154,6 +154,7 @@ def build_short_drama_prompt(product: dict[str, Any], constraints: dict[str, Any
         "5.1a 每项必须说明 kind（commitment/misunderstanding/action_consequence）、character_name、obligation、origin_storyboard_index、origin_evidence、expected_follow_through、follow_through_storyboard_indices、status（open/resolved/intentionally_abandoned）及必要时的 resolution_rationale。来源证据必须出现在来源镜头文本中；后续引用必须有效且晚于来源镜头；跨集未解决事项还必须同步到来源集 continuity_state 的未解线索/下一集要求/集末状态及下一集开场状态/未解线索。旧方案兼容，缺少列表只产生审查警告。\n"
         "6. 提供至少两个故事方向备选，机制应有实质差异，不只是换标题。\n"
         "7. 本次只做创作方案，不要调用素材生成或视频生成，不要假称已经生成成片。\n"
+        "7.1 A86人物状态变化必须形成“触发事件/信息→状态实际改变→人物反应→后续行动或剧情后果”的可核对闭环。对 status=changed 的台账项，填写 trigger_event、trigger_storyboard_indices、change_storyboard_indices、reaction_evidence/reaction_storyboard_indices、downstream_consequence_evidence/downstream_storyboard_indices；触发镜头必须早于状态改变镜头，反应和后续影响必须出现在改变之后。每段证据必须能在本集剧本或所引用分镜中定位；不得用“他想通了”等无事件依据的概述代替触发事件。旧方案可不提供人物状态台账。\n"
         "8. 只输出符合给定结构的合法JSON，不要输出Markdown。\n"
         "9. 如果 constraints.short_drama_mode 为 continuous_series 或 anthology_series，必须输出指定数量的 episodes；每集有独立剧本、分镜和结尾钩子。根级 storyboard 必须按集顺序汇总全部分镜，每个镜头带 episode_number；不要把多集缩成一集。\n"
         "10. continuous_series 必须跨集承接人物状态、因果和悬念；anthology_series 共用人物/世界观但每集有相对独立的故事。单集模式 episodes 可以只含一集。\n"
@@ -1154,6 +1155,56 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
                 add("warning", "CHARACTER_STATE_SHOTS_INVALID", f"第{episode_number}集人物状态引用了不存在的本集分镜。")
             if persist and status != "resolved" and not valid_refs:
                 add("warning", "CHARACTER_STATE_SHOTS_MISSING", f"第{episode_number}集人物“{name}”的跨集状态未引用有效本集分镜。")
+            # A86: changed states need an ordered trigger -> change -> reaction -> consequence chain.
+            if status == "changed":
+                episode = episode_by_number.get(episode_number, {})
+                episode_script = str(episode.get("full_script", "")) if isinstance(episode, dict) else ""
+                episode_shots = episode.get("storyboard", []) if isinstance(episode, dict) else []
+                if not isinstance(episode_shots, list):
+                    episode_shots = []
+                def _state_refs(field: str, code_name: str) -> list[int]:
+                    raw_refs = record.get(field, [])
+                    if not isinstance(raw_refs, list):
+                        add("warning", code_name, f"第{episode_number}集人物“{name}”的 {field} 必须是本集分镜位置列表。")
+                        return []
+                    valid = [value for value in raw_refs if isinstance(value, int) and not isinstance(value, bool) and 1 <= value <= len(episode_shots)]
+                    if len(valid) != len(raw_refs):
+                        add("warning", code_name, f"第{episode_number}集人物“{name}”的 {field} 引用了不存在的本集分镜。")
+                    return sorted(set(valid))
+                trigger_event = str(record.get("trigger_event", "")).strip()
+                trigger_refs = _state_refs("trigger_storyboard_indices", "CHARACTER_STATE_TRIGGER_SHOTS_INVALID")
+                change_refs = _state_refs("change_storyboard_indices", "CHARACTER_STATE_CHANGE_SHOTS_INVALID")
+                reaction_evidence = str(record.get("reaction_evidence", "")).strip()
+                reaction_refs = _state_refs("reaction_storyboard_indices", "CHARACTER_STATE_REACTION_SHOTS_INVALID")
+                consequence_evidence = str(record.get("downstream_consequence_evidence", "")).strip()
+                consequence_refs = _state_refs("downstream_storyboard_indices", "CHARACTER_STATE_CONSEQUENCE_SHOTS_INVALID")
+                def _evidence_located(value: str, refs: list[int]) -> bool:
+                    if not value:
+                        return False
+                    if value.casefold() in episode_script.casefold():
+                        return True
+                    return any(
+                        value.casefold() in " ".join(
+                            str(episode_shots[index - 1].get(field, ""))
+                            for field in ("action", "dialogue", "generation_prompt", "narrative_function", "story_event_reference")
+                        ).casefold()
+                        for index in refs
+                        if isinstance(episode_shots[index - 1], dict)
+                    )
+                if not trigger_event or not trigger_refs or not _evidence_located(trigger_event, trigger_refs):
+                    add("warning", "CHARACTER_STATE_TRIGGER_MISSING", f"第{episode_number}集人物“{name}”的状态标记 changed，但缺少可定位的触发事件及其分镜引用。")
+                if not change_refs:
+                    add("warning", "CHARACTER_STATE_CHANGE_SHOTS_MISSING", f"第{episode_number}集人物“{name}”标记 changed，但没有引用状态实际改变发生的镜头。")
+                if trigger_refs and change_refs and max(trigger_refs) >= min(change_refs):
+                    add("warning", "CHARACTER_STATE_TRIGGER_NOT_BEFORE_CHANGE", f"第{episode_number}集人物“{name}”的触发事件镜头必须早于状态改变镜头。")
+                if not reaction_evidence or not reaction_refs or not _evidence_located(reaction_evidence, reaction_refs):
+                    add("warning", "CHARACTER_STATE_REACTION_MISSING", f"第{episode_number}集人物“{name}”的状态变化缺少可定位的人物反应及其分镜引用。")
+                elif change_refs and min(reaction_refs) <= max(change_refs):
+                    add("warning", "CHARACTER_STATE_REACTION_NOT_LATER", f"第{episode_number}集人物“{name}”的反应镜头必须位于状态改变镜头之后。")
+                if not consequence_evidence or not consequence_refs or not _evidence_located(consequence_evidence, consequence_refs):
+                    add("warning", "CHARACTER_STATE_CONSEQUENCE_MISSING", f"第{episode_number}集人物“{name}”的状态变化缺少可定位的后续行动/剧情后果及其分镜引用。")
+                elif change_refs and min(consequence_refs) <= max(change_refs):
+                    add("warning", "CHARACTER_STATE_CONSEQUENCE_NOT_LATER", f"第{episode_number}集人物“{name}”的后续影响镜头必须位于状态改变镜头之后。")
             key = (name, dimension)
             if key in state_map:
                 add("warning", "CHARACTER_STATE_DUPLICATE_DIMENSION", f"第{episode_number}集人物“{name}”的状态维度“{dimension}”重复声明。")
