@@ -240,3 +240,7 @@ A84 代码/测试/HELP/PROJECT_LOGIC 同提交 SHA `00ad0d00a9747ca9ef666981b4e5
 
 ### A85：人物长期状态与关系跨集一致性
 A85 为每集可选的 `continuity_state.character_state_ledger` 建立跨集审查，跟踪人物认知、心理、秘密、承诺与关系等维度。显式标记 `must_persist=true` 的未解决状态必须在下一集继续出现；状态描述变化需要声明 changed/resolved，changed 必须提供可在剧本/分镜定位的 transition_evidence。旧方案兼容；文本审查不等于完整语义理解或视觉核验。
+
+
+### A85 自动化验证结果
+代码/测试 SHA `6128fabc3c530c6072dfe72e05a956fe7733065f` 已通过完整 CI push/PR 与 docs-sync push/PR：CI `38309397555`、`38309402963`；docs-sync `38309397567`、`38309403129`。文本规则不替代人物心理语义与视觉核验。
