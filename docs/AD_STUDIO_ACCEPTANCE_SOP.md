@@ -1114,3 +1114,4 @@ SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 的完整 CI 与 docs-sync 在 pu
 3. 将描述替换为引用镜头中不存在的动作，确认 `CHARACTER_STATE_MANIFESTATION_NOT_SHOWN`。
 4. 删除表现字段或镜头引用，确认 `CHARACTER_STATE_MANIFESTATION_MISSING`。
 5. 检查旧方案兼容，运行短剧专项测试、完整 CI 与 docs-sync，并记录最终 SHA。真实视频表演仍需独立视觉/人工核验。
+\n\n### A88 专项验收：多人物状态依赖一致性\n1. 测试双方理解一致的记录与 `same_understanding` 下直接冲突的记录。\n2. 测试 `different_beliefs_allowed` 不误报不同信念。\n3. 测试知识不对称缺少原因、未知人物、无效镜头、缺少双方状态及不可定位证据。\n4. 验证旧方案没有该可选字段时兼容，运行短剧专项测试、完整 CI 和 docs-sync。文本检查不等于自动理解叙事语义。\n

@@ -381,3 +381,4 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - 新增测试：有效可观察表演、仅有抽象情绪标签、表演描述无法在引用镜头中定位。
 - 本节记录的是实现目标；提交后必须以最终 SHA 的 CI 和 docs-sync 结果更新验证状态。
 - PR #32 保持 open/unmerged；Windows 真机、真实 Provider、真实扣款/账单和剪映现场验收仍暂缓。
+\n\n## A88｜多人物状态依赖一致性\n- 新增每集可选 `continuity_state.cross_character_dependencies`，声明人物间知识、关系或承诺依赖。\n- 检查双方人物、规则、证据和镜头引用；`same_understanding` 陈述不一致时警告，`asymmetric_knowledge` 缺少原因时警告。\n- `different_beliefs_allowed` 允许不同信念，不将合理误解自动判成矛盾。\n- 新增直接冲突、不同信念、知识不对称、未知人物和无效镜头引用测试。提交后以最终 SHA 核验 CI/docs-sync。\n- PR #32 保持 open/unmerged；真实 Provider、Windows 真机、扣款/账单及剪映现场验收仍暂缓。\n

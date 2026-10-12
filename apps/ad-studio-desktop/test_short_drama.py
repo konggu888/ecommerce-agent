@@ -1366,5 +1366,37 @@ class ShortDramaTests(unittest.TestCase):
             resolve_product_drama_shot_number(plan, legacy_shot)
 
 
+
+    def test_a88_checks_cross_character_consistency_but_allows_different_beliefs(self):
+        plan = sample_plan()
+        plan["characters"].append({"name": "小王", "role": "同事", "goal": "帮忙", "motivation": "合作",
+            "fear_or_secret": "无", "relationship": "同事", "relationship_dynamics": "合作",
+            "decision_pressure": "时间紧", "arc": "积极行动"})
+        def run(rule, claim_b):
+            episode = {"episode_number": 1, "full_script": "小林认为钥匙在玄关，小王谈到钥匙位置。",
+                "storyboard": [{"index": 1, "action": "小林认为钥匙在玄关，小王谈到钥匙位置。", "dialogue": ""}],
+                "continuity_state": {"cross_character_dependencies": [{
+                    "character_a": "小林", "character_b": "小王", "dependency_key": "key_location",
+                    "dependency_type": "knowledge_alignment", "consistency_rule": rule,
+                    "character_a_claim": "知道钥匙在玄关", "character_b_claim": claim_b,
+                    "evidence": "小林认为钥匙在玄关，小王谈到钥匙位置", "storyboard_indices": [1]}]}}
+            return {i["code"] for i in audit_short_drama({"format_mode": "continuous_series", "episode_count": 1, "episodes": [episode], **plan})["issues"]}
+        self.assertIn("CROSS_CHARACTER_DEPENDENCY_CONTRADICTION", run("same_understanding", "认为钥匙在办公室"))
+        self.assertNotIn("CROSS_CHARACTER_DEPENDENCY_CONTRADICTION", run("different_beliefs_allowed", "认为钥匙在办公室"))
+        self.assertIn("CROSS_CHARACTER_ASYMMETRY_UNEXPLAINED", run("asymmetric_knowledge", "不知道钥匙位置"))
+
+    def test_a88_warns_for_unknown_character_and_invalid_reference(self):
+        plan = sample_plan()
+        episode = {"episode_number": 1, "full_script": "小林没有告诉小王钥匙的位置。",
+            "storyboard": [{"index": 1, "action": "小林没有告诉小王钥匙的位置。", "dialogue": ""}],
+            "continuity_state": {"cross_character_dependencies": [{
+                "character_a": "小林", "character_b": "不存在的人物", "dependency_key": "x",
+                "dependency_type": "knowledge_alignment", "consistency_rule": "asymmetric_knowledge",
+                "character_a_claim": "知道位置", "character_b_claim": "不知道位置",
+                "evidence": "小林没有告诉小王钥匙的位置", "storyboard_indices": [9]}]}}
+        codes = {i["code"] for i in audit_short_drama({"format_mode": "continuous_series", "episode_count": 1, "episodes": [episode], **plan})["issues"]}
+        self.assertIn("CROSS_CHARACTER_DEPENDENCY_CHARACTERS_INVALID", codes)
+        self.assertIn("CROSS_CHARACTER_DEPENDENCY_SHOTS_INVALID", codes)
+
 if __name__ == "__main__":
     unittest.main()
