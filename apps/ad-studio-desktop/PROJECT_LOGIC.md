@@ -1237,3 +1237,12 @@ A81 测试夹具边界：因果链按步骤独立审查 state_continuity。测�
 - `knowledge_origin=preexisting` 时，来源镜头列表必须为空，并应填写 `known_information`。
 - 产生 warning 的情况包括时间线未声明、来源列表格式/位置无效、信息来源在后续才揭示、来源原文无法在引用镜头中找到，以及预先已知信息仍引用剧情内镜头。
 - 旧方案仍可读取；此规则是结构、顺序和文本覆盖检查，不是对人物心理的完整语义判断。
+
+
+### A83：人物承诺、误解与行动结果连续性审查
+- 输入：短剧根级 `narrative_obligations` 列表；每项包含事项类型、人物、描述、来源镜头位置/原文证据、预期后续结果、后续镜头引用、状态和必要的放弃理由。
+- 决策：`audit_short_drama()` 进行确定性字段、人物引用、来源证据、镜头顺序和文本覆盖检查；不调用模型、不产生额外费用。
+- 检查项：`NARRATIVE_OBLIGATIONS_UNSPECIFIED`、`NARRATIVE_OBLIGATION_KIND_INVALID`、`NARRATIVE_OBLIGATION_UNKNOWN_CHARACTER`、`NARRATIVE_OBLIGATION_ORIGIN_INVALID`、`NARRATIVE_OBLIGATION_ORIGIN_NOT_SHOWN`、`NARRATIVE_OBLIGATION_FOLLOW_SHOTS_INVALID`、`NARRATIVE_OBLIGATION_FOLLOW_SHOTS_NOT_LATER`、`NARRATIVE_OBLIGATION_FOLLOW_THROUGH_NOT_SHOWN` 等。
+- 状态：缺少列表仅产生 warning，兼容旧方案；不会自动改写剧情或阻止项目读取。
+- 边界：检查依赖显式声明与字符串匹配，不能证明承诺是否真实可信、误解是否合乎心理逻辑、后果是否具有语义上的因果关系；仍需人工/模型复核。
+- 更新记录（2026-10-13）：新增承诺/误解/行动后果的结构化追踪与回归测试；CI 和 docs-sync 需以本次最终 SHA 的结果为准。
