@@ -1268,3 +1268,12 @@ A81 测试夹具边界：因果链按步骤独立审查 state_continuity。测�
 
 ### A84 自动化验收记录（2026-10-13）
 代码与回归测试 SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 的完整 CI push/PR 和 docs-sync push/PR 均通过：`38308777852`、`38308783208`、`38308777939`、`38308783195`。结构/文本匹配不等于剧情语义、真实画面或商业成片验收。
+
+
+### A85：人物长期状态、秘密、认知、承诺和关系跨集一致性
+- 每集 `continuity_state.character_state_ledger` 是可选结构；记录 `character_name`、`dimension`、`state_description`、`status`、`must_persist`、`evidence`、本集 `storyboard_indices`，状态变化时补 `transition_evidence`。
+- 状态维度可描述心理/认知/秘密/承诺/关系等；关系维度建议使用 `relationship:人物A-人物B关系` 形式，避免人物配对歧义。
+- `must_persist=true` 且状态未解决时，下一集必须继续记录同一人物/维度；状态文本变化但未标记 changed/resolved 时输出 `CHARACTER_STATE_CHANGED_WITHOUT_DECLARATION`；标记 changed 却无可定位转变证据时输出 `CHARACTER_STATE_CHANGE_UNJUSTIFIED`。
+- 同时检查人物是否存在、字段类型、重复维度、状态证据能否在本集剧本/分镜定位、引用的本集镜头位置是否有效。旧方案未提供该台账时兼容读取。
+- 新增 warning codes：`CHARACTER_STATE_LEDGER_INVALID`、`CHARACTER_STATE_RECORD_INVALID`、`CHARACTER_STATE_UNKNOWN_CHARACTER`、`CHARACTER_STATE_DIMENSION_MISSING`、`CHARACTER_STATE_DESCRIPTION_MISSING`、`CHARACTER_STATE_STATUS_INVALID`、`CHARACTER_STATE_PERSIST_FLAG_INVALID`、`CHARACTER_STATE_EVIDENCE_MISSING`、`CHARACTER_STATE_EVIDENCE_UNTRACEABLE`、`CHARACTER_STATE_SHOTS_INVALID`、`CHARACTER_STATE_SHOTS_MISSING`、`CHARACTER_STATE_DUPLICATE_DIMENSION`、`CHARACTER_STATE_NOT_CARRIED_FORWARD`、`CHARACTER_STATE_CHANGED_WITHOUT_DECLARATION`、`CHARACTER_STATE_CHANGE_UNJUSTIFIED`。
+- 限制：文本状态相等/变化检测是确定性检查，不证明人物行为心理合理；必须结合人工/更强语义审查。

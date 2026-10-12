@@ -1082,3 +1082,15 @@ AI 必须执行：
 
 ### A84 本轮结果记录（2026-10-13）
 SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 的完整 CI 与 docs-sync 在 push/PR 触发下均通过（CI：`38308777852`、`38308783208`；docs-sync：`38308777939`、`38308783195`）。
+
+
+### A85 专项：人物状态与关系跨集台账
+1. 为连续剧至少两集分别添加 `continuity_state.character_state_ledger`，用 `character_name + dimension` 唯一标识状态，写明状态描述、证据、本集镜头引用和 `must_persist`。
+2. 第一集状态标记必须延续，下一集保持相同状态描述；运行审查，确认没有 A85 跨集警告。
+3. 删除下一集对应状态项，确认 `CHARACTER_STATE_NOT_CARRIED_FORWARD`。
+4. 修改下一集状态描述但状态仍标记为 persisting，确认 `CHARACTER_STATE_CHANGED_WITHOUT_DECLARATION`。
+5. 把状态改为 changed，但移除 transition_evidence 或使其无法在本集剧本/分镜中定位，确认 `CHARACTER_STATE_CHANGE_UNJUSTIFIED`。
+6. 将 must_persist 改为字符串，或使用未定义人物/无效分镜引用，确认相应字段/证据警告。
+7. 移除整个可选台账，确认旧方案仍可读且不强制产生 A85 警告。
+8. 运行短剧专项测试、完整 CI 与 docs-sync，记录最新 SHA 和结果。Windows 真机、真实 Provider、真实扣款仍按用户既定安排暂缓。
+9. 人物关系、心理变化与秘密揭露的深层语义仍需人工或语义模型复核；文本命中不是充分证明。

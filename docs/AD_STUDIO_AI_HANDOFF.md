@@ -236,3 +236,7 @@ A84 在 A83 的 `narrative_obligations` 上增加可选 `cross_episode_required`
 
 ### A84 自动化验证结果（2026-10-13）
 A84 代码/测试/HELP/PROJECT_LOGIC 同提交 SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 已通过完整 CI 和 docs-sync 的 push 与 PR 工作流：CI `38308777852`、`38308783208`；docs-sync `38308777939`、`38308783195`。这不证明人物心理/剧情语义自然，也不替代真实画面核验。
+
+
+### A85：人物长期状态与关系跨集一致性
+A85 为每集可选的 `continuity_state.character_state_ledger` 建立跨集审查，跟踪人物认知、心理、秘密、承诺与关系等维度。显式标记 `must_persist=true` 的未解决状态必须在下一集继续出现；状态描述变化需要声明 changed/resolved，changed 必须提供可在剧本/分镜定位的 transition_evidence。旧方案兼容；文本审查不等于完整语义理解或视觉核验。

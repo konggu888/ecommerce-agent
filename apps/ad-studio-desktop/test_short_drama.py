@@ -424,6 +424,61 @@ class ShortDramaTests(unittest.TestCase):
         codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
         self.assertIn("NARRATIVE_OBLIGATION_CROSS_EPISODE_FOLLOW_THROUGH_MISSING", codes)
 
+    def _a85_multiepisode_state_plan(self):
+        plan = self._a84_multiepisode_plan()
+        plan["episodes"][0]["full_script"] = "小林收到便条并答应追查。小林决定信任小王，并把秘密告诉小王。"
+        plan["episodes"][1]["full_script"] = "小林继续追查并打开旧档案。小林仍信任小王，并记得便条上的秘密。"
+        plan["episodes"][0]["continuity_state"]["character_state_ledger"] = [{
+            "character_name": "小林", "dimension": "relationship:小林-小王信任",
+            "state_description": "小林信任小王", "status": "established", "must_persist": True,
+            "evidence": "小林决定信任小王", "storyboard_indices": [1],
+        }]
+        plan["episodes"][1]["continuity_state"]["character_state_ledger"] = [{
+            "character_name": "小林", "dimension": "relationship:小林-小王信任",
+            "state_description": "小林信任小王", "status": "persisting", "must_persist": True,
+            "evidence": "小林仍信任小王", "storyboard_indices": [1],
+        }]
+        return plan
+
+    def test_a85_accepts_persisting_character_relationship_state(self):
+        plan = self._a85_multiepisode_state_plan()
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertNotIn("CHARACTER_STATE_NOT_CARRIED_FORWARD", codes)
+        self.assertNotIn("CHARACTER_STATE_CHANGED_WITHOUT_DECLARATION", codes)
+        self.assertNotIn("CHARACTER_STATE_CHANGE_UNJUSTIFIED", codes)
+
+    def test_a85_warns_when_persistent_state_disappears_in_next_episode(self):
+        plan = self._a85_multiepisode_state_plan()
+        plan["episodes"][1]["continuity_state"]["character_state_ledger"] = []
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("CHARACTER_STATE_NOT_CARRIED_FORWARD", codes)
+
+    def test_a85_warns_when_relationship_resets_without_declared_change(self):
+        plan = self._a85_multiepisode_state_plan()
+        record = plan["episodes"][1]["continuity_state"]["character_state_ledger"][0]
+        record["state_description"] = "小林不再信任小王"
+        record["status"] = "persisting"
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("CHARACTER_STATE_CHANGED_WITHOUT_DECLARATION", codes)
+
+    def test_a85_requires_transition_evidence_for_declared_state_change(self):
+        plan = self._a85_multiepisode_state_plan()
+        record = plan["episodes"][1]["continuity_state"]["character_state_ledger"][0]
+        record["state_description"] = "小林不再信任小王"
+        record["status"] = "changed"
+        record.pop("transition_evidence", None)
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("CHARACTER_STATE_CHANGE_UNJUSTIFIED", codes)
+
+    def test_a85_rejects_non_boolean_persistence_flag_and_untraceable_evidence(self):
+        plan = self._a85_multiepisode_state_plan()
+        record = plan["episodes"][0]["continuity_state"]["character_state_ledger"][0]
+        record["must_persist"] = "yes"
+        record["evidence"] = "这一句在剧本中不存在"
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("CHARACTER_STATE_PERSIST_FLAG_INVALID", codes)
+        self.assertIn("CHARACTER_STATE_EVIDENCE_UNTRACEABLE", codes)
+
     def test_a83_prompt_requires_tracking_commitments_misunderstandings_and_consequences(self):
         prompt = build_short_drama_prompt({}, {"drama_business_mode": "general"})
         self.assertIn("narrative_obligations", prompt)

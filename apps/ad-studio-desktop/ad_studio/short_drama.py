@@ -18,7 +18,7 @@ SHORT_DRAMA_SCHEMA = {
     "format_mode": "single_episode / continuous_series / anthology_series",
     "episode_count": "integer",
     "series_bible": {"series_arc": "全剧主线", "character_state": "人物长期状态与关系", "continuity_rules": ["跨集必须保持的事实"]},
-    "episodes": [{"episode_number": "integer", "title": "集名", "logline": "本集梗概", "plot_beats": ["本集节拍"], "ending_hook": "本集结尾/悬念", "full_script": "本集完整剧本", "continuity_state": {"opening_state": "本集开始时承接的剧情/人物状态", "character_state_changes": ["本集人物状态或关系的变化"], "unresolved_threads": ["本集结束后仍未解决的悬念/冲突"], "ending_state": "本集结束时可供后续承接的事实状态", "next_episode_requirements": ["下一集必须承接的事件/事实；最终集可为空列表"]}, "storyboard": ["本集分镜，字段与根级 storyboard 相同"]}],
+    "episodes": [{"episode_number": "integer", "title": "集名", "logline": "本集梗概", "plot_beats": ["本集节拍"], "ending_hook": "本集结尾/悬念", "full_script": "本集完整剧本", "continuity_state": {"opening_state": "本集开始时承接的剧情/人物状态", "character_state_changes": ["本集人物状态或关系的变化"], "character_state_ledger": [{"character_name": "人物姓名", "dimension": "心理/知识/秘密/承诺/关系等状态维度；关系可用关系:人物A-人物B", "state_description": "本集结束时该维度的明确状态", "status": "established / changed / persisting / resolved", "must_persist": "boolean；true 表示下一集仍需保持或明确转变", "evidence": "剧本或分镜中可定位的状态证据", "storyboard_indices": ["本集分镜从1开始的位置"], "transition_evidence": "状态变化时解释变化原因的可定位证据"}], "unresolved_threads": ["本集结束后仍未解决的悬念/冲突"], "ending_state": "本集结束时可供后续承接的事实状态", "next_episode_requirements": ["下一集必须承接的事件/事实；最终集可为空列表"]}, "storyboard": ["本集分镜，字段与根级 storyboard 相同"]}],
     "continuity_ledger": [{"episode_number": "integer", "opening_state": "承接状态", "character_state_changes": ["人物状态变化"], "unresolved_threads": ["未解决线索"], "ending_state": "集末状态", "next_episode_requirements": ["下一集承接要求"]}],
     "drama_business_mode": "通用AI短剧/商品植入短剧/商品转化短剧/AI短剧形式商品广告",
     "product_analysis": {"product_type": "商品类型", "target_audience": "目标人群", "selling_points": ["已确认卖点"], "usage_scenarios": ["使用场景"], "unknown_facts": ["未知或待确认信息"]},
@@ -1097,6 +1097,99 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
         if not ((obligation_text and obligation_text in next_handoff_text) or (expected_text and expected_text in next_handoff_text)):
             add("warning", "NARRATIVE_OBLIGATION_NOT_CARRIED_FORWARD", f"第{obligation_index}项仍未解决的跨集事项没有在第{later_episode_numbers[0]}集开场状态或未解线索中继续出现。")
 
+    # A85: explicit cross-episode character and relationship state ledger.
+    # Legacy episodes without this optional ledger remain compatible.
+    valid_character_state_statuses = {"established", "changed", "persisting", "resolved"}
+    episode_character_states: dict[int, dict[tuple[str, str], dict[str, Any]]] = {}
+    for episode_number, episode in sorted(episode_by_number.items()):
+        if not isinstance(episode, dict):
+            continue
+        continuity_state = episode.get("continuity_state", {})
+        if not isinstance(continuity_state, dict) or "character_state_ledger" not in continuity_state:
+            continue
+        records = continuity_state.get("character_state_ledger")
+        if not isinstance(records, list):
+            add("warning", "CHARACTER_STATE_LEDGER_INVALID", f"第{episode_number}集 character_state_ledger 必须是列表。")
+            continue
+        state_map: dict[tuple[str, str], dict[str, Any]] = {}
+        script = str(episode.get("full_script", ""))
+        shots = episode.get("storyboard", [])
+        if not isinstance(shots, list):
+            shots = []
+        shot_texts_local = [
+            " ".join(str(shot.get(key, "")) for key in ("action", "dialogue", "generation_prompt", "narrative_function", "story_event_reference")).casefold()
+            for shot in shots if isinstance(shot, dict)
+        ]
+        for record_index, record in enumerate(records, 1):
+            if not isinstance(record, dict):
+                add("warning", "CHARACTER_STATE_RECORD_INVALID", f"第{episode_number}集人物状态台账第{record_index}项必须是对象。")
+                continue
+            name = str(record.get("character_name", "")).strip()
+            dimension = str(record.get("dimension", "")).strip()
+            description = str(record.get("state_description", "")).strip()
+            status = str(record.get("status", "")).strip()
+            evidence = str(record.get("evidence", "")).strip()
+            if not name or name not in character_names:
+                add("warning", "CHARACTER_STATE_UNKNOWN_CHARACTER", f"第{episode_number}集人物状态台账引用了未定义人物“{name}”。")
+            if not dimension:
+                add("warning", "CHARACTER_STATE_DIMENSION_MISSING", f"第{episode_number}集人物状态台账缺少 dimension。")
+            if not description:
+                add("warning", "CHARACTER_STATE_DESCRIPTION_MISSING", f"第{episode_number}集人物状态台账缺少 state_description。")
+            if status not in valid_character_state_statuses:
+                add("warning", "CHARACTER_STATE_STATUS_INVALID", f"第{episode_number}集人物状态 status 无效。")
+            persist = record.get("must_persist", False)
+            if not isinstance(persist, bool):
+                add("warning", "CHARACTER_STATE_PERSIST_FLAG_INVALID", f"第{episode_number}集人物状态 must_persist 必须是布尔值。")
+                persist = False
+            if not evidence:
+                add("warning", "CHARACTER_STATE_EVIDENCE_MISSING", f"第{episode_number}集人物状态缺少 evidence。")
+            elif evidence.casefold() not in script.casefold() and not any(evidence.casefold() in text for text in shot_texts_local):
+                add("warning", "CHARACTER_STATE_EVIDENCE_UNTRACEABLE", f"第{episode_number}集人物“{name}”的状态证据无法在本集剧本或分镜中定位。")
+            refs = record.get("storyboard_indices", [])
+            if not isinstance(refs, list):
+                add("warning", "CHARACTER_STATE_SHOTS_INVALID", f"第{episode_number}集 storyboard_indices 必须是列表。")
+                refs = []
+            valid_refs = [ref for ref in refs if isinstance(ref, int) and not isinstance(ref, bool) and 1 <= ref <= len(shots)]
+            if len(valid_refs) != len(refs):
+                add("warning", "CHARACTER_STATE_SHOTS_INVALID", f"第{episode_number}集人物状态引用了不存在的本集分镜。")
+            if persist and status != "resolved" and not valid_refs:
+                add("warning", "CHARACTER_STATE_SHOTS_MISSING", f"第{episode_number}集人物“{name}”的跨集状态未引用有效本集分镜。")
+            key = (name, dimension)
+            if key in state_map:
+                add("warning", "CHARACTER_STATE_DUPLICATE_DIMENSION", f"第{episode_number}集人物“{name}”的状态维度“{dimension}”重复声明。")
+            else:
+                state_map[key] = record
+        episode_character_states[episode_number] = state_map
+
+    ordered_episode_numbers = sorted(episode_by_number)
+    if checked.get("format_mode") == "continuous_series":
+        for position, episode_number in enumerate(ordered_episode_numbers[:-1]):
+            next_number = ordered_episode_numbers[position + 1]
+            for (name, dimension), previous in episode_character_states.get(episode_number, {}).items():
+                if previous.get("must_persist") is not True or previous.get("status") == "resolved":
+                    continue
+                current = episode_character_states.get(next_number, {}).get((name, dimension))
+                if current is None:
+                    add("warning", "CHARACTER_STATE_NOT_CARRIED_FORWARD", f"第{episode_number}集人物“{name}”的状态维度“{dimension}”要求跨集保持，但第{next_number}集没有对应记录。")
+                    continue
+                old_state = str(previous.get("state_description", "")).strip()
+                new_state = str(current.get("state_description", "")).strip()
+                new_status = str(current.get("status", "")).strip()
+                if old_state and new_state and old_state != new_state:
+                    if new_status not in {"changed", "resolved"}:
+                        add("warning", "CHARACTER_STATE_CHANGED_WITHOUT_DECLARATION", f"第{next_number}集人物“{name}”的状态维度“{dimension}”与上一集不一致，却未声明 changed/resolved。")
+                    elif new_status == "changed":
+                        transition = str(current.get("transition_evidence", "")).strip()
+                        next_episode = episode_by_number.get(next_number, {})
+                        next_script = str(next_episode.get("full_script", "")) if isinstance(next_episode, dict) else ""
+                        next_shots = next_episode.get("storyboard", []) if isinstance(next_episode, dict) else []
+                        next_shot_text = " ".join(
+                            " ".join(str(shot.get(key, "")) for key in ("action", "dialogue", "generation_prompt", "narrative_function", "story_event_reference"))
+                            for shot in next_shots if isinstance(shot, dict)
+                        )
+                        if not transition or (transition.casefold() not in next_script.casefold() and transition.casefold() not in next_shot_text.casefold()):
+                            add("warning", "CHARACTER_STATE_CHANGE_UNJUSTIFIED", f"第{next_number}集人物“{name}”的状态维度“{dimension}”标记 changed，但缺少可定位的 transition_evidence。")
+
     seen_scene_locations: dict[str, str] = {}
     total_seconds = 0
     for number, shot in enumerate(checked.get("storyboard", []), 1):
@@ -1300,7 +1393,7 @@ def generate_next_short_drama_episode(model_router, plan: dict[str, Any],
         "系列短剧：共享世界观与人物设定，但本集故事可以相对独立；只继承必要的长期人物状态，不要强行把上一集悬念变成本集主线。\n"
         "通用AI短剧可以不出现商品；商品植入/转化遵守商品事实，不编造功效或参数。\n"
         "输出对象必须包含 episode_number、title、logline、plot_beats、ending_hook、full_script、continuity_state、storyboard。"
-        "continuity_state 必须含 opening_state、character_state_changes（列表）、unresolved_threads（列表）、ending_state、next_episode_requirements（列表）。"
+        "continuity_state 必须含 opening_state、character_state_changes（列表）、unresolved_threads（列表）、ending_state、next_episode_requirements（列表）；连续多集还应提供 character_state_ledger，逐人物记录心理/知识/秘密/承诺/关系等需跨集保持的状态、状态维度、明确状态、status、must_persist、证据及本集分镜位置。若状态改变，必须给出可在本集剧本或分镜中定位的 transition_evidence；不得无解释重置人物关系、已知信息或承诺。"
         "storyboard 至少一个镜头；每个镜头含 index、scene、location、characters（列表）、action、dialogue、product_integration、asset_needs（列表）、actor_requirements（列表）、scene_requirements（列表）、product_asset_requirements（列表）、shot_type、duration_seconds、generation_prompt。"
         "index 从本集第1镜开始。只返回合法JSON。\n输入：\n"
         + json.dumps(handoff, ensure_ascii=False, indent=2)

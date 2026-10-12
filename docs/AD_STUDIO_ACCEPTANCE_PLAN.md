@@ -1138,3 +1138,15 @@ A61（旧成本迁移）、A62（接手文案断言）、A63（迁移基线持�
 
 ### A84 自动化验收记录（2026-10-13）
 代码与回归测试 SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 的完整 CI push run `38308777852`、CI PR run `38308783208`、docs-sync push run `38308777939`、docs-sync PR run `38308783195` 均 success。后续若有新提交必须重新核验最新 SHA。
+
+
+## A85｜人物长期状态与关系跨集一致性
+- [ ] 建立两集以上连续剧，第一集登记人物的认知/秘密/承诺/关系状态，并将 `must_persist=true`。
+- [ ] 状态在下一集保持一致时，不出现 `CHARACTER_STATE_NOT_CARRIED_FORWARD` 或无解释重置警告。
+- [ ] 删除下一集对应人物/维度记录，确认出现 `CHARACTER_STATE_NOT_CARRIED_FORWARD`。
+- [ ] 修改下一集状态描述但不声明变化，确认出现 `CHARACTER_STATE_CHANGED_WITHOUT_DECLARATION`。
+- [ ] 声明 `changed` 但删除/伪造无法定位的 `transition_evidence`，确认出现 `CHARACTER_STATE_CHANGE_UNJUSTIFIED` 或证据不可定位警告。
+- [ ] 验证未知人物、缺失维度、重复维度、无效本集分镜位置、非布尔 `must_persist` 均有警告。
+- [ ] 验证旧方案缺少 `character_state_ledger` 时仍能读取，且不产生 A85 专项缺失警告。
+- [ ] 运行短剧专项测试、完整 CI、docs-sync；结果必须对应最新 SHA。
+- [ ] 本项为结构/文本审查，不等于完整人物心理语义判断或实际画面核验。

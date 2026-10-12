@@ -354,3 +354,11 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - docs-sync push `38308777939` success；docs-sync PR `38308783195` success。
 - PR #32 保持 open/unmerged；不得未经用户明确许可合并。
 - A84 仅做跨集结构与文本承接审查；Windows 真机、真实 Provider、真实扣款/账单核对、剪映现场验收仍暂缓。
+
+
+## A85｜人物长期状态与关系跨集一致性（待最新 CI）
+- 新增可选每集字段 `continuity_state.character_state_ledger`，追踪人物认知、秘密、承诺、心理与人物关系等必须延续的状态。
+- 对 `must_persist=true` 且未解决的状态，检查下一集是否继续记录；状态描述变化必须声明 changed/resolved，changed 必须提供在剧本/分镜中可定位的 transition_evidence。
+- 增加状态缺失、关系无解释重置、转变证据缺失、非布尔持久标记、证据不可定位等回归测试。
+- 本轮代码 SHA 与其后文档同步提交的 CI/doc-sync 必须重新确认，不能复用 A84 绿灯。
+- 旧方案不提供此可选台账时兼容；Windows 真机、真实 Provider、真实账单与画面验收仍暂缓。

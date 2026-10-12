@@ -1139,3 +1139,7 @@ SHA `f57c0eb02249439ea42cc3d46dd2d94e87bab1c1` 的完整 CI 与 docs-sync 均通
 
 ### A84 自动化验收记录（2026-10-13）
 A84 代码、回归测试及 HELP/PROJECT_LOGIC 同步提交 SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 已通过完整 CI 与 docs-sync：CI push run `38308777852`、CI PR run `38308783208`、docs-sync push run `38308777939`、docs-sync PR run `38308783195` 均 success。此结论仅覆盖自动化检查，不替代剧情语义、Windows 真机或真实素材验收。
+
+
+## A85｜人物长期状态与关系跨集一致性
+连续多集方案可在每集 `continuity_state.character_state_ledger` 中记录人物心理、已知信息、秘密、承诺、关系等状态维度。每项填写人物、维度、当前状态、状态证据、状态类型及 `must_persist`。若状态必须跨集保持，下一集必须提供同一人物/维度的状态记录；状态描述变化时需明确标记 `changed` 或 `resolved`，标记为 `changed` 时还需提供能在下一集剧本/分镜中定位的 `transition_evidence`。未使用该可选台账的旧方案保持兼容。该检查为字段与文本证据审查，不等于完整人物心理语义理解。
