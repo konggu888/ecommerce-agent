@@ -1113,3 +1113,7 @@ The selling-point coverage regression test uses `product_placement` mode to isol
 
 
 A81 测试夹具补充：明确验证“无后续影响”时，因果链每一步都必须提供 state_continuity；只为单一步骤声明不会覆盖其他步骤缺失字段的 warning。
+
+
+## A82｜人物信息掌握与时间线一致性
+每条分镜中的人物行动依据可标明 `knowledge_origin`（`storyboard` 或 `preexisting`）及 `knowledge_source_storyboard_indices`。审查器会检查信息来源镜头是否有效、是否早于当前行动镜头，以及引用镜头文本是否包含声明的信息来源原文。故事开始前已知的信息应使用 `preexisting` 并将来源镜头列表留空。缺失字段只产生警告，兼容旧方案；文本和镜头顺序检查不能完全证明人物认知或剧情语义合理。

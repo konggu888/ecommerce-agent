@@ -165,6 +165,8 @@ class ShortDramaTests(unittest.TestCase):
         self.assertIn("relationship_change", prompt)
         self.assertIn("state_continuity", prompt)
         self.assertIn("required_follow_through", prompt)
+        self.assertIn("knowledge_origin", prompt)
+        self.assertIn("knowledge_source_storyboard_indices", prompt)
         self.assertIn("前置线索", prompt)
 
     def test_audit_warns_when_action_basis_names_character_not_in_shot(self):
@@ -181,6 +183,57 @@ class ShortDramaTests(unittest.TestCase):
         report = audit_short_drama(plan)
         self.assertIn("CHARACTER_ACTION_BASIS_NOT_IN_SHOT", {item["code"] for item in report["issues"]})
         self.assertIn("CHARACTER_ACTION_BASIS_UNKNOWN_CHARACTER", {item["code"] for item in report["issues"]})
+
+    def test_audit_warns_when_character_uses_information_revealed_later(self):
+        plan = sample_plan()
+        plan["storyboard"][0]["action"] = "主角发现钥匙不在固定位置"
+        second = dict(plan["storyboard"][0])
+        second["action"] = "小林依据尚未发生的信息作出决定"
+        second["character_action_basis"] = [{
+            "character_name": "小林", "goal_or_motivation": "准时出门",
+            "known_information": "钥匙不在固定位置",
+            "knowledge_source": "主角发现钥匙不在固定位置",
+            "knowledge_origin": "storyboard", "knowledge_source_storyboard_indices": [3],
+            "decision_pressure": "时间紧迫", "choice_rationale": "依据线索行动"
+        }]
+        third = dict(plan["storyboard"][0])
+        third["action"] = "主角发现钥匙不在固定位置"
+        plan["storyboard"].extend([second, third])
+        report = audit_short_drama(plan)
+        self.assertIn("CHARACTER_KNOWLEDGE_REVEALED_LATER", {item["code"] for item in report["issues"]})
+
+    def test_audit_accepts_knowledge_revealed_in_an_earlier_shot(self):
+        plan = sample_plan()
+        plan["storyboard"][0]["action"] = "主角发现钥匙不在固定位置"
+        second = dict(plan["storyboard"][0])
+        second["action"] = "小林按已发现的线索检查收纳处"
+        second["character_action_basis"] = [{
+            "character_name": "小林", "goal_or_motivation": "准时出门",
+            "known_information": "钥匙不在固定位置",
+            "knowledge_source": "主角发现钥匙不在固定位置",
+            "knowledge_origin": "storyboard", "knowledge_source_storyboard_indices": [1],
+            "decision_pressure": "时间紧迫", "choice_rationale": "依据线索行动"
+        }]
+        plan["storyboard"].append(second)
+        report = audit_short_drama(plan)
+        codes = {item["code"] for item in report["issues"]}
+        self.assertNotIn("CHARACTER_KNOWLEDGE_REVEALED_LATER", codes)
+        self.assertNotIn("CHARACTER_KNOWLEDGE_SOURCE_SHOTS_MISSING", codes)
+        self.assertNotIn("CHARACTER_KNOWLEDGE_SOURCE_NOT_IN_SOURCE_SHOT", codes)
+
+    def test_audit_accepts_preexisting_knowledge_without_storyboard_source(self):
+        plan = sample_plan()
+        plan["storyboard"][0]["character_action_basis"] = [{
+            "character_name": "小林", "goal_or_motivation": "准时出门",
+            "known_information": "熟悉自家玄关布局",
+            "knowledge_source": "主角发现钥匙不在固定位置",
+            "knowledge_origin": "preexisting", "knowledge_source_storyboard_indices": [],
+            "decision_pressure": "时间紧迫", "choice_rationale": "先检查熟悉的位置"
+        }]
+        report = audit_short_drama(plan)
+        codes = {item["code"] for item in report["issues"]}
+        self.assertNotIn("CHARACTER_KNOWLEDGE_TIMELINE_UNSPECIFIED", codes)
+        self.assertNotIn("CHARACTER_KNOWLEDGE_PREEXISTING_HAS_SHOTS", codes)
 
     def test_audit_warns_when_action_basis_omits_character_from_character_list(self):
         plan = sample_plan()

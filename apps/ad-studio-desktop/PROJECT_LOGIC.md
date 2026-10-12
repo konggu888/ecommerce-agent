@@ -1229,3 +1229,11 @@ A78 实现注意：人物行动依据审查必须在 `shot_texts` 构建完成�
 
 
 A81 测试夹具边界：因果链按步骤独立审查 state_continuity。测试“明确无后续影响”时必须给每一步都设置该对象，否则其他步骤仍应产生 STATE_CONTINUITY_UNSPECIFIED。
+
+
+## A82｜人物信息掌握与时间线一致性审查
+- 每个 `character_action_basis` 新增 `knowledge_origin` 和 `knowledge_source_storyboard_indices`。
+- `knowledge_origin=storyboard` 时，信息来源镜头必须有效、严格早于当前镜头，并且来源原文必须出现在被引用镜头文本中。
+- `knowledge_origin=preexisting` 时，来源镜头列表必须为空，并应填写 `known_information`。
+- 产生 warning 的情况包括时间线未声明、来源列表格式/位置无效、信息来源在后续才揭示、来源原文无法在引用镜头中找到，以及预先已知信息仍引用剧情内镜头。
+- 旧方案仍可读取；此规则是结构、顺序和文本覆盖检查，不是对人物心理的完整语义判断。

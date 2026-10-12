@@ -86,7 +86,7 @@ SHORT_DRAMA_SCHEMA = {
         "product_asset_requirements": ["需要展示的商品素材标签"],
         "shot_type": "景别与镜头运动",
         "duration_seconds": "integer",
-        "generation_prompt": "可执行的镜头生成提示", "narrative_function": "本镜在剧情中的作用", "story_event_reference": ["对应 causal_chain.step 编号"], "character_action_basis": [{"character_name": "行动人物姓名", "goal_or_motivation": "本次行动对应的目标/动机", "known_information": "人物行动时已经掌握的信息", "knowledge_source": "full_script 中可定位的信息来源原文", "decision_pressure": "促使人物现在行动的压力", "choice_rationale": "人物为何作出该选择及可观察动作"}]
+        "generation_prompt": "可执行的镜头生成提示", "narrative_function": "本镜在剧情中的作用", "story_event_reference": ["对应 causal_chain.step 编号"], "character_action_basis": [{"character_name": "行动人物姓名", "goal_or_motivation": "本次行动对应的目标/动机", "known_information": "人物行动时已经掌握的信息", "knowledge_source": "full_script 中可定位的信息来源原文", "knowledge_origin": "storyboard 或 preexisting；storyboard表示剧情中获得，preexisting表示故事开始前已知", "knowledge_source_storyboard_indices": ["剧情中获得信息时对应的更早根级分镜位置；preexisting时为空列表"], "decision_pressure": "促使人物现在行动的压力", "choice_rationale": "人物为何作出该选择及可观察动作"}]
     }],
     "product_truths": ["剧情必须遵守的商品事实"],
     "risk_notes": ["待确认信息、广告表达风险或制作风险"],
@@ -137,7 +137,7 @@ def build_short_drama_prompt(product: dict[str, Any], constraints: dict[str, Any
          "设计完整的场景、冲突、节奏、转折和结尾；故事要有因果，不是卖点罗列。\n"
         "3. 商品是否出现必须服从所选创作目标：通用模式允许不出现；商品植入/转化模式应按目标呈现。任何模式都不得篡改商品外观、结构、核心功能、使用方式、规格、功效或其他事实。\n"
         "4. 未提供或无法验证的商品信息必须标为待确认，不得编造认证、销量、价格、效果或用户证言。\n"
-        "5. 输出完整剧本和可执行分镜。每个分镜必须说明动作、台词、场景、人物、商品融入方式、素材需求和生成提示；新增 narrative_function（本镜在剧情中的作用）、story_event_reference（对应的 causal_chain.step 编号列表）和 character_action_basis（逐个列出本镜每个行动人物的 goal_or_motivation、known_information、knowledge_source、decision_pressure、choice_rationale）。knowledge_source 必须是 full_script 中可逐字定位的信息来源原文；人物不能使用其当时尚未获知的信息。关键选择必须落实为可拍摄动作，人物行动应与人物目标、动机、关系压力及当时已知信息相容。反转必须有可定位的前置线索。\n"
+        "5. 输出完整剧本和可执行分镜。每个分镜必须说明动作、台词、场景、人物、商品融入方式、素材需求和生成提示；新增 narrative_function（本镜在剧情中的作用）、story_event_reference（对应的 causal_chain.step 编号列表）和 character_action_basis（逐个列出本镜每个行动人物的 goal_or_motivation、known_information、knowledge_source、knowledge_origin、knowledge_source_storyboard_indices、decision_pressure、choice_rationale）。knowledge_source 必须是 full_script 中可逐字定位的信息来源原文；knowledge_origin 必须是 storyboard 或 preexisting：若信息在本剧分镜中首次获得，knowledge_source_storyboard_indices 必须引用本镜之前真实发生的信息揭示镜头，且来源原文必须出现在引用镜头的动作/台词/生成提示中；若属于故事开始前已知的信息，knowledge_source_storyboard_indices 必须为空列表。禁止引用本镜之后才揭示的信息作为当前行动依据。人物不能使用其当时尚未获知的信息。关键选择必须落实为可拍摄动作，人物行动应与人物目标、动机、关系压力及当时已知信息相容。反转必须有可定位的前置线索。\n"
         "6. 提供至少两个故事方向备选，机制应有实质差异，不只是换标题。\n"
         "7. 本次只做创作方案，不要调用素材生成或视频生成，不要假称已经生成成片。\n"
         "8. 只输出符合给定结构的合法JSON，不要输出Markdown。\n"
@@ -893,6 +893,31 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
             knowledge_source = str(basis.get("knowledge_source", "")).strip()
             if knowledge_source and knowledge_source not in full_script_for_character_audit:
                 add("warning", "CHARACTER_KNOWLEDGE_SOURCE_UNTRACEABLE", f"第{shot_index}镜人物“{character_name}”所依赖的信息来源无法在 full_script 原文中定位；请核实人物是否提前知道了不应知道的信息。")
+            # A82: distinguish information learned during the depicted story from pre-existing knowledge.
+            knowledge_origin = str(basis.get("knowledge_origin", "")).strip()
+            source_refs = basis.get("knowledge_source_storyboard_indices")
+            if knowledge_origin not in ("storyboard", "preexisting"):
+                add("warning", "CHARACTER_KNOWLEDGE_TIMELINE_UNSPECIFIED", f"第{shot_index}镜人物“{character_name}”没有说明信息是在剧情中获得还是故事开始前已知。")
+            if not isinstance(source_refs, list):
+                add("warning", "CHARACTER_KNOWLEDGE_SOURCE_SHOTS_INVALID", f"第{shot_index}镜人物“{character_name}”的信息来源镜头必须使用列表。")
+                source_refs = []
+            valid_source_refs = [ref for ref in source_refs if isinstance(ref, int) and not isinstance(ref, bool) and 1 <= ref <= len(storyboard)]
+            if len(valid_source_refs) != len(source_refs):
+                add("warning", "CHARACTER_KNOWLEDGE_SOURCE_SHOTS_INVALID", f"第{shot_index}镜人物“{character_name}”引用了不存在的信息来源镜头。")
+            if knowledge_origin == "preexisting":
+                if source_refs:
+                    add("warning", "CHARACTER_KNOWLEDGE_PREEXISTING_HAS_SHOTS", f"第{shot_index}镜人物“{character_name}”标记信息为故事开始前已知，却仍引用剧情内来源镜头。")
+                if not str(basis.get("known_information", "")).strip():
+                    add("warning", "CHARACTER_KNOWN_INFORMATION_MISSING", f"第{shot_index}镜人物“{character_name}”没有说明故事开始前已知的信息。")
+            elif knowledge_origin == "storyboard":
+                if not valid_source_refs:
+                    add("warning", "CHARACTER_KNOWLEDGE_SOURCE_SHOTS_MISSING", f"第{shot_index}镜人物“{character_name}”声称在剧情中获得信息，但没有有效的信息揭示镜头。")
+                if any(ref >= shot_index for ref in valid_source_refs):
+                    add("warning", "CHARACTER_KNOWLEDGE_REVEALED_LATER", f"第{shot_index}镜人物“{character_name}”引用的信息来源镜头没有早于当前镜头；可能使用了尚未获知的信息。")
+                if knowledge_source and valid_source_refs:
+                    missing_source_shots = [ref for ref in valid_source_refs if knowledge_source.casefold() not in shot_texts[ref - 1].casefold()]
+                    if missing_source_shots:
+                        add("warning", "CHARACTER_KNOWLEDGE_SOURCE_NOT_IN_SOURCE_SHOT", f"第{shot_index}镜人物“{character_name}”声明的信息来源原文没有出现在引用的信息揭示镜头中；请修正来源引用或补充可观察的揭示动作/台词。")
     if isinstance(causal_chain, list):
         for step_index, step in enumerate(causal_chain, 1):
             if not isinstance(step, dict):
