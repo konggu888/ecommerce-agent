@@ -317,13 +317,22 @@ class ShortDramaTests(unittest.TestCase):
     def test_a83_warns_on_invalid_or_nonchronological_obligation_references(self):
         plan = sample_plan()
         plan["storyboard"][0]["action"] = "小林误以为小王拿走钥匙，并开始质问小王。"
-        plan["narrative_obligations"] = [{
-            "kind": "misunderstanding", "character_name": "小林",
-            "obligation": "小林误以为小王拿走钥匙",
-            "origin_storyboard_index": 99, "origin_evidence": "误以为小王拿走钥匙",
-            "expected_follow_through": "小林发现钥匙其实在自己的包里",
-            "follow_through_storyboard_indices": [1], "status": "open"
-        }]
+        plan["narrative_obligations"] = [
+            {
+                "kind": "misunderstanding", "character_name": "小林",
+                "obligation": "小林误以为小王拿走钥匙",
+                "origin_storyboard_index": 99, "origin_evidence": "误以为小王拿走钥匙",
+                "expected_follow_through": "小林发现钥匙其实在自己的包里",
+                "follow_through_storyboard_indices": [1], "status": "open"
+            },
+            {
+                "kind": "misunderstanding", "character_name": "小林",
+                "obligation": "同镜引用作为后续镜头",
+                "origin_storyboard_index": 1, "origin_evidence": "主角翻找物品",
+                "expected_follow_through": "小林发现钥匙其实在自己的包里",
+                "follow_through_storyboard_indices": [1], "status": "open"
+            }
+        ]
         codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
         self.assertIn("NARRATIVE_OBLIGATION_ORIGIN_INVALID", codes)
         self.assertIn("NARRATIVE_OBLIGATION_FOLLOW_SHOTS_NOT_LATER", codes)
