@@ -1221,3 +1221,13 @@ A92 首次 CI 发现测试没有在重新加载项目前保存已解析的镜头
 
 ### A92 CI 根因修正
 A92 失败根因是测试假设项目只有一个默认镜头，而 `new_project()` 实际提供多个镜头；新增镜头不在 `shots[1]`。现改为精确两镜头 fixture，并按 `shot.id` 检查重载结果。新 SHA 的 CI/docs-sync 仍需重新验证。
+
+
+## A93｜失效跨集锁定在 Provider 调用前拦截并隔离镜头
+- [x] 增加真实生产入口级测试：锁定演员已停用时，直接走 _render_with_provider()。
+- [ ] Provider 调用次数必须为 0，并返回 SERIES_LOCKED_ASSET_INVALID。
+- [ ] 不得将锁定 ID 替换为相似标签素材；原 ID 应保留。
+- [ ] 锁定失败前不得触发同镜头其他缺失素材的自动生成。
+- [ ] 非目标镜头状态和已有输出路径必须保持不变。
+- [ ] 最新 SHA 的 Desktop Core、完整 CI push/PR、docs-sync push/PR 全部通过。
+- [ ] 此自动化测试不替代真实 Provider、Windows 真机和画面视觉验收。

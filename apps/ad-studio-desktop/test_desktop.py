@@ -2060,6 +2060,55 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(restored_by_id[second.id].scene_id, "scene-series-1")
 
 
+
+    def test_a93_invalid_series_lock_blocks_provider_dispatch_and_preserves_other_shots(self):
+        from ad_studio.models import Asset
+
+        class CountingProvider:
+            provider_name = "测试 Provider"
+            cost_per_shot_rmb = 1.0
+            def __init__(self):
+                self.calls = 0
+            def generate(self, request):
+                self.calls += 1
+                raise AssertionError("锁定素材失效时不得调用 Provider")
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            library = LocalLibrary(root / "library")
+            library._write([
+                Asset("actor-fixed", "固定演员", "演员", "user_upload", None, [], active=False, reusable=True),
+            ])
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 1, "连续短剧")
+            self.assertGreaterEqual(len(project.shots), 2)
+            target, untouched = project.shots[0], project.shots[1]
+            untouched.status = "已生成"
+            untouched.video_path = "existing-other-shot.mp4"
+            project.creative_plan = {"shots": [{
+                "index": target.index,
+                "asset_resolution": {
+                    "actor_asset_id": "actor-fixed",
+                    "product_tags": ["不应在锁定失败后触发补素材"],
+                    "generation_if_missing": True,
+                },
+            }]}
+            provider = CountingProvider()
+
+            with self.assertRaisesRegex(RuntimeError, "SERIES_LOCKED_ASSET_INVALID"):
+                store._render_with_provider(project, target, provider)
+
+            self.assertEqual(provider.calls, 0, "失效锁定必须在 Provider 调用前拦截")
+            self.assertIn("生成失败", target.status)
+            self.assertIsNone(target.actor_id, "不得静默绑定其他演员")
+            self.assertEqual(untouched.status, "已生成")
+            self.assertEqual(untouched.video_path, "existing-other-shot.mp4")
+            self.assertEqual(
+                project.creative_plan["shots"][0]["asset_resolution"]["actor_asset_id"],
+                "actor-fixed",
+                "失败时必须保留原锁定 ID 供恢复处理",
+            )
+
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.

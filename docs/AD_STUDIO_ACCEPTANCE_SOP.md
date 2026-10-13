@@ -1156,3 +1156,13 @@ SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 的完整 CI 与 docs-sync 在 pu
 
 ### A92 CI 根因修正（待重新验收）
 失败源于测试对默认镜头列表位置的错误假设，而非生产代码的 ID 持久化已被证明失效。现明确构造两个镜头，并按稳定 ID 验证每个镜头的演员/场景绑定；新 SHA 的完整 CI/docs-sync 通过后才能勾选完成。
+
+
+### A93 专项：Provider 调用边界与单镜头隔离
+1. 在本地素材库中创建一个已停用的跨集锁定演员/场景资产，并让目标镜头的创意计划继续引用原 asset_id。
+2. 使用计数型测试 Provider 调用单镜头渲染入口，而不只单测素材解析函数。
+3. 断言返回 SERIES_LOCKED_ASSET_INVALID，Provider 的 generate() 调用次数为 0。
+4. 断言原锁定 ID 保留、未绑定相似素材，且同镜头其他缺失素材未启动生成。
+5. 断言其他镜头的状态与已有输出路径未变化。
+6. 运行 Desktop Core、完整 CI push/PR、docs-sync push/PR；所有结果必须对应最终 SHA。
+7. 不得把此测试描述为真实 Provider、Windows 真机或生成画面的视觉验收。

@@ -279,3 +279,7 @@ A85 为每集可选的 `continuity_state.character_state_ledger` 建立跨集审
 
 ### A92 CI 根因修正
 测试原先按 `restored.shots[1]` 查找追加镜头，但新项目本身已有多个默认镜头。现在只保留两个目标镜头，并按 `shot.id` 查找重载记录；所有检查必须基于新的最终 SHA。
+
+
+## A93 接手规则：验证真实 Provider 调用边界
+不要只验证 resolve_assets() 返回错误。必须从 _render_with_provider() 生产入口使用计数型 fake Provider 验证失效锁定在 provider.generate() 之前拦截（调用次数 0），保留原锁定 ID，不静默选择相似资产，也不触发同镜头其他素材的自动生成；同时确认其他镜头状态和输出路径未变。所有改动同步 HELP、PROJECT_LOGIC、SESSION_HANDOFF、验收计划、SOP、AI handoff 与 future memo。

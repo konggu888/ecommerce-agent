@@ -431,3 +431,10 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - 根因：`new_project()` 创建的默认镜头数不止一个；测试追加的第二集镜头并不一定处于列表位置 1，导致按位置断言检查错了镜头。
 - 已修正夹具为仅包含 `first` 和 `second` 两个镜头；解析后明确断言两镜头绑定的 actor/scene ID 均为指定锁定值；重载后按稳定 `shot.id` 检查。
 - 新 SHA 的完整 CI/docs-sync 未通过前，A92 仍不得验收完成。PR #32 保持 open/unmerged；真机、真实 Provider、账单与剪映验收继续暂缓。
+
+
+## A93｜Provider 边界回归（新增，待最新 SHA 验证）
+- 目标：直接调用单镜头 Provider 渲染入口，在锁定演员素材已停用时验证 fail-closed，而不只测试 resolve_assets() 的返回值。
+- 验收点：Provider 调用次数为 0；抛出 SERIES_LOCKED_ASSET_INVALID；原锁定 ID 保留；不绑定相似素材；其他镜头状态/已有输出路径不变。
+- 同镜头其他缺失素材不得在锁定失败前触发自动生成。
+- 必须以新 SHA 的 CI push/PR 和 docs-sync push/PR 验证；PR #32 保持 open/unmerged。Windows 真机、真实 Provider、账单和剪映现场验收继续暂缓。
