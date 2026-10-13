@@ -1322,3 +1322,5 @@ SHA `9bcb19ac950f0addcc5a0bfab599dd060c11ec1e`：299 项 Desktop Core 测试、P
 - `ProductionStore.validate_series_asset_locks()` 在项目加载、`recover_project()` 和镜头 Provider 调用前重新核验锁定演员/场景的精确 ID。
 - 检查索引可读、ID 存在、active=true、reusable=true、kind 与锁定类型匹配；不可读时 fail-closed。
 - 失效问题写入 `creative_plan.recovery.history`，保留原 ID，阻止当前镜头调用 Provider；不自动替换/生成，也不重生成整部短剧。
+
+A91 补充：`resolve_assets()` 在处理未锁定素材之前先执行当前镜头锁定预检；任一锁定失效即记录恢复状态并提前返回，避免无关素材自动生成副作用。

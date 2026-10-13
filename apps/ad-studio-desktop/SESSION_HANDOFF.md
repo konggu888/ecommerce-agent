@@ -413,3 +413,4 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - A90 SHA：`8baa4339618f6a40fac4cdf0191eecf4eb0208cf`。以下 A91 提交的完整 CI 与 docs-sync 必须以最新 SHA 重新核验。
 - A91：项目重新打开、任务恢复、单镜头生成/重生成前复核跨集锁定素材；失效时 fail-closed，保留原 asset_id 并记录恢复原因。
 - Windows 真机、真实 Provider、实际扣款/账单核对、剪映现场验收继续暂缓。
+- A91 补充保护：镜头素材解析先预检锁定 ID；一旦锁定失效，在任何其他缺失素材生成之前 fail-closed。

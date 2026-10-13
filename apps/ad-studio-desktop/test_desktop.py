@@ -1992,6 +1992,27 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertIn("SERIES_LOCKED_ASSET_INVALID", restored.creative_plan["recovery"]["history"][-1]["error_code"])
 
 
+
+
+    def test_a91_invalid_series_lock_blocks_asset_resolution_before_fallback(self):
+        from ad_studio.models import Asset
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            library = LocalLibrary(root / "library")
+            library._write([Asset("actor-fixed", "固定演员", "演员", "user_upload", None, [], active=False, reusable=True)])
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 1, "真人口播")
+            shot = project.shots[0]
+            project.creative_plan = {"shots": [{
+                "index": shot.index,
+                "asset_resolution": {"actor_asset_id": "actor-fixed", "product_tags": ["应有但不生成"]},
+            }]}
+            result = store.resolve_assets(project, shot)
+            self.assertEqual(result["演员"]["error_code"], "SERIES_LOCKED_ASSET_INVALID")
+            self.assertFalse(result["演员"]["generate_if_missing"])
+            self.assertNotIn("商品素材", result)  # no unrelated fallback/generation after lock failure
+
+
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.

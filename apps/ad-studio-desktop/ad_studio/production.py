@@ -442,6 +442,21 @@ class ProductionStore:
         ai=next((x for x in plan_shots if int(x.get("index", -1)) == shot.index), {})
         req=ai.get("asset_resolution", {}) or {}
         generator=AssetGenerator(self.library_root/'asset-generation.json',self.library_root)
+        # Preflight all locks before resolving anything else. A stale series lock must
+        # not cause unrelated missing assets to be generated as a side effect.
+        preflight_issues = self.validate_series_asset_locks(project, shot.index)
+        if preflight_issues:
+            for issue in preflight_issues:
+                kind = issue["kind"]
+                resolution[kind] = {
+                    "asset": None, "source": "跨集锁定素材无效", "generate_if_missing": False,
+                    "locked_asset_id": issue.get("asset_id"), "error_code": issue["error_code"],
+                    "error": issue["error"],
+                }
+            project.creative_plan.setdefault("asset_resolution", {})[shot.id] = resolution
+            self._record_series_lock_issues(project, preflight_issues, stage="素材解析前发现跨集锁定素材失效")
+            self.save(project)
+            return resolution
         for kind, tags, lock_key in (("演员", req.get("actor_tags", []), "actor_asset_id"), ("场景", req.get("scene_tags", []), "scene_asset_id"), ("商品素材", req.get("product_tags", []), None)):
             locked_id = str(req.get(lock_key) or "").strip() if lock_key else ""
             if locked_id:

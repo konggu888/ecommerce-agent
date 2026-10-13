@@ -1140,3 +1140,4 @@ SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 的完整 CI 与 docs-sync 在 pu
 4. 尝试生成/重生成受影响镜头，确认 Provider 调用前被拦截；不替换素材、不重生成整部短剧。
 5. 修复原素材或由用户明确修改 ID 后再重试。
 6. 记录同一最终 SHA 的 Desktop Core、Python compile、完整 CI 与 docs-sync 结果。
+7. 额外确认：锁定失效时不应先生成同镜头其他缺失素材，再报告锁定错误。
