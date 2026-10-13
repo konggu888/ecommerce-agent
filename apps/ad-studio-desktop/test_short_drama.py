@@ -1387,7 +1387,7 @@ class ShortDramaTests(unittest.TestCase):
         plan = sample_plan()
         plan["storyboard"][0]["episode_number"] = 2
         plan["series_asset_locks"] = [{"asset_type": "actor", "asset_key": "lead-01", "target": "小林",
-            "canonical_description": "固定身份外观", "episode_numbers": [1]}]
+            "canonical_description": "固定身份外观", "episode_numbers": [2]}]
         validated = validate_short_drama(plan)
         self.assertFalse(any("lead-01" in item for item in validated["storyboard"][0]["actor_requirements"]))
         plan["series_asset_locks"][0]["episode_numbers"] = [True]

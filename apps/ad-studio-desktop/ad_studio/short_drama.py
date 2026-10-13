@@ -374,6 +374,7 @@ def validate_short_drama(raw: dict[str, Any]) -> dict[str, Any]:
             raise ShortDramaPlanError(f"短剧方案字段 {key} 必须是列表。")
     if raw.get("format_mode") == "single_episode":
         raw.setdefault("continuity_ledger", build_episode_continuity_ledger(raw))
+    _apply_series_asset_locks(raw)
     return raw
 
 
@@ -467,7 +468,6 @@ def generate_short_drama(model_router, product: dict[str, Any], constraints: dic
         raise ShortDramaPlanError(
             f"模型返回 {validated.get('episode_count')} 集，但用户选择了 {requested_count} 集；未保存不匹配的方案。"
         )
-    _apply_series_asset_locks(validated)
     return validated
 
 
