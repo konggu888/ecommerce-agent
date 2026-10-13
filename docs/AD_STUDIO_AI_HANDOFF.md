@@ -327,3 +327,7 @@ A85 为每集可选的 `continuity_state.character_state_ledger` 建立跨集审
 
 ## 最近进展：A97 项目恢复隔离
 新增自动化回归，检查恢复时只重置缺失成片的目标镜头，不影响其他有效镜头的输出路径、状态、版本与费用，并覆盖保存/重新打开。必须等最新提交 SHA 的四项 CI/docs-sync 全绿后再标记通过；PR #32 保持 open/unmerged，真实 Provider 与 Windows 真机仍暂缓。
+
+
+## A98 项目恢复摘要幂等性
+修复了重复恢复时丢失缺失镜头提示的问题：已明确标记为“待重新生成/重新选择素材”的镜头，在真正处理前重复恢复仍会出现在 `missing_media`；普通“待生成”镜头不误报。有效兄弟镜头保持不变。最新 SHA 的 CI push/PR 与 docs-sync push/PR 全部通过后才能标记通过。

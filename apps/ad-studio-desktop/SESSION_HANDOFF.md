@@ -494,3 +494,7 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 
 ## A97｜单镜头恢复隔离（2026-10-14，待最新 SHA CI 验证）
 新增回归覆盖项目恢复时仅重置缺失成片的目标镜头；有效兄弟镜头的输出路径、状态、版本和费用必须保持，保存/重开后仍一致。完成后需检查最新 SHA 的 push/PR CI 与 docs-sync 四项结果；PR #32 保持 open/unmerged。真实 Provider、Windows 真机、账单和剪映验收继续暂缓。
+
+
+## A98｜恢复摘要幂等性（2026-10-14，等待最新 SHA 验证）
+新增修复：项目第一次恢复发现缺失成片后，即使后续再次打开并恢复，尚未处理的镜头仍出现在 `missing_media` 中；普通未生成镜头不误报；有效兄弟镜头路径/状态/版本保持不变。修改后需检查最新 SHA 的 push/PR CI 与 docs-sync 四项结果。PR #32 保持 open/unmerged；真实 Provider、Windows 真机、账单与剪映现场验收继续暂缓。

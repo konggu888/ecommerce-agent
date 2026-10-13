@@ -161,6 +161,14 @@ class ProductionStore:
                 missing_media.append(shot.id)
                 shot.video_path = None
                 shot.status = "待重新生成/重新选择素材"
+            elif (
+                not shot.video_path
+                and shot.status == "待重新生成/重新选择素材"
+            ):
+                # Keep recovery reporting idempotent: a second restart must not
+                # make a previously detected missing output disappear from the
+                # recovery summary before the user has regenerated that shot.
+                missing_media.append(shot.id)
         invalid_outputs = []
         records = list(creative_plan.get("final_output_history_records", []) or [])
         manifests = creative_plan.get("final_output_manifests", {}) or {}

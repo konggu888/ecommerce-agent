@@ -2284,6 +2284,46 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(restored_by_id[untouched.id].video_path, str(valid_output))
             self.assertEqual(restored_by_id[untouched.id].status, "已生成")
 
+
+    def test_a98_recovery_repeats_missing_shot_until_regenerated(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 1, "连续短剧")
+            target, untouched = project.shots[:2]
+
+            valid_output = root / "renders" / "untouched-shot.mp4"
+            valid_output.parent.mkdir(parents=True, exist_ok=True)
+            valid_output.write_bytes(b"valid-video-placeholder")
+            target.video_path = str(root / "renders" / "missing-target-shot.mp4")
+            target.status = "生成中"
+            untouched.video_path = str(valid_output)
+            untouched.status = "已生成"
+            untouched.version = 2
+            store.save(project)
+
+            first = store.recover_project(project)
+            self.assertIn(target.id, first["missing_media"])
+            self.assertEqual(target.status, "待重新生成/重新选择素材")
+            self.assertEqual(untouched.video_path, str(valid_output))
+            self.assertEqual(untouched.status, "已生成")
+
+            second = store.recover_project(project)
+            self.assertIn(
+                target.id,
+                second["missing_media"],
+                "重复打开/恢复项目时，尚未重生成的缺失镜头仍须出现在恢复摘要中",
+            )
+            self.assertEqual(target.status, "待重新生成/重新选择素材")
+            self.assertEqual(untouched.video_path, str(valid_output))
+            self.assertEqual(untouched.status, "已生成")
+            self.assertEqual(untouched.version, 2)
+
+            restored = store.load(project.id)
+            restored_by_id = {shot.id: shot for shot in restored.shots}
+            self.assertIn(target.id, restored.creative_plan["recovery"]["last_recovery"]["missing_media"])
+            self.assertEqual(restored_by_id[untouched.id].video_path, str(valid_output))
+
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.
