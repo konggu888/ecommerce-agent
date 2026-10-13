@@ -1377,7 +1377,7 @@ class ShortDramaTests(unittest.TestCase):
         rows = short_drama_production_rows(plan, "测试商品")
         self.assertEqual(rows[0]["asset_resolution"]["actor_asset_id"], "actor-fixed")
         self.assertEqual(rows[0]["asset_resolution"]["scene_asset_id"], "scene-fixed")
-        self.assertFalse(rows[0]["asset_resolution"]["generation_if_missing"])
+        self.assertTrue(rows[0]["asset_resolution"]["generation_if_missing"])  # unlocked product/other assets may still generate
 
     def test_a90_legacy_series_asset_locks_keep_tag_matching(self):
         plan = sample_plan()
