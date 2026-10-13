@@ -1948,6 +1948,50 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(len(ledger._load()), 2001)
 
 
+
+
+    def test_a91_series_asset_lock_detects_disabled_retyped_and_nonreusable_assets(self):
+        from ad_studio.models import Asset
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 1, "真人口播")
+            project.creative_plan = {"shots": [{"index": 1, "asset_resolution": {
+                "actor_asset_id": "actor-fixed", "scene_asset_id": "scene-fixed"}}]}
+            library = LocalLibrary(root / "library")
+            library._write([
+                Asset("actor-fixed", "固定演员", "演员", "user_upload", None, [], active=False, reusable=True),
+                Asset("scene-fixed", "固定场景", "演员", "user_upload", None, [], active=True, reusable=True),
+            ])
+            issues = store.validate_series_asset_locks(project)
+            self.assertEqual(len(issues), 2)
+            self.assertIn("停用", issues[0]["error"])
+            self.assertIn("类型", issues[1]["error"])
+            library._write([
+                Asset("actor-fixed", "固定演员", "演员", "user_upload", None, [], active=True, reusable=False),
+                Asset("scene-fixed", "固定场景", "场景", "user_upload", None, [], active=True, reusable=True),
+            ])
+            issues = store.validate_series_asset_locks(project)
+            self.assertEqual(len(issues), 1)
+            self.assertIn("不可复用", issues[0]["error"])
+
+    def test_a91_project_reload_records_stale_series_lock_and_preserves_exact_id(self):
+        from ad_studio.models import Asset
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            library = LocalLibrary(root / "library")
+            library._write([Asset("actor-fixed", "固定演员", "演员", "user_upload", None, [], active=True, reusable=True)])
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 1, "真人口播")
+            project.creative_plan = {"shots": [{"index": 1, "asset_resolution": {"actor_asset_id": "actor-fixed"}}]}
+            store.save(project)
+            library._write([])
+            restored = store.load(project.id)
+            self.assertEqual(restored.creative_plan["shots"][0]["asset_resolution"]["actor_asset_id"], "actor-fixed")
+            self.assertEqual(restored.creative_plan["recovery"]["status"], "需处理")
+            self.assertIn("SERIES_LOCKED_ASSET_INVALID", restored.creative_plan["recovery"]["history"][-1]["error_code"])
+
+
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.

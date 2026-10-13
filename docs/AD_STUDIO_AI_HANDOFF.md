@@ -264,3 +264,7 @@ A85 为每集可选的 `continuity_state.character_state_ledger` 建立跨集审
 
 ## A90：跨集物理素材 ID 绑定（待最新 SHA 自动化验收）
 跨集演员/场景锁定可选指定本地素材库 asset_id，并将精确 ID 传入制作行。生产解析按 ID 验证资产存在、启用、可复用且类型匹配；无效时明确返回 SERIES_LOCKED_ASSET_INVALID，禁止静默替换或自动生成。未提供 ID 的 A89 旧方案保持标签匹配兼容。此约束只保证素材调度选择，不保证生成画面像素级一致。最新 SHA 的完整 CI/docs-sync 必须重新核验；PR #32 保持 open/unmerged，Windows 真机与真实 Provider 验收继续暂缓。
+
+
+## A91 接手注意事项
+跨集演员/场景锁定必须在项目重新打开、任务恢复和每次单镜头生成/重生成前重新校验。锁定 ID 失效或本地索引不可读取时必须 fail-closed，保留原 ID、记录原因并阻止受影响镜头调用 Provider；不能用标签匹配、自动补素材或重生成整部短剧绕过锁定。

@@ -406,3 +406,10 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 
 ## A90：跨集物理素材 ID 绑定（待最新 SHA 自动化验收）
 跨集演员/场景锁定可选指定本地素材库 asset_id，并将精确 ID 传入制作行。生产解析按 ID 验证资产存在、启用、可复用且类型匹配；无效时明确返回 SERIES_LOCKED_ASSET_INVALID，禁止静默替换或自动生成。未提供 ID 的 A89 旧方案保持标签匹配兼容。此约束只保证素材调度选择，不保证生成画面像素级一致。最新 SHA 的完整 CI/docs-sync 必须重新核验；PR #32 保持 open/unmerged，Windows 真机与真实 Provider 验收继续暂缓。
+
+
+## 当前接手状态覆盖（2026-10-14；以本节为准）
+- 当前分支：`feat/product-drama-visual-review`；PR #32 保持 open/unmerged，不得自动合并。
+- A90 SHA：`8baa4339618f6a40fac4cdf0191eecf4eb0208cf`。以下 A91 提交的完整 CI 与 docs-sync 必须以最新 SHA 重新核验。
+- A91：项目重新打开、任务恢复、单镜头生成/重生成前复核跨集锁定素材；失效时 fail-closed，保留原 asset_id 并记录恢复原因。
+- Windows 真机、真实 Provider、实际扣款/账单核对、剪映现场验收继续暂缓。

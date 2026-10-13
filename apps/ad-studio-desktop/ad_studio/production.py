@@ -30,7 +30,72 @@ class ProductionStore:
         if not p.exists(): return None
         data=json.loads(p.read_text(encoding='utf-8'))
         data['shots']=[Shot(**s) for s in data.get('shots',[])]
-        return Project(**data)
+        project = Project(**data)
+        # Re-open is a trust boundary: re-check physical locks against the current library.
+        issues = self.validate_series_asset_locks(project)
+        if issues:
+            self._record_series_lock_issues(project, issues, stage="项目重新打开时发现跨集锁定素材失效")
+            self.save(project)
+        return project
+
+    def validate_series_asset_locks(self, project: Project, shot_index: int | None = None):
+        """Re-check persisted physical actor/scene locks; fail closed on stale library state."""
+        locked_rows = []
+        for row in (project.creative_plan or {}).get("shots", []):
+            try:
+                row_index = int(row.get("index", -1))
+            except (TypeError, ValueError):
+                row_index = -1
+            if shot_index is not None and row_index != int(shot_index):
+                continue
+            req = row.get("asset_resolution", {}) or {}
+            for kind, key in (("演员", "actor_asset_id"), ("场景", "scene_asset_id")):
+                asset_id = str(req.get(key) or "").strip()
+                if asset_id:
+                    locked_rows.append((row_index, kind, asset_id))
+        if not locked_rows:
+            return []
+        try:
+            by_id = {asset.id: asset for asset in LocalLibrary(self.library_root).all()}
+        except Exception as exc:
+            return [{"shot_index": idx, "kind": kind, "asset_id": aid,
+                     "error_code": "SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE",
+                     "error": f"跨集锁定素材库无法读取，已阻止继续制作：{exc}"}
+                    for idx, kind, aid in locked_rows]
+        issues = []
+        for idx, kind, aid in locked_rows:
+            asset = by_id.get(aid)
+            if asset is None:
+                reason = "素材记录不存在（可能已删除或索引已变化）"
+            elif not asset.active:
+                reason = "素材已停用"
+            elif not asset.reusable:
+                reason = "素材已设置为不可复用"
+            elif asset.kind != kind:
+                reason = f"素材类型已改变/不匹配（实际：{asset.kind}，要求：{kind}）"
+            else:
+                continue
+            issues.append({"shot_index": idx, "kind": kind, "asset_id": aid,
+                           "error_code": "SERIES_LOCKED_ASSET_INVALID",
+                           "error": f"镜头 {idx} 的跨集锁定{kind}素材 {aid} 无效：{reason}；禁止替换或自动生成。"})
+        return issues
+
+    def _record_series_lock_issues(self, project: Project, issues: list[dict[str, Any]], *, stage: str):
+        recovery = project.creative_plan.setdefault("recovery", {})
+        history = recovery.setdefault("history", [])
+        for issue in issues:
+            signature = (issue.get("error_code"), issue.get("shot_index"), issue.get("asset_id"), issue.get("error"))
+            if any((item.get("error_code"), item.get("shot_index"), item.get("asset_id"), item.get("error")) == signature
+                   and item.get("status") in ("需处理", "待恢复") for item in history):
+                continue
+            history.append({**issue, "stage": stage, "retryable": False, "status": "需处理",
+                            "next_action": "恢复/重新启用原锁定素材，或由用户明确修改锁定 ID；系统不会自动替换或生成。",
+                            "created_at": datetime.datetime.now().isoformat(timespec="seconds")})
+        if issues:
+            recovery.update({"status": "需处理", "stage": stage,
+                             "error": "；".join(issue["error"] for issue in issues),
+                             "next_action": "检查本地素材库及原锁定素材，修复后只重试受影响镜头。",
+                             "updated_at": datetime.datetime.now().isoformat(timespec="seconds")})
 
     def record_recovery_failure(self, project: Project, *, stage: str, error: str, next_action: str, retryable: bool = True):
         """统一记录可恢复失败；不清除已有有效资产，保存下一步动作。"""
@@ -54,6 +119,9 @@ class ProductionStore:
         """恢复中断项目：清理未完成临时输出、校正失效媒体状态，并保留有效资产与历史。"""
         creative_plan = project.creative_plan
         recovery = creative_plan.setdefault("recovery", {})
+        lock_issues = self.validate_series_asset_locks(project)
+        if lock_issues:
+            self._record_series_lock_issues(project, lock_issues, stage="中断项目恢复时发现跨集锁定素材失效")
         removed_parts = 0
         render_root = self.root / "renders" / project.id
         if render_root.exists():
@@ -498,7 +566,16 @@ class ProductionStore:
         provider_call_started = False
         try:
             self.save(project)
-            self.resolve_assets(project, shot)
+            resolution = self.resolve_assets(project, shot)
+            # Re-check immediately before Provider dispatch; asset state may have changed since load.
+            lock_issues = self.validate_series_asset_locks(project, shot.index)
+            resolution_issues = [item for item in resolution.values()
+                                 if item.get("error_code") in ("SERIES_LOCKED_ASSET_INVALID", "SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE")]
+            if lock_issues or resolution_issues:
+                issues = lock_issues + resolution_issues
+                self._record_series_lock_issues(project, issues, stage="单镜头生成/重生成前拦截")
+                self.save(project)
+                raise RuntimeError("SERIES_LOCKED_ASSET_INVALID：跨集锁定素材已失效，已阻止当前镜头生成；未替换素材、未自动生成替代项。")
             library = LocalLibrary(self.library_root)
             asset_ids = [x for x in [shot.actor_id, shot.scene_id, *shot.product_asset_ids] if x]
             asset_map = {asset.id: asset for asset in library.all()}
