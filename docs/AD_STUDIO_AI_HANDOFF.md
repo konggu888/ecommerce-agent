@@ -272,3 +272,6 @@ A85 为每集可选的 `continuity_state.character_state_ledger` 建立跨集审
 
 ## A92 AI 接手规则
 新增或修改跨集物理锁定逻辑时，必须同时验证锁定 ID 是否最终写入实际 `Shot.actor_id` / `Shot.scene_id`，不能只检查创意方案中的 `asset_resolution` 文本字段。测试应包含相似标签的干扰素材与保存/重开项目场景。
+
+### A92 CI 失败修正步骤
+首次 CI 失败点是测试调用镜头素材解析后直接重载项目，没有先保存，因此不能证明持久化绑定。修正测试：先 `store.save(project)`，再 `store.load(project.id)`，随后断言两集 actor/scene ID 保留。修复 SHA 必须重新执行全套检查。

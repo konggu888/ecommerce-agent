@@ -419,3 +419,8 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - A91 最新 SHA `9e0dc1c89539444af7203fdcf88882fabfcd750f` 的 PR CI 与 PR docs-sync 已通过；push CI 曾出现长时间 in_progress，后续接手需再次核对是否结束。
 - A92 新增端到端回归：两集目标镜头必须落到相同锁定 actor/scene ID，忽略相似标签替代素材，并在保存/重新打开后保留绑定。
 - PR #32 继续 open/unmerged；Windows 真机、真实 Provider、实际扣款和剪映现场验收仍暂缓。
+
+## A92 CI 修正待验证（2026-10-14）
+- 首次 A92 CI 在保存/重载断言失败：测试调用 `resolve_assets()` 后直接 `load()`，遗漏 `store.save(project)`。
+- 已识别为测试步骤遗漏；后续提交会在 reload 前保存已解析的项目，修复后的 SHA 需要重新确认 CI/docs-sync。
+- 当前分支 head 为 A92 SHA `0758bfe5604ae31f604988bd3a320ede7f1b7ece`，该 SHA 的 PR CI 失败，不能标记 A92 通过；PR #32 继续 open/unmerged。

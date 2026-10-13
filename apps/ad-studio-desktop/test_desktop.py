@@ -2050,6 +2050,8 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(first.scene_id, second.scene_id)
             self.assertNotEqual(first.actor_id, "actor-lookalike")
             self.assertNotEqual(first.scene_id, "scene-lookalike")
+            # Persist the resolved per-shot actor/scene bindings before testing reload.
+            store.save(project)
             restored = store.load(project.id)
             self.assertEqual(restored.shots[0].actor_id, "actor-series-1")
             self.assertEqual(restored.shots[1].actor_id, "actor-series-1")
