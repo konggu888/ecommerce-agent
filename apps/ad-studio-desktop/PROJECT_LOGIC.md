@@ -1324,3 +1324,8 @@ SHA `9bcb19ac950f0addcc5a0bfab599dd060c11ec1e`：299 项 Desktop Core 测试、P
 - 失效问题写入 `creative_plan.recovery.history`，保留原 ID，阻止当前镜头调用 Provider；不自动替换/生成，也不重生成整部短剧。
 
 A91 补充：`resolve_assets()` 在处理未锁定素材之前先执行当前镜头锁定预检；任一锁定失效即记录恢复状态并提前返回，避免无关素材自动生成副作用。
+
+## A92｜跨集锁定 ID 到实际镜头绑定的端到端一致性
+- 对连续多集的目标镜头逐镜调用 `resolve_assets()`，确认 `actor_asset_id` / `scene_asset_id` 最终写入镜头 `actor_id` / `scene_id`。
+- 即使素材库存在标签相似的替代演员/场景，明确锁定 ID 也必须优先且唯一；锁定 ID 不可用时由 A91 fail-closed 保护阻断。
+- 保存、重新打开项目后，镜头绑定 ID 不变；本验收证明的是本地素材调度 ID 一致，不保证生成画面像素级一致。

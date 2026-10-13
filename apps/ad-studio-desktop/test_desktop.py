@@ -2013,6 +2013,50 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertNotIn("商品素材", result)  # no unrelated fallback/generation after lock failure
 
 
+
+
+    def test_a92_locked_series_assets_resolve_to_same_physical_ids_across_episodes(self):
+        from ad_studio.models import Asset, Shot
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            library = LocalLibrary(root / "library")
+            library._write([
+                Asset("actor-series-1", "系列固定演员", "演员", "user_upload", None, ["主角"]),
+                Asset("scene-series-1", "系列固定场景", "场景", "user_upload", None, ["主场景"]),
+                Asset("actor-lookalike", "相似演员", "演员", "user_upload", None, ["主角"]),
+                Asset("scene-lookalike", "相似场景", "场景", "user_upload", None, ["主场景"]),
+            ])
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 1, "真人口播")
+            first = project.shots[0]
+            first.episode_number = 1
+            second = Shot(id="shot-episode-2", index=2, title="第二集", visual="同一主角进入同一场景", script="继续剧情", episode_number=2)
+            project.shots.append(second)
+            rows = []
+            for idx in (1, 2):
+                rows.append({"index": idx, "episode_number": idx, "asset_resolution": {
+                    "actor_tags": ["主角"], "scene_tags": ["主场景"], "product_tags": [],
+                    "actor_asset_id": "actor-series-1", "scene_asset_id": "scene-series-1",
+                    "generation_if_missing": False,
+                }})
+            project.creative_plan = {"shots": rows}
+            first_resolution = store.resolve_assets(project, first)
+            second_resolution = store.resolve_assets(project, second)
+            self.assertEqual(first_resolution["演员"]["asset"], "actor-series-1")
+            self.assertEqual(second_resolution["演员"]["asset"], "actor-series-1")
+            self.assertEqual(first_resolution["场景"]["asset"], "scene-series-1")
+            self.assertEqual(second_resolution["场景"]["asset"], "scene-series-1")
+            self.assertEqual(first.actor_id, second.actor_id)
+            self.assertEqual(first.scene_id, second.scene_id)
+            self.assertNotEqual(first.actor_id, "actor-lookalike")
+            self.assertNotEqual(first.scene_id, "scene-lookalike")
+            restored = store.load(project.id)
+            self.assertEqual(restored.shots[0].actor_id, "actor-series-1")
+            self.assertEqual(restored.shots[1].actor_id, "actor-series-1")
+            self.assertEqual(restored.shots[0].scene_id, "scene-series-1")
+            self.assertEqual(restored.shots[1].scene_id, "scene-series-1")
+
+
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.

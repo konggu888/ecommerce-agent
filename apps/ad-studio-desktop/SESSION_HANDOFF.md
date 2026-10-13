@@ -414,3 +414,8 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - A91：项目重新打开、任务恢复、单镜头生成/重生成前复核跨集锁定素材；失效时 fail-closed，保留原 asset_id 并记录恢复原因。
 - Windows 真机、真实 Provider、实际扣款/账单核对、剪映现场验收继续暂缓。
 - A91 补充保护：镜头素材解析先预检锁定 ID；一旦锁定失效，在任何其他缺失素材生成之前 fail-closed。
+
+## A92 接手状态
+- A91 最新 SHA `9e0dc1c89539444af7203fdcf88882fabfcd750f` 的 PR CI 与 PR docs-sync 已通过；push CI 曾出现长时间 in_progress，后续接手需再次核对是否结束。
+- A92 新增端到端回归：两集目标镜头必须落到相同锁定 actor/scene ID，忽略相似标签替代素材，并在保存/重新打开后保留绑定。
+- PR #32 继续 open/unmerged；Windows 真机、真实 Provider、实际扣款和剪映现场验收仍暂缓。
