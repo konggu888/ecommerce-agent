@@ -498,3 +498,7 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 
 ## A98｜恢复摘要幂等性（2026-10-14，等待最新 SHA 验证）
 新增修复：项目第一次恢复发现缺失成片后，即使后续再次打开并恢复，尚未处理的镜头仍出现在 `missing_media` 中；普通未生成镜头不误报；有效兄弟镜头路径/状态/版本保持不变。修改后需检查最新 SHA 的 push/PR CI 与 docs-sync 四项结果。PR #32 保持 open/unmerged；真实 Provider、Windows 真机、账单与剪映现场验收继续暂缓。
+
+
+## 2026-10-14：A99 已提交，CI 待验证
+最新提交：`c8252dc58995289d8ca38dfd15dc8e66f8001eeb`。A99 修复恢复阶段的逐镜头费用快照残留：只要存在成功的实际费用账本记录，就以账本逐镜头对账；没有成功费用记录的镜头归零，防止单镜头显示旧金额而项目总额已更新。新增 `test_a99_successful_ledger_clears_stale_cost_on_unbilled_sibling_shot`，覆盖账本金额、未计费兄弟镜头归零及保存/重载。已同步 HELP.md 与 PROJECT_LOGIC.md。当前该 SHA 的 CI 与 docs-sync push workflow 已排队，不能提前宣称通过；下一步先确认该 SHA 的 CI、docs-sync push/PR 全部结束，再继续检查单镜头重试的版本与计费联动。PR #32 保持 open/unmerged；Windows 真机和真实 Provider/账单验收仍暂缓。
