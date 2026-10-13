@@ -246,8 +246,10 @@ class ProductionStore:
             project.actual_cost_summary = summary
             for shot in project.shots:
                 shot_cost = self.ledger.shot_actual_cost(project.id, shot.id)
-                if shot_cost is not None:
-                    shot.actual_cost_rmb = shot_cost
+                # Once any successful ledger entry exists, the ledger is authoritative
+                # for every shot: absence of a shot-level entry means zero recorded
+                # spend, not permission to retain a stale snapshot amount.
+                shot.actual_cost_rmb = float(shot_cost or 0.0)
         else:
             summary = dict(summary)
             summary["actual_cost_rmb"] = round(float(project.actual_cost_rmb or 0.0), 6)

@@ -2324,6 +2324,32 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertIn(target.id, restored.creative_plan["recovery"]["last_recovery"]["missing_media"])
             self.assertEqual(restored_by_id[untouched.id].video_path, str(valid_output))
 
+    def test_a99_successful_ledger_clears_stale_cost_on_unbilled_sibling_shot(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 1, "连续短剧")
+            charged, uncharged = project.shots[:2]
+            store._record_actual_cost(
+                project, shot=charged, category="video", amount_rmb=0.72, provider="test"
+            )
+            # Simulate stale persisted snapshots after the successful charge was recorded.
+            charged.actual_cost_rmb = 0.72
+            uncharged.actual_cost_rmb = 8.88
+            project.actual_cost_rmb = 99.0
+            store.save(project)
+
+            result = store.recover_project(project)
+
+            self.assertTrue(result["cost_reconciled"])
+            self.assertAlmostEqual(project.actual_cost_rmb, 0.72)
+            self.assertAlmostEqual(charged.actual_cost_rmb, 0.72)
+            self.assertAlmostEqual(uncharged.actual_cost_rmb, 0.0)
+            restored = store.load(project.id)
+            restored_by_id = {shot.id: shot for shot in restored.shots}
+            self.assertAlmostEqual(restored.actual_cost_rmb, 0.72)
+            self.assertAlmostEqual(restored_by_id[uncharged.id].actual_cost_rmb, 0.0)
+
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.
