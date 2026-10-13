@@ -160,7 +160,8 @@ def build_short_drama_prompt(product: dict[str, Any], constraints: dict[str, Any
         "9. 如果 constraints.short_drama_mode 为 continuous_series 或 anthology_series，必须输出指定数量的 episodes；每集有独立剧本、分镜和结尾钩子。根级 storyboard 必须按集顺序汇总全部分镜，每个镜头带 episode_number；不要把多集缩成一集。\n"
         "10. continuous_series 必须跨集承接人物状态、因果和悬念；anthology_series 共用人物/世界观但每集有相对独立的故事。单集模式 episodes 可以只含一集。\n"
 
-        "10.1 每集必须输出 continuity_state：opening_state（开集承接状态）、character_state_changes（人物/关系变化列表）、unresolved_threads（集末未解决线索列表）、ending_state（集末确定状态）、next_episode_requirements（下一集必须承接的要求；最终集可为空列表）。连续剧第N集 opening_state 必须承接第N-1集 ending_state 和 next_episode_requirements，不能重置人物记忆或忽略未解决悬念。\n"
+        "10.2 多集方案可输出根级 series_asset_locks（列表；无需要锁定的复用资产时可为空）。每项格式为 {asset_type: actor/scene, asset_key: 稳定标识, target: 人物姓名或精确场景/地点名, canonical_description: 必须跨集保持的可见身份/外观/布景特征, episode_numbers: 可选的适用集号列表}。只为会反复出现且需要保持身份一致的人物/场景建立锁；不要锁定随剧情合理变化的服装、受损状态或临时布景。程序会将锁定描述追加到对应分镜的 actor_requirements/scene_requirements，供资产调度和生成提示使用；这只是文本约束，不保证模型画面绝对一致。\n"
+        + "10.1 每集必须输出 continuity_state：opening_state（开集承接状态）、character_state_changes（人物/关系变化列表）、unresolved_threads（集末未解决线索列表）、ending_state（集末确定状态）、next_episode_requirements（下一集必须承接的要求；最终集可为空列表）。连续剧第N集 opening_state 必须承接第N-1集 ending_state 和 next_episode_requirements，不能重置人物记忆或忽略未解决悬念。\n"
         "11. 每个镜头必须带 episode_number；同一角色的外貌、身份、关键服装和关系在 series_bible 中保持稳定。\n"
         "12. 输出必须包含 drama_business_mode，且与 constraints.drama_business_mode 一致；人物、场景、商品素材需求要与所选模式匹配。\n\n输入与约束：\n"
         + json.dumps(payload, ensure_ascii=False, indent=2)
@@ -192,6 +193,61 @@ def build_episode_continuity_ledger(plan: dict[str, Any]) -> list[dict[str, Any]
             "next_episode_requirements": [str(x).strip() for x in state.get("next_episode_requirements", []) if str(x).strip()] if isinstance(state.get("next_episode_requirements", []), list) else [],
         })
     return ledger
+
+
+def _apply_series_asset_locks(plan: dict[str, Any]) -> None:
+    """Carry explicitly declared recurring actor/scene identity constraints into production requirements."""
+    locks = plan.get("series_asset_locks")
+    if locks is None:
+        return
+    if not isinstance(locks, list):
+        raise ShortDramaPlanError("series_asset_locks 必须是列表。")
+    shots = plan.get("storyboard", [])
+    if not isinstance(shots, list):
+        return
+    for lock_index, lock in enumerate(locks, 1):
+        if not isinstance(lock, dict):
+            raise ShortDramaPlanError(f"第{lock_index}条跨集资产锁定必须是对象。")
+        asset_type = str(lock.get("asset_type", "")).strip()
+        asset_key = str(lock.get("asset_key", "")).strip()
+        target = str(lock.get("target", "")).strip()
+        description = str(lock.get("canonical_description", "")).strip()
+        if asset_type not in {"actor", "scene"}:
+            raise ShortDramaPlanError(f"第{lock_index}条跨集资产锁定的 asset_type 必须是 actor 或 scene。")
+        if not asset_key or not target or not description:
+            raise ShortDramaPlanError(f"第{lock_index}条跨集资产锁定必须填写 asset_key、target 和 canonical_description。")
+        episode_numbers = lock.get("episode_numbers")
+        if episode_numbers is not None:
+            if not isinstance(episode_numbers, list) or any(not isinstance(n, int) or isinstance(n, bool) or n < 1 for n in episode_numbers):
+                raise ShortDramaPlanError(f"第{lock_index}条跨集资产锁定的 episode_numbers 必须是正整数列表。")
+            applicable_episodes = set(episode_numbers)
+        else:
+            applicable_episodes = None
+        requirement = f"跨集资产锁定[{asset_key}]：{description}"
+        for shot in shots:
+            if not isinstance(shot, dict):
+                continue
+            try:
+                episode_number = int(shot.get("episode_number", 1) or 1)
+            except (TypeError, ValueError):
+                episode_number = 1
+            if applicable_episodes is not None and episode_number not in applicable_episodes:
+                continue
+            if asset_type == "actor":
+                names = shot.get("characters", [])
+                matched = isinstance(names, list) and target in [str(name).strip() for name in names]
+                field = "actor_requirements"
+            else:
+                matched = target.casefold() in {str(shot.get("scene", "")).strip().casefold(), str(shot.get("location", "")).strip().casefold()}
+                field = "scene_requirements"
+            if not matched:
+                continue
+            values = shot.get(field)
+            if not isinstance(values, list):
+                values = []
+                shot[field] = values
+            if requirement not in [str(value).strip() for value in values]:
+                values.append(requirement)
 
 
 def validate_short_drama(raw: dict[str, Any]) -> dict[str, Any]:
@@ -410,6 +466,7 @@ def generate_short_drama(model_router, product: dict[str, Any], constraints: dic
         raise ShortDramaPlanError(
             f"模型返回 {validated.get('episode_count')} 集，但用户选择了 {requested_count} 集；未保存不匹配的方案。"
         )
+    _apply_series_asset_locks(validated)
     return validated
 
 
@@ -1461,6 +1518,31 @@ def audit_short_drama(plan: dict[str, Any], product_material: dict[str, Any] | N
             add("warning", "PRODUCT_MATERIAL_EMPTY", "当前没有可供比对的商品资料，商品事实无法自动核验。")
             break
 
+    for lock_index, lock in enumerate(checked.get("series_asset_locks", []) if isinstance(checked.get("series_asset_locks", []), list) else [], 1):
+        if not isinstance(lock, dict):
+            continue
+        asset_type = str(lock.get("asset_type", "")).strip()
+        target = str(lock.get("target", "")).strip()
+        episode_numbers = lock.get("episode_numbers")
+        applicable = set(episode_numbers) if isinstance(episode_numbers, list) else None
+        found = False
+        for shot in checked.get("storyboard", []):
+            if not isinstance(shot, dict):
+                continue
+            try:
+                shot_episode = int(shot.get("episode_number", 1) or 1)
+            except (TypeError, ValueError):
+                shot_episode = 1
+            if applicable is not None and shot_episode not in applicable:
+                continue
+            if asset_type == "actor" and isinstance(shot.get("characters"), list) and target in [str(name).strip() for name in shot.get("characters", [])]:
+                found = True
+            elif asset_type == "scene" and target.casefold() in {str(shot.get("scene", "")).strip().casefold(), str(shot.get("location", "")).strip().casefold()}:
+                found = True
+            if found:
+                break
+        if not found:
+            add("warning", "SERIES_ASSET_LOCK_TARGET_NOT_FOUND", f"第{lock_index}条跨集资产锁定没有匹配到适用分镜：{target}；请核对人物/场景名称和适用集数。")
     counts: dict[str, int] = {}
     for issue in issues:
         counts[issue["level"]] = counts.get(issue["level"], 0) + 1
@@ -1500,6 +1582,7 @@ def generate_next_short_drama_episode(model_router, plan: dict[str, Any],
         "previous_episode": previous,
         "previous_episode_continuity": state,
         "continuity_ledger": source.get("continuity_ledger") or build_episode_continuity_ledger(source),
+        "series_asset_locks": source.get("series_asset_locks", []),
         "series_bible": source.get("series_bible", {}),
         "characters": source.get("characters", []),
         "world": source.get("world", ""),
@@ -1515,6 +1598,7 @@ def generate_next_short_drama_episode(model_router, plan: dict[str, Any],
         f"本次必须生成第{next_number}集。输入包含上一集完整内容、人物状态、连续性台账和系列设定。\n"
         "连续多集：必须因果承接上一集结尾、人物变化、未解线索和下一集承接要求；不能让人物忘记已发生的事，不能无解释地改变地点、关系或道具状态。\n"
         "系列短剧：共享世界观与人物设定，但本集故事可以相对独立；只继承必要的长期人物状态，不要强行把上一集悬念变成本集主线。\n"
+        "如果输入提供 series_asset_locks，必须保留该列表并让相关人物/场景在新集分镜中继续使用一致的身份约束；不得自行重写锁定描述。\n"
         "通用AI短剧可以不出现商品；商品植入/转化遵守商品事实，不编造功效或参数。\n"
         "输出对象必须包含 episode_number、title、logline、plot_beats、ending_hook、full_script、continuity_state、storyboard。"
         "continuity_state 必须含 opening_state、character_state_changes（列表）、unresolved_threads（列表）、ending_state、next_episode_requirements（列表）；连续多集还应提供 character_state_ledger，逐人物记录心理/知识/秘密/承诺/关系等需跨集保持的状态、状态维度、明确状态、status、must_persist、证据及本集分镜位置。若状态改变，必须给出可在本集剧本或分镜中定位的 transition_evidence；不得无解释重置人物关系、已知信息或承诺。"

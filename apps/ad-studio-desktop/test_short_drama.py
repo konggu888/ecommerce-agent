@@ -1367,6 +1367,40 @@ class ShortDramaTests(unittest.TestCase):
 
 
 
+    def test_a89_series_asset_locks_flow_into_production_requirements(self):
+        plan = sample_plan()
+        plan["series_asset_locks"] = [
+            {"asset_type": "actor", "asset_key": "lead-01", "target": "小林",
+             "canonical_description": "同一张脸、短黑发、深蓝通勤外套"},
+            {"asset_type": "scene", "asset_key": "home-entry", "target": "现代公寓",
+             "canonical_description": "同一玄关布局、浅木色鞋柜与左侧挂钩"},
+        ]
+        validated = validate_short_drama(plan)
+        shot = validated["storyboard"][0]
+        self.assertTrue(any("lead-01" in item and "短黑发" in item for item in shot["actor_requirements"]))
+        self.assertTrue(any("home-entry" in item and "浅木色鞋柜" in item for item in shot["scene_requirements"]))
+        rows = short_drama_production_rows(plan, "测试商品")
+        self.assertTrue(any("lead-01" in item for item in rows[0]["asset_resolution"]["actor_tags"]))
+        self.assertTrue(any("home-entry" in item for item in rows[0]["asset_resolution"]["scene_tags"]))
+
+    def test_a89_asset_locks_can_be_episode_scoped_and_bad_schema_is_rejected(self):
+        plan = sample_plan()
+        plan["storyboard"][0]["episode_number"] = 2
+        plan["series_asset_locks"] = [{"asset_type": "actor", "asset_key": "lead-01", "target": "小林",
+            "canonical_description": "固定身份外观", "episode_numbers": [1]}]
+        validated = validate_short_drama(plan)
+        self.assertFalse(any("lead-01" in item for item in validated["storyboard"][0]["actor_requirements"]))
+        plan["series_asset_locks"][0]["episode_numbers"] = [True]
+        with self.assertRaises(ShortDramaPlanError):
+            validate_short_drama(plan)
+
+    def test_a89_warns_when_asset_lock_target_does_not_match_any_shot(self):
+        plan = sample_plan()
+        plan["series_asset_locks"] = [{"asset_type": "actor", "asset_key": "missing", "target": "不存在的人物",
+            "canonical_description": "固定外观"}]
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("SERIES_ASSET_LOCK_TARGET_NOT_FOUND", codes)
+
     def test_a88_checks_cross_character_consistency_but_allows_different_beliefs(self):
         plan = sample_plan()
         plan["characters"].append({"name": "小王", "role": "同事", "goal": "帮忙", "motivation": "合作",

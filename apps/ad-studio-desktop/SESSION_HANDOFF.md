@@ -382,3 +382,9 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - 本节记录的是实现目标；提交后必须以最终 SHA 的 CI 和 docs-sync 结果更新验证状态。
 - PR #32 保持 open/unmerged；Windows 真机、真实 Provider、真实扣款/账单和剪映现场验收仍暂缓。
 \n\n## A88｜多人物状态依赖一致性\n- 新增每集可选 `continuity_state.cross_character_dependencies`，声明人物间知识、关系或承诺依赖。\n- 检查双方人物、规则、证据和镜头引用；`same_understanding` 陈述不一致时警告，`asymmetric_knowledge` 缺少原因时警告。\n- `different_beliefs_allowed` 允许不同信念，不将合理误解自动判成矛盾。\n- 新增直接冲突、不同信念、知识不对称、未知人物和无效镜头引用测试。提交后以最终 SHA 核验 CI/docs-sync。\n- PR #32 保持 open/unmerged；真实 Provider、Windows 真机、扣款/账单及剪映现场验收仍暂缓。\n
+
+## A89｜跨集演员/场景资产锁定（自动化阶段）
+- 新增根级可选 `series_asset_locks`，可为重复人物/场景定义稳定 key、规范外观/布景描述和适用集数。
+- 锁定描述进入对应分镜的演员/场景需求，供既有资产调度链使用；下一集续写上下文保留该锁定列表。
+- 新增锁定注入、集数范围、非法 schema、无目标命中警告测试。
+- 限制：这是需求文本锁定，不宣称已复用同一物理素材文件或保证生成画面身份一致。PR #32 保持 open/unmerged。

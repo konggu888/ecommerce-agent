@@ -1115,3 +1115,11 @@ SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 的完整 CI 与 docs-sync 在 pu
 4. 删除表现字段或镜头引用，确认 `CHARACTER_STATE_MANIFESTATION_MISSING`。
 5. 检查旧方案兼容，运行短剧专项测试、完整 CI 与 docs-sync，并记录最终 SHA。真实视频表演仍需独立视觉/人工核验。
 \n\n### A88 专项验收：多人物状态依赖一致性\n1. 测试双方理解一致的记录与 `same_understanding` 下直接冲突的记录。\n2. 测试 `different_beliefs_allowed` 不误报不同信念。\n3. 测试知识不对称缺少原因、未知人物、无效镜头、缺少双方状态及不可定位证据。\n4. 验证旧方案没有该可选字段时兼容，运行短剧专项测试、完整 CI 和 docs-sync。文本检查不等于自动理解叙事语义。\n
+
+### A89 专项验收：跨集演员/场景资产锁定
+1. 为角色与场景分别定义锁定项，检查规范描述进入匹配镜头的 actor_requirements/scene_requirements。
+2. 检查 `short_drama_production_rows()` 的 actor_tags/scene_tags 包含锁定描述。
+3. 指定集号范围，确认范围外镜头不应用锁定。
+4. 测试非法类型、非正整数/布尔集号及不存在目标；目标缺失应出现 `SERIES_ASSET_LOCK_TARGET_NOT_FOUND`。
+5. 检查续写下一集上下文仍带 series_asset_locks。
+6. 运行专项测试、完整 CI 与 docs-sync；文本锁定不能冒充物理素材复用或画面验收。
