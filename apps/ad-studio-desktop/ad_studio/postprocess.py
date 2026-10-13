@@ -1,4 +1,5 @@
 from pathlib import Path
+import math
 import shutil
 import subprocess
 
@@ -38,12 +39,33 @@ def adapt_aspect(input_path: Path, output_path: Path, aspect: str = "9:16"):
     _run([ffmpeg_path(), "-y", "-i", str(input_path), "-vf", vf, "-c:v", codec, "-preset", "p4" if codec == "h264_nvenc" else "medium", "-pix_fmt", "yuv420p", "-an", str(output_path)])
     return output_path
 
+def _normalized_focus(value: float) -> float:
+    """Return a safe normalized crop focal coordinate; invalid values use center."""
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return 0.5
+    if not math.isfinite(number):
+        return 0.5
+    return min(1.0, max(0.0, number))
+
+
+def _focus_crop_filter(width: int, height: int, focus_x: float, focus_y: float) -> str:
+    """Scale to cover the target frame, then position the crop using normalized AI focus."""
+    x = _normalized_focus(focus_x)
+    y = _normalized_focus(focus_y)
+    return (
+        f"scale={width}:{height}:force_original_aspect_ratio=increase,"
+        f"crop={width}:{height}:x=(iw-{width})*{x:.6f}:y=(ih-{height})*{y:.6f}"
+    )
+
+
 def process_shot(input_path: Path, output_path: Path, aspect: str = "9:16", speed: float = 1.0, focus_x: float = 0.5, focus_y: float = 0.5, transition: str = "硬切"):
     if speed <= 0:
         raise ValueError("速度必须大于 0")
     output_path.parent.mkdir(parents=True, exist_ok=True)
     width, height = ASPECTS.get(aspect, ASPECTS["9:16"])
-    vf = f"scale={width}:{height}:force_original_aspect_ratio=increase,crop={width}:{height}"
+    vf = _focus_crop_filter(width, height, focus_x, focus_y)
     if speed != 1.0:
         vf += f",setpts={1.0/speed}*PTS"
     if transition == "淡入": vf += ",fade=t=in:st=0:d=0.25"
