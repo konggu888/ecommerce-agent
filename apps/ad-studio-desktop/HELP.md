@@ -1222,3 +1222,10 @@ A92 失败并非保存步骤缺失，而是测试夹具假设 `new_project()` �
 
 ## A95｜素材索引损坏时的 fail-closed 保护
 如果本地素材库索引为空白、截断或不是有效 JSON，跨集锁定素材校验必须返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`，禁止继续解析、禁止自动补素材、禁止调用视频 Provider。原锁定 ID 必须保留，其他镜头现有状态和输出不得受影响。修复索引后应重新打开/重试受影响镜头；不得将索引损坏误判为原素材不存在并自动换人。
+
+
+### A95 自动化验收结果（2026-10-14；测试代码 SHA `6b225e09adac63265d53b27eae3ed6a54a51f49e`）
+- CI push run `38471501401`、CI PR run `38471510428`、docs-sync push run `38471501250`、docs-sync PR run `38471510506` 全部 success。
+- 无效/截断 `library.json` 返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`；素材解析提前停止，不继续处理其他素材；Provider 调用次数为 0。
+- 原锁定 ID 保留，非目标镜头状态及已有输出路径保持不变。
+- PR #32 保持 open/unmerged。真实 Provider、Windows 真机、实际账单/扣款、剪映现场和生成画面视觉一致性继续暂缓。

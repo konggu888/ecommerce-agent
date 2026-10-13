@@ -1255,8 +1255,19 @@ A94 自动化验收已通过：SHA `289cc0954cb93ce1a218436d2a6137317a7c6130` �
 
 ## A95｜本地素材索引损坏时阻断生产
 - [x] 构造 `library.json` 截断/无效 JSON 场景。
-- [ ] 返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`，而不是静默当作素材不存在。
-- [ ] 素材解析提前结束，不为同镜头其他缺失素材执行自动生成。
-- [ ] Provider 调用次数为 0，原锁定 ID 保留。
-- [ ] 其他镜头状态和已有输出路径不变。
-- [ ] 最新 SHA 的 CI push/PR、docs-sync push/PR 全部通过。
+- [x] 返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`，而不是静默当作素材不存在。
+- [x] 素材解析提前结束，不为同镜头其他缺失素材执行自动生成。
+- [x] Provider 调用次数为 0，原锁定 ID 保留。
+- [x] 其他镜头状态和已有输出路径不变。
+- [x] 测试代码 SHA `6b225e09adac63265d53b27eae3ed6a54a51f49e` 的 CI push `38471501401`、CI PR `38471510428`、docs-sync push `38471501250`、docs-sync PR `38471510506` 全部通过。
+
+
+### A95 自动化验收结果（2026-10-14；测试代码 SHA `6b225e09adac63265d53b27eae3ed6a54a51f49e`）
+- CI push run `38471501401`、CI PR run `38471510428`、docs-sync push run `38471501250`、docs-sync PR run `38471510506` 全部 success。
+- 无效/截断 `library.json` 返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`；素材解析提前停止，不继续处理其他素材；Provider 调用次数为 0。
+- 原锁定 ID 保留，非目标镜头状态及已有输出路径保持不变。
+- PR #32 保持 open/unmerged。真实 Provider、Windows 真机、实际账单/扣款、剪映现场和生成画面视觉一致性继续暂缓。
+
+
+### A95 最新自动化结果覆盖（2026-10-14）
+A95 的损坏素材索引 fail-closed 测试已通过：无效 JSON 返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`，禁止 fallback/Provider 调用，原锁定 ID 与其他镜头输出保持不变。测试代码 SHA 为 `6b225e09adac63265d53b27eae3ed6a54a51f49e`；其 CI push/PR 与 docs-sync push/PR 均成功。文档状态更新后的最新 SHA 仍需重新跑完整检查。

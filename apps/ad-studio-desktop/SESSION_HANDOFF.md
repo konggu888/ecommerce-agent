@@ -470,3 +470,10 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - `_render_with_provider()` 必须在 Provider 调用前拦截，计数型 Provider 调用次数为 0。
 - 原锁定 ID 与其他镜头已有状态/输出路径必须保持不变。
 - 最新 SHA 的 CI push/PR、docs-sync push/PR 全部通过后方可标记通过；PR #32 保持 open/unmerged。
+
+
+### A95 自动化验收结果（2026-10-14；测试代码 SHA `6b225e09adac63265d53b27eae3ed6a54a51f49e`）
+- CI push run `38471501401`、CI PR run `38471510428`、docs-sync push run `38471501250`、docs-sync PR run `38471510506` 全部 success。
+- 无效/截断 `library.json` 返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`；素材解析提前停止，不继续处理其他素材；Provider 调用次数为 0。
+- 原锁定 ID 保留，非目标镜头状态及已有输出路径保持不变。
+- PR #32 保持 open/unmerged。真实 Provider、Windows 真机、实际账单/扣款、剪映现场和生成画面视觉一致性继续暂缓。

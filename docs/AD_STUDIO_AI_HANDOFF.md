@@ -306,3 +306,10 @@ A85 为每集可选的 `continuity_state.character_state_ledger` 建立跨集审
 
 ## A95 接手规则：索引损坏不是素材缺失
 本地 `library.json` 不可读取或 JSON 解码失败时，跨集锁定校验必须 fail-closed 并返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`。不要尝试从标签匹配或自动生成来绕过。先修复/恢复索引，再针对受影响镜头重试。需使用生产入口级计数型 Provider 测试并验证非目标镜头隔离。
+
+
+### A95 自动化验收结果（2026-10-14；测试代码 SHA `6b225e09adac63265d53b27eae3ed6a54a51f49e`）
+- CI push run `38471501401`、CI PR run `38471510428`、docs-sync push run `38471501250`、docs-sync PR run `38471510506` 全部 success。
+- 无效/截断 `library.json` 返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`；素材解析提前停止，不继续处理其他素材；Provider 调用次数为 0。
+- 原锁定 ID 保留，非目标镜头状态及已有输出路径保持不变。
+- PR #32 保持 open/unmerged。真实 Provider、Windows 真机、实际账单/扣款、剪映现场和生成画面视觉一致性继续暂缓。

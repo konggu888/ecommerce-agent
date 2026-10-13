@@ -726,3 +726,10 @@ A84 代码/回归测试 SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 的完整
 
 ## A95｜素材库索引损坏与安全恢复
 新增索引损坏场景的自动化保护：不能把损坏的 `library.json` 当作资产缺失处理；必须停止素材解析与 Provider 调用，保留原锁定 ID，不触发自动补素材并保护其他镜头。索引修复后再恢复生产。此项不代表真实 Provider、Windows 真机或视觉连续性已验收。
+
+
+### A95 自动化验收结果（2026-10-14；测试代码 SHA `6b225e09adac63265d53b27eae3ed6a54a51f49e`）
+- CI push run `38471501401`、CI PR run `38471510428`、docs-sync push run `38471501250`、docs-sync PR run `38471510506` 全部 success。
+- 无效/截断 `library.json` 返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`；素材解析提前停止，不继续处理其他素材；Provider 调用次数为 0。
+- 原锁定 ID 保留，非目标镜头状态及已有输出路径保持不变。
+- PR #32 保持 open/unmerged。真实 Provider、Windows 真机、实际账单/扣款、剪映现场和生成画面视觉一致性继续暂缓。
