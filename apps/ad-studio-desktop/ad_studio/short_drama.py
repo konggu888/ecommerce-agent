@@ -20,7 +20,7 @@ SHORT_DRAMA_SCHEMA = {
     "series_bible": {"series_arc": "全剧主线", "character_state": "人物长期状态与关系", "continuity_rules": ["跨集必须保持的事实"]},
     "episodes": [{"episode_number": "integer", "title": "集名", "logline": "本集梗概", "plot_beats": ["本集节拍"], "ending_hook": "本集结尾/悬念", "full_script": "本集完整剧本", "continuity_state": {"opening_state": "本集开始时承接的剧情/人物状态", "character_state_changes": ["本集人物状态或关系的变化"], "character_state_ledger": [{"character_name": "人物姓名", "dimension": "心理/知识/秘密/承诺/关系等状态维度；关系可用关系:人物A-人物B", "state_description": "本集结束时该维度的明确状态", "status": "established / changed / persisting / resolved", "must_persist": "boolean；true 表示下一集仍需保持或明确转变", "evidence": "剧本或分镜中可定位的状态证据", "storyboard_indices": ["本集分镜从1开始的位置"], "transition_evidence": "状态变化时解释变化原因的可定位证据", "trigger_event": "直接触发状态变化的具体事件/信息", "trigger_storyboard_indices": ["触发事件所在的本集分镜位置"], "change_storyboard_indices": ["状态实际改变发生的本集分镜位置"], "reaction_evidence": "人物对触发事件的可定位反应", "reaction_storyboard_indices": ["反应所在的本集分镜位置"], "downstream_consequence_evidence": "状态变化影响后续行动/选择的可定位证据", "downstream_storyboard_indices": ["后续影响所在的本集分镜位置"], "observable_manifestation": "人物状态变化在镜头中可观察到的具体动作/台词/表情或互动，不要只写心理标签", "observable_storyboard_indices": ["直接表现该状态变化的本集分镜位置"]}], "unresolved_threads": ["本集结束后仍未解决的悬念/冲突"], "ending_state": "本集结束时可供后续承接的事实状态", "next_episode_requirements": ["下一集必须承接的事件/事实；最终集可为空列表"], "cross_character_dependencies": [{"character_a": "人物A", "character_b": "人物B", "dependency_key": "共享事项标识", "dependency_type": "knowledge_alignment / relationship_alignment / belief_alignment / commitment_alignment", "consistency_rule": "same_understanding / asymmetric_knowledge / different_beliefs_allowed", "character_a_claim": "人物A对此事项的状态", "character_b_claim": "人物B对此事项的状态", "asymmetry_rationale": "知识不对称原因；仅适用时填写", "evidence": "可定位证据", "storyboard_indices": ["本集分镜位置"]}]}, "storyboard": ["本集分镜，字段与根级 storyboard 相同"]}],
     "continuity_ledger": [{"episode_number": "integer", "opening_state": "承接状态", "character_state_changes": ["人物状态变化"], "unresolved_threads": ["未解决线索"], "ending_state": "集末状态", "next_episode_requirements": ["下一集承接要求"]}],
-    "series_asset_locks": [{"asset_type": "actor / scene", "asset_key": "跨集稳定标识", "target": "人物姓名或精确场景/地点名", "canonical_description": "跨集必须保持的可见身份/外观/布景特征", "episode_numbers": ["可选的适用集号正整数列表"]}],
+    "series_asset_locks": [{"asset_type": "actor / scene", "asset_key": "跨集稳定标识", "target": "人物姓名或精确场景/地点名", "canonical_description": "跨集必须保持的可见身份/外观/布景特征", "asset_id": "可选的本地素材库精确资产 ID", "episode_numbers": ["可选的适用集号正整数列表"]}],
     "drama_business_mode": "通用AI短剧/商品植入短剧/商品转化短剧/AI短剧形式商品广告",
     "product_analysis": {"product_type": "商品类型", "target_audience": "目标人群", "selling_points": ["已确认卖点"], "usage_scenarios": ["使用场景"], "unknown_facts": ["未知或待确认信息"]},
     "genre_decision": {"selected_genre": "自主选择的题材", "reasoning": "选择理由", "world_style": "时代与世界设定", "story_product_role": "商品在剧情中的自然作用"},
@@ -500,6 +500,19 @@ def short_drama_production_rows(plan: dict[str, Any], product_name: str) -> list
             f"生成要求：{prompt}" if prompt else "",
         ) if part)
         episode_number = int(shot.get("episode_number", 1))
+        locked_actor_id = None
+        locked_scene_id = None
+        for lock in validated.get("series_asset_locks", []) or []:
+            if not isinstance(lock, dict) or not str(lock.get("asset_id") or "").strip():
+                continue
+            applicable = lock.get("episode_numbers")
+            if isinstance(applicable, list) and episode_number not in applicable:
+                continue
+            target = str(lock.get("target") or "").strip().casefold()
+            if lock.get("asset_type") == "actor" and target in [str(name).strip().casefold() for name in shot.get("characters", [])]:
+                locked_actor_id = str(lock["asset_id"]).strip()
+            elif lock.get("asset_type") == "scene" and target in {str(shot.get("scene") or "").strip().casefold(), str(shot.get("location") or "").strip().casefold()}:
+                locked_scene_id = str(lock["asset_id"]).strip()
         rows.append({
             "index": index,
             "episode_shot_index": int(shot.get("index", index)),
@@ -512,7 +525,9 @@ def short_drama_production_rows(plan: dict[str, Any], product_name: str) -> list
                 "actor_tags": actor_tags,
                 "scene_tags": scene_tags,
                 "product_tags": product_tags,
-                "generation_if_missing": True,
+                "actor_asset_id": locked_actor_id,
+                "scene_asset_id": locked_scene_id,
+                "generation_if_missing": not bool(locked_actor_id or locked_scene_id),
             },
             "director_mode": "short_drama",
             "story_scene": title,

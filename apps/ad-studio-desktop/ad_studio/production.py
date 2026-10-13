@@ -374,10 +374,20 @@ class ProductionStore:
         ai=next((x for x in plan_shots if int(x.get("index", -1)) == shot.index), {})
         req=ai.get("asset_resolution", {}) or {}
         generator=AssetGenerator(self.library_root/'asset-generation.json',self.library_root)
-        for kind, tags in (("演员", req.get("actor_tags", [])), ("场景", req.get("scene_tags", [])), ("商品素材", req.get("product_tags", []))):
-            found=library.best_match(kind,tags)
-            item={'asset':found.id if found else None,'source':'本地复用' if found else '待自动生成','generate_if_missing':bool(req.get('generation_if_missing', True))}
-            if not found and item['generate_if_missing']:
+        for kind, tags, lock_key in (("演员", req.get("actor_tags", []), "actor_asset_id"), ("场景", req.get("scene_tags", []), "scene_asset_id"), ("商品素材", req.get("product_tags", []), None)):
+            locked_id = str(req.get(lock_key) or "").strip() if lock_key else ""
+            if locked_id:
+                exact = next((asset for asset in library.all() if asset.id == locked_id), None)
+                valid = bool(exact and exact.active and exact.reusable and exact.kind == kind)
+                found = exact if valid else None
+                item = {"asset": found.id if found else None, "source": "跨集锁定素材复用" if found else "跨集锁定素材无效", "generate_if_missing": False, "locked_asset_id": locked_id}
+                if not found:
+                    reason = "不存在" if exact is None else ("已停用" if not exact.active else ("不可复用" if not exact.reusable else f"类型不匹配（实际：{exact.kind}，要求：{kind}）"))
+                    item.update({"error_code": "SERIES_LOCKED_ASSET_INVALID", "error": f"跨集锁定素材 {locked_id} {reason}；禁止自动替换或生成。"})
+            else:
+                found=library.best_match(kind,tags)
+                item={'asset':found.id if found else None,'source':'本地复用' if found else '待自动生成','generate_if_missing':bool(req.get('generation_if_missing', True))}
+            if not locked_id and not found and item['generate_if_missing']:
                 if generator.configured(kind):
                     item['source']='自动生成中'
                     try:

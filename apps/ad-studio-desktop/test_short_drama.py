@@ -1367,6 +1367,25 @@ class ShortDramaTests(unittest.TestCase):
 
 
 
+
+    def test_a90_series_asset_ids_are_bound_to_production_rows(self):
+        plan = sample_plan()
+        plan["series_asset_locks"] = [
+            {"asset_type": "actor", "asset_key": "lead", "target": "小林", "canonical_description": "固定演员", "asset_id": "actor-fixed"},
+            {"asset_type": "scene", "asset_key": "home", "target": "卧室", "canonical_description": "固定布景", "asset_id": "scene-fixed"},
+        ]
+        rows = short_drama_production_rows(plan, "测试商品")
+        self.assertEqual(rows[0]["asset_resolution"]["actor_asset_id"], "actor-fixed")
+        self.assertEqual(rows[0]["asset_resolution"]["scene_asset_id"], "scene-fixed")
+        self.assertFalse(rows[0]["asset_resolution"]["generation_if_missing"])
+
+    def test_a90_legacy_series_asset_locks_keep_tag_matching(self):
+        plan = sample_plan()
+        plan["series_asset_locks"] = [{"asset_type": "actor", "asset_key": "lead", "target": "小林", "canonical_description": "固定演员"}]
+        rows = short_drama_production_rows(plan, "测试商品")
+        self.assertIsNone(rows[0]["asset_resolution"]["actor_asset_id"])
+        self.assertTrue(rows[0]["asset_resolution"]["generation_if_missing"])
+
     def test_a89_series_asset_locks_flow_into_production_requirements(self):
         plan = sample_plan()
         plan["series_asset_locks"] = [
