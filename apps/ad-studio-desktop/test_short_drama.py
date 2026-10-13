@@ -1372,7 +1372,7 @@ class ShortDramaTests(unittest.TestCase):
         plan = sample_plan()
         plan["series_asset_locks"] = [
             {"asset_type": "actor", "asset_key": "lead", "target": "小林", "canonical_description": "固定演员", "asset_id": "actor-fixed"},
-            {"asset_type": "scene", "asset_key": "home", "target": "卧室", "canonical_description": "固定布景", "asset_id": "scene-fixed"},
+            {"asset_type": "scene", "asset_key": "home", "target": "公寓玄关", "canonical_description": "固定布景", "asset_id": "scene-fixed"},
         ]
         rows = short_drama_production_rows(plan, "测试商品")
         self.assertEqual(rows[0]["asset_resolution"]["actor_asset_id"], "actor-fixed")
