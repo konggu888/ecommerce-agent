@@ -291,3 +291,7 @@ A85 为每集可选的 `continuity_state.character_state_ledger` 建立跨集审
 - A92 跨集锁定 actor/scene 精确 ID 已验证解析绑定、相似标签不覆盖、保存/重开后绑定持久化。
 - A93 从 `_render_with_provider()` 入口验证失效锁定素材在 Provider 调用前拦截，Provider 调用次数为 0；保留原锁定 ID，不绑定替代演员，不影响其他镜头已有状态/路径。
 - PR #32 保持 open/unmerged。以上仅为自动化测试；Windows 真机、真实 Provider、真实账单/扣款、剪映现场及生成画面视觉一致性继续暂缓。
+
+
+## A94 接手规则：原资产恢复后再试
+对锁定素材失效的修复路径，必须验证恢复同一 asset_id 后可安全重试；不能因为旧恢复记录永久阻断，也不能转而选择同标签资产。恢复后的解析仍须禁用自动生成。CI 与 docs-sync 必须在最新 SHA 上重新确认。

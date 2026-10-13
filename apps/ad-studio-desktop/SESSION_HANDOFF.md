@@ -446,3 +446,11 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - A92 跨集锁定 actor/scene 精确 ID 已验证解析绑定、相似标签不覆盖、保存/重开后绑定持久化。
 - A93 从 `_render_with_provider()` 入口验证失效锁定素材在 Provider 调用前拦截，Provider 调用次数为 0；保留原锁定 ID，不绑定替代演员，不影响其他镜头已有状态/路径。
 - PR #32 保持 open/unmerged。以上仅为自动化测试；Windows 真机、真实 Provider、真实账单/扣款、剪映现场及生成画面视觉一致性继续暂缓。
+
+
+## A94｜原锁定素材恢复后的重试（待最新 SHA 验证）
+- 先停用原锁定演员，确认返回 SERIES_LOCKED_ASSET_INVALID 且不自动生成。
+- 恢复同一 ID 的 active/reusable 状态，并保留一个标签相同的相似演员作为干扰项。
+- 再次解析后必须绑定原 actor-fixed ID，source 为“跨集锁定素材复用”，generation_if_missing 为 false。
+- 不允许因之前有失效恢复记录而永久阻断，也不允许改绑相似资产。
+- 最新 SHA 的完整 CI push/PR 与 docs-sync push/PR 通过后才能标记完成。PR #32 保持 open/unmerged。

@@ -1174,3 +1174,11 @@ SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 的完整 CI 与 docs-sync 在 pu
 - A92 跨集锁定 actor/scene 精确 ID 已验证解析绑定、相似标签不覆盖、保存/重开后绑定持久化。
 - A93 从 `_render_with_provider()` 入口验证失效锁定素材在 Provider 调用前拦截，Provider 调用次数为 0；保留原锁定 ID，不绑定替代演员，不影响其他镜头已有状态/路径。
 - PR #32 保持 open/unmerged。以上仅为自动化测试；Windows 真机、真实 Provider、真实账单/扣款、剪映现场及生成画面视觉一致性继续暂缓。
+
+
+### A94 专项：恢复原锁定素材后的安全重试
+1. 建立停用的原锁定演员和标签相同但 ID 不同的启用演员。
+2. 首次解析必须返回 SERIES_LOCKED_ASSET_INVALID，且不生成/不绑定替代项。
+3. 将原素材记录恢复为 active、reusable 且 kind 正确，再次解析。
+4. 断言成功绑定原 ID、source 为跨集锁定素材复用、generation_if_missing 为 false。
+5. 运行 Desktop Core、完整 CI push/PR 和 docs-sync push/PR，按最终 SHA 记录。

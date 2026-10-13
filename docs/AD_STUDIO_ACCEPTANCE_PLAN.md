@@ -1238,3 +1238,12 @@ A92 失败根因是测试假设项目只有一个默认镜头，而 `new_project
 - [x] A93 失效锁定在 Provider 调用前 fail-closed，Provider 调用次数为 0，原锁定 ID 保留且其他镜头不受影响。
 - [x] SHA `db8c2a4e80bdbd6a5d308848e84905c1c2a348d0` 的 CI push/PR 与 docs-sync push/PR 全部通过。
 - [ ] 真实 Provider、Windows 真机、实际账单/扣款、剪映现场及视觉身份连续性仍暂缓。
+
+
+## A94｜恢复原锁定资产后的安全重试
+- [x] 构造锁定演员停用、同标签相似演员仍启用的场景。
+- [ ] 失效阶段返回 SERIES_LOCKED_ASSET_INVALID，并关闭 fallback/自动生成。
+- [ ] 恢复原 asset_id 的 active/reusable 状态后，重新解析成功绑定原 ID。
+- [ ] 相似标签素材不得覆盖原 ID，generation_if_missing 继续为 false。
+- [ ] 最新 SHA 的 CI push/PR、docs-sync push/PR 全部通过。
+- [ ] 此项仅验证本地调度恢复，不代表真实 Provider/视频视觉验收。

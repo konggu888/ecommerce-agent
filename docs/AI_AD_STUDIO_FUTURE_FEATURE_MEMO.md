@@ -711,3 +711,7 @@ A84 代码/回归测试 SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 的完整
 - A92 跨集锁定 actor/scene 精确 ID 已验证解析绑定、相似标签不覆盖、保存/重开后绑定持久化。
 - A93 从 `_render_with_provider()` 入口验证失效锁定素材在 Provider 调用前拦截，Provider 调用次数为 0；保留原锁定 ID，不绑定替代演员，不影响其他镜头已有状态/路径。
 - PR #32 保持 open/unmerged。以上仅为自动化测试；Windows 真机、真实 Provider、真实账单/扣款、剪映现场及生成画面视觉一致性继续暂缓。
+
+
+## A94｜跨集锁定素材恢复与安全重试
+在 A91/A93 的 fail-closed 保护基础上，验证本地原资产恢复后可继续生产：素材恢复为 active、reusable、类型匹配时，重试应绑定原 asset_id；即使存在相似标签资产也不能替换，且不启用自动生成。真实 Provider、Windows 真机、账单与画面视觉验收仍按原计划暂缓。

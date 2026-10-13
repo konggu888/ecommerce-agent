@@ -2109,6 +2109,48 @@ class DesktopCoreTests(unittest.TestCase):
                 "失败时必须保留原锁定 ID 供恢复处理",
             )
 
+
+    def test_a94_restoring_original_locked_asset_allows_exact_resolution_retry(self):
+        from ad_studio.models import Asset
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            library = LocalLibrary(root / "library")
+            library._write([
+                Asset("actor-fixed", "系列固定演员", "演员", "user_upload", None, ["主角"], active=False, reusable=True),
+                Asset("actor-lookalike", "相似演员", "演员", "user_upload", None, ["主角"], active=True, reusable=True),
+            ])
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 1, "连续短剧")
+            shot = project.shots[0]
+            project.creative_plan = {"shots": [{
+                "index": shot.index,
+                "asset_resolution": {
+                    "actor_asset_id": "actor-fixed",
+                    "actor_tags": ["主角"],
+                    "generation_if_missing": True,
+                },
+            }]}
+
+            failed = store.resolve_assets(project, shot)
+            self.assertEqual(failed["演员"]["error_code"], "SERIES_LOCKED_ASSET_INVALID")
+            self.assertFalse(failed["演员"]["generate_if_missing"])
+            self.assertIsNone(shot.actor_id)
+
+            # Recovery is explicit: the same physical asset ID becomes valid again.
+            library._write([
+                Asset("actor-fixed", "系列固定演员", "演员", "user_upload", None, ["主角"], active=True, reusable=True),
+                Asset("actor-lookalike", "相似演员", "演员", "user_upload", None, ["主角"], active=True, reusable=True),
+            ])
+            retried = store.resolve_assets(project, shot)
+
+            self.assertEqual(retried["演员"]["asset"], "actor-fixed")
+            self.assertEqual(retried["演员"]["locked_asset_id"], "actor-fixed")
+            self.assertEqual(retried["演员"]["source"], "跨集锁定素材复用")
+            self.assertFalse(retried["演员"]["generate_if_missing"])
+            self.assertEqual(shot.actor_id, "actor-fixed")
+            self.assertNotEqual(shot.actor_id, "actor-lookalike")
+
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.

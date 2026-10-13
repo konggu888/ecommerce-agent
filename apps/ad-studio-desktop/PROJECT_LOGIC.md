@@ -1348,3 +1348,7 @@ A92 测试误把追加镜头视为 `shots[1]`，但 `new_project()` 已包含多
 - A92 跨集锁定 actor/scene 精确 ID 已验证解析绑定、相似标签不覆盖、保存/重开后绑定持久化。
 - A93 从 `_render_with_provider()` 入口验证失效锁定素材在 Provider 调用前拦截，Provider 调用次数为 0；保留原锁定 ID，不绑定替代演员，不影响其他镜头已有状态/路径。
 - PR #32 保持 open/unmerged。以上仅为自动化测试；Windows 真机、真实 Provider、真实账单/扣款、剪映现场及生成画面视觉一致性继续暂缓。
+
+
+## A94｜失效恢复后重试规则
+锁定素材恢复为 active、reusable 且 kind 匹配后，再次调用 resolve_assets() 应能成功绑定原锁定 ID；恢复前的失败记录不能导致永久阻断，也不能授权使用相似标签资产。锁定 ID 存在时，generation_if_missing 必须保持 false。此处只验证本地素材解析恢复，不替代实际 Provider 或视觉验收。
