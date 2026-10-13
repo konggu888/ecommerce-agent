@@ -331,3 +331,14 @@ A85 为每集可选的 `continuity_state.character_state_ledger` 建立跨集审
 
 ## A98 项目恢复摘要幂等性
 修复了重复恢复时丢失缺失镜头提示的问题：已明确标记为“待重新生成/重新选择素材”的镜头，在真正处理前重复恢复仍会出现在 `missing_media`；普通“待生成”镜头不误报。有效兄弟镜头保持不变。最新 SHA 的 CI push/PR 与 docs-sync push/PR 全部通过后才能标记通过。
+
+
+## 2026-10-14 当前优先级：商业剪辑决策层升级
+用户已明确要求暂停费用对账/单镜头重试保护检查线，优先核查并升级未来路线图第 5 项“商业级剪辑决策层”。本轮具体修复是 `postprocess.process_shot()` 不再忽略 `focus_x/focus_y`：FFmpeg crop 现在根据归一化坐标定位；非法/非有限坐标回退中心，越界值夹紧；新增 `test_postprocess.py` 回归测试。此项不等于商业剪辑能力整体完成。
+
+接手必做：
+- 先读取 `apps/ad-studio-desktop/SESSION_HANDOFF.md` 最新更新，再检查当前分支 HEAD 和 PR。
+- 检查本轮最新 SHA 对应的完整 CI、docs-sync；必要时运行 `python3 -m unittest discover -s apps/ad-studio-desktop -p 'test_*.py'` 与 `python3 -m compileall -q apps/ad-studio-desktop/ad_studio`。
+- 继续沿“AI决策 → 参数校验/持久化 → 实际剪辑执行 → 输出检查”审计，逐项标记有代码+测试证据、部分实现、未实现/未验证。
+- 后续重点是节奏、镜头衔接、字幕密度、音乐卡点、商品展示节奏和剪后反馈。每次代码修改必须同步 HELP、PROJECT_LOGIC、SESSION_HANDOFF、验收计划、验收 SOP、本文件和根目录未来备忘。
+- Windows 真机、真实 Provider/扣费、剪映现场验收仍按用户要求暂缓；PR 保持 open/unmerged。不得把 CI 绿灯或结构化剪辑参数等同于商业成片质量。
