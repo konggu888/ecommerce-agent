@@ -313,3 +313,7 @@ A85 为每集可选的 `continuity_state.character_state_ledger` 建立跨集审
 - 无效/截断 `library.json` 返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`；素材解析提前停止，不继续处理其他素材；Provider 调用次数为 0。
 - 原锁定 ID 保留，非目标镜头状态及已有输出路径保持不变。
 - PR #32 保持 open/unmerged。真实 Provider、Windows 真机、实际账单/扣款、剪映现场和生成画面视觉一致性继续暂缓。
+
+
+## A96 接手规则：索引修复后必须可恢复
+索引损坏的 fail-closed 不应演变成永久失败。补充测试：修复 `library.json` 并恢复原资产后，重新解析应绑定原锁定 ID，不得因存在相似资产而换人，也不得触发 fallback。必须在最新 SHA 上重跑 CI 与 docs-sync。

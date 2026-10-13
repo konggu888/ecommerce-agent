@@ -2209,6 +2209,45 @@ class DesktopCoreTests(unittest.TestCase):
                 "索引恢复前必须保留原锁定 ID，不能静默解绑",
             )
 
+
+    def test_a96_repaired_asset_index_allows_retry_of_original_series_lock(self):
+        from ad_studio.models import Asset
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            library_root = root / "library"
+            library = LocalLibrary(library_root)
+            original = Asset("actor-fixed", "系列固定演员", "演员", "user_upload", None, ["主角"], active=True, reusable=True)
+            lookalike = Asset("actor-lookalike", "相似演员", "演员", "user_upload", None, ["主角"], active=True, reusable=True)
+            library._write([original, lookalike])
+            store = ProductionStore(root / "projects", library_root=library_root)
+            project = new_project("https://item.jd.com/123.html", 1, "连续短剧")
+            shot = project.shots[0]
+            project.creative_plan = {"shots": [{
+                "index": shot.index,
+                "asset_resolution": {
+                    "actor_asset_id": "actor-fixed",
+                    "actor_tags": ["主角"],
+                    "generation_if_missing": True,
+                },
+            }]}
+
+            library.index.write_text('{"assets":[', encoding="utf-8")
+            broken = store.resolve_assets(project, shot)
+            self.assertEqual(broken["演员"]["error_code"], "SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE")
+            self.assertFalse(broken["演员"]["generate_if_missing"])
+            self.assertIsNone(shot.actor_id)
+
+            # Restore a valid index containing the exact original ID and a tempting lookalike.
+            library._write([original, lookalike])
+            retried = store.resolve_assets(project, shot)
+            self.assertEqual(retried["演员"]["asset"], "actor-fixed")
+            self.assertEqual(retried["演员"]["locked_asset_id"], "actor-fixed")
+            self.assertEqual(retried["演员"]["source"], "跨集锁定素材复用")
+            self.assertFalse(retried["演员"]["generate_if_missing"])
+            self.assertEqual(shot.actor_id, "actor-fixed")
+            self.assertNotEqual(shot.actor_id, "actor-lookalike")
+
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.

@@ -477,3 +477,10 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - 无效/截断 `library.json` 返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`；素材解析提前停止，不继续处理其他素材；Provider 调用次数为 0。
 - 原锁定 ID 保留，非目标镜头状态及已有输出路径保持不变。
 - PR #32 保持 open/unmerged。真实 Provider、Windows 真机、实际账单/扣款、剪映现场和生成画面视觉一致性继续暂缓。
+
+
+## A96｜索引修复后重试（待最新 SHA 验证）
+- 先把 `library.json` 截断，确认返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE` 且不自动生成。
+- 修复索引，重新写入原锁定 ID，并保留同标签相似资产作为干扰项。
+- 再次解析应成功绑定原 ID，来源为跨集锁定素材复用，`generation_if_missing` 仍为 false。
+- CI push/PR 与 docs-sync push/PR 必须以最新 SHA 全部通过；PR #32 不合并。

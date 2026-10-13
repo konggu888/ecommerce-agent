@@ -733,3 +733,7 @@ A84 代码/回归测试 SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 的完整
 - 无效/截断 `library.json` 返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`；素材解析提前停止，不继续处理其他素材；Provider 调用次数为 0。
 - 原锁定 ID 保留，非目标镜头状态及已有输出路径保持不变。
 - PR #32 保持 open/unmerged。真实 Provider、Windows 真机、实际账单/扣款、剪映现场和生成画面视觉一致性继续暂缓。
+
+
+## A96｜素材索引故障的可恢复性
+在 A95 安全阻断基础上，补充索引修复后的恢复测试：重新读取合法索引后，原锁定素材应恢复可用并绑定原 ID；相似标签资产不能替代，且不允许自动生成。真实 Provider、Windows 真机、账单与视觉验收仍按既定计划暂缓。

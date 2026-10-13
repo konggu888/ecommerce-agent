@@ -1370,3 +1370,7 @@ A92 测试误把追加镜头视为 `shots[1]`，但 `new_project()` 已包含多
 - 无效/截断 `library.json` 返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`；素材解析提前停止，不继续处理其他素材；Provider 调用次数为 0。
 - 原锁定 ID 保留，非目标镜头状态及已有输出路径保持不变。
 - PR #32 保持 open/unmerged。真实 Provider、Windows 真机、实际账单/扣款、剪映现场和生成画面视觉一致性继续暂缓。
+
+
+## A96｜索引修复后的恢复语义
+`SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE` 是可恢复的素材库读取故障，不应让项目永久阻断。索引修复且原锁定资产重新可读、active、reusable、kind 匹配后，再次 `resolve_assets()` 必须绑定原 ID；不能改绑相似项或开启 `generation_if_missing`。本测试只验证本地索引/资产解析恢复。

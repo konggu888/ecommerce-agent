@@ -1271,3 +1271,10 @@ A94 自动化验收已通过：SHA `289cc0954cb93ce1a218436d2a6137317a7c6130` �
 
 ### A95 最新自动化结果覆盖（2026-10-14）
 A95 的损坏素材索引 fail-closed 测试已通过：无效 JSON 返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`，禁止 fallback/Provider 调用，原锁定 ID 与其他镜头输出保持不变。测试代码 SHA 为 `6b225e09adac63265d53b27eae3ed6a54a51f49e`；其 CI push/PR 与 docs-sync push/PR 均成功。文档状态更新后的最新 SHA 仍需重新跑完整检查。
+
+
+## A96｜修复素材索引后的安全重试
+- [x] 先验证索引损坏返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`，且关闭 fallback。
+- [ ] 修复索引后，原锁定素材可重新解析。
+- [ ] 相似标签资产不得覆盖原 ID，且禁止自动生成。
+- [ ] 最新 SHA 的 CI push/PR、docs-sync push/PR 全部通过。
