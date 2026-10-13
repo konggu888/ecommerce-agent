@@ -695,3 +695,7 @@ A84 代码/回归测试 SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 的完整
 
 ### A92 状态补充
 首次 CI 失败定位为测试遗漏保存步骤：解析镜头后没有 `store.save(project)` 就读取磁盘项目。已修正为先保存后重载；修复后的 SHA 仍需完整 CI/docs-sync 验证，不能沿用旧 SHA 结果。
+
+
+### A92 CI 根因修正
+不要假设 `new_project()` 的默认镜头数。A92 fixture 现在明确只包含两集目标镜头，重载验证按稳定 `shot.id` 匹配并检查精确 actor/scene ID。

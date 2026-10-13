@@ -275,3 +275,7 @@ A85 为每集可选的 `continuity_state.character_state_ledger` 建立跨集审
 
 ### A92 CI 失败修正步骤
 首次 CI 失败点是测试调用镜头素材解析后直接重载项目，没有先保存，因此不能证明持久化绑定。修正测试：先 `store.save(project)`，再 `store.load(project.id)`，随后断言两集 actor/scene ID 保留。修复 SHA 必须重新执行全套检查。
+
+
+### A92 CI 根因修正
+测试原先按 `restored.shots[1]` 查找追加镜头，但新项目本身已有多个默认镜头。现在只保留两个目标镜头，并按 `shot.id` 查找重载记录；所有检查必须基于新的最终 SHA。

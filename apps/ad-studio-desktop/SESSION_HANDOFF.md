@@ -424,3 +424,10 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - 首次 A92 CI 在保存/重载断言失败：测试调用 `resolve_assets()` 后直接 `load()`，遗漏 `store.save(project)`。
 - 已识别为测试步骤遗漏；后续提交会在 reload 前保存已解析的项目，修复后的 SHA 需要重新确认 CI/docs-sync。
 - 当前分支 head 为 A92 SHA `0758bfe5604ae31f604988bd3a320ede7f1b7ece`，该 SHA 的 PR CI 失败，不能标记 A92 通过；PR #32 继续 open/unmerged。
+
+
+## A92 CI 根因与修复（2026-10-14）
+- SHA `e01003444a268a2b8fa70a031d0bd2155ac062e7` 的 CI 失败位置为重载后 `restored.shots[1].actor_id` 为 `None`。
+- 根因：`new_project()` 创建的默认镜头数不止一个；测试追加的第二集镜头并不一定处于列表位置 1，导致按位置断言检查错了镜头。
+- 已修正夹具为仅包含 `first` 和 `second` 两个镜头；解析后明确断言两镜头绑定的 actor/scene ID 均为指定锁定值；重载后按稳定 `shot.id` 检查。
+- 新 SHA 的完整 CI/docs-sync 未通过前，A92 仍不得验收完成。PR #32 保持 open/unmerged；真机、真实 Provider、账单与剪映验收继续暂缓。

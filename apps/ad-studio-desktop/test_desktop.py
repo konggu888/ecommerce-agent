@@ -2053,10 +2053,11 @@ class DesktopCoreTests(unittest.TestCase):
             # Persist the resolved per-shot actor/scene bindings before testing reload.
             store.save(project)
             restored = store.load(project.id)
-            self.assertEqual(restored.shots[0].actor_id, "actor-series-1")
-            self.assertEqual(restored.shots[1].actor_id, "actor-series-1")
-            self.assertEqual(restored.shots[0].scene_id, "scene-series-1")
-            self.assertEqual(restored.shots[1].scene_id, "scene-series-1")
+            restored_by_id = {shot.id: shot for shot in restored.shots}
+            self.assertEqual(restored_by_id[first.id].actor_id, "actor-series-1")
+            self.assertEqual(restored_by_id[second.id].actor_id, "actor-series-1")
+            self.assertEqual(restored_by_id[first.id].scene_id, "scene-series-1")
+            self.assertEqual(restored_by_id[second.id].scene_id, "scene-series-1")
 
 
 if __name__ == "__main__":
