@@ -377,6 +377,8 @@ class ProductionStore:
         for kind, tags, lock_key in (("演员", req.get("actor_tags", []), "actor_asset_id"), ("场景", req.get("scene_tags", []), "scene_asset_id"), ("商品素材", req.get("product_tags", []), None)):
             locked_id = str(req.get(lock_key) or "").strip() if lock_key else ""
             if locked_id:
+                # Explicit series identity locks are fail-closed: never substitute a lookalike
+                # or trigger generation when the exact library record is unavailable.
                 exact = next((asset for asset in library.all() if asset.id == locked_id), None)
                 valid = bool(exact and exact.active and exact.reusable and exact.kind == kind)
                 found = exact if valid else None
