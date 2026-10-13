@@ -527,7 +527,7 @@ def short_drama_production_rows(plan: dict[str, Any], product_name: str) -> list
                 "product_tags": product_tags,
                 "actor_asset_id": locked_actor_id,
                 "scene_asset_id": locked_scene_id,
-                "generation_if_missing": not bool(locked_actor_id or locked_scene_id),
+                "generation_if_missing": True,
             },
             "director_mode": "short_drama",
             "story_scene": title,
