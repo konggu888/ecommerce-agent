@@ -1251,3 +1251,12 @@ A92 失败根因是测试假设项目只有一个默认镜头，而 `new_project
 
 ### A94 最新状态覆盖（2026-10-14）
 A94 自动化验收已通过：SHA `289cc0954cb93ce1a218436d2a6137317a7c6130` 的 CI push/PR 与 docs-sync push/PR 全部成功。真实 Provider、Windows 真机、实际账单/扣款、剪映现场及生成画面视觉一致性继续暂缓。
+
+
+## A95｜本地素材索引损坏时阻断生产
+- [x] 构造 `library.json` 截断/无效 JSON 场景。
+- [ ] 返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`，而不是静默当作素材不存在。
+- [ ] 素材解析提前结束，不为同镜头其他缺失素材执行自动生成。
+- [ ] Provider 调用次数为 0，原锁定 ID 保留。
+- [ ] 其他镜头状态和已有输出路径不变。
+- [ ] 最新 SHA 的 CI push/PR、docs-sync push/PR 全部通过。

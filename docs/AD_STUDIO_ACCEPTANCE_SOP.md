@@ -1189,3 +1189,12 @@ SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 的完整 CI 与 docs-sync 在 pu
 - CI push run `38470748908`、CI PR run `38470757428`、docs-sync push run `38470748944`、docs-sync PR run `38470757442` 均 success。
 - 失效阶段确认锁定素材错误并关闭生成；恢复同一 asset_id 后可重试并精确绑定原 ID，即使存在同标签相似资产也不替换；锁定 ID 仍禁止 fallback/自动生成。
 - PR #32 保持 open/unmerged；真实 Provider、Windows 真机、账单/扣款、剪映现场与画面视觉一致性仍暂缓。
+
+
+### A95 专项：素材索引损坏时 fail-closed
+1. 先创建有效锁定演员，然后将本地 `library.json` 写成截断/无效 JSON。
+2. 校验应返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`，不能将索引故障降级成“素材不存在”。
+3. 检查素材解析立即停止，不处理商品素材或触发自动生成。
+4. 从 `_render_with_provider()` 入口调用计数型 fake Provider，断言调用次数为 0。
+5. 检查原锁定 ID 和其他镜头状态/已有输出未改变。
+6. 修复索引后再单独验证恢复重试；全部 CI 与文档同步必须对应最新 SHA。

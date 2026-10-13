@@ -461,3 +461,12 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - CI push run `38470748908`、CI PR run `38470757428`、docs-sync push run `38470748944`、docs-sync PR run `38470757442` 均 success。
 - 失效阶段确认锁定素材错误并关闭生成；恢复同一 asset_id 后可重试并精确绑定原 ID，即使存在同标签相似资产也不替换；锁定 ID 仍禁止 fallback/自动生成。
 - PR #32 保持 open/unmerged；真实 Provider、Windows 真机、账单/扣款、剪映现场与画面视觉一致性仍暂缓。
+
+
+## A95｜损坏素材索引保护（待最新 SHA 验证）
+- 使用无效/截断 JSON 模拟本地 `library.json` 损坏。
+- 预期错误码为 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`，不得误报为单个资产不存在。
+- `resolve_assets()` 必须 fail-closed，不处理同镜头其他素材，不触发补素材。
+- `_render_with_provider()` 必须在 Provider 调用前拦截，计数型 Provider 调用次数为 0。
+- 原锁定 ID 与其他镜头已有状态/输出路径必须保持不变。
+- 最新 SHA 的 CI push/PR、docs-sync push/PR 全部通过后方可标记通过；PR #32 保持 open/unmerged。

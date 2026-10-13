@@ -302,3 +302,7 @@ A85 为每集可选的 `continuity_state.character_state_ledger` 建立跨集审
 - CI push run `38470748908`、CI PR run `38470757428`、docs-sync push run `38470748944`、docs-sync PR run `38470757442` 均 success。
 - 失效阶段确认锁定素材错误并关闭生成；恢复同一 asset_id 后可重试并精确绑定原 ID，即使存在同标签相似资产也不替换；锁定 ID 仍禁止 fallback/自动生成。
 - PR #32 保持 open/unmerged；真实 Provider、Windows 真机、账单/扣款、剪映现场与画面视觉一致性仍暂缓。
+
+
+## A95 接手规则：索引损坏不是素材缺失
+本地 `library.json` 不可读取或 JSON 解码失败时，跨集锁定校验必须 fail-closed 并返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`。不要尝试从标签匹配或自动生成来绕过。先修复/恢复索引，再针对受影响镜头重试。需使用生产入口级计数型 Provider 测试并验证非目标镜头隔离。

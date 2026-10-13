@@ -2151,6 +2151,64 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(shot.actor_id, "actor-fixed")
             self.assertNotEqual(shot.actor_id, "actor-lookalike")
 
+
+    def test_a95_corrupt_library_index_fails_closed_before_provider_dispatch(self):
+        from ad_studio.models import Asset
+
+        class CountingProvider:
+            provider_name = "计数测试 Provider"
+            cost_per_shot_rmb = 1.0
+            def __init__(self):
+                self.calls = 0
+            def generate(self, request):
+                self.calls += 1
+                raise AssertionError("素材索引损坏时不应调用 Provider")
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            library_root = root / "library"
+            library = LocalLibrary(library_root)
+            library._write([
+                Asset("actor-fixed", "系列固定演员", "演员", "user_upload", None, ["主角"], active=True, reusable=True),
+            ])
+            store = ProductionStore(root / "projects", library_root=library_root)
+            project = new_project("https://item.jd.com/123.html", 1, "连续短剧")
+            target = project.shots[0]
+            other = project.shots[1]
+            other.status = "已生成"
+            other.video_path = "existing-other-shot.mp4"
+            project.creative_plan = {"shots": [{
+                "index": target.index,
+                "asset_resolution": {
+                    "actor_asset_id": "actor-fixed",
+                    "product_tags": ["不应触发自动补素材"],
+                    "generation_if_missing": True,
+                },
+            }]}
+
+            # Simulate a truncated/corrupt local asset index after the project was created.
+            library.index.write_text('{"assets": [broken', encoding="utf-8")
+            issues = store.validate_series_asset_locks(project, target.index)
+            self.assertTrue(issues)
+            self.assertEqual(issues[0]["error_code"], "SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE")
+
+            resolution = store.resolve_assets(project, target)
+            self.assertEqual(resolution["演员"]["error_code"], "SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE")
+            self.assertFalse(resolution["演员"]["generate_if_missing"])
+            self.assertNotIn("商品素材", resolution, "索引异常时不得继续处理其他素材")
+
+            provider = CountingProvider()
+            with self.assertRaisesRegex(RuntimeError, "SERIES_LOCKED_ASSET_INVALID"):
+                store._render_with_provider(project, target, provider)
+            self.assertEqual(provider.calls, 0)
+            self.assertEqual(other.status, "已生成")
+            self.assertEqual(other.video_path, "existing-other-shot.mp4")
+            self.assertEqual(
+                project.creative_plan["shots"][0]["asset_resolution"]["actor_asset_id"],
+                "actor-fixed",
+                "索引恢复前必须保留原锁定 ID，不能静默解绑",
+            )
+
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.

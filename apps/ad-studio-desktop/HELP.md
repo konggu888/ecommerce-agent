@@ -1218,3 +1218,7 @@ A92 失败并非保存步骤缺失，而是测试夹具假设 `new_project()` �
 - CI push run `38470748908`、CI PR run `38470757428`、docs-sync push run `38470748944`、docs-sync PR run `38470757442` 均 success。
 - 失效阶段确认锁定素材错误并关闭生成；恢复同一 asset_id 后可重试并精确绑定原 ID，即使存在同标签相似资产也不替换；锁定 ID 仍禁止 fallback/自动生成。
 - PR #32 保持 open/unmerged；真实 Provider、Windows 真机、账单/扣款、剪映现场与画面视觉一致性仍暂缓。
+
+
+## A95｜素材索引损坏时的 fail-closed 保护
+如果本地素材库索引为空白、截断或不是有效 JSON，跨集锁定素材校验必须返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`，禁止继续解析、禁止自动补素材、禁止调用视频 Provider。原锁定 ID 必须保留，其他镜头现有状态和输出不得受影响。修复索引后应重新打开/重试受影响镜头；不得将索引损坏误判为原素材不存在并自动换人。

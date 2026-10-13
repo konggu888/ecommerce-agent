@@ -722,3 +722,7 @@ A84 代码/回归测试 SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 的完整
 - CI push run `38470748908`、CI PR run `38470757428`、docs-sync push run `38470748944`、docs-sync PR run `38470757442` 均 success。
 - 失效阶段确认锁定素材错误并关闭生成；恢复同一 asset_id 后可重试并精确绑定原 ID，即使存在同标签相似资产也不替换；锁定 ID 仍禁止 fallback/自动生成。
 - PR #32 保持 open/unmerged；真实 Provider、Windows 真机、账单/扣款、剪映现场与画面视觉一致性仍暂缓。
+
+
+## A95｜素材库索引损坏与安全恢复
+新增索引损坏场景的自动化保护：不能把损坏的 `library.json` 当作资产缺失处理；必须停止素材解析与 Provider 调用，保留原锁定 ID，不触发自动补素材并保护其他镜头。索引修复后再恢复生产。此项不代表真实 Provider、Windows 真机或视觉连续性已验收。
