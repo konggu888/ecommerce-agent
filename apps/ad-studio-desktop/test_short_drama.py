@@ -1385,7 +1385,6 @@ class ShortDramaTests(unittest.TestCase):
 
     def test_a89_asset_locks_can_be_episode_scoped_and_bad_schema_is_rejected(self):
         plan = sample_plan()
-        plan["storyboard"][0]["episode_number"] = 2
         plan["series_asset_locks"] = [{"asset_type": "actor", "asset_key": "lead-01", "target": "小林",
             "canonical_description": "固定身份外观", "episode_numbers": [2]}]
         validated = validate_short_drama(plan)

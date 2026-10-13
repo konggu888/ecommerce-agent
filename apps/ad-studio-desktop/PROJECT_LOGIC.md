@@ -1296,3 +1296,7 @@ A87 在 A86 因果闭环上新增可观察表演字段与审查：`observable_ma
 - `validate_short_drama()` 将锁定描述注入匹配分镜的 actor/scene requirements；现有 `short_drama_production_rows()` 会把约束送入既有资产调度字段。
 - 锁定目标未命中任何适用分镜时，审查输出 `SERIES_ASSET_LOCK_TARGET_NOT_FOUND`；错误 schema/集号类型拒绝。
 - 这是文本级锁定，物理素材 ID 复用和生成画面身份仍需单独验证。
+
+
+### A89 验收修正
+锁定注入由 `validate_short_drama()` 统一执行，覆盖直接校验、审查及 `short_drama_production_rows()` 转换路径。集号范围测试使用合法的第1集方案验证第2集限定锁定不会应用；无效布尔集号仍必须被拒绝。

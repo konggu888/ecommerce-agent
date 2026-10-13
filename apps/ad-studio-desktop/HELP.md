@@ -1159,3 +1159,7 @@ A84 代码、回归测试及 HELP/PROJECT_LOGIC 同步提交 SHA `00ad0d00a9747c
 
 ## A89｜跨集演员/场景资产文本锁定
 多集短剧可选根级 `series_asset_locks`，为反复出现且需保持身份一致的人物/场景指定 `asset_key`、`target`、`canonical_description`，并可用 `episode_numbers` 限定集数。审查器将锁定描述追加到匹配分镜的 `actor_requirements` 或 `scene_requirements`，因此会进入既有资产调度需求；找不到匹配人物/场景时产生 `SERIES_ASSET_LOCK_TARGET_NOT_FOUND`。这是生成提示/资产需求层的文本约束，不等于已将同一物理素材文件锁定，也不保证生成画面绝对一致。
+
+
+### A89 自动化修正记录
+CI 发现资产锁定注入最初挂在生成流程而非通用方案校验流程，已移动到 `validate_short_drama()`，确保加载/审查/生产行转换同样生效。集号范围测试改为在第1集方案中声明仅适用于第2集的锁定，验证范围外不注入；不再制造一个与方案集数不一致的无效分镜。
