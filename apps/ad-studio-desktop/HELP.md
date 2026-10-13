@@ -1167,3 +1167,7 @@ CI 发现资产锁定注入最初挂在生成流程而非通用方案校验流�
 
 ### A89 自动化验证结果（2026-10-14）
 最终验证 SHA：`9bcb19ac950f0addcc5a0bfab599dd060c11ec1e`。Desktop Core 299 项测试通过；Python 语法、前端语法、Typecheck、Engine 与 Risk Controller 检查通过。CI push `38465502064`、CI PR `38465509232`、docs-sync push `38465502037`、docs-sync PR `38465509210` 均 success。结果仅覆盖自动化/文本需求层，不证明物理演员/场景素材文件被锁定复用或生成画面身份一致。
+
+
+## A90：跨集物理素材 ID 绑定（待最新 SHA 自动化验收）
+跨集演员/场景锁定可选指定本地素材库 asset_id，并将精确 ID 传入制作行。生产解析按 ID 验证资产存在、启用、可复用且类型匹配；无效时明确返回 SERIES_LOCKED_ASSET_INVALID，禁止静默替换或自动生成。未提供 ID 的 A89 旧方案保持标签匹配兼容。此约束只保证素材调度选择，不保证生成画面像素级一致。最新 SHA 的完整 CI/docs-sync 必须重新核验；PR #32 保持 open/unmerged，Windows 真机与真实 Provider 验收继续暂缓。

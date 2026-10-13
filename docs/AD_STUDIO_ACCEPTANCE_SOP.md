@@ -1127,3 +1127,7 @@ SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 的完整 CI 与 docs-sync 在 pu
 
 ### A89 自动化验收结果（2026-10-14）
 最终 SHA `9bcb19ac950f0addcc5a0bfab599dd060c11ec1e` 的 CI push/PR 与 docs-sync push/PR 全部通过；Desktop Core 299 项测试通过。文本需求层锁定已自动化验收，物理资产 ID 复用和生成画面身份一致性仍未验收。
+
+
+## A90：跨集物理素材 ID 绑定（待最新 SHA 自动化验收）
+跨集演员/场景锁定可选指定本地素材库 asset_id，并将精确 ID 传入制作行。生产解析按 ID 验证资产存在、启用、可复用且类型匹配；无效时明确返回 SERIES_LOCKED_ASSET_INVALID，禁止静默替换或自动生成。未提供 ID 的 A89 旧方案保持标签匹配兼容。此约束只保证素材调度选择，不保证生成画面像素级一致。最新 SHA 的完整 CI/docs-sync 必须重新核验；PR #32 保持 open/unmerged，Windows 真机与真实 Provider 验收继续暂缓。
