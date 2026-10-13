@@ -502,3 +502,25 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 
 ## 2026-10-14：A99 已提交，CI 待验证
 最新提交：`c8252dc58995289d8ca38dfd15dc8e66f8001eeb`。A99 修复恢复阶段的逐镜头费用快照残留：只要存在成功的实际费用账本记录，就以账本逐镜头对账；没有成功费用记录的镜头归零，防止单镜头显示旧金额而项目总额已更新。新增 `test_a99_successful_ledger_clears_stale_cost_on_unbilled_sibling_shot`，覆盖账本金额、未计费兄弟镜头归零及保存/重载。已同步 HELP.md 与 PROJECT_LOGIC.md。当前该 SHA 的 CI 与 docs-sync push workflow 已排队，不能提前宣称通过；下一步先确认该 SHA 的 CI、docs-sync push/PR 全部结束，再继续检查单镜头重试的版本与计费联动。PR #32 保持 open/unmerged；Windows 真机和真实 Provider/账单验收仍暂缓。
+
+
+---
+
+# 2026-10-14 接手状态更新：转向商业剪辑能力主线
+
+> **下一位 AI 必须先读本段，再读本文件其余内容。** 旧段落中出现的历史 SHA、PR 编号和“本轮必须继续做的事”可能过期；以下面的当前状态和 GitHub 实际检查为准。
+
+## 当前工作现场
+- 仓库：`konggu888/ecommerce-agent`
+- 分支：`feat/product-drama-visual-review`
+- 本轮起始基线：`4713c6b024b2a4f407b3b9b4ac8fc4f2b6077597`
+- 当前优先级已由用户明确调整：**暂停费用对账/单镜头重试保护检查线，优先推进未来路线图第 5 项“商业级剪辑决策层升级”。**
+- Windows 真机测试、真实视频 Provider/真实扣款、剪映现场验收继续暂缓；PR 不得擅自合并。
+- 已发现并修复：`postprocess.process_shot()` 原先接收 `focus_x/focus_y`，但 FFmpeg crop 仍固定居中，导致 AI 焦点参数没有影响实际输出构图。
+- 代码变更：新增 `_normalized_focus()` 与 `_focus_crop_filter()`，把归一化焦点坐标实际写入 FFmpeg crop 的 x/y；越界坐标夹紧，NaN/Infinity/非法值回退中心。
+- 新增回归测试：`apps/ad-studio-desktop/test_postprocess.py`，验证生成的 FFmpeg 命令包含焦点坐标，并覆盖边界/异常值。
+- 本轮代码提交：`6beb0786b2cf94dedfc146bd7672e2be3bdeac76`；测试提交：`3c47efafb317b42157c7a4054ff4b9d479250b63`；帮助文档提交：`c5b0634b88e1e2df2333d358ddacf4942aa44704`。后续文档提交和 CI 状态必须按最新 SHA 重新确认。
+- 下一步严格顺序：检查最新 HEAD/PR 与 CI/docs-sync；运行新增焦点裁切回归测试及桌面全量单测/语法检查（若无法运行必须如实说明）；再继续商业剪辑决策链审计。
+- 后续重点：目标驱动的镜头节奏、真实动态裁切/焦点执行、镜头衔接与转场判断、字幕信息密度、音画节奏/音乐卡点、商品展示节奏、剪后质量反馈。
+- 每次代码修改必须同步 HELP、PROJECT_LOGIC、SESSION_HANDOFF、验收计划、验收 SOP、`docs/AD_STUDIO_AI_HANDOFF.md` 和根目录未来功能备忘。
+- 不得把基础 FFmpeg 拼接、结构化参数或 CI 通过描述为“商业级剪辑已完成”。路线图第 5 项继续保留，直到各能力实现并正式验收。
