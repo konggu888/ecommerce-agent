@@ -1224,10 +1224,17 @@ A92 失败根因是测试假设项目只有一个默认镜头，而 `new_project
 
 
 ## A93｜失效跨集锁定在 Provider 调用前拦截并隔离镜头
-- [x] 增加真实生产入口级测试：锁定演员已停用时，直接走 _render_with_provider()。
-- [ ] Provider 调用次数必须为 0，并返回 SERIES_LOCKED_ASSET_INVALID。
-- [ ] 不得将锁定 ID 替换为相似标签素材；原 ID 应保留。
-- [ ] 锁定失败前不得触发同镜头其他缺失素材的自动生成。
-- [ ] 非目标镜头状态和已有输出路径必须保持不变。
-- [ ] 最新 SHA 的 Desktop Core、完整 CI push/PR、docs-sync push/PR 全部通过。
-- [ ] 此自动化测试不替代真实 Provider、Windows 真机和画面视觉验收。
+- [x] 增加生产入口级测试：锁定演员已停用时，直接走 _render_with_provider()。
+- [x] Provider 调用次数为 0，并返回 SERIES_LOCKED_ASSET_INVALID。
+- [x] 不得将锁定 ID 替换为相似标签素材；原 ID 保留。
+- [x] 锁定失败前不触发同镜头其他缺失素材的自动生成。
+- [x] 非目标镜头状态和已有输出路径保持不变。
+- [x] SHA `db8c2a4e80bdbd6a5d308848e84905c1c2a348d0` 的 CI push `38470175403`、CI PR `38470184669`、docs-sync push `38470175408`、docs-sync PR `38470184505` 全部通过。
+- [ ] 真实 Provider、Windows 真机和画面视觉验收仍待后续阶段。
+
+
+### A92/A93 最终自动化状态（2026-10-14）
+- [x] A92 精确 actor/scene 锁定 ID 在两集镜头实际绑定，并在保存/重开后保持；相似标签资产不能覆盖。
+- [x] A93 失效锁定在 Provider 调用前 fail-closed，Provider 调用次数为 0，原锁定 ID 保留且其他镜头不受影响。
+- [x] SHA `db8c2a4e80bdbd6a5d308848e84905c1c2a348d0` 的 CI push/PR 与 docs-sync push/PR 全部通过。
+- [ ] 真实 Provider、Windows 真机、实际账单/扣款、剪映现场及视觉身份连续性仍暂缓。

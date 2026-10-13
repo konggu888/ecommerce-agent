@@ -438,3 +438,11 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - 验收点：Provider 调用次数为 0；抛出 SERIES_LOCKED_ASSET_INVALID；原锁定 ID 保留；不绑定相似素材；其他镜头状态/已有输出路径不变。
 - 同镜头其他缺失素材不得在锁定失败前触发自动生成。
 - 必须以新 SHA 的 CI push/PR 和 docs-sync push/PR 验证；PR #32 保持 open/unmerged。Windows 真机、真实 Provider、账单和剪映现场验收继续暂缓。
+
+
+### A92/A93 自动化验收结果（2026-10-14；以本节为准）
+- 最终代码与测试 SHA：`db8c2a4e80bdbd6a5d308848e84905c1c2a348d0`。
+- CI push run `38470175403`、CI PR run `38470184669`、docs-sync push run `38470175408`、docs-sync PR run `38470184505` 均 success。
+- A92 跨集锁定 actor/scene 精确 ID 已验证解析绑定、相似标签不覆盖、保存/重开后绑定持久化。
+- A93 从 `_render_with_provider()` 入口验证失效锁定素材在 Provider 调用前拦截，Provider 调用次数为 0；保留原锁定 ID，不绑定替代演员，不影响其他镜头已有状态/路径。
+- PR #32 保持 open/unmerged。以上仅为自动化测试；Windows 真机、真实 Provider、真实账单/扣款、剪映现场及生成画面视觉一致性继续暂缓。

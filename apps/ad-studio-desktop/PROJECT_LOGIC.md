@@ -1340,3 +1340,11 @@ A92 测试误把追加镜头视为 `shots[1]`，但 `new_project()` 已包含多
 
 ## A93｜跨集锁定 fail-closed 的 Provider 边界
 单镜头生成入口 _render_with_provider() 必须在实际 provider.generate() 前完成素材解析与锁定复核。若锁定资产已失效，必须抛出 SERIES_LOCKED_ASSET_INVALID 并保持 Provider 调用次数为 0；不得对该镜头的其他缺失素材做副作用生成，不得用相似标签资产覆盖锁定 ID。该错误应仅影响目标镜头，不得清除或重写其他镜头的状态/已有输出。原 asset_id 与恢复记录必须保留。
+
+
+### A92/A93 自动化验收结果（2026-10-14；以本节为准）
+- 最终代码与测试 SHA：`db8c2a4e80bdbd6a5d308848e84905c1c2a348d0`。
+- CI push run `38470175403`、CI PR run `38470184669`、docs-sync push run `38470175408`、docs-sync PR run `38470184505` 均 success。
+- A92 跨集锁定 actor/scene 精确 ID 已验证解析绑定、相似标签不覆盖、保存/重开后绑定持久化。
+- A93 从 `_render_with_provider()` 入口验证失效锁定素材在 Provider 调用前拦截，Provider 调用次数为 0；保留原锁定 ID，不绑定替代演员，不影响其他镜头已有状态/路径。
+- PR #32 保持 open/unmerged。以上仅为自动化测试；Windows 真机、真实 Provider、真实账单/扣款、剪映现场及生成画面视觉一致性继续暂缓。

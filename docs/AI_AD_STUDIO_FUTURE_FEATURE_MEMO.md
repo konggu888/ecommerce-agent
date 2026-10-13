@@ -703,3 +703,11 @@ A84 代码/回归测试 SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 的完整
 
 ## A93｜跨集锁定失效的 Provider 边界回归
 新增生产入口级自动化保护：锁定素材失效时，当前镜头在任何 Provider 调用前停止，原 ID 保留、不静默换成相似素材、不触发同镜头其他素材的补生成，且不影响其他镜头现有状态/输出。此为自动化安全边界，不代表真实 Provider 或视觉一致性已验收；真实 Provider、Windows 真机、账单与剪映验收仍按既定计划暂缓。
+
+
+### A92/A93 自动化验收结果（2026-10-14；以本节为准）
+- 最终代码与测试 SHA：`db8c2a4e80bdbd6a5d308848e84905c1c2a348d0`。
+- CI push run `38470175403`、CI PR run `38470184669`、docs-sync push run `38470175408`、docs-sync PR run `38470184505` 均 success。
+- A92 跨集锁定 actor/scene 精确 ID 已验证解析绑定、相似标签不覆盖、保存/重开后绑定持久化。
+- A93 从 `_render_with_provider()` 入口验证失效锁定素材在 Provider 调用前拦截，Provider 调用次数为 0；保留原锁定 ID，不绑定替代演员，不影响其他镜头已有状态/路径。
+- PR #32 保持 open/unmerged。以上仅为自动化测试；Windows 真机、真实 Provider、真实账单/扣款、剪映现场及生成画面视觉一致性继续暂缓。
