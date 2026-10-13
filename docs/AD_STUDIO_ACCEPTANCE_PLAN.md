@@ -1194,3 +1194,7 @@ A61（旧成本迁移）、A62（接手文案断言）、A63（迁移基线持�
 - [x] 最终 SHA `9bcb19ac950f0addcc5a0bfab599dd060c11ec1e` 的 CI push/PR、docs-sync push/PR 全部 success；299 项 Desktop Core 测试通过。
 - [ ] 真实资产库是否复用同一演员/场景素材 ID，仍待后续实现与验收。
 - [ ] 真实生成视频的人物/场景身份连续性仍待视觉/人工验收；Windows 真机测试暂缓。
+
+
+## A90：跨集物理素材 ID 绑定（待最新 SHA 自动化验收）
+跨集演员/场景锁定可选指定本地素材库 asset_id，并将精确 ID 传入制作行。生产解析按 ID 验证资产存在、启用、可复用且类型匹配；无效时明确返回 SERIES_LOCKED_ASSET_INVALID，禁止静默替换或自动生成。未提供 ID 的 A89 旧方案保持标签匹配兼容。此约束只保证素材调度选择，不保证生成画面像素级一致。最新 SHA 的完整 CI/docs-sync 必须重新核验；PR #32 保持 open/unmerged，Windows 真机与真实 Provider 验收继续暂缓。
