@@ -393,3 +393,12 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 ### A89 CI 修复追踪
 - 首轮 CI 发现锁定注入调用位置不正确、集号范围测试夹具与单集方案集数不一致，已根据日志修复。
 - 当前修复提交必须重新等待 push/PR CI 与 docs-sync push/PR；不得沿用之前 SHA 的失败或通过状态。
+
+
+## A89｜跨集演员/场景资产文本锁定（2026-10-14 自动化验证通过）
+- 当前工作分支：`feat/product-drama-visual-review`；PR #32 保持 open/unmerged。
+- 最终代码 SHA：`9bcb19ac950f0addcc5a0bfab599dd060c11ec1e`。
+- `series_asset_locks` 已加入短剧输出 schema；`validate_short_drama()` 将锁定描述注入匹配分镜的 actor/scene requirements；续写上下文携带锁定列表；未匹配目标产生 warning。
+- A89 回归覆盖演员/场景锁定注入、生产行传递、适用集数、非法集号与目标未命中；299 项 Desktop Core 测试全部通过。
+- CI push `38465502064`、CI PR `38465509232`、docs-sync push `38465502037`、docs-sync PR `38465509210` 均 success。
+- 限制：仅文本/资产需求层约束，不等于同一物理素材文件复用，不保证生成画面身份绝对一致。Windows 真机、真实 Provider、真实扣款/账单、剪映现场验收仍暂缓。

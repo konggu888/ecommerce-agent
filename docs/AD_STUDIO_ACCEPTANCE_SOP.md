@@ -1123,3 +1123,7 @@ SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 的完整 CI 与 docs-sync 在 pu
 4. 测试非法类型、非正整数/布尔集号及不存在目标；目标缺失应出现 `SERIES_ASSET_LOCK_TARGET_NOT_FOUND`。
 5. 检查续写下一集上下文仍带 series_asset_locks。
 6. 运行专项测试、完整 CI 与 docs-sync；文本锁定不能冒充物理素材复用或画面验收。
+
+
+### A89 自动化验收结果（2026-10-14）
+最终 SHA `9bcb19ac950f0addcc5a0bfab599dd060c11ec1e` 的 CI push/PR 与 docs-sync push/PR 全部通过；Desktop Core 299 项测试通过。文本需求层锁定已自动化验收，物理资产 ID 复用和生成画面身份一致性仍未验收。

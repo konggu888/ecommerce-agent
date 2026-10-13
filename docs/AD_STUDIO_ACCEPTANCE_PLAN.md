@@ -1183,3 +1183,14 @@ A61（旧成本迁移）、A62（接手文案断言）、A63（迁移基线持�
 - [ ] 下一集续写上下文保留锁定列表。
 - [ ] 短剧专项测试、完整 CI、PR CI、docs-sync push/PR 均在最终 SHA 通过。
 - [ ] 文本约束不等于同一物理素材文件复用或真实画面身份一致。
+
+
+## A89｜跨集演员/场景资产锁定验收状态更新（2026-10-14）
+- [x] 根级 `series_asset_locks` 定义 actor/scene、稳定 key、目标、规范描述和可选集号范围，并加入短剧输出 schema。
+- [x] 锁定描述注入匹配镜头的演员/场景需求，进入 `short_drama_production_rows()` 的资产调度字段。
+- [x] 集号范围外的镜头不应用锁定。
+- [x] 非法锁定结构/集号被拒绝；目标未命中时产生 `SERIES_ASSET_LOCK_TARGET_NOT_FOUND`。
+- [x] 下一集续写上下文携带锁定列表（代码路径检查；后续可继续补充独立回归断言）。
+- [x] 最终 SHA `9bcb19ac950f0addcc5a0bfab599dd060c11ec1e` 的 CI push/PR、docs-sync push/PR 全部 success；299 项 Desktop Core 测试通过。
+- [ ] 真实资产库是否复用同一演员/场景素材 ID，仍待后续实现与验收。
+- [ ] 真实生成视频的人物/场景身份连续性仍待视觉/人工验收；Windows 真机测试暂缓。

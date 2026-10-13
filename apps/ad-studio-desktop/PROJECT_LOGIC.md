@@ -1300,3 +1300,7 @@ A87 在 A86 因果闭环上新增可观察表演字段与审查：`observable_ma
 
 ### A89 验收修正
 锁定注入由 `validate_short_drama()` 统一执行，覆盖直接校验、审查及 `short_drama_production_rows()` 转换路径。集号范围测试使用合法的第1集方案验证第2集限定锁定不会应用；无效布尔集号仍必须被拒绝。
+
+
+### A89 自动化验证记录（2026-10-14）
+SHA `9bcb19ac950f0addcc5a0bfab599dd060c11ec1e`：299 项 Desktop Core 测试、Python/前端语法、Typecheck、Engine、Risk Controller 全部通过；CI push/PR 与 docs-sync push/PR 均成功（run IDs：`38465502064`、`38465509232`、`38465502037`、`38465509210`）。物理资产 ID 复用与真实画面一致性尚未验收。

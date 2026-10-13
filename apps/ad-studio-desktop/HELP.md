@@ -1163,3 +1163,7 @@ A84 代码、回归测试及 HELP/PROJECT_LOGIC 同步提交 SHA `00ad0d00a9747c
 
 ### A89 自动化修正记录
 CI 发现资产锁定注入最初挂在生成流程而非通用方案校验流程，已移动到 `validate_short_drama()`，确保加载/审查/生产行转换同样生效。集号范围测试改为在第1集方案中声明仅适用于第2集的锁定，验证范围外不注入；不再制造一个与方案集数不一致的无效分镜。
+
+
+### A89 自动化验证结果（2026-10-14）
+最终验证 SHA：`9bcb19ac950f0addcc5a0bfab599dd060c11ec1e`。Desktop Core 299 项测试通过；Python 语法、前端语法、Typecheck、Engine 与 Risk Controller 检查通过。CI push `38465502064`、CI PR `38465509232`、docs-sync push `38465502037`、docs-sync PR `38465509210` 均 success。结果仅覆盖自动化/文本需求层，不证明物理演员/场景素材文件被锁定复用或生成画面身份一致。
