@@ -1218,3 +1218,11 @@ SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 的完整 CI 与 docs-sync 在 pu
 - CI push run `38471876626`、CI PR run `38471884325`、docs-sync push run `38471876601`、docs-sync PR run `38471884345` 全部 success。
 - 索引损坏时返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE` 并禁止 fallback；索引恢复后，重新解析精确绑定原锁定资产 ID，标签相似资产不能替换，且不触发自动生成。
 - PR #32 继续保持 open/unmerged。真实 Provider、Windows 真机、账单/扣款、剪映现场与生成画面视觉一致性继续暂缓。
+
+
+### A97 项目恢复单镜头隔离
+1. 建立缺失输出的目标镜头，并建立具有非空输出文件的正常兄弟镜头。
+2. 保存项目后执行 `recover_project()`。
+3. 检查只有目标镜头进入 `missing_media`；正常镜头的输出路径、状态、版本和费用不变。
+4. 重新加载项目，以稳定镜头 ID 复核上述字段。
+5. 核对最新提交 SHA 的 CI push、CI PR、docs-sync push、docs-sync PR 均通过。此自动化项不等于真机或真实供应商验收。

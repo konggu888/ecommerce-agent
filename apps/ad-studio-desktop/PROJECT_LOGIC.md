@@ -1380,3 +1380,7 @@ A92 测试误把追加镜头视为 `shots[1]`，但 `new_project()` 已包含多
 - CI push run `38471876626`、CI PR run `38471884325`、docs-sync push run `38471876601`、docs-sync PR run `38471884345` 全部 success。
 - 索引损坏时返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE` 并禁止 fallback；索引恢复后，重新解析精确绑定原锁定资产 ID，标签相似资产不能替换，且不触发自动生成。
 - PR #32 继续保持 open/unmerged。真实 Provider、Windows 真机、账单/扣款、剪映现场与生成画面视觉一致性继续暂缓。
+
+
+## A97｜项目恢复的单镜头隔离边界（2026-10-14）
+`recover_project()` 遇到成片文件缺失时，只把该镜头加入 `missing_media` 并清除该镜头无效的输出路径；兄弟镜头的有效视频路径、已生成状态、版本号和镜头实际费用不得被重置。回归测试保存并重载项目，按稳定 shot.id 验证目标镜头与未受影响镜头。此项验证恢复数据隔离，不触发 Provider，也不替代真机/真实生成验收。

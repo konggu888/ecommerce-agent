@@ -490,3 +490,7 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - CI push run `38471876626`、CI PR run `38471884325`、docs-sync push run `38471876601`、docs-sync PR run `38471884345` 全部 success。
 - 索引损坏时返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE` 并禁止 fallback；索引恢复后，重新解析精确绑定原锁定资产 ID，标签相似资产不能替换，且不触发自动生成。
 - PR #32 继续保持 open/unmerged。真实 Provider、Windows 真机、账单/扣款、剪映现场与生成画面视觉一致性继续暂缓。
+
+
+## A97｜单镜头恢复隔离（2026-10-14，待最新 SHA CI 验证）
+新增回归覆盖项目恢复时仅重置缺失成片的目标镜头；有效兄弟镜头的输出路径、状态、版本和费用必须保持，保存/重开后仍一致。完成后需检查最新 SHA 的 push/PR CI 与 docs-sync 四项结果；PR #32 保持 open/unmerged。真实 Provider、Windows 真机、账单和剪映验收继续暂缓。
