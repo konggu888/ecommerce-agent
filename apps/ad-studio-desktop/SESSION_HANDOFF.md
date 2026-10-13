@@ -484,3 +484,9 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - 修复索引，重新写入原锁定 ID，并保留同标签相似资产作为干扰项。
 - 再次解析应成功绑定原 ID，来源为跨集锁定素材复用，`generation_if_missing` 仍为 false。
 - CI push/PR 与 docs-sync push/PR 必须以最新 SHA 全部通过；PR #32 不合并。
+
+
+### A96 自动化验收结果（2026-10-14；测试代码 SHA `fc01ace4eeb90ccb2f2df10b44a57f8b3c69f134`）
+- CI push run `38471876626`、CI PR run `38471884325`、docs-sync push run `38471876601`、docs-sync PR run `38471884345` 全部 success。
+- 索引损坏时返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE` 并禁止 fallback；索引恢复后，重新解析精确绑定原锁定资产 ID，标签相似资产不能替换，且不触发自动生成。
+- PR #32 继续保持 open/unmerged。真实 Provider、Windows 真机、账单/扣款、剪映现场与生成画面视觉一致性继续暂缓。

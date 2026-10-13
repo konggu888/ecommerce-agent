@@ -1275,6 +1275,16 @@ A95 的损坏素材索引 fail-closed 测试已通过：无效 JSON 返回 `SERI
 
 ## A96｜修复素材索引后的安全重试
 - [x] 先验证索引损坏返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`，且关闭 fallback。
-- [ ] 修复索引后，原锁定素材可重新解析。
-- [ ] 相似标签资产不得覆盖原 ID，且禁止自动生成。
-- [ ] 最新 SHA 的 CI push/PR、docs-sync push/PR 全部通过。
+- [x] 修复索引后，原锁定素材可重新解析。
+- [x] 相似标签资产不得覆盖原 ID，且禁止自动生成。
+- [x] 测试代码 SHA `fc01ace4eeb90ccb2f2df10b44a57f8b3c69f134` 的 CI push `38471876626`、CI PR `38471884325`、docs-sync push `38471876601`、docs-sync PR `38471884345` 全部通过。
+
+
+### A96 自动化验收结果（2026-10-14；测试代码 SHA `fc01ace4eeb90ccb2f2df10b44a57f8b3c69f134`）
+- CI push run `38471876626`、CI PR run `38471884325`、docs-sync push run `38471876601`、docs-sync PR run `38471884345` 全部 success。
+- 索引损坏时返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE` 并禁止 fallback；索引恢复后，重新解析精确绑定原锁定资产 ID，标签相似资产不能替换，且不触发自动生成。
+- PR #32 继续保持 open/unmerged。真实 Provider、Windows 真机、账单/扣款、剪映现场与生成画面视觉一致性继续暂缓。
+
+
+### A96 最新自动化结果覆盖（2026-10-14）
+A96 已通过：素材索引损坏时安全阻断，索引修复后恢复原锁定素材并精确绑定原 ID。测试代码 SHA `fc01ace4eeb90ccb2f2df10b44a57f8b3c69f134` 的 CI push/PR 与 docs-sync push/PR 全部成功。文档状态更新后的最新 SHA 仍需重新跑完整检查。

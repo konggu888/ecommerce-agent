@@ -737,3 +737,9 @@ A84 代码/回归测试 SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 的完整
 
 ## A96｜素材索引故障的可恢复性
 在 A95 安全阻断基础上，补充索引修复后的恢复测试：重新读取合法索引后，原锁定素材应恢复可用并绑定原 ID；相似标签资产不能替代，且不允许自动生成。真实 Provider、Windows 真机、账单与视觉验收仍按既定计划暂缓。
+
+
+### A96 自动化验收结果（2026-10-14；测试代码 SHA `fc01ace4eeb90ccb2f2df10b44a57f8b3c69f134`）
+- CI push run `38471876626`、CI PR run `38471884325`、docs-sync push run `38471876601`、docs-sync PR run `38471884345` 全部 success。
+- 索引损坏时返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE` 并禁止 fallback；索引恢复后，重新解析精确绑定原锁定资产 ID，标签相似资产不能替换，且不触发自动生成。
+- PR #32 继续保持 open/unmerged。真实 Provider、Windows 真机、账单/扣款、剪映现场与生成画面视觉一致性继续暂缓。

@@ -1374,3 +1374,9 @@ A92 测试误把追加镜头视为 `shots[1]`，但 `new_project()` 已包含多
 
 ## A96｜索引修复后的恢复语义
 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE` 是可恢复的素材库读取故障，不应让项目永久阻断。索引修复且原锁定资产重新可读、active、reusable、kind 匹配后，再次 `resolve_assets()` 必须绑定原 ID；不能改绑相似项或开启 `generation_if_missing`。本测试只验证本地索引/资产解析恢复。
+
+
+### A96 自动化验收结果（2026-10-14；测试代码 SHA `fc01ace4eeb90ccb2f2df10b44a57f8b3c69f134`）
+- CI push run `38471876626`、CI PR run `38471884325`、docs-sync push run `38471876601`、docs-sync PR run `38471884345` 全部 success。
+- 索引损坏时返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE` 并禁止 fallback；索引恢复后，重新解析精确绑定原锁定资产 ID，标签相似资产不能替换，且不触发自动生成。
+- PR #32 继续保持 open/unmerged。真实 Provider、Windows 真机、账单/扣款、剪映现场与生成画面视觉一致性继续暂缓。
