@@ -260,7 +260,3 @@ A85 为每集可选的 `continuity_state.character_state_ledger` 建立跨集审
 
 ### A89 验证基准（2026-10-14）
 当前验证 SHA `9bcb19ac950f0addcc5a0bfab599dd060c11ec1e`；CI push `38465502064`、CI PR `38465509232`、docs-sync push `38465502037`、docs-sync PR `38465509210` 均成功，299 项 Desktop Core 测试通过。PR #32 保持 open/unmerged。A89 是文本/资产需求层约束；不能据此声称物理素材复用或视觉一致性验收完成。
-
-
-## A90：跨集物理素材 ID 绑定（待最新 SHA 自动化验收）
-跨集演员/场景锁定可选指定本地素材库 asset_id，并将精确 ID 传入制作行。生产解析按 ID 验证资产存在、启用、可复用且类型匹配；无效时明确返回 SERIES_LOCKED_ASSET_INVALID，禁止静默替换或自动生成。未提供 ID 的 A89 旧方案保持标签匹配兼容。此约束只保证素材调度选择，不保证生成画面像素级一致。最新 SHA 的完整 CI/docs-sync 必须重新核验；PR #32 保持 open/unmerged，Windows 真机与真实 Provider 验收继续暂缓。

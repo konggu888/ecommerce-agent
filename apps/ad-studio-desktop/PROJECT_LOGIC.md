@@ -1304,3 +1304,7 @@ A87 在 A86 因果闭环上新增可观察表演字段与审查：`observable_ma
 
 ### A89 自动化验证记录（2026-10-14）
 SHA `9bcb19ac950f0addcc5a0bfab599dd060c11ec1e`：299 项 Desktop Core 测试、Python/前端语法、Typecheck、Engine、Risk Controller 全部通过；CI push/PR 与 docs-sync push/PR 均成功（run IDs：`38465502064`、`38465509232`、`38465502037`、`38465509210`）。物理资产 ID 复用与真实画面一致性尚未验收。
+
+
+## A90：跨集物理素材 ID 绑定（待最新 SHA 自动化验收）
+跨集演员/场景锁定可选指定本地素材库 asset_id，并将精确 ID 传入制作行。生产解析按 ID 验证资产存在、启用、可复用且类型匹配；无效时明确返回 SERIES_LOCKED_ASSET_INVALID，禁止静默替换或自动生成。未提供 ID 的 A89 旧方案保持标签匹配兼容。此约束只保证素材调度选择，不保证生成画面像素级一致。最新 SHA 的完整 CI/docs-sync 必须重新核验；PR #32 保持 open/unmerged，Windows 真机与真实 Provider 验收继续暂缓。
