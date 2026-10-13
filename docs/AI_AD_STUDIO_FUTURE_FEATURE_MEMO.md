@@ -715,3 +715,10 @@ A84 代码/回归测试 SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 的完整
 
 ## A94｜跨集锁定素材恢复与安全重试
 在 A91/A93 的 fail-closed 保护基础上，验证本地原资产恢复后可继续生产：素材恢复为 active、reusable、类型匹配时，重试应绑定原 asset_id；即使存在相似标签资产也不能替换，且不启用自动生成。真实 Provider、Windows 真机、账单与画面视觉验收仍按原计划暂缓。
+
+
+### A94 自动化验收结果（2026-10-14；以本节为准）
+- 代码与测试 SHA：`289cc0954cb93ce1a218436d2a6137317a7c6130`。
+- CI push run `38470748908`、CI PR run `38470757428`、docs-sync push run `38470748944`、docs-sync PR run `38470757442` 均 success。
+- 失效阶段确认锁定素材错误并关闭生成；恢复同一 asset_id 后可重试并精确绑定原 ID，即使存在同标签相似资产也不替换；锁定 ID 仍禁止 fallback/自动生成。
+- PR #32 保持 open/unmerged；真实 Provider、Windows 真机、账单/扣款、剪映现场与画面视觉一致性仍暂缓。

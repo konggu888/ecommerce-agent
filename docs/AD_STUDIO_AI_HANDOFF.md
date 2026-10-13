@@ -295,3 +295,10 @@ A85 为每集可选的 `continuity_state.character_state_ledger` 建立跨集审
 
 ## A94 接手规则：原资产恢复后再试
 对锁定素材失效的修复路径，必须验证恢复同一 asset_id 后可安全重试；不能因为旧恢复记录永久阻断，也不能转而选择同标签资产。恢复后的解析仍须禁用自动生成。CI 与 docs-sync 必须在最新 SHA 上重新确认。
+
+
+### A94 自动化验收结果（2026-10-14；以本节为准）
+- 代码与测试 SHA：`289cc0954cb93ce1a218436d2a6137317a7c6130`。
+- CI push run `38470748908`、CI PR run `38470757428`、docs-sync push run `38470748944`、docs-sync PR run `38470757442` 均 success。
+- 失效阶段确认锁定素材错误并关闭生成；恢复同一 asset_id 后可重试并精确绑定原 ID，即使存在同标签相似资产也不替换；锁定 ID 仍禁止 fallback/自动生成。
+- PR #32 保持 open/unmerged；真实 Provider、Windows 真机、账单/扣款、剪映现场与画面视觉一致性仍暂缓。

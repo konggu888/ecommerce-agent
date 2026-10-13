@@ -1182,3 +1182,10 @@ SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 的完整 CI 与 docs-sync 在 pu
 3. 将原素材记录恢复为 active、reusable 且 kind 正确，再次解析。
 4. 断言成功绑定原 ID、source 为跨集锁定素材复用、generation_if_missing 为 false。
 5. 运行 Desktop Core、完整 CI push/PR 和 docs-sync push/PR，按最终 SHA 记录。
+
+
+### A94 自动化验收结果（2026-10-14；以本节为准）
+- 代码与测试 SHA：`289cc0954cb93ce1a218436d2a6137317a7c6130`。
+- CI push run `38470748908`、CI PR run `38470757428`、docs-sync push run `38470748944`、docs-sync PR run `38470757442` 均 success。
+- 失效阶段确认锁定素材错误并关闭生成；恢复同一 asset_id 后可重试并精确绑定原 ID，即使存在同标签相似资产也不替换；锁定 ID 仍禁止 fallback/自动生成。
+- PR #32 保持 open/unmerged；真实 Provider、Windows 真机、账单/扣款、剪映现场与画面视觉一致性仍暂缓。

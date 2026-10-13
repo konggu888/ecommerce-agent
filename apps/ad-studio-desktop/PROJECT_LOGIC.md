@@ -1352,3 +1352,10 @@ A92 测试误把追加镜头视为 `shots[1]`，但 `new_project()` 已包含多
 
 ## A94｜失效恢复后重试规则
 锁定素材恢复为 active、reusable 且 kind 匹配后，再次调用 resolve_assets() 应能成功绑定原锁定 ID；恢复前的失败记录不能导致永久阻断，也不能授权使用相似标签资产。锁定 ID 存在时，generation_if_missing 必须保持 false。此处只验证本地素材解析恢复，不替代实际 Provider 或视觉验收。
+
+
+### A94 自动化验收结果（2026-10-14；以本节为准）
+- 代码与测试 SHA：`289cc0954cb93ce1a218436d2a6137317a7c6130`。
+- CI push run `38470748908`、CI PR run `38470757428`、docs-sync push run `38470748944`、docs-sync PR run `38470757442` 均 success。
+- 失效阶段确认锁定素材错误并关闭生成；恢复同一 asset_id 后可重试并精确绑定原 ID，即使存在同标签相似资产也不替换；锁定 ID 仍禁止 fallback/自动生成。
+- PR #32 保持 open/unmerged；真实 Provider、Windows 真机、账单/扣款、剪映现场与画面视觉一致性仍暂缓。

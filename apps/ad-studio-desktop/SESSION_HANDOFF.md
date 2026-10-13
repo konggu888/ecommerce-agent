@@ -454,3 +454,10 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - 再次解析后必须绑定原 actor-fixed ID，source 为“跨集锁定素材复用”，generation_if_missing 为 false。
 - 不允许因之前有失效恢复记录而永久阻断，也不允许改绑相似资产。
 - 最新 SHA 的完整 CI push/PR 与 docs-sync push/PR 通过后才能标记完成。PR #32 保持 open/unmerged。
+
+
+### A94 自动化验收结果（2026-10-14；以本节为准）
+- 代码与测试 SHA：`289cc0954cb93ce1a218436d2a6137317a7c6130`。
+- CI push run `38470748908`、CI PR run `38470757428`、docs-sync push run `38470748944`、docs-sync PR run `38470757442` 均 success。
+- 失效阶段确认锁定素材错误并关闭生成；恢复同一 asset_id 后可重试并精确绑定原 ID，即使存在同标签相似资产也不替换；锁定 ID 仍禁止 fallback/自动生成。
+- PR #32 保持 open/unmerged；真实 Provider、Windows 真机、账单/扣款、剪映现场与画面视觉一致性仍暂缓。

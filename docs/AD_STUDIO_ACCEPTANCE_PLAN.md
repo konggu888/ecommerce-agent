@@ -1242,8 +1242,12 @@ A92 失败根因是测试假设项目只有一个默认镜头，而 `new_project
 
 ## A94｜恢复原锁定资产后的安全重试
 - [x] 构造锁定演员停用、同标签相似演员仍启用的场景。
-- [ ] 失效阶段返回 SERIES_LOCKED_ASSET_INVALID，并关闭 fallback/自动生成。
-- [ ] 恢复原 asset_id 的 active/reusable 状态后，重新解析成功绑定原 ID。
-- [ ] 相似标签素材不得覆盖原 ID，generation_if_missing 继续为 false。
-- [ ] 最新 SHA 的 CI push/PR、docs-sync push/PR 全部通过。
+- [x] 失效阶段返回 SERIES_LOCKED_ASSET_INVALID，并关闭 fallback/自动生成。
+- [x] 恢复原 asset_id 的 active/reusable 状态后，重新解析成功绑定原 ID。
+- [x] 相似标签素材不得覆盖原 ID，generation_if_missing 继续为 false。
+- [x] SHA `289cc0954cb93ce1a218436d2a6137317a7c6130` 的 CI push `38470748908`、CI PR `38470757428`、docs-sync push `38470748944`、docs-sync PR `38470757442` 全部通过。
 - [ ] 此项仅验证本地调度恢复，不代表真实 Provider/视频视觉验收。
+
+
+### A94 最新状态覆盖（2026-10-14）
+A94 自动化验收已通过：SHA `289cc0954cb93ce1a218436d2a6137317a7c6130` 的 CI push/PR 与 docs-sync push/PR 全部成功。真实 Provider、Windows 真机、实际账单/扣款、剪映现场及生成画面视觉一致性继续暂缓。
