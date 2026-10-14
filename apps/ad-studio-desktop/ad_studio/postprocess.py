@@ -32,15 +32,14 @@ def adapt_aspect(input_path: Path, output_path: Path, aspect: str = "9:16"):
         raise ValueError(f"不支持的画幅：{aspect}")
     width, height = ASPECTS[aspect]
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    # 适配画幅；固定中心裁切由 process_shot 的 AI 焦点参数负责。
-    focus_x, focus_y = 0.5, 0.5
-    vf = f"scale={width}:{height}:force_original_aspect_ratio=increase,crop={width}:{height}:x=(iw-{width})*{focus_x}:y=(ih-{height})*{focus_y}"
+    # 独立画幅适配采用中心裁切；需要执行 AI 焦点构图时使用 process_shot。
+    vf = f"scale={width}:{height}:force_original_aspect_ratio=increase,crop={width}:{height}:x=(iw-{width})*0.5:y=(ih-{height})*0.5"
     codec = best_h264_encoder()
     _run([ffmpeg_path(), "-y", "-i", str(input_path), "-vf", vf, "-c:v", codec, "-preset", "p4" if codec == "h264_nvenc" else "medium", "-pix_fmt", "yuv420p", "-an", str(output_path)])
     return output_path
 
 def _normalized_focus(value: float) -> float:
-    """Return a safe normalized crop focal coordinate; invalid values use center."""
+    """Return a safe normalized focal coordinate; invalid values use center."""
     try:
         number = float(value)
     except (TypeError, ValueError):
@@ -51,12 +50,19 @@ def _normalized_focus(value: float) -> float:
 
 
 def _focus_crop_filter(width: int, height: int, focus_x: float, focus_y: float) -> str:
-    """Scale to cover the target frame, then position the crop using normalized AI focus."""
+    """Keep the normalized focal point near the crop center, clamped to image bounds.
+
+    Coordinates describe the subject/focal point in the scaled source frame, not the
+    crop-window offset. When there is insufficient overflow in an axis, the crop
+    necessarily stays at zero on that axis.
+    """
     x = _normalized_focus(focus_x)
     y = _normalized_focus(focus_y)
+    crop_x = f"max(0,min(iw-{width},iw*{x:.6f}-{width}/2))"
+    crop_y = f"max(0,min(ih-{height},ih*{y:.6f}-{height}/2))"
     return (
         f"scale={width}:{height}:force_original_aspect_ratio=increase,"
-        f"crop={width}:{height}:x=(iw-{width})*{x:.6f}:y=(ih-{height})*{y:.6f}"
+        f"crop={width}:{height}:x='{crop_x}':y='{crop_y}'"
     )
 
 

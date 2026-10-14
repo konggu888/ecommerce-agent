@@ -342,3 +342,15 @@ A85 为每集可选的 `continuity_state.character_state_ledger` 建立跨集审
 - 继续沿“AI决策 → 参数校验/持久化 → 实际剪辑执行 → 输出检查”审计，逐项标记有代码+测试证据、部分实现、未实现/未验证。
 - 后续重点是节奏、镜头衔接、字幕密度、音乐卡点、商品展示节奏和剪后反馈。每次代码修改必须同步 HELP、PROJECT_LOGIC、SESSION_HANDOFF、验收计划、验收 SOP、本文件和根目录未来备忘。
 - Windows 真机、真实 Provider/扣费、剪映现场验收仍按用户要求暂缓；PR 保持 open/unmerged。不得把 CI 绿灯或结构化剪辑参数等同于商业成片质量。
+
+
+## 最新接手补充（2026-10-14）：商业剪辑焦点坐标语义
+这是对本文件先前“焦点坐标实际控制 crop 位置”描述的精确定义，后续以本段为准：
+- 当前分支：`feat/product-drama-visual-review`；PR #32 必须保持 open/unmerged。
+- 用户已要求暂停费用对账/单镜头重试保护检查线，优先推进未来路线图第 5 项“商业剪辑决策层升级”。
+- `focus_x/focus_y` 表示缩放后源画面中的主体/视觉焦点归一化位置（0–1），不是 crop 偏移比例。裁切窗口尽量将焦点放到输出画面中心，并限制在源画面边界内。
+- `adapt_aspect()` 仍是中心裁切工具；`process_shot()` 是焦点驱动裁切入口。
+- 新增/更新的 `apps/ad-studio-desktop/test_postprocess.py` 应断言实际 FFmpeg `-vf` 参数中的 max/min 焦点定位表达式，覆盖边界夹紧、NaN/Infinity/非法输入回退。
+- 接手后必须重新读取 `apps/ad-studio-desktop/SESSION_HANDOFF.md`，查询当前 HEAD、PR #32、当前 SHA 的完整 CI 与 docs-sync；本次修正之后的 SHA 结果不得继承旧提交的绿色结果。
+- 继续逐项实现并验收动态节奏、镜头衔接、字幕信息密度、音乐卡点、商品展示节奏与剪后反馈。不要把焦点定位这一小项说成商业级剪辑整体完成。
+- Windows 真机、真实 Provider/扣费和剪映现场验收按用户要求继续暂缓。

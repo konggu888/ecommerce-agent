@@ -524,3 +524,13 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - 后续重点：目标驱动的镜头节奏、真实动态裁切/焦点执行、镜头衔接与转场判断、字幕信息密度、音画节奏/音乐卡点、商品展示节奏、剪后质量反馈。
 - 每次代码修改必须同步 HELP、PROJECT_LOGIC、SESSION_HANDOFF、验收计划、验收 SOP、`docs/AD_STUDIO_AI_HANDOFF.md` 和根目录未来功能备忘。
 - 不得把基础 FFmpeg 拼接、结构化参数或 CI 通过描述为“商业级剪辑已完成”。路线图第 5 项继续保留，直到各能力实现并正式验收。
+
+
+## 2026-10-14 最新接手更新：商业剪辑焦点语义校正
+- 接手时必须重新查询分支 `feat/product-drama-visual-review` 的最新 HEAD、PR #32 和该 SHA 的 CI/docs-sync；当前修正基于起始 HEAD `728e786a7adcbdab1e110c86e4dd99fbf08d9033`，不能沿用起始 SHA 的 CI 作为新提交验收。
+- 继续暂停费用对账/单镜头重试保护线；当前主线是商业剪辑决策层。
+- 焦点坐标语义明确为“缩放后源画面中的主体/视觉焦点归一化位置”，不是裁切窗口偏移量。裁切窗口尽可能把该焦点放在目标画面中心，并用 FFmpeg 的 max/min 表达式限制在画面边界内；没有多余画面可裁的轴保持边界位置。
+- `adapt_aspect()` 是独立的中心裁切工具，不声称执行 AI 焦点；需要焦点驱动的单镜头处理应走 `process_shot()`。
+- `test_postprocess.py` 验证实际传给 FFmpeg 的 `-vf` 字符串、焦点定位表达式、边界夹紧及非法/非有限输入回退。它不等于真实视频画面已视觉验收。
+- 下一步：检查最新提交四项 CI/docs-sync；在可用的本地仓库环境运行桌面全量单测与语法检查；随后继续审查目标驱动的节奏、镜头衔接、字幕密度、音画卡点和剪后反馈。
+- 必须同步维护 HELP、PROJECT_LOGIC、本文件、验收计划、验收 SOP、`docs/AD_STUDIO_AI_HANDOFF.md` 和根目录未来功能备忘。PR #32 保持 open/unmerged；Windows 真机、真实 Provider/扣费和剪映现场验收继续暂缓。
