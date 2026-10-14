@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "28b28cfa453dc5fdc131b82b1c521c690afdcf03",
-  "audit_status": "requirement_level_semantic_dedup_reviewed_known_tasks_historical_gaps_unresolved_code_test_evidence_A0_A5_partial_A3_layout_ci_green",
+  "audit_status": "requirement_level_semantic_dedup_reviewed_known_tasks_A99_historical_gap_recovered_A68_A74_unresolved_code_test_evidence_A0_A5_partial",
   "progress_percentages_enabled": false,
   "policy": "Historical headings are not proof. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until scope deduplication and weighting review.",
   "counts": {
@@ -27,8 +27,7 @@
     "A71",
     "A72",
     "A73",
-    "A74",
-    "A99"
+    "A74"
   ],
   "tasks": [
     {
@@ -3444,24 +3443,55 @@
     },
     {
       "task_id": "A99",
-      "title": "正式任务标题缺失：需确认是否有意跳号或历史任务遗漏",
-      "acceptance_source_section": "未映射",
-      "sources": [],
-      "audit_note": "未在路线图、验收计划、未来备忘的任务标题中找到；不得猜测内容。",
-      "roadmap_phase": "待路线图映射",
-      "development_status": "not_audited",
-      "acceptance_status": "not_audited",
+      "title": "项目恢复时逐镜头实际费用对账",
+      "acceptance_source_section": "历史正式实现记录：A99 项目恢复与费用对账",
+      "sources": [
+        "apps/ad-studio-desktop/HELP.md",
+        "apps/ad-studio-desktop/PROJECT_LOGIC.md",
+        "apps/ad-studio-desktop/ad_studio/production.py",
+        "apps/ad-studio-desktop/test_desktop.py"
+      ],
+      "audit_note": "历史提交 c8252dc58995289d8ca38dfd15dc8e66f8001eeb 明确标记 A99：当成功实际费用账本存在时，逐镜头费用以账本为权威来源；没有成功费用记录的镜头清除过期快照金额为 0，避免项目总费用已对账而单镜头仍显示旧金额。正式任务内容已恢复，但当前 HEAD 的逐项完整验收仍待证据审计。",
+      "roadmap_phase": "阶段1｜可靠的生产底座",
+      "development_status": "historical_implementation_confirmed_current_head_evidence_mapped_partial",
+      "acceptance_status": "partial_evidence_mapping_not_fully_accepted",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "historical_commit",
+          "sha": "c8252dc58995289d8ca38dfd15dc8e66f8001eeb",
+          "url": "https://github.com/konggu888/ecommerce-agent/commit/c8252dc58995289d8ca38dfd15dc8e66f8001eeb",
+          "detail": "Commit explicitly identifies A99 and changes per-shot cost reconciliation in recover_project flow."
+        },
+        {
+          "kind": "current_test",
+          "sha": "9525f3ac068ebff5b9ae8da3d852fef29e8cf5bb",
+          "detail": "apps/ad-studio-desktop/test_desktop.py::test_a99_successful_ledger_clears_stale_cost_on_unbilled_sibling_shot"
+        },
+        {
+          "kind": "current_source",
+          "sha": "9525f3ac068ebff5b9ae8da3d852fef29e8cf5bb",
+          "detail": "apps/ad-studio-desktop/ad_studio/production.py::_sync_actual_cost; successful ledger is authoritative for each shot."
+        }
+      ],
       "remaining_conditions": [
-        "在历史提交/旧版计划与全部相关文档中追查该编号",
-        "确认是有意跳号、遗失的正式验收项、已撤销项或重复映射；禁止凭空补造功能"
+        "逐项核对当前 HEAD 的 _sync_actual_cost、recover_project、ledger 数据合同与 A99 专项测试",
+        "确认成功账本存在/仅有失败账本/旧项目无成功账本三类边界均有独立断言",
+        "完整代码/测试/CI 证据审计通过前不得标记完全验收"
       ],
       "duplicate_mapping": null,
       "deferred": false,
-      "source_heading_inventory": {},
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_heading_inventory": {
+        "apps/ad-studio-desktop/HELP.md": [
+          "## 2026-10-14：A99 项目恢复时逐镜头实际费用对账"
+        ],
+        "apps/ad-studio-desktop/PROJECT_LOGIC.md": [
+          "## 2026-10-14：A99 恢复阶段逐镜头费用对账"
+        ]
+      },
+      "source_inventory_status": "historical_task_recovered_from_help_logic_and_test_commit_semantic_dedup_and_full_acceptance_pending",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A100",
@@ -3992,7 +4022,7 @@
       "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
     ],
     "note": "Repeated headings can be status/history entries rather than duplicate requirements. Do not merge tasks solely because an ID appears in multiple headings. The eight IDs listed in known_id_gaps have no formal task heading in the four current source documents and remain unresolved pending historical investigation.",
-    "next_scope": "A3 fields/actions layout and AST test landed in commit f20bf426594a55ac74267641b53d9166acef6798; CI Push/PR and docs-sync Push/PR all passed. A0-A5 source/test evidence is now partially mapped, none is fully accepted. Continue mapping each acceptance subcondition and investigate A68-A74/A99 historical numbering gaps."
+    "next_scope": "A99 recovered from historical implementation commit and HELP/PROJECT_LOGIC/test evidence; removed from unresolved gaps but remains partial until full current-HEAD audit. Only A68-A74 remain unresolved. Continue historical investigation of A68-A74 and case-by-case evidence audit A0-A5; no overall percentage."
   },
   "inventory_method": "Heading inventory normalizes literal backslash-n sequences before parsing Markdown headings; historical headings are not proof of implementation or acceptance.",
   "historical_investigation": {
@@ -4007,7 +4037,19 @@
       "A68_A74": "No formal headings found in the four current source documents or the checked historical acceptance-plan/SOP snapshots; commit-message search returned no matching commits. This is not proof that the tasks never existed.",
       "A99": "No formal heading found in the four current source documents or checked historical acceptance-plan/SOP snapshots; commit-message search returned no matching commits. This is not proof that the task never existed."
     },
-    "next_action": "Continue targeted historical lookup; do not invent titles or map placeholders to product features without evidence."
+    "next_action": "Continue targeted historical lookup; do not invent titles or map placeholders to product features without evidence.",
+    "A99": {
+      "status": "recovered",
+      "evidence_commit": "c8252dc58995289d8ca38dfd15dc8e66f8001eeb",
+      "source_files": [
+        "apps/ad-studio-desktop/HELP.md",
+        "apps/ad-studio-desktop/PROJECT_LOGIC.md",
+        "apps/ad-studio-desktop/ad_studio/production.py",
+        "apps/ad-studio-desktop/test_desktop.py"
+      ],
+      "conclusion": "Not an intentional gap: formal A99 implementation and test evidence found in history. Keep A99 as a distinct task; do not merge into A57/A59 because A99 specifically clears stale per-shot snapshots when a successful ledger exists.",
+      "remaining": "Full current-HEAD acceptance audit pending."
+    }
   },
   "semantic_dedup_batches": [
     {
@@ -4564,6 +4606,22 @@
         "Real Windows, real footage, Provider, actual billing, Jianying, and real campaign validation remain deferred."
       ],
       "next_batch": "Requirement-level dedup is now reviewed for A0-A112 except unresolved numbering gaps A68-A74/A99; next consolidate roadmap phase mapping and unresolved gaps, then begin current-HEAD code/test/evidence audit in bounded batches."
+    },
+    {
+      "batch_id": "PLAN-003-HISTORY-A99",
+      "range": "A99",
+      "status": "historical_task_recovered_requirement_level_reviewed_full_evidence_audit_pending",
+      "finding": "A99 was documented in HELP.md and PROJECT_LOGIC.md and explicitly implemented/tested in historical commit c8252dc58995289d8ca38dfd15dc8e66f8001eeb. The missing marker came from inventory limited to the four original planning sources. A99 is distinct from A57 project-open reconciliation and A59 project total because it enforces per-shot ledger-authoritative zeroing for unbilled shots.",
+      "related_tasks": [
+        {
+          "task_id": "A57",
+          "relation": "related_recovery_and_cost_reconciliation_but_not_duplicate"
+        },
+        {
+          "task_id": "A59",
+          "relation": "project_total_ledger_source_related_but_not_duplicate"
+        }
+      ]
     }
   ],
   "code_test_evidence_batches": [
