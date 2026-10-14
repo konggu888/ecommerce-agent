@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "28b28cfa453dc5fdc131b82b1c521c690afdcf03",
-  "audit_status": "normalized_source_heading_inventory_completed_semantic_dedup_in_progress_code_test_evidence_audit_pending",
+  "audit_status": "normalized_source_heading_inventory_completed_semantic_dedup_requirement_level_reviewed_A0_A112_with_historical_gaps_code_test_evidence_audit_pending",
   "progress_percentages_enabled": false,
   "policy": "Historical headings are not proof. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until scope deduplication and weighting review.",
   "counts": {
@@ -16,7 +16,8 @@
     "weighting_completed": false,
     "heading_inventory_completed_ids": 113,
     "semantic_dedup_completed": false,
-    "code_test_evidence_audit_completed_ids": 0
+    "code_test_evidence_audit_completed_ids": 0,
+    "semantic_dedup_reviewed_task_ids": 105
   },
   "known_id_gaps": [
     "A68",
@@ -56,7 +57,10 @@
           "## A0 · 启动、界面与基础工程"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A1",
@@ -84,7 +88,10 @@
           "## A1 · 工程稳定性"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A2",
@@ -112,7 +119,10 @@
           "## A2 · 新建项目"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A3",
@@ -140,7 +150,10 @@
           "## A3 · 三类任务选择"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A4",
@@ -168,7 +181,10 @@
           "## A4 · 原始素材管理"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A5",
@@ -196,7 +212,10 @@
           "## A5 · 素材视觉分析"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A6",
@@ -225,7 +244,10 @@
           "## A6 · 商品资料"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A7",
@@ -255,7 +277,10 @@
           "## A7 · 内容理解"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段3｜AI广告编导"
     },
     {
       "task_id": "A8",
@@ -284,7 +309,10 @@
           "## A8 · 剪辑策略"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段3｜AI广告编导"
     },
     {
       "task_id": "A9",
@@ -312,7 +340,10 @@
           "## A9 · 真人口播"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A10",
@@ -340,7 +371,10 @@
           "## A10 · 音频"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A11",
@@ -368,7 +402,10 @@
           "## A11 · 字幕"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A12",
@@ -396,7 +433,10 @@
           "## A12 · 缺口判断"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A13",
@@ -424,7 +464,10 @@
           "## A13 · AI生成"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A14",
@@ -452,7 +495,10 @@
           "## A14 · 实拍+AI混合"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A15",
@@ -480,7 +526,10 @@
           "## A15 · 电商短视频生产"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A16",
@@ -508,7 +557,10 @@
           "## A16 · 商品主图视频生产"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A17",
@@ -536,7 +588,10 @@
           "## A17 · 广告投放视频生产"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A18",
@@ -565,7 +620,10 @@
           "## A18 · 多版本"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A19",
@@ -594,7 +652,10 @@
           "## A19 · 创意实验设计"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A20",
@@ -624,7 +685,10 @@
           "## A20 · 创意事实检查"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A21",
@@ -652,7 +716,10 @@
           "## A21 · 分镜事实检查"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A22",
@@ -680,7 +747,10 @@
           "## A22 · 视觉事实检查"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A23",
@@ -710,7 +780,10 @@
           "## A23 · 风险控制"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A24",
@@ -740,7 +813,10 @@
           "## A24 · 最终安全闸门"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A25",
@@ -769,7 +845,10 @@
           "## A25 · 媒体质量"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A26",
@@ -798,7 +877,10 @@
           "## A26 · 成片版本历史"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A27",
@@ -827,7 +909,10 @@
           "## A27 · 成片交付中心"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A28",
@@ -856,7 +941,10 @@
           "## A28 · 本地项目数据"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A29",
@@ -886,7 +974,10 @@
           "## A29 · 数据边界"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A30",
@@ -915,7 +1006,10 @@
           "## A30 · 失败恢复"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A31",
@@ -944,7 +1038,10 @@
           "## A31 · 帮助文档"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段0｜路线与证据基线"
     },
     {
       "task_id": "A32",
@@ -973,7 +1070,10 @@
           "## A32 · AI接手能力"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段0｜路线与证据基线"
     },
     {
       "task_id": "A33",
@@ -1004,7 +1104,10 @@
           "## A33 · 完整用户流程"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A34",
@@ -1036,7 +1139,10 @@
           "## 2026-10-11：AI 辅助商品画面对比（A34 第一阶段）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段5｜资产与制作效率深化"
     },
     {
       "task_id": "A35",
@@ -1064,7 +1170,10 @@
           "## A35 · 问题镜头定位与仅重生成（第一阶段实现，待验收）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段5｜资产与制作效率深化"
     },
     {
       "task_id": "A36",
@@ -1092,7 +1201,10 @@
           "## A36｜视觉核验结果辅助单镜头修复验收"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段5｜资产与制作效率深化"
     },
     {
       "task_id": "A37",
@@ -1124,7 +1236,10 @@
           "## A37 质量补充"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段5｜资产与制作效率深化"
     },
     {
       "task_id": "A38",
@@ -1152,7 +1267,10 @@
           "## A38｜跨会话接手检查"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段0｜路线与证据基线"
     },
     {
       "task_id": "A39",
@@ -1180,7 +1298,10 @@
           "## A39｜功能分支 CI 核验"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段0｜路线与证据基线"
     },
     {
       "task_id": "A40",
@@ -1208,7 +1329,10 @@
           "## A40｜CI 失败的处理"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段0｜路线与证据基线"
     },
     {
       "task_id": "A41",
@@ -1236,7 +1360,10 @@
           "## A41｜修复文案断言失败"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段0｜路线与证据基线"
     },
     {
       "task_id": "A42",
@@ -1264,7 +1391,10 @@
           "## A42｜CI 成功结果记录"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段0｜路线与证据基线"
     },
     {
       "task_id": "A43",
@@ -1296,7 +1426,10 @@
           "## A43：单镜头重生成的旧版本保护（待 CI）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A44",
@@ -1328,7 +1461,10 @@
           "## A44：短剧分镜稳定映射（待 CI）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段4｜AI短剧能力"
     },
     {
       "task_id": "A45",
@@ -1360,7 +1496,10 @@
           "## A45：失败恢复状态提示修复（待 CI）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A46",
@@ -1395,7 +1534,10 @@
           "### A46 验收日志补充"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A47",
@@ -1430,7 +1572,10 @@
           "## A47–A50：自动化阶段通过基准"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A48",
@@ -1462,7 +1607,10 @@
           "## A48：实拍镜头输出保护（待 CI）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A49",
@@ -1494,7 +1642,10 @@
           "## A49：多段实拍中断恢复（待 CI）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A50",
@@ -1529,7 +1680,16 @@
           "## A47–A50：自动化阶段通过基准"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
+      "relationship_to_other_tasks": [
+        {
+          "related_task_id": "A56",
+          "relation": "regression_remediation_record_not_a_separate_product_capability"
+        }
+      ]
     },
     {
       "task_id": "A51",
@@ -1561,7 +1721,10 @@
           "## A51：费用预估前置校验（待 CI）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A52",
@@ -1593,7 +1756,10 @@
           "## A52：视频重试成本归因（待 CI）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A53",
@@ -1625,7 +1791,10 @@
           "## A53：恢复路径有效性补强"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A54",
@@ -1657,7 +1826,10 @@
           "## A54：活动成片有效性校验"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A55",
@@ -1690,7 +1862,10 @@
           "## A55–A58 自动化验收记录"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A56",
@@ -1722,11 +1897,20 @@
           "## A56：提示词换行回归修复（待 CI）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
+      "relationship_to_other_tasks": [
+        {
+          "related_task_id": "A50",
+          "relation": "regression_remediation_for"
+        }
+      ]
     },
     {
       "task_id": "A57",
-      "title": "成本待核对状态界面对齐",
+      "title": "项目恢复入口、成本对账与待核对状态 UI",
       "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
@@ -1757,7 +1941,20 @@
           "## A57：恢复流程接入 UI 与成本账本对账（待 CI）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
+      "relationship_to_other_tasks": [
+        {
+          "related_task_id": "A59",
+          "relation": "uses_success-ledger_as_cost_source"
+        },
+        {
+          "related_task_id": "A60",
+          "relation": "preserves_legacy_cost_for_failed-only_ledger"
+        }
+      ]
     },
     {
       "task_id": "A58",
@@ -1790,7 +1987,10 @@
           "## A55–A58 自动化验收记录"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段5｜资产与制作效率深化"
     },
     {
       "task_id": "A59",
@@ -1823,7 +2023,10 @@
           "## A59/A60 状态更新"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A60",
@@ -1856,7 +2059,10 @@
           "## A59/A60 状态更新"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A61",
@@ -1891,7 +2097,16 @@
           "### A61 验收日志补充"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
+      "relationship_to_other_tasks": [
+        {
+          "related_task_id": "A62",
+          "relation": "acceptance_text_remediation_record_not_a_separate_product_capability"
+        }
+      ]
     },
     {
       "task_id": "A62",
@@ -1923,7 +2138,10 @@
           "## A62：接手文案断言对齐（待 CI）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "task_kind": "acceptance_remediation"
     },
     {
       "task_id": "A63",
@@ -1955,7 +2173,10 @@
           "## A63：旧成本迁移失败边界（待 CI）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A64",
@@ -1987,7 +2208,10 @@
           "## A64：素材成本故障保护（待 CI）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
     },
     {
       "task_id": "A65",
@@ -3630,7 +3854,7 @@
       "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
     ],
     "note": "Repeated headings can be status/history entries rather than duplicate requirements. Do not merge tasks solely because an ID appears in multiple headings. The eight IDs listed in known_id_gaps have no formal task heading in the four current source documents and remain unresolved pending historical investigation.",
-    "next_scope": "PLAN-003 requirement-level dedup batches A65-A67, A75-A89, A90-A98, and A100-A112 reviewed. No cross-ID merge candidates found so far; related clusters recorded as distinct pipeline/failure scenarios. Next review A0-A64, map all tasks to roadmap phases, then begin code/test/current-SHA evidence audit. Historical gaps A68-A74/A99 remain unresolved."
+    "next_scope": "Requirement-level review batches now cover A0-A67 and A75-A112. A56 is tracked as a regression remediation for A50; A62 is an acceptance-text remediation for A61; A57 is one compound task with two separately tested scenarios. Provisional roadmap phase mappings are recorded for A0-A64; validate and consolidate phase mapping after resolving historical gaps A68-A74/A99. Code/test/current-HEAD evidence audit remains pending."
   },
   "inventory_method": "Heading inventory normalizes literal backslash-n sequences before parsing Markdown headings; historical headings are not proof of implementation or acceptance.",
   "historical_investigation": {
@@ -3911,6 +4135,298 @@
         "Real Windows, footage, audio listening, subtitle readability, Provider, billing, Jianying, and commercial-quality review remain deferred."
       ],
       "next_batch": "Return to A0-A64 for requirement-level dedup and roadmap-phase mapping; then begin the code/test/current-SHA evidence audit."
+    },
+    {
+      "batch_id": "PLAN-003-DEDUP-005",
+      "range": "A0-A64",
+      "status": "reviewed_requirement_level_no_product_feature_merges_found_with_remediation_relations_recorded",
+      "reviewed_sources": [
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+      ],
+      "findings": [
+        {
+          "ids": [
+            "A0",
+            "A1",
+            "A2",
+            "A3",
+            "A4",
+            "A5",
+            "A6"
+          ],
+          "decision": "keep_separate",
+          "reason": "工程启动/稳定性、项目创建、任务选择、原始素材、视觉分析和商品资料是不同链路边界。"
+        },
+        {
+          "ids": [
+            "A7",
+            "A8",
+            "A9",
+            "A10",
+            "A11",
+            "A12",
+            "A13",
+            "A14",
+            "A15",
+            "A16",
+            "A17",
+            "A18",
+            "A19"
+          ],
+          "decision": "keep_separate",
+          "reason": "内容理解、策略、口播、音频、字幕、缺口处理、AI生成、混合制作、三类成片、多版本和创意实验分别覆盖不同输入/决策/执行合同。A15-A17虽共享生产框架，但输出目标和广告逻辑不同。"
+        },
+        {
+          "ids": [
+            "A20",
+            "A21",
+            "A22",
+            "A23",
+            "A24",
+            "A25"
+          ],
+          "decision": "keep_separate",
+          "reason": "创意事实、分镜事实、视觉事实、风险、最终安全闸门和媒体质量是不同层次的质量/安全检查，不能用一个通用质量项替代。"
+        },
+        {
+          "ids": [
+            "A26",
+            "A27",
+            "A28",
+            "A29",
+            "A30",
+            "A31",
+            "A32",
+            "A33"
+          ],
+          "decision": "keep_separate",
+          "reason": "版本历史、交付、本地数据、数据边界、失败恢复、帮助、AI接手和完整用户流程分别是持久化/交付/治理/可维护性要求。"
+        },
+        {
+          "ids": [
+            "A34",
+            "A35",
+            "A36",
+            "A37"
+          ],
+          "decision": "keep_separate",
+          "reason": "商品画面对比、问题镜头定位与仅重生成、视觉结果辅助修复、修正草稿换行显示是检查、定位、修复执行和 UI 呈现的不同环节。"
+        },
+        {
+          "ids": [
+            "A38",
+            "A39",
+            "A40",
+            "A41",
+            "A42"
+          ],
+          "decision": "keep_separate_as_process_and_acceptance_infrastructure",
+          "reason": "跨会话接手完整性、分支 CI 覆盖、测试路径修复、文案断言修复和基准 CI 记录属于不同过程/回归问题；其中 A40/A41 是历史修复型任务，不是新增用户功能。"
+        },
+        {
+          "ids": [
+            "A43",
+            "A44",
+            "A45",
+            "A46",
+            "A47",
+            "A48",
+            "A49"
+          ],
+          "decision": "keep_separate",
+          "reason": "单镜头失败恢复、短剧分镜映射、UI 恢复状态、编辑旧版保护、素材解析失败、实拍输出原子替换和多段中断清理覆盖不同失败入口与持久化边界。"
+        },
+        {
+          "ids": [
+            "A51",
+            "A52",
+            "A53",
+            "A54",
+            "A55",
+            "A57",
+            "A58",
+            "A59",
+            "A60",
+            "A61",
+            "A63",
+            "A64"
+          ],
+          "decision": "keep_separate",
+          "reason": "报价前校验、失败尝试记账、活动/旧版媒体有效性、成本异常保护、恢复与成本对账 UI、视觉证据输入校验、成本汇总、失败-only 兼容、旧成本迁移、迁移后失败保护和素材账本故障分别验证不同数据/故障路径。"
+        },
+        {
+          "ids": [
+            "A50",
+            "A56"
+          ],
+          "decision": "related_not_duplicate",
+          "reason": "A50 是提示词必须使用真实换行的原始行为合同；A56 是 A55 重构后该合同回归失败的修复/重新验证记录。保留 A56 的历史任务，但不得把它当作第二项独立产品能力或再次重复计入功能数量。",
+          "relation": "A56 regression_remediation_for A50"
+        },
+        {
+          "ids": [
+            "A61",
+            "A62"
+          ],
+          "decision": "related_not_duplicate",
+          "reason": "A61 是旧项目历史成本迁移与对账能力；A62 是因 handoff 文案测试断言失败而产生的验收/文案修复，不是独立成本功能。保留记录以追踪故障和修复，但功能统计归属于 A61。",
+          "relation": "A62 acceptance_remediation_for A61"
+        },
+        {
+          "ids": [
+            "A57"
+          ],
+          "decision": "compound_task_heading_inventory_corrected",
+          "reason": "同一编号有两个正式来源标题：成本待核对状态 UI、打开项目恢复入口与成本对账。两者在实现路径上共同形成恢复摘要和成本核对体验，暂按一个复合验收任务记录，不拆造新编号；代码证据审计时须分别验证 UI 状态与打开项目恢复/账本重建。",
+          "relation": "two acceptance scenarios under one existing task ID"
+        },
+        {
+          "ids": [
+            "A47",
+            "A48",
+            "A49",
+            "A50"
+          ],
+          "decision": "history_sections_not_new_tasks",
+          "reason": "A47–A50 自动化结果/基准标题是汇总状态记录，不应额外生成重复任务。"
+        },
+        {
+          "ids": [
+            "A55",
+            "A56",
+            "A57",
+            "A58"
+          ],
+          "decision": "history_sections_not_new_tasks",
+          "reason": "A55–A58 自动化验收记录是状态汇总，不应额外生成重复任务。"
+        }
+      ],
+      "provisional_roadmap_mapping": [
+        {
+          "ids": [
+            "A0",
+            "A1",
+            "A2",
+            "A3",
+            "A4",
+            "A5",
+            "A6",
+            "A9",
+            "A10",
+            "A11",
+            "A12",
+            "A13",
+            "A14",
+            "A15",
+            "A16",
+            "A17",
+            "A18",
+            "A19",
+            "A20",
+            "A21",
+            "A22",
+            "A23",
+            "A24",
+            "A25",
+            "A26",
+            "A27",
+            "A28",
+            "A29",
+            "A30",
+            "A33",
+            "A43",
+            "A45",
+            "A46",
+            "A47",
+            "A48",
+            "A49",
+            "A51",
+            "A52",
+            "A53",
+            "A54",
+            "A55",
+            "A57",
+            "A59",
+            "A60",
+            "A61",
+            "A63",
+            "A64"
+          ],
+          "phase": "阶段1｜可靠的生产底座",
+          "confidence": "high",
+          "reason": "核心生产链、质量闸门、版本/交付/本地持久化、故障恢复与成本账本可靠性。"
+        },
+        {
+          "ids": [
+            "A7",
+            "A8"
+          ],
+          "phase": "阶段3｜AI广告编导",
+          "confidence": "medium",
+          "reason": "内容/商品理解、卖点排序和剪辑策略直接参与广告创意决策；阶段1仍需作为执行底座。"
+        },
+        {
+          "ids": [
+            "A31",
+            "A32",
+            "A38",
+            "A39",
+            "A40",
+            "A41",
+            "A42"
+          ],
+          "phase": "阶段0｜路线与证据基线",
+          "confidence": "high",
+          "reason": "帮助/AI接手/CI/文档断言属于执行治理、证据和跨会话可持续性。"
+        },
+        {
+          "ids": [
+            "A34",
+            "A35",
+            "A36",
+            "A37",
+            "A58"
+          ],
+          "phase": "阶段5｜资产与制作效率深化",
+          "confidence": "medium",
+          "reason": "商品画面核验、问题镜头修复和输入证据安全增强素材/制作质量；其中 A58 是该能力的输入安全边界。"
+        },
+        {
+          "ids": [
+            "A44"
+          ],
+          "phase": "阶段4｜AI短剧能力",
+          "confidence": "high",
+          "reason": "短剧分镜与镜头映射稳定性直接服务短剧制作。"
+        },
+        {
+          "ids": [
+            "A50",
+            "A56"
+          ],
+          "phase": "阶段1｜可靠的生产底座",
+          "confidence": "high",
+          "reason": "提示词文本进入实际 Provider 请求的稳定性；A56 作为 A50 的回归修复记录，不单独计产品能力。"
+        },
+        {
+          "ids": [
+            "A58"
+          ],
+          "phase": "阶段5｜资产与制作效率深化",
+          "confidence": "medium",
+          "reason": "商品视觉对比的输入文件校验。"
+        }
+      ],
+      "limitations": [
+        "This is requirement-level semantic review and a provisional roadmap-phase mapping; it is not code/test/current-HEAD evidence verification.",
+        "Task A62 is a remediation record and must not be counted as a separate user-facing capability.",
+        "A68-A74 and A99 remain unresolved historical numbering gaps; no titles or capabilities are invented.",
+        "Real Windows, real footage, Provider, actual billing, Jianying, and real campaign validation remain deferred."
+      ],
+      "next_batch": "Requirement-level dedup is now reviewed for A0-A112 except unresolved numbering gaps A68-A74/A99; next consolidate roadmap phase mapping and unresolved gaps, then begin current-HEAD code/test/evidence audit in bounded batches."
     }
   ]
 }
