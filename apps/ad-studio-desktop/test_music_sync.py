@@ -71,7 +71,7 @@ class BeatDetectionTests(unittest.TestCase):
 
     def test_local_beat_planning_keeps_safe_unrelated_boundary(self):
         plan = music_sync.plan_beat_aligned_durations(
-            [2.0, 2.0, 2.0, 2.0], [2.1, 4.1, 6.1], 0.95,
+            [2.0, 2.0, 2.0, 2.0], [2.2, 4.1, 6.1], 0.95,
             minimum_durations=[0.8, 2.2, 0.8, 0.8])
         self.assertTrue(plan["changed"])
         self.assertAlmostEqual(plan["durations"][0], 2.0, places=6)
@@ -84,11 +84,11 @@ class BeatDetectionTests(unittest.TestCase):
 
     def test_multiple_protected_neighbors_revert_only_conflicting_boundaries(self):
         plan = music_sync.plan_beat_aligned_durations(
-            [2.0, 2.0, 2.0, 2.0, 2.0], [2.1, 4.1, 6.1, 8.1], 0.95,
+            [2.0, 2.0, 2.0, 2.0, 2.0], [2.2, 4.0, 6.1, 8.1], 0.95,
             minimum_durations=[2.2, 2.2, 2.2, 0.8, 0.8])
         self.assertEqual(plan["durations"][0], 2.0)
         self.assertEqual(plan["durations"][1], 2.0)
-        self.assertEqual(plan["durations"][2], 2.0)
+        self.assertAlmostEqual(plan["durations"][2], 2.1, places=6)
         self.assertTrue(plan["changed"])
         self.assertTrue(plan["reverted_boundaries"])
         self.assertAlmostEqual(sum(plan["durations"]), 10.0, places=6)
