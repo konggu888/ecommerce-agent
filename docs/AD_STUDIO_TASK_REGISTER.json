@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_from_head": "28b28cfa453dc5fdc131b82b1c521c690afdcf03",
+  "generated_from_head": "3801204559bb05cb617a13ef249fe35db0030a50",
   "audit_status": "all_113_numbered_task_titles_recovered_requirement_level_reviewed_final_cross_source_dedup_and_current_head_evidence_audit_pending",
   "progress_percentages_enabled": false,
   "policy": "Historical headings are not proof. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until scope deduplication and weighting review.",
@@ -4273,7 +4273,7 @@
       "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
     ],
     "note": "Repeated headings can be status/history entries rather than duplicate requirements. Do not merge tasks solely because an ID appears in multiple headings. The eight IDs listed in known_id_gaps have no formal task heading in the four current source documents and remain unresolved pending historical investigation.",
-    "next_scope": "Historical investigation recovered A68-A74 from implementation commits and HELP/PROJECT_LOGIC/SESSION_HANDOFF; A99 was also recovered. Formal acceptance plan/SOP and future memo now receive the missing A68-A74 sections. No numbered ID gaps remain. Next consolidate cross-source duplicate/state headings, then continue current-HEAD code/test evidence audit A0-A5 and A68-A74/A99; overall percentage remains disabled."
+    "next_scope": "A68-A74 were recovered from historical implementation commits and HELP/PROJECT_LOGIC/SESSION_HANDOFF; formal acceptance plan/SOP and future memo now contain explicit checklists. A99 also recovered. The 3801204559bb05cb617a13ef249fe35db0030a50 SHA has CI Push/PR and docs-sync Push/PR all green. Next: consolidate cross-source duplicate/status sections, then continue case-by-case evidence audit; no overall completion percentage."
   },
   "inventory_method": "Heading inventory normalizes literal backslash-n sequences before parsing Markdown headings; historical headings are not proof of implementation or acceptance.",
   "historical_investigation": {
@@ -5148,6 +5148,35 @@
         "Windows real-machine rendering/interaction and real footage visual accuracy remain deferred."
       ],
       "next_step": "Continue A0-A5 case-by-case mapping; find historical origin of A68-A74/A99. Do not calculate global completion percentage."
+    },
+    {
+      "batch_id": "PLAN-003-HEAD-VERIFICATION-380120",
+      "range": "Current branch verification",
+      "status": "all_four_workflows_green",
+      "current_sha": "3801204559bb05cb617a13ef249fe35db0030a50",
+      "checks": {
+        "ci_push": {
+          "run_id": 38632995881,
+          "status": "success"
+        },
+        "ci_pr": {
+          "run_id": 38633002986,
+          "status": "success"
+        },
+        "docs_sync_push": {
+          "run_id": 38632996276,
+          "status": "success"
+        },
+        "docs_sync_pr": {
+          "run_id": 38633002832,
+          "status": "success"
+        }
+      },
+      "pr32": {
+        "state": "open",
+        "merged": false
+      },
+      "note": "This is the latest fully checked SHA before the handoff-only status refresh; recheck the new SHA after this documentation update."
     }
   ]
 }
