@@ -36,6 +36,14 @@ class BeatDetectionTests(unittest.TestCase):
         self.assertFalse(music_sync.plan_beat_aligned_durations([2.0,2.0],[2.24],0.95,max_shot_delta=0.1)["changed"])
         self.assertFalse(music_sync.plan_beat_aligned_durations([0.9,0.9],[0.1],0.95,min_duration=0.8)["changed"])
 
+    def test_crossfade_boundary_plan_falls_back_without_retiming(self):
+        plan=music_sync.plan_beat_aligned_durations(
+            [2.0,2.0,2.0],[2.1,4.1],0.95,allow_retime=False
+        )
+        self.assertFalse(plan["changed"])
+        self.assertEqual(plan["durations"],[2.0,2.0,2.0])
+        self.assertIn("交叉溶解",plan["reason"])
+
     def test_invalid_duration_and_extreme_speed_are_rejected(self):
         self.assertFalse(music_sync.plan_beat_aligned_durations([2.0,float("nan")],[2.0],0.95)["changed"])
         with self.assertRaises(ValueError): music_sync.retime_clip(Path("in.mp4"),Path("out.mp4"),1.5)

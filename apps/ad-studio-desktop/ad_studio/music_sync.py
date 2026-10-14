@@ -47,7 +47,7 @@ def analyze_music_file(path: Path) -> dict:
 
 def plan_beat_aligned_durations(durations:list[float], beat_times:list[float], confidence:float,
                                 max_boundary_shift:float=0.25,max_shot_delta:float=0.25,
-                                min_duration:float=0.8,min_confidence:float=0.45)->dict:
+                                min_duration:float=0.8,min_confidence:float=0.45,allow_retime:bool=True)->dict:
     try:
         original=[float(x) for x in durations]
         beats=sorted(float(x) for x in beat_times if math.isfinite(float(x)) and float(x)>=0)
@@ -56,6 +56,8 @@ def plan_beat_aligned_durations(durations:list[float], beat_times:list[float], c
         return {"durations":list(durations),"changed":False,"reason":"输入无效"}
     if not original or any(not math.isfinite(x) or x<=0 for x in original):
         return {"durations":list(durations),"changed":False,"reason":"镜头时长无效"}
+    if not allow_retime:
+        return {"durations":original,"changed":False,"reason":"含交叉溶解转场，当前保守保留原切点"}
     if not math.isfinite(confidence) or confidence<min_confidence or not beats:
         return {"durations":original,"changed":False,"reason":"节拍置信度不足，保留原切点"}
     boundaries=[]; elapsed=0.0

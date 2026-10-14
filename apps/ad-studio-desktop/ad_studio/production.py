@@ -909,6 +909,8 @@ class ProductionStore:
         bgm_path = out.with_name(out.stem + ".bgm.tmp.mp4")
         normalized_path = out.with_name(out.stem + ".1080p.tmp.mp4")
         retimed_paths = []
+        shot_transitions = [str(getattr(s, 'transition', '硬切') or '硬切') for s in shots]
+        transition_safe = not any(value == '交叉溶解' for value in shot_transitions[1:])
         try:
             shot_paths = [Path(s.video_path) for s in shots]
             bgm_value = (project.creative_plan or {}).get("final_bgm_path")
@@ -919,7 +921,7 @@ class ProductionStore:
                 analysis = analyze_music_file(bgm)
                 original_durations = [probe_duration(path) for path in shot_paths]
                 plan = plan_beat_aligned_durations(original_durations, analysis.get("beats", []),
-                                                   analysis.get("confidence", 0.0))
+                                                   analysis.get("confidence", 0.0), allow_retime=transition_safe)
                 music_audit = {
                     "enabled": True, "path": str(bgm), "bpm": analysis.get("bpm"),
                     "confidence": analysis.get("confidence", 0.0), "changed": bool(plan.get("changed")),
@@ -941,7 +943,6 @@ class ProductionStore:
                         adjusted_paths.append(retimed)
                     shot_paths = adjusted_paths
                 project.creative_plan["last_music_sync_audit"] = music_audit
-            shot_transitions = [str(getattr(s, 'transition', '硬切') or '硬切') for s in shots]
             if any(value == '交叉溶解' for value in shot_transitions[1:]):
                 concat_with_transitions(shot_paths, concat_path, shot_transitions, aspect=aspect)
             else:
