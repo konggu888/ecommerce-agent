@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "generated_from_head": "ae6a6c80b10d6f8f8f427b6c9d49edcaf4ee51a3",
+  "generated_from_head": "28b28cfa453dc5fdc131b82b1c521c690afdcf03",
   "audit_status": "initial_inventory_not_fully_audited",
   "progress_percentages_enabled": false,
-  "policy": "Historical headings are not proof. Verify code, tests and evidence tied to current SHA. Weights remain null until scope deduplication and weighting review.",
+  "policy": "Historical headings are not proof. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until scope deduplication and weighting review.",
   "counts": {
-    "canonical_ids": 113,
+    "numbered_slots": 113,
     "fully_audited": 0,
     "automation_verified_ids": [
       "A109",
@@ -30,17 +30,18 @@
     {
       "task_id": "A0",
       "title": "启动、界面与基础工程",
-      "phase": "第一阶段：桌面应用基础",
+      "acceptance_source_section": "第一阶段：桌面应用基础",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -48,17 +49,18 @@
     {
       "task_id": "A1",
       "title": "工程稳定性",
-      "phase": "第一阶段：桌面应用基础",
+      "acceptance_source_section": "第一阶段：桌面应用基础",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -66,17 +68,18 @@
     {
       "task_id": "A2",
       "title": "新建项目",
-      "phase": "第二阶段：项目与任务生命周期",
+      "acceptance_source_section": "第二阶段：项目与任务生命周期",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -84,17 +87,18 @@
     {
       "task_id": "A3",
       "title": "任务选择",
-      "phase": "第二阶段：项目与任务生命周期",
+      "acceptance_source_section": "第二阶段：项目与任务生命周期",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -102,17 +106,18 @@
     {
       "task_id": "A4",
       "title": "原始素材管理",
-      "phase": "第三阶段：素材与商品资料",
+      "acceptance_source_section": "第三阶段：素材与商品资料",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -120,17 +125,18 @@
     {
       "task_id": "A5",
       "title": "素材视觉分析",
-      "phase": "第三阶段：素材与商品资料",
+      "acceptance_source_section": "第三阶段：素材与商品资料",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -138,17 +144,18 @@
     {
       "task_id": "A6",
       "title": "商品资料",
-      "phase": "第三阶段：素材与商品资料",
+      "acceptance_source_section": "第三阶段：素材与商品资料",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -156,17 +163,18 @@
     {
       "task_id": "A7",
       "title": "内容理解",
-      "phase": "第四阶段：AI分析与决策",
+      "acceptance_source_section": "第四阶段：AI分析与决策",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -174,17 +182,18 @@
     {
       "task_id": "A8",
       "title": "剪辑策略",
-      "phase": "第四阶段：AI分析与决策",
+      "acceptance_source_section": "第四阶段：AI分析与决策",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -192,17 +201,18 @@
     {
       "task_id": "A9",
       "title": "真人口播",
-      "phase": "第五阶段：真人、音频、字幕",
+      "acceptance_source_section": "第五阶段：真人、音频、字幕",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -210,17 +220,18 @@
     {
       "task_id": "A10",
       "title": "音频",
-      "phase": "第五阶段：真人、音频、字幕",
+      "acceptance_source_section": "第五阶段：真人、音频、字幕",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -228,17 +239,18 @@
     {
       "task_id": "A11",
       "title": "字幕",
-      "phase": "第五阶段：真人、音频、字幕",
+      "acceptance_source_section": "第五阶段：真人、音频、字幕",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -246,17 +258,18 @@
     {
       "task_id": "A12",
       "title": "缺口判断",
-      "phase": "第六阶段：补拍、AI补镜头与混合制作",
+      "acceptance_source_section": "第六阶段：补拍、AI补镜头与混合制作",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -264,17 +277,18 @@
     {
       "task_id": "A13",
       "title": "AI生成",
-      "phase": "第六阶段：补拍、AI补镜头与混合制作",
+      "acceptance_source_section": "第六阶段：补拍、AI补镜头与混合制作",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -282,17 +296,18 @@
     {
       "task_id": "A14",
       "title": "实拍+AI混合制作",
-      "phase": "第六阶段：补拍、AI补镜头与混合制作",
+      "acceptance_source_section": "第六阶段：补拍、AI补镜头与混合制作",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -300,17 +315,18 @@
     {
       "task_id": "A15",
       "title": "电商短视频生产",
-      "phase": "第七阶段：三类成片生产",
+      "acceptance_source_section": "第七阶段：三类成片生产",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -318,17 +334,18 @@
     {
       "task_id": "A16",
       "title": "商品主图视频生产",
-      "phase": "第七阶段：三类成片生产",
+      "acceptance_source_section": "第七阶段：三类成片生产",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -336,17 +353,18 @@
     {
       "task_id": "A17",
       "title": "广告投放视频生产",
-      "phase": "第七阶段：三类成片生产",
+      "acceptance_source_section": "第七阶段：三类成片生产",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -354,17 +372,18 @@
     {
       "task_id": "A18",
       "title": "多版本",
-      "phase": "第八阶段：多版本与创意实验",
+      "acceptance_source_section": "第八阶段：多版本与创意实验",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -372,17 +391,18 @@
     {
       "task_id": "A19",
       "title": "创意实验设计",
-      "phase": "第八阶段：多版本与创意实验",
+      "acceptance_source_section": "第八阶段：多版本与创意实验",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -390,17 +410,18 @@
     {
       "task_id": "A20",
       "title": "创意事实检查",
-      "phase": "第九阶段：事实、合规与安全",
+      "acceptance_source_section": "第九阶段：事实、合规与安全",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -408,17 +429,18 @@
     {
       "task_id": "A21",
       "title": "分镜事实检查",
-      "phase": "第九阶段：事实、合规与安全",
+      "acceptance_source_section": "第九阶段：事实、合规与安全",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -426,17 +448,18 @@
     {
       "task_id": "A22",
       "title": "视觉事实检查",
-      "phase": "第九阶段：事实、合规与安全",
+      "acceptance_source_section": "第九阶段：事实、合规与安全",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -444,17 +467,18 @@
     {
       "task_id": "A23",
       "title": "风险控制",
-      "phase": "第九阶段：事实、合规与安全",
+      "acceptance_source_section": "第九阶段：事实、合规与安全",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -462,17 +486,18 @@
     {
       "task_id": "A24",
       "title": "最终安全闸门",
-      "phase": "第十阶段：成片、安全闸门与交付",
+      "acceptance_source_section": "第十阶段：成片、安全闸门与交付",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -480,17 +505,18 @@
     {
       "task_id": "A25",
       "title": "媒体质量检查",
-      "phase": "第十阶段：成片、安全闸门与交付",
+      "acceptance_source_section": "第十阶段：成片、安全闸门与交付",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -498,17 +524,18 @@
     {
       "task_id": "A26",
       "title": "成片版本历史",
-      "phase": "第十阶段：成片、安全闸门与交付",
+      "acceptance_source_section": "第十阶段：成片、安全闸门与交付",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -516,17 +543,18 @@
     {
       "task_id": "A27",
       "title": "成片交付中心",
-      "phase": "第十阶段：成片、安全闸门与交付",
+      "acceptance_source_section": "第十阶段：成片、安全闸门与交付",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -534,17 +562,18 @@
     {
       "task_id": "A28",
       "title": "本地项目数据",
-      "phase": "第十一阶段：数据与持久化",
+      "acceptance_source_section": "第十一阶段：数据与持久化",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -552,17 +581,18 @@
     {
       "task_id": "A29",
       "title": "数据边界",
-      "phase": "第十一阶段：数据与持久化",
+      "acceptance_source_section": "第十一阶段：数据与持久化",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -570,17 +600,18 @@
     {
       "task_id": "A30",
       "title": "失败恢复",
-      "phase": "第十二阶段：异常恢复",
+      "acceptance_source_section": "第十二阶段：异常恢复",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -588,17 +619,18 @@
     {
       "task_id": "A31",
       "title": "帮助文档",
-      "phase": "第十三阶段：帮助与可维护性",
+      "acceptance_source_section": "第十三阶段：帮助与可维护性",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -606,17 +638,18 @@
     {
       "task_id": "A32",
       "title": "AI接手能力",
-      "phase": "第十三阶段：帮助与可维护性",
+      "acceptance_source_section": "第十三阶段：帮助与可维护性",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -624,17 +657,18 @@
     {
       "task_id": "A33",
       "title": "完整用户流程",
-      "phase": "第十四阶段：桌面项目完整端到端验收",
+      "acceptance_source_section": "第十四阶段：桌面项目完整端到端验收",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -642,18 +676,19 @@
     {
       "task_id": "A34",
       "title": "AI辅助商品画面对比",
-      "phase": "A34 · AI辅助商品画面对比（第一阶段）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -661,17 +696,18 @@
     {
       "task_id": "A35",
       "title": "问题镜头定位与仅重生成",
-      "phase": "A35 · 问题镜头定位与仅重生成（第一阶段实现，待验收）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -679,17 +715,18 @@
     {
       "task_id": "A36",
       "title": "AI视觉核验结果辅助单镜头修复",
-      "phase": "A35 · 问题镜头定位与仅重生成（第一阶段实现，待验收）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -697,18 +734,19 @@
     {
       "task_id": "A37",
       "title": "视觉修正草稿换行显示",
-      "phase": "A35 · 问题镜头定位与仅重生成（第一阶段实现，待验收）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -716,17 +754,18 @@
     {
       "task_id": "A38",
       "title": "跨会话接手信息完整性",
-      "phase": "A35 · 问题镜头定位与仅重生成（第一阶段实现，待验收）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -734,17 +773,18 @@
     {
       "task_id": "A39",
       "title": "功能分支 CI 覆盖",
-      "phase": "A35 · 问题镜头定位与仅重生成（第一阶段实现，待验收）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -752,17 +792,18 @@
     {
       "task_id": "A40",
       "title": "接手测试路径修复",
-      "phase": "A35 · 问题镜头定位与仅重生成（第一阶段实现，待验收）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -770,17 +811,18 @@
     {
       "task_id": "A41",
       "title": "接手文案断言修复",
-      "phase": "A35 · 问题镜头定位与仅重生成（第一阶段实现，待验收）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -788,17 +830,18 @@
     {
       "task_id": "A42",
       "title": "已确认基准 CI",
-      "phase": "A35 · 问题镜头定位与仅重生成（第一阶段实现，待验收）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -806,18 +849,19 @@
     {
       "task_id": "A43",
       "title": "单镜头重新生成失败恢复",
-      "phase": "A35 · 问题镜头定位与仅重生成（第一阶段实现，待验收）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -825,18 +869,19 @@
     {
       "task_id": "A44",
       "title": "短剧镜头映射稳定性",
-      "phase": "A35 · 问题镜头定位与仅重生成（第一阶段实现，待验收）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -844,18 +889,19 @@
     {
       "task_id": "A45",
       "title": "失败恢复状态 UI 对齐",
-      "phase": "A35 · 问题镜头定位与仅重生成（第一阶段实现，待验收）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -863,18 +909,19 @@
     {
       "task_id": "A46",
       "title": "编辑镜头时保护旧版本视频",
-      "phase": "A35 · 问题镜头定位与仅重生成（第一阶段实现，待验收）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -882,18 +929,19 @@
     {
       "task_id": "A47",
       "title": "素材解析阶段失败恢复",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -901,18 +949,19 @@
     {
       "task_id": "A48",
       "title": "实拍裁剪失败不破坏旧成片",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -920,18 +969,19 @@
     {
       "task_id": "A49",
       "title": "多段实拍中断文件清理",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -939,18 +989,19 @@
     {
       "task_id": "A50",
       "title": "视频生成提示词换行回归",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -958,18 +1009,19 @@
     {
       "task_id": "A51",
       "title": "费用预估弹窗前置校验",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -977,18 +1029,19 @@
     {
       "task_id": "A52",
       "title": "视频 Provider 失败尝试与成本去重",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -996,18 +1049,19 @@
     {
       "task_id": "A53",
       "title": "恢复流程拒绝零字节旧视频",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1015,18 +1069,19 @@
     {
       "task_id": "A54",
       "title": "恢复时识别零字节活动视频",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1034,18 +1089,19 @@
     {
       "task_id": "A55",
       "title": "成本记账异常不丢失成功视频",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1053,18 +1109,19 @@
     {
       "task_id": "A56",
       "title": "提示词换行回归修复",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1072,18 +1129,19 @@
     {
       "task_id": "A57",
       "title": "成本待核对状态界面对齐",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1091,18 +1149,19 @@
     {
       "task_id": "A58",
       "title": "商品画面对比输入证据校验",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1110,18 +1169,19 @@
     {
       "task_id": "A59",
       "title": "项目成本汇总单一事实源",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1129,18 +1189,19 @@
     {
       "task_id": "A60",
       "title": "失败-only 账本兼容",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1148,18 +1209,19 @@
     {
       "task_id": "A61",
       "title": "旧项目成本迁移与镜头成本对账",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1167,18 +1229,19 @@
     {
       "task_id": "A62",
       "title": "历史成本迁移文案断言修复",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1186,18 +1249,19 @@
     {
       "task_id": "A63",
       "title": "迁移基线在后续记账失败时保留",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1205,18 +1269,19 @@
     {
       "task_id": "A64",
       "title": "素材成本账本失败保护",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1224,18 +1289,19 @@
     {
       "task_id": "A65",
       "title": "用量账本原子写入与完整历史保留",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1243,18 +1309,19 @@
     {
       "task_id": "A66",
       "title": "人工商品画面核验证据文件校验",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1262,17 +1329,18 @@
     {
       "task_id": "A67",
       "title": "短剧人工核验证据失效保护",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1280,16 +1348,17 @@
     {
       "task_id": "A68",
       "title": "正式任务标题缺失：需确认是否有意跳号或历史任务遗漏",
-      "phase": "未映射",
+      "acceptance_source_section": "未映射",
       "sources": [],
       "audit_note": "未在路线图、验收计划、未来备忘的任务标题中找到；不得猜测内容。",
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1297,16 +1366,17 @@
     {
       "task_id": "A69",
       "title": "正式任务标题缺失：需确认是否有意跳号或历史任务遗漏",
-      "phase": "未映射",
+      "acceptance_source_section": "未映射",
       "sources": [],
       "audit_note": "未在路线图、验收计划、未来备忘的任务标题中找到；不得猜测内容。",
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1314,16 +1384,17 @@
     {
       "task_id": "A70",
       "title": "正式任务标题缺失：需确认是否有意跳号或历史任务遗漏",
-      "phase": "未映射",
+      "acceptance_source_section": "未映射",
       "sources": [],
       "audit_note": "未在路线图、验收计划、未来备忘的任务标题中找到；不得猜测内容。",
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1331,16 +1402,17 @@
     {
       "task_id": "A71",
       "title": "正式任务标题缺失：需确认是否有意跳号或历史任务遗漏",
-      "phase": "未映射",
+      "acceptance_source_section": "未映射",
       "sources": [],
       "audit_note": "未在路线图、验收计划、未来备忘的任务标题中找到；不得猜测内容。",
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1348,16 +1420,17 @@
     {
       "task_id": "A72",
       "title": "正式任务标题缺失：需确认是否有意跳号或历史任务遗漏",
-      "phase": "未映射",
+      "acceptance_source_section": "未映射",
       "sources": [],
       "audit_note": "未在路线图、验收计划、未来备忘的任务标题中找到；不得猜测内容。",
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1365,16 +1438,17 @@
     {
       "task_id": "A73",
       "title": "正式任务标题缺失：需确认是否有意跳号或历史任务遗漏",
-      "phase": "未映射",
+      "acceptance_source_section": "未映射",
       "sources": [],
       "audit_note": "未在路线图、验收计划、未来备忘的任务标题中找到；不得猜测内容。",
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1382,16 +1456,17 @@
     {
       "task_id": "A74",
       "title": "正式任务标题缺失：需确认是否有意跳号或历史任务遗漏",
-      "phase": "未映射",
+      "acceptance_source_section": "未映射",
       "sources": [],
       "audit_note": "未在路线图、验收计划、未来备忘的任务标题中找到；不得猜测内容。",
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1399,18 +1474,19 @@
     {
       "task_id": "A75",
       "title": "商品事实锁与剧情内容交叉审查",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1418,18 +1494,19 @@
     {
       "task_id": "A76",
       "title": "Selling-point storyboard coverage",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1437,18 +1514,19 @@
     {
       "task_id": "A77",
       "title": "短剧关键剧情事件与分镜落地",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1456,18 +1534,19 @@
     {
       "task_id": "A78",
       "title": "人物动机与信息掌握一致性",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1475,18 +1554,19 @@
     {
       "task_id": "A79",
       "title": "人物行动依据与镜头角色绑定",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1494,18 +1574,19 @@
     {
       "task_id": "A80",
       "title": "人物关系变化与剧情后果",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1513,18 +1594,19 @@
     {
       "task_id": "A81",
       "title": "人物状态与剧情连续性审查",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1532,17 +1614,18 @@
     {
       "task_id": "A82",
       "title": "人物信息掌握与时间线一致性审查",
-      "phase": "A47｜素材解析阶段失败恢复",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1550,17 +1633,18 @@
     {
       "task_id": "A83",
       "title": "人物承诺、误解与行动结果一致性审查",
-      "phase": "A83｜人物承诺、误解与行动结果一致性审查（自动化阶段待最新 CI）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
+      "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1568,18 +1652,19 @@
     {
       "task_id": "A84",
       "title": "跨集剧情承接事项一致性",
-      "phase": "A83｜人物承诺、误解与行动结果一致性审查（自动化阶段待最新 CI）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1587,18 +1672,19 @@
     {
       "task_id": "A85",
       "title": "人物长期状态与关系跨集一致性",
-      "phase": "A83｜人物承诺、误解与行动结果一致性审查（自动化阶段待最新 CI）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1606,18 +1692,19 @@
     {
       "task_id": "A86",
       "title": "人物状态变化因果闭环验收",
-      "phase": "A83｜人物承诺、误解与行动结果一致性审查（自动化阶段待最新 CI）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1625,18 +1712,19 @@
     {
       "task_id": "A87",
       "title": "人物状态到可观察表演验收",
-      "phase": "A83｜人物承诺、误解与行动结果一致性审查（自动化阶段待最新 CI）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1644,16 +1732,17 @@
     {
       "task_id": "A88",
       "title": "正式任务标题缺失：需确认是否有意跳号或历史任务遗漏",
-      "phase": "未映射",
+      "acceptance_source_section": "未映射",
       "sources": [],
       "audit_note": "未在路线图、验收计划、未来备忘的任务标题中找到；不得猜测内容。",
+      "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1661,18 +1750,19 @@
     {
       "task_id": "A89",
       "title": "跨集演员/场景资产锁定验收",
-      "phase": "A83｜人物承诺、误解与行动结果一致性审查（自动化阶段待最新 CI）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1680,18 +1770,19 @@
     {
       "task_id": "A90",
       "title": "跨集物理素材 ID 绑定",
-      "phase": "A83｜人物承诺、误解与行动结果一致性审查（自动化阶段待最新 CI）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1699,18 +1790,19 @@
     {
       "task_id": "A91",
       "title": "跨集锁定素材失效检测验收项",
-      "phase": "A83｜人物承诺、误解与行动结果一致性审查（自动化阶段待最新 CI）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1718,18 +1810,19 @@
     {
       "task_id": "A92",
       "title": "跨集物理素材绑定落地验收",
-      "phase": "A83｜人物承诺、误解与行动结果一致性审查（自动化阶段待最新 CI）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1737,18 +1830,19 @@
     {
       "task_id": "A93",
       "title": "失效跨集锁定在 Provider 调用前拦截并隔离镜头",
-      "phase": "A83｜人物承诺、误解与行动结果一致性审查（自动化阶段待最新 CI）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1756,18 +1850,19 @@
     {
       "task_id": "A94",
       "title": "恢复原锁定资产后的安全重试",
-      "phase": "A83｜人物承诺、误解与行动结果一致性审查（自动化阶段待最新 CI）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1775,18 +1870,19 @@
     {
       "task_id": "A95",
       "title": "本地素材索引损坏时阻断生产",
-      "phase": "A83｜人物承诺、误解与行动结果一致性审查（自动化阶段待最新 CI）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1794,18 +1890,19 @@
     {
       "task_id": "A96",
       "title": "修复素材索引后的安全重试",
-      "phase": "A83｜人物承诺、误解与行动结果一致性审查（自动化阶段待最新 CI）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1813,18 +1910,19 @@
     {
       "task_id": "A97",
       "title": "项目恢复仅重置损坏镜头",
-      "phase": "A83｜人物承诺、误解与行动结果一致性审查（自动化阶段待最新 CI）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1832,18 +1930,19 @@
     {
       "task_id": "A98",
       "title": "重复恢复仍列出待处理的缺失镜头",
-      "phase": "A83｜人物承诺、误解与行动结果一致性审查（自动化阶段待最新 CI）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1851,16 +1950,17 @@
     {
       "task_id": "A99",
       "title": "正式任务标题缺失：需确认是否有意跳号或历史任务遗漏",
-      "phase": "未映射",
+      "acceptance_source_section": "未映射",
       "sources": [],
       "audit_note": "未在路线图、验收计划、未来备忘的任务标题中找到；不得猜测内容。",
+      "roadmap_phase": "待路线图映射",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1868,18 +1968,19 @@
     {
       "task_id": "A100",
       "title": "商业剪辑淡出时间窗",
-      "phase": "A83｜人物承诺、误解与行动结果一致性审查（自动化阶段待最新 CI）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1887,18 +1988,19 @@
     {
       "task_id": "A101",
       "title": "变速时音画同步",
-      "phase": "A83｜人物承诺、误解与行动结果一致性审查（自动化阶段待最新 CI）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1906,18 +2008,19 @@
     {
       "task_id": "A102",
       "title": "最终导出最低 1080P 级分辨率",
-      "phase": "A83｜人物承诺、误解与行动结果一致性审查（自动化阶段待最新 CI）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1925,18 +2028,19 @@
     {
       "task_id": "A103",
       "title": "镜头淡入/淡出音画同步",
-      "phase": "A83｜人物承诺、误解与行动结果一致性审查（自动化阶段待最新 CI）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1944,18 +2048,19 @@
     {
       "task_id": "A104",
       "title": "相邻镜头真实交叉溶解",
-      "phase": "A83｜人物承诺、误解与行动结果一致性审查（自动化阶段待最新 CI）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1963,18 +2068,19 @@
     {
       "task_id": "A105",
       "title": "分镜节奏标签必须影响实际播放速度",
-      "phase": "A83｜人物承诺、误解与行动结果一致性审查（自动化阶段待最新 CI）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -1982,18 +2088,19 @@
     {
       "task_id": "A106",
       "title": "商业镜头角色驱动的默认剪辑决策",
-      "phase": "A83｜人物承诺、误解与行动结果一致性审查（自动化阶段待最新 CI）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -2001,18 +2108,19 @@
     {
       "task_id": "A107",
       "title": "商业角色推断时长进入真实生成请求",
-      "phase": "A83｜人物承诺、误解与行动结果一致性审查（自动化阶段待最新 CI）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -2020,18 +2128,19 @@
     {
       "task_id": "A108",
       "title": "字幕信息密度与时间轴自适应",
-      "phase": "A83｜人物承诺、误解与行动结果一致性审查（自动化阶段待最新 CI）",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据和依赖后填写"
+        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -2039,12 +2148,13 @@
     {
       "task_id": "A109",
       "title": "音乐节拍与画面切点真实联动",
-      "phase": "路线图阶段完成规则",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 2｜商业级剪辑决策层",
       "development_status": "implemented_automation",
       "acceptance_status": "automation_passed",
       "weight": null,
@@ -2056,11 +2166,11 @@
           "ci_pr": "38571022693",
           "docs_sync_push": "38571014277",
           "docs_sync_pr": "38571022758",
-          "note": "仅自动化阶段；真实素材/听感/字幕可读性和商业质量未验收"
+          "note": "证据绑定历史 SHA；后续文档提交的 CI 需独立核验。仅自动化阶段，真实商业质量未验收"
         }
       ],
       "remaining_conditions": [
-        "按阶段2退出条件复核真实生产链证据；真实环境验收继续暂缓"
+        "按阶段2退出条件复核实际生产链证据；真实环境验收继续暂缓"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -2068,12 +2178,13 @@
     {
       "task_id": "A110",
       "title": "商业剪辑内容保护",
-      "phase": "路线图阶段完成规则",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 2｜商业级剪辑决策层",
       "development_status": "implemented_automation",
       "acceptance_status": "automation_passed",
       "weight": null,
@@ -2085,11 +2196,11 @@
           "ci_pr": "38571022693",
           "docs_sync_push": "38571014277",
           "docs_sync_pr": "38571022758",
-          "note": "仅自动化阶段；真实素材/听感/字幕可读性和商业质量未验收"
+          "note": "证据绑定历史 SHA；后续文档提交的 CI 需独立核验。仅自动化阶段，真实商业质量未验收"
         }
       ],
       "remaining_conditions": [
-        "按阶段2退出条件复核真实生产链证据；真实环境验收继续暂缓"
+        "按阶段2退出条件复核实际生产链证据；真实环境验收继续暂缓"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -2097,12 +2208,13 @@
     {
       "task_id": "A111",
       "title": "逐边界局部音乐卡点规划",
-      "phase": "路线图阶段完成规则",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 2｜商业级剪辑决策层",
       "development_status": "implemented_automation",
       "acceptance_status": "automation_passed",
       "weight": null,
@@ -2114,11 +2226,11 @@
           "ci_pr": "38571022693",
           "docs_sync_push": "38571014277",
           "docs_sync_pr": "38571022758",
-          "note": "仅自动化阶段；真实素材/听感/字幕可读性和商业质量未验收"
+          "note": "证据绑定历史 SHA；后续文档提交的 CI 需独立核验。仅自动化阶段，真实商业质量未验收"
         }
       ],
       "remaining_conditions": [
-        "按阶段2退出条件复核真实生产链证据；真实环境验收继续暂缓"
+        "按阶段2退出条件复核实际生产链证据；真实环境验收继续暂缓"
       ],
       "duplicate_mapping": null,
       "deferred": false
@@ -2126,12 +2238,13 @@
     {
       "task_id": "A112",
       "title": "字幕实际时间窗参与内容保护",
-      "phase": "路线图阶段完成规则",
+      "acceptance_source_section": "后续扩展验收阶段（在 A33 基础上追加）",
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
+      "roadmap_phase": "阶段 2｜商业级剪辑决策层",
       "development_status": "implemented_automation",
       "acceptance_status": "automation_passed",
       "weight": null,
@@ -2143,11 +2256,11 @@
           "ci_pr": "38571022693",
           "docs_sync_push": "38571014277",
           "docs_sync_pr": "38571022758",
-          "note": "仅自动化阶段；真实素材/听感/字幕可读性和商业质量未验收"
+          "note": "证据绑定历史 SHA；后续文档提交的 CI 需独立核验。仅自动化阶段，真实商业质量未验收"
         }
       ],
       "remaining_conditions": [
-        "按阶段2退出条件复核真实生产链证据；真实环境验收继续暂缓"
+        "按阶段2退出条件复核实际生产链证据；真实环境验收继续暂缓"
       ],
       "duplicate_mapping": null,
       "deferred": false
