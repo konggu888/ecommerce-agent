@@ -38,6 +38,29 @@ def adapt_aspect(input_path: Path, output_path: Path, aspect: str = "9:16"):
     _run([ffmpeg_path(), "-y", "-i", str(input_path), "-vf", vf, "-c:v", codec, "-preset", "p4" if codec == "h264_nvenc" else "medium", "-pix_fmt", "yuv420p", "-an", str(output_path)])
     return output_path
 
+def normalize_output_resolution(input_path: Path, output_path: Path, aspect: str = "9:16"):
+    """Normalize final exports to at least the project's 1080-class profile.
+
+    This guarantees output dimensions; upscaling alone cannot restore source detail.
+    """
+    if aspect not in ASPECTS:
+        raise ValueError(f"不支持的画幅：{aspect}")
+    width, height = ASPECTS[aspect]
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    vf = (
+        f"scale={width}:{height}:force_original_aspect_ratio=increase,"
+        f"crop={width}:{height}:x=(iw-{width})*0.5:y=(ih-{height})*0.5"
+    )
+    codec = best_h264_encoder()
+    _run([
+        ffmpeg_path(), "-y", "-i", str(input_path), "-vf", vf,
+        "-c:v", codec, "-preset", "p4" if codec == "h264_nvenc" else "medium",
+        "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k",
+        "-movflags", "+faststart", str(output_path),
+    ])
+    return output_path
+
+
 def _normalized_focus(value: float) -> float:
     """Return a safe normalized focal coordinate; invalid values use center."""
     try:

@@ -6,6 +6,7 @@
 - 分支：`feat/product-drama-visual-review`；PR #32 保持 open/unmerged，不得擅自合并。
 - 商业剪辑焦点定位代码提交：`fe3dcfde8e78f7d5d079fcbc1ed99d6265a79dbb`。该 SHA 的 CI push、CI PR、docs-sync push、docs-sync PR 四项均已 success；任何新提交都必须重新核对最新 SHA。
 - 用户已明确要求暂停费用对账/单镜头重试保护线，优先推进未来路线图第 5 项“商业级剪辑决策层升级”。
+- 新增硬性要求：最终成片最低 1080P 级（9:16 1080×1920、16:9 1920×1080、1:1 1080×1080）。A102 将最终拼接结果转码到该尺寸并由 ffprobe 检查；尺寸放大不等于 AI 细节增强。A102 代码已准备，需以最新 SHA 的 CI 与 docs-sync 四项运行结果为准。
 - 已修复 `process_shot()` 忽略 AI 焦点的问题：`focus_x/focus_y` 是缩放后源画面中的主体/视觉焦点归一化位置，不是裁切窗口偏移比例；系统在合法边界内尽量将焦点放到输出画面中心。新增回归测试验证实际 FFmpeg `-vf` 参数及异常输入处理。
 - 当前仍未完成商业剪辑整体能力。下一步应推进可追溯的剪辑决策：每个镜头的商业角色、选择理由、节奏/时长理由、转场理由与实际执行参数对齐；之后逐步实现画面驱动节奏、镜头衔接、字幕密度、音乐卡点、商品展示节奏及剪后反馈。
 - 接手必做：重新查询分支 HEAD、PR #32、最新 SHA 的 CI 和 docs-sync；在仓库可用时运行 `python3 -m unittest discover -s apps/ad-studio-desktop -p 'test_*.py'` 和 `python3 -m compileall -q apps/ad-studio-desktop/ad_studio`。没有实际执行就不能声称本地测试通过。
@@ -383,3 +384,7 @@ A85 为每集可选的 `continuity_state.character_state_ledger` 建立跨集审
 
 ## A101 接手记录：变速音画同步
 本轮 `process_shot()` 在非 1.0 倍速时同步添加 FFmpeg `atempo` 音频滤镜，避免只改视频时间戳而音轨仍保持原时长；正常速度不增加滤镜。两个回归测试检查了两种情况。先核验本次 SHA 的完整 CI/docs-sync push/PR 四项结果，再决定自动化验收；真实素材的音画同步和听感检查继续暂缓。
+
+
+## A102：最终导出最低 1080P 级尺寸（待 CI）
+最终拼接后统一归一化转码，并以 ffprobe 校验最低尺寸：竖屏 1080×1920、横屏 1920×1080、方形 1080×1080。低于最低值的输出拒绝交付。测试覆盖 FFmpeg 参数和低分辨率质检。尺寸放大不等于 AI 超分/真实细节恢复；Windows 真机画面验收继续暂缓。先查当前 SHA 的 CI/doc-sync push/PR 四项结果，再继续商业剪辑路线图。

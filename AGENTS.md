@@ -4,6 +4,8 @@
 
 ## 0. 最高优先级规则
 
+- 最终导出最低分辨率要求为 1080P 级：竖屏 1080×1920、横屏 1920×1080、方形 1080×1080。最终输出必须经过归一化转码并由 ffprobe 复核；分辨率放大不等于恢复真实细节，不得宣传为 AI 画质修复。
+
 只要修改 apps/ad-studio-desktop/ 的程序代码，就必须在同一次修改中同时完成：
 1. 更新 apps/ad-studio-desktop/HELP.md
 2. 更新 apps/ad-studio-desktop/PROJECT_LOGIC.md

@@ -8,7 +8,7 @@ import math
 from .models import Project, Shot, accept_hybrid_generated_shot
 from .ffmpeg import make_clip, concat
 from .providers import GenerationRequest, load_video_provider, load_asset_provider
-from .postprocess import process_shot
+from .postprocess import process_shot, normalize_output_resolution
 from .library import LocalLibrary
 from .asset_generation import AssetGenerator, LocalAssetBackend
 from .hardware import detect_hardware
@@ -815,6 +815,13 @@ class ProductionStore:
             if expected_w and abs((result["width"] / result["height"]) - (expected_w / expected_h)) > 0.03:
                 result["reason"] = f"输出画幅与要求 {aspect} 不一致"
                 return result
+            minimum_width, minimum_height = {"9:16": (1080, 1920), "16:9": (1920, 1080), "1:1": (1080, 1080)}.get(aspect, (1080, 1920))
+            if result["width"] < minimum_width or result["height"] < minimum_height:
+                result["reason"] = (
+                    f"输出分辨率低于最低 1080P 要求（当前 {result['width']}×{result['height']}，"
+                    f"至少需要 {minimum_width}×{minimum_height}）"
+                )
+                return result
             result["valid"] = True
             result["reason"] = "最终视频机器质检通过"
             return result
@@ -895,7 +902,15 @@ class ProductionStore:
         suffix=f'-v{int(variant_index)}' if variant_index else ''
         episode_suffix=f'-ep{int(episode_number)}' if episode_number is not None else ''
         out=self.root/'final'/project.id/f'final-{aspect.replace(":", "x")}{episode_suffix}{suffix}.mp4'
-        concat([Path(s.video_path) for s in shots],out)
+        concat_path = out.with_name(out.stem + ".concat.tmp.mp4")
+        normalized_path = out.with_name(out.stem + ".1080p.tmp.mp4")
+        try:
+            concat([Path(s.video_path) for s in shots], concat_path)
+            normalize_output_resolution(concat_path, normalized_path, aspect)
+            normalized_path.replace(out)
+        finally:
+            concat_path.unlink(missing_ok=True)
+            normalized_path.unlink(missing_ok=True)
         media_check=self.inspect_final_output(out, aspect)
         if not media_check["valid"]:
             if out.exists():

@@ -95,3 +95,32 @@ class FocusCropFilterTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+
+class OutputResolutionTests(unittest.TestCase):
+    def test_final_output_normalizer_targets_1080_class_resolution_and_keeps_audio(self):
+        with mock.patch.object(postprocess, "ffmpeg_path", return_value="ffmpeg"), \
+             mock.patch.object(postprocess, "best_h264_encoder", return_value="libx264"), \
+             mock.patch.object(postprocess, "_run") as run:
+            postprocess.normalize_output_resolution(
+                Path("input.mp4"), Path("final.mp4"), aspect="9:16"
+            )
+        command = run.call_args.args[0]
+        self.assertIn("scale=1080:1920:force_original_aspect_ratio=increase", command)
+        self.assertIn("crop=1080:1920", command[command.index("-vf") + 1])
+        self.assertIn("-c:a", command)
+        self.assertIn("+faststart", command)
+        self.assertEqual(command[-1], "final.mp4")
+
+    def test_final_output_normalizer_supports_landscape_and_square_profiles(self):
+        for aspect, size in (("16:9", "1920:1080"), ("1:1", "1080:1080")):
+            with self.subTest(aspect=aspect), \
+                 mock.patch.object(postprocess, "ffmpeg_path", return_value="ffmpeg"), \
+                 mock.patch.object(postprocess, "best_h264_encoder", return_value="libx264"), \
+                 mock.patch.object(postprocess, "_run") as run:
+                postprocess.normalize_output_resolution(
+                    Path("input.mp4"), Path("final.mp4"), aspect=aspect
+                )
+                self.assertIn(f"scale={size}:force_original_aspect_ratio=increase",
+                              run.call_args.args[0][run.call_args.args[0].index("-vf") + 1])

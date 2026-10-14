@@ -721,6 +721,23 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertTrue(result["valid"])
             self.assertEqual(result["duration_seconds"], 5.2)
 
+    def test_final_output_inspection_rejects_below_1080_class_resolution(self):
+        with tempfile.TemporaryDirectory() as td:
+            from unittest.mock import patch
+            root = Path(td)
+            store = ProductionStore(root)
+            output = root / "low.mp4"
+            output.write_bytes(b"video")
+            fake_probe = '{"streams":[{"codec_type":"video","width":720,"height":1280}],"format":{"duration":"5.2"}}'
+            completed = type("Completed", (), {"stdout": fake_probe})()
+            with patch("ad_studio.production.shutil.which", return_value="/usr/bin/ffprobe"), patch(
+                "ad_studio.production.subprocess.run", return_value=completed
+            ):
+                result = store.inspect_final_output(output, "9:16")
+            self.assertFalse(result["valid"])
+            self.assertIn("1080P", result["reason"])
+            self.assertIn("720×1280", result["reason"])
+
     def test_final_delivery_repair_routes_point_back_to_correct_stage(self):
         try:
             from ad_studio.app import App
