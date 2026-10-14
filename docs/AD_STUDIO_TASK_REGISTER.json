@@ -2781,7 +2781,9 @@
           "## A90：跨集物理素材 ID 绑定（待最新 SHA 自动化验收）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-003"
     },
     {
       "task_id": "A91",
@@ -2813,7 +2815,9 @@
           "## A91 范围更新（2026-10-14）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-003"
     },
     {
       "task_id": "A92",
@@ -2854,7 +2858,9 @@
           "### A92/A93 自动化验收结果（2026-10-14；以本节为准）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-003"
     },
     {
       "task_id": "A93",
@@ -2889,7 +2895,9 @@
           "### A92/A93 自动化验收结果（2026-10-14；以本节为准）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-003"
     },
     {
       "task_id": "A94",
@@ -2924,7 +2932,9 @@
           "### A94 自动化验收结果（2026-10-14；以本节为准）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-003"
     },
     {
       "task_id": "A95",
@@ -2960,7 +2970,9 @@
           "### A95 自动化验收结果（2026-10-14；测试代码 SHA `6b225e09adac63265d53b27eae3ed6a54a51f49e`）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-003"
     },
     {
       "task_id": "A96",
@@ -2996,7 +3008,9 @@
           "### A96 自动化验收结果（2026-10-14；测试代码 SHA `fc01ace4eeb90ccb2f2df10b44a57f8b3c69f134`）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-003"
     },
     {
       "task_id": "A97",
@@ -3028,7 +3042,9 @@
           "## A97 自动化回归补充（2026-10-14）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-003"
     },
     {
       "task_id": "A98",
@@ -3060,7 +3076,9 @@
           "## A98 自动化回归补充（2026-10-14）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-003"
     },
     {
       "task_id": "A99",
@@ -3586,7 +3604,7 @@
       "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
     ],
     "note": "Repeated headings can be status/history entries rather than duplicate requirements. Do not merge tasks solely because an ID appears in multiple headings. The eight IDs listed in known_id_gaps have no formal task heading in the four current source documents and remain unresolved pending historical investigation.",
-    "next_scope": "PLAN-003 requirement-level dedup batches completed: A75-A89 and A65-A67, no cross-ID merges identified so far. Continue A90-A98, then A100-A112, then A0-A64; unresolved historical gaps A68-A74/A99 remain unknown. Code/test/current-SHA evidence audit still pending."
+    "next_scope": "PLAN-003 requirement-level dedup batches A65-A67, A75-A89, A90-A98 reviewed; no cross-ID merge candidates found, but A90-A98 recorded as a related cluster of distinct failure/recovery scenarios. Next A100-A112, then A0-A64 and roadmap-phase mapping. Historical gaps A68-A74/A99 unresolved; code/test/current-SHA evidence audit pending."
   },
   "inventory_method": "Heading inventory normalizes literal backslash-n sequences before parsing Markdown headings; historical headings are not proof of implementation or acceptance.",
   "historical_investigation": {
@@ -3723,6 +3741,74 @@
         "A68-A74 and A99 remain unresolved historical numbering gaps; do not infer missing task titles."
       ],
       "next_batch": "A90-A98, then A100-A112; after that review A0-A64 and map all task groups to roadmap phases."
+    },
+    {
+      "batch_id": "PLAN-003-DEDUP-003",
+      "range": "A90-A98",
+      "status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "reviewed_sources": [
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+      ],
+      "related_cluster": {
+        "theme": "跨集精确素材锁定与项目恢复安全",
+        "ids": [
+          "A90",
+          "A91",
+          "A92",
+          "A93",
+          "A94",
+          "A95",
+          "A96",
+          "A97",
+          "A98"
+        ],
+        "decision": "keep_separate_as_distinct_acceptance_scenarios",
+        "rationale": [
+          "A90 establishes exact asset_id propagation and compatibility for old no-ID plans.",
+          "A91 covers invalid/missing/inactive/non-reusable/type-mismatched lock fail-closed checks across restore/regeneration.",
+          "A92 verifies actual actor_id/scene_id binding across episodes and save/reopen persistence.",
+          "A93 verifies Provider-call count is zero and isolates the affected shot when a lock is invalid.",
+          "A94 verifies retry after restoring the original locked asset.",
+          "A95 covers corrupt/unreadable asset index as a distinct fail-closed cause.",
+          "A96 verifies recovery after repairing the index.",
+          "A97 verifies one-shot project recovery only changes the damaged shot.",
+          "A98 verifies repeated recovery remains idempotent and continues surfacing missing media."
+        ]
+      },
+      "history_or_summary_sections": [
+        {
+          "source": "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "heading": "### A92/A93 最终自动化状态（2026-10-14）",
+          "treatment": "combined_status_record_not_new_requirement"
+        },
+        {
+          "source": "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "heading": "### A94 最新状态覆盖（2026-10-14）",
+          "treatment": "status_update_not_new_requirement"
+        },
+        {
+          "source": "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "heading": "### A95 最新自动化结果覆盖（2026-10-14）",
+          "treatment": "status_update_not_new_requirement"
+        },
+        {
+          "source": "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "heading": "### A96 最新自动化结果覆盖（2026-10-14）",
+          "treatment": "status_update_not_new_requirement"
+        },
+        {
+          "source": "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md",
+          "heading": "### A92/A93 自动化验收结果（2026-10-14；以本节为准）",
+          "treatment": "combined_status_record_not_new_requirement"
+        }
+      ],
+      "limitations": [
+        "Requirement-level dedup only. Historical CI records are not evidence for current HEAD; latest code/test/SHA evidence audit remains pending.",
+        "Real Provider, Windows real-machine, actual billing, Jianying on-site, and generated-image identity consistency remain deferred."
+      ],
+      "next_batch": "A100-A112; then return to A0-A64 and roadmap-phase mapping."
     }
   ]
 }
