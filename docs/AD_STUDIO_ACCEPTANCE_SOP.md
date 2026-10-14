@@ -1302,3 +1302,11 @@ A102 回归夹具检查：如果测试使用 mock 替代 FFmpeg，必须让 mock
 3. 检查 FFmpeg filter graph 含 xfade 与 acrossfade，按各镜头时长计算偏移，并为无音轨镜头生成等长静音。
 4. 检查输入视频画幅/FPS/timebase/像素格式统一，且短镜头不会使用超出 40% 镜头时长的溶解。
 5. 完整 CI 和 docs-sync push/PR 全部通过后才确认自动化验收；Windows 真机画面与听感检查继续按用户要求暂缓。
+
+
+## A105 验收：分镜 pacing 到播放速度执行
+1. 检查 `validate_plan()` 将慢/标准/快/极快分别转成 0.85/1.0/1.15/1.3 倍速默认值。
+2. 检查模型明确提供 `speed` 时覆盖默认映射，且仍按既有范围夹紧。
+3. 检查未知 pacing 标签回退“标准”及 1.0 倍速。
+4. 检查单测通过，且 `postprocess_shot()` 将有效 speed 传入 `process_shot()`，视频 `setpts` 与音频 `atempo` 保持同步。
+5. 最新 SHA 的 CI Push/PR 和 docs-sync Push/PR 全部通过后才确认自动化验收。此项不等于画面语义节奏分析、音乐卡点或商业剪辑整体完成。
