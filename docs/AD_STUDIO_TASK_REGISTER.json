@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_from_head": "306fab2b0cca11e7b15d787f430ebeb449ae16fa",
+  "generated_from_head": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6",
   "audit_status": "all_113_numbered_task_titles_recovered_requirement_level_reviewed_cross_source_status_reconciliation_pending_current_head_code_test_evidence_audit_pending",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until cross-source scope reconciliation and weighting review. Historical A68-A74 and A99 task identities have been recovered; their current-HEAD evidence audit remains pending.",
@@ -36,14 +36,22 @@
       "dependencies": [],
       "evidence": [
         {
-          "kind": "source_or_ci",
-          "detail": "apps/ad-studio-desktop/ad_studio/app.py: App.__init__ creates Tk root, sets title/geometry/minsize and initializes libraries/store/model router/UI",
-          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/run.py",
+          "detail": "Entrypoint calls App().mainloop() only when run as __main__.",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/app.py",
+          "detail": "App.__init__ initializes Tk title/geometry/minsize, local library/store/model router, then UI and refresh routines.",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
         }
       ],
       "remaining_conditions": [
-        "No dedicated startup/launch-path test mapped yet",
-        "code presence is not acceptance."
+        "No dedicated automated test for importing/launching run.py or App startup success/failure paths was mapped.",
+        "Main-window navigation, Chinese UI labels, close/back behavior, visible user feedback and runtime dependency/filesystem failure cases remain separate acceptance checks.",
+        "No Windows real-machine visual/interaction acceptance; code presence and CI alone are not full A0 acceptance."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -59,7 +67,8 @@
       "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
-      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
+      "last_verified_date": "2026-10-15"
     },
     {
       "task_id": "A1",
@@ -75,24 +84,40 @@
       "dependencies": [],
       "evidence": [
         {
-          "kind": "source_or_ci",
-          "detail": "CI push run 38631620219 success",
-          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+          "kind": "workflow",
+          "path": ".github/workflows/ci.yml",
+          "detail": "CI workflow runs frontend syntax, desktop Python compileall, desktop core unit tests, TypeScript, engine and risk-controller tests.",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
         },
         {
-          "kind": "source_or_ci",
-          "detail": "CI PR run 38631629453 success",
-          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38634425694",
+          "detail": "CI Push success for audited base SHA",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
         },
         {
-          "kind": "test",
-          "detail": "Current SHA full CI green",
-          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38634432319",
+          "detail": "CI PR success for audited base SHA",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38634425395",
+          "detail": "docs-sync Push success for audited base SHA",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38634432326",
+          "detail": "docs-sync PR success for audited base SHA",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
         }
       ],
       "remaining_conditions": [
-        "General CI success is not a task-specific stability matrix",
-        "startup errors, missing dependencies, filesystem permission failures and recovery boundaries need explicit mapping."
+        "The workflow is broad automated regression evidence, not a dedicated A1 stability matrix.",
+        "Startup/import errors, missing dependencies, filesystem permission failures, malformed local configuration and recovery boundaries still need explicit mapping to deterministic tests.",
+        "CI success does not prove Windows runtime stability."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -107,7 +132,8 @@
       "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
-      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
+      "last_verified_date": "2026-10-15"
     },
     {
       "task_id": "A2",
@@ -123,29 +149,52 @@
       "dependencies": [],
       "evidence": [
         {
-          "kind": "source_or_ci",
-          "detail": "apps/ad-studio-desktop/ad_studio/app.py: App.create() validates URL/budget/variant count, parses product, handles footage errors, builds plans",
-          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/app.py",
+          "detail": "App.create() validates URL/budget/variant count, scans user footage with explicit error paths, parses/merges product facts and starts plan generation.",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
         },
         {
-          "kind": "source_or_ci",
-          "detail": "apps/ad-studio-desktop/ad_studio/engine.py: new_project()",
-          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
-        },
-        {
-          "kind": "source_or_ci",
-          "detail": "apps/ad-studio-desktop/test_desktop.py: test_ai_create_plan_runs_full_understanding_to_asset_pipeline, test_project_lifecycle_isolated_between_projects, test_project_save_load",
-          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/engine.py",
+          "detail": "new_project() builds a Project and initial shots.",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
         },
         {
           "kind": "test",
-          "detail": "Relevant tests exist and current SHA CI green; tests were not locally executed outside CI",
-          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+          "path": "apps/ad-studio-desktop/test_desktop.py",
+          "detail": "test_project_lifecycle_isolated_between_projects; test_project_save_load; test_task_type_is_persisted_and_not_replaced_by_platform; test_ai_create_plan_runs_full_understanding_to_asset_pipeline.",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38634425694",
+          "detail": "CI Push success for audited base SHA",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38634432319",
+          "detail": "CI PR success for audited base SHA",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38634425395",
+          "detail": "docs-sync Push success for audited base SHA",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38634432326",
+          "detail": "docs-sync PR success for audited base SHA",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
         }
       ],
       "remaining_conditions": [
-        "No direct App.create() UI orchestration test mapped",
-        "need finish acceptance-case to source/test links."
+        "No direct UI-orchestration test invoking App.create() with mocked widgets/model router was mapped.",
+        "Project directory creation, failed persistence/write, malformed saved project and startup/open-project recovery boundaries need explicit case-to-test mapping.",
+        "A new_project() unit path and save/load tests do not alone establish every A2 checklist item."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -160,7 +209,8 @@
       "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
-      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
+      "last_verified_date": "2026-10-15"
     },
     {
       "task_id": "A3",
@@ -170,7 +220,7 @@
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
       "roadmap_phase": "待路线图映射",
-      "development_status": "implemented_pending_current_sha_ci_and_acceptance",
+      "development_status": "implemented_automation_layout_contract_passed_full_task_acceptance_pending",
       "acceptance_status": "partial_automation_layout_contract_passed_other_acceptance_pending",
       "weight": null,
       "dependencies": [],
@@ -178,51 +228,44 @@
         {
           "kind": "source",
           "path": "apps/ad-studio-desktop/ad_studio/app.py",
-          "detail": "App.ui separates fields and actions containers; fixed field grid rows."
+          "detail": "App.ui() separates fields/actions containers; task type, video form, variants and footage controls occupy distinct grid cells; App.create() stores task_type in creative_plan.",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
         },
         {
-          "kind": "test_added",
+          "kind": "test",
           "path": "apps/ad-studio-desktop/test_desktop.py",
-          "detail": "test_setup_form_grid_rows_do_not_overlap AST checks seven required control placements and isolated action grid."
+          "detail": "test_setup_form_grid_rows_do_not_overlap AST checks seven control positions and action-grid separation; test_three_task_types_have_distinct_deterministic_policies; test_task_type_is_persisted_and_not_replaced_by_platform.",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
         },
         {
-          "kind": "source_or_ci",
-          "detail": "apps/ad-studio-desktop/ad_studio/app.py: App.ui() fields/actions containers and row contract",
-          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38634425694",
+          "detail": "CI Push success for audited base SHA",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
         },
         {
-          "kind": "source_or_ci",
-          "detail": "apps/ad-studio-desktop/test_desktop.py: test_setup_form_grid_rows_do_not_overlap",
-          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38634432319",
+          "detail": "CI PR success for audited base SHA",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
         },
         {
-          "kind": "test",
-          "detail": "CI Push 38631620219 success",
-          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38634425395",
+          "detail": "docs-sync Push success for audited base SHA",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
         },
         {
-          "kind": "test",
-          "detail": "CI PR 38631629453 success",
-          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
-        },
-        {
-          "kind": "test",
-          "detail": "docs-sync Push 38631620187 success",
-          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
-        },
-        {
-          "kind": "test",
-          "detail": "docs-sync PR 38631629510 success",
-          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
-        },
-        {
-          "kind": "test",
-          "detail": "Existing test_task_type_is_persisted_and_not_replaced_by_platform",
-          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38634432326",
+          "detail": "docs-sync PR success for audited base SHA",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
         }
       ],
       "remaining_conditions": [
-        "AST layout contract and CI passed, but remaining A3 task-selection/persistence acceptance mapping and Windows visual/interaction test remain open."
+        "The AST layout contract is automated and the audited base SHA CI is green; this is not a rendered Tk layout test.",
+        "Complete task-specific acceptance for all three task types, UI create path, persistence/restore and visible interaction remains to be mapped.",
+        "Windows real-machine visual/interaction testing remains deferred by user instruction."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -237,7 +280,8 @@
       "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
-      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
+      "last_verified_date": "2026-10-15"
     },
     {
       "task_id": "A4",
@@ -253,34 +297,58 @@
       "dependencies": [],
       "evidence": [
         {
-          "kind": "source_or_ci",
-          "detail": "apps/ad-studio-desktop/ad_studio/app.py: App.create() checks footage folder, scan_footage(), rejects unusable media, persists footage_folder",
-          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/app.py",
+          "detail": "App.create() validates the footage folder, calls scan_footage(), handles FootageError/no-usable-file cases and saves footage_folder.",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
         },
         {
-          "kind": "source_or_ci",
-          "detail": "apps/ad-studio-desktop/ad_studio/footage.py: scan_footage() and planning/validation helpers",
-          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
-        },
-        {
-          "kind": "test",
-          "detail": "test_footage_planner_uses_only_supplied_assets_and_respects_task_rules",
-          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/footage.py",
+          "detail": "scan_footage(), probe_clip(), archive_analyzed_waste(), trim_clip() and footage-plan validation.",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
         },
         {
           "kind": "test",
-          "detail": "test_footage_planner_rejects_missing_plan_output",
-          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+          "path": "apps/ad-studio-desktop/test_footage.py",
+          "detail": "test_missing_folder_raises; test_lists_sorted_video_files; test_unparsable_file_gets_note; test_archives_ai_rejected_and_unparsable_but_keeps_good; plan/source validation cases.",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
         },
         {
           "kind": "test",
-          "detail": "test_footage_plan_enforces_speech_filler_cleanup_and_timestamp_ranges",
-          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+          "path": "apps/ad-studio-desktop/test_desktop.py",
+          "detail": "test_footage_planner_uses_only_supplied_assets_and_respects_task_rules; test_footage_planner_rejects_missing_plan_output; test_footage_plan_enforces_speech_filler_cleanup_and_timestamp_ranges.",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38634425694",
+          "detail": "CI Push success for audited base SHA",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38634432319",
+          "detail": "CI PR success for audited base SHA",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38634425395",
+          "detail": "docs-sync Push success for audited base SHA",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38634432326",
+          "detail": "docs-sync PR success for audited base SHA",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
         }
       ],
       "remaining_conditions": [
-        "Need map folder scanning, unsupported/corrupt media and source preservation cases to focused tests",
-        "test_desktop coverage alone is not exhaustive."
+        "Mapped unit tests cover scanning, unparseable media notes and waste archiving, but the full A4 checklist still needs a case-by-case matrix for duplicate detection, source preservation, unsupported media and filesystem errors.",
+        "No end-to-end desktop import-folder-to-final-output test has been demonstrated for every task type.",
+        "Real-world media variety and Windows filesystem behavior remain unverified."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -295,7 +363,8 @@
       "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
-      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
+      "last_verified_date": "2026-10-15"
     },
     {
       "task_id": "A5",
@@ -311,24 +380,58 @@
       "dependencies": [],
       "evidence": [
         {
-          "kind": "source_or_ci",
-          "detail": "apps/ad-studio-desktop/ad_studio/app.py: build_visual_manifest(), ModelRouter.analyze_footage(), archive_analyzed_waste() path",
-          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/footage.py",
+          "detail": "extract_keyframes() builds keyframe samples; build_visual_manifest() packages frames for model analysis; normalize/rank/coverage helpers process returned analysis.",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
         },
         {
-          "kind": "source_or_ci",
-          "detail": "apps/ad-studio-desktop/ad_studio/model_router.py: analyze_footage() stage",
-          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/app.py",
+          "detail": "App.create() builds the visual manifest, calls ModelRouter.analyze_footage(), stores analysis and archives explicitly rejected/unparsable materials.",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
         },
         {
           "kind": "test",
-          "detail": "Footage planner tests above cover plan validity, not visual frame extraction/analysis fidelity",
-          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+          "path": "apps/ad-studio-desktop/test_footage.py",
+          "detail": "Existing tests cover scan errors, unparsable files, ranking/coverage, gap analysis and waste archive; no dedicated test for build_visual_manifest/extract_keyframes failure behavior was mapped.",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_model_router.py",
+          "detail": "test_visual_fact_audit_maps_real_footage_analysis_risks_to_variant_plan covers downstream risk mapping, not frame extraction or visual-analysis fidelity.",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38634425694",
+          "detail": "CI Push success for audited base SHA",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38634432319",
+          "detail": "CI PR success for audited base SHA",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38634425395",
+          "detail": "docs-sync Push success for audited base SHA",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38634432326",
+          "detail": "docs-sync PR success for audited base SHA",
+          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
         }
       ],
       "remaining_conditions": [
-        "No dedicated deterministic test for manifest frame extraction and visual-analysis failure/fallback was mapped in this batch",
-        "real visual accuracy cannot be established by CI."
+        "No dedicated deterministic test was mapped for keyframe extraction/manifest creation success and failure, empty/corrupt frame output, or analyze_footage provider failure/fallback.",
+        "Separate automated coverage is needed for blur/occlusion/shake/product visibility and for tracing analysis findings to the source file/frame.",
+        "Real visual accuracy cannot be established by CI; true-material/Windows visual review remains deferred."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -343,7 +446,8 @@
       "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
-      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
+      "last_verified_date": "2026-10-15"
     },
     {
       "task_id": "A6",
@@ -4968,7 +5072,7 @@
     {
       "batch_id": "PLAN-003-EVIDENCE-001",
       "range": "A0-A3",
-      "status": "partial_evidence_review_blocked_by_existing_ui_layout_defect",
+      "status": "partial_evidence_mapping_ui_defect_resolved_current_head_ci_green_acceptance_pending",
       "reviewed_at": "2026-10-15",
       "reviewed_sources": [
         "apps/ad-studio-desktop/ad_studio/app.py",
@@ -5034,12 +5138,13 @@
         "This batch is a source/test mapping review, not full A0-A3 acceptance. No local tests were run through this connector workflow.",
         "Do not mark A0-A3 accepted until per-task acceptance cases and current-SHA evidence are fully mapped.",
         "Windows real-machine testing remains deferred as previously agreed."
-      ]
+      ],
+      "note": "A3 UI grid defect was repaired in f20bf426594a55ac74267641b53d9166acef6798; the later documentation-only baseline has all four CI/doc-sync workflows green. A0-A5 remain partially mapped, not accepted."
     },
     {
       "batch_id": "PLAN-003-EVIDENCE-A3-UI-REMEDIATION",
       "range": "A3 UI grid regression",
-      "status": "implemented_pending_current_sha_ci",
+      "status": "implemented_ci_green_current_head_acceptance_pending",
       "current_parent_sha": "776cd2c99e779a5008ccfb77ab9878af2fa7e67d",
       "changes": [
         "Separate form fields into fields container",
@@ -5052,7 +5157,7 @@
     {
       "batch_id": "PLAN-003-EVIDENCE-A0-A5",
       "range": "A0-A5",
-      "status": "partial_source_test_mapping_current_sha_ci_green_not_accepted",
+      "status": "partial_source_test_mapping_current_head_ci_green_not_accepted",
       "current_sha": "f20bf426594a55ac74267641b53d9166acef6798",
       "ci": {
         "push": {
@@ -5147,7 +5252,8 @@
         "A0/A1/A2/A4/A5 remain partial; A3 layout contract passed but full task-selection acceptance is still partial.",
         "Windows real-machine rendering/interaction and real footage visual accuracy remain deferred."
       ],
-      "next_step": "Continue current-HEAD code/test/evidence audit for A0-A5 in bounded batches; the A68-A74 and A99 historical identities have been recovered. Do not calculate global completion percentage."
+      "next_step": "A0-A5 partial mapping refreshed against the current code snapshot. Next finish the cross-source duplicate/status reconciliation and continue remaining acceptance-case evidence; do not calculate global completion percentage.",
+      "audited_base_sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
     },
     {
       "batch_id": "PLAN-003-HEAD-VERIFICATION-380120",
@@ -5177,6 +5283,35 @@
         "merged": false
       },
       "note": "This is the latest fully checked SHA before the handoff-only status refresh; recheck the new SHA after this documentation update."
+    },
+    {
+      "batch_id": "PLAN-003-HEAD-VERIFICATION-7A1AC",
+      "range": "Current branch verification",
+      "status": "all_four_workflows_green",
+      "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6",
+      "workflows": [
+        {
+          "name": "CI Push",
+          "run_id": 38634425694,
+          "conclusion": "success"
+        },
+        {
+          "name": "CI PR",
+          "run_id": 38634432319,
+          "conclusion": "success"
+        },
+        {
+          "name": "docs-sync Push",
+          "run_id": 38634425395,
+          "conclusion": "success"
+        },
+        {
+          "name": "docs-sync PR",
+          "run_id": 38634432326,
+          "conclusion": "success"
+        }
+      ],
+      "note": "Documentation/planning audit baseline; does not imply full acceptance of A0-A5."
     }
   ]
 }
