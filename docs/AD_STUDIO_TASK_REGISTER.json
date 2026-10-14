@@ -2019,7 +2019,9 @@
           "## A65：本地用量账本长期完整性"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-002"
     },
     {
       "task_id": "A66",
@@ -2051,7 +2053,9 @@
           "## 2026-10-11：人工商品画面核验证据防护（A66，待最新 CI）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-002"
     },
     {
       "task_id": "A67",
@@ -2079,7 +2083,9 @@
           "## A67：审查持久化人工核验证据是否仍有效"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-002"
     },
     {
       "task_id": "A68",
@@ -3580,7 +3586,7 @@
       "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
     ],
     "note": "Repeated headings can be status/history entries rather than duplicate requirements. Do not merge tasks solely because an ID appears in multiple headings. The eight IDs listed in known_id_gaps have no formal task heading in the four current source documents and remain unresolved pending historical investigation.",
-    "next_scope": "PLAN-003 semantic dedup batch A65-A89 reviewed at requirement-text level; continue A65-A67, then A90-A112. Historical gaps A68-A74 and A99 remain unresolved. Code/test/current-SHA audit still pending."
+    "next_scope": "PLAN-003 requirement-level dedup batches completed: A75-A89 and A65-A67, no cross-ID merges identified so far. Continue A90-A98, then A100-A112, then A0-A64; unresolved historical gaps A68-A74/A99 remain unknown. Code/test/current-SHA evidence audit still pending."
   },
   "inventory_method": "Heading inventory normalizes literal backslash-n sequences before parsing Markdown headings; historical headings are not proof of implementation or acceptance.",
   "historical_investigation": {
@@ -3685,6 +3691,38 @@
         "A68-A74 remain unresolved numbering gaps; A99 remains unresolved."
       ],
       "next_batch": "A65-A67, then A90-A112; preserve one batch per review and do not infer implementation from docs."
+    },
+    {
+      "batch_id": "PLAN-003-DEDUP-002",
+      "range": "A65-A67",
+      "status": "reviewed_no_cross_id_merge_yet",
+      "reviewed_sources": [
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+      ],
+      "findings": [
+        {
+          "id": "A65",
+          "decision": "keep_separate",
+          "reason": "Atomic usage-ledger writes and complete historical cost retention; unrelated to visual-review evidence."
+        },
+        {
+          "id": "A66",
+          "decision": "keep_separate",
+          "reason": "Validate that human product-visual review evidence is an existing, non-empty, supported image/video file and normalize the saved path."
+        },
+        {
+          "id": "A67",
+          "decision": "keep_separate",
+          "reason": "Re-check previously persisted human-review evidence during short-drama audit so stale passed status cannot hide a missing/empty/unsupported file."
+        }
+      ],
+      "limitations": [
+        "Requirement-text dedup only; code, tests, latest-SHA evidence, cost reconciliation, Windows real-machine behavior, and real visual review are not audited in this batch.",
+        "A68-A74 and A99 remain unresolved historical numbering gaps; do not infer missing task titles."
+      ],
+      "next_batch": "A90-A98, then A100-A112; after that review A0-A64 and map all task groups to roadmap phases."
     }
   ]
 }
