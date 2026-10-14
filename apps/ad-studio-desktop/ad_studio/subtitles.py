@@ -89,7 +89,7 @@ def analyze_subtitle_density(text: str, duration=3, max_chars=18):
 
 
 def write_srt(text: str, output: Path, duration=3, max_chars=18):
-    """Write adaptive subtitles spanning the actual clip duration instead of a fixed 3 seconds."""
+    """A108: Write adaptive subtitles spanning the actual clip duration, not a fixed 3 seconds."""
     output.parent.mkdir(parents=True, exist_ok=True)
     plan = plan_subtitle_timing(text, duration=duration, max_chars=max_chars)
     lines = []

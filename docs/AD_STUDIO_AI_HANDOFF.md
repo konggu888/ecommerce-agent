@@ -415,5 +415,5 @@ A106 首轮 CI 修复说明：自动化测试发现未知 `pacing` 标签必须�
 A106 的时长推断曾只保存在 CreativeShot 中；运行时 `Shot` 构造未传入 duration_seconds，视频生成请求因此可能仍用 3 秒默认值。A107 新增 `runtime_shot_editing_fields()` 并在 `_activate_plan()` 中使用，使时长、pacing、speed、transition 一起进入实际运行时对象。新增回归测试验证商品细节角色默认 4 秒及字段映射。下一步检查最新 SHA 的 CI Push/PR、docs-sync Push/PR 四项；PR #32 保持 open/unmerged。Provider 是否严格遵守请求时长仍须真实素材验收，Windows/Provider 验收按用户要求暂缓。
 
 
-## A108 接手记录：字幕密度基础执行闭环
+## A108 接手记录：字幕密度基础执行闭环（修复提交后待重新核验）
 `write_srt()` 按实际片长生成多段 SRT，`analyze_subtitle_density()` 返回字/秒和风险提示；字幕 UI 使用 FFprobe 实际时长并把结果传入真实烧录路径。短镜头会减少字幕切换次数，但可能需要更精简文案；系统只提示，不改写原文。新提交后必须重新核验 CI/doc-sync Push/PR 四项，PR #32 保持 open/unmerged。真实素材可读性、音乐卡点与剪后反馈仍是未完成商业剪辑能力。

@@ -619,5 +619,5 @@ A102 后续修正：首轮 CI 暴露测试夹具没有模拟归一化阶段输�
 A106 的角色默认时长没有从 `CreativeShot` 复制到运行时 `Shot`，导致视频 Provider 请求可能继续使用默认 3 秒。A107 新增 `runtime_shot_editing_fields()` 并由 `app._activate_plan()` 消费，映射 duration_seconds/pacing/speed/transition；测试覆盖商品细节镜头默认 4 秒。提交后核对当前 SHA 的 CI Push/PR、docs-sync Push/PR 四项。PR #32 保持 open/unmerged；Windows 真机、真实 Provider/实际扣费、剪映现场验收继续暂缓。商业剪辑整体仍未完成，下一步继续推进音乐卡点、字幕信息密度和真实内容驱动的剪后优化。
 
 
-## A108 接手记录：字幕按实际镜头时长与信息密度自适应
+## A108 接手记录：字幕按实际镜头时长与信息密度自适应（修复提交后待重新核验）
 `subtitles.py` 新增时间轴规划和密度分析；字幕加工 UI 使用 FFprobe 实际时长，不再固定 `duration=3`，按时长/文本长度切分 SRT，尽量在标点处断句，并在短镜头减少快速切换、提示高字/秒风险。请检查当前 SHA 的 CI Push/PR、docs-sync Push/PR 四项。PR #32 保持 open/unmerged；真实素材、Windows 真机和字幕可读性验收继续暂缓。下一项商业剪辑可继续推进音乐节拍与画面卡点，但不得宣称字幕高级优化已完成。
