@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "28b28cfa453dc5fdc131b82b1c521c690afdcf03",
-  "audit_status": "source_heading_inventory_completed_semantic_dedup_code_test_evidence_audit_pending",
+  "audit_status": "normalized_source_heading_inventory_completed_semantic_dedup_code_test_evidence_audit_pending",
   "progress_percentages_enabled": false,
   "policy": "Historical headings are not proof. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until scope deduplication and weighting review.",
   "counts": {
@@ -26,7 +26,6 @@
     "A72",
     "A73",
     "A74",
-    "A88",
     "A99"
   ],
   "tasks": [
@@ -55,11 +54,9 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "# 附录 A｜全项目逐阶段验收清单（A0–A33、B1–B3）",
           "## A0 · 启动、界面与基础工程"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A1",
@@ -85,11 +82,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A1 · 工程稳定性"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A2",
@@ -115,11 +110,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A2 · 新建项目"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A3",
@@ -145,11 +138,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A3 · 三类任务选择"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A4",
@@ -175,11 +166,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A4 · 原始素材管理"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A5",
@@ -205,11 +194,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A5 · 素材视觉分析"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A6",
@@ -236,11 +223,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A6 · 商品资料"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A7",
@@ -268,11 +253,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A7 · 内容理解"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A8",
@@ -299,11 +282,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A8 · 剪辑策略"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A9",
@@ -329,11 +310,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A9 · 真人口播"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A10",
@@ -359,11 +338,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A10 · 音频"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A11",
@@ -389,11 +366,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A11 · 字幕"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A12",
@@ -419,11 +394,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A12 · 缺口判断"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A13",
@@ -449,11 +422,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A13 · AI生成"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A14",
@@ -479,11 +450,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A14 · 实拍+AI混合"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A15",
@@ -509,11 +478,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A15 · 电商短视频生产"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A16",
@@ -539,11 +506,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A16 · 商品主图视频生产"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A17",
@@ -569,11 +534,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A17 · 广告投放视频生产"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A18",
@@ -600,11 +563,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A18 · 多版本"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A19",
@@ -631,11 +592,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A19 · 创意实验设计"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A20",
@@ -663,11 +622,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A20 · 创意事实检查"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A21",
@@ -693,11 +650,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A21 · 分镜事实检查"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A22",
@@ -723,11 +678,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A22 · 视觉事实检查"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A23",
@@ -755,11 +708,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A23 · 风险控制"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A24",
@@ -787,11 +738,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A24 · 最终安全闸门"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A25",
@@ -818,11 +767,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A25 · 媒体质量"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A26",
@@ -849,11 +796,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A26 · 成片版本历史"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A27",
@@ -880,11 +825,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A27 · 成片交付中心"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A28",
@@ -911,11 +854,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A28 · 本地项目数据"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A29",
@@ -943,11 +884,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A29 · 数据边界"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A30",
@@ -974,11 +913,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A30 · 失败恢复"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A31",
@@ -1005,11 +942,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A31 · 帮助文档"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A32",
@@ -1036,11 +971,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A32 · AI接手能力"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A33",
@@ -1069,11 +1002,9 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "# 附录 A｜全项目逐阶段验收清单（A0–A33、B1–B3）",
           "## A33 · 完整用户流程"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A34",
@@ -1101,12 +1032,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A34 · AI辅助商品画面对比（新增扩展阶段）"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## 2026-10-11：AI 辅助商品画面对比（A34 第一阶段）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A35",
@@ -1132,11 +1062,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A35 · 问题镜头定位与仅重生成（第一阶段实现，待验收）"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A36",
@@ -1162,11 +1090,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A36｜视觉核验结果辅助单镜头修复验收"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A37",
@@ -1194,12 +1120,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A37｜修正草稿格式验收"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A37 质量补充"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A38",
@@ -1225,11 +1150,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A38｜跨会话接手检查"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A39",
@@ -1255,11 +1178,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A39｜功能分支 CI 核验"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A40",
@@ -1285,11 +1206,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A40｜CI 失败的处理"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A41",
@@ -1315,11 +1234,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A41｜修复文案断言失败"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A42",
@@ -1345,11 +1262,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A42｜CI 成功结果记录"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A43",
@@ -1377,12 +1292,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A43｜单镜头重生成失败恢复验收"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A43：单镜头重生成的旧版本保护（待 CI）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A44",
@@ -1410,12 +1324,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A44｜短剧镜头映射验收"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A44：短剧分镜稳定映射（待 CI）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A45",
@@ -1443,12 +1356,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A45｜失败恢复状态显示验收"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A45：失败恢复状态提示修复（待 CI）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A46",
@@ -1478,13 +1390,12 @@
           "## A46｜编辑镜头旧版本保护验收",
           "### A46 文案断言失败恢复"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A46：镜头编辑路径纳入旧版保护（待 CI）",
           "### A46 验收日志补充"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A47",
@@ -1514,13 +1425,12 @@
           "## A47｜素材解析失败的恢复验收",
           "## A47–A50｜自动化阶段结果"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A47：素材解析异常纳入旧版恢复（待 CI）",
           "## A47–A50：自动化阶段通过基准"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A48",
@@ -1548,12 +1458,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A48｜实拍裁剪原子替换验收"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A48：实拍镜头输出保护（待 CI）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A49",
@@ -1581,12 +1490,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A49｜多段实拍中断恢复验收"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A49：多段实拍中断恢复（待 CI）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A50",
@@ -1616,13 +1524,12 @@
           "## A50｜视频提示词换行验收",
           "## A47–A50｜自动化阶段结果"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A50：视频提示词格式回归（待 CI）",
           "## A47–A50：自动化阶段通过基准"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A51",
@@ -1650,12 +1557,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A51｜费用预估前置校验验收"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A51：费用预估前置校验（待 CI）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A52",
@@ -1683,12 +1589,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A52｜失败尝试账本与成本去重验收"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A52：视频重试成本归因（待 CI）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A53",
@@ -1716,12 +1621,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A53｜零字节上一版视频恢复验收"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A53：恢复路径有效性补强"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A54",
@@ -1749,12 +1653,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A54｜零字节活动视频恢复验收"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A54：活动成片有效性校验"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A55",
@@ -1782,13 +1685,12 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A55｜成功视频遇到成本账本故障的验收"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A55：成功视频与成本记账异常解耦（待 CI）",
           "## A55–A58 自动化验收记录"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A56",
@@ -1816,12 +1718,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A56｜提示词换行回归验收"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A56：提示词换行回归修复（待 CI）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A57",
@@ -1851,13 +1752,12 @@
           "## A57｜成本待核对 UI 验收",
           "## A57｜打开项目恢复与成本对账验收"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A57：成本核对状态避免误报",
           "## A57：恢复流程接入 UI 与成本账本对账（待 CI）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A58",
@@ -1885,13 +1785,12 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A58｜商品画面对比输入校验验收"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A58：视觉核验输入证据安全检查",
           "## A55–A58 自动化验收记录"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A59",
@@ -1919,13 +1818,12 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A59｜项目成本汇总去重验收"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A59：成本汇总去重（待 CI）",
           "## A59/A60 状态更新"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A60",
@@ -1953,13 +1851,12 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A60｜失败-only 账本成本兼容验收"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A60：失败-only 账本兼容（待 CI）",
           "## A59/A60 状态更新"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A61",
@@ -1989,13 +1886,12 @@
           "## A61｜旧项目成本迁移验收",
           "### A61 handoff 文案断言修复"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A61：历史成本迁移与镜头成本统一（待 CI）",
           "### A61 验收日志补充"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A62",
@@ -2023,12 +1919,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A62｜历史成本迁移文案验收"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A62：接手文案断言对齐（待 CI）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A63",
@@ -2056,12 +1951,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A63｜迁移后新费用失败验收"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A63：旧成本迁移失败边界（待 CI）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A64",
@@ -2089,12 +1983,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A64｜素材成本账本故障验收"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A64：素材成本故障保护（待 CI）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A65",
@@ -2122,12 +2015,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A65｜用量账本持久化故障验收"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A65：本地用量账本长期完整性"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A66",
@@ -2155,12 +2047,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A66｜人工商品画面核验证据文件验收"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## 2026-10-11：人工商品画面核验证据防护（A66，待最新 CI）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A67",
@@ -2186,11 +2077,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A67：审查持久化人工核验证据是否仍有效"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A68",
@@ -2210,13 +2099,8 @@
       ],
       "duplicate_mapping": null,
       "deferred": false,
-      "source_heading_inventory": {
-        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [],
-        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
-      },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_heading_inventory": {},
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A69",
@@ -2236,13 +2120,8 @@
       ],
       "duplicate_mapping": null,
       "deferred": false,
-      "source_heading_inventory": {
-        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [],
-        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
-      },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_heading_inventory": {},
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A70",
@@ -2262,13 +2141,8 @@
       ],
       "duplicate_mapping": null,
       "deferred": false,
-      "source_heading_inventory": {
-        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [],
-        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
-      },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_heading_inventory": {},
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A71",
@@ -2288,13 +2162,8 @@
       ],
       "duplicate_mapping": null,
       "deferred": false,
-      "source_heading_inventory": {
-        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [],
-        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
-      },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_heading_inventory": {},
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A72",
@@ -2314,13 +2183,8 @@
       ],
       "duplicate_mapping": null,
       "deferred": false,
-      "source_heading_inventory": {
-        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [],
-        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
-      },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_heading_inventory": {},
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A73",
@@ -2340,13 +2204,8 @@
       ],
       "duplicate_mapping": null,
       "deferred": false,
-      "source_heading_inventory": {
-        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [],
-        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
-      },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_heading_inventory": {},
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A74",
@@ -2366,13 +2225,8 @@
       ],
       "duplicate_mapping": null,
       "deferred": false,
-      "source_heading_inventory": {
-        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [],
-        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
-      },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_heading_inventory": {},
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A75",
@@ -2400,12 +2254,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A75：商品事实锁与剧情内容交叉审查"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A75：商品事实锁与剧情内容交叉审查"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A76",
@@ -2433,12 +2286,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A76: Selling-point storyboard coverage"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A76: Selling-point storyboard coverage"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A77",
@@ -2466,12 +2318,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "### A77 专项补充：关键事件到分镜的可追溯性"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "### A77 · 短剧关键剧情事件到分镜的一致性审查"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A78",
@@ -2499,12 +2350,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "### A78 专项补充：人物行动与知识状态"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "### A78 · 人物行动动机与信息掌握一致性"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A79",
@@ -2532,12 +2382,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "### A79 专项补充：行动依据人物引用"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "### A79：人物行动依据与角色绑定一致性"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A80",
@@ -2567,12 +2416,11 @@
           "### A80 专项补充：人物关系变化",
           "### A80 故障处理补充"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "### A80：人物关系变化与因果后果"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A81",
@@ -2600,12 +2448,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "### A81 专项补充：人物状态后果是否延续到后续镜头"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "### 已落地的短剧连续性审查能力边界（A81–A84；不是待开发功能）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A82",
@@ -2631,11 +2478,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "### A82 专项：人物信息来源是否符合剧情时间线"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A83",
@@ -2661,11 +2506,9 @@
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "### A83 专项：人物承诺、误解与行动结果是否得到后续承接"
-        ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A84",
@@ -2695,14 +2538,13 @@
           "### A84 专项：跨集承诺、误解和行动后果连续性",
           "### A84 本轮结果记录（2026-10-13）"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "### 已落地的短剧连续性审查能力边界（A81–A84；不是待开发功能）",
           "### A84 已落地能力（待最新 SHA 自动化验证）",
           "### A84 自动化验证结果（2026-10-13）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A85",
@@ -2732,13 +2574,12 @@
           "### A85 专项：人物状态与关系跨集台账",
           "### A85 本轮结果记录"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "### A85 已实现能力边界（待自动化验证）",
           "### A85 自动化验证结果"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A86",
@@ -2766,12 +2607,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "### A86 专项：人物状态变化因果闭环"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "### A86 已实现能力（待最新 SHA 自动化验证）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A87",
@@ -2799,12 +2639,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "### A87 专项验收：人物状态是否落实到分镜表演"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "### A87 已加入实现（以最新 SHA CI 结果为准）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A88",
@@ -2825,12 +2664,17 @@
       "duplicate_mapping": null,
       "deferred": false,
       "source_heading_inventory": {
-        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [],
-        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A88｜多人物状态依赖一致性验收"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "### A88 专项验收：多人物状态依赖一致性"
+        ],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "### A88 已加入实现（以最新 SHA CI 结果为准）"
+        ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A89",
@@ -2860,13 +2704,12 @@
           "### A89 专项验收：跨集演员/场景资产锁定",
           "### A89 自动化验收结果（2026-10-14）"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A89｜跨集演员/场景资产文本锁定（进行中，自动化验收待定）",
           "### A89 自动化状态更新（2026-10-14）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A90",
@@ -2894,13 +2737,12 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A90：跨集物理素材 ID 绑定（待最新 SHA 自动化验收）"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A90 — 跨集物理素材 ID 绑定",
           "## A90：跨集物理素材 ID 绑定（待最新 SHA 自动化验收）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A91",
@@ -2928,12 +2770,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A91｜跨集锁定失效保护验收步骤"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A91 范围更新（2026-10-14）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A92",
@@ -2967,7 +2808,6 @@
           "### A92 CI 根因修正（待重新验收）",
           "### A92/A93 自动化验收结果（2026-10-14；以本节为准）"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A92｜跨集物理资产绑定的端到端验证",
           "### A92 状态补充",
@@ -2975,7 +2815,7 @@
           "### A92/A93 自动化验收结果（2026-10-14；以本节为准）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A93",
@@ -3005,13 +2845,12 @@
           "### A93 专项：Provider 调用边界与单镜头隔离",
           "### A92/A93 自动化验收结果（2026-10-14；以本节为准）"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A93｜跨集锁定失效的 Provider 边界回归",
           "### A92/A93 自动化验收结果（2026-10-14；以本节为准）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A94",
@@ -3041,13 +2880,12 @@
           "### A94 专项：恢复原锁定素材后的安全重试",
           "### A94 自动化验收结果（2026-10-14；以本节为准）"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A94｜跨集锁定素材恢复与安全重试",
           "### A94 自动化验收结果（2026-10-14；以本节为准）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A95",
@@ -3078,13 +2916,12 @@
           "### A95 专项：素材索引损坏时 fail-closed",
           "### A95 自动化验收结果（2026-10-14；测试代码 SHA `6b225e09adac63265d53b27eae3ed6a54a51f49e`）"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A95｜素材库索引损坏与安全恢复",
           "### A95 自动化验收结果（2026-10-14；测试代码 SHA `6b225e09adac63265d53b27eae3ed6a54a51f49e`）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A96",
@@ -3115,13 +2952,12 @@
           "### A96 专项：修复素材索引后的安全重试",
           "### A96 自动化验收结果（2026-10-14；测试代码 SHA `fc01ace4eeb90ccb2f2df10b44a57f8b3c69f134`）"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A96｜素材索引故障的可恢复性",
           "### A96 自动化验收结果（2026-10-14；测试代码 SHA `fc01ace4eeb90ccb2f2df10b44a57f8b3c69f134`）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A97",
@@ -3149,12 +2985,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "### A97 项目恢复单镜头隔离"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A97 自动化回归补充（2026-10-14）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A98",
@@ -3182,12 +3017,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "### A98 重复恢复的缺失镜头摘要"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "## A98 自动化回归补充（2026-10-14）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A99",
@@ -3207,13 +3041,8 @@
       ],
       "duplicate_mapping": null,
       "deferred": false,
-      "source_heading_inventory": {
-        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [],
-        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
-        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
-      },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_heading_inventory": {},
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A100",
@@ -3241,12 +3070,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A100｜淡出滤镜专项验收"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "### A100 自动化实现补充：淡出窗口修正（不代表路线图项目完成）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A101",
@@ -3274,12 +3102,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A101｜变速音画同步专项验收"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "### A101 自动化实现补充：变速音画同步（不代表路线图项目完成）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A102",
@@ -3307,12 +3134,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A102 验收补充：最终导出最低 1080P 级分辨率"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "### A102 已落地的基础输出底线（不代表商业画质增强完成）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A103",
@@ -3340,12 +3166,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A103 验收：淡入/淡出音画同步"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "### A103：镜头淡入/淡出音画同步（代码实现待 CI）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A104",
@@ -3373,12 +3198,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A104 验收：相邻镜头真实交叉溶解"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "### A104：相邻镜头真实交叉溶解（自动化待验）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A105",
@@ -3406,12 +3230,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A105 验收：分镜 pacing 到播放速度执行"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "### A105：分镜节奏参数执行闭环（自动化待验）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A106",
@@ -3439,12 +3262,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A106 验收：商业镜头角色默认剪辑决策"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "### A106：商业镜头角色到剪辑参数的可追溯默认值（实现后待自动化验收）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A107",
@@ -3472,12 +3294,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A107 验收：商业角色时长进入运行时生成请求"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "### A107：商业角色推断时长进入运行时生成请求（代码已接通，CI 待本轮验证）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A108",
@@ -3505,12 +3326,11 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## A108 验收：字幕信息密度与时间轴自适应（当前 SHA 需重新核验）"
         ],
-        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "### A108：字幕时长与密度基础闭环（当前 SHA 自动化验收中）"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A109",
@@ -3562,7 +3382,7 @@
           "### A109 转场安全补充"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A110",
@@ -3608,7 +3428,7 @@
           "### A110｜音乐卡点的口播、字幕与商品展示保护"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A111",
@@ -3662,7 +3482,7 @@
           "### A111 CI 修复记录"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A112",
@@ -3696,22 +3516,26 @@
       "source_heading_inventory": {
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
           "## A112｜字幕实际时间窗参与内容保护",
+          "## A112｜字幕实际时间窗参与内容保护",
           "## A112 自动化验收结果｜2026-10-14"
         ],
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
           "## 商业剪辑 A112：SRT 实际时间窗与卡点保护",
+          "## A112 验收步骤｜字幕真实 cue 时间窗保护",
           "## A112 自动化验收结果｜2026-10-14"
         ],
         "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [
           "#### 历史任务：A112｜字幕实际时间窗参与内容保护（已完成自动化阶段；以下原始计划保留作历史）",
+          "#### A112｜字幕实际时间窗参与内容保护（代码候选已提交，自动化验收以最新 SHA 为准）",
           "### A112 自动化验收记录（2026-10-14）"
         ],
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
           "### A112｜字幕实际时间窗与剪辑保护（下一项）",
+          "## A112｜字幕真实时间窗与剪辑节奏协同",
           "## A112 自动化验收结果｜2026-10-14"
         ]
       },
-      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     }
   ],
   "source_inventory": {
@@ -3724,5 +3548,6 @@
     ],
     "note": "Repeated headings can be status/history entries rather than duplicate requirements. Do not merge tasks solely because an ID appears in multiple headings. The nine IDs listed in known_id_gaps have no task heading in the acceptance plan/SOP and require historical investigation.",
     "next_scope": "Investigate missing IDs and perform semantic cross-document deduplication for A0-A112; then audit code/tests/current-SHA evidence."
-  }
+  },
+  "inventory_method": "Heading inventory normalizes literal backslash-n sequences before parsing Markdown headings; historical headings are not proof of implementation or acceptance."
 }
