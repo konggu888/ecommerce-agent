@@ -27,7 +27,7 @@ def segment_subtitles(segments, max_chars=18):
 
 def _split_caption_text(text: str, max_chars: int) -> list[str]:
     """Split text at nearby punctuation where possible, with a hard character limit."""
-    remaining = re.sub(r"\\s+", " ", str(text).strip())
+    remaining = re.sub(r"\s+", " ", str(text).strip())
     max_chars = max(1, int(max_chars))
     chunks = []
     punctuation = "，。！？；：,.!?;:"
@@ -51,7 +51,7 @@ def plan_subtitle_timing(text: str, duration=3, max_chars=18, min_segment_second
     if not duration > 0:
         duration = 3.0
     duration = min(duration, 24 * 60 * 60)
-    body = re.sub(r"\\s+", " ", str(text).strip()) or " "
+    body = re.sub(r"\s+", " ", str(text).strip()) or " "
     max_chars = max(1, int(max_chars))
     try:
         min_segment_seconds = max(0.1, float(min_segment_seconds))
@@ -95,7 +95,7 @@ def write_srt(text: str, output: Path, duration=3, max_chars=18):
     lines = []
     for i, row in enumerate(plan["segments"], 1):
         lines += [str(i), f"{_ts(row['start'])} --> {_ts(row['end'])}", row["text"], ""]
-    output.write_text("\\n".join(lines), encoding="utf-8")
+    output.write_text("\n".join(lines), encoding="utf-8")
     return output
 
 def write_srt_segments(segments, output: Path, max_chars=18):

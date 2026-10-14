@@ -1835,11 +1835,11 @@ class App(tk.Tk):
                 if density['warnings']:
                     messagebox.showwarning(
                         '字幕密度提醒',
-                        f"镜头时长：{density['duration']:.2f} 秒\\n"
-                        f"字幕密度：{density['chars_per_second']:.1f} 字/秒\\n"
-                        f"预计字幕段数：{density['segment_count']}\\n\\n"
-                        + "\\n".join(density['warnings'])
-                        + "\\n\\n系统仍会继续处理；建议优先缩短文案，避免字幕过密。"
+                        f"镜头时长：{density['duration']:.2f} 秒\n"
+                        f"字幕密度：{density['chars_per_second']:.1f} 字/秒\n"
+                        f"预计字幕段数：{density['segment_count']}\n\n"
+                        + "\n".join(density['warnings'])
+                        + "\n\n系统仍会继续处理；建议优先缩短文案，避免字幕过密。"
                     )
                 srt=write_srt(subtitle_text,folder/f'v{s.version}.srt',duration=clip_duration,
                               max_chars=density['effective_max_chars'])
