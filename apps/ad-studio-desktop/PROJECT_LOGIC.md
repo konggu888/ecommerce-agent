@@ -1516,3 +1516,7 @@ ProductionStore.build_final() 在实际镜头时长读取后，按创意方案�
 ## AI 计划体系与范围控制（2026-10-14）
 
 统一执行规则见 `docs/AD_STUDIO_EXECUTION_CONTROL.md`，总进度入口见 `docs/AD_STUDIO_PROGRESS_DASHBOARD.md`。收到“推进/继续”时，必须先检查当前 HEAD、PR 和四项 CI/doc-sync，再从正式台账选择唯一下一项任务。每项任务必须写明目标、范围、排除项、依赖、实际生产链、测试矩阵、验收证据与停止条件；非阻断的额外想法只登记，不得顺手扩展。全量任务去重和权重审计完成前，禁止发布未经证据支持的总体完成百分比。PR #32 不合并；Windows 真机、真实 Provider/扣费、剪映现场、真实素材与投放验证继续暂缓。
+
+## 统一任务登记表
+
+`docs/AD_STUDIO_TASK_REGISTER.json` 是 A0–A112 初次盘点索引；它目前只提供编号与来源索引，除 A109–A112 已有的自动化证据外，其他任务均需按代码/测试/当前 SHA 重新核验。任务登记表中的权重保持为空，直到去重、路线图映射和证据审计完成。缺少正式标题的编号须先查明原因，禁止补造任务。整体进度和唯一下一项以 `docs/AD_STUDIO_PROGRESS_DASHBOARD.md` 为准。
