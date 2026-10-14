@@ -191,7 +191,7 @@ def validate_plan(raw: dict[str, Any]) -> CreativePlan:
         intent = resolve_editing_intent(shot, is_last_shot=(i == len(shots)))
         pacing_value = str(shot.get("pacing", intent["pacing"]))
         if pacing_value not in {"慢", "标准", "快", "极快"}:
-            pacing_value = intent["pacing"]
+            pacing_value = "标准"
         # Explicit model decisions win; role-based defaults fill missing fields only.
         pacing_default_speed = {"慢": 0.85, "标准": 1.0, "快": 1.15, "极快": 1.3}[pacing_value]
         default_duration = intent["duration_seconds"]
@@ -218,7 +218,7 @@ def validate_plan(raw: dict[str, Any]) -> CreativePlan:
                 bgm_intensity=str(shot.get("bgm_intensity", "低")),
                 bgm_volume=min(0.35, max(0.0, float(shot.get("bgm_volume", 0.16)))),
                 transition=str(shot.get("transition", intent["transition"])) if str(shot.get("transition", intent["transition"])) in {"硬切", "淡入", "淡出", "交叉溶解"} else intent["transition"],
-                editing_intent={**intent, "duration_source": "explicit" if "duration_seconds" in shot else "role_default", "speed_source": "explicit" if "speed" in shot else ("pacing_default" if "pacing" in shot else "role_default"), "transition_source": "explicit" if "transition" in shot else "role_default"},
+                editing_intent={**intent, "resolved_duration_seconds": max(1, int(shot.get("duration_seconds", default_duration))), "resolved_pacing": pacing_value, "resolved_speed": min(1.5, max(0.75, float(shot.get("speed", pacing_default_speed if "pacing" in shot else intent["speed"])))), "resolved_transition": str(shot.get("transition", intent["transition"])) if str(shot.get("transition", intent["transition"])) in {"硬切", "淡入", "淡出", "交叉溶解"} else intent["transition"], "duration_source": "explicit" if "duration_seconds" in shot else "role_default", "speed_source": "explicit" if "speed" in shot else ("pacing_default" if "pacing" in shot else "role_default"), "transition_source": "explicit" if "transition" in shot else "role_default"},
             )
         )
 

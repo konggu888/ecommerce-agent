@@ -1316,5 +1316,5 @@ A102 回归夹具检查：如果测试使用 mock 替代 FFmpeg，必须让 mock
 1. 检查 `resolve_editing_intent()` 只读取已声明的分镜文本，返回角色、时长、节奏、速度、转场、理由和依据边界。
 2. 分别验证开场钩子、商品细节、功能演示、证据对比和 CTA 默认值；末镜头 CTA 的默认淡出必须进入既有 transition 执行路径。
 3. 验证显式时长/速度/转场优先；显式 pacing 但省略 speed 时仍使用 A105 pacing 映射。
-4. 验证 `CreativeShot.editing_intent` 持久化所需信息并标记参数来源；不得把关键词分类描述为真实画面语义理解。
+4. 验证 `CreativeShot.editing_intent` 持久化角色、理由、依据、最终生效参数与参数来源；未知 pacing 标签必须回退标准；不得把关键词分类描述为真实画面语义理解。
 5. 检查新增回归测试及当前 SHA 的 CI Push/PR、docs-sync Push/PR；未全部成功前不得确认自动化验收。真实素材/Windows 画面与听感仍须另行验收。

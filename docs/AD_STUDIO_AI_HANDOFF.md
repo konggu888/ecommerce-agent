@@ -407,3 +407,6 @@ A102 首轮 CI 暴露测试夹具未模拟归一化阶段的目标文件，并�
 
 ## A106 接手记录：商业镜头角色默认剪辑决策（待当前 SHA CI）
 本轮新增 `creative_engine.resolve_editing_intent()`，根据分镜文本推断商业角色并补齐缺失的时长、pacing/speed、transition；显式参数优先。决策保存角色、理由、依据边界及参数来源，并复用现有生成/后处理/最终拼接链。新增角色映射、末镜 CTA 淡出、显式覆盖回归测试。下一步先查本轮最终 SHA 的 CI Push/PR 与 docs-sync Push/PR；PR #32 保持 open/unmerged。该规则只基于文本关键词，不是画面理解；真实素材/Windows 验收、音乐卡点、字幕密度与剪后反馈仍未完成。
+
+
+A106 首轮 CI 修复说明：自动化测试发现未知 `pacing` 标签必须继续回退“标准”，不能使用推断角色的默认节奏。代码现已修正，并把最终生效的时长、节奏、速度、转场写入 `editing_intent`；需以修复后的 SHA 重新检查 CI Push/PR 与 docs-sync Push/PR 四项结果。

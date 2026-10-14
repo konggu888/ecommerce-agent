@@ -1445,3 +1445,6 @@ ProductionStore.build_final() 检查每个非首镜头的 Shot.transition；只�
 
 ## A106：基于商业镜头角色的可追溯默认剪辑决策
 `creative_engine.resolve_editing_intent()` 根据镜头 objective/visual/dialogue/cta_role/generation_prompt 中的文本关键词，将镜头归类为 hook、product_detail、demonstration、proof、pain_point、reaction、cta 或 story_beat，并给出默认时长、pacing/speed、transition 与理由。仅在对应字段缺失时采用默认值；显式 duration/speed/transition 保持优先。结果存入 `CreativeShot.editing_intent`，包含参数来源与“文本规则而非视觉识别”的边界说明。当前 production 已消费同一分镜的 duration、speed 与 transition，因此这些默认值进入既有生成/后处理/拼接链。关键词规则会受文本措辞影响，不能替代真实画面分析、音乐卡点、字幕密度优化或剪后质量反馈。
+
+
+A106 修复补充：未知 `pacing` 标签继续按 A105 既有契约回退“标准”，不能回退到推断角色的默认节奏；`editing_intent` 同时记录最终生效的时长、节奏、速度和转场，避免理由字段与实际执行值不一致。

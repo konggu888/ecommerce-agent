@@ -613,4 +613,4 @@ A102 后续修正：首轮 CI 暴露测试夹具没有模拟归一化阶段输�
 
 
 ## A106 接手记录：商业镜头角色驱动默认剪辑决策（待最新 SHA CI）
-新增 `resolve_editing_intent()`，将分镜文本归类为 hook、product_detail、demonstration、proof、pain_point、reaction、cta 或 story_beat；仅在字段缺失时补齐默认时长、节奏/速度与转场，显式参数优先。决策理由、规则依据和参数来源写入 `CreativeShot.editing_intent`。新增测试覆盖主要角色、末镜 CTA 淡出和显式参数覆盖。提交后必须重新查询当前 SHA 的 CI Push/PR 与 docs-sync Push/PR；PR #32 保持 open/unmerged。文本规则不代表视觉理解，商业剪辑整体与真实素材验收仍未完成。
+新增 `resolve_editing_intent()`，将分镜文本归类为 hook、product_detail、demonstration、proof、pain_point、reaction、cta 或 story_beat；仅在字段缺失时补齐默认时长、节奏/速度与转场，显式参数优先。决策理由、规则依据和参数来源写入 `CreativeShot.editing_intent`。新增测试覆盖主要角色、末镜 CTA 淡出和显式参数覆盖。首轮 CI 暴露未知 pacing 标签回退规则需兼容 A105，已修正为“标准”，并补充最终生效参数审计字段。修复提交后必须重新查询当前 SHA 的 CI Push/PR 与 docs-sync Push/PR；PR #32 保持 open/unmerged。文本规则不代表视觉理解，商业剪辑整体与真实素材验收仍未完成。
