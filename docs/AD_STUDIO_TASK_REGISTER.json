@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "28b28cfa453dc5fdc131b82b1c521c690afdcf03",
-  "audit_status": "normalized_source_heading_inventory_completed_semantic_dedup_code_test_evidence_audit_pending",
+  "audit_status": "normalized_source_heading_inventory_completed_semantic_dedup_in_progress_code_test_evidence_audit_pending",
   "progress_percentages_enabled": false,
   "policy": "Historical headings are not proof. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until scope deduplication and weighting review.",
   "counts": {
@@ -2258,7 +2258,9 @@
           "## A75：商品事实锁与剧情内容交叉审查"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-001"
     },
     {
       "task_id": "A76",
@@ -2290,7 +2292,9 @@
           "## A76: Selling-point storyboard coverage"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-001"
     },
     {
       "task_id": "A77",
@@ -2322,7 +2326,9 @@
           "### A77 · 短剧关键剧情事件到分镜的一致性审查"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-001"
     },
     {
       "task_id": "A78",
@@ -2354,7 +2360,9 @@
           "### A78 · 人物行动动机与信息掌握一致性"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-001"
     },
     {
       "task_id": "A79",
@@ -2386,7 +2394,9 @@
           "### A79：人物行动依据与角色绑定一致性"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-001"
     },
     {
       "task_id": "A80",
@@ -2420,7 +2430,9 @@
           "### A80：人物关系变化与因果后果"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-001"
     },
     {
       "task_id": "A81",
@@ -2452,7 +2464,9 @@
           "### 已落地的短剧连续性审查能力边界（A81–A84；不是待开发功能）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-001"
     },
     {
       "task_id": "A82",
@@ -2480,7 +2494,9 @@
           "### A82 专项：人物信息来源是否符合剧情时间线"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-001"
     },
     {
       "task_id": "A83",
@@ -2508,7 +2524,9 @@
           "### A83 专项：人物承诺、误解与行动结果是否得到后续承接"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-001"
     },
     {
       "task_id": "A84",
@@ -2544,7 +2562,9 @@
           "### A84 自动化验证结果（2026-10-13）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-001"
     },
     {
       "task_id": "A85",
@@ -2579,7 +2599,9 @@
           "### A85 自动化验证结果"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-001"
     },
     {
       "task_id": "A86",
@@ -2611,7 +2633,9 @@
           "### A86 已实现能力（待最新 SHA 自动化验证）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-001"
     },
     {
       "task_id": "A87",
@@ -2643,7 +2667,9 @@
           "### A87 已加入实现（以最新 SHA CI 结果为准）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-001"
     },
     {
       "task_id": "A88",
@@ -2677,7 +2703,9 @@
           "### A88 已加入实现（以最新 SHA CI 结果为准）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-001"
     },
     {
       "task_id": "A89",
@@ -2712,7 +2740,9 @@
           "### A89 自动化状态更新（2026-10-14）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-001"
     },
     {
       "task_id": "A90",
@@ -3550,7 +3580,7 @@
       "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
     ],
     "note": "Repeated headings can be status/history entries rather than duplicate requirements. Do not merge tasks solely because an ID appears in multiple headings. The eight IDs listed in known_id_gaps have no formal task heading in the four current source documents and remain unresolved pending historical investigation.",
-    "next_scope": "Continue historical investigation for A68-A74 and A99 using older document snapshots and commit history; then perform semantic cross-document deduplication for A0-A112, followed by code/test/current-SHA evidence audit."
+    "next_scope": "PLAN-003 semantic dedup batch A65-A89 reviewed at requirement-text level; continue A65-A67, then A90-A112. Historical gaps A68-A74 and A99 remain unresolved. Code/test/current-SHA audit still pending."
   },
   "inventory_method": "Heading inventory normalizes literal backslash-n sequences before parsing Markdown headings; historical headings are not proof of implementation or acceptance.",
   "historical_investigation": {
@@ -3566,5 +3596,95 @@
       "A99": "No formal heading found in the four current source documents or checked historical acceptance-plan/SOP snapshots; commit-message search returned no matching commits. This is not proof that the task never existed."
     },
     "next_action": "Continue targeted historical lookup; do not invent titles or map placeholders to product features without evidence."
-  }
+  },
+  "semantic_dedup_batches": [
+    {
+      "batch_id": "PLAN-003-DEDUP-001",
+      "range": "A75-A89",
+      "status": "reviewed_no_cross_id_merge_yet",
+      "reviewed_sources": [
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+      ],
+      "findings": [
+        {
+          "ids": [
+            "A75",
+            "A76"
+          ],
+          "decision": "keep_separate",
+          "reason": "A75 checks confirmed/unknown product facts against product-data evidence; A76 checks whether confirmed selling points are represented in storyboard action/product integration/dialogue/prompt text."
+        },
+        {
+          "ids": [
+            "A77",
+            "A78",
+            "A79",
+            "A80"
+          ],
+          "decision": "keep_separate",
+          "reason": "Distinct checks: narrative events reaching shots; per-character motive/knowledge evidence; action-basis character reference integrity; relationship-change declaration and shot-text coverage."
+        },
+        {
+          "ids": [
+            "A81",
+            "A82",
+            "A83",
+            "A84",
+            "A85",
+            "A86",
+            "A87",
+            "A88"
+          ],
+          "decision": "keep_separate",
+          "reason": "Separate continuity dimensions: state consequences across shots, knowledge timeline, obligation follow-through, cross-episode carry-forward, long-term character state, causal transition chain, observable performance, and cross-character dependency."
+        },
+        {
+          "ids": [
+            "A89"
+          ],
+          "decision": "keep_separate",
+          "reason": "Series actor/scene textual lock propagation is distinct from the A88 cross-character narrative-state dependency check and from later physical asset-ID binding work."
+        }
+      ],
+      "history_or_summary_sections": [
+        {
+          "source": "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "heading": "### A80 首轮 CI 故障记录",
+          "treatment": "history_not_new_requirement"
+        },
+        {
+          "source": "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "heading": "### A84 自动化验收记录（2026-10-13）",
+          "treatment": "status_evidence_not_new_requirement"
+        },
+        {
+          "source": "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "heading": "### A85 自动化验证记录",
+          "treatment": "status_evidence_not_new_requirement"
+        },
+        {
+          "source": "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "heading": "## A89｜跨集演员/场景资产锁定验收状态更新（2026-10-14）",
+          "treatment": "status_update_not_new_requirement"
+        },
+        {
+          "source": "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md",
+          "heading": "### 已落地的短剧连续性审查能力边界（A81–A84；不是待开发功能）",
+          "treatment": "aggregate_summary_not_new_requirement"
+        },
+        {
+          "source": "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md",
+          "heading": "### A89 自动化状态更新（2026-10-14）",
+          "treatment": "status_update_not_new_requirement"
+        }
+      ],
+      "limitations": [
+        "This is a requirement-level semantic review of A75-A89 source text only. It does not verify code, tests, latest SHA evidence, roadmap-phase mapping, or real video quality.",
+        "A68-A74 remain unresolved numbering gaps; A99 remains unresolved."
+      ],
+      "next_batch": "A65-A67, then A90-A112; preserve one batch per review and do not infer implementation from docs."
+    }
+  ]
 }
