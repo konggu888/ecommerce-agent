@@ -2911,7 +2911,7 @@
         "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
-      "audit_note": "未在路线图、验收计划、未来备忘的任务标题中找到；不得猜测内容。",
+      "audit_note": "已在验收计划、验收 SOP 与未来功能备忘中找到正式标题；此前因标题解析未归一化字面量反斜杠+n而被误报缺失。当前仍待独立核验实现、测试、当前 SHA 证据与验收状态。",
       "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
@@ -2934,7 +2934,7 @@
           "### A88 已加入实现（以最新 SHA CI 结果为准）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "source_inventory_status": "normalized_heading_inventory_completed_semantic_dedup_reviewed_code_evidence_pending",
       "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
       "semantic_dedup_batch": "PLAN-003-DEDUP-001"
     },
