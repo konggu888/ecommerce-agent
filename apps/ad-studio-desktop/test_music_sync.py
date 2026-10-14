@@ -1,3 +1,5 @@
+# A109 legacy audio compatibility
+# Older shot files may already contain baked-in per-shot BGM; use clean source clips before global mixing.
 import unittest
 from unittest import mock
 from pathlib import Path

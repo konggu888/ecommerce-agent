@@ -427,3 +427,6 @@ A106 的时长推断曾只保存在 CreativeShot 中；运行时 `Shot` 构造�
 
 ## A109｜音乐节拍与画面切点真实联动
 本轮在生产链实现全局 BGM 与保守节拍切点联动：`finish_selected()` 将选择持久化到项目级；`ProductionStore.build_final()` 分析 BGM、规划实际镜头时长、必要时临时变速并保持原音轨同步，拼接后统一混入一条连续 BGM，最后继续 1080P 归一化。专项测试位于 `apps/ad-studio-desktop/test_music_sync.py`。下一 AI 必须重新核对最新 HEAD、CI 和 docs-sync，不得把代码存在视为测试通过；真实素材/Windows 听感验收仍暂缓。
+
+### A109 旧项目音轨兼容边界
+A109 兼容边界：旧项目中已把 BGM 烧录进镜头音轨的成片，无法仅凭现有文件可靠分离旧音乐。重新使用全局 BGM 前，应从未混入 BGM 的镜头源重新执行字幕处理；否则可能叠加旧音乐。
