@@ -6,7 +6,7 @@ import subprocess
 import datetime
 import math
 from .models import Project, Shot, accept_hybrid_generated_shot
-from .ffmpeg import make_clip, concat
+from .ffmpeg import make_clip, concat, concat_with_transitions
 from .providers import GenerationRequest, load_video_provider, load_asset_provider
 from .postprocess import process_shot, normalize_output_resolution
 from .library import LocalLibrary
@@ -905,7 +905,12 @@ class ProductionStore:
         concat_path = out.with_name(out.stem + ".concat.tmp.mp4")
         normalized_path = out.with_name(out.stem + ".1080p.tmp.mp4")
         try:
-            concat([Path(s.video_path) for s in shots], concat_path)
+            shot_paths = [Path(s.video_path) for s in shots]
+            shot_transitions = [str(getattr(s, 'transition', '硬切') or '硬切') for s in shots]
+            if any(value == '交叉溶解' for value in shot_transitions[1:]):
+                concat_with_transitions(shot_paths, concat_path, shot_transitions, aspect=aspect)
+            else:
+                concat(shot_paths, concat_path)
             normalize_output_resolution(concat_path, normalized_path, aspect)
             normalized_path.replace(out)
         finally:

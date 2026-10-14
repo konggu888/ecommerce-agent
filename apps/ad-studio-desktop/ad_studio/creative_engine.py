@@ -110,7 +110,7 @@ JSON_SCHEMA = {
         "speed": "number 0.75..1.5",
         "bgm_intensity": "无|低|中|高",
         "bgm_volume": "number 0..0.35",
-        "transition": "硬切|淡入|淡出"
+        "transition": "硬切|淡入|淡出|交叉溶解"
     }]
 }
 
@@ -176,7 +176,7 @@ def validate_plan(raw: dict[str, Any]) -> CreativePlan:
                 speed=min(1.5, max(0.75, float(shot.get("speed", 1.0)))),
                 bgm_intensity=str(shot.get("bgm_intensity", "低")),
                 bgm_volume=min(0.35, max(0.0, float(shot.get("bgm_volume", 0.16)))),
-                transition=str(shot.get("transition", "硬切")),
+                transition=str(shot.get("transition", "硬切")) if str(shot.get("transition", "硬切")) in {"硬切", "淡入", "淡出", "交叉溶解"} else "硬切",
             )
         )
 
