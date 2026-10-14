@@ -40,6 +40,7 @@ class CreativeEngineTests(unittest.TestCase):
         self.assertEqual(plan.video_form, "真人+产品")
         self.assertEqual(len(plan.shots), 1)
 
+    # A missing speed is distinct from an explicit speed and must use pacing defaults.
     def test_pacing_sets_executable_default_speed(self):
         cases = (("慢", 0.85), ("标准", 1.0), ("快", 1.15), ("极快", 1.3))
         for pacing, expected_speed in cases:

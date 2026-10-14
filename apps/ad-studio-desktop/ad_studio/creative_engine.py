@@ -158,6 +158,7 @@ def validate_plan(raw: dict[str, Any]) -> CreativePlan:
         if pacing_value not in {"慢", "标准", "快", "极快"}:
             pacing_value = "标准"
         # Pacing is an executable default, not just descriptive metadata.
+        # The schema marks speed optional, so omitted values can use the pacing default.
         # An explicit speed from the creative model remains authoritative.
         pacing_default_speed = {"慢": 0.85, "标准": 1.0, "快": 1.15, "极快": 1.3}[pacing_value]
         creative_shots.append(

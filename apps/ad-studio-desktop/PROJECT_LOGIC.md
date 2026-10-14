@@ -1440,4 +1440,4 @@ ProductionStore.build_final() 检查每个非首镜头的 Shot.transition；只�
 
 
 ## A105：分镜 pacing 到实际播放速度的执行闭环
-`creative_engine.validate_plan()` 在规范化分镜时校验 `pacing`；缺失 `speed` 时将慢/标准/快/极快映射为 0.85/1.0/1.15/1.3 倍速，未知 pacing 回退标准。若 LLM 显式返回 `speed`，显式值经既有 0.75–1.5 范围夹紧后优先。该 `CreativeShot.speed` 会进入现有单镜头后处理并同时调整视频时间戳与原音轨速度。该项修复了 pacing 标签与执行参数脱节的问题，但没有实现按画面动作、情绪曲线、台词密度或音乐节拍自动决定每镜头节奏。
+`creative_engine.validate_plan()` 在规范化分镜时校验 `pacing`；缺失 `speed` 时将慢/标准/快/极快映射为 0.85/1.0/1.15/1.3 倍速，未知 pacing 回退标准。分镜 schema 中 `speed` 为可选项；若 LLM 显式返回 `speed`，显式值经既有 0.75–1.5 范围夹紧后优先。该 `CreativeShot.speed` 会进入现有单镜头后处理并同时调整视频时间戳与原音轨速度。该项修复了 pacing 标签与执行参数脱节的问题，但没有实现按画面动作、情绪曲线、台词密度或音乐节拍自动决定每镜头节奏。
