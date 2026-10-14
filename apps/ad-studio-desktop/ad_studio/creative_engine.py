@@ -107,7 +107,7 @@ JSON_SCHEMA = {
         "subtitle_position": "顶部安全区|中部安全区|底部安全区|不显示",
         "subtitle_style": "白字黑边|黄字黑边|简洁白字",
         "pacing": "慢|标准|快|极快；缺少 speed 时分别默认 0.85x/1.0x/1.15x/1.3x",
-        "speed": "number 0.75..1.5",
+        "speed": "optional number 0.75..1.5; omit to use pacing default",
         "bgm_intensity": "无|低|中|高",
         "bgm_volume": "number 0..0.35",
         "transition": "硬切|淡入|淡出|交叉溶解"
