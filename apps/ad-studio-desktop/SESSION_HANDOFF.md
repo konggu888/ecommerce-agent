@@ -1,3 +1,21 @@
+# 【当前接手状态｜2026-10-14｜优先读本段】
+
+> 本段优先级高于下方旧历史记录；如果下方内容提到旧 PR、旧 SHA 或旧任务，请以本段和 GitHub 实时状态为准。
+
+- 仓库：`konggu888/ecommerce-agent`
+- 项目：`apps/ad-studio-desktop`
+- 分支：`feat/product-drama-visual-review`
+- 商业剪辑焦点定位功能提交：`fe3dcfde8e78f7d5d079fcbc1ed99d6265a79dbb`
+- 该功能提交对应的 CI push、CI PR、docs-sync push、docs-sync PR 均已 success；此后若 HEAD 有变化，必须重新检查最新 SHA 的四项结果。
+- PR #32 保持 open/unmerged，未经用户明确许可不得合并。
+- 用户最新优先级：暂停费用对账/单镜头重试保护检查线，继续推进未来路线图第 5 项“商业级剪辑决策层升级”。
+- 已完成的小步：修正 `focus_x/focus_y` 语义，让它们表示缩放后源画面中的主体/视觉焦点归一化位置；裁切窗口在合法边界内尽量将焦点放到输出画面中心。新增 `test_postprocess.py` 检查实际 FFmpeg 参数、边界夹紧及非法/非有限输入回退。
+- 这只是“焦点参数真正影响裁切”的单项修复，**不是商业剪辑整体完成**。下一步应建立/完善可追溯的商业剪辑决策层：解释镜头商业角色、选择理由、节奏/时长理由、转场理由，并保证决策确实影响实际执行；后续再做字幕信息密度、音乐卡点、镜头衔接与剪后反馈。
+- 先读本段，再读 `docs/AD_STUDIO_AI_HANDOFF.md`、`PROJECT_LOGIC.md`、`HELP.md`。每次代码修改必须同步 HELP、PROJECT_LOGIC、本文件、验收计划、验收 SOP、AI handoff 和未来功能备忘。
+- Windows 真机、真实 Provider/实际扣费、剪映现场验收继续按用户要求暂缓；不得把 CI 绿灯或命令字符串测试等同于真实商业成片质量验收。
+
+---
+
 # SESSION_HANDOFF.md — 桌面项目跨会话接手入口
 
 > **新会话必须先读本文件，再读 `docs/AD_STUDIO_AI_HANDOFF.md`、`PROJECT_LOGIC.md` 和 `HELP.md`。** 本文件记录当前工作现场，不代表功能已验收。

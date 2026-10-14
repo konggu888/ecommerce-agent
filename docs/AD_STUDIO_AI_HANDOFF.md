@@ -1,3 +1,18 @@
+# 【当前接手状态｜2026-10-14】
+
+> 本段是新 AI 接手时的当前优先级入口；下文历史记录用于背景参考，遇到冲突以本段和 GitHub 当前状态为准。
+
+- 仓库：`konggu888/ecommerce-agent`；项目：`apps/ad-studio-desktop`。
+- 分支：`feat/product-drama-visual-review`；PR #32 保持 open/unmerged，不得擅自合并。
+- 商业剪辑焦点定位代码提交：`fe3dcfde8e78f7d5d079fcbc1ed99d6265a79dbb`。该 SHA 的 CI push、CI PR、docs-sync push、docs-sync PR 四项均已 success；任何新提交都必须重新核对最新 SHA。
+- 用户已明确要求暂停费用对账/单镜头重试保护线，优先推进未来路线图第 5 项“商业级剪辑决策层升级”。
+- 已修复 `process_shot()` 忽略 AI 焦点的问题：`focus_x/focus_y` 是缩放后源画面中的主体/视觉焦点归一化位置，不是裁切窗口偏移比例；系统在合法边界内尽量将焦点放到输出画面中心。新增回归测试验证实际 FFmpeg `-vf` 参数及异常输入处理。
+- 当前仍未完成商业剪辑整体能力。下一步应推进可追溯的剪辑决策：每个镜头的商业角色、选择理由、节奏/时长理由、转场理由与实际执行参数对齐；之后逐步实现画面驱动节奏、镜头衔接、字幕密度、音乐卡点、商品展示节奏及剪后反馈。
+- 接手必做：重新查询分支 HEAD、PR #32、最新 SHA 的 CI 和 docs-sync；在仓库可用时运行 `python3 -m unittest discover -s apps/ad-studio-desktop -p 'test_*.py'` 和 `python3 -m compileall -q apps/ad-studio-desktop/ad_studio`。没有实际执行就不能声称本地测试通过。
+- Windows 真机、真实 Provider/扣费、剪映现场和真实成片视觉验收继续暂缓。CI 绿灯不代表商业质量已验收。
+
+---
+
 # AI 商品广告工厂：独立 AI 接手入口
 
 > 本文件是“完全不知道本项目历史的新 AI”使用的最短接手入口。它不依赖聊天记录、个人记忆或上一位 AI 的口头结论。
