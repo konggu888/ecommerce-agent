@@ -106,7 +106,7 @@ JSON_SCHEMA = {
         "focus_y": "number 0..1",
         "subtitle_position": "顶部安全区|中部安全区|底部安全区|不显示",
         "subtitle_style": "白字黑边|黄字黑边|简洁白字",
-        "pacing": "慢|标准|快|极快",
+        "pacing": "慢|标准|快|极快；缺少 speed 时分别默认 0.85x/1.0x/1.15x/1.3x",
         "speed": "number 0.75..1.5",
         "bgm_intensity": "无|低|中|高",
         "bgm_volume": "number 0..0.35",
@@ -154,6 +154,12 @@ def validate_plan(raw: dict[str, Any]) -> CreativePlan:
     for i, shot in enumerate(shots, 1):
         if not isinstance(shot, dict):
             raise CreativePlanError(f"第{i}个分镜不是对象")
+        pacing_value = str(shot.get("pacing", "标准"))
+        if pacing_value not in {"慢", "标准", "快", "极快"}:
+            pacing_value = "标准"
+        # Pacing is an executable default, not just descriptive metadata.
+        # An explicit speed from the creative model remains authoritative.
+        pacing_default_speed = {"慢": 0.85, "标准": 1.0, "快": 1.15, "极快": 1.3}[pacing_value]
         creative_shots.append(
             CreativeShot(
                 index=int(shot.get("index", i)),
@@ -172,8 +178,8 @@ def validate_plan(raw: dict[str, Any]) -> CreativePlan:
                 focus_y=min(1.0, max(0.0, float(shot.get("focus_y", 0.5)))),
                 subtitle_position=str(shot.get("subtitle_position", "底部安全区")),
                 subtitle_style=str(shot.get("subtitle_style", "白字黑边")),
-                pacing=str(shot.get("pacing", "标准")),
-                speed=min(1.5, max(0.75, float(shot.get("speed", 1.0)))),
+                pacing=pacing_value,
+                speed=min(1.5, max(0.75, float(shot.get("speed", pacing_default_speed)))),
                 bgm_intensity=str(shot.get("bgm_intensity", "低")),
                 bgm_volume=min(0.35, max(0.0, float(shot.get("bgm_volume", 0.16)))),
                 transition=str(shot.get("transition", "硬切")) if str(shot.get("transition", "硬切")) in {"硬切", "淡入", "淡出", "交叉溶解"} else "硬切",
