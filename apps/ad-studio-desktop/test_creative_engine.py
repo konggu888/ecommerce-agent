@@ -40,6 +40,32 @@ class CreativeEngineTests(unittest.TestCase):
         self.assertEqual(plan.video_form, "真人+产品")
         self.assertEqual(len(plan.shots), 1)
 
+    def test_pacing_sets_executable_default_speed(self):
+        cases = (("慢", 0.85), ("标准", 1.0), ("快", 1.15), ("极快", 1.3))
+        for pacing, expected_speed in cases:
+            with self.subTest(pacing=pacing):
+                raw = sample_plan()
+                raw["shots"][0]["pacing"] = pacing
+                shot = validate_plan(raw).shots[0]
+                self.assertEqual(shot.pacing, pacing)
+                self.assertEqual(shot.speed, expected_speed)
+
+    def test_explicit_speed_overrides_pacing_default(self):
+        raw = sample_plan()
+        raw["shots"][0]["pacing"] = "快"
+        raw["shots"][0]["speed"] = 0.9
+        shot = validate_plan(raw).shots[0]
+        self.assertEqual(shot.pacing, "快")
+        self.assertEqual(shot.speed, 0.9)
+
+    def test_unknown_pacing_falls_back_to_standard(self):
+        raw = sample_plan()
+        raw["shots"][0]["pacing"] = "极其神速"
+        raw["shots"][0].pop("speed", None)
+        shot = validate_plan(raw).shots[0]
+        self.assertEqual(shot.pacing, "标准")
+        self.assertEqual(shot.speed, 1.0)
+
     def test_engine_uses_llm_output(self):
         seen = {}
         class FakeLLM:
