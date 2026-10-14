@@ -2,6 +2,13 @@
 
 > 本段优先级高于下方旧历史记录；如果下方内容提到旧 PR、旧 SHA 或旧任务，请以本段和 GitHub 实时状态为准。
 
+## 路线图执行指令（2026-10-14，优先于下方旧“下一步”记录）
+- 唯一战略路线图：`docs/AD_STUDIO_PRODUCT_ROADMAP.md`。所有 AI 接手后必须按该路线图执行，不可直接沿用旧备忘录里的开发顺序。
+- 最新已核对基线为 `83549d4ca428adc233d61da292e2f245d498da0d`；该 SHA 的 PR 触发 CI 与 docs-sync 已核对为 success。路线图提交产生新 SHA 后必须重新查询完整 CI Push/PR、docs-sync Push/PR 四项状态。
+- 当前主攻：阶段 2“商业级剪辑决策层”；下一项具体任务：A109“音乐节拍与画面切点真实联动”。先审计全局 BGM、逐镜头混音、最终拼接和原音轨同步，再决定安全的实现路径；不得只加检测函数/报告。
+- A108 是字幕基础时间轴与密度风险提示，不代表语义口播对齐、真实画面可读性或商业成片质量已验收。
+- PR #32 保持 open/unmerged。Windows 真机、真实素材、真实 Provider/扣费、剪映现场与真实投放数据验证继续暂缓。
+
 - 仓库：`konggu888/ecommerce-agent`
 - 项目：`apps/ad-studio-desktop`
 - 分支：`feat/product-drama-visual-review`
