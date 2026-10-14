@@ -219,3 +219,7 @@ A111 最新 SHA `fc445e75e40fd34e5b16868369700e685e2db276` 的 CI Push/PR 与 do
 
 ## A112 自动化验收结果｜2026-10-14
 代码基线 e8deb1ec4ef9edf7d999c79539762ea2627affab 的 CI Push 38570453607、CI PR 38570460103、docs-sync Push 38570453565、docs-sync PR 38570460195 均 success。此后每次提交仍需重新查询最新 SHA 的四项工作流，且 PR #32 保持 open/unmerged。
+
+## A3 设置区布局回归要求（2026-10-15）
+A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/方案数/素材来源控件放入独立 fields 容器，统一使用 row 0–6；把全部操作按钮移入独立 actions 容器的 6 列网格，避免操作按钮与输入控件共享同一 grid 单元格。新增 AST 回归测试检查 task_type=(2,1)、form=(3,1)、variant_count=(4,1)、footage_mode=(5,1)、footage_folder=(5,2)、文件夹按钮=(5,3) 与自动形式提示=(3,2)。该提交只证明源代码布局合同和静态 AST 断言；尚待最新 SHA 的完整 CI/doc-sync，且不替代 Windows 真机可用性验收。
+- 后续调整创建项目表单时，字段控件与操作按钮必须分属独立容器；修改后运行 `test_setup_form_grid_rows_do_not_overlap`，并核验完整 CI 与 docs-sync。

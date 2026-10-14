@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "28b28cfa453dc5fdc131b82b1c521c690afdcf03",
-  "audit_status": "requirement_level_semantic_dedup_reviewed_known_tasks_historical_gaps_unresolved_code_test_evidence_audit_started_A0_A3_partial_A3_ui_defect_blocking",
+  "audit_status": "requirement_level_semantic_dedup_reviewed_known_tasks_historical_gaps_unresolved_code_test_evidence_audit_A0_A3_partial_A3_layout_fix_pending_ci",
   "progress_percentages_enabled": false,
   "policy": "Historical headings are not proof. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until scope deduplication and weighting review.",
   "counts": {
@@ -133,13 +133,26 @@
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
       "roadmap_phase": "待路线图映射",
-      "development_status": "not_audited",
-      "acceptance_status": "not_audited",
+      "development_status": "implemented_pending_current_sha_ci_and_acceptance",
+      "acceptance_status": "partial_blocker_remediated_pending_ci",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/app.py",
+          "detail": "App.ui separates fields and actions containers; fixed field grid rows."
+        },
+        {
+          "kind": "test_added",
+          "path": "apps/ad-studio-desktop/test_desktop.py",
+          "detail": "test_setup_form_grid_rows_do_not_overlap AST checks seven required control placements and isolated action grid."
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "确认当前提交的 CI Push/PR 与 docs-sync Push/PR 全部成功",
+        "将 A3 其他任务选择/持久化合同逐项映射到当前代码与测试",
+        "Windows 真机可见性与交互验收按用户约定暂缓"
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -3856,7 +3869,7 @@
       "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
     ],
     "note": "Repeated headings can be status/history entries rather than duplicate requirements. Do not merge tasks solely because an ID appears in multiple headings. The eight IDs listed in known_id_gaps have no formal task heading in the four current source documents and remain unresolved pending historical investigation.",
-    "next_scope": "Evidence audit batch A0-A3 has started. A3 UI layout overlap was found; next fix the existing task/form/variant/footage setup-grid alignment with a regression test and all required docs in one code commit, then rerun checks. Continue A0-A5 evidence mapping only after that. Historical numbering gaps A68-A74/A99 remain unresolved; overall percent remains disabled."
+    "next_scope": "A3 grid-row collision fix and AST regression test are staged in the same candidate tree with all required documents. After committing, verify the exact new HEAD and four CI/doc-sync workflows. Only then continue A0-A5 evidence mapping. Historical gaps A68-A74/A99 remain unresolved; overall completion percentage remains disabled."
   },
   "inventory_method": "Heading inventory normalizes literal backslash-n sequences before parsing Markdown headings; historical headings are not proof of implementation or acceptance.",
   "historical_investigation": {
@@ -4501,6 +4514,19 @@
         "Do not mark A0-A3 accepted until per-task acceptance cases and current-SHA evidence are fully mapped.",
         "Windows real-machine testing remains deferred as previously agreed."
       ]
+    },
+    {
+      "batch_id": "PLAN-003-EVIDENCE-A3-UI-REMEDIATION",
+      "range": "A3 UI grid regression",
+      "status": "implemented_pending_current_sha_ci",
+      "current_parent_sha": "776cd2c99e779a5008ccfb77ab9878af2fa7e67d",
+      "changes": [
+        "Separate form fields into fields container",
+        "Move action buttons into separate six-column actions grid",
+        "Add AST regression test for task/form/variant/footage/folder/helper grid positions"
+      ],
+      "test": "test_setup_form_grid_rows_do_not_overlap",
+      "acceptance_boundary": "CI must pass on resulting HEAD; AST proves source layout contract only, not Windows rendering or interaction."
     }
   ]
 }

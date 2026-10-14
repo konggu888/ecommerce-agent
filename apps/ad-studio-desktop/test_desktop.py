@@ -1,4 +1,5 @@
 # A102 final-render fixtures mock the normalization output file explicitly.
+import ast
 import tempfile
 import unittest
 from pathlib import Path
@@ -11,6 +12,41 @@ from ad_studio.model_router import ModelRouter, ModelProfile, build_stage_prompt
 
 
 class DesktopCoreTests(unittest.TestCase):
+
+    def test_setup_form_grid_rows_do_not_overlap(self):
+        source_path = Path(__file__).with_name("ad_studio") / "app.py"
+        source = source_path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        ui = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "ui")
+
+        def grid_position(fragment):
+            for node in ast.walk(ui):
+                if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Attribute) or node.func.attr != "grid":
+                    continue
+                segment = ast.get_source_segment(source, node) or ""
+                if fragment not in segment:
+                    continue
+                keywords = {item.arg: ast.literal_eval(item.value) for item in node.keywords if item.arg in {"row", "column"}}
+                return keywords.get("row"), keywords.get("column")
+            self.fail(f"Could not find grid placement for {fragment!r}")
+
+        expected = {
+            "self.task_type": (2, 1),
+            "self.form": (3, 1),
+            "self.variant_count": (4, 1),
+            "self.footage_mode": (5, 1),
+            "textvariable=self.footage_folder": (5, 2),
+            "text='选择素材文件夹'": (5, 3),
+            "text='留空/自动：交给AI判断；手动选择仅作为约束'": (3, 2),
+        }
+        for fragment, position in expected.items():
+            with self.subTest(control=fragment):
+                self.assertEqual(grid_position(fragment), position)
+
+        self.assertIn("actions=ttk.Frame(setup)", source)
+        self.assertIn("ttk.Button(actions,text=label,command=command).grid(row=index//6,column=index%6", source)
+
 
     def test_ai_stage_prompts_preserve_product_fact_boundary(self):
         product = {"name": "商品X", "selling_points": ["用户确认卖点"], "specs": {"容量": "500ml"}}
