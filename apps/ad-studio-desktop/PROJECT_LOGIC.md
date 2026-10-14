@@ -1411,6 +1411,3 @@ ProductionStore._sync_actual_cost() 在发现成功账本记录后，会为所�
 
 ## 2026-10-14：文档同步 CI 契约
 `tools/check_ad_studio_docs.py` 的必需文档清单覆盖八个文件：根目录 `AGENTS.md`、`HELP.md`、`PROJECT_LOGIC.md`、验收计划、验收 SOP、`SESSION_HANDOFF.md`、`docs/AD_STUDIO_AI_HANDOFF.md` 和根目录未来功能备忘。只要桌面端代码/测试有变化，以上文件都必须在同一差异范围内更新。该脚本仅检查文件是否被同步修改，不替代人工检查内容是否准确、完整。
-
-
-文档同步 CI 测试实现补充（2026-10-14）：新增的契约测试必须保持有效 Python 语法，并由现有桌面单元测试发现规则自动执行；文档同步脚本负责检查同一差异中的必需文件清单。
