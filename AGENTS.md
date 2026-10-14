@@ -25,14 +25,16 @@
 ## 1. AI 接手项目时必须先读
 
 按以下顺序理解项目：
-1. docs/AD_STUDIO_AI_HANDOFF.md（无聊天历史的最短入口）
-2. 本文件 AGENTS.md
-3. apps/ad-studio-desktop/PROJECT_LOGIC.md
-4. apps/ad-studio-desktop/HELP.md
-5. 目标代码文件及其依赖
-6. 测试文件
-7. 如进行验收：docs/AD_STUDIO_ACCEPTANCE_PLAN.md
-8. 如进行验收：docs/AD_STUDIO_ACCEPTANCE_SOP.md
+1. apps/ad-studio-desktop/SESSION_HANDOFF.md（当前状态、HEAD、CI 与下一步）
+2. docs/AD_STUDIO_AI_HANDOFF.md（无聊天历史的最短入口）
+3. docs/AD_STUDIO_PRODUCT_ROADMAP.md（产品阶段与唯一战略优先级）
+4. 本文件 AGENTS.md
+5. apps/ad-studio-desktop/PROJECT_LOGIC.md
+6. apps/ad-studio-desktop/HELP.md
+7. 目标代码文件及其依赖
+8. 测试文件
+9. 如进行验收：docs/AD_STUDIO_ACCEPTANCE_PLAN.md
+10. 如进行验收：docs/AD_STUDIO_ACCEPTANCE_SOP.md
 
 没有读完以上文档，不得直接重构核心流程。
 

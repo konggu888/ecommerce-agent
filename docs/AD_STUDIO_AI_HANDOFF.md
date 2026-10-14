@@ -41,26 +41,25 @@
 - 任何具体显卡型号都不是系统最低配置或架构边界。
 - 修改桌面端代码必须同步更新 HELP.md 和 PROJECT_LOGIC.md，并通过文档同步检查。
 
-## 3. 当前验收进度
+## 3. 当前路线与进度
 
-以 docs/AD_STUDIO_ACCEPTANCE_PLAN.md 的正式顺序为准：
+产品战略顺序唯一以 `docs/AD_STUDIO_PRODUCT_ROADMAP.md` 为准；专项验收项与证据以 `docs/AD_STUDIO_ACCEPTANCE_PLAN.md` 为准。不要把下方历史记录或旧“下一步”当作当前执行顺序。
 
-**A0–A33：既有阶段记录；A34：AI 辅助商品画面对比（待最新 CI 验收）；A35：单镜头局部修复第一阶段已实现，待专项测试/CI 验收。**
+- 当前分支：`feat/product-drama-visual-review`；PR #32 open/unmerged，不得合并。
+- 当前已核对基线：A108 字幕基础自适应实现提交 `83549d4ca428adc233d61da292e2f245d498da0d`；路线图文件随后已提交，接手者必须重新查询当前 HEAD 及其 CI/doc-sync。
+- 当前主攻：商业级剪辑决策层升级。
+- 下一项具体工作：A109 音乐节拍与画面切点真实联动。先审计 BGM 在逐镜头处理、最终拼接和原音轨中的实际路径，再实现并测试真实时间轴联动。
+- A108 只覆盖按实际镜头时长生成字幕时间轴、长文案标点分段、短镜头减少切换并提示信息密度风险；不代表口播语义对齐、真实画面可读性或商业成片质量已验收。
+- 最低输出尺寸为 1080P 级（9:16 1080×1920、16:9 1920×1080、1:1 1080×1080）；放大输出不等于恢复真实细节。
+- Windows 真机、真实素材、真实 Provider/实际扣费、剪映现场及真实投放数据验收继续暂缓。
 
-不要把历史文档中的旧“下一阶段”文字当成当前状态；以本文件和验收计划中最新的 A31/A32 记录为准。
+## 4. 验收计划与路线图
 
-## 4. 验收计划
-
-唯一阶段顺序入口：docs/AD_STUDIO_ACCEPTANCE_PLAN.md
-
-A32 是既有 AI 接手能力阶段；当前工作先核验 A34 提示词/测试和最新 CI，再验收 A35 单镜头局部修复。接手入口仍应让没有任何本项目聊天历史的新 AI 独立找到：
-1. 项目目标
-2. 架构
-3. 当前进度
-4. 验收计划
-5. 测试方式
-6. 安全边界
-7. 下一步工作
+- 产品阶段、先后顺序、阶段退出条件：`docs/AD_STUDIO_PRODUCT_ROADMAP.md`。
+- 正式专项验收范围和清单：`docs/AD_STUDIO_ACCEPTANCE_PLAN.md`。
+- 验收操作规程：`docs/AD_STUDIO_ACCEPTANCE_SOP.md`。
+- AI 接手时必须独立找到：项目目标、架构、当前进度、当前路线、测试入口、安全边界、下一项任务。
+- 进入下一阶段前先确认当前阶段退出条件；不得把“功能代码存在”或“CI 绿灯”视为商业成片质量验收。
 
 ## 5. 测试入口
 
@@ -85,7 +84,7 @@ CI 还会运行前端语法、Python 语法、Typecheck、Engine 和 Risk Contro
 
 ## 7. 新 AI 的固定接手顺序
 
-**本文件 → AGENTS.md → PROJECT_LOGIC.md → HELP.md → AD_STUDIO_ACCEPTANCE_PLAN.md → 目标代码/测试 → 安全边界**
+**apps/ad-studio-desktop/SESSION_HANDOFF.md → 本文件 → docs/AD_STUDIO_PRODUCT_ROADMAP.md → AGENTS.md → PROJECT_LOGIC.md → HELP.md → AD_STUDIO_ACCEPTANCE_PLAN.md → AD_STUDIO_ACCEPTANCE_SOP.md → 目标代码/测试 → 安全边界**
 
 读完后，先检查当前最新 CI/失败日志和工作区状态，再决定是否继续修改。不得凭聊天记录或上一轮结论直接推进。
 
