@@ -595,3 +595,10 @@ A102 后续修正：首轮 CI 暴露测试夹具没有模拟归一化阶段输�
 - 新增测试覆盖变速淡出音频滤镜、短片段淡入及常速淡出。
 - 这项是单镜头淡化；相邻镜头交叉溶解、节奏分析和音乐卡点仍未完成。
 - 当前提交的完整 CI 与 docs-sync push/PR 结果待确认；PR #32 保持 open/unmerged。
+
+
+## A104：相邻镜头真实交叉溶解（当前提交待 CI）
+- 最新改动在 ffmpeg.concat_with_transitions() 中使用真实 xfade 画面交叠和 acrossfade 音频交叠，按镜头实际时长计算 offset；无音轨输入生成等长静音。
+- ProductionStore.build_final() 仅在非首镜头的 transition == “交叉溶解”时启用；其他项目保留原 concat。
+- 新增 test_ffmpeg.py 覆盖滤镜图、无音轨补静音与配置数量校验。
+- 当前提交的 CI push/PR 与 docs-sync push/PR 尚待核验。PR #32 必须保持 open/unmerged；Windows 真机、真实 Provider/扣费和剪映现场验收继续暂缓。
