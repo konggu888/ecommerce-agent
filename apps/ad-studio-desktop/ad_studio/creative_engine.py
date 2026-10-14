@@ -29,6 +29,7 @@ class CreativeShot:
     bgm_intensity: str = "低"
     bgm_volume: float = 0.16
     transition: str = "硬切"
+    editing_intent: dict = field(default_factory=dict)
 
 
 @dataclass
@@ -94,7 +95,7 @@ JSON_SCHEMA = {
         "objective": "string",
         "visual": "string",
         "dialogue": "string",
-        "duration_seconds": "integer",
+        "duration_seconds": "optional integer; omitted values use commercial-role defaults",
         "actor_requirements": ["string"],
         "scene_requirements": ["string"],
         "product_asset_requirements": ["string"],
@@ -106,11 +107,11 @@ JSON_SCHEMA = {
         "focus_y": "number 0..1",
         "subtitle_position": "顶部安全区|中部安全区|底部安全区|不显示",
         "subtitle_style": "白字黑边|黄字黑边|简洁白字",
-        "pacing": "慢|标准|快|极快；缺少 speed 时分别默认 0.85x/1.0x/1.15x/1.3x",
+        "pacing": "optional 慢|标准|快|极快；缺省时按商业镜头角色推断",
         "speed": "optional number 0.75..1.5; omit to use pacing default",
         "bgm_intensity": "无|低|中|高",
         "bgm_volume": "number 0..0.35",
-        "transition": "硬切|淡入|淡出|交叉溶解"
+        "transition": "optional 硬切|淡入|淡出|交叉溶解；缺省时按商业镜头角色推断"
     }]
 }
 
@@ -130,6 +131,39 @@ def _text_list(value: Any) -> list[str]:
     if not isinstance(value, list):
         return []
     return [str(x).strip() for x in value if str(x).strip()]
+
+
+def resolve_editing_intent(shot: dict[str, Any], *, is_last_shot: bool = False) -> dict[str, Any]:
+    """Resolve auditable editing defaults from declared shot text; not visual understanding."""
+    text = " ".join(str(shot.get(key, "") or "") for key in
+                    ("objective", "visual", "dialogue", "cta_role", "generation_prompt")).lower()
+    groups = {
+        "cta": ("cta", "行动号召", "立即购买", "下单", "点击", "咨询", "购买", "转化", "领券"),
+        "product_detail": ("商品特写", "产品特写", "细节", "材质", "接口", "外观", "参数", "质感", "商品展示", "产品展示"),
+        "demonstration": ("演示", "使用方法", "操作步骤", "功能展示", "使用过程", "如何使用", "实操"),
+        "proof": ("证明", "对比", "测试", "证据", "验证", "前后变化", "实测"),
+        "hook": ("开场", "钩子", "抓眼球", "反常识", "悬念", "第一秒", "吸引注意"),
+        "pain_point": ("痛点", "麻烦", "困扰", "问题场景", "顾虑", "不方便"),
+        "reaction": ("反应", "惊讶", "犹豫", "情绪变化", "人物表情"),
+    }
+    if str(shot.get("cta_role", "")).strip():
+        role = "cta"
+    else:
+        role = next((name for name, terms in groups.items() if any(term in text for term in terms)), "story_beat")
+    defaults = {
+        "cta": (3, "标准", 1.0, "淡出" if is_last_shot else "硬切", "行动号召需要留出清晰读取与决策时间；末镜头默认淡出收束。"),
+        "product_detail": (4, "慢", 0.85, "交叉溶解", "商品细节需要更长观察时间，采用较慢节奏并柔和衔接。"),
+        "demonstration": (5, "标准", 1.0, "硬切", "功能/使用演示需要足够时间看清操作步骤。"),
+        "proof": (4, "慢", 0.85, "交叉溶解", "证据或对比需要观察差异，默认放慢并柔和衔接。"),
+        "hook": (2, "快", 1.15, "硬切", "开场钩子优先快速建立注意，默认短时长与较快节奏。"),
+        "pain_point": (3, "快", 1.15, "硬切", "痛点应快速明确，避免铺陈过长。"),
+        "reaction": (3, "慢", 0.85, "硬切", "人物反应需要短暂停留以传递情绪。"),
+        "story_beat": (3, "标准", 1.0, "硬切", "未识别到明确商业角色，使用保守标准节奏与硬切。"),
+    }
+    duration, pacing, speed, transition, rationale = defaults[role]
+    return {"role": role, "duration_seconds": duration, "pacing": pacing, "speed": speed,
+            "transition": transition, "rationale": rationale,
+            "basis": "分镜文本关键词规则；不是对生成画面的视觉语义识别"}
 
 
 def validate_plan(raw: dict[str, Any]) -> CreativePlan:
@@ -154,20 +188,20 @@ def validate_plan(raw: dict[str, Any]) -> CreativePlan:
     for i, shot in enumerate(shots, 1):
         if not isinstance(shot, dict):
             raise CreativePlanError(f"第{i}个分镜不是对象")
-        pacing_value = str(shot.get("pacing", "标准"))
+        intent = resolve_editing_intent(shot, is_last_shot=(i == len(shots)))
+        pacing_value = str(shot.get("pacing", intent["pacing"]))
         if pacing_value not in {"慢", "标准", "快", "极快"}:
-            pacing_value = "标准"
-        # Pacing is an executable default, not just descriptive metadata.
-        # The schema marks speed optional, so omitted values can use the pacing default.
-        # An explicit speed from the creative model remains authoritative.
+            pacing_value = intent["pacing"]
+        # Explicit model decisions win; role-based defaults fill missing fields only.
         pacing_default_speed = {"慢": 0.85, "标准": 1.0, "快": 1.15, "极快": 1.3}[pacing_value]
+        default_duration = intent["duration_seconds"]
         creative_shots.append(
             CreativeShot(
                 index=int(shot.get("index", i)),
                 objective=str(shot.get("objective", "")),
                 visual=str(shot.get("visual", "")),
                 dialogue=str(shot.get("dialogue", "")),
-                duration_seconds=max(1, int(shot.get("duration_seconds", 3))),
+                duration_seconds=max(1, int(shot.get("duration_seconds", default_duration))),
                 actor_requirements=_text_list(shot.get("actor_requirements")),
                 scene_requirements=_text_list(shot.get("scene_requirements")),
                 product_asset_requirements=_text_list(shot.get("product_asset_requirements")),
@@ -180,10 +214,11 @@ def validate_plan(raw: dict[str, Any]) -> CreativePlan:
                 subtitle_position=str(shot.get("subtitle_position", "底部安全区")),
                 subtitle_style=str(shot.get("subtitle_style", "白字黑边")),
                 pacing=pacing_value,
-                speed=min(1.5, max(0.75, float(shot.get("speed", pacing_default_speed)))),
+                speed=min(1.5, max(0.75, float(shot.get("speed", pacing_default_speed if "pacing" in shot else intent["speed"])))),
                 bgm_intensity=str(shot.get("bgm_intensity", "低")),
                 bgm_volume=min(0.35, max(0.0, float(shot.get("bgm_volume", 0.16)))),
-                transition=str(shot.get("transition", "硬切")) if str(shot.get("transition", "硬切")) in {"硬切", "淡入", "淡出", "交叉溶解"} else "硬切",
+                transition=str(shot.get("transition", intent["transition"])) if str(shot.get("transition", intent["transition"])) in {"硬切", "淡入", "淡出", "交叉溶解"} else intent["transition"],
+                editing_intent={**intent, "duration_source": "explicit" if "duration_seconds" in shot else "role_default", "speed_source": "explicit" if "speed" in shot else ("pacing_default" if "pacing" in shot else "role_default"), "transition_source": "explicit" if "transition" in shot else "role_default"},
             )
         )
 

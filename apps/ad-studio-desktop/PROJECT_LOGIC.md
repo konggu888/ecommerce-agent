@@ -1441,3 +1441,7 @@ ProductionStore.build_final() 检查每个非首镜头的 Shot.transition；只�
 
 ## A105：分镜 pacing 到实际播放速度的执行闭环
 `creative_engine.validate_plan()` 在规范化分镜时校验 `pacing`；缺失 `speed` 时将慢/标准/快/极快映射为 0.85/1.0/1.15/1.3 倍速，未知 pacing 回退标准。分镜 schema 中 `speed` 为可选项；若 LLM 显式返回 `speed`，显式值经既有 0.75–1.5 范围夹紧后优先。该 `CreativeShot.speed` 会进入现有单镜头后处理并同时调整视频时间戳与原音轨速度。该项修复了 pacing 标签与执行参数脱节的问题，但没有实现按画面动作、情绪曲线、台词密度或音乐节拍自动决定每镜头节奏。
+
+
+## A106：基于商业镜头角色的可追溯默认剪辑决策
+`creative_engine.resolve_editing_intent()` 根据镜头 objective/visual/dialogue/cta_role/generation_prompt 中的文本关键词，将镜头归类为 hook、product_detail、demonstration、proof、pain_point、reaction、cta 或 story_beat，并给出默认时长、pacing/speed、transition 与理由。仅在对应字段缺失时采用默认值；显式 duration/speed/transition 保持优先。结果存入 `CreativeShot.editing_intent`，包含参数来源与“文本规则而非视觉识别”的边界说明。当前 production 已消费同一分镜的 duration、speed 与 transition，因此这些默认值进入既有生成/后处理/拼接链。关键词规则会受文本措辞影响，不能替代真实画面分析、音乐卡点、字幕密度优化或剪后质量反馈。

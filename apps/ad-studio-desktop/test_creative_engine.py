@@ -67,6 +67,51 @@ class CreativeEngineTests(unittest.TestCase):
         self.assertEqual(shot.pacing, "标准")
         self.assertEqual(shot.speed, 1.0)
 
+    def test_role_defaults_drive_duration_speed_and_transition(self):
+        cases = [
+            ({"objective": "开场钩子：反常识问题"}, "hook", 2, 1.15, "硬切"),
+            ({"objective": "商品细节展示", "visual": "商品特写与材质"}, "product_detail", 4, 0.85, "交叉溶解"),
+            ({"objective": "功能演示", "visual": "逐步展示使用方法"}, "demonstration", 5, 1.0, "硬切"),
+            ({"objective": "实测对比证明"}, "proof", 4, 0.85, "交叉溶解"),
+        ]
+        for fields, role, duration, speed, transition in cases:
+            with self.subTest(role=role):
+                raw = sample_plan()
+                shot = raw["shots"][0]
+                shot.update(fields)
+                for key in ("duration_seconds", "pacing", "speed", "transition"):
+                    shot.pop(key, None)
+                resolved = validate_plan(raw).shots[0]
+                self.assertEqual(resolved.editing_intent["role"], role)
+                self.assertEqual(resolved.duration_seconds, duration)
+                self.assertEqual(resolved.speed, speed)
+                self.assertEqual(resolved.transition, transition)
+                self.assertEqual(resolved.editing_intent["duration_source"], "role_default")
+                self.assertTrue(resolved.editing_intent["rationale"])
+
+    def test_last_cta_defaults_to_fade_out(self):
+        raw = sample_plan()
+        shot = raw["shots"][0]
+        shot.update({"objective": "结束购买提醒", "cta_role": "下单转化"})
+        for key in ("duration_seconds", "pacing", "speed", "transition"):
+            shot.pop(key, None)
+        resolved = validate_plan(raw).shots[0]
+        self.assertEqual(resolved.editing_intent["role"], "cta")
+        self.assertEqual(resolved.transition, "淡出")
+        self.assertEqual(resolved.editing_intent["transition_source"], "role_default")
+
+    def test_explicit_editing_decisions_override_role_defaults(self):
+        raw = sample_plan()
+        shot = raw["shots"][0]
+        shot.update({"objective": "商品细节特写", "duration_seconds": 7, "pacing": "快", "speed": 1.2, "transition": "硬切"})
+        resolved = validate_plan(raw).shots[0]
+        self.assertEqual(resolved.duration_seconds, 7)
+        self.assertEqual(resolved.speed, 1.2)
+        self.assertEqual(resolved.transition, "硬切")
+        self.assertEqual(resolved.editing_intent["duration_source"], "explicit")
+        self.assertEqual(resolved.editing_intent["speed_source"], "explicit")
+        self.assertEqual(resolved.editing_intent["transition_source"], "explicit")
+
     def test_engine_uses_llm_output(self):
         seen = {}
         class FakeLLM:
