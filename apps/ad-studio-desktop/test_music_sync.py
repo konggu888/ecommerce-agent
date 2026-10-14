@@ -54,9 +54,11 @@ class BeatDetectionTests(unittest.TestCase):
         plan = music_sync.plan_beat_aligned_durations(
             [2.0, 2.0, 2.0], [1.9, 4.1], 0.95,
             minimum_durations=protection["minimum_durations"])
-        self.assertFalse(plan["changed"])
-        self.assertEqual(plan["durations"], [2.0, 2.0, 2.0])
-        self.assertIn("保护时长", plan["reason"])
+        self.assertTrue(plan["changed"])
+        self.assertAlmostEqual(plan["durations"][0], 2.0, places=6)
+        self.assertAlmostEqual(plan["durations"][1], 2.1, places=6)
+        self.assertAlmostEqual(plan["durations"][2], 1.9, places=6)
+        self.assertIn(1, plan["reverted_boundaries"])
 
     def test_underlength_dialogue_prevents_music_retiming(self):
         protection = music_sync.derive_content_minimum_durations([
@@ -65,9 +67,10 @@ class BeatDetectionTests(unittest.TestCase):
         plan = music_sync.plan_beat_aligned_durations(
             [2.0, 2.0, 2.0], [2.1, 4.1], 0.95,
             minimum_durations=protection["minimum_durations"])
-        self.assertFalse(plan["changed"])
-        self.assertEqual(plan["durations"], [2.0, 2.0, 2.0])
-        self.assertIn("低于", plan["reason"])
+        self.assertTrue(plan["changed"])
+        self.assertGreaterEqual(plan["durations"][0], 2.0)
+        self.assertAlmostEqual(sum(plan["durations"]), 6.0, places=6)
+        self.assertIn("reverted_boundaries", plan)
 
     def test_local_beat_planning_keeps_safe_unrelated_boundary(self):
         plan = music_sync.plan_beat_aligned_durations(

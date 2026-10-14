@@ -183,7 +183,7 @@ def plan_beat_aligned_durations(durations:list[float], beat_times:list[float], c
     return {"durations":proposed if changed else original,"changed":changed,
             "boundaries":points if changed else [sum(original[:i]) for i in range(1,len(original))],
             "adjusted_boundaries":adjusted,"reverted_boundaries":sorted(reverted),
-            "reason":("仅调整安全边界；冲突边界保留原位置" if reverted else "切点已在安全范围内贴近音乐节拍") if changed
+            "reason":("局部卡点仅调整安全边界；冲突边界保留原位置" if reverted else "切点已在安全范围内贴近音乐节拍") if changed
                      else ("冲突边界保留原位置，其他边界无需调整" if reverted else "现有切点已足够接近节拍")}
 
 def _has_audio(path:Path)->bool:
