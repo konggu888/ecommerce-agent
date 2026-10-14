@@ -1408,3 +1408,6 @@ ProductionStore._sync_actual_cost() 在发现成功账本记录后，会为所�
 - 当某轴不存在多余画面时，该轴裁切起点为 0，无法仅靠裁切将焦点移到中心；不得声称所有输入比例下焦点都能被完全居中。
 - `adapt_aspect()` 是独立中心裁切路径，不执行 AI 焦点定位；`process_shot()` 才执行焦点驱动裁切。
 - 单元测试检查真实 FFmpeg `-vf` 命令字符串及无效值处理；仍需真实成片视觉检查来验证最终画面效果。
+
+## 2026-10-14：文档同步 CI 契约
+`tools/check_ad_studio_docs.py` 的必需文档清单覆盖八个文件：根目录 `AGENTS.md`、`HELP.md`、`PROJECT_LOGIC.md`、验收计划、验收 SOP、`SESSION_HANDOFF.md`、`docs/AD_STUDIO_AI_HANDOFF.md` 和根目录未来功能备忘。只要桌面端代码/测试有变化，以上文件都必须在同一差异范围内更新。该脚本仅检查文件是否被同步修改，不替代人工检查内容是否准确、完整。

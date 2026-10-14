@@ -119,3 +119,6 @@ GitHub Actions 也会执行相同检查；代码改了而两个文档没有同�
 - 每个创意方案必须独立保存完整 shots 快照。
 - 恢复方案不能只按 index 匹配；原始镜头按稳定 id 恢复，人工纳入的额外镜头必须完整保留。
 - 修改桌面端代码时同步更新 HELP.md 与 PROJECT_LOGIC.md，并重新检查 CI/doc-sync。
+
+## Desktop 项目文档同步硬性规则（2026-10-14）
+当 `apps/ad-studio-desktop/` 下有代码或测试文件变更时，同一变更必须同时更新以下全部项目文档/规则文件：`AGENTS.md`、`apps/ad-studio-desktop/HELP.md`、`apps/ad-studio-desktop/PROJECT_LOGIC.md`、`docs/AD_STUDIO_ACCEPTANCE_PLAN.md`、`docs/AD_STUDIO_ACCEPTANCE_SOP.md`、`apps/ad-studio-desktop/SESSION_HANDOFF.md`、`docs/AD_STUDIO_AI_HANDOFF.md`、`docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md`。由 `tools/check_ad_studio_docs.py` 在 CI 中强制检查；单独的 docs-sync 通过不等于完整 CI 通过。

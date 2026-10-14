@@ -369,3 +369,9 @@ A85 为每集可选的 `continuity_state.character_state_ledger` 建立跨集审
 - 接手后必须重新读取 `apps/ad-studio-desktop/SESSION_HANDOFF.md`，查询当前 HEAD、PR #32、当前 SHA 的完整 CI 与 docs-sync；本次修正之后的 SHA 结果不得继承旧提交的绿色结果。
 - 继续逐项实现并验收动态节奏、镜头衔接、字幕信息密度、音乐卡点、商品展示节奏与剪后反馈。不要把焦点定位这一小项说成商业级剪辑整体完成。
 - Windows 真机、真实 Provider/扣费和剪映现场验收按用户要求继续暂缓。
+
+## 2026-10-14：文档同步 CI 覆盖范围修正
+- 旧脚本只要求 HELP.md、PROJECT_LOGIC.md 同步，未覆盖接手规则中的其他关键文件。
+- 已将文档同步契约扩展为八个文件，并增加契约测试，防止清单回退。
+- 本次提交后必须重新核验最新 SHA 的完整 CI push/PR 与 docs-sync push/PR；PR #32 不得合并。
+- 接手后仍须阅读 SESSION_HANDOFF.md 并人工确认文档内容；文件路径被更新不等于语义已完整同步。

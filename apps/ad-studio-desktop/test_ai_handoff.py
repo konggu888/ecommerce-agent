@@ -140,5 +140,22 @@ class AIHandoffTests(unittest.TestCase):
         self.assertIn("A64", text)
         self.assertIn("成本待核对", text)
 
-if __name__ == "__main__":
+
+    def test_doc_sync_checker_requires_all_cross_session_documents(self):
+        checker = (ROOT / "tools" / "check_ad_studio_docs.py").read_text(encoding="utf-8")
+        required_paths = (
+            "AGENTS.md",
+            "apps/ad-studio-desktop/HELP.md",
+            "apps/ad-studio-desktop/PROJECT_LOGIC.md",
+            "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+            "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+            "apps/ad-studio-desktop/SESSION_HANDOFF.md",
+            "docs/AD_STUDIO_AI_HANDOFF.md",
+            "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md",
+        )
+        for path in required_paths:
+            with self.subTest(path=path):
+                self.assertIn(path, checker)
+        self.assertIn("Desktop code changes must update all files listed in REQUIRED", checker)
+\nif __name__ == "__main__":
     unittest.main()

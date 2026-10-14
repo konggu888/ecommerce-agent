@@ -552,3 +552,10 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - `test_postprocess.py` 验证实际传给 FFmpeg 的 `-vf` 字符串、焦点定位表达式、边界夹紧及非法/非有限输入回退。它不等于真实视频画面已视觉验收。
 - 下一步：检查最新提交四项 CI/docs-sync；在可用的本地仓库环境运行桌面全量单测与语法检查；随后继续审查目标驱动的节奏、镜头衔接、字幕密度、音画卡点和剪后反馈。
 - 必须同步维护 HELP、PROJECT_LOGIC、本文件、验收计划、验收 SOP、`docs/AD_STUDIO_AI_HANDOFF.md` 和根目录未来功能备忘。PR #32 保持 open/unmerged；Windows 真机、真实 Provider/扣费和剪映现场验收继续暂缓。
+
+## 2026-10-14 最新接手补充：文档同步 CI 扩围（本次变更后需重新查 CI）
+- 已发现旧的 `tools/check_ad_studio_docs.py` 只强制检查 HELP.md 与 PROJECT_LOGIC.md，覆盖范围小于项目既定接手规则。
+- 本次将其扩展为要求同一桌面代码/测试变更同时修改八个规则/文档文件，并增加自动化契约测试。
+- 变更后必须重新查询本分支最新 HEAD 对应的 CI push、CI PR、docs-sync push、docs-sync PR；不能把本次变更前 SHA 的绿色结果当作本次结果。
+- 文档检查只验证规定文件是否出现在同一差异中，不证明文档内容语义完全正确；仍需审阅差异，并将 docs-sync 与完整 CI 分开报告。
+- PR #32 继续保持 open/unmerged；不执行合并。
