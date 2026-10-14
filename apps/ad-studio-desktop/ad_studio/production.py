@@ -9,6 +9,8 @@ from .models import Project, Shot, accept_hybrid_generated_shot
 from .ffmpeg import make_clip, concat, concat_with_transitions
 from .providers import GenerationRequest, load_video_provider, load_asset_provider
 from .postprocess import process_shot, normalize_output_resolution
+from .postprocess import probe_duration
+from .music_sync import analyze_music_file, plan_beat_aligned_durations, retime_clip, mix_global_bgm
 from .library import LocalLibrary
 from .asset_generation import AssetGenerator, LocalAssetBackend
 from .hardware import detect_hardware
@@ -902,20 +904,61 @@ class ProductionStore:
         suffix=f'-v{int(variant_index)}' if variant_index else ''
         episode_suffix=f'-ep{int(episode_number)}' if episode_number is not None else ''
         out=self.root/'final'/project.id/f'final-{aspect.replace(":", "x")}{episode_suffix}{suffix}.mp4'
+        out.parent.mkdir(parents=True, exist_ok=True)
         concat_path = out.with_name(out.stem + ".concat.tmp.mp4")
+        bgm_path = out.with_name(out.stem + ".bgm.tmp.mp4")
         normalized_path = out.with_name(out.stem + ".1080p.tmp.mp4")
+        retimed_paths = []
         try:
             shot_paths = [Path(s.video_path) for s in shots]
+            bgm_value = (project.creative_plan or {}).get("final_bgm_path")
+            if bgm_value:
+                bgm = Path(str(bgm_value)).expanduser()
+                if not bgm.is_file() or bgm.stat().st_size <= 0:
+                    raise RuntimeError(f"项目设置的全局BGM不存在或为空：{bgm}")
+                analysis = analyze_music_file(bgm)
+                original_durations = [probe_duration(path) for path in shot_paths]
+                plan = plan_beat_aligned_durations(original_durations, analysis.get("beats", []),
+                                                   analysis.get("confidence", 0.0))
+                music_audit = {
+                    "enabled": True, "path": str(bgm), "bpm": analysis.get("bpm"),
+                    "confidence": analysis.get("confidence", 0.0), "changed": bool(plan.get("changed")),
+                    "reason": plan.get("reason"), "beat_reason": analysis.get("reason"),
+                    "original_durations": original_durations,
+                    "planned_durations": plan.get("durations", original_durations),
+                }
+                if plan.get("changed"):
+                    adjusted_paths = []
+                    for idx, (shot_path, original_duration, target_duration) in enumerate(
+                            zip(shot_paths, original_durations, plan["durations"])):
+                        speed = original_duration / target_duration
+                        if abs(speed - 1.0) < 0.0075:
+                            adjusted_paths.append(shot_path)
+                            continue
+                        retimed = out.with_name(f"{out.stem}.beat-shot-{idx + 1}.tmp.mp4")
+                        retime_clip(shot_path, retimed, speed)
+                        retimed_paths.append(retimed)
+                        adjusted_paths.append(retimed)
+                    shot_paths = adjusted_paths
+                project.creative_plan["last_music_sync_audit"] = music_audit
             shot_transitions = [str(getattr(s, 'transition', '硬切') or '硬切') for s in shots]
             if any(value == '交叉溶解' for value in shot_transitions[1:]):
                 concat_with_transitions(shot_paths, concat_path, shot_transitions, aspect=aspect)
             else:
                 concat(shot_paths, concat_path)
-            normalize_output_resolution(concat_path, normalized_path, aspect)
+            if bgm_value:
+                mix_global_bgm(concat_path, Path(str(bgm_value)),
+                               bgm_path, float((project.creative_plan or {}).get("final_bgm_volume", 0.16) or 0.16))
+                normalize_output_resolution(bgm_path, normalized_path, aspect)
+            else:
+                normalize_output_resolution(concat_path, normalized_path, aspect)
             normalized_path.replace(out)
         finally:
             concat_path.unlink(missing_ok=True)
+            bgm_path.unlink(missing_ok=True)
             normalized_path.unlink(missing_ok=True)
+            for path in retimed_paths:
+                path.unlink(missing_ok=True)
         media_check=self.inspect_final_output(out, aspect)
         if not media_check["valid"]:
             if out.exists():

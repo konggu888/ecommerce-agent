@@ -1822,11 +1822,11 @@ class App(tk.Tk):
         ttk.Label(frm,text='字幕',font=('Microsoft YaHei UI',13,'bold')).pack(anchor='w')
         script=tk.Text(frm,height=7); script.pack(fill='both',expand=True,pady=6); script.insert('1.0',s.script)
         bgms=self.lib.reusable('BGM'); names=['不添加BGM']+[a.name for a in bgms]; bm=tk.StringVar(value=names[0])
-        ttk.Label(frm,text='BGM').pack(anchor='w'); ttk.Combobox(frm,textvariable=bm,values=names,state='readonly').pack(fill='x',pady=5)
+        ttk.Label(frm,text='成片统一BGM（最终拼接时连续播放，不在每个镜头重启）').pack(anchor='w'); ttk.Combobox(frm,textvariable=bm,values=names,state='readonly').pack(fill='x',pady=5)
         def run():
             try:
                 from .subtitles import write_srt, analyze_subtitle_density
-                from .postprocess import burn_subtitles, mix_audio, probe_duration
+                from .postprocess import burn_subtitles, probe_duration
                 base=Path(s.video_path); folder=self.store.root/'postprocessed'/self.project.id/s.id
                 folder.mkdir(parents=True,exist_ok=True)
                 subtitle_text=script.get('1.0','end').strip()
@@ -1846,10 +1846,17 @@ class App(tk.Tk):
                 subout=folder/f'v{s.version}-sub.mp4'
                 burn_subtitles(base,subout,srt,getattr(s,'subtitle_position','底部安全区'),getattr(s,'subtitle_style','白字黑边'))
                 chosen=next((a for a in bgms if a.name==bm.get()),None); final=subout
+                # Save BGM at project level; final render starts it once after picture assembly.
                 if chosen and chosen.path and getattr(s,'bgm_intensity','低') != '无':
-                    audioout=folder/f'v{s.version}-audio.mp4'; mix_audio(subout,audioout,Path(chosen.path),getattr(s,'bgm_volume',0.16)); final=audioout
+                    self.project.creative_plan['final_bgm_path']=str(Path(chosen.path).expanduser())
+                    self.project.creative_plan['final_bgm_name']=chosen.name
+                    self.project.creative_plan['final_bgm_volume']=float(getattr(s,'bgm_volume',0.16))
+                else:
+                    self.project.creative_plan.pop('final_bgm_path',None)
+                    self.project.creative_plan.pop('final_bgm_name',None)
+                    self.project.creative_plan.pop('final_bgm_volume',None)
                 s.video_path=str(final); s.status='本地成片加工完成'; self.store.save(self.project); self.refresh_shots(); self.show_shot()
-                self.detail.set(f'镜头 {s.index} 已完成字幕/音频加工：{final}'); win.destroy()
+                self.detail.set(f'镜头 {s.index} 字幕处理完成；成片统一BGM：{self.project.creative_plan.get("final_bgm_name","未选择")}'); win.destroy()
             except Exception as e: messagebox.showerror('本地成片加工失败',str(e))
         ttk.Button(frm,text='执行：字幕 + BGM/人声处理',command=run).pack(anchor='e',pady=8)
 
