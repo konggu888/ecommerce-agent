@@ -47,6 +47,22 @@ class BeatDetectionTests(unittest.TestCase):
         self.assertGreater(result["minimum_durations"][2], 2.0)
         self.assertIn("非视觉识别", result["shots"][0]["basis"])
 
+    def test_actual_srt_windows_protect_shortest_caption_display_time(self):
+        result = music_sync.derive_subtitle_minimum_duration([{"start": 0.0, "end": 0.4}, {"start": 0.4, "end": 2.0}], 2.0)
+        self.assertTrue(result["valid"])
+        self.assertAlmostEqual(result["minimum_duration"], 2.0)
+        self.assertIn("真实 SRT", result["reason"])
+
+    def test_actual_srt_windows_allow_safe_shortening_when_cues_are_long_enough(self):
+        result = music_sync.derive_subtitle_minimum_duration([{"start": 0.0, "end": 1.0}, {"start": 1.0, "end": 3.0}], 3.0)
+        self.assertTrue(result["valid"])
+        self.assertAlmostEqual(result["minimum_duration"], 1.95)
+
+    def test_invalid_srt_windows_fall_back(self):
+        result = music_sync.derive_subtitle_minimum_duration([{"start": 2.0, "end": 1.0}], 3.0)
+        self.assertFalse(result["valid"])
+        self.assertEqual(result["minimum_duration"], 3.0)
+
     def test_beat_snap_preserves_dialogue_and_product_holds(self):
         protection = music_sync.derive_content_minimum_durations([
             {"objective": "商品细节展示", "editing_intent": {"role": "product_detail"}}, {}, {}

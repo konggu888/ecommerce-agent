@@ -10,7 +10,8 @@ from .ffmpeg import make_clip, concat, concat_with_transitions
 from .providers import GenerationRequest, load_video_provider, load_asset_provider
 from .postprocess import process_shot, normalize_output_resolution
 from .postprocess import probe_duration
-from .music_sync import analyze_music_file, derive_content_minimum_durations, plan_beat_aligned_durations, retime_clip, mix_global_bgm
+from .music_sync import analyze_music_file, derive_content_minimum_durations, derive_subtitle_minimum_duration, plan_beat_aligned_durations, retime_clip, mix_global_bgm
+from .subtitles import parse_srt_cues
 from .library import LocalLibrary
 from .asset_generation import AssetGenerator, LocalAssetBackend
 from .hardware import detect_hardware
@@ -941,9 +942,40 @@ class ProductionStore:
                     row["editing_intent"] = row.get("editing_intent") or {}
                     content_rows.append(row)
                 content_protection = derive_content_minimum_durations(content_rows, original_durations)
+                subtitle_audit = []
+                subtitle_map = (project.creative_plan or {}).get("subtitle_timing_by_shot", {})
+                if not isinstance(subtitle_map, dict):
+                    subtitle_map = {}
+                combined_minimums = list(content_protection["minimum_durations"])
+                for shot_index, (shot, clip_path, clip_duration) in enumerate(zip(shots, shot_paths, original_durations)):
+                    record = subtitle_map.get(str(getattr(shot, "id", "")), {})
+                    reason = "未找到与当前镜头版本绑定的 SRT 记录，沿用常规内容保护"
+                    if isinstance(record, dict) and str(record.get("source_video_path", "")) == str(clip_path):
+                        try:
+                            recorded_duration = float(record.get("source_duration_seconds"))
+                            if abs(recorded_duration - clip_duration) > 0.15:
+                                raise ValueError("记录的字幕源时长与当前镜头不匹配")
+                            srt_path = Path(str(record.get("srt_path", ""))).expanduser()
+                            parsed = parse_srt_cues(srt_path, duration=clip_duration)
+                            protection = derive_subtitle_minimum_duration(parsed["cues"], clip_duration)
+                            if not protection["valid"]:
+                                raise ValueError(protection["reason"])
+                            combined_minimums[shot_index] = max(combined_minimums[shot_index], protection["minimum_duration"])
+                            reason = protection["reason"]
+                            subtitle_audit.append({
+                                "shot_index": shot_index + 1, "status": "applied",
+                                "srt_path": str(srt_path), "cue_count": parsed["cue_count"],
+                                "shortest_cue_seconds": protection.get("shortest_cue_seconds"),
+                                "minimum_duration": protection["minimum_duration"], "reason": reason,
+                            })
+                        except (OSError, ValueError, TypeError, KeyError) as exc:
+                            reason = f"SRT 时间窗不可用，保守回退：{exc}"
+                            subtitle_audit.append({"shot_index": shot_index + 1, "status": "fallback", "reason": reason})
+                    else:
+                        subtitle_audit.append({"shot_index": shot_index + 1, "status": "fallback", "reason": reason})
                 plan = plan_beat_aligned_durations(original_durations, analysis.get("beats", []),
                                                    analysis.get("confidence", 0.0), allow_retime=transition_safe,
-                                                   minimum_durations=content_protection["minimum_durations"])
+                                                   minimum_durations=combined_minimums)
                 music_audit = {
                     "enabled": True, "path": str(bgm), "bpm": analysis.get("bpm"),
                     "confidence": analysis.get("confidence", 0.0), "changed": bool(plan.get("changed")),
@@ -951,6 +983,7 @@ class ProductionStore:
                     "original_durations": original_durations,
                     "planned_durations": plan.get("durations", original_durations),
                     "content_protection": content_protection["shots"],
+                    "subtitle_timing_protection": subtitle_audit,
                 }
                 if plan.get("changed"):
                     adjusted_paths = []

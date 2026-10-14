@@ -215,3 +215,26 @@ def mix_global_bgm(video_path:Path,bgm_path:Path,output_path:Path,volume:float=0
     cmd += ["-filter_complex",filters,"-map","0:v","-map","[a]","-c:v","copy","-c:a","aac","-b:a","192k","-shortest","-movflags","+faststart",str(output_path)]
     subprocess.run(cmd,capture_output=True,check=True)
     return output_path
+
+
+def derive_subtitle_minimum_duration(cues: list[dict], original_duration: float,
+                                     minimum_cue_seconds: float = 0.65) -> dict:
+    """Protect real SRT cue windows from being shortened below a readable display floor."""
+    try:
+        duration = float(original_duration)
+        minimum_cue = float(minimum_cue_seconds)
+        windows = [(float(cue["start"]), float(cue["end"])) for cue in cues]
+    except (TypeError, ValueError, KeyError, OverflowError):
+        return {"valid": False, "minimum_duration": original_duration, "reason": "字幕 cue 数据无效，未增加时间轴约束"}
+    if (not math.isfinite(duration) or duration <= 0 or not math.isfinite(minimum_cue)
+            or minimum_cue <= 0 or not windows):
+        return {"valid": False, "minimum_duration": original_duration, "reason": "字幕 cue 或镜头时长无效，未增加时间轴约束"}
+    lengths = [end-start for start,end in windows]
+    if any(not math.isfinite(start) or not math.isfinite(end) or start < 0 or end <= start or end > duration + 0.15
+           for start,end in windows):
+        return {"valid": False, "minimum_duration": original_duration, "reason": "字幕 cue 时间窗与镜头时间轴不一致，未增加时间轴约束"}
+    shortest = min(lengths)
+    required = min(duration, duration * minimum_cue / shortest)
+    return {"valid": True, "minimum_duration": round(required,3),
+            "shortest_cue_seconds": round(shortest,3), "minimum_cue_seconds": minimum_cue,
+            "reason": "依据真实 SRT 最短 cue 时长，避免卡点变速将字幕停留压至 0.65 秒以下"}

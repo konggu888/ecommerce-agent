@@ -1855,6 +1855,15 @@ class App(tk.Tk):
                     self.project.creative_plan.pop('final_bgm_path',None)
                     self.project.creative_plan.pop('final_bgm_name',None)
                     self.project.creative_plan.pop('final_bgm_volume',None)
+                # Bind this exact subtitle-burned video version to the SRT timeline used to create it.
+                timing_map=self.project.creative_plan.setdefault('subtitle_timing_by_shot', {})
+                timing_map[s.id]={
+                    'srt_path':str(srt),
+                    'source_video_path':str(final),
+                    'source_version':int(getattr(s,'version',0) or 0),
+                    'source_duration_seconds':float(clip_duration),
+                    'cue_timeline_source':'A108 SRT generated for the actual source clip duration',
+                }
                 s.video_path=str(final); s.status='本地成片加工完成'; self.store.save(self.project); self.refresh_shots(); self.show_shot()
                 self.detail.set(f'镜头 {s.index} 字幕处理完成；成片统一BGM：{self.project.creative_plan.get("final_bgm_name","未选择")}'); win.destroy()
             except Exception as e: messagebox.showerror('本地成片加工失败',str(e))

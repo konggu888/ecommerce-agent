@@ -106,3 +106,58 @@ def write_srt_segments(segments, output: Path, max_chars=18):
         lines += [str(i), f"{_ts(row['start'])} --> {_ts(row['end'])}", row["text"], ""]
     output.write_text("\n".join(lines), encoding="utf-8")
     return output
+
+
+_SRT_TIMESTAMP = re.compile(r"^(\\d{2,}:\\d{2}:\\d{2}[,.]\\d{1,3})\\s*-->\\s*(\\d{2,}:\\d{2}:\\d{2}[,.]\\d{1,3})(?:\\s+.*)?$")
+
+
+def _parse_srt_timestamp(value: str) -> float:
+    match = re.fullmatch(r"(\\d{2,}):(\\d{2}):(\\d{2})[,.](\\d{1,3})", value.strip())
+    if not match:
+        raise ValueError("SRT 时间戳格式无效")
+    hours, minutes, seconds, fraction = match.groups()
+    if int(minutes) >= 60 or int(seconds) >= 60:
+        raise ValueError("SRT 时间戳中的分钟或秒超出范围")
+    millis = int(fraction.ljust(3, "0")[:3])
+    return int(hours) * 3600 + int(minutes) * 60 + int(seconds) + millis / 1000.0
+
+
+def parse_srt_cues(source: Path | str, duration: float | None = None,
+                   end_tolerance: float = 0.15) -> dict:
+    """Read real cue windows from SRT and validate them against one clip timeline."""
+    path = Path(source)
+    if not path.is_file() or path.stat().st_size <= 0:
+        raise ValueError("SRT 文件不存在或为空")
+    raw = path.read_text(encoding="utf-8-sig")
+    blocks = re.split(r"\\n\\s*\\n", raw.replace("\\r\\n", "\\n").replace("\\r", "\\n").strip())
+    cues = []
+    previous_start = -1.0
+    for block in blocks:
+        lines = [line.strip() for line in block.splitlines() if line.strip()]
+        if not lines:
+            continue
+        time_index = next((i for i, line in enumerate(lines) if "-->" in line), None)
+        if time_index is None or time_index + 1 >= len(lines):
+            raise ValueError("SRT cue 缺少时间窗或字幕文本")
+        match = _SRT_TIMESTAMP.fullmatch(lines[time_index])
+        if not match:
+            raise ValueError("SRT cue 时间窗格式无效")
+        start, end = _parse_srt_timestamp(match.group(1)), _parse_srt_timestamp(match.group(2))
+        text = "\\n".join(lines[time_index + 1:]).strip()
+        if not text or end <= start:
+            raise ValueError("SRT cue 文本为空或结束时间不晚于开始时间")
+        if start + 1e-6 < previous_start:
+            raise ValueError("SRT cue 时间顺序不一致")
+        previous_start = start
+        cues.append({"start": start, "end": end, "duration": end - start, "text": text})
+    if not cues:
+        raise ValueError("SRT 没有有效字幕 cue")
+    if duration is not None:
+        clip_duration = float(duration)
+        if not clip_duration > 0:
+            raise ValueError("镜头时长无效，无法校验 SRT 时间轴")
+        if any(cue["start"] < -1e-6 or cue["end"] > clip_duration + end_tolerance for cue in cues):
+            raise ValueError("SRT cue 超出镜头时间轴")
+        if abs(cues[-1]["end"] - clip_duration) > end_tolerance:
+            raise ValueError("SRT 结束时间与当前镜头时长不匹配")
+    return {"cues": cues, "cue_count": len(cues), "timeline_end": cues[-1]["end"], "duration": duration}
