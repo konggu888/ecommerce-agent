@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "generated_from_head": "3801204559bb05cb617a13ef249fe35db0030a50",
-  "audit_status": "all_113_numbered_task_titles_recovered_requirement_level_reviewed_final_cross_source_dedup_and_current_head_evidence_audit_pending",
+  "generated_from_head": "d6ada69a456311b8e9bf44792d373a391dab4ccc",
+  "audit_status": "all_113_numbered_task_titles_recovered_requirement_level_reviewed_cross_source_status_reconciliation_pending_current_head_code_test_evidence_audit_pending",
   "progress_percentages_enabled": false,
-  "policy": "Historical headings are not proof. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until scope deduplication and weighting review.",
+  "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until cross-source scope reconciliation and weighting review. Historical A68-A74 and A99 task identities have been recovered; their current-HEAD evidence audit remains pending.",
   "counts": {
     "numbered_slots": 113,
     "fully_audited": 0,
