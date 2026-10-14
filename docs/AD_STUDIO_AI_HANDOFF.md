@@ -480,7 +480,5 @@ A109 转场安全补充：当前切点变速遇到显式“交叉溶解”时保
 ## A112 自动化验收结果｜2026-10-14
 代码基线 e8deb1ec4ef9edf7d999c79539762ea2627affab 的 CI Push 38570453607、CI PR 38570460103、docs-sync Push 38570453565、docs-sync PR 38570460195 均 success。PR #32 继续 open/unmerged。后续任务先复核阶段 2 退出条件；Windows 真机、真实素材、Provider/扣费和商业效果继续暂缓。
 
-## PLAN-003 最新执行记录｜A3 设置区布局修复（2026-10-15）
-A3 的布局阻塞已完成代码与 AST 回归测试修改，但验收状态仍为待最新 SHA CI/doc-sync。检查 `test_setup_form_grid_rows_do_not_overlap` 与 `App.ui()` 的 `fields` / `actions` 分离。提交后必须核验 CI Push、CI PR、docs-sync Push、docs-sync PR 四项；四项成功后才可继续 A0–A5 证据审计。不要标记 A3 完整验收，不要计算总体百分比；PR #32 不合并，真实环境测试按既定边界暂缓。
-
-A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/方案数/素材来源控件放入独立 fields 容器，统一使用 row 0–6；把全部操作按钮移入独立 actions 容器的 6 列网格，避免操作按钮与输入控件共享同一 grid 单元格。新增 AST 回归测试检查 task_type=(2,1)、form=(3,1)、variant_count=(4,1)、footage_mode=(5,1)、footage_folder=(5,2)、文件夹按钮=(5,3) 与自动形式提示=(3,2)。该提交只证明源代码布局合同和静态 AST 断言；尚待最新 SHA 的完整 CI/doc-sync，且不替代 Windows 真机可用性验收。
+## PLAN-003 最新执行记录｜A3 布局修复与 A0–A5 证据审计（2026-10-15）
+当前 HEAD `f20bf426594a55ac74267641b53d9166acef6798` 的 CI Push/PR 与 docs-sync Push/PR 四项均成功。A3 设置区字段与操作按钮已分容器，新增 AST 布局回归测试；只代表自动化布局合同通过，不代表完整 A3 或 Windows UI 验收完成。A0–A5 证据映射已启动但仅部分完成：A0 启动链缺专门测试，A1 稳定性缺任务级矩阵，A2 缺 App.create() 直接编排测试，A4 缺损坏素材/扫描失败的完整测试映射，A5 缺视觉帧提取/分析失败回退的确定性测试映射。下一步继续逐项映射验收子条件并调查 A68–A74/A99 历史来源。PR #32 保持 open/unmerged；总体完成率关闭；真实环境验收继续暂缓。

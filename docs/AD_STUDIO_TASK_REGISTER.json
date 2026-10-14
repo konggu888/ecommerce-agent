@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "28b28cfa453dc5fdc131b82b1c521c690afdcf03",
-  "audit_status": "requirement_level_semantic_dedup_reviewed_known_tasks_historical_gaps_unresolved_code_test_evidence_audit_A0_A3_partial_A3_layout_fix_pending_ci",
+  "audit_status": "requirement_level_semantic_dedup_reviewed_known_tasks_historical_gaps_unresolved_code_test_evidence_A0_A5_partial_A3_layout_ci_green",
   "progress_percentages_enabled": false,
   "policy": "Historical headings are not proof. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until scope deduplication and weighting review.",
   "counts": {
@@ -18,7 +18,7 @@
     "semantic_dedup_completed": false,
     "code_test_evidence_audit_completed_ids": 0,
     "semantic_dedup_reviewed_task_ids": 105,
-    "code_test_evidence_reviewed_ids": 4
+    "code_test_evidence_reviewed_ids": 6
   },
   "known_id_gaps": [
     "A68",
@@ -39,13 +39,20 @@
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
       "roadmap_phase": "待路线图映射",
-      "development_status": "not_audited",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "source_or_ci",
+          "detail": "apps/ad-studio-desktop/ad_studio/app.py: App.__init__ creates Tk root, sets title/geometry/minsize and initializes libraries/store/model router/UI",
+          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "No dedicated startup/launch-path test mapped yet",
+        "code presence is not acceptance."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -71,13 +78,30 @@
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
       "roadmap_phase": "待路线图映射",
-      "development_status": "not_audited",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "source_or_ci",
+          "detail": "CI push run 38631620219 success",
+          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+        },
+        {
+          "kind": "source_or_ci",
+          "detail": "CI PR run 38631629453 success",
+          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+        },
+        {
+          "kind": "test",
+          "detail": "Current SHA full CI green",
+          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "General CI success is not a task-specific stability matrix",
+        "startup errors, missing dependencies, filesystem permission failures and recovery boundaries need explicit mapping."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -102,13 +126,35 @@
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
       "roadmap_phase": "待路线图映射",
-      "development_status": "not_audited",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "source_or_ci",
+          "detail": "apps/ad-studio-desktop/ad_studio/app.py: App.create() validates URL/budget/variant count, parses product, handles footage errors, builds plans",
+          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+        },
+        {
+          "kind": "source_or_ci",
+          "detail": "apps/ad-studio-desktop/ad_studio/engine.py: new_project()",
+          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+        },
+        {
+          "kind": "source_or_ci",
+          "detail": "apps/ad-studio-desktop/test_desktop.py: test_ai_create_plan_runs_full_understanding_to_asset_pipeline, test_project_lifecycle_isolated_between_projects, test_project_save_load",
+          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+        },
+        {
+          "kind": "test",
+          "detail": "Relevant tests exist and current SHA CI green; tests were not locally executed outside CI",
+          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "No direct App.create() UI orchestration test mapped",
+        "need finish acceptance-case to source/test links."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -134,7 +180,7 @@
       ],
       "roadmap_phase": "待路线图映射",
       "development_status": "implemented_pending_current_sha_ci_and_acceptance",
-      "acceptance_status": "partial_blocker_remediated_pending_ci",
+      "acceptance_status": "partial_automation_layout_contract_passed_other_acceptance_pending",
       "weight": null,
       "dependencies": [],
       "evidence": [
@@ -147,12 +193,45 @@
           "kind": "test_added",
           "path": "apps/ad-studio-desktop/test_desktop.py",
           "detail": "test_setup_form_grid_rows_do_not_overlap AST checks seven required control placements and isolated action grid."
+        },
+        {
+          "kind": "source_or_ci",
+          "detail": "apps/ad-studio-desktop/ad_studio/app.py: App.ui() fields/actions containers and row contract",
+          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+        },
+        {
+          "kind": "source_or_ci",
+          "detail": "apps/ad-studio-desktop/test_desktop.py: test_setup_form_grid_rows_do_not_overlap",
+          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+        },
+        {
+          "kind": "test",
+          "detail": "CI Push 38631620219 success",
+          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+        },
+        {
+          "kind": "test",
+          "detail": "CI PR 38631629453 success",
+          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+        },
+        {
+          "kind": "test",
+          "detail": "docs-sync Push 38631620187 success",
+          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+        },
+        {
+          "kind": "test",
+          "detail": "docs-sync PR 38631629510 success",
+          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+        },
+        {
+          "kind": "test",
+          "detail": "Existing test_task_type_is_persisted_and_not_replaced_by_platform",
+          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
         }
       ],
       "remaining_conditions": [
-        "确认当前提交的 CI Push/PR 与 docs-sync Push/PR 全部成功",
-        "将 A3 其他任务选择/持久化合同逐项映射到当前代码与测试",
-        "Windows 真机可见性与交互验收按用户约定暂缓"
+        "AST layout contract and CI passed, but remaining A3 task-selection/persistence acceptance mapping and Windows visual/interaction test remain open."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -177,13 +256,40 @@
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
       "roadmap_phase": "待路线图映射",
-      "development_status": "not_audited",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "source_or_ci",
+          "detail": "apps/ad-studio-desktop/ad_studio/app.py: App.create() checks footage folder, scan_footage(), rejects unusable media, persists footage_folder",
+          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+        },
+        {
+          "kind": "source_or_ci",
+          "detail": "apps/ad-studio-desktop/ad_studio/footage.py: scan_footage() and planning/validation helpers",
+          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+        },
+        {
+          "kind": "test",
+          "detail": "test_footage_planner_uses_only_supplied_assets_and_respects_task_rules",
+          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+        },
+        {
+          "kind": "test",
+          "detail": "test_footage_planner_rejects_missing_plan_output",
+          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+        },
+        {
+          "kind": "test",
+          "detail": "test_footage_plan_enforces_speech_filler_cleanup_and_timestamp_ranges",
+          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "Need map folder scanning, unsupported/corrupt media and source preservation cases to focused tests",
+        "test_desktop coverage alone is not exhaustive."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -208,13 +314,30 @@
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
       "roadmap_phase": "待路线图映射",
-      "development_status": "not_audited",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "source_or_ci",
+          "detail": "apps/ad-studio-desktop/ad_studio/app.py: build_visual_manifest(), ModelRouter.analyze_footage(), archive_analyzed_waste() path",
+          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+        },
+        {
+          "kind": "source_or_ci",
+          "detail": "apps/ad-studio-desktop/ad_studio/model_router.py: analyze_footage() stage",
+          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+        },
+        {
+          "kind": "test",
+          "detail": "Footage planner tests above cover plan validity, not visual frame extraction/analysis fidelity",
+          "sha": "f20bf426594a55ac74267641b53d9166acef6798"
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "No dedicated deterministic test for manifest frame extraction and visual-analysis failure/fallback was mapped in this batch",
+        "real visual accuracy cannot be established by CI."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -3869,7 +3992,7 @@
       "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
     ],
     "note": "Repeated headings can be status/history entries rather than duplicate requirements. Do not merge tasks solely because an ID appears in multiple headings. The eight IDs listed in known_id_gaps have no formal task heading in the four current source documents and remain unresolved pending historical investigation.",
-    "next_scope": "A3 grid-row collision fix and AST regression test are staged in the same candidate tree with all required documents. After committing, verify the exact new HEAD and four CI/doc-sync workflows. Only then continue A0-A5 evidence mapping. Historical gaps A68-A74/A99 remain unresolved; overall completion percentage remains disabled."
+    "next_scope": "A3 fields/actions layout and AST test landed in commit f20bf426594a55ac74267641b53d9166acef6798; CI Push/PR and docs-sync Push/PR all passed. A0-A5 source/test evidence is now partially mapped, none is fully accepted. Continue mapping each acceptance subcondition and investigate A68-A74/A99 historical numbering gaps."
   },
   "inventory_method": "Heading inventory normalizes literal backslash-n sequences before parsing Markdown headings; historical headings are not proof of implementation or acceptance.",
   "historical_investigation": {
@@ -4527,6 +4650,106 @@
       ],
       "test": "test_setup_form_grid_rows_do_not_overlap",
       "acceptance_boundary": "CI must pass on resulting HEAD; AST proves source layout contract only, not Windows rendering or interaction."
+    },
+    {
+      "batch_id": "PLAN-003-EVIDENCE-A0-A5",
+      "range": "A0-A5",
+      "status": "partial_source_test_mapping_current_sha_ci_green_not_accepted",
+      "current_sha": "f20bf426594a55ac74267641b53d9166acef6798",
+      "ci": {
+        "push": {
+          "run_id": 38631620219,
+          "status": "success",
+          "url": "https://github.com/konggu888/ecommerce-agent/actions/runs/38631620219"
+        },
+        "pr": {
+          "run_id": 38631629453,
+          "status": "success",
+          "url": "https://github.com/konggu888/ecommerce-agent/actions/runs/38631629453"
+        },
+        "docs_sync_push": {
+          "run_id": 38631620187,
+          "status": "success",
+          "url": "https://github.com/konggu888/ecommerce-agent/actions/runs/38631620187"
+        },
+        "docs_sync_pr": {
+          "run_id": 38631629510,
+          "status": "success",
+          "url": "https://github.com/konggu888/ecommerce-agent/actions/runs/38631629510"
+        }
+      },
+      "findings": {
+        "A0": {
+          "source": [
+            "apps/ad-studio-desktop/ad_studio/app.py: App.__init__ creates Tk root, sets title/geometry/minsize and initializes libraries/store/model router/UI"
+          ],
+          "tests": [],
+          "gap": "No dedicated startup/launch-path test mapped yet; code presence is not acceptance."
+        },
+        "A1": {
+          "source": [
+            "CI push run 38631620219 success",
+            "CI PR run 38631629453 success"
+          ],
+          "tests": [
+            "Current SHA full CI green"
+          ],
+          "gap": "General CI success is not a task-specific stability matrix; startup errors, missing dependencies, filesystem permission failures and recovery boundaries need explicit mapping."
+        },
+        "A2": {
+          "source": [
+            "apps/ad-studio-desktop/ad_studio/app.py: App.create() validates URL/budget/variant count, parses product, handles footage errors, builds plans",
+            "apps/ad-studio-desktop/ad_studio/engine.py: new_project()",
+            "apps/ad-studio-desktop/test_desktop.py: test_ai_create_plan_runs_full_understanding_to_asset_pipeline, test_project_lifecycle_isolated_between_projects, test_project_save_load"
+          ],
+          "tests": [
+            "Relevant tests exist and current SHA CI green; tests were not locally executed outside CI"
+          ],
+          "gap": "No direct App.create() UI orchestration test mapped; need finish acceptance-case to source/test links."
+        },
+        "A3": {
+          "source": [
+            "apps/ad-studio-desktop/ad_studio/app.py: App.ui() fields/actions containers and row contract",
+            "apps/ad-studio-desktop/test_desktop.py: test_setup_form_grid_rows_do_not_overlap"
+          ],
+          "tests": [
+            "CI Push 38631620219 success",
+            "CI PR 38631629453 success",
+            "docs-sync Push 38631620187 success",
+            "docs-sync PR 38631629510 success",
+            "Existing test_task_type_is_persisted_and_not_replaced_by_platform"
+          ],
+          "gap": "AST layout contract and CI passed, but remaining A3 task-selection/persistence acceptance mapping and Windows visual/interaction test remain open."
+        },
+        "A4": {
+          "source": [
+            "apps/ad-studio-desktop/ad_studio/app.py: App.create() checks footage folder, scan_footage(), rejects unusable media, persists footage_folder",
+            "apps/ad-studio-desktop/ad_studio/footage.py: scan_footage() and planning/validation helpers"
+          ],
+          "tests": [
+            "test_footage_planner_uses_only_supplied_assets_and_respects_task_rules",
+            "test_footage_planner_rejects_missing_plan_output",
+            "test_footage_plan_enforces_speech_filler_cleanup_and_timestamp_ranges"
+          ],
+          "gap": "Need map folder scanning, unsupported/corrupt media and source preservation cases to focused tests; test_desktop coverage alone is not exhaustive."
+        },
+        "A5": {
+          "source": [
+            "apps/ad-studio-desktop/ad_studio/app.py: build_visual_manifest(), ModelRouter.analyze_footage(), archive_analyzed_waste() path",
+            "apps/ad-studio-desktop/ad_studio/model_router.py: analyze_footage() stage"
+          ],
+          "tests": [
+            "Footage planner tests above cover plan validity, not visual frame extraction/analysis fidelity"
+          ],
+          "gap": "No dedicated deterministic test for manifest frame extraction and visual-analysis failure/fallback was mapped in this batch; real visual accuracy cannot be established by CI."
+        }
+      },
+      "limitations": [
+        "This batch maps available source/test evidence but does not execute tests locally; CI ran on GitHub.",
+        "A0/A1/A2/A4/A5 remain partial; A3 layout contract passed but full task-selection acceptance is still partial.",
+        "Windows real-machine rendering/interaction and real footage visual accuracy remain deferred."
+      ],
+      "next_step": "Continue A0-A5 case-by-case mapping; find historical origin of A68-A74/A99. Do not calculate global completion percentage."
     }
   ]
 }
