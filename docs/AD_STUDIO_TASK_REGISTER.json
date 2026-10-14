@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "28b28cfa453dc5fdc131b82b1c521c690afdcf03",
-  "audit_status": "initial_inventory_not_fully_audited",
+  "audit_status": "source_heading_inventory_completed_semantic_dedup_code_test_evidence_audit_pending",
   "progress_percentages_enabled": false,
   "policy": "Historical headings are not proof. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until scope deduplication and weighting review.",
   "counts": {
@@ -13,7 +13,10 @@
       "A111",
       "A112"
     ],
-    "weighting_completed": false
+    "weighting_completed": false,
+    "heading_inventory_completed_ids": 113,
+    "semantic_dedup_completed": false,
+    "code_test_evidence_audit_completed_ids": 0
   },
   "known_id_gaps": [
     "A68",
@@ -44,7 +47,19 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A0 · 启动、界面与基础工程"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "# 附录 A｜全项目逐阶段验收清单（A0–A33、B1–B3）",
+          "## A0 · 启动、界面与基础工程"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A1",
@@ -63,7 +78,18 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A1 · 工程稳定性"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A1 · 工程稳定性"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A2",
@@ -82,7 +108,18 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A2 · 新建项目"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A2 · 新建项目"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A3",
@@ -101,7 +138,18 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A3 · 任务选择"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A3 · 三类任务选择"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A4",
@@ -120,7 +168,18 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A4 · 原始素材管理"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A4 · 原始素材管理"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A5",
@@ -139,7 +198,18 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A5 · 素材视觉分析"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A5 · 素材视觉分析"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A6",
@@ -158,7 +228,19 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A6 · 商品资料",
+          "## 2026-10-09 验收记录：A6 商品资料库补强"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A6 · 商品资料"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A7",
@@ -177,7 +259,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A7 · 内容理解",
+          "## 2026-10-09 A7 验收记录",
+          "## 2026-10-09 A7 验收最终回归"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A7 · 内容理解"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A8",
@@ -196,7 +291,19 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A8 · 剪辑策略",
+          "## 2026-10-09 A8 验收记录"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A8 · 剪辑策略"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A9",
@@ -215,7 +322,18 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A9 · 真人口播"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A9 · 真人口播"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A10",
@@ -234,7 +352,18 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A10 · 音频"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A10 · 音频"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A11",
@@ -253,7 +382,18 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A11 · 字幕"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A11 · 字幕"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A12",
@@ -272,7 +412,18 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A12 · 缺口判断"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A12 · 缺口判断"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A13",
@@ -291,7 +442,18 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A13 · AI生成"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A13 · AI生成"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A14",
@@ -310,7 +472,18 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A14 · 实拍+AI混合制作"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A14 · 实拍+AI混合"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A15",
@@ -329,7 +502,18 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A15 · 电商短视频生产"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A15 · 电商短视频生产"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A16",
@@ -348,7 +532,18 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A16 · 商品主图视频生产"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A16 · 商品主图视频生产"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A17",
@@ -367,7 +562,18 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A17 · 广告投放视频生产"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A17 · 广告投放视频生产"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A18",
@@ -386,7 +592,19 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A18 · 多版本",
+          "## 2026-10-09 A18-A19 验收记录"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A18 · 多版本"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A19",
@@ -405,7 +623,19 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A19 · 创意实验设计",
+          "## 2026-10-09 A18-A19 验收记录"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A19 · 创意实验设计"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A20",
@@ -424,7 +654,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A20 · 创意事实检查",
+          "## 2026-10-09 A20-A23 独立回归锚点",
+          "## 2026-10-09 A20-A23 独立验收最终记录"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A20 · 创意事实检查"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A21",
@@ -443,7 +686,18 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A21 · 分镜事实检查"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A21 · 分镜事实检查"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A22",
@@ -462,7 +716,18 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A22 · 视觉事实检查"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A22 · 视觉事实检查"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A23",
@@ -481,7 +746,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A23 · 风险控制",
+          "## 2026-10-09 A20-A23 独立回归锚点",
+          "## 2026-10-09 A20-A23 独立验收最终记录"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A23 · 风险控制"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A24",
@@ -500,7 +778,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A24 · 最终安全闸门",
+          "## 2026-10-09 A24 验收变更",
+          "## 2026-10-09 A24 最终验收"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A24 · 最终安全闸门"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A25",
@@ -519,7 +810,19 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A25 · 媒体质量检查",
+          "## 2026-10-09 A25 最终验收记录"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A25 · 媒体质量"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A26",
@@ -538,7 +841,19 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A26 · 成片版本历史",
+          "## 2026-10-09 A26 验收推进记录"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A26 · 成片版本历史"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A27",
@@ -557,7 +872,19 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A27 · 成片交付中心",
+          "## 2026-10-09 A27 验收推进记录"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A27 · 成片交付中心"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A28",
@@ -576,7 +903,19 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A28 · 本地项目数据",
+          "## 2026-10-09 A28 验收推进记录"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A28 · 本地项目数据"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A29",
@@ -595,7 +934,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A29 · 数据边界",
+          "## 2026-10-09 A29 验收推进记录",
+          "### 2026-10-09 A29 独立重新验收"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A29 · 数据边界"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A30",
@@ -614,7 +966,19 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A30 · 失败恢复",
+          "### 2026-10-09 A30 验收推进记录"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A30 · 失败恢复"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A31",
@@ -633,7 +997,19 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A31 · 帮助文档",
+          "## 2026-10-09 A31 验收记录"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A31 · 帮助文档"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A32",
@@ -652,7 +1028,19 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A32 · AI接手能力",
+          "### A32 正式验收记录（2026-10-09）"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A32 · AI接手能力"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A33",
@@ -671,7 +1059,21 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A33 · 完整用户流程",
+          "### A33 正式验收记录（2026-10-09）",
+          "# 后续扩展验收阶段（在 A33 基础上追加）"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "# 附录 A｜全项目逐阶段验收清单（A0–A33、B1–B3）",
+          "## A33 · 完整用户流程"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A34",
@@ -691,7 +1093,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A34 · AI辅助商品画面对比（第一阶段）"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A34 · AI辅助商品画面对比（新增扩展阶段）"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## 2026-10-11：AI 辅助商品画面对比（A34 第一阶段）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A35",
@@ -710,7 +1125,18 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A35 · 问题镜头定位与仅重生成（第一阶段实现，待验收）"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A35 · 问题镜头定位与仅重生成（第一阶段实现，待验收）"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A36",
@@ -729,7 +1155,18 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A36｜AI视觉核验结果辅助单镜头修复（代码已提交，待 CI）"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A36｜视觉核验结果辅助单镜头修复验收"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A37",
@@ -749,7 +1186,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A37｜视觉修正草稿换行显示"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A37｜修正草稿格式验收"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A37 质量补充"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A38",
@@ -768,7 +1218,18 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A38｜跨会话接手信息完整性"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A38｜跨会话接手检查"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A39",
@@ -787,7 +1248,18 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A39｜功能分支 CI 覆盖"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A39｜功能分支 CI 核验"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A40",
@@ -806,7 +1278,18 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A40｜接手测试路径修复"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A40｜CI 失败的处理"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A41",
@@ -825,7 +1308,18 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A41｜接手文案断言修复"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A41｜修复文案断言失败"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A42",
@@ -844,7 +1338,18 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A42｜已确认基准 CI"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A42｜CI 成功结果记录"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A43",
@@ -864,7 +1369,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A43｜单镜头重新生成失败恢复"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A43｜单镜头重生成失败恢复验收"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A43：单镜头重生成的旧版本保护（待 CI）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A44",
@@ -884,7 +1402,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A44｜短剧镜头映射稳定性"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A44｜短剧镜头映射验收"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A44：短剧分镜稳定映射（待 CI）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A45",
@@ -904,7 +1435,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A45｜失败恢复状态 UI 对齐"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A45｜失败恢复状态显示验收"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A45：失败恢复状态提示修复（待 CI）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A46",
@@ -924,7 +1468,23 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A46｜编辑镜头时保护旧版本视频",
+          "### A46 CI 失败处理记录"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A46｜编辑镜头旧版本保护验收",
+          "### A46 文案断言失败恢复"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A46：镜头编辑路径纳入旧版保护（待 CI）",
+          "### A46 验收日志补充"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A47",
@@ -944,7 +1504,23 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A47｜素材解析阶段失败恢复",
+          "## A47–A50｜最新自动化验收记录"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A47｜素材解析失败的恢复验收",
+          "## A47–A50｜自动化阶段结果"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A47：素材解析异常纳入旧版恢复（待 CI）",
+          "## A47–A50：自动化阶段通过基准"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A48",
@@ -964,7 +1540,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A48｜实拍裁剪失败不破坏旧成片"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A48｜实拍裁剪原子替换验收"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A48：实拍镜头输出保护（待 CI）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A49",
@@ -984,7 +1573,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A49｜多段实拍中断文件清理"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A49｜多段实拍中断恢复验收"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A49：多段实拍中断恢复（待 CI）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A50",
@@ -1004,7 +1606,23 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A50｜视频生成提示词换行回归",
+          "## A47–A50｜最新自动化验收记录"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A50｜视频提示词换行验收",
+          "## A47–A50｜自动化阶段结果"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A50：视频提示词格式回归（待 CI）",
+          "## A47–A50：自动化阶段通过基准"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A51",
@@ -1024,7 +1642,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A51｜费用预估弹窗前置校验"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A51｜费用预估前置校验验收"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A51：费用预估前置校验（待 CI）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A52",
@@ -1044,7 +1675,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A52｜视频 Provider 失败尝试与成本去重"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A52｜失败尝试账本与成本去重验收"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A52：视频重试成本归因（待 CI）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A53",
@@ -1064,7 +1708,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A53｜恢复流程拒绝零字节旧视频"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A53｜零字节上一版视频恢复验收"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A53：恢复路径有效性补强"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A54",
@@ -1084,7 +1741,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A54｜恢复时识别零字节活动视频"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A54｜零字节活动视频恢复验收"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A54：活动成片有效性校验"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A55",
@@ -1104,7 +1774,21 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A55｜成本记账异常不丢失成功视频"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A55｜成功视频遇到成本账本故障的验收"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A55：成功视频与成本记账异常解耦（待 CI）",
+          "## A55–A58 自动化验收记录"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A56",
@@ -1124,7 +1808,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A56｜提示词换行回归修复"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A56｜提示词换行回归验收"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A56：提示词换行回归修复（待 CI）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A57",
@@ -1144,7 +1841,23 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A57｜成本待核对状态界面对齐",
+          "## A57｜项目恢复入口与成本对账"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A57｜成本待核对 UI 验收",
+          "## A57｜打开项目恢复与成本对账验收"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A57：成本核对状态避免误报",
+          "## A57：恢复流程接入 UI 与成本账本对账（待 CI）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A58",
@@ -1164,7 +1877,21 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A58｜商品画面对比输入证据校验"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A58｜商品画面对比输入校验验收"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A58：视觉核验输入证据安全检查",
+          "## A55–A58 自动化验收记录"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A59",
@@ -1184,7 +1911,21 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A59｜项目成本汇总单一事实源"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A59｜项目成本汇总去重验收"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A59：成本汇总去重（待 CI）",
+          "## A59/A60 状态更新"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A60",
@@ -1204,7 +1945,21 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A60｜失败-only 账本兼容"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A60｜失败-only 账本成本兼容验收"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A60：失败-only 账本兼容（待 CI）",
+          "## A59/A60 状态更新"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A61",
@@ -1224,7 +1979,23 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A61｜旧项目成本迁移与镜头成本对账",
+          "### A61 CI 文案断言失败记录"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A61｜旧项目成本迁移验收",
+          "### A61 handoff 文案断言修复"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A61：历史成本迁移与镜头成本统一（待 CI）",
+          "### A61 验收日志补充"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A62",
@@ -1244,7 +2015,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A62｜历史成本迁移文案断言修复"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A62｜历史成本迁移文案验收"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A62：接手文案断言对齐（待 CI）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A63",
@@ -1264,7 +2048,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A63｜迁移基线在后续记账失败时保留"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A63｜迁移后新费用失败验收"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A63：旧成本迁移失败边界（待 CI）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A64",
@@ -1284,7 +2081,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A64｜素材成本账本失败保护"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A64｜素材成本账本故障验收"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A64：素材成本故障保护（待 CI）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A65",
@@ -1304,7 +2114,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A65｜用量账本原子写入与完整历史保留"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A65｜用量账本持久化故障验收"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A65：本地用量账本长期完整性"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A66",
@@ -1324,7 +2147,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A66｜人工商品画面核验证据文件校验"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A66｜人工商品画面核验证据文件验收"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## 2026-10-11：人工商品画面核验证据防护（A66，待最新 CI）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A67",
@@ -1343,7 +2179,18 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A67｜短剧人工核验证据失效保护"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A67：审查持久化人工核验证据是否仍有效"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A68",
@@ -1358,10 +2205,18 @@
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "在历史提交/旧版计划与全部相关文档中追查该编号",
+        "确认是有意跳号、遗失的正式验收项、已撤销项或重复映射；禁止凭空补造功能"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A69",
@@ -1376,10 +2231,18 @@
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "在历史提交/旧版计划与全部相关文档中追查该编号",
+        "确认是有意跳号、遗失的正式验收项、已撤销项或重复映射；禁止凭空补造功能"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A70",
@@ -1394,10 +2257,18 @@
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "在历史提交/旧版计划与全部相关文档中追查该编号",
+        "确认是有意跳号、遗失的正式验收项、已撤销项或重复映射；禁止凭空补造功能"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A71",
@@ -1412,10 +2283,18 @@
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "在历史提交/旧版计划与全部相关文档中追查该编号",
+        "确认是有意跳号、遗失的正式验收项、已撤销项或重复映射；禁止凭空补造功能"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A72",
@@ -1430,10 +2309,18 @@
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "在历史提交/旧版计划与全部相关文档中追查该编号",
+        "确认是有意跳号、遗失的正式验收项、已撤销项或重复映射；禁止凭空补造功能"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A73",
@@ -1448,10 +2335,18 @@
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "在历史提交/旧版计划与全部相关文档中追查该编号",
+        "确认是有意跳号、遗失的正式验收项、已撤销项或重复映射；禁止凭空补造功能"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A74",
@@ -1466,10 +2361,18 @@
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "在历史提交/旧版计划与全部相关文档中追查该编号",
+        "确认是有意跳号、遗失的正式验收项、已撤销项或重复映射；禁止凭空补造功能"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A75",
@@ -1489,7 +2392,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A75：商品事实锁与剧情内容交叉审查"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A75：商品事实锁与剧情内容交叉审查"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A75：商品事实锁与剧情内容交叉审查"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A76",
@@ -1509,7 +2425,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A76: Selling-point storyboard coverage"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A76: Selling-point storyboard coverage"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A76: Selling-point storyboard coverage"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A77",
@@ -1529,7 +2458,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "### A77 · 短剧关键剧情事件与分镜落地（开发中）"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "### A77 专项补充：关键事件到分镜的可追溯性"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "### A77 · 短剧关键剧情事件到分镜的一致性审查"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A78",
@@ -1549,7 +2491,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "### A78 · 人物动机与信息掌握一致性（开发中）"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "### A78 专项补充：人物行动与知识状态"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "### A78 · 人物行动动机与信息掌握一致性"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A79",
@@ -1569,7 +2524,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "### A79｜人物行动依据与镜头角色绑定"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "### A79 专项补充：行动依据人物引用"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "### A79：人物行动依据与角色绑定一致性"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A80",
@@ -1589,7 +2557,22 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "### A80｜人物关系变化与剧情后果",
+          "### A80 首轮 CI 故障记录"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "### A80 专项补充：人物关系变化",
+          "### A80 故障处理补充"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "### A80：人物关系变化与因果后果"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A81",
@@ -1609,7 +2592,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A81｜人物状态与剧情连续性审查（本轮新增）"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "### A81 专项补充：人物状态后果是否延续到后续镜头"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "### 已落地的短剧连续性审查能力边界（A81–A84；不是待开发功能）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A82",
@@ -1628,7 +2624,18 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A82｜人物信息掌握与时间线一致性审查"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "### A82 专项：人物信息来源是否符合剧情时间线"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A83",
@@ -1647,7 +2654,18 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "### A83｜人物承诺、误解与行动结果一致性审查（自动化阶段待最新 CI）"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "### A83 专项：人物承诺、误解与行动结果是否得到后续承接"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A84",
@@ -1667,7 +2685,24 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A84｜跨集剧情承接事项一致性",
+          "### A84 自动化验收记录（2026-10-13）"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "### A84 专项：跨集承诺、误解和行动后果连续性",
+          "### A84 本轮结果记录（2026-10-13）"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "### 已落地的短剧连续性审查能力边界（A81–A84；不是待开发功能）",
+          "### A84 已落地能力（待最新 SHA 自动化验证）",
+          "### A84 自动化验证结果（2026-10-13）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A85",
@@ -1687,7 +2722,23 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A85｜人物长期状态与关系跨集一致性",
+          "### A85 自动化验证记录"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "### A85 专项：人物状态与关系跨集台账",
+          "### A85 本轮结果记录"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "### A85 已实现能力边界（待自动化验证）",
+          "### A85 自动化验证结果"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A86",
@@ -1707,7 +2758,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A86｜人物状态变化因果闭环验收"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "### A86 专项：人物状态变化因果闭环"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "### A86 已实现能力（待最新 SHA 自动化验证）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A87",
@@ -1727,7 +2791,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A87｜人物状态到可观察表演验收"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "### A87 专项验收：人物状态是否落实到分镜表演"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "### A87 已加入实现（以最新 SHA CI 结果为准）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A88",
@@ -1742,10 +2819,18 @@
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "在历史提交/旧版计划与全部相关文档中追查该编号",
+        "确认是有意跳号、遗失的正式验收项、已撤销项或重复映射；禁止凭空补造功能"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A89",
@@ -1765,7 +2850,23 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A89｜跨集演员/场景资产锁定验收",
+          "## A89｜跨集演员/场景资产锁定验收状态更新（2026-10-14）"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "### A89 专项验收：跨集演员/场景资产锁定",
+          "### A89 自动化验收结果（2026-10-14）"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A89｜跨集演员/场景资产文本锁定（进行中，自动化验收待定）",
+          "### A89 自动化状态更新（2026-10-14）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A90",
@@ -1785,7 +2886,21 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A90：跨集物理素材 ID 绑定（待最新 SHA 自动化验收）"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A90：跨集物理素材 ID 绑定（待最新 SHA 自动化验收）"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A90 — 跨集物理素材 ID 绑定",
+          "## A90：跨集物理素材 ID 绑定（待最新 SHA 自动化验收）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A91",
@@ -1805,7 +2920,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A91｜跨集锁定素材失效检测验收项"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A91｜跨集锁定失效保护验收步骤"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A91 范围更新（2026-10-14）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A92",
@@ -1825,7 +2953,29 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A92｜跨集物理素材绑定落地验收",
+          "### A92 状态修正",
+          "### A92 CI 根因修正",
+          "### A92/A93 最终自动化状态（2026-10-14）"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "### A92 专项：跨集物理素材绑定落地",
+          "### A92 CI 失败修正（待重新验收）",
+          "### A92 CI 根因修正（待重新验收）",
+          "### A92/A93 自动化验收结果（2026-10-14；以本节为准）"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A92｜跨集物理资产绑定的端到端验证",
+          "### A92 状态补充",
+          "### A92 CI 根因修正",
+          "### A92/A93 自动化验收结果（2026-10-14；以本节为准）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A93",
@@ -1845,7 +2995,23 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A93｜失效跨集锁定在 Provider 调用前拦截并隔离镜头",
+          "### A92/A93 最终自动化状态（2026-10-14）"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "### A93 专项：Provider 调用边界与单镜头隔离",
+          "### A92/A93 自动化验收结果（2026-10-14；以本节为准）"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A93｜跨集锁定失效的 Provider 边界回归",
+          "### A92/A93 自动化验收结果（2026-10-14；以本节为准）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A94",
@@ -1865,7 +3031,23 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A94｜恢复原锁定资产后的安全重试",
+          "### A94 最新状态覆盖（2026-10-14）"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "### A94 专项：恢复原锁定素材后的安全重试",
+          "### A94 自动化验收结果（2026-10-14；以本节为准）"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A94｜跨集锁定素材恢复与安全重试",
+          "### A94 自动化验收结果（2026-10-14；以本节为准）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A95",
@@ -1885,7 +3067,24 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A95｜本地素材索引损坏时阻断生产",
+          "### A95 自动化验收结果（2026-10-14；测试代码 SHA `6b225e09adac63265d53b27eae3ed6a54a51f49e`）",
+          "### A95 最新自动化结果覆盖（2026-10-14）"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "### A95 专项：素材索引损坏时 fail-closed",
+          "### A95 自动化验收结果（2026-10-14；测试代码 SHA `6b225e09adac63265d53b27eae3ed6a54a51f49e`）"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A95｜素材库索引损坏与安全恢复",
+          "### A95 自动化验收结果（2026-10-14；测试代码 SHA `6b225e09adac63265d53b27eae3ed6a54a51f49e`）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A96",
@@ -1905,7 +3104,24 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A96｜修复素材索引后的安全重试",
+          "### A96 自动化验收结果（2026-10-14；测试代码 SHA `fc01ace4eeb90ccb2f2df10b44a57f8b3c69f134`）",
+          "### A96 最新自动化结果覆盖（2026-10-14）"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "### A96 专项：修复素材索引后的安全重试",
+          "### A96 自动化验收结果（2026-10-14；测试代码 SHA `fc01ace4eeb90ccb2f2df10b44a57f8b3c69f134`）"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A96｜素材索引故障的可恢复性",
+          "### A96 自动化验收结果（2026-10-14；测试代码 SHA `fc01ace4eeb90ccb2f2df10b44a57f8b3c69f134`）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A97",
@@ -1925,7 +3141,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A97｜项目恢复仅重置损坏镜头（自动化回归）"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "### A97 项目恢复单镜头隔离"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A97 自动化回归补充（2026-10-14）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A98",
@@ -1945,7 +3174,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A98｜重复恢复仍列出待处理的缺失镜头"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "### A98 重复恢复的缺失镜头摘要"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A98 自动化回归补充（2026-10-14）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A99",
@@ -1960,10 +3202,18 @@
       "dependencies": [],
       "evidence": [],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "在历史提交/旧版计划与全部相关文档中追查该编号",
+        "确认是有意跳号、遗失的正式验收项、已撤销项或重复映射；禁止凭空补造功能"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": []
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A100",
@@ -1983,7 +3233,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A100｜商业剪辑淡出时间窗"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A100｜淡出滤镜专项验收"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "### A100 自动化实现补充：淡出窗口修正（不代表路线图项目完成）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A101",
@@ -2003,7 +3266,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A101｜变速时音画同步"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A101｜变速音画同步专项验收"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "### A101 自动化实现补充：变速音画同步（不代表路线图项目完成）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A102",
@@ -2023,7 +3299,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A102 · 最终导出最低 1080P 级分辨率（待 CI 验收）"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A102 验收补充：最终导出最低 1080P 级分辨率"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "### A102 已落地的基础输出底线（不代表商业画质增强完成）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A103",
@@ -2043,7 +3332,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A103 · 镜头淡入/淡出音画同步（待 CI 验收）"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A103 验收：淡入/淡出音画同步"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "### A103：镜头淡入/淡出音画同步（代码实现待 CI）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A104",
@@ -2063,7 +3365,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A104 · 相邻镜头真实交叉溶解（待 CI 验收）"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A104 验收：相邻镜头真实交叉溶解"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "### A104：相邻镜头真实交叉溶解（自动化待验）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A105",
@@ -2083,7 +3398,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A105 · 分镜节奏标签必须影响实际播放速度（待 CI 验收）"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A105 验收：分镜 pacing 到播放速度执行"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "### A105：分镜节奏参数执行闭环（自动化待验）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A106",
@@ -2103,7 +3431,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A106｜商业镜头角色驱动的默认剪辑决策（待当前 SHA 自动化验收）"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A106 验收：商业镜头角色默认剪辑决策"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "### A106：商业镜头角色到剪辑参数的可追溯默认值（实现后待自动化验收）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A107",
@@ -2123,7 +3464,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A107｜商业角色推断时长进入真实生成请求（自动化验收）"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A107 验收：商业角色时长进入运行时生成请求"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "### A107：商业角色推断时长进入运行时生成请求（代码已接通，CI 待本轮验证）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A108",
@@ -2143,7 +3497,20 @@
         "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A108｜字幕信息密度与时间轴自适应（当前 SHA 自动化验收中）"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A108 验收：字幕信息密度与时间轴自适应（当前 SHA 需重新核验）"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "### A108：字幕时长与密度基础闭环（当前 SHA 自动化验收中）"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A109",
@@ -2173,7 +3540,29 @@
         "按阶段2退出条件复核实际生产链证据；真实环境验收继续暂缓"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A109｜音乐节拍与画面切点真实联动",
+          "### A109 旧项目音轨兼容边界",
+          "### A109 转场安全补充"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "### A109 音乐卡点验收",
+          "### A109 旧项目音轨兼容边界",
+          "### A109 转场安全补充"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [
+          "#### A109｜音乐节拍与画面切点联动（自动化实现已接通，真实质量待验）",
+          "#### A109 实施状态（自动化实现提交后须以最新 CI 为准）"
+        ],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "### A109｜音乐节拍与画面切点真实联动（已接通自动化生产链；真实质量待验）",
+          "### A109 旧项目音轨兼容边界",
+          "### A109 转场安全补充"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A110",
@@ -2203,7 +3592,23 @@
         "按阶段2退出条件复核实际生产链证据；真实环境验收继续暂缓"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A110｜商业剪辑内容保护（音乐卡点不可损害商品信息）"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## 商业剪辑 A110：内容保护验收"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [
+          "#### A110｜内容保护约束音乐卡点（已实现，自动化 CI 通过）",
+          "### A110 当前实现说明"
+        ],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "### A110｜音乐卡点的口播、字幕与商品展示保护"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A111",
@@ -2233,7 +3638,31 @@
         "按阶段2退出条件复核实际生产链证据；真实环境验收继续暂缓"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A111｜逐边界局部音乐卡点规划",
+          "### A111 测试夹具修正",
+          "### A111 CI 修复记录"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## 商业剪辑 A111：逐边界局部卡点验收",
+          "### A111 测试夹具修正",
+          "### A111 CI 修复记录"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [
+          "#### A111｜逐边界的局部卡点规划（自动化 CI 通过，真实质量待验）",
+          "### A111 当前实现说明",
+          "### A111 测试夹具修正",
+          "### A111 CI 修复记录"
+        ],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "### A111｜逐边界局部音乐卡点规划（已提交自动化实现，真实质量待验）",
+          "### A111 测试夹具修正",
+          "### A111 CI 修复记录"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     },
     {
       "task_id": "A112",
@@ -2263,7 +3692,37 @@
         "按阶段2退出条件复核实际生产链证据；真实环境验收继续暂缓"
       ],
       "duplicate_mapping": null,
-      "deferred": false
+      "deferred": false,
+      "source_heading_inventory": {
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A112｜字幕实际时间窗参与内容保护",
+          "## A112 自动化验收结果｜2026-10-14"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## 商业剪辑 A112：SRT 实际时间窗与卡点保护",
+          "## A112 自动化验收结果｜2026-10-14"
+        ],
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md": [
+          "#### 历史任务：A112｜字幕实际时间窗参与内容保护（已完成自动化阶段；以下原始计划保留作历史）",
+          "### A112 自动化验收记录（2026-10-14）"
+        ],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "### A112｜字幕实际时间窗与剪辑保护（下一项）",
+          "## A112 自动化验收结果｜2026-10-14"
+        ]
+      },
+      "source_inventory_status": "heading_inventory_only_semantic_dedup_and_code_evidence_pending"
     }
-  ]
+  ],
+  "source_inventory": {
+    "method": "Read heading structure from the current branch's acceptance plan, acceptance SOP, product roadmap, and future feature memo. This is a discovery index only, not proof of implementation or semantic equivalence.",
+    "sources": [
+      "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+      "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+      "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+      "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+    ],
+    "note": "Repeated headings can be status/history entries rather than duplicate requirements. Do not merge tasks solely because an ID appears in multiple headings. The nine IDs listed in known_id_gaps have no task heading in the acceptance plan/SOP and require historical investigation.",
+    "next_scope": "Investigate missing IDs and perform semantic cross-document deduplication for A0-A112; then audit code/tests/current-SHA evidence."
+  }
 }
