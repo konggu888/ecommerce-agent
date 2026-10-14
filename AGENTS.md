@@ -122,3 +122,9 @@ GitHub Actions 也会执行相同检查；代码改了而两个文档没有同�
 
 ## Desktop 项目文档同步硬性规则（2026-10-14）
 当 `apps/ad-studio-desktop/` 下有代码或测试文件变更时，同一变更必须同时更新以下全部项目文档/规则文件：`AGENTS.md`、`apps/ad-studio-desktop/HELP.md`、`apps/ad-studio-desktop/PROJECT_LOGIC.md`、`docs/AD_STUDIO_ACCEPTANCE_PLAN.md`、`docs/AD_STUDIO_ACCEPTANCE_SOP.md`、`apps/ad-studio-desktop/SESSION_HANDOFF.md`、`docs/AD_STUDIO_AI_HANDOFF.md`、`docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md`。由 `tools/check_ad_studio_docs.py` 在 CI 中强制检查；单独的 docs-sync 通过不等于完整 CI 通过。
+
+
+## 商业剪辑变更要求（A100）
+- `process_shot()` 的“淡出”必须落在变速后的镜头末尾，而不是从镜头开头开始。
+- 涉及剪辑滤镜的代码变更，必须新增 FFmpeg 命令层回归，并同步更新 HELP、PROJECT_LOGIC、验收计划、验收 SOP、SESSION_HANDOFF、AI handoff 与未来功能备忘。
+- 自动化命令断言不等于真实画面验收；Windows 真机/剪映验证仍按用户要求暂缓。

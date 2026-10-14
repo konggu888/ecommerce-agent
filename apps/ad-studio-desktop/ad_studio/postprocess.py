@@ -74,8 +74,18 @@ def process_shot(input_path: Path, output_path: Path, aspect: str = "9:16", spee
     vf = _focus_crop_filter(width, height, focus_x, focus_y)
     if speed != 1.0:
         vf += f",setpts={1.0/speed}*PTS"
-    if transition == "淡入": vf += ",fade=t=in:st=0:d=0.25"
-    elif transition == "淡出": vf += ",fade=t=out:st=0:d=0.25"
+    if transition == "淡入":
+        vf += ",fade=t=in:st=0:d=0.25"
+    elif transition == "淡出":
+        # Fade-out must occur at the END of the processed clip, not at its start.
+        # setpts above changes the output duration, so scale the probed input duration
+        # by the selected playback speed before calculating the fade window.
+        output_duration = probe_duration(input_path) / speed
+        if not math.isfinite(output_duration) or output_duration <= 0:
+            raise RuntimeError("无法确定有效镜头时长，不能执行淡出")
+        fade_duration = min(0.25, output_duration)
+        fade_start = max(0.0, output_duration - fade_duration)
+        vf += f",fade=t=out:st={fade_start:.3f}:d={fade_duration:.3f}"
     codec = best_h264_encoder()
     _run([ffmpeg_path(), "-y", "-i", str(input_path), "-vf", vf, "-c:v", codec, "-preset", "p4" if codec == "h264_nvenc" else "medium", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", str(output_path)])
     return output_path

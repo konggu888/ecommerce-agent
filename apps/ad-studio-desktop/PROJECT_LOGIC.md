@@ -1411,3 +1411,7 @@ ProductionStore._sync_actual_cost() 在发现成功账本记录后，会为所�
 
 ## 2026-10-14：文档同步 CI 契约
 `tools/check_ad_studio_docs.py` 的必需文档清单覆盖八个文件：根目录 `AGENTS.md`、`HELP.md`、`PROJECT_LOGIC.md`、验收计划、验收 SOP、`SESSION_HANDOFF.md`、`docs/AD_STUDIO_AI_HANDOFF.md` 和根目录未来功能备忘。只要桌面端代码/测试有变化，以上文件都必须在同一差异范围内更新。该脚本仅检查文件是否被同步修改，不替代人工检查内容是否准确、完整。
+
+
+## A100｜淡出时间窗与变速语义
+`process_shot()` 在 `setpts` 变速后再应用淡出，因此淡出起点必须基于 `probe_duration(input_path) / speed` 得到的输出时长计算。淡出时长为 `min(0.25, output_duration)`，起点为 `max(0, output_duration - fade_duration)`。旧实现将 `fade=t=out:st=0` 固定放在开头，会造成“淡出”实际在镜头开始时变暗；A100 修正此行为。测试验证变速后的时间窗和极短镜头边界。该修正仅保证滤镜参数逻辑，仍需真机视觉验收。

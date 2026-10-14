@@ -559,3 +559,12 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - 变更后必须重新查询本分支最新 HEAD 对应的 CI push、CI PR、docs-sync push、docs-sync PR；不能把本次变更前 SHA 的绿色结果当作本次结果。
 - 文档检查只验证规定文件是否出现在同一差异中，不证明文档内容语义完全正确；仍需审阅差异，并将 docs-sync 与完整 CI 分开报告。
 - PR #32 继续保持 open/unmerged；不执行合并。
+
+
+## 2026-10-14｜A100 商业剪辑淡出修正（本轮待 CI）
+- 起始 SHA：`7358148776e10775edff98b69273c5d29fab7ec5`；该 SHA 的 CI push/PR 与 docs-sync push/PR 已全部 success。
+- 本轮修正 `postprocess.process_shot()`：旧“淡出”滤镜从 0 秒开始，实际会在镜头开头淡出。现在先读取输入时长，再按速度计算输出时长，将淡出放到处理后镜头尾部；极短镜头会缩短淡出时长。
+- 新增 `test_postprocess.py` 两个回归：变速后的末尾淡出、短片段边界。
+- 本次新 SHA 的完整 CI 与 docs-sync push/PR 必须重新核验，未通过前不标记 A100 自动化验收完成。
+- 后续继续商业剪辑决策层：镜头节奏、真实镜头间转场、字幕信息密度、音画节奏/卡点、商品展示节奏、剪后质量反馈。不能把本次局部滤镜修正说成商业级剪辑已完成。
+- PR #32 保持 open/unmerged；Windows 真机、真实 Provider/扣费和剪映现场验收继续暂缓。

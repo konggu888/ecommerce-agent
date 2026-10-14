@@ -375,3 +375,7 @@ A85 为每集可选的 `continuity_state.character_state_ledger` 建立跨集审
 - 已将文档同步契约扩展为八个文件，并增加契约测试，防止清单回退。
 - 本次提交后必须重新核验最新 SHA 的完整 CI push/PR 与 docs-sync push/PR；PR #32 不得合并。
 - 接手后仍须阅读 SESSION_HANDOFF.md 并人工确认文档内容；文件路径被更新不等于语义已完整同步。
+
+
+## A100 接手记录：商业剪辑淡出时间窗
+本轮在 `postprocess.py` 修复“淡出”固定从 0 秒开始的问题。新实现以 FFprobe 时长除以播放速度得到后处理时长，再计算末尾 0.25 秒淡出窗口；更短的镜头使用实际镜头时长。`test_postprocess.py` 新增变速与超短片段回归。接手 AI 必须先检查最新 SHA 的完整 CI/docs-sync push/PR 四项状态，再决定验收；真机视觉/听感验证仍暂缓。商业剪辑路线图第 5 项继续未完成。
