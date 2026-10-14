@@ -69,6 +69,39 @@ class BeatDetectionTests(unittest.TestCase):
         self.assertEqual(plan["durations"], [2.0, 2.0, 2.0])
         self.assertIn("低于", plan["reason"])
 
+    def test_local_beat_planning_keeps_safe_unrelated_boundary(self):
+        plan = music_sync.plan_beat_aligned_durations(
+            [2.0, 2.0, 2.0, 2.0], [2.1, 4.1, 6.1], 0.95,
+            minimum_durations=[0.8, 2.2, 0.8, 0.8])
+        self.assertTrue(plan["changed"])
+        self.assertAlmostEqual(plan["durations"][0], 2.0, places=6)
+        self.assertAlmostEqual(plan["durations"][1], 2.0, places=6)
+        self.assertAlmostEqual(plan["durations"][2], 2.1, places=6)
+        self.assertAlmostEqual(plan["durations"][3], 1.9, places=6)
+        self.assertIn(3, plan["adjusted_boundaries"])
+        self.assertTrue(plan["reverted_boundaries"])
+        self.assertIn("局部", plan["reason"])
+
+    def test_multiple_protected_neighbors_revert_only_conflicting_boundaries(self):
+        plan = music_sync.plan_beat_aligned_durations(
+            [2.0, 2.0, 2.0, 2.0, 2.0], [2.1, 4.1, 6.1, 8.1], 0.95,
+            minimum_durations=[2.2, 2.2, 2.2, 0.8, 0.8])
+        self.assertEqual(plan["durations"][0], 2.0)
+        self.assertEqual(plan["durations"][1], 2.0)
+        self.assertEqual(plan["durations"][2], 2.0)
+        self.assertTrue(plan["changed"])
+        self.assertTrue(plan["reverted_boundaries"])
+        self.assertAlmostEqual(sum(plan["durations"]), 10.0, places=6)
+
+    def test_low_confidence_and_crossfade_still_fall_back(self):
+        original = [2.0, 2.0, 2.0]
+        low = music_sync.plan_beat_aligned_durations(original, [2.1, 4.1], 0.2)
+        crossfade = music_sync.plan_beat_aligned_durations(original, [2.1, 4.1], 0.95, allow_retime=False)
+        self.assertEqual(low["durations"], original)
+        self.assertEqual(crossfade["durations"], original)
+        self.assertFalse(low["changed"])
+        self.assertFalse(crossfade["changed"])
+
     def test_crossfade_boundary_plan_falls_back_without_retiming(self):
         plan=music_sync.plan_beat_aligned_durations(
             [2.0,2.0,2.0],[2.1,4.1],0.95,allow_retime=False

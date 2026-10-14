@@ -94,44 +94,97 @@ def plan_beat_aligned_durations(durations:list[float], beat_times:list[float], c
         original=[float(x) for x in durations]
         beats=sorted(float(x) for x in beat_times if math.isfinite(float(x)) and float(x)>=0)
         confidence=float(confidence)
+        max_boundary_shift=float(max_boundary_shift)
+        max_shot_delta=float(max_shot_delta)
+        min_duration=float(min_duration)
+        min_confidence=float(min_confidence)
     except (TypeError,ValueError):
         return {"durations":list(durations),"changed":False,"reason":"输入无效"}
     if not original or any(not math.isfinite(x) or x<=0 for x in original):
         return {"durations":list(durations),"changed":False,"reason":"镜头时长无效"}
+    if not all(math.isfinite(x) for x in (confidence,max_boundary_shift,max_shot_delta,min_duration,min_confidence)) or max_boundary_shift<0 or max_shot_delta<0 or min_duration<=0:
+        return {"durations":original,"changed":False,"reason":"卡点安全参数无效"}
     if not allow_retime:
         return {"durations":original,"changed":False,"reason":"含交叉溶解转场，当前保守保留原切点"}
     if minimum_durations is not None:
         try:
-            protected = [float(value) for value in minimum_durations]
-        except (TypeError, ValueError):
+            protected=[float(value) for value in minimum_durations]
+        except (TypeError,ValueError):
             return {"durations":original,"changed":False,"reason":"内容保护时长无效，保留原切点"}
-        if len(protected) != len(original) or any(not math.isfinite(value) or value < min_duration for value in protected):
+        if len(protected)!=len(original) or any(not math.isfinite(value) or value<min_duration for value in protected):
             return {"durations":original,"changed":False,"reason":"内容保护时长无效，保留原切点"}
-        if any(old + 1e-9 < required for old, required in zip(original, protected)):
-            return {"durations":original,"changed":False,"reason":"现有镜头时长已低于口播/字幕/商品展示保护需求，保留原切点"}
     else:
-        protected = [min_duration] * len(original)
-    if not math.isfinite(confidence) or confidence<min_confidence or not beats:
+        protected=[min_duration]*len(original)
+    if confidence<min_confidence or not beats:
         return {"durations":original,"changed":False,"reason":"节拍置信度不足，保留原切点"}
-    boundaries=[]; elapsed=0.0
-    for duration in original[:-1]:
-        elapsed+=duration; nearest=min(beats,key=lambda beat:abs(beat-elapsed),default=elapsed)
-        boundaries.append(nearest if abs(nearest-elapsed)<=max_boundary_shift else elapsed)
-    points=[0.0]+boundaries+[sum(original)]
-    proposed=[points[i+1]-points[i] for i in range(len(original))]
-    if any(not math.isfinite(x) or x<min_duration for x in proposed):
-        return {"durations":original,"changed":False,"reason":"卡点会产生过短镜头，保留原切点"}
-    if any(new + 1e-9 < required for new, required in zip(proposed, protected)):
-        return {"durations":original,"changed":False,"reason":"节拍卡点会压缩口播/字幕/商品展示保护时长，保留原切点"}
-    if any(abs(new-old)>max_shot_delta+1e-9 for new,old in zip(proposed,original)):
-        return {"durations":original,"changed":False,"reason":"卡点调整超出安全范围，保留原切点"}
-    if any(not 0.85<=old/new<=1.15 for old,new in zip(original,proposed)):
-        return {"durations":original,"changed":False,"reason":"需要过度变速，保留原切点"}
-    changed=any(abs(new-old)>0.015 for new,old in zip(proposed,original))
-    return {"durations":proposed if changed else original,"changed":changed,
-            "boundaries":points[1:-1] if changed else [sum(original[:i]) for i in range(1,len(original))],
-            "reason":"切点已在安全范围内贴近音乐节拍" if changed else "现有切点已足够接近节拍"}
 
+    # Existing content-underlength is not worsened, but it no longer freezes unrelated boundaries.
+    floors=[max(min_duration,required) if old+1e-9>=required else old
+            for old,required in zip(original,protected)]
+    desired=[]; elapsed=0.0
+    for duration in original[:-1]:
+        elapsed+=duration
+        nearest=min(beats,key=lambda beat:abs(beat-elapsed),default=elapsed)
+        desired.append(nearest-elapsed if abs(nearest-elapsed)<=max_boundary_shift else 0.0)
+    shifts=list(desired)
+    reverted=set()
+
+    def calculate(values):
+        result=[]
+        for index,old in enumerate(original):
+            left=values[index-1] if index>0 else 0.0
+            right=values[index] if index<len(values) else 0.0
+            result.append(old+right-left)
+        return result
+
+    def shot_is_safe(index,value):
+        old=original[index]
+        if not math.isfinite(value) or value+1e-9<floors[index]:
+            return False
+        if abs(value-old)>max_shot_delta+1e-9:
+            return False
+        speed=old/value if value>0 else float("inf")
+        return 0.85-1e-9<=speed<=1.15+1e-9
+
+    # Revoke only boundary shifts implicated in an unsafe shot. Re-evaluate because
+    # neighboring boundary shifts share a shot duration and can constrain each other.
+    for _ in range(max(1,2*len(shifts)+1)):
+        proposed=calculate(shifts)
+        invalid=[i for i,value in enumerate(proposed) if not shot_is_safe(i,value)]
+        if not invalid:
+            break
+        changed_any=False
+        for index in invalid:
+            adjacent=[]
+            if index>0 and abs(shifts[index-1])>1e-9:
+                adjacent.append(index-1)
+            if index<len(shifts) and abs(shifts[index])>1e-9:
+                adjacent.append(index)
+            if not adjacent:
+                continue
+            # Prefer retaining the stronger beat move; cancel the smaller one first.
+            chosen=min(adjacent,key=lambda boundary:(abs(shifts[boundary]),abs(desired[boundary]),boundary))
+            shifts[chosen]=0.0
+            reverted.add(chosen+1)
+            changed_any=True
+        if not changed_any:
+            break
+
+    proposed=calculate(shifts)
+    # Final hard guard: no unsafe local plan is allowed to reach the render path.
+    if any(not shot_is_safe(i,value) for i,value in enumerate(proposed)):
+        return {"durations":original,"changed":False,"reason":"局部卡点无法同时满足内容保护和变速约束，保留原切点"}
+    changed=any(abs(new-old)>0.015 for new,old in zip(proposed,original))
+    points=[]; elapsed=0.0
+    for index,duration in enumerate(original[:-1]):
+        elapsed+=duration
+        points.append(elapsed+shifts[index])
+    adjusted=[index+1 for index,shift in enumerate(shifts) if abs(shift)>0.015]
+    return {"durations":proposed if changed else original,"changed":changed,
+            "boundaries":points if changed else [sum(original[:i]) for i in range(1,len(original))],
+            "adjusted_boundaries":adjusted,"reverted_boundaries":sorted(reverted),
+            "reason":("仅调整安全边界；冲突边界保留原位置" if reverted else "切点已在安全范围内贴近音乐节拍") if changed
+                     else ("冲突边界保留原位置，其他边界无需调整" if reverted else "现有切点已足够接近节拍")}
 
 def _has_audio(path:Path)->bool:
     result=subprocess.run([shutil.which("ffprobe") or "ffprobe","-v","error","-select_streams","a:0","-show_entries","stream=codec_type","-of","csv=p=0",str(path)],capture_output=True,text=True,check=True)

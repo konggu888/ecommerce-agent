@@ -1483,3 +1483,8 @@ A109 转场安全补充：当前切点变速遇到显式“交叉溶解”时保
 ProductionStore.build_final() 在实际镜头时长读取后，按创意方案与运行时镜头合并台词、屏幕文字、商品资产需求、CTA 与 editing_intent，调用 derive_content_minimum_durations() 计算逐镜头保护下限，再将 minimum_durations 传入 plan_beat_aligned_durations()。若原时长或拟议卡点时长低于任一保护下限，规划器保留整组原始切点，避免对部分镜头变速造成新的时间轴不一致。审计结果保存在 creative_plan.last_music_sync_audit.content_protection。
 
 限制：保护估算来自文本/结构化元数据，并非真实视觉理解或语音识别；不自动延长原本不足的镜头。
+
+## A111：逐边界局部音乐卡点规划
+`plan_beat_aligned_durations()` 为每个候选切点生成局部位移；新镜头时长按相邻边界位移差计算，保持总时长不漂移。规划器逐镜头检查有效最低时长、内容保护下限、最大时长变化和 0.85–1.15 变速约束；发现冲突时只撤销相邻的相关边界位移并重新检查，最终仍有冲突则整组安全回退。对原本已经低于保护下限的镜头，只要求不进一步压短，不假称修复了原始不足。审计记录 `adjusted_boundaries`、`reverted_boundaries`。
+
+交叉溶解、低置信度仍沿用既有保守回退；内容保护来源仍是分镜文本/结构化元数据。

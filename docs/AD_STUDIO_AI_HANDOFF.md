@@ -1,13 +1,13 @@
-# 【最新接手状态｜A110 已实现并通过自动化 CI｜2026-10-14】
+# 【最新接手状态｜A111 已实现，等待本轮最新 CI｜2026-10-14】
 
-- 仓库：konggu888/ecommerce-agent；分支：feat/product-drama-visual-review；PR #32 保持 open/unmerged。
-- 当前代码 HEAD：49cb3ff3bf61b5b005f6a71d0cccf9f12da7c3bb（A110：音乐卡点内容保护）。
-- 当前 HEAD 的 CI Push 38565962977、CI PR 38565972017、docs-sync Push 38565963002、docs-sync PR 38565971966 均 success。
-- A110 已把分镜台词/脚本、屏幕文字、商品资产需求、商品细节/演示/证据角色与 CTA 的最低停留时长估算接入 ProductionStore.build_final() 的真实音乐卡点规划；如果现有镜头时长或拟议切点低于保护下限，则保留原切点。逐镜头保护依据写入 creative_plan.last_music_sync_audit.content_protection。
-- 本次代码、测试和八份强制文档（AGENTS、HELP、PROJECT_LOGIC、验收计划、验收 SOP、SESSION_HANDOFF、AI handoff、未来备忘）与路线图已在同一 A110 提交更新；后续无需再重复提交同一批文档内容。CI 的 docs-sync 只做检查，不会替开发者自动生成重复提交。
-- 自动化 CI 已通过，包含桌面 Python 语法/核心测试、TypeScript、Engine 与 Risk Controller。没有在当前运行环境本地执行 unittest/compileall；不得声称本地测试执行过。
-- 下一项路线图任务：A111「逐边界的局部卡点规划」——让一个受保护镜头不必阻断所有无关边界；只接受不压缩相邻镜头保护下限且满足变速/时长约束的边界，其他边界保留原样。
-- Windows 真机、真实素材、真实 Provider/扣费、剪映现场、真实听感与商品可见性/投放效果仍按用户要求暂缓。文本规则和 CI 绿灯不等于商业成片质量验收。
+- 仓库：konggu888/ecommerce-agent；分支：feat/product-drama-visual-review；PR #32 必须保持 open/unmerged。
+- A111 起始基线：4d37ba45429fc5422a7702e2d064a4122dcf3247。本轮完成逐边界局部卡点规划：不安全边界可局部撤销，尽可能保留其他安全边界；边界冲突检查涵盖内容保护、最短时长、最大时长变化和变速范围。
+- 对已低于内容保护估算下限的原镜头，规划器不再要求全组停摆，但不会进一步压短该镜头；原有不足未被自动修复。交叉溶解与低置信度仍保守回退。
+- 专项测试新增局部安全边界、多个相邻保护镜头、低置信度和交叉溶解回退。代码、测试、八份强制文档与路线图同一提交更新。
+- 本轮提交后必须重新核对该 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR 四项状态；运行中的检查不得报通过。
+- 下一项待 CI 完成后再从路线图确认，不得提前跳到其他阶段。PR #32 不合并；Windows 真机、真实素材、真实 Provider/扣费、剪映现场、真实听感与商业效果仍暂缓。
+
+---
 
 ---
 
