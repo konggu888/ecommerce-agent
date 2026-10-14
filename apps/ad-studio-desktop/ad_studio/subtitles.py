@@ -108,11 +108,11 @@ def write_srt_segments(segments, output: Path, max_chars=18):
     return output
 
 
-_SRT_TIMESTAMP = re.compile(r"^(\\d{2,}:\\d{2}:\\d{2}[,.]\\d{1,3})\\s*-->\\s*(\\d{2,}:\\d{2}:\\d{2}[,.]\\d{1,3})(?:\\s+.*)?$")
+_SRT_TIMESTAMP = re.compile(r"^(\d{2,}:\d{2}:\d{2}[,.]\d{1,3})\s*-->\s*(\d{2,}:\d{2}:\d{2}[,.]\d{1,3})(?:\s+.*)?$")
 
 
 def _parse_srt_timestamp(value: str) -> float:
-    match = re.fullmatch(r"(\\d{2,}):(\\d{2}):(\\d{2})[,.](\\d{1,3})", value.strip())
+    match = re.fullmatch(r"(\d{2,}):(\d{2}):(\d{2})[,.](\d{1,3})", value.strip())
     if not match:
         raise ValueError("SRT 时间戳格式无效")
     hours, minutes, seconds, fraction = match.groups()
@@ -129,7 +129,7 @@ def parse_srt_cues(source: Path | str, duration: float | None = None,
     if not path.is_file() or path.stat().st_size <= 0:
         raise ValueError("SRT 文件不存在或为空")
     raw = path.read_text(encoding="utf-8-sig")
-    blocks = re.split(r"\\n\\s*\\n", raw.replace("\\r\\n", "\\n").replace("\\r", "\\n").strip())
+    blocks = re.split(r"\n\s*\n", raw.replace("\r\n", "\n").replace("\r", "\n").strip())
     cues = []
     previous_start = -1.0
     for block in blocks:
@@ -143,7 +143,7 @@ def parse_srt_cues(source: Path | str, duration: float | None = None,
         if not match:
             raise ValueError("SRT cue 时间窗格式无效")
         start, end = _parse_srt_timestamp(match.group(1)), _parse_srt_timestamp(match.group(2))
-        text = "\\n".join(lines[time_index + 1:]).strip()
+        text = "\n".join(lines[time_index + 1:]).strip()
         if not text or end <= start:
             raise ValueError("SRT cue 文本为空或结束时间不晚于开始时间")
         if start + 1e-6 < previous_start:

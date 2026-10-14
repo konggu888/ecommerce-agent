@@ -50,7 +50,7 @@ class ParseSrtCueWindowTests(unittest.TestCase):
     def test_parses_single_and_multiple_real_cue_windows(self):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "real.srt"
-            path.write_text("1\\n00:00:00,000 --> 00:00:01,000\\n第一条\\n\\n2\\n00:00:01,000 --> 00:00:03,000\\n第二条\\n", encoding="utf-8")
+            path.write_text("1\n00:00:00,000 --> 00:00:01,000\n第一条\n\n2\n00:00:01,000 --> 00:00:03,000\n第二条\n", encoding="utf-8")
             result = parse_srt_cues(path, duration=3.0)
         self.assertEqual(result["cue_count"], 2)
         self.assertEqual(result["cues"][0]["start"], 0.0)
@@ -59,13 +59,13 @@ class ParseSrtCueWindowTests(unittest.TestCase):
     def test_accepts_dot_timestamp_fraction(self):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "decimal.srt"
-            path.write_text("1\\n00:00:00.000 --> 00:00:02.000\\n字幕\\n", encoding="utf-8")
+            path.write_text("1\n00:00:00.000 --> 00:00:02.000\n字幕\n", encoding="utf-8")
             self.assertEqual(parse_srt_cues(path, duration=2.0)["cue_count"], 1)
 
     def test_rejects_out_of_range_and_mismatched_timeline(self):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "late.srt"
-            path.write_text("1\\n00:00:01,000 --> 00:00:04,000\\n字幕\\n", encoding="utf-8")
+            path.write_text("1\n00:00:01,000 --> 00:00:04,000\n字幕\n", encoding="utf-8")
             with self.assertRaises(ValueError): parse_srt_cues(path, duration=3.0)
 
     def test_rejects_malformed_empty_and_missing_srt(self):
@@ -76,3 +76,7 @@ class ParseSrtCueWindowTests(unittest.TestCase):
             path.write_text("", encoding="utf-8")
             with self.assertRaises(ValueError): parse_srt_cues(path, duration=2.0)
             with self.assertRaises(ValueError): parse_srt_cues(Path(folder) / "missing.srt", duration=2.0)
+
+
+if __name__ == "__main__":
+    unittest.main()
