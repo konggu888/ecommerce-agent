@@ -1,3 +1,15 @@
+# 【最新接手指令｜规划体系优先｜2026-10-14】
+
+- 规划体系实施前 HEAD：`7cfabb23e9ab0c05c6189d31dcf6b7410f7934c7`；该 SHA 的 CI Push 38571014259、CI PR 38571022693、docs-sync Push 38571014277、docs-sync PR 38571022758 均 success。规划体系新提交后必须重新查询 HEAD 与四项工作流。
+- PR #32 保持 Open / unmerged。Windows 真机、真实素材、真实 Provider/扣费、剪映现场、真实投放数据继续暂缓。
+- 用户已批准先建立完整计划与 AI 执行控制体系。执行协议：`docs/AD_STUDIO_EXECUTION_CONTROL.md`；总进度：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`；战略路线图：`docs/AD_STUDIO_PRODUCT_ROADMAP.md`。
+- A112 已完成自动化阶段；下方“下一项 A112”等旧文字均为历史记录，不得用作当前指令。
+- 当前唯一任务：PLAN-003，全量盘点 A0–A112、路线图任务、未来功能备忘和 SOP 检查点；去重映射、核验代码/测试/当前 SHA 证据。完成前不计算整体完成百分比。
+- 每轮开始前重新检查当前 HEAD、PR #32 和 CI Push、CI PR、docs-sync Push、docs-sync PR；一次只执行一个有明确停止条件的任务。
+- 桌面代码变更同一提交同步八份强制文档；规划变更同步所有受影响入口，避免无意义重复提交。
+
+---
+
 # 【最新接手状态｜A112 自动化 CI 已通过｜2026-10-14】
 
 - 仓库：konggu888/ecommerce-agent；分支：feat/product-drama-visual-review；PR #32 保持 open/unmerged。

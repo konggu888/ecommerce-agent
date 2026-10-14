@@ -1,3 +1,14 @@
+# 【最高优先级：任务范围与计划控制｜2026-10-14】
+
+- 每次推进先读 SESSION_HANDOFF、AI handoff、`docs/AD_STUDIO_EXECUTION_CONTROL.md`、`docs/AD_STUDIO_PROGRESS_DASHBOARD.md` 与唯一路线图。
+- 当前先完成 PLAN-003 全量任务盘点与去重，不先增加产品功能；A112 已完成自动化阶段。全量盘点/权重审计前禁止发布总体完成百分比。
+- 每轮只做一个明确任务，开始前写明目标、范围、排除项、依赖、测试、文档、验收标准和停止条件。非阻断新想法只登记，不顺手实现。
+- 达到预定验收条件即停止；未验证项不得标记完成。PR #32 保持 Open / unmerged。
+- Windows 真机、真实素材、Provider/扣费、剪映现场与真实投放验证继续暂缓。
+- 当前状态与下一项以总进度台账为准，详细协议见执行控制文件。
+
+---
+
 # AI 商品广告工厂：AI 修改强制规则
 
 这是给任何 AI 编程代理、Codex、Claude、Gemini、Cursor、Copilot 或人工开发者的强制工作协议。

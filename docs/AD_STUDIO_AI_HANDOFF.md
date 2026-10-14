@@ -1,3 +1,14 @@
+# 【最新接手指令｜规划体系优先｜2026-10-14】
+
+先读取 `apps/ad-studio-desktop/SESSION_HANDOFF.md`，再读本文件、`docs/AD_STUDIO_EXECUTION_CONTROL.md`、`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`、路线图、AGENTS、HELP、PROJECT_LOGIC、验收计划与 SOP。
+规划体系实施前 HEAD：`7cfabb23e9ab0c05c6189d31dcf6b7410f7934c7`，四项 CI/doc-sync 均 success；新提交后必须重新查询最新 HEAD 与四项状态。
+PR #32 保持 Open / unmerged。真实 Windows、素材、Provider/扣费、剪映现场、真实投放/商业效果继续暂缓。
+A112 已完成自动化阶段。旧正文中的“下一项 A112”等均为历史内容。
+当前唯一下一项 PLAN-003：全量盘点 A0–A112、路线图、未来备忘与 SOP 检查点，去重并核验状态/证据。盘点完成前不发布总体完成百分比，也不推进新的产品功能。
+每轮一个主要任务；任务外非阻断想法登记待办，不顺手实现。
+
+---
+
 # 【最新接手状态｜A111 已通过自动化 CI；下一项 A112｜2026-10-14】
 
 - 仓库：konggu888/ecommerce-agent；分支：feat/product-drama-visual-review；PR #32 保持 open/unmerged。

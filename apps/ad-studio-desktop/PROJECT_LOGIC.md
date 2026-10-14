@@ -1503,3 +1503,16 @@ ProductionStore.build_final() 在实际镜头时长读取后，按创意方案�
 
 ## A112 自动化验收结果｜2026-10-14
 代码基线 e8deb1ec4ef9edf7d999c79539762ea2627affab 的 CI Push 38570453607、CI PR 38570460103、docs-sync Push 38570453565、docs-sync PR 38570460195 均 success。当前只确认 SRT 时间窗解析、绑定与规划器保护的自动化行为；真实画面可读性和口播语义对齐仍未验收。
+
+## AI 计划控制与进度事实源
+
+- 战略顺序唯一来源：`docs/AD_STUDIO_PRODUCT_ROADMAP.md`。
+- AI 执行范围与任务单规则：`docs/AD_STUDIO_EXECUTION_CONTROL.md`。
+- 当前状态、证据和下一项任务：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`。
+- 验收步骤以 `docs/AD_STUDIO_ACCEPTANCE_PLAN.md` 和 `docs/AD_STUDIO_ACCEPTANCE_SOP.md` 为准。
+- AI 不得从旧聊天/历史 handoff 自行推导下一项；必须核验当前 SHA、PR 与四项 CI/doc-sync。任务外非阻断问题只登记，不得顺手实现。全量盘点和权重审计未完成前不发布整体完成率。
+
+
+## AI 计划体系与范围控制（2026-10-14）
+
+统一执行规则见 `docs/AD_STUDIO_EXECUTION_CONTROL.md`，总进度入口见 `docs/AD_STUDIO_PROGRESS_DASHBOARD.md`。收到“推进/继续”时，必须先检查当前 HEAD、PR 和四项 CI/doc-sync，再从正式台账选择唯一下一项任务。每项任务必须写明目标、范围、排除项、依赖、实际生产链、测试矩阵、验收证据与停止条件；非阻断的额外想法只登记，不得顺手扩展。全量任务去重和权重审计完成前，禁止发布未经证据支持的总体完成百分比。PR #32 不合并；Windows 真机、真实 Provider/扣费、剪映现场、真实素材与投放验证继续暂缓。
