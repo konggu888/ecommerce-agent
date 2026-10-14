@@ -1437,3 +1437,7 @@ A102 测试边界补充：最终输出测试必须模拟 `normalize_output_resol
 
 ## A104：最终成片相邻镜头交叉溶解
 ProductionStore.build_final() 检查每个非首镜头的 Shot.transition；只有显式请求“交叉溶解”时才调用 ffmpeg.concat_with_transitions()，其他项目保留原 concat 路径。新拼接器用 ffprobe 读取时长/音轨，按所选画幅预先统一尺寸、30fps、时间基准和像素格式，再用 xfade 做画面交叠、acrossfade 做音频交叠；无音轨镜头用等长静音补齐。交叉溶解最长 0.35 秒，短镜头缩短；非交叉边界用 1ms 过渡以维持统一滤镜链。该执行逻辑已接入最终输出路径，但真实媒体兼容性/主观剪辑质量仍需真机验收。
+
+
+## A105：分镜 pacing 到实际播放速度的执行闭环
+`creative_engine.validate_plan()` 在规范化分镜时校验 `pacing`；缺失 `speed` 时将慢/标准/快/极快映射为 0.85/1.0/1.15/1.3 倍速，未知 pacing 回退标准。若 LLM 显式返回 `speed`，显式值经既有 0.75–1.5 范围夹紧后优先。该 `CreativeShot.speed` 会进入现有单镜头后处理并同时调整视频时间戳与原音轨速度。该项修复了 pacing 标签与执行参数脱节的问题，但没有实现按画面动作、情绪曲线、台词密度或音乐节拍自动决定每镜头节奏。
