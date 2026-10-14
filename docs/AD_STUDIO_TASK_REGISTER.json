@@ -2141,7 +2141,8 @@
       "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
-      "task_kind": "acceptance_remediation"
+      "task_kind": "acceptance_remediation",
+      "provisional_roadmap_phase": "阶段0｜路线与证据基线"
     },
     {
       "task_id": "A63",
@@ -4376,7 +4377,9 @@
             "A39",
             "A40",
             "A41",
-            "A42"
+            "A42",
+            "A32",
+            "A62"
           ],
           "phase": "阶段0｜路线与证据基线",
           "confidence": "high",
