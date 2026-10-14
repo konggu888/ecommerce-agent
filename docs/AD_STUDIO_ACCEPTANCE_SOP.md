@@ -1324,3 +1324,10 @@ A102 回归夹具检查：如果测试使用 mock 替代 FFmpeg，必须让 mock
 2. 检查 `runtime_shot_editing_fields()` 将时长、pacing、speed、transition 一并映射到运行时 Shot，且 `app._activate_plan()` 使用该映射。
 3. 检查 `ProductionStore.generate_shot()` 的 `GenerationRequest.duration` 来源是运行时 Shot.duration_seconds；不得只在 editing_intent 报告中记录时长。
 4. 验证显式时长优先，新增回归测试通过，并检查当前 SHA 的 CI Push/PR、docs-sync Push/PR 四项全部成功。外部 Provider 实际遵守请求时长需要真实素材验收，不可由单测代替。
+
+
+## A108 验收：字幕信息密度与时间轴自适应
+1. 检查 `plan_subtitle_timing()` 使用实际时长，SRT 最后一段结束时间应覆盖整段镜头时长，而非固定 3 秒。
+2. 使用含标点的长文案验证优先分段；短镜头验证字幕切换数受限、密度风险明确返回，且原始文字未被删改。
+3. 检查字幕加工 UI 读取 `probe_duration()`，将 `analyze_subtitle_density()` 与 `write_srt()` 接入实际烧录流程；用户确认警告后仍可继续处理。
+4. 运行字幕测试并核验当前 SHA 的 CI Push/PR、docs-sync Push/PR 四项；实际阅读舒适度仍需真实素材/Windows 另行验收。

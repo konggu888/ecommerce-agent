@@ -221,6 +221,8 @@ postprocess.py 根据 Shot 参数执行：
 - subtitle
 - audio/BGM
 
+字幕逻辑在 subtitles.py：`plan_subtitle_timing()` 根据真实镜头时长与文案长度生成多段时间轴，优先在标点处分段；短镜头无法容纳常规段数时减少切换频率，并通过 `analyze_subtitle_density()` 返回字/秒与风险提示。桌面字幕加工必须用 FFprobe 获取实际媒体时长，警告后仍允许用户继续，最终通过现有 `burn_subtitles()` 烧录生成的 SRT。该规则不会改写/删减文案，也不能代替真实素材可读性评估。
+
 ffmpeg.py 根据实际硬件动态选择可用 H.264 硬件编码器（NVENC/AMF/QSV/VideoToolbox），无硬件编码器时使用 CPU 编码。
 
 ## 11. Provider 原则
@@ -1451,3 +1453,7 @@ A106 修复补充：未知 `pacing` 标签继续按 A105 既有契约回退“�
 
 ## A107：商业剪辑时长进入运行时生产对象
 创意引擎根据商业角色得到的 `CreativeShot.duration_seconds` 必须复制到桌面运行时 `models.Shot.duration_seconds`，否则 `ProductionStore.generate_shot()` 的 `GenerationRequest.duration` 会读到模型默认的 3 秒，导致角色决策只存在于计划中。统一通过 `runtime_shot_editing_fields()` 映射时长、pacing、speed、transition，`app._activate_plan()` 创建每个运行时 Shot 时消费该映射。回归测试验证角色默认时长和相关字段进入运行时映射。该闭环只保证本地请求参数一致，不保证外部 Provider 实际输出时长与请求完全一致。
+
+
+## A108：字幕密度与镜头时长执行闭环
+`write_srt()` 不再把任意字幕固定写为单条 3 秒，而是依据视频实际时长构建 SRT 时间轴；文本较长时优先按标点拆分，并在短镜头里降低字幕切换频率。`analyze_subtitle_density()` 计算无空格字数/秒、字幕段数和风险说明，UI 会提示高密度/长单条字幕。实际路径位于字幕加工 UI：`probe_duration()` → 密度分析 → 自适应 SRT → `burn_subtitles()`。测试只验证时间轴与规则输出，不替代真实视频的阅读舒适度验收。

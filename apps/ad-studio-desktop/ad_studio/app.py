@@ -1825,11 +1825,24 @@ class App(tk.Tk):
         ttk.Label(frm,text='BGM').pack(anchor='w'); ttk.Combobox(frm,textvariable=bm,values=names,state='readonly').pack(fill='x',pady=5)
         def run():
             try:
-                from .subtitles import write_srt
-                from .postprocess import burn_subtitles, mix_audio
+                from .subtitles import write_srt, analyze_subtitle_density
+                from .postprocess import burn_subtitles, mix_audio, probe_duration
                 base=Path(s.video_path); folder=self.store.root/'postprocessed'/self.project.id/s.id
                 folder.mkdir(parents=True,exist_ok=True)
-                srt=write_srt(script.get('1.0','end').strip(),folder/f'v{s.version}.srt',duration=3)
+                subtitle_text=script.get('1.0','end').strip()
+                clip_duration=probe_duration(base)
+                density=analyze_subtitle_density(subtitle_text, duration=clip_duration)
+                if density['warnings']:
+                    messagebox.showwarning(
+                        '字幕密度提醒',
+                        f"镜头时长：{density['duration']:.2f} 秒\\n"
+                        f"字幕密度：{density['chars_per_second']:.1f} 字/秒\\n"
+                        f"预计字幕段数：{density['segment_count']}\\n\\n"
+                        + "\\n".join(density['warnings'])
+                        + "\\n\\n系统仍会继续处理；建议优先缩短文案，避免字幕过密。"
+                    )
+                srt=write_srt(subtitle_text,folder/f'v{s.version}.srt',duration=clip_duration,
+                              max_chars=density['effective_max_chars'])
                 subout=folder/f'v{s.version}-sub.mp4'
                 burn_subtitles(base,subout,srt,getattr(s,'subtitle_position','底部安全区'),getattr(s,'subtitle_style','白字黑边'))
                 chosen=next((a for a in bgms if a.name==bm.get()),None); final=subout

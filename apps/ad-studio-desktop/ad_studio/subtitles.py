@@ -25,10 +25,77 @@ def segment_subtitles(segments, max_chars=18):
             result.append({"start": start + i * step, "end": start + (i + 1) * step, "text": chunk.strip()})
     return result
 
-def write_srt(text: str, output: Path, duration=3):
+def _split_caption_text(text: str, max_chars: int) -> list[str]:
+    """Split text at nearby punctuation where possible, with a hard character limit."""
+    remaining = re.sub(r"\\s+", " ", str(text).strip())
+    max_chars = max(1, int(max_chars))
+    chunks = []
+    punctuation = "，。！？；：,.!?;:"
+    while len(remaining) > max_chars:
+        window = remaining[:max_chars]
+        boundary = max((window.rfind(mark) for mark in punctuation), default=-1)
+        cut = boundary + 1 if boundary >= max(4, max_chars // 2) else max_chars
+        chunks.append(remaining[:cut].strip())
+        remaining = remaining[cut:].strip()
+    if remaining:
+        chunks.append(remaining)
+    return chunks or [" "]
+
+
+def plan_subtitle_timing(text: str, duration=3, max_chars=18, min_segment_seconds=0.65):
+    """Build timed captions for the real clip duration and report density compromises."""
+    try:
+        duration = float(duration)
+    except (TypeError, ValueError):
+        duration = 3.0
+    if not duration > 0:
+        duration = 3.0
+    duration = min(duration, 24 * 60 * 60)
+    body = re.sub(r"\\s+", " ", str(text).strip()) or " "
+    max_chars = max(1, int(max_chars))
+    try:
+        min_segment_seconds = max(0.1, float(min_segment_seconds))
+    except (TypeError, ValueError):
+        min_segment_seconds = 0.65
+    chunks = _split_caption_text(body, max_chars)
+    max_cues = max(1, int(duration / min_segment_seconds))
+    warnings = []
+    effective_max_chars = max_chars
+    if len(chunks) > max_cues:
+        effective_max_chars = max(max_chars, (len(body) + max_cues - 1) // max_cues)
+        chunks = _split_caption_text(body, effective_max_chars)
+        warnings.append("镜头时长不足以容纳常规长度字幕，已减少切换次数；单条字幕可能偏密。")
+    chars_per_second = len(body.replace(" ", "")) / duration
+    if chars_per_second > 8:
+        warnings.append(f"字幕信息密度偏高（约 {chars_per_second:.1f} 字/秒），建议缩短文案或延长镜头。")
+    segment_duration = duration / len(chunks)
+    rows = []
+    for index, chunk in enumerate(chunks):
+        start = index * segment_duration
+        end = duration if index == len(chunks) - 1 else (index + 1) * segment_duration
+        rows.append({"start": start, "end": end, "text": chunk})
+    return {"segments": rows, "duration": duration, "char_count": len(body.replace(" ", "")),
+            "chars_per_second": chars_per_second, "segment_count": len(rows),
+            "effective_max_chars": effective_max_chars, "warnings": warnings}
+
+
+def analyze_subtitle_density(text: str, duration=3, max_chars=18):
+    """Return a UI-safe density summary without changing the subtitle text."""
+    plan = plan_subtitle_timing(text, duration=duration, max_chars=max_chars)
+    return {key: plan[key] for key in (
+        "duration", "char_count", "chars_per_second", "segment_count",
+        "effective_max_chars", "warnings"
+    )}
+
+
+def write_srt(text: str, output: Path, duration=3, max_chars=18):
+    """Write adaptive subtitles spanning the actual clip duration instead of a fixed 3 seconds."""
     output.parent.mkdir(parents=True, exist_ok=True)
-    body = text.strip() or " "
-    output.write_text(f"1\n{_ts(0)} --> {_ts(duration)}\n{body}\n", encoding="utf-8")
+    plan = plan_subtitle_timing(text, duration=duration, max_chars=max_chars)
+    lines = []
+    for i, row in enumerate(plan["segments"], 1):
+        lines += [str(i), f"{_ts(row['start'])} --> {_ts(row['end'])}", row["text"], ""]
+    output.write_text("\\n".join(lines), encoding="utf-8")
     return output
 
 def write_srt_segments(segments, output: Path, max_chars=18):
