@@ -559,3 +559,6 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - 变更后必须重新查询本分支最新 HEAD 对应的 CI push、CI PR、docs-sync push、docs-sync PR；不能把本次变更前 SHA 的绿色结果当作本次结果。
 - 文档检查只验证规定文件是否出现在同一差异中，不证明文档内容语义完全正确；仍需审阅差异，并将 docs-sync 与完整 CI 分开报告。
 - PR #32 继续保持 open/unmerged；不执行合并。
+
+
+本轮修正说明（2026-10-14）：文档同步契约测试已补充并检查 Python 文件结构；本次提交后仍需以最新 HEAD 重新检查 CI push/PR 与 docs-sync push/PR，不能继承旧 SHA 结果。

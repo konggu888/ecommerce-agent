@@ -122,3 +122,6 @@ GitHub Actions 也会执行相同检查；代码改了而两个文档没有同�
 
 ## Desktop 项目文档同步硬性规则（2026-10-14）
 当 `apps/ad-studio-desktop/` 下有代码或测试文件变更时，同一变更必须同时更新以下全部项目文档/规则文件：`AGENTS.md`、`apps/ad-studio-desktop/HELP.md`、`apps/ad-studio-desktop/PROJECT_LOGIC.md`、`docs/AD_STUDIO_ACCEPTANCE_PLAN.md`、`docs/AD_STUDIO_ACCEPTANCE_SOP.md`、`apps/ad-studio-desktop/SESSION_HANDOFF.md`、`docs/AD_STUDIO_AI_HANDOFF.md`、`docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md`。由 `tools/check_ad_studio_docs.py` 在 CI 中强制检查；单独的 docs-sync 通过不等于完整 CI 通过。
+
+
+文档同步契约测试修正（2026-10-14）：契约测试必须保持为可执行的 Python unittest，CI 将执行完整桌面测试套件；仅有文档路径清单不够，还要保证测试文件语法有效。

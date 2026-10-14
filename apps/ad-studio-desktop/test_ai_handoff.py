@@ -157,5 +157,6 @@ class AIHandoffTests(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertIn(path, checker)
         self.assertIn("Desktop code changes must update all files listed in REQUIRED", checker)
-\nif __name__ == "__main__":
+
+if __name__ == "__main__":
     unittest.main()
