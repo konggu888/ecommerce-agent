@@ -1,3 +1,13 @@
+# 【PLAN-003 最新进度｜2026-10-14｜优先于下方旧历史】
+
+- 已完成验收计划、验收 SOP、产品路线图、未来功能备忘四份文档的 A0–A112 标题来源索引，写入 `docs/AD_STUDIO_TASK_REGISTER.json` 的 `source_heading_inventory`；这只是文档标题盘点，不是语义去重或代码验收。
+- 已将 `docs/AD_STUDIO_PROGRESS_DASHBOARD.md` 更新为当前 PLAN-003 状态。全量审计仍未完成：`fully_audited=0`、语义去重未完成、代码/测试证据核验未开始、权重为空、整体百分比关闭。
+- 首要缺口：A68–A74、A88、A99 在验收计划和 SOP 中没有对应的正式任务标题。下一步先追查历史提交和旧版文档，确认是跳号、编号遗失、已撤销还是重复映射；禁止自行补造功能。
+- 多个相同 ID 的标题可能只是故障/状态历史，不得直接当成重复任务。完成历史追查后，继续按范围分批做语义去重与代码/测试证据核验。
+- 当前分支：`feat/product-drama-visual-review`；PR #32 必须保持 Open / unmerged；Windows 真机、真实素材、Provider/扣费、剪映现场与真实投放验证继续暂缓。
+
+---
+
 # 【最新接手指令｜规划体系优先｜2026-10-14】
 
 - 规划体系实施前 HEAD：`7cfabb23e9ab0c05c6189d31dcf6b7410f7934c7`；该 SHA 的 CI Push 38571014259、CI PR 38571022693、docs-sync Push 38571014277、docs-sync PR 38571022758 均 success。规划体系新提交后必须重新查询 HEAD 与四项工作流。
