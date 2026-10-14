@@ -107,8 +107,9 @@ class OutputResolutionTests(unittest.TestCase):
                 Path("input.mp4"), Path("final.mp4"), aspect="9:16"
             )
         command = run.call_args.args[0]
-        self.assertIn("scale=1080:1920:force_original_aspect_ratio=increase", command)
-        self.assertIn("crop=1080:1920", command[command.index("-vf") + 1])
+        video_filter = command[command.index("-vf") + 1]
+        self.assertIn("scale=1080:1920:force_original_aspect_ratio=increase", video_filter)
+        self.assertIn("crop=1080:1920", video_filter)
         self.assertIn("-c:a", command)
         self.assertIn("+faststart", command)
         self.assertEqual(command[-1], "final.mp4")

@@ -41,9 +41,15 @@ class A33FullUserFlowTests(unittest.TestCase):
             "streams":[{"codec_type":"video","width":1080,"height":1920}],
             "format":{"duration":"6.0"}
         })})()
+        def fake_normalize(source, target, aspect):
+            Path(target).parent.mkdir(parents=True, exist_ok=True)
+            Path(target).write_bytes(Path(source).read_bytes())
+            return Path(target)
         with patch("ad_studio.production.concat", side_effect=fake_concat), patch(
-            "ad_studio.production.shutil.which", return_value="/usr/bin/ffprobe"
-        ), patch("ad_studio.production.subprocess.run", return_value=probe):
+            "ad_studio.production.normalize_output_resolution", side_effect=fake_normalize
+        ), patch("ad_studio.production.shutil.which", return_value="/usr/bin/ffprobe"), patch(
+            "ad_studio.production.subprocess.run", return_value=probe
+        ):
             built = store.build_final(project, "9:16", variant_index=1)
         self.assertTrue(built.exists())
         manifest = json.loads(built.with_suffix(".json").read_text(encoding="utf-8"))

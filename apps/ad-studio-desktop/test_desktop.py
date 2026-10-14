@@ -950,9 +950,15 @@ class DesktopCoreTests(unittest.TestCase):
                 video.write_bytes(b"video")
                 shot.video_path = str(video)
             completed = type("Completed", (), {"stdout": '{"streams":[{"codec_type":"video","width":1080,"height":1920}],"format":{"duration":"4.0"}}'})()
+            def fake_normalize(source, target, aspect):
+                Path(target).parent.mkdir(parents=True, exist_ok=True)
+                Path(target).write_bytes(Path(source).read_bytes())
+                return Path(target)
             with patch("ad_studio.production.concat") as concat, patch(
-                "ad_studio.production.shutil.which", return_value="/usr/bin/ffprobe"
-            ), patch("ad_studio.production.subprocess.run", return_value=completed):
+                "ad_studio.production.normalize_output_resolution", side_effect=fake_normalize
+            ), patch("ad_studio.production.shutil.which", return_value="/usr/bin/ffprobe"), patch(
+                "ad_studio.production.subprocess.run", return_value=completed
+            ):
                 def fake_concat(inputs, output):
                     Path(output).parent.mkdir(parents=True, exist_ok=True)
                     Path(output).write_bytes(b"episode-video")
@@ -1049,9 +1055,15 @@ class DesktopCoreTests(unittest.TestCase):
                 path.write_bytes(b"video")
                 shot.video_path = str(path)
             completed = type("Completed", (), {"stdout": '{"streams":[{"codec_type":"video","width":1920,"height":1080}],"format":{"duration":"5.2"}}'})()
+            def fake_normalize(source, target, aspect):
+                Path(target).parent.mkdir(parents=True, exist_ok=True)
+                Path(target).write_bytes(Path(source).read_bytes())
+                return Path(target)
             with patch("ad_studio.production.concat") as concat, patch(
-                "ad_studio.production.shutil.which", return_value="/usr/bin/ffprobe"
-            ), patch("ad_studio.production.subprocess.run", return_value=completed):
+                "ad_studio.production.normalize_output_resolution", side_effect=fake_normalize
+            ), patch("ad_studio.production.shutil.which", return_value="/usr/bin/ffprobe"), patch(
+                "ad_studio.production.subprocess.run", return_value=completed
+            ):
                 def fake_concat(inputs, output):
                     Path(output).parent.mkdir(parents=True, exist_ok=True)
                     Path(output).write_bytes(b"invalid-output")
