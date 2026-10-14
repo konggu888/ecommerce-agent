@@ -602,3 +602,9 @@ A102 后续修正：首轮 CI 暴露测试夹具没有模拟归一化阶段输�
 - ProductionStore.build_final() 仅在非首镜头的 transition == “交叉溶解”时启用；其他项目保留原 concat。
 - 新增 test_ffmpeg.py 覆盖滤镜图、无音轨补静音与配置数量校验。
 - 当前提交的 CI push/PR 与 docs-sync push/PR 尚待核验。PR #32 必须保持 open/unmerged；Windows 真机、真实 Provider/扣费和剪映现场验收继续暂缓。
+
+
+## A105：分镜节奏默认值接入实际播放速度（当前提交待 CI 核验）
+- `creative_engine.validate_plan()` 现在将 pacing 标签映射为可执行速度默认值：慢 0.85x、标准 1.0x、快 1.15x、极快 1.3x。
+- 显式 `speed` 优先；未知 pacing 回退“标准”。新增 `test_creative_engine.py` 覆盖四档映射、显式速度覆盖和未知标签回退。
+- 下一步先核验当前最新 SHA 的 CI Push/PR 与 docs-sync Push/PR。不要把此基础映射描述为画面理解、情绪节奏或音乐卡点已完成。PR #32 保持 open/unmerged；Windows 真机验收继续暂缓。
