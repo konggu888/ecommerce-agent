@@ -41,7 +41,7 @@
 - 任何具体显卡型号都不是系统最低配置或架构边界。
 - 修改桌面端代码必须同步更新 HELP.md 和 PROJECT_LOGIC.md，并通过文档同步检查。
 
-## 3. 当前路线与进度
+## 3. 当前验收进度与路线
 
 产品战略顺序唯一以 `docs/AD_STUDIO_PRODUCT_ROADMAP.md` 为准；专项验收项与证据以 `docs/AD_STUDIO_ACCEPTANCE_PLAN.md` 为准。不要把下方历史记录或旧“下一步”当作当前执行顺序。
 
