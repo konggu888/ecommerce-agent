@@ -483,17 +483,17 @@ A109 转场安全补充：当前切点变速遇到显式“交叉溶解”时保
 代码基线 e8deb1ec4ef9edf7d999c79539762ea2627affab 的 CI Push 38570453607、CI PR 38570460103、docs-sync Push 38570453565、docs-sync PR 38570460195 均 success。PR #32 继续 open/unmerged。后续任务先复核阶段 2 退出条件；Windows 真机、真实素材、Provider/扣费和商业效果继续暂缓。
 
 ## PLAN-003 最新执行记录｜A3 布局修复与 A0–A5 证据审计（2026-10-15）
-当前 HEAD `f20bf426594a55ac74267641b53d9166acef6798` 的 CI Push/PR 与 docs-sync Push/PR 四项均成功。A3 设置区字段与操作按钮已分容器，新增 AST 布局回归测试；只代表自动化布局合同通过，不代表完整 A3 或 Windows UI 验收完成。A0–A5 证据映射已启动但仅部分完成：A0 启动链缺专门测试，A1 稳定性缺任务级矩阵，A2 缺 App.create() 直接编排测试，A4 缺损坏素材/扫描失败的完整测试映射，A5 缺视觉帧提取/分析失败回退的确定性测试映射。下一步继续逐项映射验收子条件并调查 A68–A74 历史来源。PR #32 保持 open/unmerged；总体完成率关闭；真实环境验收继续暂缓。
+当前 HEAD `f20bf426594a55ac74267641b53d9166acef6798` 的 CI Push/PR 与 docs-sync Push/PR 四项均成功。A3 设置区字段与操作按钮已分容器，新增 AST 布局回归测试；只代表自动化布局合同通过，不代表完整 A3 或 Windows UI 验收完成。A0–A5 证据映射已启动但仅部分完成：A0 启动链缺专门测试，A1 稳定性缺任务级矩阵，A2 缺 App.create() 直接编排测试，A4 缺损坏素材/扫描失败的完整测试映射，A5 缺视觉帧提取/分析失败回退的确定性测试映射。本段为历史证据记录；A68–A74 与 A99 的历史任务身份已恢复。下一步按文件顶部 PLAN-003 状态完成跨来源合并映射并继续逐项当前 HEAD 证据审计。PR #32 保持 open/unmerged；总体完成率关闭；真实环境验收继续暂缓。
 
 
 ## 历史编号调查更新｜A99 已找回（2026-10-15）
-历史提交 `c8252dc58995289d8ca38dfd15dc8e66f8001eeb` 明确标记 A99，HELP.md、PROJECT_LOGIC.md 和 `test_a99_successful_ledger_clears_stale_cost_on_unbilled_sibling_shot` 均提供证据。台账已恢复正式标题并移除 A99 缺口标记；它与 A57/A59 相关但不重复。当前只剩 A68–A74 未解决；A99 当前 HEAD 的完整验收仍待审计。
+历史提交 `c8252dc58995289d8ca38dfd15dc8e66f8001eeb` 明确标记 A99，HELP.md、PROJECT_LOGIC.md 和 `test_a99_successful_ledger_clears_stale_cost_on_unbilled_sibling_shot` 均提供证据。台账已恢复正式标题并移除 A99 缺口标记；它与 A57/A59 相关但不重复。本段为历史调查记录；后续调查已恢复 A68–A74 正式任务身份。A68–A74 与 A99 当前 HEAD 的完整验收仍待审计。
 
 
 
 
-## 最新接手状态｜2026-10-15
-- 最近完整核验 SHA：3801204559bb05cb617a13ef249fe35db0030a50；该 SHA 的 CI Push/PR 与 docs-sync Push/PR 四项均 success。当前 PR #32 Open / unmerged。
+## 历史接手状态｜2026-10-15｜已由文件顶部 PLAN-003 状态取代
+- 本段旧基线：3801204559bb05cb617a13ef249fe35db0030a50；它不是当前 HEAD，不能用来证明最新提交 CI。当前状态以文件顶部 PLAN-003 段和 GitHub 实时 Actions 为准。PR #32 仍须 Open / unmerged。
 - A3 设置区布局修复与 AST 回归测试已提交，自动化 CI 全绿；仍未完成 Windows 真机验收，也未宣称完整 A3 验收完成。
 - A68–A74 已从历史实现提交和 HELP/PROJECT_LOGIC/SESSION_HANDOFF 找回，正式验收计划/SOP及未来备忘已补回；A99 也已找回。113 个编号均有任务标题，编号缺口为 0。
 - 需求文本级复核已记录 113 个编号，但最终跨来源重复/状态段合并审计尚未完成；代码/测试证据审计仅 A0–A5 部分映射，fully_audited=0、权重为空、总体完成率关闭。

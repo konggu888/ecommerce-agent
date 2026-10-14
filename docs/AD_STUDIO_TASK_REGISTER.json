@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_from_head": "d6ada69a456311b8e9bf44792d373a391dab4ccc",
+  "generated_from_head": "306fab2b0cca11e7b15d787f430ebeb449ae16fa",
   "audit_status": "all_113_numbered_task_titles_recovered_requirement_level_reviewed_cross_source_status_reconciliation_pending_current_head_code_test_evidence_audit_pending",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until cross-source scope reconciliation and weighting review. Historical A68-A74 and A99 task identities have been recovered; their current-HEAD evidence audit remains pending.",
@@ -4277,7 +4277,7 @@
   },
   "inventory_method": "Heading inventory normalizes literal backslash-n sequences before parsing Markdown headings; historical headings are not proof of implementation or acceptance.",
   "historical_investigation": {
-    "status": "partial",
+    "status": "historical_task_identities_recovered_current_head_acceptance_pending",
     "checked_refs": [
       "feat/product-drama-visual-review",
       "7cfabb23e9ab0c05c6189d31dcf6b7410f7934c7",
@@ -4285,10 +4285,10 @@
     ],
     "findings": {
       "A88": "False gap caused by parser not normalizing literal backslash-n sequences; formal headings found in acceptance plan, SOP and future feature memo.",
-      "A68_A74": "No formal headings found in the four current source documents or the checked historical acceptance-plan/SOP snapshots; commit-message search returned no matching commits. This is not proof that the tasks never existed.",
-      "A99": "No formal heading found in the four current source documents or checked historical acceptance-plan/SOP snapshots; commit-message search returned no matching commits. This is not proof that the task never existed."
+      "A68_A74": "Recovered: historical implementation commits and HELP/PROJECT_LOGIC/SESSION_HANDOFF evidence identify A68-A74; formal acceptance plan/SOP and future memo headings have been restored. Current-HEAD implementation/test acceptance remains pending.",
+      "A99": "Recovered: historical implementation commit c8252dc58995289d8ca38dfd15dc8e66f8001eeb and dedicated test identify A99. Current-HEAD implementation/test acceptance remains pending."
     },
-    "next_action": "Continue targeted historical lookup; do not invent titles or map placeholders to product features without evidence.",
+    "next_action": "Finish cross-source duplicate/status-section reconciliation; then continue current-HEAD code/test evidence audit in bounded batches. Do not invent features or calculate global completion percentage.",
     "A99": {
       "status": "recovered",
       "evidence_commit": "c8252dc58995289d8ca38dfd15dc8e66f8001eeb",
@@ -4422,9 +4422,9 @@
       ],
       "limitations": [
         "This is a requirement-level semantic review of A75-A89 source text only. It does not verify code, tests, latest SHA evidence, roadmap-phase mapping, or real video quality.",
-        "A68-A74 remain unresolved numbering gaps; A99 remains unresolved."
+        "A68-A74 and A99 task identities have been recovered; current-HEAD code/test acceptance remains pending."
       ],
-      "next_batch": "A65-A67, then A90-A112; preserve one batch per review and do not infer implementation from docs."
+      "next_batch": "Final cross-source duplicate/status reconciliation, then current-HEAD code/test/evidence audit in bounded batches; do not infer implementation from docs."
     },
     {
       "batch_id": "PLAN-003-DEDUP-002",
@@ -4454,9 +4454,9 @@
       ],
       "limitations": [
         "Requirement-text dedup only; code, tests, latest-SHA evidence, cost reconciliation, Windows real-machine behavior, and real visual review are not audited in this batch.",
-        "A68-A74 and A99 remain unresolved historical numbering gaps; do not infer missing task titles."
+        "A68-A74 and A99 task identities have been recovered; current-HEAD code/test acceptance remains pending."
       ],
-      "next_batch": "A90-A98, then A100-A112; after that review A0-A64 and map all task groups to roadmap phases."
+      "next_batch": "Final cross-source duplicate/status reconciliation, then current-HEAD code/test/evidence audit in bounded batches; do not infer implementation from docs."
     },
     {
       "batch_id": "PLAN-003-DEDUP-003",
@@ -4524,7 +4524,7 @@
         "Requirement-level dedup only. Historical CI records are not evidence for current HEAD; latest code/test/SHA evidence audit remains pending.",
         "Real Provider, Windows real-machine, actual billing, Jianying on-site, and generated-image identity consistency remain deferred."
       ],
-      "next_batch": "A100-A112; then return to A0-A64 and roadmap-phase mapping."
+      "next_batch": "Final cross-source duplicate/status reconciliation, then current-HEAD code/test/evidence audit in bounded batches; do not infer implementation from docs."
     },
     {
       "batch_id": "PLAN-003-DEDUP-004",
@@ -4600,7 +4600,7 @@
         "Requirement-level dedup only. This batch does not re-run A100-A112 tests or prove current-SHA acceptance; older per-task CI records are historical only.",
         "Real Windows, footage, audio listening, subtitle readability, Provider, billing, Jianying, and commercial-quality review remain deferred."
       ],
-      "next_batch": "Return to A0-A64 for requirement-level dedup and roadmap-phase mapping; then begin the code/test/current-SHA evidence audit."
+      "next_batch": "Final cross-source duplicate/status reconciliation, then current-HEAD code/test/evidence audit in bounded batches; do not infer implementation from docs."
     },
     {
       "batch_id": "PLAN-003-DEDUP-005",
@@ -4888,10 +4888,10 @@
       "limitations": [
         "This is requirement-level semantic review and a provisional roadmap-phase mapping; it is not code/test/current-HEAD evidence verification.",
         "Task A62 is a remediation record and must not be counted as a separate user-facing capability.",
-        "A68-A74 and A99 remain unresolved historical numbering gaps; no titles or capabilities are invented.",
+        "A68-A74 and A99 task identities have been recovered; current-HEAD code/test acceptance remains pending.",
         "Real Windows, real footage, Provider, actual billing, Jianying, and real campaign validation remain deferred."
       ],
-      "next_batch": "Requirement-level dedup is now reviewed for A0-A112 except unresolved numbering gaps A68-A74/A99; next consolidate roadmap phase mapping and unresolved gaps, then begin current-HEAD code/test/evidence audit in bounded batches."
+      "next_batch": "Final cross-source duplicate/status reconciliation, then current-HEAD code/test/evidence audit in bounded batches; do not infer implementation from docs."
     },
     {
       "batch_id": "PLAN-003-HISTORY-A99",
@@ -5147,7 +5147,7 @@
         "A0/A1/A2/A4/A5 remain partial; A3 layout contract passed but full task-selection acceptance is still partial.",
         "Windows real-machine rendering/interaction and real footage visual accuracy remain deferred."
       ],
-      "next_step": "Continue A0-A5 case-by-case mapping; find historical origin of A68-A74/A99. Do not calculate global completion percentage."
+      "next_step": "Continue current-HEAD code/test/evidence audit for A0-A5 in bounded batches; the A68-A74 and A99 historical identities have been recovered. Do not calculate global completion percentage."
     },
     {
       "batch_id": "PLAN-003-HEAD-VERIFICATION-380120",
