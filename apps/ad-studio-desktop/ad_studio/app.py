@@ -1821,7 +1821,7 @@ class App(tk.Tk):
         frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
         ttk.Label(frm,text='字幕',font=('Microsoft YaHei UI',13,'bold')).pack(anchor='w')
         script=tk.Text(frm,height=7); script.pack(fill='both',expand=True,pady=6); script.insert('1.0',s.script)
-        bgms=self.lib.reusable('BGM'); names=['不添加BGM']+[a.name for a in bgms]; bm=tk.StringVar(value=names[0])
+        bgms=self.lib.reusable('BGM'); names=['不添加BGM']+[a.name for a in bgms]; saved_bgm=(self.project.creative_plan or {}).get('final_bgm_name'); bm=tk.StringVar(value=saved_bgm if saved_bgm in names else names[0])
         ttk.Label(frm,text='成片统一BGM（最终拼接时连续播放，不在每个镜头重启）').pack(anchor='w'); ttk.Combobox(frm,textvariable=bm,values=names,state='readonly').pack(fill='x',pady=5)
         def run():
             try:
