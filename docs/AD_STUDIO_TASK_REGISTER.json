@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "28b28cfa453dc5fdc131b82b1c521c690afdcf03",
-  "audit_status": "requirement_level_semantic_dedup_reviewed_known_tasks_A99_historical_gap_recovered_A68_A74_unresolved_code_test_evidence_A0_A5_partial",
+  "audit_status": "all_113_numbered_task_titles_recovered_requirement_level_reviewed_final_cross_source_dedup_and_current_head_evidence_audit_pending",
   "progress_percentages_enabled": false,
   "policy": "Historical headings are not proof. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until scope deduplication and weighting review.",
   "counts": {
@@ -17,18 +17,10 @@
     "heading_inventory_completed_ids": 113,
     "semantic_dedup_completed": false,
     "code_test_evidence_audit_completed_ids": 0,
-    "semantic_dedup_reviewed_task_ids": 105,
+    "semantic_dedup_reviewed_task_ids": 113,
     "code_test_evidence_reviewed_ids": 6
   },
-  "known_id_gaps": [
-    "A68",
-    "A69",
-    "A70",
-    "A71",
-    "A72",
-    "A73",
-    "A74"
-  ],
+  "known_id_gaps": [],
   "tasks": [
     {
       "task_id": "A0",
@@ -2450,150 +2442,409 @@
     },
     {
       "task_id": "A68",
-      "title": "正式任务标题缺失：需确认是否有意跳号或历史任务遗漏",
-      "acceptance_source_section": "未映射",
-      "sources": [],
-      "audit_note": "未在路线图、验收计划、未来备忘的任务标题中找到；不得猜测内容。",
-      "roadmap_phase": "待路线图映射",
-      "development_status": "not_audited",
-      "acceptance_status": "not_audited",
+      "title": "AI 短剧后续剧情影响分析",
+      "acceptance_source_section": "历史正式实现记录，已补入验收计划与 SOP",
+      "sources": [
+        "apps/ad-studio-desktop/HELP.md",
+        "apps/ad-studio-desktop/PROJECT_LOGIC.md",
+        "apps/ad-studio-desktop/SESSION_HANDOFF.md",
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+      ],
+      "audit_note": "指定源集后分析后续集影响，输出真实受影响集、风险、依据与建议；报告保存但不自动改写。 历史实现提交 002e56b0f2324058ad8e3f6e45e1c84ffbe3cafa；当前 HEAD 的完整验收状态仍须逐项核对。",
+      "roadmap_phase": "阶段4｜AI 短剧能力",
+      "development_status": "historical_implementation_confirmed_current_head_evidence_audit_pending",
+      "acceptance_status": "partial_evidence_mapping_not_fully_accepted",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "historical_commit",
+          "sha": "002e56b0f2324058ad8e3f6e45e1c84ffbe3cafa",
+          "url": "https://github.com/konggu888/ecommerce-agent/commit/002e56b0f2324058ad8e3f6e45e1c84ffbe3cafa",
+          "detail": "指定源集后分析后续集影响，输出真实受影响集、风险、依据与建议；报告保存但不自动改写。"
+        },
+        {
+          "kind": "current_test_names",
+          "sha": "3718ab273ad66a885cd99d79da24bf3fe45af062",
+          "detail": "apps/ad-studio-desktop/test_short_drama.py: test_continuity_impact_analysis_reports_only_existing_downstream_episodes, test_continuity_impact_analysis_rejects_non_downstream_episode"
+        }
+      ],
       "remaining_conditions": [
-        "在历史提交/旧版计划与全部相关文档中追查该编号",
-        "确认是有意跳号、遗失的正式验收项、已撤销项或重复映射；禁止凭空补造功能"
+        "逐项核对当前 HEAD 对应实现、正向/负向测试和旧方案兼容合同",
+        "记录当前 SHA 的短剧专项测试与 CI/doc-sync 证据",
+        "真实模型剧情质量、语义误报/漏报与真实素材画面验收仍需独立人工/真机验收"
       ],
       "duplicate_mapping": null,
       "deferred": false,
-      "source_heading_inventory": {},
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_heading_inventory": {
+        "apps/ad-studio-desktop/HELP.md": [
+          "## A68：AI 短剧后续剧情影响分析"
+        ],
+        "apps/ad-studio-desktop/PROJECT_LOGIC.md": [
+          "### A68：AI 短剧后续剧情影响分析"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A68｜AI 短剧后续剧情影响分析"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A68｜AI 短剧后续剧情影响分析"
+        ],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A68–A74｜已落地的短剧编导结构能力（历史任务恢复，2026-10-15）"
+        ]
+      },
+      "source_inventory_status": "historical_task_recovered_formal_plan_sop_added_semantic_reviewed_evidence_audit_pending",
+      "provisional_roadmap_phase": "阶段4｜AI 短剧能力"
     },
     {
       "task_id": "A69",
-      "title": "正式任务标题缺失：需确认是否有意跳号或历史任务遗漏",
-      "acceptance_source_section": "未映射",
-      "sources": [],
-      "audit_note": "未在路线图、验收计划、未来备忘的任务标题中找到；不得猜测内容。",
-      "roadmap_phase": "待路线图映射",
-      "development_status": "not_audited",
-      "acceptance_status": "not_audited",
+      "title": "AI 编导故事引擎与留存设计",
+      "acceptance_source_section": "历史正式实现记录，已补入验收计划与 SOP",
+      "sources": [
+        "apps/ad-studio-desktop/HELP.md",
+        "apps/ad-studio-desktop/PROJECT_LOGIC.md",
+        "apps/ad-studio-desktop/SESSION_HANDOFF.md",
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+      ],
+      "audit_note": "新生成方案强制故事引擎、因果递进冲突与开场留存设计，缺失时拒绝保存。 历史实现提交 a83bb8bb2c019663b026b509c4565f7d8c63d6c5；当前 HEAD 的完整验收状态仍须逐项核对。",
+      "roadmap_phase": "阶段4｜AI 短剧能力",
+      "development_status": "historical_implementation_confirmed_current_head_evidence_audit_pending",
+      "acceptance_status": "partial_evidence_mapping_not_fully_accepted",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "historical_commit",
+          "sha": "a83bb8bb2c019663b026b509c4565f7d8c63d6c5",
+          "url": "https://github.com/konggu888/ecommerce-agent/commit/a83bb8bb2c019663b026b509c4565f7d8c63d6c5",
+          "detail": "新生成方案强制故事引擎、因果递进冲突与开场留存设计，缺失时拒绝保存。"
+        },
+        {
+          "kind": "current_test_names",
+          "sha": "3718ab273ad66a885cd99d79da24bf3fe45af062",
+          "detail": "apps/ad-studio-desktop/test_short_drama.py: test_generation_rejects_short_drama_without_causal_story_engine, test_generation_prompt_requires_causal_conflict_hook_and_payoff"
+        }
+      ],
       "remaining_conditions": [
-        "在历史提交/旧版计划与全部相关文档中追查该编号",
-        "确认是有意跳号、遗失的正式验收项、已撤销项或重复映射；禁止凭空补造功能"
+        "逐项核对当前 HEAD 对应实现、正向/负向测试和旧方案兼容合同",
+        "记录当前 SHA 的短剧专项测试与 CI/doc-sync 证据",
+        "真实模型剧情质量、语义误报/漏报与真实素材画面验收仍需独立人工/真机验收"
       ],
       "duplicate_mapping": null,
       "deferred": false,
-      "source_heading_inventory": {},
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_heading_inventory": {
+        "apps/ad-studio-desktop/HELP.md": [
+          "## A69：AI 编导故事引擎与留存设计"
+        ],
+        "apps/ad-studio-desktop/PROJECT_LOGIC.md": [
+          "### A69：AI 编导故事引擎与留存设计"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A69｜AI 编导故事引擎与留存设计"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A69｜AI 编导故事引擎与留存设计"
+        ],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A68–A74｜已落地的短剧编导结构能力（历史任务恢复，2026-10-15）"
+        ]
+      },
+      "source_inventory_status": "historical_task_recovered_formal_plan_sop_added_semantic_reviewed_evidence_audit_pending",
+      "provisional_roadmap_phase": "阶段4｜AI 短剧能力"
     },
     {
       "task_id": "A70",
-      "title": "正式任务标题缺失：需确认是否有意跳号或历史任务遗漏",
-      "acceptance_source_section": "未映射",
-      "sources": [],
-      "audit_note": "未在路线图、验收计划、未来备忘的任务标题中找到；不得猜测内容。",
-      "roadmap_phase": "待路线图映射",
-      "development_status": "not_audited",
-      "acceptance_status": "not_audited",
+      "title": "短剧故事结构检查",
+      "acceptance_source_section": "历史正式实现记录，已补入验收计划与 SOP",
+      "sources": [
+        "apps/ad-studio-desktop/HELP.md",
+        "apps/ad-studio-desktop/PROJECT_LOGIC.md",
+        "apps/ad-studio-desktop/SESSION_HANDOFF.md",
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+      ],
+      "audit_note": "对故事引擎、冲突升级和留存结构缺项产生 warning，旧方案兼容。 历史实现提交 aa5840b5d846a12eedbea889494f300a469dc847；当前 HEAD 的完整验收状态仍须逐项核对。",
+      "roadmap_phase": "阶段4｜AI 短剧能力",
+      "development_status": "historical_implementation_confirmed_current_head_evidence_audit_pending",
+      "acceptance_status": "partial_evidence_mapping_not_fully_accepted",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "historical_commit",
+          "sha": "aa5840b5d846a12eedbea889494f300a469dc847",
+          "url": "https://github.com/konggu888/ecommerce-agent/commit/aa5840b5d846a12eedbea889494f300a469dc847",
+          "detail": "对故事引擎、冲突升级和留存结构缺项产生 warning，旧方案兼容。"
+        },
+        {
+          "kind": "current_test_names",
+          "sha": "3718ab273ad66a885cd99d79da24bf3fe45af062",
+          "detail": "apps/ad-studio-desktop/test_short_drama.py: test_audit_flags_missing_story_engine_and_hook_design"
+        }
+      ],
       "remaining_conditions": [
-        "在历史提交/旧版计划与全部相关文档中追查该编号",
-        "确认是有意跳号、遗失的正式验收项、已撤销项或重复映射；禁止凭空补造功能"
+        "逐项核对当前 HEAD 对应实现、正向/负向测试和旧方案兼容合同",
+        "记录当前 SHA 的短剧专项测试与 CI/doc-sync 证据",
+        "真实模型剧情质量、语义误报/漏报与真实素材画面验收仍需独立人工/真机验收"
       ],
       "duplicate_mapping": null,
       "deferred": false,
-      "source_heading_inventory": {},
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_heading_inventory": {
+        "apps/ad-studio-desktop/HELP.md": [
+          "## A70：短剧故事结构检查"
+        ],
+        "apps/ad-studio-desktop/PROJECT_LOGIC.md": [
+          "### A70：短剧故事结构检查"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A70｜短剧故事结构检查"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A70｜短剧故事结构检查"
+        ],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A68–A74｜已落地的短剧编导结构能力（历史任务恢复，2026-10-15）"
+        ]
+      },
+      "source_inventory_status": "historical_task_recovered_formal_plan_sop_added_semantic_reviewed_evidence_audit_pending",
+      "provisional_roadmap_phase": "阶段4｜AI 短剧能力"
     },
     {
       "task_id": "A71",
-      "title": "正式任务标题缺失：需确认是否有意跳号或历史任务遗漏",
-      "acceptance_source_section": "未映射",
-      "sources": [],
-      "audit_note": "未在路线图、验收计划、未来备忘的任务标题中找到；不得猜测内容。",
-      "roadmap_phase": "待路线图映射",
-      "development_status": "not_audited",
-      "acceptance_status": "not_audited",
+      "title": "备选故事方向差异化",
+      "acceptance_source_section": "历史正式实现记录，已补入验收计划与 SOP",
+      "sources": [
+        "apps/ad-studio-desktop/HELP.md",
+        "apps/ad-studio-desktop/PROJECT_LOGIC.md",
+        "apps/ad-studio-desktop/SESSION_HANDOFF.md",
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+      ],
+      "audit_note": "至少两个完整备选故事方向，检查核心叙事机制重复及必填字段。 历史实现提交 f094441de66cd99b1b083e63612788fa41df7d79；当前 HEAD 的完整验收状态仍须逐项核对。",
+      "roadmap_phase": "阶段4｜AI 短剧能力",
+      "development_status": "historical_implementation_confirmed_current_head_evidence_audit_pending",
+      "acceptance_status": "partial_evidence_mapping_not_fully_accepted",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "historical_commit",
+          "sha": "f094441de66cd99b1b083e63612788fa41df7d79",
+          "url": "https://github.com/konggu888/ecommerce-agent/commit/f094441de66cd99b1b083e63612788fa41df7d79",
+          "detail": "至少两个完整备选故事方向，检查核心叙事机制重复及必填字段。"
+        },
+        {
+          "kind": "current_test_names",
+          "sha": "3718ab273ad66a885cd99d79da24bf3fe45af062",
+          "detail": "apps/ad-studio-desktop/test_short_drama.py: test_generation_rejects_duplicate_story_direction_mechanisms, test_generation_requires_distinct_story_direction_fields"
+        }
+      ],
       "remaining_conditions": [
-        "在历史提交/旧版计划与全部相关文档中追查该编号",
-        "确认是有意跳号、遗失的正式验收项、已撤销项或重复映射；禁止凭空补造功能"
+        "逐项核对当前 HEAD 对应实现、正向/负向测试和旧方案兼容合同",
+        "记录当前 SHA 的短剧专项测试与 CI/doc-sync 证据",
+        "真实模型剧情质量、语义误报/漏报与真实素材画面验收仍需独立人工/真机验收"
       ],
       "duplicate_mapping": null,
       "deferred": false,
-      "source_heading_inventory": {},
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_heading_inventory": {
+        "apps/ad-studio-desktop/HELP.md": [
+          "## A71：备选故事方向差异化"
+        ],
+        "apps/ad-studio-desktop/PROJECT_LOGIC.md": [
+          "### A71：备选故事方向差异化"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A71｜备选故事方向差异化"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A71｜备选故事方向差异化"
+        ],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A68–A74｜已落地的短剧编导结构能力（历史任务恢复，2026-10-15）"
+        ]
+      },
+      "source_inventory_status": "historical_task_recovered_formal_plan_sop_added_semantic_reviewed_evidence_audit_pending",
+      "provisional_roadmap_phase": "阶段4｜AI 短剧能力"
     },
     {
       "task_id": "A72",
-      "title": "正式任务标题缺失：需确认是否有意跳号或历史任务遗漏",
-      "acceptance_source_section": "未映射",
-      "sources": [],
-      "audit_note": "未在路线图、验收计划、未来备忘的任务标题中找到；不得猜测内容。",
-      "roadmap_phase": "待路线图映射",
-      "development_status": "not_audited",
-      "acceptance_status": "not_audited",
+      "title": "人物动机与关系动力",
+      "acceptance_source_section": "历史正式实现记录，已补入验收计划与 SOP",
+      "sources": [
+        "apps/ad-studio-desktop/HELP.md",
+        "apps/ad-studio-desktop/PROJECT_LOGIC.md",
+        "apps/ad-studio-desktop/SESSION_HANDOFF.md",
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+      ],
+      "audit_note": "人物字段包括动机、恐惧/秘密、关系动态、决策压力和人物弧光；新方案强制，旧方案 warning。 历史实现提交 fa51938e4a1fc80dd148cfa3f9ffd32f41354a59；当前 HEAD 的完整验收状态仍须逐项核对。",
+      "roadmap_phase": "阶段4｜AI 短剧能力",
+      "development_status": "historical_implementation_confirmed_current_head_evidence_audit_pending",
+      "acceptance_status": "partial_evidence_mapping_not_fully_accepted",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "historical_commit",
+          "sha": "fa51938e4a1fc80dd148cfa3f9ffd32f41354a59",
+          "url": "https://github.com/konggu888/ecommerce-agent/commit/fa51938e4a1fc80dd148cfa3f9ffd32f41354a59",
+          "detail": "人物字段包括动机、恐惧/秘密、关系动态、决策压力和人物弧光；新方案强制，旧方案 warning。"
+        },
+        {
+          "kind": "current_test_names",
+          "sha": "3718ab273ad66a885cd99d79da24bf3fe45af062",
+          "detail": "apps/ad-studio-desktop/test_short_drama.py: test_generation_rejects_character_without_motivation_and_relationship_dynamics, test_audit_warns_when_character_motivation_is_missing"
+        }
+      ],
       "remaining_conditions": [
-        "在历史提交/旧版计划与全部相关文档中追查该编号",
-        "确认是有意跳号、遗失的正式验收项、已撤销项或重复映射；禁止凭空补造功能"
+        "逐项核对当前 HEAD 对应实现、正向/负向测试和旧方案兼容合同",
+        "记录当前 SHA 的短剧专项测试与 CI/doc-sync 证据",
+        "真实模型剧情质量、语义误报/漏报与真实素材画面验收仍需独立人工/真机验收"
       ],
       "duplicate_mapping": null,
       "deferred": false,
-      "source_heading_inventory": {},
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_heading_inventory": {
+        "apps/ad-studio-desktop/HELP.md": [
+          "## A72：人物动机与关系动力"
+        ],
+        "apps/ad-studio-desktop/PROJECT_LOGIC.md": [
+          "### A72：人物动机与关系动力"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A72｜人物动机与关系动力"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A72｜人物动机与关系动力"
+        ],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A68–A74｜已落地的短剧编导结构能力（历史任务恢复，2026-10-15）"
+        ]
+      },
+      "source_inventory_status": "historical_task_recovered_formal_plan_sop_added_semantic_reviewed_evidence_audit_pending",
+      "provisional_roadmap_phase": "阶段4｜AI 短剧能力"
     },
     {
       "task_id": "A73",
-      "title": "正式任务标题缺失：需确认是否有意跳号或历史任务遗漏",
-      "acceptance_source_section": "未映射",
-      "sources": [],
-      "audit_note": "未在路线图、验收计划、未来备忘的任务标题中找到；不得猜测内容。",
-      "roadmap_phase": "待路线图映射",
-      "development_status": "not_audited",
-      "acceptance_status": "not_audited",
+      "title": "剧情事件因果链",
+      "acceptance_source_section": "历史正式实现记录，已补入验收计划与 SOP",
+      "sources": [
+        "apps/ad-studio-desktop/HELP.md",
+        "apps/ad-studio-desktop/PROJECT_LOGIC.md",
+        "apps/ad-studio-desktop/SESSION_HANDOFF.md",
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+      ],
+      "audit_note": "新生成方案要求至少三步有序因果链，记录事件、前因、人物选择、后果和状态变化。 历史实现提交 77affeb537a208f43bc7988eccf144ba92429c91；当前 HEAD 的完整验收状态仍须逐项核对。",
+      "roadmap_phase": "阶段4｜AI 短剧能力",
+      "development_status": "historical_implementation_confirmed_current_head_evidence_audit_pending",
+      "acceptance_status": "partial_evidence_mapping_not_fully_accepted",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "historical_commit",
+          "sha": "77affeb537a208f43bc7988eccf144ba92429c91",
+          "url": "https://github.com/konggu888/ecommerce-agent/commit/77affeb537a208f43bc7988eccf144ba92429c91",
+          "detail": "新生成方案要求至少三步有序因果链，记录事件、前因、人物选择、后果和状态变化。"
+        },
+        {
+          "kind": "current_test_names",
+          "sha": "3718ab273ad66a885cd99d79da24bf3fe45af062",
+          "detail": "apps/ad-studio-desktop/test_short_drama.py: test_generation_rejects_missing_causal_chain, test_generation_rejects_causal_step_without_consequence, test_audit_warns_when_causal_chain_is_missing"
+        }
+      ],
       "remaining_conditions": [
-        "在历史提交/旧版计划与全部相关文档中追查该编号",
-        "确认是有意跳号、遗失的正式验收项、已撤销项或重复映射；禁止凭空补造功能"
+        "逐项核对当前 HEAD 对应实现、正向/负向测试和旧方案兼容合同",
+        "记录当前 SHA 的短剧专项测试与 CI/doc-sync 证据",
+        "真实模型剧情质量、语义误报/漏报与真实素材画面验收仍需独立人工/真机验收"
       ],
       "duplicate_mapping": null,
       "deferred": false,
-      "source_heading_inventory": {},
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_heading_inventory": {
+        "apps/ad-studio-desktop/HELP.md": [
+          "## A73：剧情事件因果链"
+        ],
+        "apps/ad-studio-desktop/PROJECT_LOGIC.md": [
+          "### A73：剧情事件因果链"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A73｜剧情事件因果链"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A73｜剧情事件因果链"
+        ],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A68–A74｜已落地的短剧编导结构能力（历史任务恢复，2026-10-15）"
+        ]
+      },
+      "source_inventory_status": "historical_task_recovered_formal_plan_sop_added_semantic_reviewed_evidence_audit_pending",
+      "provisional_roadmap_phase": "阶段4｜AI 短剧能力"
     },
     {
       "task_id": "A74",
-      "title": "正式任务标题缺失：需确认是否有意跳号或历史任务遗漏",
-      "acceptance_source_section": "未映射",
-      "sources": [],
-      "audit_note": "未在路线图、验收计划、未来备忘的任务标题中找到；不得猜测内容。",
-      "roadmap_phase": "待路线图映射",
-      "development_status": "not_audited",
-      "acceptance_status": "not_audited",
+      "title": "因果链与剧本/分镜证据对齐",
+      "acceptance_source_section": "历史正式实现记录，已补入验收计划与 SOP",
+      "sources": [
+        "apps/ad-studio-desktop/HELP.md",
+        "apps/ad-studio-desktop/PROJECT_LOGIC.md",
+        "apps/ad-studio-desktop/SESSION_HANDOFF.md",
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+      ],
+      "audit_note": "每步因果链引用剧本原文与真实根级分镜索引；新方案拒绝无效引用，旧方案 warning。 历史实现提交 bac6feb10520eac18ce3734b6de34df3527a56af；当前 HEAD 的完整验收状态仍须逐项核对。",
+      "roadmap_phase": "阶段4｜AI 短剧能力",
+      "development_status": "historical_implementation_confirmed_current_head_evidence_audit_pending",
+      "acceptance_status": "partial_evidence_mapping_not_fully_accepted",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "historical_commit",
+          "sha": "bac6feb10520eac18ce3734b6de34df3527a56af",
+          "url": "https://github.com/konggu888/ecommerce-agent/commit/bac6feb10520eac18ce3734b6de34df3527a56af",
+          "detail": "每步因果链引用剧本原文与真实根级分镜索引；新方案拒绝无效引用，旧方案 warning。"
+        },
+        {
+          "kind": "current_test_names",
+          "sha": "3718ab273ad66a885cd99d79da24bf3fe45af062",
+          "detail": "apps/ad-studio-desktop/test_short_drama.py: test_generation_rejects_causal_evidence_not_in_script, test_generation_rejects_causal_chain_with_invalid_storyboard_reference, test_audit_flags_causal_script_and_storyboard_mismatch"
+        }
+      ],
       "remaining_conditions": [
-        "在历史提交/旧版计划与全部相关文档中追查该编号",
-        "确认是有意跳号、遗失的正式验收项、已撤销项或重复映射；禁止凭空补造功能"
+        "逐项核对当前 HEAD 对应实现、正向/负向测试和旧方案兼容合同",
+        "记录当前 SHA 的短剧专项测试与 CI/doc-sync 证据",
+        "真实模型剧情质量、语义误报/漏报与真实素材画面验收仍需独立人工/真机验收"
       ],
       "duplicate_mapping": null,
       "deferred": false,
-      "source_heading_inventory": {},
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_heading_inventory": {
+        "apps/ad-studio-desktop/HELP.md": [
+          "## A74：因果链与剧本/分镜证据对齐"
+        ],
+        "apps/ad-studio-desktop/PROJECT_LOGIC.md": [
+          "### A74：因果链与剧本/分镜证据对齐"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md": [
+          "## A74｜因果链与剧本/分镜证据对齐"
+        ],
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md": [
+          "## A74｜因果链与剧本/分镜证据对齐"
+        ],
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md": [
+          "## A68–A74｜已落地的短剧编导结构能力（历史任务恢复，2026-10-15）"
+        ]
+      },
+      "source_inventory_status": "historical_task_recovered_formal_plan_sop_added_semantic_reviewed_evidence_audit_pending",
+      "provisional_roadmap_phase": "阶段4｜AI 短剧能力"
     },
     {
       "task_id": "A75",
@@ -4022,7 +4273,7 @@
       "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
     ],
     "note": "Repeated headings can be status/history entries rather than duplicate requirements. Do not merge tasks solely because an ID appears in multiple headings. The eight IDs listed in known_id_gaps have no formal task heading in the four current source documents and remain unresolved pending historical investigation.",
-    "next_scope": "A99 recovered from historical implementation commit and HELP/PROJECT_LOGIC/test evidence; removed from unresolved gaps but remains partial until full current-HEAD audit. Only A68-A74 remain unresolved. Continue historical investigation of A68-A74 and case-by-case evidence audit A0-A5; no overall percentage."
+    "next_scope": "Historical investigation recovered A68-A74 from implementation commits and HELP/PROJECT_LOGIC/SESSION_HANDOFF; A99 was also recovered. Formal acceptance plan/SOP and future memo now receive the missing A68-A74 sections. No numbered ID gaps remain. Next consolidate cross-source duplicate/state headings, then continue current-HEAD code/test evidence audit A0-A5 and A68-A74/A99; overall percentage remains disabled."
   },
   "inventory_method": "Heading inventory normalizes literal backslash-n sequences before parsing Markdown headings; historical headings are not proof of implementation or acceptance.",
   "historical_investigation": {
@@ -4049,6 +4300,41 @@
       ],
       "conclusion": "Not an intentional gap: formal A99 implementation and test evidence found in history. Keep A99 as a distinct task; do not merge into A57/A59 because A99 specifically clears stale per-shot snapshots when a successful ledger exists.",
       "remaining": "Full current-HEAD acceptance audit pending."
+    },
+    "A68": {
+      "status": "recovered",
+      "evidence_commit": "002e56b0f2324058ad8e3f6e45e1c84ffbe3cafa",
+      "conclusion": "指定源集后分析后续集影响，输出真实受影响集、风险、依据与建议；报告保存但不自动改写。 Historical HELP/PROJECT_LOGIC/handoff evidence confirms this was a real numbered task; formal acceptance plan/SOP headings were missing and have now been restored. Full current-HEAD acceptance remains pending."
+    },
+    "A69": {
+      "status": "recovered",
+      "evidence_commit": "a83bb8bb2c019663b026b509c4565f7d8c63d6c5",
+      "conclusion": "新生成方案强制故事引擎、因果递进冲突与开场留存设计，缺失时拒绝保存。 Historical HELP/PROJECT_LOGIC/handoff evidence confirms this was a real numbered task; formal acceptance plan/SOP headings were missing and have now been restored. Full current-HEAD acceptance remains pending."
+    },
+    "A70": {
+      "status": "recovered",
+      "evidence_commit": "aa5840b5d846a12eedbea889494f300a469dc847",
+      "conclusion": "对故事引擎、冲突升级和留存结构缺项产生 warning，旧方案兼容。 Historical HELP/PROJECT_LOGIC/handoff evidence confirms this was a real numbered task; formal acceptance plan/SOP headings were missing and have now been restored. Full current-HEAD acceptance remains pending."
+    },
+    "A71": {
+      "status": "recovered",
+      "evidence_commit": "f094441de66cd99b1b083e63612788fa41df7d79",
+      "conclusion": "至少两个完整备选故事方向，检查核心叙事机制重复及必填字段。 Historical HELP/PROJECT_LOGIC/handoff evidence confirms this was a real numbered task; formal acceptance plan/SOP headings were missing and have now been restored. Full current-HEAD acceptance remains pending."
+    },
+    "A72": {
+      "status": "recovered",
+      "evidence_commit": "fa51938e4a1fc80dd148cfa3f9ffd32f41354a59",
+      "conclusion": "人物字段包括动机、恐惧/秘密、关系动态、决策压力和人物弧光；新方案强制，旧方案 warning。 Historical HELP/PROJECT_LOGIC/handoff evidence confirms this was a real numbered task; formal acceptance plan/SOP headings were missing and have now been restored. Full current-HEAD acceptance remains pending."
+    },
+    "A73": {
+      "status": "recovered",
+      "evidence_commit": "77affeb537a208f43bc7988eccf144ba92429c91",
+      "conclusion": "新生成方案要求至少三步有序因果链，记录事件、前因、人物选择、后果和状态变化。 Historical HELP/PROJECT_LOGIC/handoff evidence confirms this was a real numbered task; formal acceptance plan/SOP headings were missing and have now been restored. Full current-HEAD acceptance remains pending."
+    },
+    "A74": {
+      "status": "recovered",
+      "evidence_commit": "bac6feb10520eac18ce3734b6de34df3527a56af",
+      "conclusion": "每步因果链引用剧本原文与真实根级分镜索引；新方案拒绝无效引用，旧方案 warning。 Historical HELP/PROJECT_LOGIC/handoff evidence confirms this was a real numbered task; formal acceptance plan/SOP headings were missing and have now been restored. Full current-HEAD acceptance remains pending."
     }
   },
   "semantic_dedup_batches": [
@@ -4621,6 +4907,60 @@
           "task_id": "A59",
           "relation": "project_total_ledger_source_related_but_not_duplicate"
         }
+      ]
+    },
+    {
+      "batch_id": "PLAN-003-HISTORY-A68-A74",
+      "range": "A68-A74",
+      "status": "historical_tasks_recovered_requirement_level_reviewed_formal_acceptance_sections_restored",
+      "findings": [
+        {
+          "task_id": "A68",
+          "title": "AI 短剧后续剧情影响分析",
+          "decision": "keep_separate",
+          "reason": "指定源集后分析后续集影响，输出真实受影响集、风险、依据与建议；报告保存但不自动改写。"
+        },
+        {
+          "task_id": "A69",
+          "title": "AI 编导故事引擎与留存设计",
+          "decision": "keep_separate",
+          "reason": "新生成方案强制故事引擎、因果递进冲突与开场留存设计，缺失时拒绝保存。"
+        },
+        {
+          "task_id": "A70",
+          "title": "短剧故事结构检查",
+          "decision": "keep_separate",
+          "reason": "对故事引擎、冲突升级和留存结构缺项产生 warning，旧方案兼容。"
+        },
+        {
+          "task_id": "A71",
+          "title": "备选故事方向差异化",
+          "decision": "keep_separate",
+          "reason": "至少两个完整备选故事方向，检查核心叙事机制重复及必填字段。"
+        },
+        {
+          "task_id": "A72",
+          "title": "人物动机与关系动力",
+          "decision": "keep_separate",
+          "reason": "人物字段包括动机、恐惧/秘密、关系动态、决策压力和人物弧光；新方案强制，旧方案 warning。"
+        },
+        {
+          "task_id": "A73",
+          "title": "剧情事件因果链",
+          "decision": "keep_separate",
+          "reason": "新生成方案要求至少三步有序因果链，记录事件、前因、人物选择、后果和状态变化。"
+        },
+        {
+          "task_id": "A74",
+          "title": "因果链与剧本/分镜证据对齐",
+          "decision": "keep_separate",
+          "reason": "每步因果链引用剧本原文与真实根级分镜索引；新方案拒绝无效引用，旧方案 warning。"
+        }
+      ],
+      "limitations": [
+        "A69 generation contract and A70 warning audit are related but not duplicates.",
+        "A73 causal chain schema and A74 script/storyboard evidence references are related but distinct.",
+        "All seven tasks remain partial for current-HEAD evidence and real model/visual quality boundaries."
       ]
     }
   ],

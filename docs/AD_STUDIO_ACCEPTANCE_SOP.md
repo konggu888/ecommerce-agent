@@ -996,6 +996,49 @@ AI 必须执行：
 5. 该步骤只验收证据文件有效性，不替代人工对照商品外观、结构、功能和正确用法；真实素材及 Windows 真机验收仍单独执行。
 
 
+## A68｜AI 短剧后续剧情影响分析验收
+1. 准备至少三集短剧方案和连续性台账，指定第 1 集进行影响分析。
+2. 确认报告只列出真实存在且晚于源集的后续集，包含风险等级、具体依据与建议，并保存到方案。
+3. 确认分析不会自动改写任一集；测试不存在的集、源集本身和非后续集编号均被拒绝。
+4. 运行 test_short_drama.py 对应连续性影响测试、完整 CI 与 docs-sync。
+5. 人工评审真实模型分析质量；不把结构检查说成穷尽语义矛盾。
+
+## A69｜故事引擎与留存设计验收
+1. 对新生成方案分别删除 story_engine、减少冲突升级步骤、删除 hook_design 或留存装置，确认生成流程拒绝保存。
+2. 确认旧方案读取仍兼容，审核报告能指出缺项。
+3. 运行 test_generation_rejects_short_drama_without_causal_story_engine、test_generation_prompt_requires_causal_conflict_hook_and_payoff 与 test_audit_flags_missing_story_engine_and_hook_design。
+4. 检查完整 CI/doc-sync；真实模型写作质量仍需人工评审。
+
+## A70｜故事结构审查验收
+1. 分别构造缺少人物目标/阻力/代价/转折/伏笔兑现/情绪回报、冲突升级不足和 hook 不完整的旧方案。
+2. 确认 audit_short_drama 返回对应 warning，不把旧方案读取直接阻断。
+3. 运行短剧专项测试、完整 CI 与 docs-sync；记录最新 SHA。
+4. 人工确认 warning 不被误写成“剧情必然失败”的结论。
+
+## A71｜备选故事方向差异化验收
+1. 删除一个备选方向必填字段，确认新生成方案被拒绝。
+2. 让两个方向的核心叙事机制签名完全相同，确认拒绝；再使用不同机制的完整方向确认通过。
+3. 运行 test_generation_rejects_duplicate_story_direction_mechanisms 与 test_generation_requires_distinct_story_direction_fields、完整 CI/doc-sync。
+4. 记录语义相似内容仍可能漏检，需要人工评审。
+
+## A72｜人物动机与关系动力验收
+1. 删除人物 motivation 或 relationship_dynamics 等关键字段，确认新生成流程拒绝保存。
+2. 对旧方案运行审查，确认缺失字段只产生 warning 并保持兼容。
+3. 运行 test_generation_rejects_character_without_motivation_and_relationship_dynamics、test_audit_warns_when_character_motivation_is_missing、完整 CI/doc-sync。
+4. 不把字段检查等同于心理真实性或人物弧光质量。
+
+## A73｜剧情事件因果链验收
+1. 对新方案删除 causal_chain、删掉 consequence 或打乱 step 顺序，确认生成校验拒绝。
+2. 对旧方案缺少 causal_chain 的情况运行审查，确认只产生 warning。
+3. 运行 test_generation_rejects_missing_causal_chain、test_generation_rejects_causal_step_without_consequence、test_audit_warns_when_causal_chain_is_missing 与完整 CI/doc-sync。
+4. 结构测试不替代整段剧情因果评审。
+
+## A74｜因果链剧本/分镜证据对齐验收
+1. 将 script_evidence 改为 full_script 中不存在的文本，确认新生成校验拒绝。
+2. 将 storyboard_indices 指向 0、越界索引或不存在的分镜，确认拒绝。
+3. 对旧方案运行审查，确认输出 CAUSAL_SCRIPT_MISMATCH、CAUSAL_STORYBOARD_MISSING 或 CAUSAL_STORYBOARD_MISMATCH 中相应警告。
+4. 运行 test_generation_rejects_causal_evidence_not_in_script、test_generation_rejects_causal_chain_with_invalid_storyboard_reference、test_audit_flags_causal_script_and_storyboard_mismatch 与完整 CI/doc-sync。
+5. 文本证据对齐不代表真实画面已演出事件；真实素材/Windows 验收仍按用户要求暂缓。
 ## A75：商品事实锁与剧情内容交叉审查
 1. 用未在商品资料中出现的已确认事实运行审查，确认产生 `PRODUCT_CONFIRMED_FACT_UNSUPPORTED`。
 2. 将未核实参数作为肯定宣传语写入剧本，确认产生 `PRODUCT_UNKNOWN_FACT_USED`。
