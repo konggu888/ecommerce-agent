@@ -1429,3 +1429,7 @@ ProductionStore._sync_actual_cost() 在发现成功账本记录后，会为所�
 `build_final()` 先 concat 到临时文件，再调用 `normalize_output_resolution()` 统一转码至所选画幅的最低 1080P 级配置，之后由 ffprobe 校验尺寸和画幅。低于目标尺寸的输出不可交付。此能力只保证像素尺寸，不等于 AI 超分或细节恢复。
 
 A102 测试边界补充：最终输出测试必须模拟 `normalize_output_resolution()` 写出目标临时文件；真实生产路径仍执行 FFmpeg 转码，不能把 mock 当成实际媒体验证。
+
+
+## A103：淡入/淡出音画同步
+`process_shot()` 对淡入/淡出统一探测源时长，并以 `source_duration / speed` 计算输出时间窗；画面使用 `fade`，原音轨使用 `afade`。变速时音频滤镜顺序为 `atempo` 后接 `afade`，确保淡出发生在变速后的末尾。短片段的淡化时长限制为 `min(0.25s, output_duration)`。这是镜头内部的音画淡化，不应描述为相邻镜头的交叉溶解。

@@ -53,10 +53,32 @@ class FocusCropFilterTests(unittest.TestCase):
 
         command = run.call_args.args[0]
         video_filter = command[command.index("-vf") + 1]
-        # Four input seconds at 2x speed yields a two-second output;
-        # the 250ms fade therefore starts at 1.750s, not at time zero.
+        audio_filter = command[command.index("-af") + 1]
+        # Four input seconds at 2x speed yields a two-second output.
         self.assertIn("setpts=0.5*PTS", video_filter)
         self.assertIn("fade=t=out:st=1.750:d=0.250", video_filter)
+        self.assertEqual(audio_filter, "atempo=2.000000,afade=t=out:st=1.750:d=0.250")
+
+    def test_fade_in_synchronizes_video_and_audio(self):
+        with mock.patch.object(postprocess, "ffmpeg_path", return_value="ffmpeg"), \
+             mock.patch.object(postprocess, "best_h264_encoder", return_value="libx264"), \
+             mock.patch.object(postprocess, "probe_duration", return_value=0.1), \
+             mock.patch.object(postprocess, "_run") as run:
+            postprocess.process_shot(Path("input.mp4"), Path("out.mp4"), transition="淡入")
+        command = run.call_args.args[0]
+        video_filter = command[command.index("-vf") + 1]
+        audio_filter = command[command.index("-af") + 1]
+        self.assertIn("fade=t=in:st=0:d=0.100", video_filter)
+        self.assertEqual(audio_filter, "afade=t=in:st=0:d=0.100")
+
+    def test_fade_out_synchronizes_audio_at_end_without_speed_change(self):
+        with mock.patch.object(postprocess, "ffmpeg_path", return_value="ffmpeg"), \
+             mock.patch.object(postprocess, "best_h264_encoder", return_value="libx264"), \
+             mock.patch.object(postprocess, "probe_duration", return_value=3.0), \
+             mock.patch.object(postprocess, "_run") as run:
+            postprocess.process_shot(Path("input.mp4"), Path("out.mp4"), transition="淡出")
+        command = run.call_args.args[0]
+        self.assertEqual(command[command.index("-af") + 1], "afade=t=out:st=2.750:d=0.250")
 
     def test_short_clip_fade_out_does_not_exceed_clip_duration(self):
         with mock.patch.object(postprocess, "ffmpeg_path", return_value="ffmpeg"), \

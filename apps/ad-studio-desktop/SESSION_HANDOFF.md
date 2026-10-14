@@ -588,3 +588,10 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - 当前提交 SHA 的完整 CI 与 docs-sync push/PR 结果待确认；PR #32 必须保持 open/unmerged。
 
 A102 后续修正：首轮 CI 暴露测试夹具没有模拟归一化阶段输出文件、以及一条 FFmpeg 参数断言检查错位置；已修复夹具并调整断言。当前最新 SHA `cf21060274bf1eb3dc0b1b37e19ae81aec3d1b05` 的 CI/doc-sync 需重新确认。
+
+
+## A103：镜头淡入/淡出音画同步（待 CI）
+- 修改 `ad_studio/postprocess.py`：淡入/淡出时同时处理视频和原音轨，按变速后的输出时长计算窗口，短镜头自动缩短淡化时长。
+- 新增测试覆盖变速淡出音频滤镜、短片段淡入及常速淡出。
+- 这项是单镜头淡化；相邻镜头交叉溶解、节奏分析和音乐卡点仍未完成。
+- 当前提交的完整 CI 与 docs-sync push/PR 结果待确认；PR #32 保持 open/unmerged。
