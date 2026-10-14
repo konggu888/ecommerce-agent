@@ -1427,3 +1427,5 @@ ProductionStore._sync_actual_cost() 在发现成功账本记录后，会为所�
 
 ## 2026-10-14：A102 最终导出分辨率底线
 `build_final()` 先 concat 到临时文件，再调用 `normalize_output_resolution()` 统一转码至所选画幅的最低 1080P 级配置，之后由 ffprobe 校验尺寸和画幅。低于目标尺寸的输出不可交付。此能力只保证像素尺寸，不等于 AI 超分或细节恢复。
+
+A102 测试边界补充：最终输出测试必须模拟 `normalize_output_resolution()` 写出目标临时文件；真实生产路径仍执行 FFmpeg 转码，不能把 mock 当成实际媒体验证。

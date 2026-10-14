@@ -1,3 +1,4 @@
+# A102: these tests verify output-dimension normalization commands, not perceptual AI upscaling.
 import unittest
 from pathlib import Path
 from unittest import mock

@@ -1,3 +1,4 @@
+# A102: offline flow fixtures simulate the final normalization stage separately from FFmpeg.
 import json
 import tempfile
 import unittest

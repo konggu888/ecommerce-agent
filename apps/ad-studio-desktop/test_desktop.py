@@ -1,3 +1,4 @@
+# A102 final-render fixtures mock the normalization output file explicitly.
 import tempfile
 import unittest
 from pathlib import Path

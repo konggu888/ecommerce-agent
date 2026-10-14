@@ -586,3 +586,5 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - 新增测试：后处理命令覆盖竖屏/横屏/方形配置；最终媒体质检覆盖 720×1280 竖屏拒绝。
 - 这只是最低像素尺寸保障，不等于 AI 超分、去噪或细节恢复。Windows 实机画质检查仍暂缓。
 - 当前提交 SHA 的完整 CI 与 docs-sync push/PR 结果待确认；PR #32 必须保持 open/unmerged。
+
+A102 后续修正：首轮 CI 暴露测试夹具没有模拟归一化阶段输出文件、以及一条 FFmpeg 参数断言检查错位置；已修复夹具并调整断言。当前最新 SHA `cf21060274bf1eb3dc0b1b37e19ae81aec3d1b05` 的 CI/doc-sync 需重新确认。
