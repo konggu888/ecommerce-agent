@@ -1318,3 +1318,9 @@ A102 回归夹具检查：如果测试使用 mock 替代 FFmpeg，必须让 mock
 3. 验证显式时长/速度/转场优先；显式 pacing 但省略 speed 时仍使用 A105 pacing 映射。
 4. 验证 `CreativeShot.editing_intent` 持久化角色、理由、依据、最终生效参数与参数来源；未知 pacing 标签必须回退标准；不得把关键词分类描述为真实画面语义理解。
 5. 检查新增回归测试及当前 SHA 的 CI Push/PR、docs-sync Push/PR；未全部成功前不得确认自动化验收。真实素材/Windows 画面与听感仍须另行验收。
+
+## A107 验收：商业角色时长进入运行时生成请求
+1. 从 `validate_plan()` 创建缺少 `duration_seconds` 的商品细节镜头，确认推断默认时长为 4 秒。
+2. 检查 `runtime_shot_editing_fields()` 将时长、pacing、speed、transition 一并映射到运行时 Shot，且 `app._activate_plan()` 使用该映射。
+3. 检查 `ProductionStore.generate_shot()` 的 `GenerationRequest.duration` 来源是运行时 Shot.duration_seconds；不得只在 editing_intent 报告中记录时长。
+4. 验证显式时长优先，新增回归测试通过，并检查当前 SHA 的 CI Push/PR、docs-sync Push/PR 四项全部成功。外部 Provider 实际遵守请求时长需要真实素材验收，不可由单测代替。

@@ -166,6 +166,16 @@ def resolve_editing_intent(shot: dict[str, Any], *, is_last_shot: bool = False) 
             "basis": "分镜文本关键词规则；不是对生成画面的视觉语义识别"}
 
 
+def runtime_shot_editing_fields(shot: CreativeShot) -> dict[str, Any]:
+    """Copy resolved creative editing decisions into the executable production Shot model."""
+    return {
+        "duration_seconds": max(1, int(shot.duration_seconds)),
+        "pacing": shot.pacing,
+        "speed": shot.speed,
+        "transition": shot.transition,
+    }
+
+
 def validate_plan(raw: dict[str, Any]) -> CreativePlan:
     if not isinstance(raw, dict):
         raise CreativePlanError("LLM没有返回JSON对象")

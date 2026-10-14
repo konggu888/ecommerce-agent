@@ -11,7 +11,7 @@ from .hardware import detect_hardware, format_hardware
 from .capability import CapabilityRouter
 from .production import ProductionStore, generation_failure_ui_state, normalize_cost_estimate_rmb
 from .product_parser import parse_product_url, save_product, save_product_library, load_product_library, merge_product_library, ProductInfo
-from .creative_engine import CreativeEngine, validate_plan, validate_task_type_plan, TASK_TYPE_POLICIES
+from .creative_engine import CreativeEngine, validate_plan, validate_task_type_plan, runtime_shot_editing_fields, TASK_TYPE_POLICIES
 from .short_drama import audit_short_drama, build_episode_continuity_ledger, generate_short_drama, generate_next_short_drama_episode, analyze_episode_continuity_impact, short_drama_production_rows, record_product_visual_verification, compare_product_visual_shot, prepare_product_drama_shot_regeneration, product_visual_correction_suggestion, resolve_product_drama_shot_number
 from .model_router import ModelRouter, ModelProfile, FUNCTIONS, audit_ad_variant_set, build_creative_test_plan, audit_creative_factual_consistency, audit_storyboard_fact_consistency, audit_visual_fact_consistency
 from .browser_skill import _find_agent_browser
@@ -1287,8 +1287,8 @@ class App(tk.Tk):
                 title=x.objective or f'镜头{x.index}', visual=x.visual, script=x.dialogue,
                 composition=x.composition, focus_x=x.focus_x, focus_y=x.focus_y,
                 subtitle_position=x.subtitle_position, subtitle_style=x.subtitle_style,
-                pacing=x.pacing, speed=x.speed, bgm_intensity=x.bgm_intensity,
-                bgm_volume=x.bgm_volume, transition=x.transition,
+                **runtime_shot_editing_fields(x), bgm_intensity=x.bgm_intensity,
+                bgm_volume=x.bgm_volume,
             ) for x in plan.shots
         ]
         self.active_variant_index=int(raw.get('_variant_index',1))

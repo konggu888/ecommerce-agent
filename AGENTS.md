@@ -155,3 +155,8 @@ GitHub Actions 也会执行相同检查；代码改了而两个文档没有同�
 - 当分镜未提供明确时长、速度或转场时，可以根据镜头商业角色提供可追溯的保守默认值；显式字段必须优先。
 - 默认决策必须保存角色、理由、依据边界、最终生效参数与参数来源，并由现有生成/后处理/最终拼接链实际消费；未知 pacing 标签回退“标准”，不得只生成报告冒充执行。
 - 文本关键词归类必须明确标记为规则回退，不得描述为真实画面语义理解。新增代码/测试时同步八份文档，并核查最新 SHA 的 CI 与 docs-sync Push/PR 四项状态。
+
+## 商业剪辑变更要求（A107）
+- 商业镜头角色推断出的 duration_seconds 必须从 CreativeShot 复制到运行时 Shot，确保 ProductionStore 的真实 GenerationRequest.duration 消费该值；不得只写入创意计划或审计报告。
+- 统一映射 helper 必须同步 pacing、speed、transition；显式字段优先规则不得回退。新增测试与代码同一提交更新八份项目文档，并检查最新 SHA 的 CI 与 docs-sync Push/PR 四项结果。
+- 自动化只能证明本地请求参数闭环，不能证明第三方 Provider 一定按请求时长输出；真实 Provider 与 Windows 验收仍按用户要求暂缓。

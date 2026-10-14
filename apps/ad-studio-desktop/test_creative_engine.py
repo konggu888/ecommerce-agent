@@ -1,6 +1,6 @@
 import unittest
 
-from ad_studio.creative_engine import CreativeEngine, CreativePlanError, validate_plan
+from ad_studio.creative_engine import CreativeEngine, CreativePlanError, runtime_shot_editing_fields, validate_plan
 
 
 def sample_plan():
@@ -111,6 +111,19 @@ class CreativeEngineTests(unittest.TestCase):
         self.assertEqual(resolved.editing_intent["duration_source"], "explicit")
         self.assertEqual(resolved.editing_intent["speed_source"], "explicit")
         self.assertEqual(resolved.editing_intent["transition_source"], "explicit")
+
+    def test_resolved_duration_and_editing_fields_reach_runtime_mapping(self):
+        raw = sample_plan()
+        shot = raw["shots"][0]
+        shot.update({"objective": "商品细节特写", "visual": "展示材质与接口"})
+        for key in ("duration_seconds", "pacing", "speed", "transition"):
+            shot.pop(key, None)
+        creative_shot = validate_plan(raw).shots[0]
+        runtime_fields = runtime_shot_editing_fields(creative_shot)
+        self.assertEqual(runtime_fields["duration_seconds"], 4)
+        self.assertEqual(runtime_fields["pacing"], "慢")
+        self.assertEqual(runtime_fields["speed"], 0.85)
+        self.assertEqual(runtime_fields["transition"], "交叉溶解")
 
     def test_engine_uses_llm_output(self):
         seen = {}

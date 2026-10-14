@@ -11,7 +11,7 @@
 - 用户最新优先级：暂停费用对账/单镜头重试保护检查线，继续推进未来路线图第 5 项“商业级剪辑决策层升级”。
 - 用户新增硬性画质要求：最终导出最低为 1080P 级。A102 已实现最终拼接后统一归一化转码：9:16 1080×1920、16:9 1920×1080、1:1 1080×1080，并由 ffprobe 拒绝低于该尺寸的交付结果。注意这保证像素尺寸，不代表已实现 AI 超分/细节恢复；A102 当前 SHA 的 CI/doc-sync 需检查。
 - 已完成的小步：修正 `focus_x/focus_y` 语义，让它们表示缩放后源画面中的主体/视觉焦点归一化位置；裁切窗口在合法边界内尽量将焦点放到输出画面中心。新增 `test_postprocess.py` 检查实际 FFmpeg 参数、边界夹紧及非法/非有限输入回退。
-- 商业剪辑决策层 A106 已新增：`resolve_editing_intent()` 根据分镜文本角色补齐缺省时长/节奏/转场，并将理由与参数来源存入 `editing_intent`；显式参数优先。当前最新已知基线 HEAD 为 `66e6aa8594fe8bb35fbc82077257129a3564dde0`（该基线四项 CI/doc-sync 成功）；A106 新提交尚需重新核验全部四项。
+- 商业剪辑决策层 A106 已新增：`resolve_editing_intent()` 根据分镜文本角色补齐缺省时长/节奏/转场，并将理由与参数来源存入 `editing_intent`；显式参数优先。A106 基线 `884c45dd8524abf4c4ebf7ee7fc8daa67987f686` 的 CI Push/PR 与 docs-sync Push/PR 均 success；A107 本轮修改提交后必须重新核验四项。
 - 本轮目标不是宣称商业剪辑整体完成。文本关键词规则不等于画面理解；画面驱动节奏、音乐卡点、字幕密度、商品展示节奏和剪后反馈仍待开发/验收。
 - 这只是“焦点参数真正影响裁切”的单项修复，**不是商业剪辑整体完成**。下一步应建立/完善可追溯的商业剪辑决策层：解释镜头商业角色、选择理由、节奏/时长理由、转场理由，并保证决策确实影响实际执行；后续再做字幕信息密度、音乐卡点、镜头衔接与剪后反馈。
 - 先读本段，再读 `docs/AD_STUDIO_AI_HANDOFF.md`、`PROJECT_LOGIC.md`、`HELP.md`。每次代码修改必须同步 HELP、PROJECT_LOGIC、本文件、验收计划、验收 SOP、AI handoff 和未来功能备忘。
@@ -614,3 +614,6 @@ A102 后续修正：首轮 CI 暴露测试夹具没有模拟归一化阶段输�
 
 ## A106 接手记录：商业镜头角色驱动默认剪辑决策（待最新 SHA CI）
 新增 `resolve_editing_intent()`，将分镜文本归类为 hook、product_detail、demonstration、proof、pain_point、reaction、cta 或 story_beat；仅在字段缺失时补齐默认时长、节奏/速度与转场，显式参数优先。决策理由、规则依据和参数来源写入 `CreativeShot.editing_intent`。新增测试覆盖主要角色、末镜 CTA 淡出和显式参数覆盖。首轮 CI 暴露未知 pacing 标签回退规则需兼容 A105，已修正为“标准”，并补充最终生效参数审计字段。修复提交后必须重新查询当前 SHA 的 CI Push/PR 与 docs-sync Push/PR；PR #32 保持 open/unmerged。文本规则不代表视觉理解，商业剪辑整体与真实素材验收仍未完成。
+
+## A107 接手记录：商业角色时长进入运行时生成请求
+A106 的角色默认时长没有从 `CreativeShot` 复制到运行时 `Shot`，导致视频 Provider 请求可能继续使用默认 3 秒。A107 新增 `runtime_shot_editing_fields()` 并由 `app._activate_plan()` 消费，映射 duration_seconds/pacing/speed/transition；测试覆盖商品细节镜头默认 4 秒。提交后核对当前 SHA 的 CI Push/PR、docs-sync Push/PR 四项。PR #32 保持 open/unmerged；Windows 真机、真实 Provider/实际扣费、剪映现场验收继续暂缓。商业剪辑整体仍未完成，下一步继续推进音乐卡点、字幕信息密度和真实内容驱动的剪后优化。

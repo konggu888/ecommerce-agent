@@ -8,7 +8,7 @@
 - 用户已明确要求暂停费用对账/单镜头重试保护线，优先推进未来路线图第 5 项“商业级剪辑决策层升级”。
 - 新增硬性要求：最终成片最低 1080P 级（9:16 1080×1920、16:9 1920×1080、1:1 1080×1080）。A102 将最终拼接结果转码到该尺寸并由 ffprobe 检查；尺寸放大不等于 AI 细节增强。A102 代码已准备，需以最新 SHA 的 CI 与 docs-sync 四项运行结果为准。
 - 已修复 `process_shot()` 忽略 AI 焦点的问题：`focus_x/focus_y` 是缩放后源画面中的主体/视觉焦点归一化位置，不是裁切窗口偏移比例；系统在合法边界内尽量将焦点放到输出画面中心。新增回归测试验证实际 FFmpeg `-vf` 参数及异常输入处理。
-- A106 已加入基于分镜文本的商业角色默认决策：缺省时长/速度/转场按 hook、商品细节、演示、证据、痛点、反应、CTA 等角色推断，理由和参数来源保存在 `CreativeShot.editing_intent`；显式参数优先。该规则不是视觉语义理解，最新 SHA CI/doc-sync 仍待核验。
+- A106 已加入基于分镜文本的商业角色默认决策；A107 修复推断时长未复制到运行时 Shot 的执行断点，现由 `runtime_shot_editing_fields()` 将 duration/pacing/speed/transition 一起传入生产镜头。最新基线 HEAD `884c45dd8524abf4c4ebf7ee7fc8daa67987f686` 的 CI Push/PR 与 docs-sync Push/PR 均 success；A107 仍待本轮提交后重新核验。规则只基于文本，不代表视觉语义理解。
 - 当前仍未完成商业剪辑整体能力。后续继续推进真实画面驱动节奏、镜头衔接、字幕密度、音乐卡点、商品展示节奏及剪后反馈。
 - 接手必做：重新查询分支 HEAD、PR #32、最新 SHA 的 CI 和 docs-sync；在仓库可用时运行 `python3 -m unittest discover -s apps/ad-studio-desktop -p 'test_*.py'` 和 `python3 -m compileall -q apps/ad-studio-desktop/ad_studio`。没有实际执行就不能声称本地测试通过。
 - Windows 真机、真实 Provider/扣费、剪映现场和真实成片视觉验收继续暂缓。CI 绿灯不代表商业质量已验收。
@@ -410,3 +410,6 @@ A102 首轮 CI 暴露测试夹具未模拟归一化阶段的目标文件，并�
 
 
 A106 首轮 CI 修复说明：自动化测试发现未知 `pacing` 标签必须继续回退“标准”，不能使用推断角色的默认节奏。代码现已修正，并把最终生效的时长、节奏、速度、转场写入 `editing_intent`；需以修复后的 SHA 重新检查 CI Push/PR 与 docs-sync Push/PR 四项结果。
+
+## A107 接手记录：商业角色时长进入运行时生成请求
+A106 的时长推断曾只保存在 CreativeShot 中；运行时 `Shot` 构造未传入 duration_seconds，视频生成请求因此可能仍用 3 秒默认值。A107 新增 `runtime_shot_editing_fields()` 并在 `_activate_plan()` 中使用，使时长、pacing、speed、transition 一起进入实际运行时对象。新增回归测试验证商品细节角色默认 4 秒及字段映射。下一步检查最新 SHA 的 CI Push/PR、docs-sync Push/PR 四项；PR #32 保持 open/unmerged。Provider 是否严格遵守请求时长仍须真实素材验收，Windows/Provider 验收按用户要求暂缓。

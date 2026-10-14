@@ -1448,3 +1448,6 @@ ProductionStore.build_final() 检查每个非首镜头的 Shot.transition；只�
 
 
 A106 修复补充：未知 `pacing` 标签继续按 A105 既有契约回退“标准”，不能回退到推断角色的默认节奏；`editing_intent` 同时记录最终生效的时长、节奏、速度和转场，避免理由字段与实际执行值不一致。
+
+## A107：商业剪辑时长进入运行时生产对象
+创意引擎根据商业角色得到的 `CreativeShot.duration_seconds` 必须复制到桌面运行时 `models.Shot.duration_seconds`，否则 `ProductionStore.generate_shot()` 的 `GenerationRequest.duration` 会读到模型默认的 3 秒，导致角色决策只存在于计划中。统一通过 `runtime_shot_editing_fields()` 映射时长、pacing、speed、transition，`app._activate_plan()` 创建每个运行时 Shot 时消费该映射。回归测试验证角色默认时长和相关字段进入运行时映射。该闭环只保证本地请求参数一致，不保证外部 Provider 实际输出时长与请求完全一致。
