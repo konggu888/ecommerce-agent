@@ -1,3 +1,13 @@
+# 【PLAN-003 最新进度｜2026-10-14｜优先于下方旧历史】
+
+- 已建立 A0–A112 四份规划来源的标题索引，见 `docs/AD_STUDIO_TASK_REGISTER.json`。当前只完成 heading inventory；语义去重、代码/测试/当前 SHA 证据核验尚未完成，禁止发布总体完成百分比。
+- `docs/AD_STUDIO_PROGRESS_DASHBOARD.md` 与 `apps/ad-studio-desktop/SESSION_HANDOFF.md` 已同步本轮进度。
+- 下一项优先追查 A68–A74、A88、A99 的历史来源，确认是否有意跳号、正式任务标题遗失、已撤销或重复映射。不得自行编造功能或用空槽位推算完成率。
+- 同 ID 的重复标题可能是故障记录或状态更新；只有比较具体要求后才可以建立 canonical/duplicate 映射。
+- PR #32 保持 Open / unmerged。Windows 真机、真实素材、Provider/扣费、剪映现场与真实投放/商业效果验证继续暂缓。
+
+---
+
 # 【最新接手指令｜规划体系优先｜2026-10-14】
 
 先读取 `apps/ad-studio-desktop/SESSION_HANDOFF.md`，再读本文件、`docs/AD_STUDIO_EXECUTION_CONTROL.md`、`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`、路线图、AGENTS、HELP、PROJECT_LOGIC、验收计划与 SOP。
