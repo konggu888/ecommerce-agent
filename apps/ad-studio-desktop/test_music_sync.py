@@ -47,7 +47,9 @@ class BeatDetectionTests(unittest.TestCase):
         self.assertEqual(command[-1],"out.mp4")
 
     def test_global_bgm_uses_one_continuous_track_after_assembly(self):
-        with mock.patch.object(music_sync,"_has_audio",return_value=True), mock.patch.object(music_sync.subprocess,"run") as run:
+        with mock.patch.object(music_sync,"_has_audio",return_value=True), \
+             mock.patch.object(Path,"is_file",return_value=True), \
+             mock.patch.object(music_sync.subprocess,"run") as run:
             music_sync.mix_global_bgm(Path("assembled.mp4"),Path("music.mp3"),Path("mixed.mp4"),0.2)
         command=run.call_args.args[0]
         self.assertIn("-stream_loop",command)
