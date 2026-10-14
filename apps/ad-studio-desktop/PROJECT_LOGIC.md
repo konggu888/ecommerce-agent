@@ -1433,3 +1433,7 @@ A102 测试边界补充：最终输出测试必须模拟 `normalize_output_resol
 
 ## A103：淡入/淡出音画同步
 `process_shot()` 对淡入/淡出统一探测源时长，并以 `source_duration / speed` 计算输出时间窗；画面使用 `fade`，原音轨使用 `afade`。变速时音频滤镜顺序为 `atempo` 后接 `afade`，确保淡出发生在变速后的末尾。短片段的淡化时长限制为 `min(0.25s, output_duration)`。这是镜头内部的音画淡化，不应描述为相邻镜头的交叉溶解。
+
+
+## A104：最终成片相邻镜头交叉溶解
+ProductionStore.build_final() 检查每个非首镜头的 Shot.transition；只有显式请求“交叉溶解”时才调用 ffmpeg.concat_with_transitions()，其他项目保留原 concat 路径。新拼接器用 ffprobe 读取时长/音轨，按所选画幅预先统一尺寸、30fps、时间基准和像素格式，再用 xfade 做画面交叠、acrossfade 做音频交叠；无音轨镜头用等长静音补齐。交叉溶解最长 0.35 秒，短镜头缩短；非交叉边界用 1ms 过渡以维持统一滤镜链。该执行逻辑已接入最终输出路径，但真实媒体兼容性/主观剪辑质量仍需真机验收。
