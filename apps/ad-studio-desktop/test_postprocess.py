@@ -71,6 +71,27 @@ class FocusCropFilterTests(unittest.TestCase):
         video_filter = command[command.index("-vf") + 1]
         self.assertIn("fade=t=out:st=0.000:d=0.100", video_filter)
 
+    def test_speed_change_keeps_audio_in_sync_with_video(self):
+        with mock.patch.object(postprocess, "ffmpeg_path", return_value="ffmpeg"), \
+             mock.patch.object(postprocess, "best_h264_encoder", return_value="libx264"), \
+             mock.patch.object(postprocess, "_run") as run:
+            postprocess.process_shot(
+                Path("input.mp4"), Path("out.mp4"),
+                aspect="9:16", speed=1.25,
+            )
+
+        command = run.call_args.args[0]
+        self.assertIn("-vf", command)
+        self.assertIn("-af", command)
+        self.assertEqual(command[command.index("-af") + 1], "atempo=1.250000")
+
+    def test_normal_speed_does_not_add_unneeded_audio_tempo_filter(self):
+        with mock.patch.object(postprocess, "ffmpeg_path", return_value="ffmpeg"), \
+             mock.patch.object(postprocess, "best_h264_encoder", return_value="libx264"), \
+             mock.patch.object(postprocess, "_run") as run:
+            postprocess.process_shot(Path("input.mp4"), Path("out.mp4"), speed=1.0)
+        self.assertNotIn("-af", run.call_args.args[0])
+
 
 if __name__ == "__main__":
     unittest.main()

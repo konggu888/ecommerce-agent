@@ -1415,3 +1415,7 @@ ProductionStore._sync_actual_cost() 在发现成功账本记录后，会为所�
 
 ## A100｜淡出时间窗与变速语义
 `process_shot()` 在 `setpts` 变速后再应用淡出，因此淡出起点必须基于 `probe_duration(input_path) / speed` 得到的输出时长计算。淡出时长为 `min(0.25, output_duration)`，起点为 `max(0, output_duration - fade_duration)`。旧实现将 `fade=t=out:st=0` 固定放在开头，会造成“淡出”实际在镜头开始时变暗；A100 修正此行为。测试验证变速后的时间窗和极短镜头边界。该修正仅保证滤镜参数逻辑，仍需真机视觉验收。
+
+
+## A101｜视频变速与原音轨同步
+`process_shot()` 使用 `setpts=1/speed*PTS` 调整视频时长。此前音轨没有对应处理，因此只变速画面时，音轨仍保持原始时长，可能出现声音与画面不同步。现在当 `speed != 1.0` 时添加 `-af atempo=<speed>`，让音轨时长按同一速度变化；正常速度不添加滤镜。测试检查非 1.0 倍速确实携带 `atempo` 参数，1.0 倍速不携带该参数。自动化测试不等于真实音画同步验收。

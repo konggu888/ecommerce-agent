@@ -87,7 +87,13 @@ def process_shot(input_path: Path, output_path: Path, aspect: str = "9:16", spee
         fade_start = max(0.0, output_duration - fade_duration)
         vf += f",fade=t=out:st={fade_start:.3f}:d={fade_duration:.3f}"
     codec = best_h264_encoder()
-    _run([ffmpeg_path(), "-y", "-i", str(input_path), "-vf", vf, "-c:v", codec, "-preset", "p4" if codec == "h264_nvenc" else "medium", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", str(output_path)])
+    cmd = [ffmpeg_path(), "-y", "-i", str(input_path), "-vf", vf]
+    if speed != 1.0:
+        # Keep original audio aligned with setpts-adjusted video duration.
+        cmd.extend(["-af", f"atempo={speed:.6f}"])
+    cmd.extend(["-c:v", codec, "-preset", "p4" if codec == "h264_nvenc" else "medium",
+                "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", str(output_path)])
+    _run(cmd)
     return output_path
 
 def mix_audio(input_path: Path, output_path: Path, bgm_path: Path | None = None, bgm_volume: float = 0.16):
