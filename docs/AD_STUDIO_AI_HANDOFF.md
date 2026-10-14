@@ -1,3 +1,14 @@
+# 【A110 当前接手状态｜2026-10-14】
+
+- 当前分支：feat/product-drama-visual-review；仓库：konggu888/ecommerce-agent；PR #32 必须保持 open/unmerged。
+- 起始基线 SHA：e29a35c05b9152d215a39a432e86793db4388f30。本轮目标为路线图阶段 2 的 A110：让音乐卡点尊重口播、字幕、商品展示/演示/证据和 CTA 的最低内容时长。
+- A109 已实现项目级连续 BGM、节拍候选/置信度、实际时长规划、受限同步变速、拼接后统一混音及 1080P 归一化；交叉溶解时保守不变速。A110 将文本/结构化内容保护下限接入同一实际生产链，并将理由写入 last_music_sync_audit。
+- 本轮代码、测试与全部八份强制文档必须同一提交：AGENTS.md、HELP.md、PROJECT_LOGIC.md、验收计划、验收 SOP、SESSION_HANDOFF.md、AI_HANDOFF.md、未来功能备忘；路线图同步调整当前下一项。
+- 先前基线 e29a35c05b9152d215a39a432e86793db4388f30 的 PR CI 与 docs-sync 为 success；提交 A110 后必须重新检查最新 SHA 的 CI Push/PR、docs-sync Push/PR 四项，不能沿用旧绿灯。
+- Windows 真机、真实素材、真实 Provider/扣费、剪映现场与真实投放数据仍按用户要求暂缓；自动化规则不代表商业成片质量验收。
+
+---
+
 # 【当前接手状态｜2026-10-14】
 
 > 本段是新 AI 接手时的当前优先级入口；下文历史记录用于背景参考，遇到冲突以本段和 GitHub 当前状态为准。

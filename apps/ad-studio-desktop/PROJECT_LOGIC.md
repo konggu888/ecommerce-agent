@@ -1477,3 +1477,9 @@ A109 兼容边界：旧项目中已把 BGM 烧录进镜头音轨的成片，无�
 
 ### A109 转场安全补充
 A109 转场安全补充：当前切点变速遇到显式“交叉溶解”时保守回退原镜头时长，仍保留既有交叉溶解与全局连续 BGM；待单独建模转场重叠时长后再开放这类边界的卡点调整。
+
+
+## A110：音乐节拍与商业信息保护执行链
+ProductionStore.build_final() 在实际镜头时长读取后，按创意方案与运行时镜头合并台词、屏幕文字、商品资产需求、CTA 与 editing_intent，调用 derive_content_minimum_durations() 计算逐镜头保护下限，再将 minimum_durations 传入 plan_beat_aligned_durations()。若原时长或拟议卡点时长低于任一保护下限，规划器保留整组原始切点，避免对部分镜头变速造成新的时间轴不一致。审计结果保存在 creative_plan.last_music_sync_audit.content_protection。
+
+限制：保护估算来自文本/结构化元数据，并非真实视觉理解或语音识别；不自动延长原本不足的镜头。

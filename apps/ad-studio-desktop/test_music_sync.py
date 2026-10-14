@@ -36,6 +36,39 @@ class BeatDetectionTests(unittest.TestCase):
         self.assertFalse(music_sync.plan_beat_aligned_durations([2.0,2.0],[2.24],0.95,max_shot_delta=0.1)["changed"])
         self.assertFalse(music_sync.plan_beat_aligned_durations([0.9,0.9],[0.1],0.95,min_duration=0.8)["changed"])
 
+    def test_content_protection_estimates_dialogue_text_and_product_hold(self):
+        result = music_sync.derive_content_minimum_durations([
+            {"dialogue": "这款产品操作简单，适合日常使用"},
+            {"objective": "商品细节展示", "editing_intent": {"role": "product_detail"}},
+            {"on_screen_text": ["立即咨询，了解更多"]},
+        ], [5.0, 3.0, 3.0])
+        self.assertGreater(result["minimum_durations"][0], 3.0)
+        self.assertEqual(result["minimum_durations"][1], 2.0)
+        self.assertGreater(result["minimum_durations"][2], 2.0)
+        self.assertIn("非视觉识别", result["shots"][0]["basis"])
+
+    def test_beat_snap_preserves_dialogue_and_product_holds(self):
+        protection = music_sync.derive_content_minimum_durations([
+            {"objective": "商品细节展示", "editing_intent": {"role": "product_detail"}}, {}, {}
+        ], [2.0, 2.0, 2.0])
+        plan = music_sync.plan_beat_aligned_durations(
+            [2.0, 2.0, 2.0], [1.9, 4.1], 0.95,
+            minimum_durations=protection["minimum_durations"])
+        self.assertFalse(plan["changed"])
+        self.assertEqual(plan["durations"], [2.0, 2.0, 2.0])
+        self.assertIn("保护时长", plan["reason"])
+
+    def test_underlength_dialogue_prevents_music_retiming(self):
+        protection = music_sync.derive_content_minimum_durations([
+            {"dialogue": "这段口播包含较多必须听清楚的商品说明信息"}, {}, {}
+        ], [2.0, 2.0, 2.0])
+        plan = music_sync.plan_beat_aligned_durations(
+            [2.0, 2.0, 2.0], [2.1, 4.1], 0.95,
+            minimum_durations=protection["minimum_durations"])
+        self.assertFalse(plan["changed"])
+        self.assertEqual(plan["durations"], [2.0, 2.0, 2.0])
+        self.assertIn("低于", plan["reason"])
+
     def test_crossfade_boundary_plan_falls_back_without_retiming(self):
         plan=music_sync.plan_beat_aligned_durations(
             [2.0,2.0,2.0],[2.1,4.1],0.95,allow_retime=False

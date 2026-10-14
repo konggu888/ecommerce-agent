@@ -10,7 +10,7 @@ from .ffmpeg import make_clip, concat, concat_with_transitions
 from .providers import GenerationRequest, load_video_provider, load_asset_provider
 from .postprocess import process_shot, normalize_output_resolution
 from .postprocess import probe_duration
-from .music_sync import analyze_music_file, plan_beat_aligned_durations, retime_clip, mix_global_bgm
+from .music_sync import analyze_music_file, derive_content_minimum_durations, plan_beat_aligned_durations, retime_clip, mix_global_bgm
 from .library import LocalLibrary
 from .asset_generation import AssetGenerator, LocalAssetBackend
 from .hardware import detect_hardware
@@ -920,14 +920,37 @@ class ProductionStore:
                     raise RuntimeError(f"项目设置的全局BGM不存在或为空：{bgm}")
                 analysis = analyze_music_file(bgm)
                 original_durations = [probe_duration(path) for path in shot_paths]
+                creative_rows = (project.creative_plan or {}).get("shots", [])
+                rows_by_index = {}
+                for row in creative_rows if isinstance(creative_rows, list) else []:
+                    if isinstance(row, dict):
+                        try:
+                            rows_by_index[int(row.get("index", -1))] = row
+                        except (TypeError, ValueError):
+                            continue
+                content_rows = []
+                for shot in shots:
+                    row = dict(rows_by_index.get(int(getattr(shot, "index", -1)), {}))
+                    row["dialogue"] = row.get("dialogue") or getattr(shot, "script", "")
+                    row["script"] = getattr(shot, "script", "")
+                    row["visual"] = row.get("visual") or getattr(shot, "visual", "")
+                    row["objective"] = row.get("objective") or getattr(shot, "title", "")
+                    row["on_screen_text"] = row.get("on_screen_text") or []
+                    row["product_asset_requirements"] = row.get("product_asset_requirements") or getattr(shot, "product_asset_ids", [])
+                    row["cta_role"] = row.get("cta_role") or ""
+                    row["editing_intent"] = row.get("editing_intent") or {}
+                    content_rows.append(row)
+                content_protection = derive_content_minimum_durations(content_rows, original_durations)
                 plan = plan_beat_aligned_durations(original_durations, analysis.get("beats", []),
-                                                   analysis.get("confidence", 0.0), allow_retime=transition_safe)
+                                                   analysis.get("confidence", 0.0), allow_retime=transition_safe,
+                                                   minimum_durations=content_protection["minimum_durations"])
                 music_audit = {
                     "enabled": True, "path": str(bgm), "bpm": analysis.get("bpm"),
                     "confidence": analysis.get("confidence", 0.0), "changed": bool(plan.get("changed")),
                     "reason": plan.get("reason"), "beat_reason": analysis.get("reason"),
                     "original_durations": original_durations,
                     "planned_durations": plan.get("durations", original_durations),
+                    "content_protection": content_protection["shots"],
                 }
                 if plan.get("changed"):
                     adjusted_paths = []

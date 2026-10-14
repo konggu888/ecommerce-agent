@@ -45,9 +45,51 @@ def analyze_music_file(path: Path) -> dict:
     return detect_beats(samples,11025)
 
 
+
+
+def derive_content_minimum_durations(shot_metadata: list[dict], durations: list[float]) -> dict:
+    """Estimate conservative holds from dialogue, on-screen text, product role and CTA.
+
+    This uses storyboard metadata only; it is not visual speech recognition or scene understanding.
+    """
+    protected = []
+    for index, raw_duration in enumerate(durations):
+        row = shot_metadata[index] if index < len(shot_metadata) and isinstance(shot_metadata[index], dict) else {}
+        dialogue = str(row.get("dialogue") or row.get("script") or "")
+        raw_text = row.get("on_screen_text") or []
+        if isinstance(raw_text, str):
+            text_items = [raw_text]
+        elif isinstance(raw_text, (list, tuple)):
+            text_items = [str(item) for item in raw_text if str(item).strip()]
+        else:
+            text_items = []
+        dialogue_chars = sum(1 for char in dialogue if not char.isspace())
+        on_screen_chars = sum(1 for value in text_items for char in value if not char.isspace())
+        intent = row.get("editing_intent") if isinstance(row.get("editing_intent"), dict) else {}
+        role = str(intent.get("role") or row.get("role") or "").strip().lower()
+        content_text = " ".join(str(row.get(key) or "") for key in ("title", "objective", "visual", "generation_prompt"))
+        product_requirements = row.get("product_asset_requirements") or row.get("product_asset_ids") or []
+        if isinstance(product_requirements, str):
+            product_requirements = [product_requirements] if product_requirements.strip() else []
+        product_terms = ("商品", "产品", "特写", "材质", "接口", "规格", "细节", "功能展示", "使用演示", "操作步骤", "实测", "对比", "证据")
+        product_hold = 2.0 if role in {"product_detail", "demonstration", "proof"} or product_requirements or any(term in content_text for term in product_terms) else 0.0
+        cta_hold = 2.0 if str(row.get("cta_role") or "").strip() or role == "cta" else 0.0
+        dialogue_hold = dialogue_chars / 4.5 + 0.35 if dialogue_chars else 0.0
+        text_hold = on_screen_chars / 4.0 + 0.4 if on_screen_chars else 0.0
+        minimum = max(0.8, dialogue_hold, text_hold, product_hold, cta_hold)
+        protected.append({
+            "shot_index": index + 1, "dialogue_chars": dialogue_chars,
+            "on_screen_text_chars": on_screen_chars, "role": role or "未声明",
+            "minimum_duration": round(minimum, 3),
+            "basis": "分镜台词/屏幕文字/商品角色的保守时长估算；非视觉识别",
+        })
+    return {"minimum_durations": [item["minimum_duration"] for item in protected], "shots": protected}
+
+
 def plan_beat_aligned_durations(durations:list[float], beat_times:list[float], confidence:float,
                                 max_boundary_shift:float=0.25,max_shot_delta:float=0.25,
-                                min_duration:float=0.8,min_confidence:float=0.45,allow_retime:bool=True)->dict:
+                                min_duration:float=0.8,min_confidence:float=0.45,allow_retime:bool=True,
+                                minimum_durations:list[float]|None=None)->dict:
     try:
         original=[float(x) for x in durations]
         beats=sorted(float(x) for x in beat_times if math.isfinite(float(x)) and float(x)>=0)
@@ -58,6 +100,17 @@ def plan_beat_aligned_durations(durations:list[float], beat_times:list[float], c
         return {"durations":list(durations),"changed":False,"reason":"镜头时长无效"}
     if not allow_retime:
         return {"durations":original,"changed":False,"reason":"含交叉溶解转场，当前保守保留原切点"}
+    if minimum_durations is not None:
+        try:
+            protected = [float(value) for value in minimum_durations]
+        except (TypeError, ValueError):
+            return {"durations":original,"changed":False,"reason":"内容保护时长无效，保留原切点"}
+        if len(protected) != len(original) or any(not math.isfinite(value) or value < min_duration for value in protected):
+            return {"durations":original,"changed":False,"reason":"内容保护时长无效，保留原切点"}
+        if any(old + 1e-9 < required for old, required in zip(original, protected)):
+            return {"durations":original,"changed":False,"reason":"现有镜头时长已低于口播/字幕/商品展示保护需求，保留原切点"}
+    else:
+        protected = [min_duration] * len(original)
     if not math.isfinite(confidence) or confidence<min_confidence or not beats:
         return {"durations":original,"changed":False,"reason":"节拍置信度不足，保留原切点"}
     boundaries=[]; elapsed=0.0
@@ -68,6 +121,8 @@ def plan_beat_aligned_durations(durations:list[float], beat_times:list[float], c
     proposed=[points[i+1]-points[i] for i in range(len(original))]
     if any(not math.isfinite(x) or x<min_duration for x in proposed):
         return {"durations":original,"changed":False,"reason":"卡点会产生过短镜头，保留原切点"}
+    if any(new + 1e-9 < required for new, required in zip(proposed, protected)):
+        return {"durations":original,"changed":False,"reason":"节拍卡点会压缩口播/字幕/商品展示保护时长，保留原切点"}
     if any(abs(new-old)>max_shot_delta+1e-9 for new,old in zip(proposed,original)):
         return {"durations":original,"changed":False,"reason":"卡点调整超出安全范围，保留原切点"}
     if any(not 0.85<=old/new<=1.15 for old,new in zip(original,proposed)):
