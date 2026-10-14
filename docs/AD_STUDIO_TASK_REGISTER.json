@@ -3131,7 +3131,9 @@
           "### A100 自动化实现补充：淡出窗口修正（不代表路线图项目完成）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-004"
     },
     {
       "task_id": "A101",
@@ -3163,7 +3165,9 @@
           "### A101 自动化实现补充：变速音画同步（不代表路线图项目完成）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-004"
     },
     {
       "task_id": "A102",
@@ -3195,7 +3199,9 @@
           "### A102 已落地的基础输出底线（不代表商业画质增强完成）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-004"
     },
     {
       "task_id": "A103",
@@ -3227,7 +3233,9 @@
           "### A103：镜头淡入/淡出音画同步（代码实现待 CI）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-004"
     },
     {
       "task_id": "A104",
@@ -3259,7 +3267,9 @@
           "### A104：相邻镜头真实交叉溶解（自动化待验）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-004"
     },
     {
       "task_id": "A105",
@@ -3291,7 +3301,9 @@
           "### A105：分镜节奏参数执行闭环（自动化待验）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-004"
     },
     {
       "task_id": "A106",
@@ -3323,7 +3335,9 @@
           "### A106：商业镜头角色到剪辑参数的可追溯默认值（实现后待自动化验收）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-004"
     },
     {
       "task_id": "A107",
@@ -3355,7 +3369,9 @@
           "### A107：商业角色推断时长进入运行时生成请求（代码已接通，CI 待本轮验证）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-004"
     },
     {
       "task_id": "A108",
@@ -3387,7 +3403,9 @@
           "### A108：字幕时长与密度基础闭环（当前 SHA 自动化验收中）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-004"
     },
     {
       "task_id": "A109",
@@ -3439,7 +3457,9 @@
           "### A109 转场安全补充"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-004"
     },
     {
       "task_id": "A110",
@@ -3485,7 +3505,9 @@
           "### A110｜音乐卡点的口播、字幕与商品展示保护"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-004"
     },
     {
       "task_id": "A111",
@@ -3539,7 +3561,9 @@
           "### A111 CI 修复记录"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-004"
     },
     {
       "task_id": "A112",
@@ -3592,7 +3616,9 @@
           "## A112 自动化验收结果｜2026-10-14"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending"
+      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-004"
     }
   ],
   "source_inventory": {
@@ -3604,7 +3630,7 @@
       "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
     ],
     "note": "Repeated headings can be status/history entries rather than duplicate requirements. Do not merge tasks solely because an ID appears in multiple headings. The eight IDs listed in known_id_gaps have no formal task heading in the four current source documents and remain unresolved pending historical investigation.",
-    "next_scope": "PLAN-003 requirement-level dedup batches A65-A67, A75-A89, A90-A98 reviewed; no cross-ID merge candidates found, but A90-A98 recorded as a related cluster of distinct failure/recovery scenarios. Next A100-A112, then A0-A64 and roadmap-phase mapping. Historical gaps A68-A74/A99 unresolved; code/test/current-SHA evidence audit pending."
+    "next_scope": "PLAN-003 requirement-level dedup batches A65-A67, A75-A89, A90-A98, and A100-A112 reviewed. No cross-ID merge candidates found so far; related clusters recorded as distinct pipeline/failure scenarios. Next review A0-A64, map all tasks to roadmap phases, then begin code/test/current-SHA evidence audit. Historical gaps A68-A74/A99 remain unresolved."
   },
   "inventory_method": "Heading inventory normalizes literal backslash-n sequences before parsing Markdown headings; historical headings are not proof of implementation or acceptance.",
   "historical_investigation": {
@@ -3809,6 +3835,82 @@
         "Real Provider, Windows real-machine, actual billing, Jianying on-site, and generated-image identity consistency remain deferred."
       ],
       "next_batch": "A100-A112; then return to A0-A64 and roadmap-phase mapping."
+    },
+    {
+      "batch_id": "PLAN-003-DEDUP-004",
+      "range": "A100-A112",
+      "status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "reviewed_sources": [
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+        "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+      ],
+      "related_cluster": {
+        "theme": "商业剪辑执行链：时长/速度、转场、音频、字幕与内容保护",
+        "ids": [
+          "A100",
+          "A101",
+          "A102",
+          "A103",
+          "A104",
+          "A105",
+          "A106",
+          "A107",
+          "A108",
+          "A109",
+          "A110",
+          "A111",
+          "A112"
+        ],
+        "decision": "keep_separate_as_distinct_pipeline_contracts",
+        "rationale": [
+          "A100 fixes the fade-out window based on output duration; A103 synchronizes video/audio fade-in/fade-out. Related, but different execution contracts.",
+          "A101 synchronizes audio/video playback speed; A105 maps storyboard pacing labels to actual playback speed. The former is A/V execution consistency, the latter is plan-to-runtime mapping.",
+          "A102 enforces minimum exported pixel dimensions; it does not mean AI detail enhancement. Keep separate from creative editing quality.",
+          "A104 implements real adjacent-shot cross-dissolve; A109 aligns music beats with shot boundaries. A109 conservatively avoids unsafe adjustment when transitions overlap.",
+          "A106 resolves shot-role editing defaults; A107 ensures inferred duration reaches the actual generation request; these are decision-layer vs runtime request wiring.",
+          "A108 adapts subtitle timing/density to actual duration; A112 uses reliable SRT cue windows to protect beat adjustments. Subtitle readability and semantic speech alignment remain separate deferred validation.",
+          "A110 protects dialogue, subtitles, product demonstration/evidence and CTA duration lower bounds; A111 adjusts safe boundaries locally while preserving total duration and constraints."
+        ]
+      },
+      "history_or_summary_sections": [
+        {
+          "source": "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "heading": "### A111 测试夹具修正",
+          "treatment": "test-fixture-history_not_new_requirement"
+        },
+        {
+          "source": "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "heading": "### A111 CI 修复记录",
+          "treatment": "CI-fix-history_not_new_requirement"
+        },
+        {
+          "source": "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "heading": "#### 历史任务：A112｜字幕实际时间窗参与内容保护（已完成自动化阶段；以下原始计划保留作历史）",
+          "treatment": "explicitly_historical_plan_not_next_task"
+        },
+        {
+          "source": "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "heading": "### A111 测试夹具修正",
+          "treatment": "test-fixture-history_not_new_requirement"
+        },
+        {
+          "source": "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "heading": "### A111 CI 修复记录",
+          "treatment": "CI-fix-history_not_new_requirement"
+        },
+        {
+          "source": "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md",
+          "heading": "### A112｜字幕实际时间窗与剪辑保护（下一项）",
+          "treatment": "stale_historical_status_superseded_by_A112_automation_result"
+        }
+      ],
+      "limitations": [
+        "Requirement-level dedup only. This batch does not re-run A100-A112 tests or prove current-SHA acceptance; older per-task CI records are historical only.",
+        "Real Windows, footage, audio listening, subtitle readability, Provider, billing, Jianying, and commercial-quality review remain deferred."
+      ],
+      "next_batch": "Return to A0-A64 for requirement-level dedup and roadmap-phase mapping; then begin the code/test/current-SHA evidence audit."
     }
   ]
 }
