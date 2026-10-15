@@ -7,7 +7,7 @@
 
 ---
 
-# 【PLAN-003 AI 接手状态｜A100–A104 部分证据映射｜2026-10-15】
+# 【历史快照｜PLAN-003 A100–A104 证据映射补充｜2026-10-15】
 
 - 权威进度入口：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`；PR #32 保持 Open/unmerged。
 - 本轮源码/测试基线 `c77704d86d6131d13501448af76ce24afc56ad7b`；关键 blobs：`postprocess.py` `36ce0e4a17d635e3ed381c3b0bada1428e0290c4`、`ffmpeg.py` `d13870a12eae682133995bac7305900e0a4ff767`、`production.py` `e53968f47a6b8fd23df773dbd3a4ad553753e1e0`；测试 `test_postprocess.py` `29141bb61ee3ec6ae5960395e81c7dc64ef79feb`、`test_ffmpeg.py` `e409cbded7db0c01a1962f722d54c615429f5e37`、`test_desktop.py` `357c54dad99f61b99891bcc365dd2f9efc1a1009`。
