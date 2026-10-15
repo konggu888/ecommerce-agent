@@ -1,11 +1,14 @@
-# 【PLAN-003 当前状态｜DEDUP-013 文档同步修复中｜2026-10-16】
+# 【PLAN-003 当前状态｜DEDUP-013 恢复重载测试已通过 CI｜2026-10-16】
 
-- **审计基线**：`740a12e897d4e42de677b0028cda26f1b0eba932`；分支 `feat/product-drama-visual-review`；PR #32 Open/unmerged。
-- **最新工作流发现**：docs-sync PR success；docs-sync Push failure，原因是测试变更没有同时更新必需的 `AGENTS.md`、`HELP.md`、`PROJECT_LOGIC.md`；CI Push/PR 尚在运行。
-- **处理**：已确认失败日志，正在同一修复提交中补齐上述三份必需文档，并同步计划/SOP/台账/交接记录。修复提交后重新核验四项工作流，不把本次 Push docs-sync 失败当作通过。
-- **测试内容**：A57 无账本旧项目、A60 failed-only 账本在恢复后重新加载仍保留成本；A60 还核对分类汇总。A99 成功账本下清除陈旧兄弟镜头金额为独立合同。
-- **边界**：仅测试与文档；A57/A60/A99 均保持 `not_audited`。真实 Provider 扣费与外部账单核验仍暂缓。A0–A112 共 113 个编号槽位，完整代码/测试审计 0，全局语义去重未完成，整体完成率关闭。
-- **下一步**：核验修复提交四项 CI/docs-sync；如仍失败，按日志继续修复。不得新增 A113+、改编号或合并 PR #32。
+- **已验证 SHA**：`c8797e4b8d65580a7c124903d4a9c8f6e188f41a`；分支 `feat/product-drama-visual-review`；PR #32 Open/unmerged。
+- **该 SHA 四项工作流**：CI Push #38787892022 success；CI PR #38787902592 success；docs-sync Push #38787891485 success；docs-sync PR #38787902562 success。
+- **DEDUP-013 结果**：修复 docs-sync Push 的缺失文档后，四项检查全部通过。A57 无账本旧项目与 A60 failed-only 账本恢复后的重载断言已在 CI 中运行通过。
+- **语义边界**：A99 是成功账本下清除未计费兄弟镜头陈旧成本；A57/A60 是无成功账本时保留旧成本。相关但不合并。A57/A60/A99 均保持 `not_audited`；真实 Provider 账单仍暂缓。
+- **总体台账**：A0–A112 共 113 个编号槽位；完整代码/测试审计 0；全局语义去重未完成；总体完成率关闭。
+- **下一步**：继续既有 PLAN-003 的下一个有界源码/测试证据审计。若提交新变更，必须重新核验其自身四项工作流。不得新增 A113+、更改编号或合并 PR #32。
+
+---
+
 
 ---
 

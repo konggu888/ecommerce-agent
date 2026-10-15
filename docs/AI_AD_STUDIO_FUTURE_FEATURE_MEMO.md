@@ -1,3 +1,5 @@
+> **DEDUP-013 verified｜2026-10-16：** Remediation SHA `c8797e4b8d65580a7c124903d4a9c8f6e188f41a` passed CI Push/PR and docs-sync Push/PR. A57/A60 post-recovery reload assertions ran in CI. A57/A60/A99 remain not formally accepted; real Provider invoices and Windows-machine checks are deferred. Any later commit requires its own fresh CI/docs-sync checks.
+
 > **DEDUP-013 docs-sync remediation｜2026-10-16：** A57/A60 post-recovery reload assertions were added. Initial Push docs-sync failed because AGENTS.md, HELP.md and PROJECT_LOGIC.md were unchanged; those required documents are now updated. Recheck the remediation SHA's four CI/docs-sync workflows. No formal acceptance or real Provider invoice verification is implied.
 
 > **PLAN-003 DEDUP-013 补充｜2026-10-16：** 纠正 A99 的边界说明：A57 已覆盖无账本旧项目，A60 已覆盖 failed-only 账本；本轮为两项恢复测试补充保存/重载后的成本保留断言。A99 独立覆盖成功账本下未计费兄弟镜头陈旧成本清零。最新 SHA CI 需核验；A57/A60/A99 仍未正式验收，真实 Provider 账单与 Windows 真机继续暂缓。权威状态见 `docs/AD_STUDIO_PROGRESS_DASHBOARD.md`。

@@ -1,10 +1,13 @@
-## 当前接手状态｜PLAN-003 DEDUP-013 文档同步修复｜2026-10-16
+## 当前接手状态｜PLAN-003 DEDUP-013 已验证｜2026-10-16
 
-- 分支 `feat/product-drama-visual-review`；审计基线 `740a12e897d4e42de677b0028cda26f1b0eba932`；PR #32 Open/unmerged。
-- 首个 DEDUP-013 子提交的 docs-sync PR 已通过，但 docs-sync Push 失败：缺少必需文档同步（AGENTS.md、HELP.md、PROJECT_LOGIC.md）。CI Push/PR 当时仍运行。
-- 当前修复提交已补齐必需文档，并同步计划、SOP、台账、看板与接手文件；必须检查修复 SHA 的四项工作流。
-- A57/A60 新增恢复后重载断言；A99 成功账本清除陈旧兄弟镜头仍是独立合同。A57/A60/A99 保持 `not_audited`，不代表真实 Provider 账单核验。
-- 不新增 A113+，不改 A0–A112，不合并 PR #32；整体完成率关闭。
+- 分支 `feat/product-drama-visual-review`；已验证基线 `c8797e4b8d65580a7c124903d4a9c8f6e188f41a`；PR #32 Open/unmerged。
+- 上一修复 SHA 的四项工作流均成功：CI Push 38787892022、CI PR 38787902592、docs-sync Push 38787891485、docs-sync PR 38787902562。
+- DEDUP-013 增加 A57 无账本旧项目、A60 failed-only 账本恢复后的保存/重载断言；CI 已运行通过。初始 docs-sync Push 失败已通过补齐 AGENTS.md、HELP.md、PROJECT_LOGIC.md 修复。
+- A99 成功账本清除陈旧兄弟镜头是独立合同；A57/A60/A99 均未正式验收，真实 Provider 账单、Windows 真机、真实素材继续暂缓。
+- 下一步继续 PLAN-003 有界源码/测试审计。任何新提交都必须重新检查四项 CI/docs-sync。不新增 A113+，不改 A0–A112，不合并 PR #32；整体完成率关闭。
+
+---
+
 
 ---
 

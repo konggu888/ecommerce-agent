@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_from_head": "740a12e897d4e42de677b0028cda26f1b0eba932",
-  "audit_status": "DEDUP-013 added A57/A60 post-recovery reload assertions. Initial docs-sync Push failed because AGENTS.md, HELP.md and PROJECT_LOGIC.md were not changed in the test commit; remediation updates these required docs. Recheck all four workflows on the remediation SHA.",
+  "generated_from_head": "c8797e4b8d65580a7c124903d4a9c8f6e188f41a",
+  "audit_status": "DEDUP-013 remediation SHA c8797e4b8d65580a7c124903d4a9c8f6e188f41a passed CI Push, CI PR, docs-sync Push and docs-sync PR. New status-doc commit requires its own workflow check.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -4880,7 +4880,7 @@
         "resolution": "Keep one existing A57 numbered slot with two separately testable acceptance clauses: (1) successful output plus ledger failure must show cost-pending UI and suppress the normal project actual total; (2) opening a project must recover state and reconcile costs from successful ledger rows while preserving legacy costs when no ledger exists. Do not merge the clauses, create new IDs, or renumber."
       },
       "current_head_evidence_reconciliation": {
-        "head": "8847ade2db6a75439b43d1eb6dfbedb64d9edd6d",
+        "head": "c8797e4b8d65580a7c124903d4a9c8f6e188f41a",
         "checked_on": "2026-10-16",
         "source_test_paths_rechecked": true,
         "acceptance_status_preserved": "not_audited",
@@ -4889,7 +4889,14 @@
           "apps/ad-studio-desktop/test_desktop.py": "6c9eb130788aed03c73ff745c93397dd2d92bacb"
         },
         "pending_child_test_blob": "3e4ebe003dbd6df48cbddd8a2accc83705860271",
-        "note": "At audit base, the existing in-memory recovery test covered this branch but did not reload the persisted project afterward. DEDUP-013 adds reload assertions; count as automated evidence only if the child commit's CI passes. No formal acceptance. Initial child commit docs-sync Push failed due required docs not changed; remediation is in progress and current SHA workflows must be checked."
+        "note": "At audit base, the existing in-memory recovery test covered this branch but did not reload the persisted project afterward. DEDUP-013 adds reload assertions; count as automated evidence only if the child commit's CI passes. No formal acceptance. Remediation SHA c8797e4b8d65580a7c124903d4a9c8f6e188f41a passed all four CI/docs-sync workflows. This confirms the new reload assertions execute in CI; it does not constitute formal acceptance.",
+        "current_ci_and_docs_sync_rechecked": true,
+        "workflow_runs": {
+          "ci_push": 38787892022,
+          "ci_pr": 38787902592,
+          "docs_sync_push": 38787891485,
+          "docs_sync_pr": 38787902562
+        }
       }
     },
     {
@@ -5179,7 +5186,7 @@
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
       "current_head_evidence_reconciliation": {
-        "head": "8847ade2db6a75439b43d1eb6dfbedb64d9edd6d",
+        "head": "c8797e4b8d65580a7c124903d4a9c8f6e188f41a",
         "checked_on": "2026-10-16",
         "source_test_paths_rechecked": true,
         "acceptance_status_preserved": "not_audited",
@@ -5188,7 +5195,14 @@
           "apps/ad-studio-desktop/test_desktop.py": "6c9eb130788aed03c73ff745c93397dd2d92bacb"
         },
         "pending_child_test_blob": "3e4ebe003dbd6df48cbddd8a2accc83705860271",
-        "note": "At audit base, the existing in-memory recovery test covered this branch but did not reload the persisted project afterward. DEDUP-013 adds reload assertions; count as automated evidence only if the child commit's CI passes. No formal acceptance. Initial child commit docs-sync Push failed due required docs not changed; remediation is in progress and current SHA workflows must be checked."
+        "note": "At audit base, the existing in-memory recovery test covered this branch but did not reload the persisted project afterward. DEDUP-013 adds reload assertions; count as automated evidence only if the child commit's CI passes. No formal acceptance. Remediation SHA c8797e4b8d65580a7c124903d4a9c8f6e188f41a passed all four CI/docs-sync workflows. This confirms the new reload assertions execute in CI; it does not constitute formal acceptance.",
+        "current_ci_and_docs_sync_rechecked": true,
+        "workflow_runs": {
+          "ci_push": 38787892022,
+          "ci_pr": 38787902592,
+          "docs_sync_push": 38787891485,
+          "docs_sync_pr": 38787902562
+        }
       },
       "semantic_overlap_review": {
         "status": "reviewed_distinct_contracts_keep_separate",
@@ -8654,7 +8668,7 @@
       "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
       "last_verified_date": "2026-10-15",
       "current_head_evidence_reconciliation": {
-        "head": "8847ade2db6a75439b43d1eb6dfbedb64d9edd6d",
+        "head": "c8797e4b8d65580a7c124903d4a9c8f6e188f41a",
         "checked_on": "2026-10-16",
         "source_test_paths_rechecked": true,
         "acceptance_status_preserved": "not_audited",
@@ -8663,7 +8677,14 @@
           "apps/ad-studio-desktop/test_desktop.py": "6c9eb130788aed03c73ff745c93397dd2d92bacb"
         },
         "pending_child_test_blob": "3e4ebe003dbd6df48cbddd8a2accc83705860271",
-        "note": "Corrected prior gap statement: no-success branches already have tests under A57/A60; the uncovered persistence edge was post-recovery reload assertions, now added in DEDUP-013. A99's own successful-ledger branch remains separate. CI on the child commit must pass; no formal acceptance. Initial child commit docs-sync Push failed due required docs not changed; remediation is in progress and current SHA workflows must be checked."
+        "note": "Corrected prior gap statement: no-success branches already have tests under A57/A60; the uncovered persistence edge was post-recovery reload assertions, now added in DEDUP-013. A99's own successful-ledger branch remains separate. CI on the child commit must pass; no formal acceptance. Remediation SHA c8797e4b8d65580a7c124903d4a9c8f6e188f41a passed all four CI/docs-sync workflows. This confirms the new reload assertions execute in CI; it does not constitute formal acceptance.",
+        "current_ci_and_docs_sync_rechecked": true,
+        "workflow_runs": {
+          "ci_push": 38787892022,
+          "ci_pr": 38787902592,
+          "docs_sync_push": 38787891485,
+          "docs_sync_pr": 38787902562
+        }
       },
       "semantic_overlap_review": {
         "status": "reviewed_distinct_contracts_keep_separate",
@@ -11033,7 +11054,7 @@
     {
       "batch_id": "PLAN-003-DEDUP-013",
       "range": "A99/A57/A60 no-success cost-recovery persistence boundary cross-check",
-      "status": "test_assertions_added_docs_sync_push_failed_remediation_in_progress",
+      "status": "test_assertions_and_docs_sync_passed_on_c8797e4",
       "reviewed_sources": [
         "apps/ad-studio-desktop/ad_studio/production.py",
         "apps/ad-studio-desktop/test_desktop.py",
@@ -11061,7 +11082,7 @@
         "New reload assertions await CI on the child commit.",
         "Local recovery tests do not prove real Provider charges or external invoices.",
         "A57's two acceptance clauses remain separate under one A57 slot; A57/A60/A99 remain not_audited. No overall completion percentage.",
-        "Initial DEDUP-013 commit's docs-sync Push failed because the required AGENTS.md, HELP.md and PROJECT_LOGIC.md files were unchanged; remediation updates these required files and the latest SHA workflows must be rechecked."
+        "The initial test-only commit had a docs-sync Push failure; remediation SHA c8797e4b8d65580a7c124903d4a9c8f6e188f41a updated required docs and all four workflows passed. This note is historical; any later commit needs its own checks."
       ],
       "next_batch": "After child SHA CI/docs-sync is checked, continue bounded PLAN-003 evidence/semantic audit. Do not add A113+, alter A0-A112 numbering, or merge PR #32."
     }
