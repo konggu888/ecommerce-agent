@@ -1074,4 +1074,4 @@ A50–A67 的详细静态映射已存在；本轮将其规范台账行与该映�
 - A5 的输入前置依赖 A4 已写入台账；A0–A6 其余关系不因“相关”而擅自添加依赖。
 - 已重新读取当前 HEAD 的 `run.py`、`ad_studio/app.py`、`engine.py`、`footage.py`、`test_desktop.py`、`test_footage.py` 和 `.github/workflows/ci.yml`。A0–A4 的对应 source/test/workflow 证据 SHA 已更新至当前 HEAD，并附加当前 SHA 的 CI Push/PR 与 docs-sync Push/PR 记录。
 - 当前 HEAD 四项工作流：CI Push 1864、CI PR 1865、docs-sync Push 1680、docs-sync PR 1681 均 success。它们只证明自动化工作流通过，不替代各任务的完整验收清单。
-- 本轮后，台账有 7 个任务已填写主路线图阶段（A0–A6），A0–A4 五个任务含绑定当前 HEAD 的证据；仍有 63 个任务的路线图阶段待映射。验收状态不升级，`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false`、`weighting_completed=false` 保持。
+- 本轮新增 7 个任务的主路线图阶段映射（A0–A6）；台账累计已有 50/113 个任务映射到主阶段，仍有 63 个任务待映射。A0–A4 五个任务含绑定当前 HEAD 的证据。验收状态不升级，`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false`、`weighting_completed=false` 保持。
