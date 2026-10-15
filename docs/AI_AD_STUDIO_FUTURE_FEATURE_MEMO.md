@@ -892,3 +892,8 @@ A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/
 ## PLAN-003 增量审计记录｜A100–A104｜2026-10-15
 
 源码/测试基线 `c77704d86d6131d13501448af76ce24afc56ad7b`。A100 淡出时间窗与 A101 变速音画同步、A103 淡入/淡出同步由 `postprocess.py` 和 `test_postprocess.py` 覆盖，但测试只检查 mocked FFmpeg 命令；A102 最终导出 1080P 级尺寸由 `normalize_output_resolution` 与最终质检实现，测试覆盖三个画幅和低分辨率拒绝，但模拟归一化输出；A104 由 `concat_with_transitions` 实际构建 xfade/acrossfade 图，测试检查 filter graph 字符串与触发路径，但不运行真实 FFmpeg。A100–A104 均只完成部分证据映射，不代表正式验收、AI 超分、真实视听质量或 Windows 兼容性通过。基线 CI PR 与 docs-sync PR 成功，Push 工作流未独立核实。下一批 A105–A109。
+
+
+## PLAN-003 增量审计记录｜A100–A104｜2026-10-15
+
+当前源码/测试基线 `c77704d86d6131d13501448af76ce24afc56ad7b`。A100 淡出时间窗、A101 变速音画同步、A102 最终 1080P 级尺寸、A103 镜头淡入/淡出同步、A104 相邻镜头 xfade/acrossfade 均已定位源码与专项测试，全部只做部分证据映射。测试多为命令/滤镜图和 mock ffprobe 断言，未证明 Windows 真实成片效果。A104 静态 UI 检索未找到明确可编辑的转场选择器；混合转场模式中的 0.001 秒硬切重叠需真实输出验证。CI PR 与 docs-sync PR 在审计基线通过，Push 工作流未独立核实。下一批 A105–A109。
