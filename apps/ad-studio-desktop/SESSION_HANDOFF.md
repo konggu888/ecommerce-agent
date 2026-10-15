@@ -2,7 +2,7 @@
 
 - 仓库：`konggu888/ecommerce-agent`；项目：`apps/ad-studio-desktop`；分支：`feat/product-drama-visual-review`；PR #32 必须保持 Open / unmerged。
 - **唯一权威进度与下一项**：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`。当前进入 PLAN-003 全量跨来源语义去重、状态冲突裁决与依赖/证据边界复核；A0–A112 台账及分批静态映射已存在，不能重建或重复从 A50 开始。
-- 最新已核验 HEAD（本轮审计基线）：`d2bd844313b06419402f761dcab222245a4f091b`；该 SHA 的 PR-triggered CI 与 docs-sync 均 success，Netlify deploy-preview success；Push-triggered CI/docs-sync 未独立核实。任何新提交后必须重新查当前 HEAD 与工作流。
+- 最近一次已完整核验通过的基线：`8e2a714abfc77e6ce9f7e136a0ba41195f2c8fae`；该 SHA 的 PR-triggered CI 与 docs-sync 均 success，Netlify deploy-preview success。之后又提交了审计/帮助/逻辑文档更新，因此该状态**不是当前 HEAD 的通过证明**；接手时必须实时查最新 HEAD、CI、docs-sync、部署预览，Push-triggered CI/docs-sync 未独立核实前必须注明。
 - 当前继续 PLAN-003 跨来源语义/状态冲突与证据边界审计，当前子问题是预算授权时点、Provider 自动回退、密钥保存、未知费用与外发数据。仅做审计和台账裁决，不开发产品功能、不删/重编号 A0–A112、不赋权、不计算总体完成率。真实 Windows、真实素材、Provider/扣费、剪映现场、真实投放与商业效果验证继续暂缓。
 - **七层结果证明标准已纳入全项目证据规则**：软件运行、功能行为、端到端流程、普通用户可用、商品表达真实安全、商业成片质量、真实商业效果；详细定义和禁止替代关系见总进度台账及执行控制协议。台账规范化时逐项映射，不新增正式验收 ID。
 - **用户自由度已纳入 PLAN-003**：规范化 A0–A112 台账时必须映射选择/控制/知情/撤回纠正四个维度，核对模型与 Provider 选择、自动回退授权、数据外发告知、费用不确定性、密钥保存、缓存/历史隔离及取消后外部调用为零的证据。详见 UXS-2 与执行控制协议；不新增正式验收 ID，不启动产品功能开发。
