@@ -1,3 +1,14 @@
+# 【最新接手更新｜2026-10-15｜UXS-2 路由回退审计】
+
+- 当前唯一主线仍为 PLAN-003 / UXS-2 用户旅程证据映射；不是产品功能开发。
+- 已静态核对 `ModelRouter.resolve_route()` 与 `CapabilityRouter`：存在显式路由不可用后自动选取其他模型、以及本地服务不可用时选择云端服务的代码路径。尚无充分证据证明每次跨 Provider/本地转云端之前都取得明确授权，或用户拒绝后保证外部调用数为零。
+- `test_all_nine_functions_use_their_selected_model` 采用 FakeRouter，只创建并断言 9 个模型/调用；当前功能列表为 13 项，因此不得将该测试描述为完整真实路由覆盖，也不能当作回退授权测试。
+- 详细证据、边界和暂定规则见 `docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md` 的“UXS-2 路由回退专项证据映射”。
+- 下一项唯一任务：继续追踪 CapabilityRouter 的实际调用点、硬件执行模式 UI，并将路由回退/数据外发授权映射到 A0–A112；之后再按顺序检查密钥存储、费用未知值、外发告知、缓存和历史项目隔离。
+- 不修改产品代码、不新增正式验收编号、不删/重编号 A0–A112、不计算总体完成率。PR #32 保持 Open / unmerged；Windows 真机、真实 Provider/代理和真实账单继续暂缓。
+
+---
+
 # 最新接手状态｜UXS-2 用户旅程证据映射进行中｜2026-10-15
 
 - 当前审查计划：`docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md`，第 3A 节已记录创建入口、商品输入、费用授权顺序、项目持久化的首轮静态映射。
