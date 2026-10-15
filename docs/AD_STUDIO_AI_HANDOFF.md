@@ -1,7 +1,7 @@
 # 最新接手状态｜UXS-2 用户旅程证据映射进行中｜2026-10-15
 
 - 当前审查计划：`docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md`，第 3A 节已记录创建入口、商品输入、费用授权顺序、项目持久化的首轮静态映射。
-- 重要待核风险：`App.create()` 在显示 `AI创意与项目预算确认` 前调用 `ModelRouter.create_plan/create_plans`；`ModelRouter.create_plan()` 对九个创意阶段调用 `complete_json()`。如果选择收费云端模型，可能在用户确认前产生调用/费用。当前列为 P0 候选，需进一步核实路由/计费，并映射到现有 A0–A112 与正式合同；不开发产品功能、不新增正式编号、不声称已发生实际扣费。
+- 重要待裁决的合同/证据冲突：`App.create()` 在显示 `AI创意与项目预算确认` 前调用 `ModelRouter.create_plan/create_plans`；`ModelRouter.create_plan()` 对九个创意阶段调用 `complete_json()`。HELP/PROJECT_LOGIC 允许确认前进行 AI 分析，但用户费用授权是否覆盖收费的规划模型调用尚未明确。若所有收费云端模型调用都须先确认，则是 P0 候选阻断；若仅限制视频/资产生成 Provider，则需核实规划调用费用是否披露/计入预算。需进一步核对路由/计费并映射到 A0/A2 与既有正式合同；不开发产品功能、不新增正式编号、不声称已发生实际扣费。
 - 已查专项测试线索：布局 AST、商品解析器失败/回退、预算计算、项目保存/加载与项目隔离；未找到直接调用 `App.create()` 的 `test_desktop.py` 测试。完整模拟交付测试不覆盖创建前费用确认顺序。
 - 本轮开始基线 `3bd083e73ea51aec26b2ab66c755aa6c83a929cf` 的 PR CI `38695479000` 和 PR docs-sync `38695478983` success；Push-triggered 两项未独立核实。文档更新后以 GitHub 实时 HEAD 为准重查当前 SHA 工作流。
 - 下一项唯一任务：继续 UXS-2 费用/确认/取消/外部副作用映射并与 A0–A112 正式合同对照，再按用户旅程推进；全量审计完成前不计算总体完成率。
