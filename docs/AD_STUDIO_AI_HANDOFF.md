@@ -7,7 +7,7 @@
 
 ---
 
-- 源码/测试审计基线 `c77704d86d6131d13501448af76ce24afc56ad7b`；最后一次明确核验成功的工作流 HEAD `47479d41725cf726e1543524bda012fee8bdf890`（CI PR 38730727069 / docs-sync PR 38730727058）成功；本轮文档更新后的 HEAD `143d01f87c3161deee04cd2d3c821b1e915084d1`（CI PR 38731016045 / docs-sync PR 38731016172）也成功。Push 未独立核实。# 【PLAN-003 AI 接手状态｜A110–A112 部分证据映射｜2026-10-15】
+- 源码/测试审计基线 `c77704d86d6131d13501448af76ce24afc56ad7b`；最后一次明确核验成功的工作流 HEAD `47479d41725cf726e1543524bda012fee8bdf890`（CI PR 38730727069 / docs-sync PR 38730727058）成功；本轮文档更新后的 HEAD `143d01f87c3161deee04cd2d3c821b1e915084d1`（CI PR 38731016045 / docs-sync PR 38731016172）也成功。Push 未独立核实。# 【历史快照｜PLAN-003 A110–A112 部分证据映射｜2026-10-15】
 
 - 唯一权威进度：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`；PR #32 Open/unmerged。
 - 源码/测试基线 `c77704d86d6131d13501448af76ce24afc56ad7b`；文档更新前最近 HEAD `a9fe2d93d186bac79dafee294e518209d963f420` 的 CI PR / docs-sync PR success（38730727069 / 38730727058），Push 未独立核实。
