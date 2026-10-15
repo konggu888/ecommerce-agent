@@ -1559,3 +1559,17 @@ A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/
 - **A99｜恢复时逐镜头费用对账**：源码仅在成功账本记录存在时以账本为逐镜头权威，并把没有镜头账本记录的成本归零；专测覆盖成功账本和未计费兄弟镜头陈旧金额清零。失败账本独存与旧项目没有成功账本两条边界尚缺独立回归，真实 Provider/账单不在本轮范围。
 - A95–A99 全部保持 `partial_evidence_mapping` / `not_audited`，不得因旧计划中的历史 `[x]` 或历史 CI 直接继承正式通过。更新后的映射指标：需求文本复核 113；source/test/CI/workflow 指针任务 100；任意 evidence 任务 112；路线图映射 113/113；源码/测试快照绑定任务 42；最终文档 HEAD 精确绑定 0；完整代码/测试审计 0；完整审计 0；语义去重未完成；权重与总体完成率关闭。
 - 下一批按原编号进入 **A100–A104**。文档提交后先核验最新 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR；若工具无法列出 Push 触发运行，须明确记录而不能猜测。PR #32 不合并；Windows 真机、真实素材、Provider/扣费、剪映现场和商业效果验收继续暂缓。
+
+
+### PLAN-003 本轮证据记录｜A100–A104｜2026-10-15
+
+- **源码/测试审计基线**：`c77704d86d6131d13501448af76ce24afc56ad7b`。源码 blobs：`postprocess.py` `36ce0e4a17d635e3ed381c3b0bada1428e0290c4`、`production.py` `e53968f47a6b8fd23df773dbd3a4ad553753e1e0`、`ffmpeg.py` `d13870a12eae682133995bac7305900e0a4ff767`；专项测试 blobs：`test_postprocess.py` `29141bb61ee3ec6ae5960395e81c7dc64ef79feb`、`test_ffmpeg.py` `e409cbded7db0c01a1962f722d54c615429f5e37`、`test_desktop.py` `357c54dad99f61b99891bcc365dd2f9efc1a1009`。本轮只审计现有代码/测试，不改产品代码。
+- 基线 CI PR [38729441932](https://github.com/konggu888/ecommerce-agent/actions/runs/38729441932) 与 docs-sync PR [38729441851](https://github.com/konggu888/ecommerce-agent/actions/runs/38729441851) 均 success；PR #32 Open/unmerged。工作流查询未独立返回 Push 触发项，CI Push/docs-sync Push 状态未核实，不能宣称四项全绿。
+- **A100 淡出时间窗**：按 `probe_duration / speed` 算输出时长，淡出时长不超过输出时长；测试检查变速后末尾淡出与 0.1 秒短镜头。证据是 mocked FFmpeg 参数，不是实际渲染。
+- **A101 变速音画同步**：非 1.0 倍速同时设置视频 `setpts` 和音频 `atempo`；常速且无淡化时不添加多余音频滤镜。没有实际音画波形同步或音质验收。
+- **A102 最低 1080P 级导出**：竖屏 1080×1920、横屏 1920×1080、方屏 1080×1080 归一化；成片质检拒绝低于最低尺寸。测试明确模拟归一化输出，尺寸不等于细节增强，也不代表 AI 超分。
+- **A103 淡入/淡出音画同步**：视频 `fade` 与音频 `afade` 使用相同窗口，按变速后的输出时长计算并限制短片段时长；目前只验证命令构造。
+- **A104 相邻镜头交叉溶解**：显式请求时生产路径调用 `concat_with_transitions`，生成 `xfade`/`acrossfade`，统一画幅、30fps、时间基准、像素格式，并为无音轨输入补静音；默认项目仍使用 `concat`。实际 FFmpeg filter graph 未执行，混合转场中的硬切以 1ms overlap 表示，需真实成片复核。
+- A100–A104 均更新为 `partial_evidence_mapping` / `not_audited`，不能把历史计划勾选直接当成本轮正式验收。Windows 真机、真实素材、实际 FFmpeg 渲染与视听质量仍暂缓。
+- 映射覆盖指标：需求复核 113；source/test/CI/workflow 指针任务 105；任意 evidence 任务 112；路线图映射 113/113；源码/测试快照绑定任务 47；最终文档 HEAD 精确绑定 0；完整代码/测试审计 0；完整审计 0；语义去重未完成；权重和总体完成率关闭。
+- 下一批按原编号进入 **A105–A109**。文档提交后先核验最新 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR；无法独立查到 Push 运行时必须明确标记未核实。PR #32 不合并，不新增 A113+，不删除/合并/重编号 A0–A112。
