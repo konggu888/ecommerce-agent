@@ -1,11 +1,11 @@
-# 最新接手状态｜结果证明框架已纳入 UX/Safety 审查｜2026-10-15
+# 最新接手状态｜UXS-2 用户旅程证据映射进行中｜2026-10-15
 
-- 最新 HEAD：`91ece7820d414c8d801423ba8d8c4ad8420bf4d1`；PR #32 Open / unmerged，head SHA 与当前 HEAD 一致。
-- 当前 SHA 的 PR CI `38695410603`、PR docs-sync `38695410849` 均 success。当前连接器返回 PR-triggered runs；Push-triggered CI/docs-sync 两项仍需单独核实，不能推定成功。
-- 结果证明 L1–L7 已写入 `docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md` 第 7A 节：运行正确、功能行为正确、端到端流程正确、普通用户可用、商品表达真实安全、商业成片质量、真实商业效果。不同层级不可互相替代。
-- 下一项唯一主任务：UXS-2 用户旅程逐段证据映射，与 PLAN-003 全量跨来源去重/状态裁决合并推进。先映射现有 A0–A112，不新建/删除/重编号，不开发产品功能。
-- 保持 `code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false`；不分配权重、不计算总体完成率。
-- Windows 真机、真实素材、真实 Provider/扣费、剪映现场、真实投放/商业效果验证继续暂缓。PR #32 不合并。
+- 当前审查计划：`docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md`，第 3A 节已记录创建入口、商品输入、费用授权顺序、项目持久化的首轮静态映射。
+- 重要待核风险：`App.create()` 在显示 `AI创意与项目预算确认` 前调用 `ModelRouter.create_plan/create_plans`；`ModelRouter.create_plan()` 对九个创意阶段调用 `complete_json()`。如果选择收费云端模型，可能在用户确认前产生调用/费用。当前列为 P0 候选，需进一步核实路由/计费，并映射到现有 A0–A112 与正式合同；不开发产品功能、不新增正式编号、不声称已发生实际扣费。
+- 已查专项测试线索：布局 AST、商品解析器失败/回退、预算计算、项目保存/加载与项目隔离；未找到直接调用 `App.create()` 的 `test_desktop.py` 测试。完整模拟交付测试不覆盖创建前费用确认顺序。
+- 本轮开始基线 `3bd083e73ea51aec26b2ab66c755aa6c83a929cf` 的 PR CI `38695479000` 和 PR docs-sync `38695478983` success；Push-triggered 两项未独立核实。文档更新后以 GitHub 实时 HEAD 为准重查当前 SHA 工作流。
+- 下一项唯一任务：继续 UXS-2 费用/确认/取消/外部副作用映射并与 A0–A112 正式合同对照，再按用户旅程推进；全量审计完成前不计算总体完成率。
+- 保持 `code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false`。Windows 真机、真实素材、真实 Provider/扣费、剪映现场、真实投放/商业效果继续暂缓；PR #32 不合并。
 
 ---
 
