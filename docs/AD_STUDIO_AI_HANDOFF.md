@@ -7,7 +7,7 @@
 
 ---
 
-# 【PLAN-003 AI 接手状态｜A100–A104 部分证据映射｜2026-10-15】
+# 【历史快照｜PLAN-003 A100–A104 证据映射补充｜2026-10-15】
 
 - 唯一权威进度：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`；PR #32 Open/unmerged。
 - 源码/测试审计基线：`c77704d86d6131d13501448af76ce24afc56ad7b`。CI PR [38729441932](https://github.com/konggu888/ecommerce-agent/actions/runs/38729441932) 与 docs-sync PR [38729441851](https://github.com/konggu888/ecommerce-agent/actions/runs/38729441851) 成功；Push 工作流未独立核实。
