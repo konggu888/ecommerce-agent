@@ -1,4 +1,15 @@
-# 【PLAN-003 AI 接手状态｜A80–A84 部分证据映射｜2026-10-15】
+# 【PLAN-003 AI 接手状态｜A85–A89 部分证据映射｜2026-10-15】
+
+- 唯一权威进度：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`；PR #32 保持 Open / unmerged。
+- 本轮开始 HEAD `2b92072a1dd5335fe803955ffca11881ebf2dec3`；源码/测试审计快照 `4063ba5a452c0c883ff39c8ea1ce33499a80eaf4`，`short_drama.py` / `test_short_drama.py` blobs 为 `2506410d9621840ec34464fce1fa2746c7d798f4` / `2995b5764f7a86ee8c274b6359ff2f09cdf7a288`。该快照 CI Push/PR、docs-sync Push/PR 四项均 success；本轮文档提交后须核验最终 SHA 的四项工作流。
+- A85–A89 仅完成部分证据映射，正式验收未完成：A85 人物长期状态；A86 状态变化因果闭环；A87 可观察表演；A88 多人物状态依赖；A89 跨集演员/场景锁定。具体缺口见总进度台账。
+- 台账指标：需求文本复核 113；source/test/CI/workflow 指针 90；任意 evidence 102；路线图映射 113/113；源码/测试快照绑定 32；最终文档 HEAD 精确绑定 0；完整代码/测试审计 0；完整审计 0；语义去重未完成。权重与总体完成率关闭。
+- 不开发新产品功能，不新增 A113+，不删/合并/重编号 A0–A112。真实 Windows、素材、Provider/扣费、剪映现场和真实商业效果继续暂缓。
+- 下一批 A90–A94。先核验本轮文档提交后最新 HEAD 的 CI Push、CI PR、docs-sync Push、docs-sync PR，再继续。
+
+---
+
+# 【历史快照｜PLAN-003 A80–A84 部分证据映射｜2026-10-15】
 
 - 唯一权威进度：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`；PR #32 保持 Open / unmerged。
 - 源码/测试快照 `4063ba5a452c0c883ff39c8ea1ce33499a80eaf4` 的 `short_drama.py` / `test_short_drama.py` blob 分别为 `2506410d9621840ec34464fce1fa2746c7d798f4` / `2995b5764f7a86ee8c274b6359ff2f09cdf7a288`；该 SHA 四项 CI/docs-sync 均 success。文档提交后必须重查最新 HEAD 四项。
