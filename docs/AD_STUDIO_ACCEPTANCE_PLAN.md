@@ -1114,20 +1114,22 @@ A61（旧成本迁移）、A62（接手文案断言）、A63（迁移基线持�
 - [x] 检查已确认事实是否能在商品资料中找到直接文本依据，缺少依据时产生 `PRODUCT_CONFIRMED_FACT_UNSUPPORTED`。
 - [x] 检查未核实信息是否被当作肯定主张写入剧本/分镜，产生 `PRODUCT_UNKNOWN_FACT_USED`；附近明确标注“待确认/未核实/不得宣称”等时不触发该项警告。
 - [x] 增加自动化回归测试；文本检查不能替代人工语义核验。
-- [ ] 以本次最新 SHA 确认完整 CI 与 docs-sync。
-- [ ] Windows 真机、真实商品素材/Provider 和实际扣款另行验收。
+- [ ] 源码/测试审计快照 `3138a34ecd0d7779eb6809b85a1c3449daf3c24a` 的四项 CI/docs-sync 均 success；文档提交后按最终 HEAD 重查。
+- [ ] 文本依据不能证明商品事实真实；Windows 真机、真实商品素材/Provider 和实际扣款另行验收。
 
 
 ## A76: Selling-point storyboard coverage
 - [x] Check each confirmed selling point against storyboard action, product integration, dialogue, and generation prompt text.
 - [x] Emit `PRODUCT_SELLING_POINT_NOT_SHOWN` when no shot text directly represents a point.
 - [x] Add a negative regression test. Text coverage does not establish that the rendered visual truly demonstrates the feature.
-- [ ] Verify full CI and docs-sync for the new HEAD.
+- [ ] Source/test snapshot `3138a34ecd0d7779eb6809b85a1c3449daf3c24a` has all four CI/docs-sync workflows green; recheck after final documentation commits.
+- [ ] Gap: direct positive-coverage test not yet identified; text mention does not prove rendered visuals demonstrate the selling point.
 
 
-### A77 · 短剧关键剧情事件与分镜落地（开发中）
+### A77 · 短剧关键剧情事件与分镜落地（部分证据映射，仍待正式验收）
 - [ ] 新生成提示要求分镜声明叙事功能与关联因果事件编号。
 - [ ] 专项测试覆盖因果事件未落镜头、转折未落镜头、伏笔兑现未落镜头。
+- [ ] 缺口：文本匹配不证明真实生成画面演出事件或语义上完成伏笔/兑现。
 - [ ] 最新 HEAD 的短剧专项测试、完整 CI 与 docs-sync 全部通过。
 - [ ] 人工复核文本匹配误报/漏报边界；不将其当作语义验收。
 
