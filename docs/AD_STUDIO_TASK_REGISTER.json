@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "generated_from_head": "fe298b3ae6005b118d8b7b1adf775a261d228ffe",
-  "audit_status": "A0-A112 requirement-level review complete; A66-A69 partial source/test mapping tied to audited source/test snapshot fe298b3ae6005b118d8b7b1adf775a261d228ffe; four CI/docs-sync workflows succeeded on source/test snapshot; final documentation HEAD must be rechecked; complete code/test audit remains 0; full audit remains 0; semantic dedup pending; formal acceptance statuses unchanged.",
+  "generated_from_head": "5c689a16530f30c38785435f2f0a10a9fc796d2c",
+  "audit_status": "A0-A112 requirement-level review complete; A70-A74 partial source/test mapping tied to source/test snapshot 5c689a16530f30c38785435f2f0a10a9fc796d2c; four CI/docs-sync workflows succeeded on this snapshot; complete code/test audit remains 0; full audit remains 0; semantic dedup pending; weighting and overall completion percentage disabled.",
   "progress_percentages_enabled": false,
-  "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until cross-source scope reconciliation and weighting review. Historical A68-A74 and A99 task identities have been recovered; their current-HEAD evidence audit remains pending. Cross-source status audit 2026-10-15 found the dashboard's 113 partial-mapping count and this JSON snapshot's 6 structured source/test/CI/workflow evidence task IDs are different metrics; 0 evidence records are bound to current HEAD. Do not silently treat them as equivalent. Roadmap phase is still pending for 70 task records; reconcile item-by-item. Incremental current-HEAD reconciliation 2026-10-15: A0-A6 roadmap_phase mapped to Phase 1 from roadmap goal chain; A5 depends on A4. A0-A4 source/test/workflow evidence refreshed to current HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1 and current CI/docs-sync runs attached. No acceptance status upgraded; full audit remains zero. Incremental reconciliation 2026-10-15: A0-A8 primary roadmap phases are mapped; explicit dependencies A5→A4, A7→A6, A8→A7 are recorded. A0-A8 source/test mappings were rechecked against current branch tree and bound to current HEAD CI Push/PR and PR docs-sync evidence. No task acceptance status upgraded; docs-sync Push evidence for current HEAD not found. PLAN-003 2026-10-15: A8 corrected to Phase 2. A9-A17 mapped to Phase 1; explicit dependencies A12→A5/A8, A13→A12, A14→A13, A15→A8/A9/A10/A11, A16→A8/A10/A11, A17→A7/A8/A9/A10/A11. Partial evidence only; acceptance statuses unchanged. PLAN-003 incremental reconciliation 2026-10-15: A18-A19 mapped to Phase 3; A20-A23 mapped to Phase 1. Partial source/test pointers recorded with evidence SHA null pending exact commit provenance. Dependencies recorded only where the documented flow supports them: A19→A18, A21→A20, A22→A21, A23→A20/A21/A22. No acceptance status upgraded; overall completion remains disabled. PLAN-003 update 2026-10-15: A24-A29 mapped to Phase 1. Evidence SHA left null pending per-file provenance; code_test_evidence_reviewed_ids counts records with source/test/ci/workflow pointers, not semantic review or acceptance. Requirement-level semantic review remains 113; no task status promoted, no overall completion metric. PLAN-003 update 2026-10-15: A30-A33 mapped to roadmap phases with partial source/test evidence and explicit proof limits. Related recovery/doc/handoff/end-to-end requirements are recorded as overlaps, not merged. Evidence SHA remains unpinned; no task status promoted and no overall completion metric. PLAN-003 update 2026-10-15: A34-A37 mapped to Phase 5; evidence SHA remains null pending per-file provenance. result_proof_layers and user_freedom_dimensions capture the limits of automation evidence and relevant authorization/cancellation freedoms. No formal acceptance promoted, no weighting or overall completion metric. PLAN-003 update 2026-10-15: A38-A41 mapped to Phase 0. A39 push/PR CI workflow evidence is tied to validated snapshot 1af689ab2dacbaff9ad7a08a26f1b4173cc328c4; it is not final-HEAD evidence. Keep all evidence SHA null pending per-file provenance; no formal acceptance promoted. PLAN-003 update 2026-10-15: A42-A45 mapped to their strategic phases; all remain not_audited. Current-HEAD evidence count remains zero pending per-file blob provenance. Do not assign weights or publish overall completion. PLAN-003 update 2026-10-15: A46-A49 mapped to Phase 1; recovery-related overlaps remain unresolved candidates. Evidence SHA remains null pending per-file provenance. No formal acceptance promoted, no weighting or overall completion metric. PLAN-003 update 2026-10-15: A46-A49 mapped to Stage 1. Related recovery evidence remains cross-referenced without merging IDs; per-file evidence SHA remains null; no formal acceptance or overall completion metric is inferred. PLAN-003 update 2026-10-15: A50-A53 mapped to Stage 1. A50/A56 prompt-linebreak relationship and A51/A52 cost concerns remain overlap candidates, not merged items; per-file evidence SHA remains null and no overall completion metric is inferred. PLAN-003 update 2026-10-15: A54-A57 task-register entries reconciled with the current dashboard/handoff. A57's two same-ID acceptance headings remain an explicit unresolved conflict; no scope merge or renumbering. Metric correction 2026-10-15: separate source/test evidence snapshot count from exact final-current-HEAD count. A58-A61 evidence SHA values point to 5fe7fe19..., not the current documentation HEAD; current_head_evidence_task_ids is therefore 0, while source_test_evidence_snapshot_task_ids=4. PLAN-003 2026-10-15 A66-A69: source/test file blob evidence was inspected at branch HEAD fe298b3ae6005b118d8b7b1adf775a261d228ffe; its CI Push/PR and docs-sync Push/PR all succeeded. This is partial evidence mapping only, not formal acceptance. A67's explicit delete/empty-after-pass invalidation test remains a gap; A68's complete invalid-reference/persistence/no-mutation assertions require full inspection; A69 still needs caller-level persistence rejection and legacy compatibility proof. Preserve A0-A112 IDs and keep overall completion disabled. Current documentation HEAD changes with each audit-note commit; current_head_evidence_task_ids counts only records proven against the final documentation HEAD, so it remains 0 until final SHA and file-level evidence are reconciled.",
+  "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until cross-source scope reconciliation and weighting review. Historical A68-A74 and A99 task identities have been recovered; their current-HEAD evidence audit remains pending. Cross-source status audit 2026-10-15 found the dashboard's 113 partial-mapping count and this JSON snapshot's 6 structured source/test/CI/workflow evidence task IDs are different metrics; 0 evidence records are bound to current HEAD. Do not silently treat them as equivalent. Roadmap phase is still pending for 70 task records; reconcile item-by-item. Incremental current-HEAD reconciliation 2026-10-15: A0-A6 roadmap_phase mapped to Phase 1 from roadmap goal chain; A5 depends on A4. A0-A4 source/test/workflow evidence refreshed to current HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1 and current CI/docs-sync runs attached. No acceptance status upgraded; full audit remains zero. Incremental reconciliation 2026-10-15: A0-A8 primary roadmap phases are mapped; explicit dependencies A5→A4, A7→A6, A8→A7 are recorded. A0-A8 source/test mappings were rechecked against current branch tree and bound to current HEAD CI Push/PR and PR docs-sync evidence. No task acceptance status upgraded; docs-sync Push evidence for current HEAD not found. PLAN-003 2026-10-15: A8 corrected to Phase 2. A9-A17 mapped to Phase 1; explicit dependencies A12→A5/A8, A13→A12, A14→A13, A15→A8/A9/A10/A11, A16→A8/A10/A11, A17→A7/A8/A9/A10/A11. Partial evidence only; acceptance statuses unchanged. PLAN-003 incremental reconciliation 2026-10-15: A18-A19 mapped to Phase 3; A20-A23 mapped to Phase 1. Partial source/test pointers recorded with evidence SHA null pending exact commit provenance. Dependencies recorded only where the documented flow supports them: A19→A18, A21→A20, A22→A21, A23→A20/A21/A22. No acceptance status upgraded; overall completion remains disabled. PLAN-003 update 2026-10-15: A24-A29 mapped to Phase 1. Evidence SHA left null pending per-file provenance; code_test_evidence_reviewed_ids counts records with source/test/ci/workflow pointers, not semantic review or acceptance. Requirement-level semantic review remains 113; no task status promoted, no overall completion metric. PLAN-003 update 2026-10-15: A30-A33 mapped to roadmap phases with partial source/test evidence and explicit proof limits. Related recovery/doc/handoff/end-to-end requirements are recorded as overlaps, not merged. Evidence SHA remains unpinned; no task status promoted and no overall completion metric. PLAN-003 update 2026-10-15: A34-A37 mapped to Phase 5; evidence SHA remains null pending per-file provenance. result_proof_layers and user_freedom_dimensions capture the limits of automation evidence and relevant authorization/cancellation freedoms. No formal acceptance promoted, no weighting or overall completion metric. PLAN-003 update 2026-10-15: A38-A41 mapped to Phase 0. A39 push/PR CI workflow evidence is tied to validated snapshot 1af689ab2dacbaff9ad7a08a26f1b4173cc328c4; it is not final-HEAD evidence. Keep all evidence SHA null pending per-file provenance; no formal acceptance promoted. PLAN-003 update 2026-10-15: A42-A45 mapped to their strategic phases; all remain not_audited. Current-HEAD evidence count remains zero pending per-file blob provenance. Do not assign weights or publish overall completion. PLAN-003 update 2026-10-15: A46-A49 mapped to Phase 1; recovery-related overlaps remain unresolved candidates. Evidence SHA remains null pending per-file provenance. No formal acceptance promoted, no weighting or overall completion metric. PLAN-003 update 2026-10-15: A46-A49 mapped to Stage 1. Related recovery evidence remains cross-referenced without merging IDs; per-file evidence SHA remains null; no formal acceptance or overall completion metric is inferred. PLAN-003 update 2026-10-15: A50-A53 mapped to Stage 1. A50/A56 prompt-linebreak relationship and A51/A52 cost concerns remain overlap candidates, not merged items; per-file evidence SHA remains null and no overall completion metric is inferred. PLAN-003 update 2026-10-15: A54-A57 task-register entries reconciled with the current dashboard/handoff. A57's two same-ID acceptance headings remain an explicit unresolved conflict; no scope merge or renumbering. Metric correction 2026-10-15: separate source/test evidence snapshot count from exact final-current-HEAD count. A58-A61 evidence SHA values point to 5fe7fe19..., not the current documentation HEAD; current_head_evidence_task_ids is therefore 0, while source_test_evidence_snapshot_task_ids=4. PLAN-003 2026-10-15 A66-A69: source/test file blob evidence was inspected at branch HEAD fe298b3ae6005b118d8b7b1adf775a261d228ffe; its CI Push/PR and docs-sync Push/PR all succeeded. This is partial evidence mapping only, not formal acceptance. A67's explicit delete/empty-after-pass invalidation test remains a gap; A68's complete invalid-reference/persistence/no-mutation assertions require full inspection; A69 still needs caller-level persistence rejection and legacy compatibility proof. Preserve A0-A112 IDs and keep overall completion disabled. Current documentation HEAD changes with each audit-note commit; current_head_evidence_task_ids counts only records proven against the final documentation HEAD, so it remains 0 until final SHA and file-level evidence are reconciled. PLAN-003 2026-10-15 A70-A74: source/test file blob evidence was inspected at branch HEAD 5c689a16530f30c38785435f2f0a10a9fc796d2c; its CI Push/PR and docs-sync Push/PR all succeeded. This is partial evidence mapping only, not formal acceptance. Preserve known test gaps for each task; do not infer story quality from structure checks, do not merge/renumber task IDs, and keep current_head_evidence_task_ids=0 until final documentation HEAD evidence is reconciled.",
   "counts": {
     "numbered_slots": 113,
     "fully_audited": 0,
@@ -18,10 +18,10 @@
     "semantic_dedup_completed": false,
     "code_test_evidence_audit_completed_ids": 0,
     "semantic_dedup_reviewed_task_ids": 113,
-    "code_test_evidence_reviewed_ids": 70,
+    "code_test_evidence_reviewed_ids": 75,
     "roadmap_phase_mapped_ids": 111,
     "current_head_evidence_task_ids": 0,
-    "source_test_evidence_snapshot_task_ids": 12
+    "source_test_evidence_snapshot_task_ids": 17
   },
   "known_id_gaps": [],
   "tasks": [
@@ -5982,27 +5982,53 @@
       ],
       "audit_note": "对故事引擎、冲突升级和留存结构缺项产生 warning，旧方案兼容。 历史实现提交 aa5840b5d846a12eedbea889494f300a469dc847；当前 HEAD 的完整验收状态仍须逐项核对。",
       "roadmap_phase": "阶段4｜AI 短剧能力",
-      "development_status": "historical_implementation_confirmed_current_head_evidence_audit_pending",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "partial_evidence_mapping_not_fully_accepted",
       "weight": null,
       "dependencies": [],
       "evidence": [
         {
-          "kind": "historical_commit",
-          "sha": "aa5840b5d846a12eedbea889494f300a469dc847",
-          "url": "https://github.com/konggu888/ecommerce-agent/commit/aa5840b5d846a12eedbea889494f300a469dc847",
-          "detail": "对故事引擎、冲突升级和留存结构缺项产生 warning，旧方案兼容。"
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+          "detail": "generate_short_drama() enforces required story_engine fields, >=3 non-empty escalation steps, hook opening_question/payoff and >=2 retention_devices; audit_short_drama() warns for missing/weak structures without blocking legacy-plan reading.",
+          "sha": "2506410d9621840ec34464fce1fa2746c7d798f4",
+          "commit_sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
         },
         {
-          "kind": "current_test_names",
-          "sha": "3718ab273ad66a885cd99d79da24bf3fe45af062",
-          "detail": "apps/ad-studio-desktop/test_short_drama.py: test_audit_flags_missing_story_engine_and_hook_design"
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_short_drama.py",
+          "detail": "test_generation_rejects_short_drama_without_causal_story_engine; test_generation_rejects_story_with_too_few_escalation_steps; test_generation_prompt_requires_causal_conflict_hook_and_payoff; test_audit_flags_missing_story_engine_and_hook_design; test_audit_flags_weak_escalation_and_retention_design.",
+          "sha": "2995b5764f7a86ee8c274b6359ff2f09cdf7a288",
+          "commit_sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38726256278",
+          "detail": "CI Push success at source/test audit snapshot 5c689a16530f30c38785435f2f0a10a9fc796d2c.",
+          "sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38726263346",
+          "detail": "CI PR success at source/test audit snapshot 5c689a16530f30c38785435f2f0a10a9fc796d2c.",
+          "sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38726256271",
+          "detail": "docs-sync Push success at source/test audit snapshot 5c689a16530f30c38785435f2f0a10a9fc796d2c.",
+          "sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38726263242",
+          "detail": "docs-sync PR success at source/test audit snapshot 5c689a16530f30c38785435f2f0a10a9fc796d2c.",
+          "sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
         }
       ],
       "remaining_conditions": [
-        "逐项核对当前 HEAD 对应实现、正向/负向测试和旧方案兼容合同",
-        "记录当前 SHA 的短剧专项测试与 CI/doc-sync 证据",
-        "真实模型剧情质量、语义误报/漏报与真实素材画面验收仍需独立人工/真机验收"
+        "Tests cover missing engine and weak escalation/retention; they do not independently remove each required engine field or prove the semantic progression is truly causal.",
+        "Real-model false-positive/false-negative review and audience-retention quality require human review; structure fields are not quality proof."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -6023,8 +6049,24 @@
           "## A68–A74｜已落地的短剧编导结构能力（历史任务恢复，2026-10-15）"
         ]
       },
-      "source_inventory_status": "historical_task_recovered_formal_plan_sop_added_semantic_reviewed_evidence_audit_pending",
-      "provisional_roadmap_phase": "阶段4｜AI 短剧能力"
+      "source_inventory_status": "partial_current_head_source_test_and_workflow_mapping_semantic_dedup_and_full_acceptance_pending",
+      "provisional_roadmap_phase": "阶段4｜AI 短剧能力",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "result_proof_layers": [
+        "软件运行",
+        "功能行为",
+        "端到端流程",
+        "普通用户可用",
+        "商品表达真实安全",
+        "商业成片质量",
+        "真实商业效果"
+      ],
+      "user_freedom_dimensions": [
+        "选择",
+        "控制",
+        "知情",
+        "撤回纠正"
+      ]
     },
     {
       "task_id": "A71",
@@ -6040,27 +6082,53 @@
       ],
       "audit_note": "至少两个完整备选故事方向，检查核心叙事机制重复及必填字段。 历史实现提交 f094441de66cd99b1b083e63612788fa41df7d79；当前 HEAD 的完整验收状态仍须逐项核对。",
       "roadmap_phase": "阶段4｜AI 短剧能力",
-      "development_status": "historical_implementation_confirmed_current_head_evidence_audit_pending",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "partial_evidence_mapping_not_fully_accepted",
       "weight": null,
       "dependencies": [],
       "evidence": [
         {
-          "kind": "historical_commit",
-          "sha": "f094441de66cd99b1b083e63612788fa41df7d79",
-          "url": "https://github.com/konggu888/ecommerce-agent/commit/f094441de66cd99b1b083e63612788fa41df7d79",
-          "detail": "至少两个完整备选故事方向，检查核心叙事机制重复及必填字段。"
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+          "detail": "generate_short_drama() requires at least two alternative_directions, required direction fields and two distinct signatures based on conflict_source, protagonist_choice and reversal_mechanism.",
+          "sha": "2506410d9621840ec34464fce1fa2746c7d798f4",
+          "commit_sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
         },
         {
-          "kind": "current_test_names",
-          "sha": "3718ab273ad66a885cd99d79da24bf3fe45af062",
-          "detail": "apps/ad-studio-desktop/test_short_drama.py: test_generation_rejects_duplicate_story_direction_mechanisms, test_generation_requires_distinct_story_direction_fields"
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_short_drama.py",
+          "detail": "test_generation_rejects_duplicate_story_direction_mechanisms makes the three mechanism fields identical and expects rejection; test_generation_requires_distinct_story_direction_fields removes audience_hook and expects rejection; sample_plan supplies two complete directions.",
+          "sha": "2995b5764f7a86ee8c274b6359ff2f09cdf7a288",
+          "commit_sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38726256278",
+          "detail": "CI Push success at source/test audit snapshot 5c689a16530f30c38785435f2f0a10a9fc796d2c.",
+          "sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38726263346",
+          "detail": "CI PR success at source/test audit snapshot 5c689a16530f30c38785435f2f0a10a9fc796d2c.",
+          "sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38726256271",
+          "detail": "docs-sync Push success at source/test audit snapshot 5c689a16530f30c38785435f2f0a10a9fc796d2c.",
+          "sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38726263242",
+          "detail": "docs-sync PR success at source/test audit snapshot 5c689a16530f30c38785435f2f0a10a9fc796d2c.",
+          "sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
         }
       ],
       "remaining_conditions": [
-        "逐项核对当前 HEAD 对应实现、正向/负向测试和旧方案兼容合同",
-        "记录当前 SHA 的短剧专项测试与 CI/doc-sync 证据",
-        "真实模型剧情质量、语义误报/漏报与真实素材画面验收仍需独立人工/真机验收"
+        "Signature comparison only rejects exact duplicate core fields; it cannot establish natural-language semantic difference or story extensibility.",
+        "Need explicit test for fewer than two directions and old-plan audit warning behavior if these are part of the formal contract; semantic similarity remains human review."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -6081,8 +6149,24 @@
           "## A68–A74｜已落地的短剧编导结构能力（历史任务恢复，2026-10-15）"
         ]
       },
-      "source_inventory_status": "historical_task_recovered_formal_plan_sop_added_semantic_reviewed_evidence_audit_pending",
-      "provisional_roadmap_phase": "阶段4｜AI 短剧能力"
+      "source_inventory_status": "partial_current_head_source_test_and_workflow_mapping_semantic_dedup_and_full_acceptance_pending",
+      "provisional_roadmap_phase": "阶段4｜AI 短剧能力",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "result_proof_layers": [
+        "软件运行",
+        "功能行为",
+        "端到端流程",
+        "普通用户可用",
+        "商品表达真实安全",
+        "商业成片质量",
+        "真实商业效果"
+      ],
+      "user_freedom_dimensions": [
+        "选择",
+        "控制",
+        "知情",
+        "撤回纠正"
+      ]
     },
     {
       "task_id": "A72",
@@ -6098,27 +6182,53 @@
       ],
       "audit_note": "人物字段包括动机、恐惧/秘密、关系动态、决策压力和人物弧光；新方案强制，旧方案 warning。 历史实现提交 fa51938e4a1fc80dd148cfa3f9ffd32f41354a59；当前 HEAD 的完整验收状态仍须逐项核对。",
       "roadmap_phase": "阶段4｜AI 短剧能力",
-      "development_status": "historical_implementation_confirmed_current_head_evidence_audit_pending",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "partial_evidence_mapping_not_fully_accepted",
       "weight": null,
       "dependencies": [],
       "evidence": [
         {
-          "kind": "historical_commit",
-          "sha": "fa51938e4a1fc80dd148cfa3f9ffd32f41354a59",
-          "url": "https://github.com/konggu888/ecommerce-agent/commit/fa51938e4a1fc80dd148cfa3f9ffd32f41354a59",
-          "detail": "人物字段包括动机、恐惧/秘密、关系动态、决策压力和人物弧光；新方案强制，旧方案 warning。"
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+          "detail": "New generation requires name/role/goal/motivation/fear_or_secret/relationship/relationship_dynamics/decision_pressure/arc; audit_short_drama() warns on missing motivation and relationship fields, preserving legacy plan readability.",
+          "sha": "2506410d9621840ec34464fce1fa2746c7d798f4",
+          "commit_sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
         },
         {
-          "kind": "current_test_names",
-          "sha": "3718ab273ad66a885cd99d79da24bf3fe45af062",
-          "detail": "apps/ad-studio-desktop/test_short_drama.py: test_generation_rejects_character_without_motivation_and_relationship_dynamics, test_audit_warns_when_character_motivation_is_missing"
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_short_drama.py",
+          "detail": "test_generation_rejects_character_without_motivation_and_relationship_dynamics removes motivation and expects rejection; test_audit_warns_when_character_motivation_is_missing confirms warning; sample_plan supplies the full character schema.",
+          "sha": "2995b5764f7a86ee8c274b6359ff2f09cdf7a288",
+          "commit_sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38726256278",
+          "detail": "CI Push success at source/test audit snapshot 5c689a16530f30c38785435f2f0a10a9fc796d2c.",
+          "sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38726263346",
+          "detail": "CI PR success at source/test audit snapshot 5c689a16530f30c38785435f2f0a10a9fc796d2c.",
+          "sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38726256271",
+          "detail": "docs-sync Push success at source/test audit snapshot 5c689a16530f30c38785435f2f0a10a9fc796d2c.",
+          "sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38726263242",
+          "detail": "docs-sync PR success at source/test audit snapshot 5c689a16530f30c38785435f2f0a10a9fc796d2c.",
+          "sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
         }
       ],
       "remaining_conditions": [
-        "逐项核对当前 HEAD 对应实现、正向/负向测试和旧方案兼容合同",
-        "记录当前 SHA 的短剧专项测试与 CI/doc-sync 证据",
-        "真实模型剧情质量、语义误报/漏报与真实素材画面验收仍需独立人工/真机验收"
+        "Negative generation test removes motivation only, not relationship_dynamics and each other required field separately; legacy audit test also removes motivation only.",
+        "Field presence does not prove believable motivation, relationship pressure or consistent character arc; requires human story review."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -6139,8 +6249,24 @@
           "## A68–A74｜已落地的短剧编导结构能力（历史任务恢复，2026-10-15）"
         ]
       },
-      "source_inventory_status": "historical_task_recovered_formal_plan_sop_added_semantic_reviewed_evidence_audit_pending",
-      "provisional_roadmap_phase": "阶段4｜AI 短剧能力"
+      "source_inventory_status": "partial_current_head_source_test_and_workflow_mapping_semantic_dedup_and_full_acceptance_pending",
+      "provisional_roadmap_phase": "阶段4｜AI 短剧能力",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "result_proof_layers": [
+        "软件运行",
+        "功能行为",
+        "端到端流程",
+        "普通用户可用",
+        "商品表达真实安全",
+        "商业成片质量",
+        "真实商业效果"
+      ],
+      "user_freedom_dimensions": [
+        "选择",
+        "控制",
+        "知情",
+        "撤回纠正"
+      ]
     },
     {
       "task_id": "A73",
@@ -6156,27 +6282,53 @@
       ],
       "audit_note": "新生成方案要求至少三步有序因果链，记录事件、前因、人物选择、后果和状态变化。 历史实现提交 77affeb537a208f43bc7988eccf144ba92429c91；当前 HEAD 的完整验收状态仍须逐项核对。",
       "roadmap_phase": "阶段4｜AI 短剧能力",
-      "development_status": "historical_implementation_confirmed_current_head_evidence_audit_pending",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "partial_evidence_mapping_not_fully_accepted",
       "weight": null,
       "dependencies": [],
       "evidence": [
         {
-          "kind": "historical_commit",
-          "sha": "77affeb537a208f43bc7988eccf144ba92429c91",
-          "url": "https://github.com/konggu888/ecommerce-agent/commit/77affeb537a208f43bc7988eccf144ba92429c91",
-          "detail": "新生成方案要求至少三步有序因果链，记录事件、前因、人物选择、后果和状态变化。"
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+          "detail": "generate_short_drama() requires >=3 causal_chain steps, event/caused_by/character_choice/consequence/state_change/script_evidence, script evidence in full_script, valid shot references and contiguous step numbering; audit emits CAUSAL_CHAIN_INCOMPLETE for missing legacy chain.",
+          "sha": "2506410d9621840ec34464fce1fa2746c7d798f4",
+          "commit_sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
         },
         {
-          "kind": "current_test_names",
-          "sha": "3718ab273ad66a885cd99d79da24bf3fe45af062",
-          "detail": "apps/ad-studio-desktop/test_short_drama.py: test_generation_rejects_missing_causal_chain, test_generation_rejects_causal_step_without_consequence, test_audit_warns_when_causal_chain_is_missing"
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_short_drama.py",
+          "detail": "test_generation_rejects_missing_causal_chain; test_generation_rejects_causal_step_without_consequence; test_audit_warns_when_causal_chain_is_missing. sample_plan includes three ordered causal steps.",
+          "sha": "2995b5764f7a86ee8c274b6359ff2f09cdf7a288",
+          "commit_sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38726256278",
+          "detail": "CI Push success at source/test audit snapshot 5c689a16530f30c38785435f2f0a10a9fc796d2c.",
+          "sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38726263346",
+          "detail": "CI PR success at source/test audit snapshot 5c689a16530f30c38785435f2f0a10a9fc796d2c.",
+          "sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38726256271",
+          "detail": "docs-sync Push success at source/test audit snapshot 5c689a16530f30c38785435f2f0a10a9fc796d2c.",
+          "sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38726263242",
+          "detail": "docs-sync PR success at source/test audit snapshot 5c689a16530f30c38785435f2f0a10a9fc796d2c.",
+          "sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
         }
       ],
       "remaining_conditions": [
-        "逐项核对当前 HEAD 对应实现、正向/负向测试和旧方案兼容合同",
-        "记录当前 SHA 的短剧专项测试与 CI/doc-sync 证据",
-        "真实模型剧情质量、语义误报/漏报与真实素材画面验收仍需独立人工/真机验收"
+        "No directly identified test for discontinuous/out-of-order step numbers, missing caused_by/character_choice/state_change individually, or three steps with weak semantic causality.",
+        "Text structure and step numbering do not prove the plot is causally coherent; human review remains required."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -6197,8 +6349,24 @@
           "## A68–A74｜已落地的短剧编导结构能力（历史任务恢复，2026-10-15）"
         ]
       },
-      "source_inventory_status": "historical_task_recovered_formal_plan_sop_added_semantic_reviewed_evidence_audit_pending",
-      "provisional_roadmap_phase": "阶段4｜AI 短剧能力"
+      "source_inventory_status": "partial_current_head_source_test_and_workflow_mapping_semantic_dedup_and_full_acceptance_pending",
+      "provisional_roadmap_phase": "阶段4｜AI 短剧能力",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "result_proof_layers": [
+        "软件运行",
+        "功能行为",
+        "端到端流程",
+        "普通用户可用",
+        "商品表达真实安全",
+        "商业成片质量",
+        "真实商业效果"
+      ],
+      "user_freedom_dimensions": [
+        "选择",
+        "控制",
+        "知情",
+        "撤回纠正"
+      ]
     },
     {
       "task_id": "A74",
@@ -6214,27 +6382,53 @@
       ],
       "audit_note": "每步因果链引用剧本原文与真实根级分镜索引；新方案拒绝无效引用，旧方案 warning。 历史实现提交 bac6feb10520eac18ce3734b6de34df3527a56af；当前 HEAD 的完整验收状态仍须逐项核对。",
       "roadmap_phase": "阶段4｜AI 短剧能力",
-      "development_status": "historical_implementation_confirmed_current_head_evidence_audit_pending",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "partial_evidence_mapping_not_fully_accepted",
       "weight": null,
       "dependencies": [],
       "evidence": [
         {
-          "kind": "historical_commit",
-          "sha": "bac6feb10520eac18ce3734b6de34df3527a56af",
-          "url": "https://github.com/konggu888/ecommerce-agent/commit/bac6feb10520eac18ce3734b6de34df3527a56af",
-          "detail": "每步因果链引用剧本原文与真实根级分镜索引；新方案拒绝无效引用，旧方案 warning。"
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+          "detail": "generate_short_drama() rejects script_evidence not found as a full_script substring and storyboard_indices that are missing, non-integers, below 1 or beyond the root storyboard; audit emits CAUSAL_SCRIPT_MISMATCH, CAUSAL_STORYBOARD_MISSING or CAUSAL_STORYBOARD_MISMATCH.",
+          "sha": "2506410d9621840ec34464fce1fa2746c7d798f4",
+          "commit_sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
         },
         {
-          "kind": "current_test_names",
-          "sha": "3718ab273ad66a885cd99d79da24bf3fe45af062",
-          "detail": "apps/ad-studio-desktop/test_short_drama.py: test_generation_rejects_causal_evidence_not_in_script, test_generation_rejects_causal_chain_with_invalid_storyboard_reference, test_audit_flags_causal_script_and_storyboard_mismatch"
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_short_drama.py",
+          "detail": "test_generation_rejects_causal_evidence_not_in_script; test_generation_rejects_causal_chain_with_invalid_storyboard_reference; test_audit_flags_causal_script_and_storyboard_mismatch.",
+          "sha": "2995b5764f7a86ee8c274b6359ff2f09cdf7a288",
+          "commit_sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38726256278",
+          "detail": "CI Push success at source/test audit snapshot 5c689a16530f30c38785435f2f0a10a9fc796d2c.",
+          "sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38726263346",
+          "detail": "CI PR success at source/test audit snapshot 5c689a16530f30c38785435f2f0a10a9fc796d2c.",
+          "sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38726256271",
+          "detail": "docs-sync Push success at source/test audit snapshot 5c689a16530f30c38785435f2f0a10a9fc796d2c.",
+          "sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38726263242",
+          "detail": "docs-sync PR success at source/test audit snapshot 5c689a16530f30c38785435f2f0a10a9fc796d2c.",
+          "sha": "5c689a16530f30c38785435f2f0a10a9fc796d2c"
         }
       ],
       "remaining_conditions": [
-        "逐项核对当前 HEAD 对应实现、正向/负向测试和旧方案兼容合同",
-        "记录当前 SHA 的短剧专项测试与 CI/doc-sync 证据",
-        "真实模型剧情质量、语义误报/漏报与真实素材画面验收仍需独立人工/真机验收"
+        "Test fixture maps all three causal steps to a single storyboard shot, so it does not prove each event is semantically depicted by the cited shot or that the script quote is the right event.",
+        "Text substring and valid-index checks do not prove generated footage shows the event; real materials and Windows UI acceptance remain deferred."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -6255,8 +6449,24 @@
           "## A68–A74｜已落地的短剧编导结构能力（历史任务恢复，2026-10-15）"
         ]
       },
-      "source_inventory_status": "historical_task_recovered_formal_plan_sop_added_semantic_reviewed_evidence_audit_pending",
-      "provisional_roadmap_phase": "阶段4｜AI 短剧能力"
+      "source_inventory_status": "partial_current_head_source_test_and_workflow_mapping_semantic_dedup_and_full_acceptance_pending",
+      "provisional_roadmap_phase": "阶段4｜AI 短剧能力",
+      "semantic_dedup_review_status": "reviewed_requirement_level",
+      "result_proof_layers": [
+        "软件运行",
+        "功能行为",
+        "端到端流程",
+        "普通用户可用",
+        "商品表达真实安全",
+        "商业成片质量",
+        "真实商业效果"
+      ],
+      "user_freedom_dimensions": [
+        "选择",
+        "控制",
+        "知情",
+        "撤回纠正"
+      ]
     },
     {
       "task_id": "A75",
