@@ -1,14 +1,17 @@
-# 【PLAN-003 当前状态｜A66–A69 部分证据映射｜2026-10-15】
+# 【PLAN-003 当前状态｜A70–A74 部分证据映射｜2026-10-15】
 
-- **本轮源码/测试审计快照**：`fe298b3ae6005b118d8b7b1adf775a261d228ffe`；PR #32 保持 Open / unmerged。源码文件 `apps/ad-studio-desktop/ad_studio/short_drama.py` blob `2506410d9621840ec34464fce1fa2746c7d798f4`，专项测试 `apps/ad-studio-desktop/test_short_drama.py` blob `2995b5764f7a86ee8c274b6359ff2f09cdf7a288`。
-- **该快照四项工作流均 success**：CI Push [38725243430](https://github.com/konggu888/ecommerce-agent/actions/runs/38725243430)、CI PR [38725248390](https://github.com/konggu888/ecommerce-agent/actions/runs/38725248390)、docs-sync Push [38725243379](https://github.com/konggu888/ecommerce-agent/actions/runs/38725243379)、docs-sync PR [38725248456](https://github.com/konggu888/ecommerce-agent/actions/runs/38725248456)。这些结果只绑定该源码/测试快照；后续文档提交改变 HEAD 后必须重新核验最终 HEAD 四项工作流。
-- **A66｜人工商品画面核验证据文件校验**：`record_product_visual_verification()` 校验状态、镜头/模式、受支持扩展名、文件存在且非空，并保存规范化绝对路径、人工方式与备注。专项测试覆盖缺失、零字节、不支持扩展名及有效证据。边界：只检查文件有效性，不检查图像内容，也不认证商品真实性。
-- **A67｜短剧人工核验证据失效保护**：`audit_short_drama()` 重新检查持久化证据文件与人工方式/备注；历史 `passed` 但证据无效会产生 `PRODUCT_VISUAL_NOT_VERIFIED`。测试覆盖缺失旧路径和有效非空文件。**缺口**：SOP 还要求先通过后删除/清空证据，再复查；当前映射到的测试未直接覆盖该顺序。
-- **A68｜AI 短剧后续剧情影响分析**：`analyze_episode_continuity_impact()` 选择源集并只向模型提供实际存在的后续集、系列设定、连续性台账和商品事实锁，要求风险、依据、建议且禁止直接改写。已有有效后续集和非法/非后续集专项测试线索。**缺口**：需逐项核对所有非法引用、报告持久化与不修改原集的直接断言，不能只凭测试名下结论。
-- **A69｜AI 编导故事引擎与留存设计**：新生成方案要求故事引擎、至少三步冲突升级、开场疑问/结尾兑现、至少两个留存装置和可追溯因果链；专项测试覆盖缺字段、冲突步骤不足、提示词和审核警告。**缺口**：需继续确认所有必填字段、旧方案读取兼容及调用方拒绝保存的行为链。
-- **指标（均为台账覆盖/映射数，不是完成率）**：需求文本级复核 113；含 source/test/CI/workflow 指针任务 70；任意 evidence 任务 82；路线图主阶段映射 111/113，待映射 2；源码/测试证据快照绑定任务 12；最终文档 HEAD 精确绑定任务 0；完整代码/测试审计 0；完整审计 0；全量语义去重未完成。权重和总体完成率继续关闭。
-- A66–A69 均保持 `acceptance_status=not_audited`；本批只做现有 A0–A112 的代码/测试/路线图证据映射，不开发新产品功能，不新增 A113+，不删除/合并/重编号。真实 Windows、真实素材、真实 Provider/扣费、剪映现场与真实投放/商业效果验证继续暂缓。
-- **下一批：A70–A74**（短剧故事结构检查、备选故事方向差异化、人物动机与关系动力、剧情事件因果链、因果链与剧本/分镜证据对齐）。开始前必须确认最新文档 HEAD 的 CI Push、CI PR、docs-sync Push、docs-sync PR 四项都已完成且 success；若任何一项缺失/运行中/失败，先查明原因，不继续扩大批次。 A66–A69 的已知缺口仍需保留；本轮部分映射不等于正式验收通过。
+- **源码/测试审计快照**：`5c689a16530f30c38785435f2f0a10a9fc796d2c`；PR #32 保持 Open / unmerged。短剧源码 `apps/ad-studio-desktop/ad_studio/short_drama.py` blob `2506410d9621840ec34464fce1fa2746c7d798f4`；专项测试 `apps/ad-studio-desktop/test_short_drama.py` blob `2995b5764f7a86ee8c274b6359ff2f09cdf7a288`。
+- **该快照四项工作流均 success**：CI Push [38726256278](https://github.com/konggu888/ecommerce-agent/actions/runs/38726256278)、CI PR [38726263346](https://github.com/konggu888/ecommerce-agent/actions/runs/38726263346)、docs-sync Push [38726256271](https://github.com/konggu888/ecommerce-agent/actions/runs/38726256271)、docs-sync PR [38726263242](https://github.com/konggu888/ecommerce-agent/actions/runs/38726263242)。文档新提交后必须重新核验最终 HEAD 四项。
+- **A70｜短剧故事结构检查**：新生成流程要求 story_engine 必填项、至少 3 个冲突升级步骤、hook 开场疑问/结尾兑现及至少 2 个留存装置；旧方案审查以 warning 兼容。已有缺项/薄弱项测试。缺口：没有逐项删除每个必填字段的独立测试；结构不证明剧情质量。
+- **A71｜备选故事方向差异化**：要求至少两个方向，方向字段齐全，并按冲突来源/主角选择/反转机制拒绝完全重复签名。已有缺字段、重复签名测试。缺口：精确签名无法识别自然语言语义相似；还需确认少于两个方向与旧方案审查的直接测试覆盖。
+- **A72｜人物动机与关系动力**：新生成要求目标、动机、恐惧/秘密、关系、关系动态、决策压力、人物弧光；旧方案缺字段只警告。已有缺 motivation 拒绝与 warning 测试。缺口：未分别覆盖 relationship_dynamics 等每个必填字段的负向路径；字段齐全不等于人物可信。
+- **A73｜剧情事件因果链**：要求至少三步有序 causal_chain，包含事件、前因、选择、后果、状态变化及剧本证据；新生成校验拒绝缺项，旧方案审查 warning。已有缺因果链、缺 consequence、旧方案 warning 测试。缺口：缺少步骤乱序及其他必填字段逐项缺失的直接测试；结构不证明语义因果成立。
+- **A74｜因果链与剧本/分镜证据对齐**：要求 script_evidence 是 full_script 原文子串、storyboard_indices 是有效根级分镜索引；新生成拒绝无效引用，旧方案审查产生相应 warning。已有剧本文本不匹配、无效索引、审查 warning 测试。缺口：测试夹具多个因果步骤都引用同一镜，未证明事件与引用镜头的语义对应；文本可追踪性不等于真实画面演出。
+- **台账指标（覆盖/映射数，不是完成率）**：需求文本级复核 113；含 source/test/CI/workflow 指针任务 75；任意 evidence 任务 87；路线图主阶段映射 111/113；源码/测试快照绑定任务 17；最终文档 HEAD 精确绑定任务 0；完整代码/测试审计 0；完整审计 0；全量语义去重未完成。权重与总体完成率继续关闭。
+- A70–A74 的正式验收状态沿用任务台账原值（部分映射、未正式验收）；本轮仅审计现有 A0–A112，不开发新产品功能，不新增 A113+，不删除/合并/重编号。真实模型剧情质量、Windows 真机、真实素材、Provider/扣费、剪映现场和真实投放/商业效果继续暂缓。
+- **下一项**：先核对本轮最终文档 HEAD 的 CI Push、CI PR、docs-sync Push、docs-sync PR 全部完成且 success；随后按总进度台账继续下一批 A75–A79。不要跳过 A70–A74 已记录缺口，也不要把部分映射说成正式验收通过。
+
+---
 
 ---
 
