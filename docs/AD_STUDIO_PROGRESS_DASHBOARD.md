@@ -1,15 +1,14 @@
-# 【PLAN-003 当前状态｜A100–A104 部分证据映射｜2026-10-15】
+# 【PLAN-003 当前状态｜A105–A109 部分证据映射｜2026-10-15】
 
-- **源码/测试审计基线**：分支 `feat/product-drama-visual-review` 的 HEAD `c77704d86d6131d13501448af76ce24afc56ad7b`；本轮文档更新前，CI PR [38729441932](https://github.com/konggu888/ecommerce-agent/actions/runs/38729441932) 与 docs-sync PR [38729441851](https://github.com/konggu888/ecommerce-agent/actions/runs/38729441851) 均 success。PR #32 Open/unmerged。
-- **本轮只审计源码、专项测试和 UI 证据边界，不改产品代码、不宣布正式验收通过。** `postprocess.py` / `test_postprocess.py` blobs：`36ce0e4a17d635e3ed381c3b0bada1428e0290c4` / `29141bb61ee3ec6ae5960395e81c7dc64ef79feb`；`ffmpeg.py` / `test_ffmpeg.py` blobs：`d13870a12eae682133995bac7305900e0a4ff767` / `e409cbded7db0c01a1962f722d54c615429f5e37`。
-- **A100** 淡出按变速后的输出时长定位，短镜头淡化长度受限；测试核对 FFmpeg 参数。真实渲染/听感未验证。
-- **A101** 视频 `setpts` 与音频 `atempo` 同步构造，常速不添加多余音频滤镜；真实素材同步/编码器兼容性未验证。
-- **A102** 三种画幅目标均为 1080P 级尺寸，低于目标的 ffprobe 元数据被拒绝；当前测试为 mock，未证明真实最终导出。
-- **A103** 视频淡入/淡出与原音轨 `afade` 同步，短镜头及变速后淡出有命令级测试；真实成片听感未验证。
-- **A104** 已实现 `xfade`/`acrossfade` 滤镜图和无音轨补静音；仍需验证混合模式中 0.001 秒硬切重叠的实际效果。静态 UI 检索未找到明确可编辑的转场选择器，是当前发现的 UI 核对项。
-- **映射覆盖（直接按任务台账统计，不是完成率）**：113 个编号任务；109 个有 evidence 指针；104 个含 source/test evidence；当前源码/测试快照审计计数 47；完整代码/测试审计 0；完整审计 0；语义去重未完成。权重与总体完成率关闭。
-- A100–A104 均为 `partial_evidence_mapping` / `not_audited`。历史 SHA 的旧勾选不自动继承；不新增 A113+，不删除/合并/重编号；PR #32 不合并；Windows 真机、真实素材、Provider/扣费、剪映现场与商业效果验收继续暂缓。
-- **下一批 A105–A109**。文档提交后须核验最新 SHA 的四项 CI/docs-sync；Push 状态若无法独立查询须如实说明。
+- **源码/测试审计基线**：`c77704d86d6131d13501448af76ce24afc56ad7b`；文档更新前最近检查的分支 HEAD `57ed689911025f2e31241ddf487e70143ffedbe0` 的 CI PR 与 docs-sync PR 均 success（runs 38730155209 / 38730155147）。Push 触发工作流未独立核实。PR #32 Open/unmerged。
+- **A105** 节奏标签映射与显式速度覆盖有单测；后处理构造 setpts/atempo。真实渲染与完整链未集成测试。
+- **A106** 商业角色文本规则输出时长、节奏、速度、转场和依据；覆盖部分角色及显式参数优先。未全面覆盖所有角色，未证明视觉语义识别；UI 只找到转场值展示，未找到明确可编辑转场选择器。
+- **A107** 角色推断时长通过 runtime Shot 字段进入 GenerationRequest 的源码链存在；缺少直接断言最终 Provider 请求时长的专项测试。
+- **A108** 字幕路径按实际时长分析密度、生成 SRT 并烧录；单测覆盖时间轴和密度边界，缺少 UI 整链集成测试。
+- **A109** 节拍分析/切点规划/安全变速/拼接后全局 BGM 混入已接入源码生产链；专项测试覆盖 helper，但缺少 build_final 整链测试。历史 automation_passed 不继承，本轮降为部分证据映射。
+- **映射覆盖指标（不是完成率）**：编号任务 113；source/test/CI/workflow 指针 110；任意 evidence 任务 112；路线图映射 113/113；源码/测试快照绑定 52；最终文档 HEAD 精确绑定 0；完整代码/测试审计 0；完整审计 0；语义去重未完成。权重与总体完成率关闭。
+- A105–A109 全部为 `partial_evidence_mapping` / `not_audited`。本轮不改产品代码；真实 FFmpeg/Windows、真实素材、Provider/扣费、剪映现场与商业效果验收继续暂缓。PR #32 不合并；不新增 A113+，不删除/合并/重编号。
+- **下一批 A110–A112**。文档提交后须核验最新 SHA 四项 CI/docs-sync；Push 若无法独立查询，明确标注未核实。
 
 ---
 
@@ -1290,3 +1289,16 @@ A50–A67 的详细静态映射已存在；本轮将其规范台账行与该映�
 A9–A17 的可定位源码/测试线索、基线 CI/docs-sync 记录和剩余缺口已写入规范 JSON 台账。重点缺口包括真实 ASR 准确率、免费商用音乐/字体授权闭环、字幕与真实口播及商品事实一致、AI生成画面商品真实性、混合素材最终来源追溯、三类成片端到端质量。分散测试不构成整项验收通过。
 
 明确依赖：A12→A5/A8，A13→A12，A14→A13，A15→A8/A9/A10/A11，A16→A8/A10/A11，A17→A7/A8/A9/A10/A11。当前累计 61/113 个任务映射主阶段，仍有 52 个待映射。全量代码/测试证据审计仍为 0，语义去重与赋权未完成，不新增 A113+，不发布总体完成率。引用的 CI/docs-sync 为本轮文档提交前基线 SHA `5138685b3489fd249be5469fe86821b6374edde0`；新提交工作流需重新核验。
+
+
+## PLAN-003 增量审计记录｜A105–A109｜2026-10-15
+
+- **源码/测试审计基线**：`c77704d86d6131d13501448af76ce24afc56ad7b`；文档更新前最近检查的分支 HEAD 为 `57ed689911025f2e31241ddf487e70143ffedbe0`。该 HEAD 的 CI PR [38730155209](https://github.com/konggu888/ecommerce-agent/actions/runs/38730155209) 与 docs-sync PR [38730155147](https://github.com/konggu888/ecommerce-agent/actions/runs/38730155147) 均 success；Push 触发工作流未被当前查询接口独立返回，不能宣称四项均已核实。PR #32 Open/unmerged。
+- **A105｜分镜节奏映射**：慢/标准/快/极快默认速度、显式速度优先、未知标签回退有单测；后处理命令同步 setpts/atempo。真实渲染和完整 UI 到成片链未集成测试。
+- **A106｜商业角色默认剪辑**：源码按分镜文本关键词推断角色、时长/节奏/速度/转场，并记录 rationale/basis/参数来源；测试覆盖 hook、商品细节、演示、证据和末镜 CTA，以及显式参数优先。pain_point/reaction/story_beat 等角色与歧义关键词未全面测试；不是视觉语义识别。UI 仅发现展示转场值，未找到明确的可编辑转场选择器。
+- **A107｜推断时长进入生成请求**：CreativeShot → runtime Shot 的字段映射存在，生产入口将 runtime `duration_seconds` 传入 GenerationRequest；目前测试止于 runtime mapping，没有直接断言 Provider 请求最终收到推断时长。真实 Provider 仍不调用。
+- **A108｜字幕自适应**：按 FFprobe 实际时长生成 SRT，拆分长文案、限制短镜头字幕切换并显示密度警告；桌面路径可见 probe → analyze → write_srt → burn_subtitles。单测覆盖规划器/SRT，但没有 app 级整链集成测试；真实阅读舒适度和 Windows 烧录效果未验证。
+- **A109｜音乐节拍与实际切点**：生产源码把节拍分析、切点规划、内容/字幕保护、镜头变速、拼接后一次性混入全局 BGM 接入最终导出链；专项测试覆盖合成节拍、静音/低置信度回退、时长变化、内容保护、变速命令和 BGM 混音命令。但没有直接测试最终 build_final 的完整调度链，实际 FFmpeg 渲染/视听仍未验证。台账中历史 `automation_passed` 已降为 `partial_evidence_mapping` / `not_audited`，因为验收计划四项 workflow gate 尚未完整核实，且生产集成证据仍有缺口。
+- A105–A109 均为 `partial_evidence_mapping` / `not_audited`。映射覆盖：113 个编号任务；source/test/CI/workflow 指针任务 110；任意 evidence 任务 112；路线图映射 113/113；源码/测试快照绑定任务 52；最终文档 HEAD 精确绑定 0；完整代码/测试审计 0；完整审计 0；语义去重未完成；权重与总体完成率关闭。
+- 本轮不改产品代码。Windows 真机、真实素材、Provider/扣费、剪映现场与商业效果继续暂缓。PR #32 不合并；不新增 A113+，不删除/合并/重编号 A0–A112。
+- 下一批按既有编号进入 **A110–A112**。文档提交后先核验最新 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR；Push 若无法独立查询须明确记录未核实。
