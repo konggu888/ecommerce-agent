@@ -1226,7 +1226,14 @@ A61（旧成本迁移）、A62（接手文案断言）、A63（迁移基线持�
 - [ ] 描述的行为与所引用镜头不匹配，应触发 `CHARACTER_STATE_MANIFESTATION_NOT_SHOWN`。
 - [ ] 无描述/引用时触发 `CHARACTER_STATE_MANIFESTATION_MISSING`；检查旧方案兼容。
 - [ ] 通过 CI/docs-sync 后，另行对真实生成画面进行人工/视觉核验；不得把文本检查当作画面验收。
-\n\n## A88｜多人物状态依赖一致性验收\n- [ ] 可选字段可表达两个人物间知识、关系或承诺依赖。\n- [ ] 人物名必须是两个已定义且不同的人物。\n- [ ] 证据可在剧本或指定分镜定位，镜头引用有效。\n- [ ] `same_understanding` 双方状态不一致时触发 `CROSS_CHARACTER_DEPENDENCY_CONTRADICTION`。\n- [ ] `asymmetric_knowledge` 缺少原因时触发 `CROSS_CHARACTER_ASYMMETRY_UNEXPLAINED`。\n- [ ] `different_beliefs_allowed` 不因观点不同误报直接矛盾。\n- [ ] 运行专项测试、完整 CI 和 docs-sync，按最新 SHA 记录。\n
+\n\n## A88｜多人物状态依赖一致性验收
+- [ ] 可选字段可表达两个人物间知识、关系或承诺依赖。
+- [ ] 人物名必须是两个已定义且不同的人物。
+- [ ] 证据可在剧本或指定分镜定位，镜头引用有效。
+- [ ] `same_understanding` 双方状态不一致时触发 `CROSS_CHARACTER_DEPENDENCY_CONTRADICTION`。
+- [ ] `asymmetric_knowledge` 缺少原因时触发 `CROSS_CHARACTER_ASYMMETRY_UNEXPLAINED`。
+- [ ] `different_beliefs_allowed` 不因观点不同误报直接矛盾。
+- [ ] 运行专项测试、完整 CI 和 docs-sync，按最新 SHA 记录。
 
 ## A89｜跨集演员/场景资产锁定验收
 - [ ] 根级 `series_asset_locks` 可定义 actor/scene、稳定 key、目标、规范描述和可选集号范围。
