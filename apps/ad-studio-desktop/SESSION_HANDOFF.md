@@ -5,6 +5,7 @@
 - A80–A84 已完成部分映射，正式验收未完成：关系变化/后果、人物状态连续性、信息时间线、承诺/误解/行动结果、跨集承接事项。主要剩余风险是正向路径不足、语义字符串匹配局限，以及最终集/保存重载等边界。
 - 台账覆盖数：需求复核 113；source/test/CI/workflow 指针 85；任意 evidence 97；路线图阶段映射 113/113；源码/测试快照绑定 27；最终文档 HEAD 精确绑定 0；完整代码/测试审计 0；完整审计 0；语义去重未完成。权重和总体完成率关闭。
 - 不开发新产品功能，不新增 A113+，不删/合并/重编号 A0–A112。真实素材、Windows、Provider/扣费、剪映现场与商业效果验收继续暂缓。
+- 文档同步清单：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`、`docs/AD_STUDIO_TASK_REGISTER.json`、`docs/AD_STUDIO_ACCEPTANCE_PLAN.md`、`docs/AD_STUDIO_ACCEPTANCE_SOP.md`、`docs/AD_STUDIO_PRODUCT_ROADMAP.md`、`docs/AD_STUDIO_AI_HANDOFF.md` 与 `docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md` 已同步 A80–A84 部分映射和已知缺口。
 - 下一批 A85–A89。先核验最终文档 HEAD 的 CI Push、CI PR、docs-sync Push、docs-sync PR 全部完成且 success。
 
 ---
