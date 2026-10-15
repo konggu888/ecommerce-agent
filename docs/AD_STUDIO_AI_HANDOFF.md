@@ -1,9 +1,9 @@
 # 【AI 接手短入口｜2026-10-15｜规划控制体系优先】
 
 - 仓库/项目：`konggu888/ecommerce-agent/apps/ad-studio-desktop`；分支 `feat/product-drama-visual-review`；PR #32 保持 Open / unmerged。
-- 唯一权威当前任务、下一项、状态和进度：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`。本轮先盘点并纠偏规划控制体系；下一项是建立 A0–A112 规范化任务台账。当前不开发产品功能、不继续 UXS-2 专项细节。
+- 唯一权威当前任务、下一项、状态和进度：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`。当前是 PLAN-003 全量跨来源语义去重、状态冲突裁决与依赖/证据边界复核；A0–A112 台账和分批静态映射已存在，不重建、不重复从 A50 开始。当前不开发产品功能。
 - 执行规则：`docs/AD_STUDIO_EXECUTION_CONTROL.md`；战略阶段与退出条件：`docs/AD_STUDIO_PRODUCT_ROADMAP.md`；正式范围：`docs/AD_STUDIO_ACCEPTANCE_PLAN.md`；验收方法：`docs/AD_STUDIO_ACCEPTANCE_SOP.md`。
-- 本轮修改前最新已核对 HEAD `9b52642fc2608fe24b0d4dba4ba0ef36d3ca8e67` 的 PR-triggered CI 与 docs-sync 均 success，Netlify status success；Push-triggered 两项未独立核实。每次提交后重新核对新 SHA。
+- 旧 HEAD/CI 描述属于历史快照；每次接手必须实时读取 PR #32 当前 HEAD、PR-triggered CI/doc-sync 与部署状态，不把历史绿灯继承为当前证据。Push-triggered 两项如未独立查询，必须明确注明。
 - 下方旧执行快照仅为历史证据，不能作为当前“下一项”指令。遇到冲突先登记到总进度台账，不自行选择旧任务、不扩展范围。
 - 禁止删除/重编号 A0–A112；规范化台账、去重、依赖和证据审计完成前不赋权、不计算总体完成率。真实环境/Provider/扣费/剪映/投放验证继续暂缓。
 - **七层结果证明标准已纳入全项目证据规则**：软件运行、功能行为、端到端流程、普通用户可用、商品表达真实安全、商业成片质量、真实商业效果；详细定义和禁止替代关系见总进度台账及执行控制协议。台账规范化时逐项映射，不新增正式验收 ID。
@@ -17,7 +17,7 @@
 - 重要待裁决的合同/证据冲突：`App.create()` 在显示 `AI创意与项目预算确认` 前调用 `ModelRouter.create_plan/create_plans`；`ModelRouter.create_plan()` 对九个创意阶段调用 `complete_json()`。HELP/PROJECT_LOGIC 允许确认前进行 AI 分析，但用户费用授权是否覆盖收费的规划模型调用尚未明确。若所有收费云端模型调用都须先确认，则是 P0 候选阻断；若仅限制视频/资产生成 Provider，则需核实规划调用费用是否披露/计入预算。需进一步核对路由/计费并映射到 A0/A2 与既有正式合同；不开发产品功能、不新增正式编号、不声称已发生实际扣费。
 - 已查专项测试线索：布局 AST、商品解析器失败/回退、预算计算、项目保存/加载与项目隔离；未找到直接调用 `App.create()` 的 `test_desktop.py` 测试。完整模拟交付测试不覆盖创建前费用确认顺序。
 - 本轮开始基线 `3bd083e73ea51aec26b2ab66c755aa6c83a929cf` 的 PR CI `38695479000` 和 PR docs-sync `38695478983` success；Push-triggered 两项未独立核实。文档更新后以 GitHub 实时 HEAD 为准重查当前 SHA 工作流。
-- 下一项唯一任务：继续 UXS-2 费用/确认/取消/外部副作用映射并与 A0–A112 正式合同对照，再按用户旅程推进；全量审计完成前不计算总体完成率。
+- 上述 UXS-2“下一项”属于历史快照；当前执行顺序只看 `docs/AD_STUDIO_PROGRESS_DASHBOARD.md` 顶部。当前任务为 PLAN-003 全量跨来源关系与状态冲突裁决；全量审计完成前不计算总体完成率。
 - 保持 `code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false`。Windows 真机、真实素材、真实 Provider/扣费、剪映现场、真实投放/商业效果继续暂缓；PR #32 不合并。
 
 ---
