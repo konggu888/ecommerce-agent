@@ -1511,3 +1511,13 @@ A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/
 - A78：核对 knowledge_source 是否为 full_script 原文、剧情内来源镜头是否早于当前镜头、preexisting 是否不引用剧情内来源。现有测试覆盖较早来源、后续来源和 preexisting 基本路径，但语义真实性需人工评审。
 - A79：核对行动依据人物必须同时属于当前镜头人物与角色表；当前镜头每个人物必须有完整 goal/motivation、known_information、knowledge_source、decision_pressure、choice_rationale。结构绑定不证明动机合理或画面真实。
 - A75–A79 仅部分证据映射，正式验收状态不得擅自改为通过。真实素材、Windows UI、Provider/扣费、剪映和商业效果仍独立验收。
+
+
+## PLAN-003 A80–A84 部分证据映射补充（2026-10-15）
+- 源码/测试快照 `4063ba5a452c0c883ff39c8ea1ce33499a80eaf4` 的四项 CI/docs-sync 均 success；源码/测试 blob 分别为 `2506410d9621840ec34464fce1fa2746c7d798f4` 和 `2995b5764f7a86ee8c274b6359ff2f09cdf7a288`。文档提交后重查最终 HEAD。
+- A80：核对 relationship_change 是否明确，以及声明的变化是否出现在所引用镜头的动作/台词/生成提示/叙事功能/事件引用文本中。负向测试存在；正向路径与关系语义质量仍需确认。
+- A81：核对 state_continuity、受影响人物、后续承接说明、后续镜头索引有效性和时序、承接文本匹配；明确声明“无后续影响”时不得引用承接镜头。需补查真实后续承接正向路径及保存重载。
+- A82：核对 knowledge_origin 仅为 storyboard/preexisting；剧情内来源镜头必须早于当前镜头且来源原文在该镜头中；preexisting 不应引用剧情内来源镜头。结构规则不证明语义真实。
+- A83：核对承诺/误解/行动后果的 kind、角色、来源证据、时间顺序、兑现镜头和状态。当前已映射测试以承诺为主；须确认其他 kind 与 resolved/intentionally_abandoned 的独立行为。
+- A84：核对跨集标志布尔值、真实后续集、后续镜头、源集 handoff 与下一集 opening/unresolved thread。补查最终集、非连续集号、resolved/abandoned 及保存重载。
+- A80–A84 仅部分证据映射；文本匹配不等于语义一致、表演质量或真实视频画面证明。
