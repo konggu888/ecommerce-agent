@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "c77704d86d6131d13501448af76ce24afc56ad7b",
-  "audit_status": "A0-A112 heading/requirement inventory exists; A90-A99 partial source/test evidence mapped on current audit baseline c77704d86d6131d13501448af76ce24afc56ad7b. CI PR and docs-sync PR succeeded on this baseline; push workflow pair not independently verified through current workflow query. Full code/test audit remains 0; full audit remains 0; semantic dedup pending; weighting and overall completion percentage disabled.",
+  "audit_status": "A0-A112 heading/requirement inventory exists; A90-A104 partial source/test evidence mapped on source/test audit baseline c77704d86d6131d13501448af76ce24afc56ad7b. CI PR and docs-sync PR succeeded on baseline; Push workflow pair not independently verified. Full code/test audit remains 0; full audit remains 0; semantic dedup pending; weighting and overall completion percentage disabled.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until cross-source scope reconciliation and weighting review. Historical A68-A74 and A99 task identities have been recovered; their current-HEAD evidence audit remains pending. Cross-source status audit 2026-10-15 found the dashboard's 113 partial-mapping count and this JSON snapshot's 6 structured source/test/CI/workflow evidence task IDs are different metrics; 0 evidence records are bound to current HEAD. Do not silently treat them as equivalent. Roadmap phase is still pending for 70 task records; reconcile item-by-item. Incremental current-HEAD reconciliation 2026-10-15: A0-A6 roadmap_phase mapped to Phase 1 from roadmap goal chain; A5 depends on A4. A0-A4 source/test/workflow evidence refreshed to current HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1 and current CI/docs-sync runs attached. No acceptance status upgraded; full audit remains zero. Incremental reconciliation 2026-10-15: A0-A8 primary roadmap phases are mapped; explicit dependencies A5→A4, A7→A6, A8→A7 are recorded. A0-A8 source/test mappings were rechecked against current branch tree and bound to current HEAD CI Push/PR and PR docs-sync evidence. No task acceptance status upgraded; docs-sync Push evidence for current HEAD not found. PLAN-003 2026-10-15: A8 corrected to Phase 2. A9-A17 mapped to Phase 1; explicit dependencies A12→A5/A8, A13→A12, A14→A13, A15→A8/A9/A10/A11, A16→A8/A10/A11, A17→A7/A8/A9/A10/A11. Partial evidence only; acceptance statuses unchanged. PLAN-003 incremental reconciliation 2026-10-15: A18-A19 mapped to Phase 3; A20-A23 mapped to Phase 1. Partial source/test pointers recorded with evidence SHA null pending exact commit provenance. Dependencies recorded only where the documented flow supports them: A19→A18, A21→A20, A22→A21, A23→A20/A21/A22. No acceptance status upgraded; overall completion remains disabled. PLAN-003 update 2026-10-15: A24-A29 mapped to Phase 1. Evidence SHA left null pending per-file provenance; code_test_evidence_reviewed_ids counts records with source/test/ci/workflow pointers, not semantic review or acceptance. Requirement-level semantic review remains 113; no task status promoted, no overall completion metric. PLAN-003 update 2026-10-15: A30-A33 mapped to roadmap phases with partial source/test evidence and explicit proof limits. Related recovery/doc/handoff/end-to-end requirements are recorded as overlaps, not merged. Evidence SHA remains unpinned; no task status promoted and no overall completion metric. PLAN-003 update 2026-10-15: A34-A37 mapped to Phase 5; evidence SHA remains null pending per-file provenance. result_proof_layers and user_freedom_dimensions capture the limits of automation evidence and relevant authorization/cancellation freedoms. No formal acceptance promoted, no weighting or overall completion metric. PLAN-003 update 2026-10-15: A38-A41 mapped to Phase 0. A39 push/PR CI workflow evidence is tied to validated snapshot 1af689ab2dacbaff9ad7a08a26f1b4173cc328c4; it is not final-HEAD evidence. Keep all evidence SHA null pending per-file provenance; no formal acceptance promoted. PLAN-003 update 2026-10-15: A42-A45 mapped to their strategic phases; all remain not_audited. Current-HEAD evidence count remains zero pending per-file blob provenance. Do not assign weights or publish overall completion. PLAN-003 update 2026-10-15: A46-A49 mapped to Phase 1; recovery-related overlaps remain unresolved candidates. Evidence SHA remains null pending per-file provenance. No formal acceptance promoted, no weighting or overall completion metric. PLAN-003 update 2026-10-15: A46-A49 mapped to Stage 1. Related recovery evidence remains cross-referenced without merging IDs; per-file evidence SHA remains null; no formal acceptance or overall completion metric is inferred. PLAN-003 update 2026-10-15: A50-A53 mapped to Stage 1. A50/A56 prompt-linebreak relationship and A51/A52 cost concerns remain overlap candidates, not merged items; per-file evidence SHA remains null and no overall completion metric is inferred. PLAN-003 update 2026-10-15: A54-A57 task-register entries reconciled with the current dashboard/handoff. A57's two same-ID acceptance headings remain an explicit unresolved conflict; no scope merge or renumbering. Metric correction 2026-10-15: separate source/test evidence snapshot count from exact final-current-HEAD count. A58-A61 evidence SHA values point to 5fe7fe19..., not the current documentation HEAD; current_head_evidence_task_ids is therefore 0, while source_test_evidence_snapshot_task_ids=4. PLAN-003 2026-10-15 A66-A69: source/test file blob evidence was inspected at branch HEAD fe298b3ae6005b118d8b7b1adf775a261d228ffe; its CI Push/PR and docs-sync Push/PR all succeeded. This is partial evidence mapping only, not formal acceptance. A67's explicit delete/empty-after-pass invalidation test remains a gap; A68's complete invalid-reference/persistence/no-mutation assertions require full inspection; A69 still needs caller-level persistence rejection and legacy compatibility proof. Preserve A0-A112 IDs and keep overall completion disabled. Current documentation HEAD changes with each audit-note commit; current_head_evidence_task_ids counts only records proven against the final documentation HEAD, so it remains 0 until final SHA and file-level evidence are reconciled. PLAN-003 2026-10-15 A70-A74: source/test file blob evidence was inspected at branch HEAD 5c689a16530f30c38785435f2f0a10a9fc796d2c; its CI Push/PR and docs-sync Push/PR all succeeded. This is partial evidence mapping only, not formal acceptance. Preserve known test gaps for each task; do not infer story quality from structure checks, do not merge/renumber task IDs, and keep current_head_evidence_task_ids=0 until final documentation HEAD evidence is reconciled. PLAN-003 2026-10-15 A75-A79: source/test evidence was inspected at source/test snapshot 3138a34ecd0d7779eb6809b85a1c3449daf3c24a; four CI/docs-sync workflows succeeded on that snapshot. A75/A76 are mapped to Stage 4 based on their short-drama source/test context; this is a roadmap classification, not formal acceptance. Keep limitations on text-only product-fact/selling-point checks and storyboard/person-knowledge structural checks explicit. PLAN-003 2026-10-15 A80-A84: source/test evidence was inspected at source/test snapshot 4063ba5a452c0c883ff39c8ea1ce33499a80eaf4; four CI/docs-sync workflows succeeded on that snapshot. Partial mapping only; keep semantic continuity and real visual performance as separate proof layers. Preserve A0-A112 numbering and do not enable overall completion percentages.",
   "counts": {
@@ -18,10 +18,10 @@
     "semantic_dedup_completed": false,
     "code_test_evidence_audit_completed_ids": 0,
     "semantic_dedup_reviewed_task_ids": 113,
-    "code_test_evidence_reviewed_ids": 100,
+    "code_test_evidence_reviewed_ids": 105,
     "roadmap_phase_mapped_ids": 113,
     "current_head_evidence_task_ids": 0,
-    "source_test_evidence_snapshot_task_ids": 42
+    "source_test_evidence_snapshot_task_ids": 47
   },
   "known_id_gaps": [],
   "tasks": [
@@ -8561,13 +8561,47 @@
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
       "roadmap_phase": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
-      "development_status": "not_audited",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/postprocess.py",
+          "sha": "36ce0e4a17d635e3ed381c3b0bada1428e0290c4",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "process_shot computes output duration as probe_duration(input)/speed; fade duration is min(0.25, output duration), fade-out starts at max(0, output_duration-fade_duration)."
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_postprocess.py",
+          "sha": "29141bb61ee3ec6ae5960395e81c7dc64ef79feb",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "test_fade_out_happens_at_end_after_speed_change and test_short_clip_fade_out_does_not_exceed_clip_duration assert actual mocked FFmpeg filter arguments for 2x speed and 0.1-second clip."
+        },
+        {
+          "kind": "ci_pr",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441932",
+          "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "CI PR success on source/test audit baseline."
+        },
+        {
+          "kind": "docs_sync_pr",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441851",
+          "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "docs-sync PR success on source/test audit baseline."
+        },
+        {
+          "kind": "pr_state",
+          "path": "https://github.com/konggu888/ecommerce-agent/pull/32",
+          "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "PR #32 Open/unmerged on source/test audit baseline."
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "Static code and mocked command assertions cover end-of-output timing, speed adjustment and very short clips; no actual FFmpeg render or decoded-frame/audio waveform check.",
+        "Windows real-media visual/audio acceptance remains deferred; does not establish commercial editing quality."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -8582,9 +8616,18 @@
           "### A100 自动化实现补充：淡出窗口修正（不代表路线图项目完成）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
-      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
-      "semantic_dedup_batch": "PLAN-003-DEDUP-004"
+      "source_inventory_status": "current_source_test_snapshot_mapped_to_c77704d86d6131d13501448af76ce24afc56ad7b; CI_PR_and_docs_sync_PR_success; push_workflow_pair_not_independently_verified; full_acceptance_pending",
+      "semantic_dedup_review_status": "reviewed_related_editing_cluster_no_cross_id_merge",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-004",
+      "last_verified_date": "2026-10-15",
+      "current_head_evidence_reconciliation": {
+        "head": "c77704d86d6131d13501448af76ce24afc56ad7b",
+        "checked_on": "2026-10-15",
+        "source_test_paths_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": true,
+        "acceptance_status_preserved": "not_audited",
+        "note": "Evidence is bound to source/test audit baseline. CI PR and docs-sync PR success; Push workflow pair not independently verified. Not full acceptance."
+      }
     },
     {
       "task_id": "A101",
@@ -8595,13 +8638,47 @@
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
       "roadmap_phase": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
-      "development_status": "not_audited",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/postprocess.py",
+          "sha": "36ce0e4a17d635e3ed381c3b0bada1428e0290c4",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "process_shot adds setpts video timing and atempo audio timing for non-1.0 speed, while avoiding -af when speed is 1.0 and no fade is requested."
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_postprocess.py",
+          "sha": "29141bb61ee3ec6ae5960395e81c7dc64ef79feb",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "test_speed_change_keeps_audio_in_sync_with_video asserts setpts/-af at 1.25x; test_normal_speed_does_not_add_unneeded_audio_tempo_filter asserts 1.0x has no -af."
+        },
+        {
+          "kind": "ci_pr",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441932",
+          "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "CI PR success on source/test audit baseline."
+        },
+        {
+          "kind": "docs_sync_pr",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441851",
+          "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "docs-sync PR success on source/test audit baseline."
+        },
+        {
+          "kind": "pr_state",
+          "path": "https://github.com/konggu888/ecommerce-agent/pull/32",
+          "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "PR #32 Open/unmerged on source/test audit baseline."
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "Tests assert FFmpeg command construction only; no rendered media duration, waveform synchronization, pitch/audio quality or encoder compatibility test.",
+        "FFmpeg atempo constraints for unsupported extreme speeds are not validated by these tests; Windows real-media acceptance remains deferred."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -8616,9 +8693,18 @@
           "### A101 自动化实现补充：变速音画同步（不代表路线图项目完成）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
-      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
-      "semantic_dedup_batch": "PLAN-003-DEDUP-004"
+      "source_inventory_status": "current_source_test_snapshot_mapped_to_c77704d86d6131d13501448af76ce24afc56ad7b; CI_PR_and_docs_sync_PR_success; push_workflow_pair_not_independently_verified; full_acceptance_pending",
+      "semantic_dedup_review_status": "reviewed_related_editing_cluster_no_cross_id_merge",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-004",
+      "last_verified_date": "2026-10-15",
+      "current_head_evidence_reconciliation": {
+        "head": "c77704d86d6131d13501448af76ce24afc56ad7b",
+        "checked_on": "2026-10-15",
+        "source_test_paths_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": true,
+        "acceptance_status_preserved": "not_audited",
+        "note": "Evidence is bound to source/test audit baseline. CI PR and docs-sync PR success; Push workflow pair not independently verified. Not full acceptance."
+      }
     },
     {
       "task_id": "A102",
@@ -8629,13 +8715,61 @@
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
       "roadmap_phase": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
-      "development_status": "not_audited",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/postprocess.py",
+          "sha": "36ce0e4a17d635e3ed381c3b0bada1428e0290c4",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "normalize_output_resolution maps 9:16/16:9/1:1 to 1080x1920/1920x1080/1080x1080, scales/crops and retains AAC audio."
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/production.py",
+          "sha": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "build_final normalizes final concatenated output then inspect_final_output rejects output below the aspect-specific minimum."
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_postprocess.py",
+          "sha": "29141bb61ee3ec6ae5960395e81c7dc64ef79feb",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "Tests assert portrait/landscape/square normalization filters and audio retention."
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_desktop.py",
+          "sha": "357c54dad99f61b99891bcc365dd2f9efc1a1009",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "test_final_output_inspection_rejects_below_1080_class_resolution rejects 720x1280; A102 test header explicitly says normalization output is mocked."
+        },
+        {
+          "kind": "ci_pr",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441932",
+          "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "CI PR success on source/test audit baseline."
+        },
+        {
+          "kind": "docs_sync_pr",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441851",
+          "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "docs-sync PR success on source/test audit baseline."
+        },
+        {
+          "kind": "pr_state",
+          "path": "https://github.com/konggu888/ecommerce-agent/pull/32",
+          "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "PR #32 Open/unmerged on source/test audit baseline."
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "Output dimensions are normalized and a below-minimum ffprobe result is rejected in mocked tests; no actual FFmpeg/ffprobe encode/decode integration run was performed in this audit.",
+        "Upscaling guarantees pixel dimensions, not recovered detail or AI super-resolution; visual quality and Windows real-machine checks remain deferred."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -8650,9 +8784,18 @@
           "### A102 已落地的基础输出底线（不代表商业画质增强完成）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
-      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
-      "semantic_dedup_batch": "PLAN-003-DEDUP-004"
+      "source_inventory_status": "current_source_test_snapshot_mapped_to_c77704d86d6131d13501448af76ce24afc56ad7b; CI_PR_and_docs_sync_PR_success; push_workflow_pair_not_independently_verified; full_acceptance_pending",
+      "semantic_dedup_review_status": "reviewed_related_editing_cluster_no_cross_id_merge",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-004",
+      "last_verified_date": "2026-10-15",
+      "current_head_evidence_reconciliation": {
+        "head": "c77704d86d6131d13501448af76ce24afc56ad7b",
+        "checked_on": "2026-10-15",
+        "source_test_paths_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": true,
+        "acceptance_status_preserved": "not_audited",
+        "note": "Evidence is bound to source/test audit baseline. CI PR and docs-sync PR success; Push workflow pair not independently verified. Not full acceptance."
+      }
     },
     {
       "task_id": "A103",
@@ -8663,13 +8806,47 @@
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
       "roadmap_phase": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
-      "development_status": "not_audited",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/postprocess.py",
+          "sha": "36ce0e4a17d635e3ed381c3b0bada1428e0290c4",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "process_shot uses matching video fade and audio afade windows; fade timing is calculated after speed adjustment and duration is clamped."
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_postprocess.py",
+          "sha": "29141bb61ee3ec6ae5960395e81c7dc64ef79feb",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "Tests cover accelerated fade-out, short-clip fade-in, normal-speed fade-out, and short-clip fade-out via mocked FFmpeg commands."
+        },
+        {
+          "kind": "ci_pr",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441932",
+          "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "CI PR success on source/test audit baseline."
+        },
+        {
+          "kind": "docs_sync_pr",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441851",
+          "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "docs-sync PR success on source/test audit baseline."
+        },
+        {
+          "kind": "pr_state",
+          "path": "https://github.com/konggu888/ecommerce-agent/pull/32",
+          "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "PR #32 Open/unmerged on source/test audit baseline."
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "Video/audio filter strings are asserted but actual decoded black/silent ramps, perceived synchronization, and real FFmpeg output are not tested.",
+        "Windows real media and listening/viewing acceptance remains deferred."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -8684,9 +8861,18 @@
           "### A103：镜头淡入/淡出音画同步（代码实现待 CI）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
-      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
-      "semantic_dedup_batch": "PLAN-003-DEDUP-004"
+      "source_inventory_status": "current_source_test_snapshot_mapped_to_c77704d86d6131d13501448af76ce24afc56ad7b; CI_PR_and_docs_sync_PR_success; push_workflow_pair_not_independently_verified; full_acceptance_pending",
+      "semantic_dedup_review_status": "reviewed_related_editing_cluster_no_cross_id_merge",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-004",
+      "last_verified_date": "2026-10-15",
+      "current_head_evidence_reconciliation": {
+        "head": "c77704d86d6131d13501448af76ce24afc56ad7b",
+        "checked_on": "2026-10-15",
+        "source_test_paths_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": true,
+        "acceptance_status_preserved": "not_audited",
+        "note": "Evidence is bound to source/test audit baseline. CI PR and docs-sync PR success; Push workflow pair not independently verified. Not full acceptance."
+      }
     },
     {
       "task_id": "A104",
@@ -8697,13 +8883,55 @@
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
       "roadmap_phase": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
-      "development_status": "not_audited",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/ffmpeg.py",
+          "sha": "d13870a12eae682133995bac7305900e0a4ff767",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "concat_with_transitions probes duration/audio, normalizes scale/crop/fps/timebase/pixel format, creates silence for clips without audio, and builds xfade/acrossfade filters."
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/production.py",
+          "sha": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "build_final calls concat_with_transitions only when a non-first shot explicitly requests 交叉溶解; otherwise it retains concat path."
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_ffmpeg.py",
+          "sha": "e409cbded7db0c01a1962f722d54c615429f5e37",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "test_crossfade_builds_video_and_audio_overlap_filters checks xfade/acrossfade, silent audio, output profile and filter graph; other tests cover transition-count mismatch and opt-in builder routing."
+        },
+        {
+          "kind": "ci_pr",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441932",
+          "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "CI PR success on source/test audit baseline."
+        },
+        {
+          "kind": "docs_sync_pr",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441851",
+          "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "docs-sync PR success on source/test audit baseline."
+        },
+        {
+          "kind": "pr_state",
+          "path": "https://github.com/konggu888/ecommerce-agent/pull/32",
+          "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "PR #32 Open/unmerged on source/test audit baseline."
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "Tests mock ffprobe metadata and subprocess.run; they do not execute the actual FFmpeg filter graph, so runtime compatibility and output integrity remain unproven.",
+        "For a mixed transition list, hard-cut entries are represented as 0.001-second xfade/acrossfade overlaps rather than a literal zero-overlap cut; perceptual impact needs actual render review.",
+        "Windows real media visual/audio acceptance remains deferred."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -8718,9 +8946,18 @@
           "### A104：相邻镜头真实交叉溶解（自动化待验）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
-      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
-      "semantic_dedup_batch": "PLAN-003-DEDUP-004"
+      "source_inventory_status": "current_source_test_snapshot_mapped_to_c77704d86d6131d13501448af76ce24afc56ad7b; CI_PR_and_docs_sync_PR_success; push_workflow_pair_not_independently_verified; full_acceptance_pending",
+      "semantic_dedup_review_status": "reviewed_related_editing_cluster_no_cross_id_merge",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-004",
+      "last_verified_date": "2026-10-15",
+      "current_head_evidence_reconciliation": {
+        "head": "c77704d86d6131d13501448af76ce24afc56ad7b",
+        "checked_on": "2026-10-15",
+        "source_test_paths_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": true,
+        "acceptance_status_preserved": "not_audited",
+        "note": "Evidence is bound to source/test audit baseline. CI PR and docs-sync PR success; Push workflow pair not independently verified. Not full acceptance."
+      }
     },
     {
       "task_id": "A105",
