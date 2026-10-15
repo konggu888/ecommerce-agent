@@ -1,14 +1,14 @@
-# 【PLAN-003 当前状态｜A58–A61 部分证据映射｜2026-10-15】
+# 【PLAN-003 当前状态｜A62–A65 部分证据映射｜2026-10-15】
 
-- **本轮代码/测试审计基线**：`5fe7fe19b9827aad26787eb05ba93dc18e48b6be`；PR #32 当前仍 Open / unmerged。只做既有 A0–A112 任务的证据映射、阶段映射与关系裁决，不修改产品代码、不调用真实 Provider、不产生真实扣费。
-- **该基线四项自动化检查全部 success**：CI Push [38723794343](https://github.com/konggu888/ecommerce-agent/actions/runs/38723794343)、CI PR [38723802276](https://github.com/konggu888/ecommerce-agent/actions/runs/38723802276)、docs-sync Push [38723794333](https://github.com/konggu888/ecommerce-agent/actions/runs/38723794333)、docs-sync PR [38723802307](https://github.com/konggu888/ecommerce-agent/actions/runs/38723802307)。后续本轮文档提交会改变 HEAD，必须重新核验最终 SHA 的四项检查；本段不能替代新 SHA 的 CI 结果。
-- **A58｜商品画面对比输入证据校验**：`short_drama.py::compare_product_visual_shot` 对商品短剧广告模式、参考图/生成画面存在性、非空和扩展名进行校验；视频输入要求 FFmpeg/FFprobe。测试 `test_ai_visual_comparison_rejects_missing_reference_and_wrong_mode` 与 `test_ai_visual_comparison_rejects_empty_and_unsupported_files` 覆盖模式错误、空参考图、PDF、空生成文件及未知格式。边界：夹具使用临时字节文件；本轮未证明真实媒体可解码/视频抽帧成功，也未找到直接的模型调用计数断言，不能据此宣称视觉核验质量通过。A58 与人工证据校验 A66/A67 相关但合同不同。
-- **A59｜项目成本汇总单一事实源**：`_record_actual_cost()` 在成功写入账本后以 `UsageLedger.project_summary()` 覆盖项目总成本与 `cost_estimate.actual*` 字段；测试将旧项目成本设为 99，验证成功账本汇总为 1.12，失败行不计入。边界：仍需盘点所有费用入口是否统一遵循该规则；不证明供应商账单对账。
-- **A60｜失败-only 账本兼容**：`_sync_actual_cost()` 仅在存在成功账本行时用账本覆盖旧成本；失败-only 情况保留旧项目、镜头成本和分类摘要。专项测试覆盖失败-only 恢复。边界：空账本、成功/失败混合及保存重载等组合仍需按 A57/A59/A63/A99 的独立合同核对。A60 与 A59 互补，不合并。
-- **A61｜旧项目成本迁移与镜头成本对账**：首次成功记账前把旧项目/镜头成本快照迁移为“历史实际成本迁移”账本行，并重算项目与镜头成本；测试覆盖 2.50 项目旧成本、1.20 镜头旧成本、重复调用不重复迁移，以及批量无效行不部分写入。边界：磁盘替换故障、完整保存重载与真实账单仍未验收。A61 是迁移能力；A62 是文案断言修复记录，不是重复产品能力。
-- **台账指标（仅映射计数，不是完成率）**：需求文本级复核 113；含 source/test/CI/workflow 指针的任务 62；任意 evidence 的任务 74；路线图主阶段映射 105/113；待映射 8；源代码/测试快照绑定证据任务 4；最终文档 HEAD 精确匹配证据任务 0；完整代码/测试审计 0；完整审计 0；全量语义去重未完成。权重和总体完成率继续关闭。JSON 的 `generated_from_head` 记录本轮代码/测试审计基线，不表示该文档提交后的最终 HEAD。
-- 本批四项均保持 `acceptance_status=not_audited`；不新增 A113+，不删/合并/重编号 A0–A112，不擅自把关联升级成重复项。PR #32 保持 Open / unmerged。真实 Windows、真实素材、Provider/扣费、剪映现场与真实投放验证继续暂缓。
-- **下一项**：A62–A65。重点区分 A62 文案修复记录、A63 迁移后新费用记账失败保护、A64 素材成本账本故障保护、A65 用量账本原子写入与完整历史；先完成既有合同和测试映射，不开发产品功能。
+- **源码/测试审计快照**：`59cc175b40d8040c6e67fccba1b07186e625921e`。PR #32 仍 Open / unmerged。该快照与前一审计快照 `5fe7fe19b9827aad26787eb05ba93dc18e48b6be` 的 production.py、usage_ledger.py、test_desktop.py、test_ai_handoff.py、HELP.md、PROJECT_LOGIC.md blob SHA 完全一致；本批仅做既有 A0–A112 的证据映射与文档同步，不改产品代码、不调用真实 Provider、不产生真实扣费。
+- **该源码/测试快照四项工作流全部 success**：CI Push [38724733476](https://github.com/konggu888/ecommerce-agent/actions/runs/38724733476)、CI PR [38724738644](https://github.com/konggu888/ecommerce-agent/actions/runs/38724738644)、docs-sync Push [38724733595](https://github.com/konggu888/ecommerce-agent/actions/runs/38724733595)、docs-sync PR [38724738744](https://github.com/konggu888/ecommerce-agent/actions/runs/38724738744)。本轮文档提交改变 HEAD 后，必须再核验最终文档 HEAD 的四项检查；不能将此处的快照结果冒充最终文档提交结果。
+- **A62｜历史成本迁移文案断言修复**：`test_ai_handoff.py::test_handoff_mentions_a61_legacy_cost_migration` 检查根级 AI 接手文档包含 A61 与准确术语“历史实际成本迁移”。这是测试/文案修复记录，不是独立产品能力。关联 A61 但不合并编号。
+- **A63｜迁移基线在后续记账失败时保留**：测试模拟历史迁移成功、随后新费用账本写入失败，断言旧项目成本 2.50、镜头成本 1.20、旧 `cost_estimate` 成本及两条迁移记录保留。**缺口：**专项测试未直接保存并重载项目，虽然 SOP 要求这一项；因此只记录部分证据。
+- **A64｜素材成本账本失败保护**：`_record_asset_cost()` 将素材生成成功但账本失败与生成失败分离，写恢复历史及核对下一步。专项 helper 测试检查错误与恢复状态；两个调用入口目前主要由源码文本断言覆盖。**缺口：**未完整行为验证两个入口中的资产库文件、asset ID 和镜头引用都持久保留。
+- **A65｜用量账本原子写入与完整历史保留**：`record()`/`record_many()` 通过同目录临时文件和原子替换写入；测试验证替换失败时旧账本内容不变，以及 2001 条历史记录仍完整、汇总成本为 20.01。**缺口：**替换失败测试未直接断言临时文件清理，未找到 `recent(limit)` 不影响底层历史/汇总的直接回归测试。
+- **台账指标（映射数量，不是完成率）**：需求文本级复核 113；含 source/test/CI/workflow 指针的任务 66；任意 evidence 的任务 78；路线图主阶段映射 109/113；待映射 4；源码/测试证据快照绑定任务 8；最终文档 HEAD 精确绑定任务 0；完整代码/测试审计 0；完整审计 0；全量语义去重未完成。权重和总体完成率继续关闭。
+- A62–A65 均保持 `acceptance_status=not_audited`；不新增 A113+，不删/合并/重编号 A0–A112，不擅自把关联升级成重复项。PR #32 保持 Open / unmerged。真实 Windows、真实素材、Provider/扣费、剪映现场与真实投放验证继续暂缓。
+- **下一项**：A66–A69。先核对人工商品画面证据文件校验、短剧人工证据失效保护、跨集剧情影响分析、故事引擎与留存设计的当前源码/专项测试/依赖/文档；仍只做现有合同审计，不开发新产品功能。
 
 
 ---
