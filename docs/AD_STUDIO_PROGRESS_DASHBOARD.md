@@ -3,7 +3,7 @@
 > **本文件是唯一权威进度源。** 当前任务、阶段状态、任务台账、依赖、权重、证据和下一项只以本文件为准。`SESSION_HANDOFF.md` 与 `docs/AD_STUDIO_AI_HANDOFF.md` 只提供接手入口和短摘要；路线图定义战略与阶段退出条件；验收计划定义范围；SOP 定义验收方法；执行控制协议定义 AI 行为。其他文件中的“当前状态/下一项”若与本文件冲突，一律视为历史快照，先登记冲突，不据此启动任务。
 
 - 仓库：`konggu888/ecommerce-agent`；项目：`apps/ad-studio-desktop`；分支：`feat/product-drama-visual-review`；PR #32 保持 Open / unmerged。
-- 本轮开始核验的最新 PR #32 HEAD：`103518a3574429812101407123b142a553d977c5`；该 SHA 的 PR-triggered `CI`（run `38708585759`）与 `ad-studio-doc-sync`（run `38708585941`）均 completed/success，Netlify deploy-preview 为 success（`https://deploy-preview-32--gilded-pithivier-aee0ab.netlify.app`）。Push-triggered 两项未由当前工作流查询独立核实；不能用 PR 工作流代替它们。
+- 历史快照（已过时）：曾在 HEAD `103518a3574429812101407123b142a553d977c5` 核验 PR-triggered CI/docs-sync 与 deploy preview。此后分支继续产生审计文档提交；该旧 SHA 不代表当前状态。每次接手须从 PR #32 实时读取 HEAD，并逐项查该 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR；不得从本文的历史记录推断当前绿灯。
 - 当前唯一主线仍属 PLAN-003：**对 A0–A112 全量跨来源关系、状态冲突和证据边界作最终裁决**。控制体系盘点、113 个编号槽位的规范化登记及 A0–A112 部分静态证据映射已经存在；不得重复启动“重新建立台账”或从 A50 重新做同一批映射。
 - 当前已核实的核心问题：A0–A112 的 113 个槽位已有标题索引、规范化登记和分批静态证据映射；`code_test_evidence_reviewed_ids=113` 只代表每个编号均开始映射，绝不代表完成审计。真正未完成的是跨来源语义去重/状态冲突的全量裁决、任务依赖与阶段退出条件的逐项关联、证据局限与状态字段完整性复核，以及后续权重/自动一致性检查。多个接手文件与路线图顶部仍保留过时“当前任务/下一项”，正是本轮要收敛的循环来源。
 - **当前唯一任务**：继续 PLAN-003，对 A0–A112 全量跨来源语义关系、状态冲突、依赖和证据边界作最终裁决。规范化槽位登记、A0–A112 分批静态映射及权威入口纠偏已完成；现在不能重复这些前置工作，也不能把“入口纠偏”本身误报成 PLAN-003 完成。完成全量语义去重和依赖/证据审计后，才进入 PLAN-004 权重审定、PLAN-005 状态段清理、PLAN-006 自动一致性检查和 PLAN-007 阶段 2 退出复核。

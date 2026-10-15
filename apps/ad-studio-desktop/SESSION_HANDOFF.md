@@ -2,7 +2,7 @@
 
 - 唯一权威进度与下一项：docs/AD_STUDIO_PROGRESS_DASHBOARD.md。当前 HEAD 9034d06c05c56f6fe05b268332d8c8268f3db7c1，PR #32 Open/unmerged。
 - 本轮完成 A18–A23 部分映射，不是正式验收：A18/A19→阶段3；A20–A23→阶段1。依赖：A19→A18、A21→A20、A22→A21、A23→A20/A21/A22。源码/测试证据 SHA 尚未独立追溯，不能升级状态。
-- 当前 SHA 的 CI Push 38717119962、CI PR 38717127760、docs-sync PR 38717127996 success；docs-sync Push 尚未找到对应运行记录。更新后必须重新核验。
+- 审计开始基线 9034d06c05c56f6fe05b268332d8c8268f3db7c1 的 docs-sync Push 当时未找到记录；后续文档提交会改变 HEAD，因此该状态只作历史背景。每次更新后必须实时核验最终 SHA 的 CI Push/PR 与 docs-sync Push/PR。
 - 保持 current_head_evidence_task_ids=0、code_test_evidence_audit_completed_ids=0、fully_audited=0、semantic_dedup_completed=false。下一批 A24–A29。只做 PLAN-003 文档/证据审计，不开发产品功能；真实环境验证继续暂缓。
 
 ---
