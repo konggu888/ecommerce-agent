@@ -1075,3 +1075,12 @@ A50–A67 的详细静态映射已存在；本轮将其规范台账行与该映�
 - 已重新读取当前 HEAD 的 `run.py`、`ad_studio/app.py`、`engine.py`、`footage.py`、`test_desktop.py`、`test_footage.py` 和 `.github/workflows/ci.yml`。A0–A4 的对应 source/test/workflow 证据 SHA 已更新至当前 HEAD，并附加当前 SHA 的 CI Push/PR 与 docs-sync Push/PR 记录。
 - 当前 HEAD 四项工作流：CI Push 1864、CI PR 1865、docs-sync Push 1680、docs-sync PR 1681 均 success。它们只证明自动化工作流通过，不替代各任务的完整验收清单。
 - 本轮新增 7 个任务的主路线图阶段映射（A0–A6）；台账累计已有 50/113 个任务映射到主阶段，仍有 63 个任务待映射。A0–A4 五个任务含绑定当前 HEAD 的证据。验收状态不升级，`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false`、`weighting_completed=false` 保持。
+
+
+## PLAN-003 增量落库｜A5–A8 源码/测试证据与路线图映射｜2026-10-15
+
+- 已将 A5–A8 的源文件和专项测试线索写入规范 JSON 台账；A0–A8 的对应 source/test/workflow 证据绑定到当前树基线 `b11ab5306e4b4992b982fe2f2393fac43861d93e`。
+- 主路线图阶段：A0–A6 → 阶段1“可靠的生产底座”；A7–A8 → 阶段3“AI 广告编导”。此为主阶段归属，不是功能完成声明。
+- 明确依赖落库：A5 → A4（素材视觉分析消费原始素材）；A7 → A6（内容理解使用商品资料）；A8 → A7（剪辑策略承接内容理解）。没有将共享组件或相关任务一概登记成依赖。
+- A5 当前专项缺口仍包括关键帧/视觉清单失败路径、视觉风险识别准确性与源素材/帧追溯；A6 仍缺真实平台异常/数据质量覆盖；A7/A8 仍缺真实语义质量和完整 UI 覆盖。自动化测试只能证明列出的结构化行为。
+- 台账累计主阶段映射为 52/113，仍有 61 个任务待映射；A0–A8 九个任务含当前树/HEAD 绑定证据。验收状态不升级：`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false`、`weighting_completed=false`。本轮查到当前 HEAD 的 CI Push/PR 和 docs-sync PR 通过；未找到当前 HEAD 对应的 docs-sync Push 记录，不宣称其通过。
