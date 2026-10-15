@@ -1,4 +1,19 @@
-# 【PLAN-003 当前状态｜A90–A94 部分证据映射｜2026-10-15】
+# 【PLAN-003 当前状态｜A95–A99 部分证据映射｜2026-10-15】
+
+- **源码/测试审计基线**：分支 `feat/product-drama-visual-review` 的 HEAD `c77704d86d6131d13501448af76ce24afc56ad7b`；本轮文档更新前，最新 CI PR 与 docs-sync PR 均已 success（run 38729017063 / 38729017091）。PR #32 Open/unmerged。
+- **本轮仅审计现有代码、测试和证据边界，不改产品代码、不宣布正式验收通过。** 源码 `production.py` blob `e53968f47a6b8fd23df773dbd3a4ad553753e1e0`；测试 `test_desktop.py` blob `357c54dad99f61b99891bcc365dd2f9efc1a1009`。
+- **A95** 损坏素材索引 fail-closed：明确返回素材库不可用、禁止 fallback/Provider 调用、保留原 ID 和兄弟镜头输出。缺目录/权限等异常及真实 Windows 文件系统未覆盖。
+- **A96** 修复索引后按原 ID 重试，不能被相似标签资产替换；保存/重载与并发变更未独立测试。
+- **A97** 仅重置损坏镜头，保留有效兄弟镜头路径/状态/版本/费用，并检查保存加载。
+- **A98** 重复恢复仍报告未解决的缺失镜头；普通待生成镜头是否误报尚缺独立断言。
+- **A99** 成功账本覆盖项目与逐镜头成本，并将无账本兄弟镜头陈旧金额归零；失败账本与旧项目无成功账本两类边界仍需独立测试。
+- **映射覆盖指标（不是完成率）**：需求复核 113；source/test/CI/workflow 指针任务 100；任意 evidence 任务 112；路线图映射 113/113；源码/测试快照绑定 42；最终文档 HEAD 精确绑定 0；完整代码/测试审计 0；完整审计 0；语义去重未完成。权重与总体完成率关闭。
+- A95–A99 均为 `partial_evidence_mapping` / `not_audited`。历史验收勾选不自动继承；不新增 A113+，不删除/合并/重编号；PR #32 不合并；Windows 真机、真实素材、Provider/扣费、剪映现场与商业效果验收继续暂缓。
+- **下一批 A100–A104**。文档提交后须核验最新 SHA 的四项 CI/docs-sync；Push 结果若无法独立查询，应如实标注未核实。
+
+---
+
+# 【历史快照｜PLAN-003 A90–A94 部分证据映射｜2026-10-15】
 
 - **源码/测试审计基线**：分支 `feat/product-drama-visual-review` 的 HEAD `a6e052fa7edefa7e2fb794166684547436ff90f6`；本轮七份文档顺序提交后的最新 HEAD 为 `64857c4f93a4b648c207328299e690f1ef932dca`。PR #32 Open/unmerged。
 - **本轮只做源码/测试/证据映射，不改产品代码，不宣布正式验收通过。** 源码 `production.py` blob `e53968f47a6b8fd23df773dbd3a4ad553753e1e0`、`short_drama.py` blob `2506410d9621840ec34464fce1fa2746c7d798f4`；测试 `test_desktop.py` blob `357c54dad99f61b99891bcc365dd2f9efc1a1009`、`test_short_drama.py` blob `2995b5764f7a86ee8c274b6359ff2f09cdf7a288`。
