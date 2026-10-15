@@ -6599,7 +6599,6 @@
   "last_reconciled_against_head": "168bd507430af347de805c96735793c200a9802c",
   "reconciliation_status": "item_level_reconciliation_in_progress_A0_A29_roadmap_phases_and_partial_evidence_mapped",
   "cross_source_reconciliation": {
-    "dashboard_claimed_code_test_evidence_reviewed_ids": 113,
     "task_register_code_test_evidence_reviewed_ids": 30,
     "task_records_with_any_evidence": 42,
     "task_records_with_source_test_ci_or_workflow_evidence": 30,
@@ -6609,7 +6608,7 @@
     "code_test_evidence_audit_completed_ids": 0,
     "fully_audited": 0,
     "weighting_completed": false,
-    "note": "2026-10-15: A24-A29 mapped to Phase 1 with source/test pointers and proof limits. code_test_evidence_reviewed_ids counts records with source/test/ci/workflow pointers; requirement-level semantic review is separately represented by semantic_dedup_reviewed_task_ids=113. Partial mapping is not formal acceptance.",
+    "note": "2026-10-15: A24-A29 mapped to Phase 1 with source/test pointers and proof limits. code_test_evidence_reviewed_ids counts records with source/test/ci/workflow pointers; requirement-level semantic review is separately represented by semantic_dedup_reviewed_task_ids=113. Partial mapping is not formal acceptance. The former dashboard_claimed_code_test_evidence_reviewed_ids field was removed because 113 is requirement-level semantic review, not code/test evidence coverage.",
     "roadmap_phase_mapped_ids": [
       "A0",
       "A1",
