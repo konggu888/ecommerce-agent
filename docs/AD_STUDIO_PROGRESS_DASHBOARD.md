@@ -3,7 +3,7 @@
 - 本轮开始 HEAD：`3bd083e73ea51aec26b2ab66c755aa6c83a929cf`；PR #32 Open / unmerged，head SHA 与当时基线一致。当前文档更新提交后必须重新检查最新 SHA 的工作流。
 - 该开始 SHA 的 PR CI `38695479000` 与 PR docs-sync `38695478983` success；Netlify deploy-preview status success。当前 GitHub 连接器的 commit-workflow 查询仅返回 PR 触发的 runs，Push 触发的两项未独立核实。
 - UXS-2 已完成“创建入口、商品输入、费用授权顺序、项目持久化”的首轮静态映射，详见 `docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md` 第 3A 节。
-- **重要风险发现（尚未正式归类/未修复）：** `App.create()` 在展示“AI创意与项目预算确认”之前调用 `ModelRouter.create_plan/create_plans`；`ModelRouter.create_plan()` 会对九个创意阶段调用 `complete_json()`。如果所选路由为收费云端模型，可能在预算确认前产生调用/费用。需进一步核实本地/云端路由与计费，并映射到现有 A0–A112 合同；不擅自新增编号、不改产品代码。由于项目文档对“云端生成服务”和“模型分析调用”的边界可能存在不同解释，暂记为 P0 候选/授权顺序风险，不能夸大为已确认实际扣费。
+- **重要合同/证据冲突候选（尚未正式归类/未修复）：** `App.create()` 在展示“AI创意与项目预算确认”之前调用 `ModelRouter.create_plan/create_plans`；`ModelRouter.create_plan()` 对九个创意阶段调用 `complete_json()`。HELP/PROJECT_LOGIC 当前允许预算确认前进行 AI 分析，但用户的费用授权要求需裁决是否也覆盖收费的规划模型调用。若所有收费云端模型调用都必须先确认，则为 P0 候选阻断；若只限制视频/资产生成 Provider，则需核实规划调用费用是否已披露/计入预算。实际收费影响取决于路由与授权范围，不能声称每次都会扣费。先对照 A0/A2、路线图、HELP/PROJECT_LOGIC 和用户授权合同；不擅自新增编号、不改产品代码。
 - 测试证据：`test_setup_form_grid_rows_do_not_overlap` 只验证 AST 布局；`test_product_parser.py` 覆盖解析器错误/回退；`test_budget_policy`、`test_cost_breakdown_is_auditable_and_configurable` 覆盖费用计算；`test_project_save_load` 与 `test_project_lifecycle_isolated_between_projects` 覆盖持久化/隔离。已查 `test_desktop.py` 未发现直接调用 `App.create()` 的测试；`test_a33_full_flow.py` 覆盖的是模拟最终交付，不覆盖创建前确认顺序。上述仅静态映射，未运行新 SHA 测试，也不等于正式验收。
 - 下一项唯一任务：继续 UXS-2 用户旅程证据映射，优先完成“预算/确认/取消/外部副作用”调用顺序与现有 A0–A112 合同映射，再继续资产、镜头、剪辑、质检、交付、重开恢复等阶段；不开发产品功能。
 - A0–A112 编号不变；`code_test_evidence_reviewed_ids=113` 仅表示已开始映射，`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false` 不变。权重与总体完成率继续关闭。
