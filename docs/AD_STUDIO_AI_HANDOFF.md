@@ -1,14 +1,14 @@
-# 【PLAN-003 AI 接手状态｜A66–A69 部分证据映射｜2026-10-15】
+# 【PLAN-003 AI 接手状态｜A70–A74 部分证据映射｜2026-10-15】
 
-- **本轮源码/测试审计快照**：`fe298b3ae6005b118d8b7b1adf775a261d228ffe`；PR #32 保持 Open / unmerged。源码文件 `apps/ad-studio-desktop/ad_studio/short_drama.py` blob `2506410d9621840ec34464fce1fa2746c7d798f4`，专项测试 `apps/ad-studio-desktop/test_short_drama.py` blob `2995b5764f7a86ee8c274b6359ff2f09cdf7a288`。
-- **该快照四项工作流均 success**：CI Push [38725243430](https://github.com/konggu888/ecommerce-agent/actions/runs/38725243430)、CI PR [38725248390](https://github.com/konggu888/ecommerce-agent/actions/runs/38725248390)、docs-sync Push [38725243379](https://github.com/konggu888/ecommerce-agent/actions/runs/38725243379)、docs-sync PR [38725248456](https://github.com/konggu888/ecommerce-agent/actions/runs/38725248456)。这些结果只绑定该源码/测试快照；后续文档提交改变 HEAD 后必须重新核验最终 HEAD 四项工作流。
-- **A66｜人工商品画面核验证据文件校验**：`record_product_visual_verification()` 校验状态、镜头/模式、受支持扩展名、文件存在且非空，并保存规范化绝对路径、人工方式与备注。专项测试覆盖缺失、零字节、不支持扩展名及有效证据。边界：只检查文件有效性，不检查图像内容，也不认证商品真实性。
-- **A67｜短剧人工核验证据失效保护**：`audit_short_drama()` 重新检查持久化证据文件与人工方式/备注；历史 `passed` 但证据无效会产生 `PRODUCT_VISUAL_NOT_VERIFIED`。测试覆盖缺失旧路径和有效非空文件。**缺口**：SOP 还要求先通过后删除/清空证据，再复查；当前映射到的测试未直接覆盖该顺序。
-- **A68｜AI 短剧后续剧情影响分析**：`analyze_episode_continuity_impact()` 选择源集并只向模型提供实际存在的后续集、系列设定、连续性台账和商品事实锁，要求风险、依据、建议且禁止直接改写。已有有效后续集和非法/非后续集专项测试线索。**缺口**：需逐项核对所有非法引用、报告持久化与不修改原集的直接断言，不能只凭测试名下结论。
-- **A69｜AI 编导故事引擎与留存设计**：新生成方案要求故事引擎、至少三步冲突升级、开场疑问/结尾兑现、至少两个留存装置和可追溯因果链；专项测试覆盖缺字段、冲突步骤不足、提示词和审核警告。**缺口**：需继续确认所有必填字段、旧方案读取兼容及调用方拒绝保存的行为链。
-- **指标（均为台账覆盖/映射数，不是完成率）**：需求文本级复核 113；含 source/test/CI/workflow 指针任务 70；任意 evidence 任务 82；路线图主阶段映射 111/113，待映射 2；源码/测试证据快照绑定任务 12；最终文档 HEAD 精确绑定任务 0；完整代码/测试审计 0；完整审计 0；全量语义去重未完成。权重和总体完成率继续关闭。
-- A66–A69 均保持 `acceptance_status=not_audited`；本批只做现有 A0–A112 的代码/测试/路线图证据映射，不开发新产品功能，不新增 A113+，不删除/合并/重编号。真实 Windows、真实素材、真实 Provider/扣费、剪映现场与真实投放/商业效果验证继续暂缓。
-- **下一批：A70–A74**（短剧故事结构检查、备选故事方向差异化、人物动机与关系动力、剧情事件因果链、因果链与剧本/分镜证据对齐）。开始前必须确认最新文档 HEAD 的 CI Push、CI PR、docs-sync Push、docs-sync PR 四项都已完成且 success；若任何一项缺失/运行中/失败，先查明原因，不继续扩大批次。 A66–A69 的已知缺口仍需保留；本轮部分映射不等于正式验收通过。
+- 唯一权威进度：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`；PR #32 必须保持 Open / unmerged。
+- 源码/测试快照 `5c689a16530f30c38785435f2f0a10a9fc796d2c` 的 `short_drama.py` 与 `test_short_drama.py` blob 分别为 `2506410d9621840ec34464fce1fa2746c7d798f4` / `2995b5764f7a86ee8c274b6359ff2f09cdf7a288`；该 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR 均 success。文档更新后必须重查最新 HEAD 四项。
+- A70–A74 已完成部分源码/测试证据映射，正式验收仍未完成。缺口：A70 缺逐字段负向测试；A71 精确签名无法证明语义差异；A72 缺人物各字段逐项负向测试；A73 缺步骤乱序/其他字段逐项负向测试；A74 多个因果步骤共用同一镜头夹具，未证明语义对齐。
+- 台账覆盖数：需求文本复核 113；含 source/test/CI/workflow 指针 75；任意 evidence 87；路线图阶段映射 111/113；源码/测试快照绑定 17；最终文档 HEAD 精确绑定 0；完整代码/测试审计 0；完整审计 0；语义去重未完成。权重和总体完成率关闭。
+- 不开发新产品功能，不新增 A113+，不删/合并/重编号 A0–A112。真实 Windows、素材、Provider/扣费、剪映现场和商业效果验收继续暂缓。
+- 下一批 A75–A79。开始前先核验最终文档 HEAD 的 CI Push、CI PR、docs-sync Push、docs-sync PR 全部完成且 success；否则先处理 CI，不扩大批次。
+
+---
+
 
 ---
 
