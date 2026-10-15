@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_from_head": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6",
-  "audit_status": "all_113_numbered_task_titles_recovered_requirement_level_reviewed_cross_source_status_reconciliation_pending_current_head_code_test_evidence_audit_pending_A57_duplicate_heading_conflict_unresolved",
+  "generated_from_head": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be",
+  "audit_status": "A0-A112 requirement-level review complete; A58-A61 partial source/test mapping refreshed against 5fe7fe19b9827aad26787eb05ba93dc18e48b6be; current-head evidence mappings 4 tasks; full code/test audit 0; cross-source semantic dedup pending; A57 duplicate-heading conflict unresolved",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until cross-source scope reconciliation and weighting review. Historical A68-A74 and A99 task identities have been recovered; their current-HEAD evidence audit remains pending. Cross-source status audit 2026-10-15 found the dashboard's 113 partial-mapping count and this JSON snapshot's 6 structured source/test/CI/workflow evidence task IDs are different metrics; 0 evidence records are bound to current HEAD. Do not silently treat them as equivalent. Roadmap phase is still pending for 70 task records; reconcile item-by-item. Incremental current-HEAD reconciliation 2026-10-15: A0-A6 roadmap_phase mapped to Phase 1 from roadmap goal chain; A5 depends on A4. A0-A4 source/test/workflow evidence refreshed to current HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1 and current CI/docs-sync runs attached. No acceptance status upgraded; full audit remains zero. Incremental reconciliation 2026-10-15: A0-A8 primary roadmap phases are mapped; explicit dependencies A5→A4, A7→A6, A8→A7 are recorded. A0-A8 source/test mappings were rechecked against current branch tree and bound to current HEAD CI Push/PR and PR docs-sync evidence. No task acceptance status upgraded; docs-sync Push evidence for current HEAD not found. PLAN-003 2026-10-15: A8 corrected to Phase 2. A9-A17 mapped to Phase 1; explicit dependencies A12→A5/A8, A13→A12, A14→A13, A15→A8/A9/A10/A11, A16→A8/A10/A11, A17→A7/A8/A9/A10/A11. Partial evidence only; acceptance statuses unchanged. PLAN-003 incremental reconciliation 2026-10-15: A18-A19 mapped to Phase 3; A20-A23 mapped to Phase 1. Partial source/test pointers recorded with evidence SHA null pending exact commit provenance. Dependencies recorded only where the documented flow supports them: A19→A18, A21→A20, A22→A21, A23→A20/A21/A22. No acceptance status upgraded; overall completion remains disabled. PLAN-003 update 2026-10-15: A24-A29 mapped to Phase 1. Evidence SHA left null pending per-file provenance; code_test_evidence_reviewed_ids counts records with source/test/ci/workflow pointers, not semantic review or acceptance. Requirement-level semantic review remains 113; no task status promoted, no overall completion metric. PLAN-003 update 2026-10-15: A30-A33 mapped to roadmap phases with partial source/test evidence and explicit proof limits. Related recovery/doc/handoff/end-to-end requirements are recorded as overlaps, not merged. Evidence SHA remains unpinned; no task status promoted and no overall completion metric. PLAN-003 update 2026-10-15: A34-A37 mapped to Phase 5; evidence SHA remains null pending per-file provenance. result_proof_layers and user_freedom_dimensions capture the limits of automation evidence and relevant authorization/cancellation freedoms. No formal acceptance promoted, no weighting or overall completion metric. PLAN-003 update 2026-10-15: A38-A41 mapped to Phase 0. A39 push/PR CI workflow evidence is tied to validated snapshot 1af689ab2dacbaff9ad7a08a26f1b4173cc328c4; it is not final-HEAD evidence. Keep all evidence SHA null pending per-file provenance; no formal acceptance promoted. PLAN-003 update 2026-10-15: A42-A45 mapped to their strategic phases; all remain not_audited. Current-HEAD evidence count remains zero pending per-file blob provenance. Do not assign weights or publish overall completion. PLAN-003 update 2026-10-15: A46-A49 mapped to Phase 1; recovery-related overlaps remain unresolved candidates. Evidence SHA remains null pending per-file provenance. No formal acceptance promoted, no weighting or overall completion metric. PLAN-003 update 2026-10-15: A46-A49 mapped to Stage 1. Related recovery evidence remains cross-referenced without merging IDs; per-file evidence SHA remains null; no formal acceptance or overall completion metric is inferred. PLAN-003 update 2026-10-15: A50-A53 mapped to Stage 1. A50/A56 prompt-linebreak relationship and A51/A52 cost concerns remain overlap candidates, not merged items; per-file evidence SHA remains null and no overall completion metric is inferred. PLAN-003 update 2026-10-15: A54-A57 task-register entries reconciled with the current dashboard/handoff. A57's two same-ID acceptance headings remain an explicit unresolved conflict; no scope merge or renumbering.",
   "counts": {
@@ -18,9 +18,9 @@
     "semantic_dedup_completed": false,
     "code_test_evidence_audit_completed_ids": 0,
     "semantic_dedup_reviewed_task_ids": 113,
-    "code_test_evidence_reviewed_ids": 58,
-    "roadmap_phase_mapped_ids": 101,
-    "current_head_evidence_task_ids": 0
+    "code_test_evidence_reviewed_ids": 62,
+    "roadmap_phase_mapped_ids": 105,
+    "current_head_evidence_task_ids": 4
   },
   "known_id_gaps": [],
   "tasks": [
@@ -4825,14 +4825,53 @@
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
-      "roadmap_phase": "待路线图映射",
-      "development_status": "not_audited",
+      "roadmap_phase": "阶段5｜资产与制作效率深化",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+          "detail": "compare_product_visual_shot() 限定商品短剧广告模式，校验参考图与生成画面的存在、非空、扩展名；视频输入需 FFmpeg/FFprobe 并抽帧。",
+          "sha": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be"
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_short_drama.py",
+          "detail": "test_ai_visual_comparison_rejects_missing_reference_and_wrong_mode 与 test_ai_visual_comparison_rejects_empty_and_unsupported_files 覆盖模式、空参考图、PDF、空生成文件和未知格式；不证明真实视觉模型质量。",
+          "sha": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38723794343",
+          "detail": "CI Push success for audited source/test HEAD 5fe7fe19b9827aad26787eb05ba93dc18e48b6be.",
+          "sha": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38723802276",
+          "detail": "CI PR success for audited source/test HEAD 5fe7fe19b9827aad26787eb05ba93dc18e48b6be.",
+          "sha": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38723794333",
+          "detail": "Documentation sync Push success for audited source/test HEAD 5fe7fe19b9827aad26787eb05ba93dc18e48b6be.",
+          "sha": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38723802307",
+          "detail": "Documentation sync PR success for audited source/test HEAD 5fe7fe19b9827aad26787eb05ba93dc18e48b6be.",
+          "sha": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be"
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "输入校验测试使用临时字节文件，不证明文件内容是真实可解码媒体；视频抽帧/FFmpeg 环境边界需专项核验。",
+        "需要补核对校验失败时视觉模型调用计数为零、原核验状态不变的直接断言；不能只靠抛异常测试推断所有状态。",
+        "A58 是 AI 对比输入校验；A66/A67 是人工证据文件校验与历史证据失效保护，相关但不同合同。真实视觉 Provider 与 Windows 真机仍暂缓。"
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -4848,10 +4887,26 @@
           "## A55–A58 自动化验收记录"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "source_inventory_status": "normalized_heading_inventory_plus_partial_source_test_mapping_semantic_dedup_and_full_evidence_audit_pending",
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
-      "provisional_roadmap_phase": "阶段5｜资产与制作效率深化"
+      "provisional_roadmap_phase": "阶段5｜资产与制作效率深化",
+      "current_head_evidence_reconciliation": {
+        "head": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be",
+        "checked_on": "2026-10-15",
+        "source_test_paths_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": true,
+        "acceptance_status_preserved": "not_audited",
+        "note": "当前代码/测试快照与四项工作流已核对；仅为部分证据映射，不等于该任务正式验收或真实环境验收通过。"
+      },
+      "semantic_overlap_review": {
+        "status": "mapped_not_resolved",
+        "related_ids": [
+          "A66",
+          "A67"
+        ],
+        "note": "仅登记相关/重叠候选，保留所有正式编号；未合并、未重编号，须在全量跨来源语义去重时最终裁决。"
+      }
     },
     {
       "task_id": "A59",
@@ -4861,14 +4916,60 @@
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
-      "roadmap_phase": "待路线图映射",
-      "development_status": "not_audited",
+      "roadmap_phase": "阶段1｜可靠的生产底座",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
-      "dependencies": [],
-      "evidence": [],
+      "dependencies": [
+        "A52"
+      ],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/production.py",
+          "detail": "_record_actual_cost() 在写入成功账本行后用 ledger.project_summary() 覆盖项目总成本、actual_cost_summary、cost_estimate.actual 与 actual_cost_rmb。",
+          "sha": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be"
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/usage_ledger.py",
+          "detail": "project_summary() 只汇总 status=success 的 estimated_cost_rmb；失败行不计入 actual_cost_rmb。",
+          "sha": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be"
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_desktop.py",
+          "detail": "test_a59_project_cost_total_comes_from_success_ledger_rows 将旧项目成本设为 99，验证成功账本汇总为 1.12，且同步项目与 cost_estimate 字段；失败行不计费。",
+          "sha": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38723794343",
+          "detail": "CI Push success for audited source/test HEAD 5fe7fe19b9827aad26787eb05ba93dc18e48b6be.",
+          "sha": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38723802276",
+          "detail": "CI PR success for audited source/test HEAD 5fe7fe19b9827aad26787eb05ba93dc18e48b6be.",
+          "sha": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38723794333",
+          "detail": "Documentation sync Push success for audited source/test HEAD 5fe7fe19b9827aad26787eb05ba93dc18e48b6be.",
+          "sha": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38723802307",
+          "detail": "Documentation sync PR success for audited source/test HEAD 5fe7fe19b9827aad26787eb05ba93dc18e48b6be.",
+          "sha": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be"
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "现有测试覆盖成功账本汇总与字段同步，但仍需完整检查各类费用写入入口是否都统一经过同一事实源。",
+        "不证明真实供应商账单与本地账本一致；A59 与 A52/A55/A57/A60/A63/A64/A99 有交叉但不是同一合同。"
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -4884,10 +4985,31 @@
           "## A59/A60 状态更新"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "source_inventory_status": "normalized_heading_inventory_plus_partial_source_test_mapping_semantic_dedup_and_full_evidence_audit_pending",
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
-      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
+      "current_head_evidence_reconciliation": {
+        "head": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be",
+        "checked_on": "2026-10-15",
+        "source_test_paths_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": true,
+        "acceptance_status_preserved": "not_audited",
+        "note": "当前代码/测试快照与四项工作流已核对；仅为部分证据映射，不等于该任务正式验收或真实环境验收通过。"
+      },
+      "semantic_overlap_review": {
+        "status": "mapped_not_resolved",
+        "related_ids": [
+          "A52",
+          "A55",
+          "A57",
+          "A60",
+          "A63",
+          "A64",
+          "A99"
+        ],
+        "note": "仅登记相关/重叠候选，保留所有正式编号；未合并、未重编号，须在全量跨来源语义去重时最终裁决。"
+      }
     },
     {
       "task_id": "A60",
@@ -4897,14 +5019,55 @@
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
-      "roadmap_phase": "待路线图映射",
-      "development_status": "not_audited",
+      "roadmap_phase": "阶段1｜可靠的生产底座",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
-      "dependencies": [],
-      "evidence": [],
+      "dependencies": [
+        "A57",
+        "A59"
+      ],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/production.py",
+          "detail": "_sync_actual_cost() 只有存在成功账本行时才将 ledger 设为权威来源；失败-only/no-success 情况保留旧项目成本和旧分类摘要。",
+          "sha": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be"
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_desktop.py",
+          "detail": "test_a60_failed_only_ledger_preserves_legacy_actual_cost 构造旧项目成本与失败账本行，验证恢复后项目、镜头和 cost_estimate 字段未被清零，失败报价不算实际支出。",
+          "sha": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38723794343",
+          "detail": "CI Push success for audited source/test HEAD 5fe7fe19b9827aad26787eb05ba93dc18e48b6be.",
+          "sha": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38723802276",
+          "detail": "CI PR success for audited source/test HEAD 5fe7fe19b9827aad26787eb05ba93dc18e48b6be.",
+          "sha": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38723794333",
+          "detail": "Documentation sync Push success for audited source/test HEAD 5fe7fe19b9827aad26787eb05ba93dc18e48b6be.",
+          "sha": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38723802307",
+          "detail": "Documentation sync PR success for audited source/test HEAD 5fe7fe19b9827aad26787eb05ba93dc18e48b6be.",
+          "sha": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be"
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "测试覆盖失败-only 情况，但需核对空账本、成功行与失败行混合、保存重载等状态组合是否分别由 A57/A59/A63/A99 覆盖，不能整体推断通过。",
+        "A60 是失败-only 兼容；A59 是存在成功记录后的总额单一事实源，两者互补而非重复。真实账单核对仍暂缓。"
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -4920,10 +5083,30 @@
           "## A59/A60 状态更新"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "source_inventory_status": "normalized_heading_inventory_plus_partial_source_test_mapping_semantic_dedup_and_full_evidence_audit_pending",
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
-      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
+      "current_head_evidence_reconciliation": {
+        "head": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be",
+        "checked_on": "2026-10-15",
+        "source_test_paths_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": true,
+        "acceptance_status_preserved": "not_audited",
+        "note": "当前代码/测试快照与四项工作流已核对；仅为部分证据映射，不等于该任务正式验收或真实环境验收通过。"
+      },
+      "semantic_overlap_review": {
+        "status": "mapped_not_resolved",
+        "related_ids": [
+          "A52",
+          "A57",
+          "A59",
+          "A61",
+          "A63",
+          "A99"
+        ],
+        "note": "仅登记相关/重叠候选，保留所有正式编号；未合并、未重编号，须在全量跨来源语义去重时最终裁决。"
+      }
     },
     {
       "task_id": "A61",
@@ -4933,14 +5116,63 @@
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
-      "roadmap_phase": "待路线图映射",
-      "development_status": "not_audited",
+      "roadmap_phase": "阶段1｜可靠的生产底座",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
-      "dependencies": [],
-      "evidence": [],
+      "dependencies": [
+        "A59",
+        "A60",
+        "A65"
+      ],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/production.py",
+          "detail": "_ensure_legacy_cost_migrated() 在首次成功费用写入前，将旧项目/镜头快照生成“历史实际成本迁移”成功账本行，并保留未分配差额；_record_actual_cost() 随后以账本重算项目/镜头成本。",
+          "sha": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be"
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/usage_ledger.py",
+          "detail": "record_many() 先构造并校验整批记录，再通过原子账本写入路径落库。",
+          "sha": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be"
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_desktop.py",
+          "detail": "test_a61_legacy_costs_migrate_once_before_first_successful_charge 覆盖旧项目 2.50、镜头 1.20、首次新费用前迁移、重复费用不重复迁移；test_a61_record_many_migration_keeps_ledger_rows_atomic 覆盖批量无效行不部分写入。",
+          "sha": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38723794343",
+          "detail": "CI Push success for audited source/test HEAD 5fe7fe19b9827aad26787eb05ba93dc18e48b6be.",
+          "sha": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38723802276",
+          "detail": "CI PR success for audited source/test HEAD 5fe7fe19b9827aad26787eb05ba93dc18e48b6be.",
+          "sha": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38723794333",
+          "detail": "Documentation sync Push success for audited source/test HEAD 5fe7fe19b9827aad26787eb05ba93dc18e48b6be.",
+          "sha": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38723802307",
+          "detail": "Documentation sync PR success for audited source/test HEAD 5fe7fe19b9827aad26787eb05ba93dc18e48b6be.",
+          "sha": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be"
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "当前测试覆盖成功账本迁移和批量验证失败不部分写入；需继续检查迁移写入本身的磁盘替换失败、旧项目保存/重载及历史分类细节。",
+        "A61 与 A59/A60/A63/A65 相关但不同；A62 是验收文案断言修复记录，不是独立产品能力，保留编号关系不合并。",
+        "真实供应商账单、Windows 文件替换/权限边界继续暂缓。"
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -4958,7 +5190,7 @@
           "### A61 验收日志补充"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "source_inventory_status": "normalized_heading_inventory_plus_partial_source_test_mapping_semantic_dedup_and_full_evidence_audit_pending",
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
@@ -4967,7 +5199,26 @@
           "related_task_id": "A62",
           "relation": "acceptance_text_remediation_record_not_a_separate_product_capability"
         }
-      ]
+      ],
+      "current_head_evidence_reconciliation": {
+        "head": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be",
+        "checked_on": "2026-10-15",
+        "source_test_paths_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": true,
+        "acceptance_status_preserved": "not_audited",
+        "note": "当前代码/测试快照与四项工作流已核对；仅为部分证据映射，不等于该任务正式验收或真实环境验收通过。"
+      },
+      "semantic_overlap_review": {
+        "status": "mapped_not_resolved",
+        "related_ids": [
+          "A59",
+          "A60",
+          "A62",
+          "A63",
+          "A65"
+        ],
+        "note": "仅登记相关/重叠候选，保留所有正式编号；未合并、未重编号，须在全量跨来源语义去重时最终裁决。"
+      }
     },
     {
       "task_id": "A62",
@@ -7695,6 +7946,44 @@
         "A73 causal chain schema and A74 script/storyboard evidence references are related but distinct.",
         "All seven tasks remain partial for current-HEAD evidence and real model/visual quality boundaries."
       ]
+    },
+    {
+      "batch_id": "PLAN-003-DEDUP-006",
+      "range": "A58-A61",
+      "status": "requirement_level_relationships_mapped_final_cross_source_resolution_pending",
+      "reviewed_sources": [
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md",
+        "docs/AD_STUDIO_TASK_REGISTER.json",
+        "source and test paths listed in PLAN-003-CODE-EVIDENCE-006"
+      ],
+      "findings": [
+        {
+          "task_id": "A58",
+          "decision": "keep_separate",
+          "reason": "AI comparison input validation is distinct from A66 manual evidence validation and A67 stale evidence auditing."
+        },
+        {
+          "task_id": "A59",
+          "decision": "keep_separate",
+          "reason": "Successful-ledger rows are the single source of truth for project totals; this is distinct from failed-only compatibility and legacy migration."
+        },
+        {
+          "task_id": "A60",
+          "decision": "keep_separate",
+          "reason": "When ledger has only failed rows/no successful spend evidence, preserve legacy costs; this complements rather than duplicates A59."
+        },
+        {
+          "task_id": "A61",
+          "decision": "keep_separate",
+          "reason": "Migrate old project/shot cost snapshots once before first successful charge; A62 is a text-assertion remediation record, not the same product capability."
+        }
+      ],
+      "limitations": [
+        "A52/A55/A57/A63/A64/A65/A66/A67/A99 relationships remain overlap candidates only.",
+        "No IDs merged, removed, or renumbered; full semantic deduplication remains incomplete."
+      ]
     }
   ],
   "code_test_evidence_batches": [
@@ -7941,6 +8230,42 @@
         }
       ],
       "note": "Documentation/planning audit baseline; does not imply full acceptance of A0-A5."
+    },
+    {
+      "batch_id": "PLAN-003-CODE-EVIDENCE-006",
+      "range": "A58-A61",
+      "status": "partial_source_test_mapping_current_head_ci_docs_sync_rechecked",
+      "reviewed_at": "2026-10-15",
+      "reviewed_sources": [
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md",
+        "apps/ad-studio-desktop/ad_studio/short_drama.py",
+        "apps/ad-studio-desktop/ad_studio/production.py",
+        "apps/ad-studio-desktop/ad_studio/usage_ledger.py",
+        "apps/ad-studio-desktop/test_short_drama.py",
+        "apps/ad-studio-desktop/test_desktop.py"
+      ],
+      "current_head_ci_evidence": {
+        "sha": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be",
+        "ci_push": 38723794343,
+        "ci_pr": 38723802276,
+        "docs_sync_push": 38723794333,
+        "docs_sync_pr": 38723802307,
+        "all_success": true
+      },
+      "tasks": [
+        "A58",
+        "A59",
+        "A60",
+        "A61"
+      ],
+      "limitations": [
+        "A58 input validation is not real vision quality or complete zero-call proof.",
+        "A59/A60/A61 deterministic ledger tests do not reconcile real provider invoices.",
+        "No task upgraded to formal acceptance; A61/A62 remain related but distinct.",
+        "Windows, real media, provider billing, editing-app and commercial-effect validation remain deferred."
+      ]
     }
   ],
   "last_reconciled_against_head": "cfb675541102ec2d0ee2a6756fb4305a4c488896",
