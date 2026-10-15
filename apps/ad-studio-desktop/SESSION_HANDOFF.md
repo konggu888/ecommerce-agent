@@ -1,9 +1,10 @@
-# 桌面项目接手状态｜PLAN-003 A24–A29 部分证据映射｜2026-10-15
+# 桌面项目接手状态｜PLAN-003 A30–A33 部分证据映射｜2026-10-15
 
-- 唯一权威进度/下一项：docs/AD_STUDIO_PROGRESS_DASHBOARD.md。PR #32 必须保持 Open/unmerged。
-- 本轮已对 A24–A29 完成部分路线图/源码/测试指针映射，均属阶段1「可靠的生产底座」，未正式验收任何任务。A24→A20/A21/A22/A23；A25→A24；A26→A25；A27→A25/A26；A28→A26/A27；A29 与 A6/A19 有数据边界关系。
-- 台账指标已区分：需求文本级复核 113；source/test/ci/workflow 指针记录 30；当前 HEAD 精确证据 0；完整代码/测试审计 0；语义去重未完成。证据 SHA 未逐文件追溯，不得升级状态或发布总体完成率。
-- 源码快照审查基线 168bd507430af347de805c96735793c200a9802c；提交后重新核验 CI Push、CI PR、docs-sync Push、docs-sync PR。下一批 A30–A33。只做 PLAN-003 文档/证据审计，不开发产品功能；真实环境验证继续暂缓。
+- 唯一权威进度/下一项：docs/AD_STUDIO_PROGRESS_DASHBOARD.md。PR #32 保持 Open/unmerged。
+- 本轮 A30–A33 已做部分映射，均未正式验收：A30 失败恢复→阶段1；A31 帮助文档→阶段0；A32 AI接手能力→阶段0；A33 完整用户流程→阶段1。
+- A30 与 A43/A53/A54/A57/A97/A98 有部分恢复覆盖重叠；A31/A32 是文档存在性与历史盲接手的不同验收层级；A33 是 ProductionStore 确定性夹具流程，不是完整真实 UI 流程。只登记关联，不合并或重编号。
+- 指标：需求文本级复核 113；source/test/ci/workflow 指针记录 34；路线图映射 77；当前 HEAD 精确证据 0；完整代码/测试审计 0；语义去重未完成。证据 SHA 未逐文件追溯。
+- 本轮源码快照 57d02abd2e1d67ed88bc3e12035d7dbee9cdeaef；提交后必须检查 CI Push、CI PR、docs-sync Push、docs-sync PR。下一批 A34–A37。只做 PLAN-003 审计，不开发产品功能；真实环境验证继续暂缓。
 ---
 
 

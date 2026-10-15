@@ -1,6 +1,6 @@
 # 【规划与进度控制体系盘点｜2026-10-15｜权威当前状态】
 
-## PLAN-003 增量审计记录｜A24–A29｜2026-10-15
+## PLAN-003 增量审计记录｜A24–A29｜历史批次（2026-10-15）
 
 - 本轮核对 PR #32 实际 HEAD、四项 CI/doc-sync 工作流、A24–A29 原始验收合同、路线图阶段门槛、生产层/模型层/UI 源码及专项测试。只做 PLAN-003 证据与状态映射，不改产品代码，不调用真实 Provider/扣费/投放。
 - A24 最终安全闸门、A25 媒体质量、A26 成片版本历史、A27 成片交付中心、A28 本地项目数据、A29 数据边界均映射至阶段1「可靠的生产底座」。A24 依赖 A20–A23；A25→A24；A26→A25；A27→A25/A26；A28→A26/A27；A29 与 A6/A19 有数据来源/指标边界关系。依赖仅用于审计排序，不代表验收通过。
@@ -8,7 +8,7 @@
 - 证据边界：A24 风险组合覆盖仍需逐项核对；A25 尺寸放大不等于 AI 细节增强或真实画质；A26/A27 自动化不证明 Windows UI 可用性；A28 仍需损坏数据、路径迁移和磁盘异常边界；A29 单项测试不证明所有数据入口统一执行边界。真实 Windows、素材、Provider/扣费、剪映和投放仍暂缓。
 - 指标口径已纠正：semantic_dedup_reviewed_task_ids=113 是需求文本级复核；code_test_evidence_reviewed_ids=30 是具有 source/test/ci/workflow 指针的任务记录数；当前 HEAD 精确证据绑定数=0。路线图映射数=73/113，仍不发布总体完成率；code_test_evidence_audit_completed_ids=0、fully_audited=0、semantic_dedup_completed=false 保持。
 - 本轮审查的源码快照基线为 168bd507430af347de805c96735793c200a9802c；文档提交后的最终 HEAD 必须重新核验四项 workflow。PR #32 保持 Open/unmerged。
-- 下一批按编号继续 A30–A33，继续完整 PLAN-003 语义去重/冲突裁决/依赖证据边界复核；不新增 A113+、不赋权、不发布总体完成率。
+- 本批后续已由 A30–A33 审计批次承接；本段仅保留历史记录。
 
 ---
 
@@ -30,6 +30,18 @@
 - 已确认的覆盖边界：A18 有版本状态/缓存隔离测试线索，但完整 UI 与逐项独立输出仍待审；A19 有创意机制差异和禁止虚构投放指标测试，但真实投放/归因不在此证据内；A20–A22 的文本/视觉规则审计不能替代真实画面核验；A23 的部分最终安全闸门测试不能证明权限等级、Dry-run、Audit Log 等原始合同全部满足。
 - 当前 HEAD 9034d06c05c56f6fe05b268332d8c8268f3db7c1：CI Push 38717119962、CI PR 38717127760、docs-sync PR 38717127996 均 success；截至本轮查询未找到该 SHA 的 docs-sync Push 运行记录。不能宣称四项全绿。PR #32 继续 Open/unmerged。
 - 本批后续已由 A24–A29 审计批次承接；本段仅保留历史记录。不得新增 A113+、不赋权、不计算总体完成率。
+
+---
+
+## PLAN-003 增量审计记录｜A30–A33｜2026-10-15
+
+- 本轮以分支 HEAD `57d02abd2e1d67ed88bc3e12035d7dbee9cdeaef` 为源码/测试指针快照，检查 A30–A33 原始验收合同、SOP、production/app/models 源码、`test_desktop.py`、`test_ai_handoff.py`、`test_a33_full_flow.py`、HELP/PROJECT_LOGIC/AGENTS 与路线图阶段门槛；只更新规划与证据映射，不修改产品代码。
+- A30 失败恢复→阶段1；A31 帮助文档→阶段0；A32 AI接手能力→阶段0；A33 完整用户流程→阶段1。依赖映射：A30→A24/A25/A26/A28；A31→A30（仅为审计顺序，不代表文档任务必须等待功能验收）；A32→A31；A33→A0–A32。依赖不是验收通过声明。
+- A30 有恢复失败记录、清理中断素材/标记损坏输出、预算/不可重试失败提示测试；A43/A53/A54/A57/A97/A98 也覆盖部分恢复路径，登记为跨编号重叠候选，不合并 ID。A31 有帮助/逻辑/项目规则文档存在性与关键内容检查；A32 有 history-blind handoff 静态内容测试；A33 有三类任务正常、异常阻断、安全拦截、修复复查/交付的 ProductionStore 确定性测试。
+- 关键证据边界：A30 测试未覆盖原始合同全部故障组合；A31 静态关键词检查不证明文档语义完整；A32 不证明新 AI 实际独立接手无误；A33 使用 mock/夹具并直接调用生产存储层，不证明真实 Tk UI 全旅程、真实 Provider/FFmpeg/Windows 或商业成片质量。
+- 本批新增 source/test 指针记录数 34；路线图映射数 77/113；剩余待映射 36；当前 HEAD 精确证据绑定仍为 0；`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false`、`weighting_completed=false` 保持。不发布总体完成率。
+- 当前最新 HEAD 的 CI Push、CI PR、docs-sync PR 均成功；**截至检查时未发现该 HEAD 的 docs-sync Push 运行记录**，因此不能报四项全绿。提交本批后必须重查四项。PR #32 保持 Open/unmerged。
+- 下一批按编号进入 A34–A37，继续 PLAN-003 跨来源语义去重、冲突裁决和证据边界审计；不新增 A113+、不赋权、不做真实环境验收。
 
 ---
 

@@ -1,10 +1,11 @@
-# AI 接手当前状态｜PLAN-003 A24–A29 部分证据映射｜2026-10-15
+# AI 接手当前状态｜PLAN-003 A30–A33 部分证据映射｜2026-10-15
 
-- 唯一权威进度/下一项：docs/AD_STUDIO_PROGRESS_DASHBOARD.md。本轮完成 A24–A29 的部分路线图与源码/测试指针映射，不是正式验收。
-- A24–A29 均映射至阶段1「可靠的生产底座」。依赖：A24→A20/A21/A22/A23；A25→A24；A26→A25；A27→A25/A26；A28→A26/A27；A29 与 A6/A19 的数据来源/指标边界相关。
-- 规范台账口径：semantic_dedup_reviewed_task_ids=113 是需求文本级复核；code_test_evidence_reviewed_ids=30 是具有 source/test/ci/workflow 指针的任务记录数。current_head_evidence_task_ids=0、code_test_evidence_audit_completed_ids=0、fully_audited=0、semantic_dedup_completed=false；不赋权、不计算总体完成率。
-- 本轮源码快照基线 168bd507430af347de805c96735793c200a9802c；文档提交后须重新检查最终 HEAD 的 CI Push/PR 与 docs-sync Push/PR。PR #32 Open/unmerged。
-- 下一批 A30–A33，继续 PLAN-003；不新增 A113+，不开发产品功能。真实 Windows、真实素材、Provider/扣费、剪映和真实投放仍暂缓。
+- 唯一权威进度与下一项：docs/AD_STUDIO_PROGRESS_DASHBOARD.md。本轮完成 A30–A33 部分路线图/源码/测试映射，不是正式验收。
+- A30 失败恢复→阶段1；A31 帮助文档→阶段0；A32 AI接手能力→阶段0；A33 完整用户流程→阶段1。A30 与 A43/A53/A54/A57/A97/A98 存在恢复证据重叠候选；保留所有原 ID，未裁决前不合并。
+- 指标：需求文本级复核 113；有 source/test/ci/workflow 指针的任务记录 34；路线图映射 77/113；当前 HEAD 精确证据绑定 0；完整代码/测试审计 0；语义去重未完成。不得发布总体完成率、不得赋权。
+- A30/A31/A32/A33 的自动化证据分别只证明局部恢复行为、文档锚点、接手文件静态内容和 ProductionStore 夹具流程，不证明真实 Windows UI、独立 AI 接手成功或真实商业成片质量。
+- 当前源码快照基线 57d02abd2e1d67ed88bc3e12035d7dbee9cdeaef；文档提交后重新检查 CI Push、CI PR、docs-sync Push、docs-sync PR。PR #32 Open/unmerged。
+- 下一批 A34–A37；不新增 A113+，不开发产品功能。真实 Windows、真实素材、Provider/扣费、剪映与投放继续暂缓。
 ---
 
 - 仓库/项目：`konggu888/ecommerce-agent/apps/ad-studio-desktop`；分支 `feat/product-drama-visual-review`；PR #32 保持 Open / unmerged。
