@@ -3,7 +3,7 @@
   "generated_from_head": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6",
   "audit_status": "all_113_numbered_task_titles_recovered_requirement_level_reviewed_cross_source_status_reconciliation_pending_current_head_code_test_evidence_audit_pending",
   "progress_percentages_enabled": false,
-  "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until cross-source scope reconciliation and weighting review. Historical A68-A74 and A99 task identities have been recovered; their current-HEAD evidence audit remains pending. Cross-source status audit 2026-10-15 found the dashboard's 113 partial-mapping count and this JSON snapshot's 6 structured source/test/CI/workflow evidence task IDs are different metrics; 0 evidence records are bound to current HEAD. Do not silently treat them as equivalent. Roadmap phase is still pending for 70 task records; reconcile item-by-item. Incremental current-HEAD reconciliation 2026-10-15: A0-A6 roadmap_phase mapped to Phase 1 from roadmap goal chain; A5 depends on A4. A0-A4 source/test/workflow evidence refreshed to current HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1 and current CI/docs-sync runs attached. No acceptance status upgraded; full audit remains zero. Incremental reconciliation 2026-10-15: A0-A8 primary roadmap phases are mapped; explicit dependencies A5→A4, A7→A6, A8→A7 are recorded. A0-A8 source/test mappings were rechecked against current branch tree and bound to current HEAD CI Push/PR and PR docs-sync evidence. No task acceptance status upgraded; docs-sync Push evidence for current HEAD not found. PLAN-003 2026-10-15: A8 corrected to Phase 2. A9-A17 mapped to Phase 1; explicit dependencies A12→A5/A8, A13→A12, A14→A13, A15→A8/A9/A10/A11, A16→A8/A10/A11, A17→A7/A8/A9/A10/A11. Partial evidence only; acceptance statuses unchanged. PLAN-003 incremental reconciliation 2026-10-15: A18-A19 mapped to Phase 3; A20-A23 mapped to Phase 1. Partial source/test pointers recorded with evidence SHA null pending exact commit provenance. Dependencies recorded only where the documented flow supports them: A19→A18, A21→A20, A22→A21, A23→A20/A21/A22. No acceptance status upgraded; overall completion remains disabled. PLAN-003 update 2026-10-15: A24-A29 mapped to Phase 1. Evidence SHA left null pending per-file provenance; code_test_evidence_reviewed_ids counts records with source/test/ci/workflow pointers, not semantic review or acceptance. Requirement-level semantic review remains 113; no task status promoted, no overall completion metric. PLAN-003 update 2026-10-15: A30-A33 mapped to roadmap phases with partial source/test evidence and explicit proof limits. Related recovery/doc/handoff/end-to-end requirements are recorded as overlaps, not merged. Evidence SHA remains unpinned; no task status promoted and no overall completion metric. PLAN-003 update 2026-10-15: A34-A37 mapped to Phase 5; evidence SHA remains null pending per-file provenance. result_proof_layers and user_freedom_dimensions capture the limits of automation evidence and relevant authorization/cancellation freedoms. No formal acceptance promoted, no weighting or overall completion metric. PLAN-003 update 2026-10-15: A38-A41 mapped to Phase 0. A39 push/PR CI workflow evidence is tied to validated snapshot 1af689ab2dacbaff9ad7a08a26f1b4173cc328c4; it is not final-HEAD evidence. Keep all evidence SHA null pending per-file provenance; no formal acceptance promoted.",
+  "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until cross-source scope reconciliation and weighting review. Historical A68-A74 and A99 task identities have been recovered; their current-HEAD evidence audit remains pending. Cross-source status audit 2026-10-15 found the dashboard's 113 partial-mapping count and this JSON snapshot's 6 structured source/test/CI/workflow evidence task IDs are different metrics; 0 evidence records are bound to current HEAD. Do not silently treat them as equivalent. Roadmap phase is still pending for 70 task records; reconcile item-by-item. Incremental current-HEAD reconciliation 2026-10-15: A0-A6 roadmap_phase mapped to Phase 1 from roadmap goal chain; A5 depends on A4. A0-A4 source/test/workflow evidence refreshed to current HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1 and current CI/docs-sync runs attached. No acceptance status upgraded; full audit remains zero. Incremental reconciliation 2026-10-15: A0-A8 primary roadmap phases are mapped; explicit dependencies A5→A4, A7→A6, A8→A7 are recorded. A0-A8 source/test mappings were rechecked against current branch tree and bound to current HEAD CI Push/PR and PR docs-sync evidence. No task acceptance status upgraded; docs-sync Push evidence for current HEAD not found. PLAN-003 2026-10-15: A8 corrected to Phase 2. A9-A17 mapped to Phase 1; explicit dependencies A12→A5/A8, A13→A12, A14→A13, A15→A8/A9/A10/A11, A16→A8/A10/A11, A17→A7/A8/A9/A10/A11. Partial evidence only; acceptance statuses unchanged. PLAN-003 incremental reconciliation 2026-10-15: A18-A19 mapped to Phase 3; A20-A23 mapped to Phase 1. Partial source/test pointers recorded with evidence SHA null pending exact commit provenance. Dependencies recorded only where the documented flow supports them: A19→A18, A21→A20, A22→A21, A23→A20/A21/A22. No acceptance status upgraded; overall completion remains disabled. PLAN-003 update 2026-10-15: A24-A29 mapped to Phase 1. Evidence SHA left null pending per-file provenance; code_test_evidence_reviewed_ids counts records with source/test/ci/workflow pointers, not semantic review or acceptance. Requirement-level semantic review remains 113; no task status promoted, no overall completion metric. PLAN-003 update 2026-10-15: A30-A33 mapped to roadmap phases with partial source/test evidence and explicit proof limits. Related recovery/doc/handoff/end-to-end requirements are recorded as overlaps, not merged. Evidence SHA remains unpinned; no task status promoted and no overall completion metric. PLAN-003 update 2026-10-15: A34-A37 mapped to Phase 5; evidence SHA remains null pending per-file provenance. result_proof_layers and user_freedom_dimensions capture the limits of automation evidence and relevant authorization/cancellation freedoms. No formal acceptance promoted, no weighting or overall completion metric. PLAN-003 update 2026-10-15: A38-A41 mapped to Phase 0. A39 push/PR CI workflow evidence is tied to validated snapshot 1af689ab2dacbaff9ad7a08a26f1b4173cc328c4; it is not final-HEAD evidence. Keep all evidence SHA null pending per-file provenance; no formal acceptance promoted. PLAN-003 update 2026-10-15: A42-A45 mapped to their strategic phases; all remain not_audited. Current-HEAD evidence count remains zero pending per-file blob provenance. Do not assign weights or publish overall completion.",
   "counts": {
     "numbered_slots": 113,
     "fully_audited": 0,
@@ -18,8 +18,8 @@
     "semantic_dedup_completed": false,
     "code_test_evidence_audit_completed_ids": 0,
     "semantic_dedup_reviewed_task_ids": 113,
-    "code_test_evidence_reviewed_ids": 42,
-    "roadmap_phase_mapped_ids": 85,
+    "code_test_evidence_reviewed_ids": 46,
+    "roadmap_phase_mapped_ids": 89,
     "current_head_evidence_task_ids": 0
   },
   "known_id_gaps": [],
@@ -3508,14 +3508,43 @@
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
-      "roadmap_phase": "待路线图映射",
-      "development_status": "not_audited",
+      "roadmap_phase": "阶段0｜路线与证据基线",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
-      "dependencies": [],
-      "evidence": [],
+      "dependencies": [
+        "A39"
+      ],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/SESSION_HANDOFF.md",
+          "detail": "Historical A42 entry records baseline SHA 443f713cd3721eab528eb9bb17faf599d55ef3ce and explicitly requires checking any later HEAD independently.",
+          "sha": null
+        },
+        {
+          "kind": "source",
+          "path": ".github/workflows/ci.yml",
+          "detail": "The complete CI workflow defines the typecheck-and-test job and is triggered for branch pushes and pull requests targeting main.",
+          "sha": null
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_ai_handoff.py",
+          "detail": "test_handoff_records_latest_successful_ci_baseline_sha asserts the historical baseline marker and the warning that a different current HEAD must be rechecked.",
+          "sha": null
+        },
+        {
+          "kind": "ci",
+          "path": ".github/workflows/ci.yml",
+          "detail": "Historical baseline SHA 443f713cd3721eab528eb9bb17faf599d55ef3ce has CI Push run 38120824822 and docs-sync Push run 38120824802 success. Separately validated snapshot 42fa15b305ff1a5a046f15eba84460b7272fa2e7 has all four CI/doc-sync Push/PR runs success.",
+          "sha": null
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "A42's fixed SHA is a historical baseline, not a substitute for current HEAD checks; test assertion only confirms the baseline text exists.",
+        "Historical baseline API lookup found push-triggered CI and docs-sync success for 443f713; no PR-triggered run was returned for that SHA. The newer snapshot 42fa15b has four successful workflows, but the next documentation commit must be checked separately.",
+        "Evidence SHA is not pinned per file; current_head_evidence_task_ids remains zero."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -3527,10 +3556,32 @@
           "## A42｜CI 成功结果记录"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "source_inventory_status": "normalized_heading_inventory_plus_partial_source_test_mapping_semantic_dedup_and_full_evidence_audit_pending",
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
-      "provisional_roadmap_phase": "阶段0｜路线与证据基线"
+      "provisional_roadmap_phase": "阶段0｜路线与证据基线",
+      "semantic_overlap_review": {
+        "status": "mapped_not_resolved",
+        "related_ids": [
+          "A39"
+        ],
+        "note": "Shared recovery or CI evidence is a possible overlap relation only. Preserve original acceptance IDs; no duplicate verdict or merge is made."
+      },
+      "result_proof_layers": {
+        "applicable_layers": [
+          1,
+          2
+        ],
+        "automated_evidence_layers": [
+          1,
+          2
+        ],
+        "not_proven_layers": [],
+        "deferred_layers": [],
+        "note": "层级定义见 docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md；自动化证据不能替代真实 UI/Provider/媒体验证。"
+      },
+      "user_freedom_dimensions": [],
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test/workflow pointers mapped against validated snapshot 42fa15b305ff1a5a046f15eba84460b7272fa2e7. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance."
     },
     {
       "task_id": "A43",
@@ -3540,14 +3591,44 @@
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
-      "roadmap_phase": "待路线图映射",
-      "development_status": "not_audited",
+      "roadmap_phase": "阶段1｜可靠的生产底座",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
-      "dependencies": [],
-      "evidence": [],
+      "dependencies": [
+        "A35",
+        "A30"
+      ],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/production.py",
+          "detail": "ProductionStore._render_with_provider() preserves previous_video_path and restores the previous valid output on Provider failure; recover_project() removes partial outputs and restores a valid prior video after interrupted regeneration.",
+          "sha": null
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/models.py",
+          "detail": "Shot.previous_video_path stores the prior valid output separately from the active video path.",
+          "sha": null
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_desktop.py",
+          "detail": "test_a43_regeneration_failure_restores_previous_good_video_and_persists_it verifies provider-failure restore and project reload; test_a43_project_recovery_restores_previous_video_after_interrupted_regeneration verifies partial-file cleanup and interruption recovery.",
+          "sha": null
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_desktop.py",
+          "detail": "Related coverage: test_a53_recovery_rejects_zero_byte_previous_video; test_a54_recovery_restores_valid_previous_video_when_active_video_is_zero_byte; A97/A98 missing-shot recovery cases. Related coverage is not duplicate adjudication.",
+          "sha": null
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "Fixtures use a fake failing Provider and temporary local files; no real Provider or actual billing/retry validation was performed.",
+        "Need separately inspect retry/idempotence, permission/disk-full/partial-write and whether a retry can duplicate charges/assets; related A30/A53/A54/A97/A98 scenarios must be mapped individually without merging IDs.",
+        "Current CI proves automated behavior only; Windows UI/media playback and real provider recovery remain deferred. Evidence SHA is not pinned per file."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -3562,10 +3643,47 @@
           "## A43：单镜头重生成的旧版本保护（待 CI）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "source_inventory_status": "normalized_heading_inventory_plus_partial_source_test_mapping_semantic_dedup_and_full_evidence_audit_pending",
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
-      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
+      "semantic_overlap_review": {
+        "status": "mapped_not_resolved",
+        "related_ids": [
+          "A30",
+          "A45",
+          "A53",
+          "A54",
+          "A97",
+          "A98"
+        ],
+        "note": "Shared recovery or CI evidence is a possible overlap relation only. Preserve original acceptance IDs; no duplicate verdict or merge is made."
+      },
+      "result_proof_layers": {
+        "applicable_layers": [
+          1,
+          2,
+          3
+        ],
+        "automated_evidence_layers": [
+          1,
+          2,
+          3
+        ],
+        "not_proven_layers": [
+          4,
+          5,
+          6
+        ],
+        "deferred_layers": [
+          4,
+          5,
+          6
+        ],
+        "note": "层级定义见 docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md；自动化证据不能替代真实 UI/Provider/媒体验证。"
+      },
+      "user_freedom_dimensions": [],
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test/workflow pointers mapped against validated snapshot 42fa15b305ff1a5a046f15eba84460b7272fa2e7. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance."
     },
     {
       "task_id": "A44",
@@ -3575,14 +3693,38 @@
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
-      "roadmap_phase": "待路线图映射",
-      "development_status": "not_audited",
+      "roadmap_phase": "阶段4｜AI短剧能力",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
-      "dependencies": [],
-      "evidence": [],
+      "dependencies": [
+        "A35",
+        "A36"
+      ],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+          "detail": "resolve_product_drama_shot_number() prefers stable storyboard index mapping; legacy projects may fall back only to a unique title/episode match and fail closed on ambiguity.",
+          "sha": null
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/app.py",
+          "detail": "Single-shot correction/regeneration resolves the selected project shot to the source storyboard number before using comparison results and preparing the new version.",
+          "sha": null
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_short_drama.py",
+          "detail": "test_product_drama_shot_mapping_uses_stable_storyboard_index_after_insertions; test_product_drama_legacy_shot_mapping_uses_unique_title_and_episode; test_product_drama_ambiguous_legacy_mapping_fails_closed.",
+          "sha": null
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "Unit tests cover index drift and legacy mapping but do not prove the complete real Tk UI flow after arbitrary storyboard edits or a real project save/reopen cycle.",
+        "Mapping stability is a short-drama feature-stage capability; it shares implementation with A35/A36 but remains a distinct requirement. Keep IDs separate until semantic deduplication has a full cross-source verdict.",
+        "Windows UI and real Provider generation remain deferred; evidence SHA is not pinned per file."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -3597,10 +3739,38 @@
           "## A44：短剧分镜稳定映射（待 CI）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "source_inventory_status": "normalized_heading_inventory_plus_partial_source_test_mapping_semantic_dedup_and_full_evidence_audit_pending",
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
-      "provisional_roadmap_phase": "阶段4｜AI短剧能力"
+      "provisional_roadmap_phase": "阶段4｜AI短剧能力",
+      "semantic_overlap_review": {
+        "status": "mapped_not_resolved",
+        "related_ids": [
+          "A35",
+          "A36"
+        ],
+        "note": "Shared recovery or CI evidence is a possible overlap relation only. Preserve original acceptance IDs; no duplicate verdict or merge is made."
+      },
+      "result_proof_layers": {
+        "applicable_layers": [
+          2,
+          3,
+          4
+        ],
+        "automated_evidence_layers": [
+          2
+        ],
+        "not_proven_layers": [
+          3,
+          4
+        ],
+        "deferred_layers": [
+          4
+        ],
+        "note": "层级定义见 docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md；自动化证据不能替代真实 UI/Provider/媒体验证。"
+      },
+      "user_freedom_dimensions": [],
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test/workflow pointers mapped against validated snapshot 42fa15b305ff1a5a046f15eba84460b7272fa2e7. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance."
     },
     {
       "task_id": "A45",
@@ -3610,14 +3780,38 @@
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
-      "roadmap_phase": "待路线图映射",
-      "development_status": "not_audited",
+      "roadmap_phase": "阶段1｜可靠的生产底座",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
-      "dependencies": [],
-      "evidence": [],
+      "dependencies": [
+        "A43",
+        "A30"
+      ],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/app.py",
+          "detail": "The shot-generation failure handler calls generation_failure_ui_state(), preserves the recovered status, saves the project and reports the restored video path when the previous file is valid.",
+          "sha": null
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_desktop.py",
+          "detail": "test_a45_ui_failure_state_keeps_recovered_previous_video_status checks a valid previous file retains '生成失败（已保留上一版本）' and a missing file downgrades to '生成失败' with no usable path.",
+          "sha": null
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/production.py",
+          "detail": "_render_with_provider() and recover_project() establish the backend recovery state consumed by the UI state helper.",
+          "sha": null
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "The named test exercises generation_failure_ui_state() with SimpleNamespace and local files; it is not a real Tk widget/UI automation test.",
+        "Check empty/corrupt file, permissions, repeated recovery, stale path and whether displayed status/path remain synchronized after save/reopen; some adjacent coverage exists in A53/A54 but is not a substitute for item-by-item mapping.",
+        "Windows UI and real media playback remain deferred; evidence SHA is not pinned per file."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -3632,10 +3826,39 @@
           "## A45：失败恢复状态提示修复（待 CI）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "source_inventory_status": "normalized_heading_inventory_plus_partial_source_test_mapping_semantic_dedup_and_full_evidence_audit_pending",
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
-      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
+      "semantic_overlap_review": {
+        "status": "mapped_not_resolved",
+        "related_ids": [
+          "A43",
+          "A30",
+          "A54"
+        ],
+        "note": "Shared recovery or CI evidence is a possible overlap relation only. Preserve original acceptance IDs; no duplicate verdict or merge is made."
+      },
+      "result_proof_layers": {
+        "applicable_layers": [
+          2,
+          3,
+          4
+        ],
+        "automated_evidence_layers": [
+          2
+        ],
+        "not_proven_layers": [
+          3,
+          4
+        ],
+        "deferred_layers": [
+          4
+        ],
+        "note": "层级定义见 docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md；自动化证据不能替代真实 UI/Provider/媒体验证。"
+      },
+      "user_freedom_dimensions": [],
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test/workflow pointers mapped against validated snapshot 42fa15b305ff1a5a046f15eba84460b7272fa2e7. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance."
     },
     {
       "task_id": "A46",
@@ -7218,19 +7441,19 @@
       "note": "Documentation/planning audit baseline; does not imply full acceptance of A0-A5."
     }
   ],
-  "last_reconciled_against_head": "1af689ab2dacbaff9ad7a08a26f1b4173cc328c4",
-  "reconciliation_status": "item_level_reconciliation_in_progress_A0_A41_roadmap_phases_and_partial_evidence_mapped",
+  "last_reconciled_against_head": "42fa15b305ff1a5a046f15eba84460b7272fa2e7",
+  "reconciliation_status": "item_level_reconciliation_in_progress_A0_A45_roadmap_phases_and_partial_evidence_mapped",
   "cross_source_reconciliation": {
-    "task_register_code_test_evidence_reviewed_ids": 42,
-    "task_records_with_any_evidence": 54,
-    "task_records_with_source_test_ci_or_workflow_evidence": 42,
+    "task_register_code_test_evidence_reviewed_ids": 46,
+    "task_records_with_any_evidence": 58,
+    "task_records_with_source_test_ci_or_workflow_evidence": 46,
     "task_records_with_evidence_sha_matching_current_head": 0,
-    "task_records_with_roadmap_phase_pending": 28,
+    "task_records_with_roadmap_phase_pending": 24,
     "semantic_dedup_completed": false,
     "code_test_evidence_audit_completed_ids": 0,
     "fully_audited": 0,
     "weighting_completed": false,
-    "note": "2026-10-15: A38-A41 mapped to Phase 0 with source/test/workflow pointers, proof-layer limits and overlap relationships. code_test_evidence_reviewed_ids counts task records with source/test/ci/workflow pointers, not formal audit or acceptance.",
+    "note": "2026-10-15: A42-A45 mapped with phase assignments, source/test/CI pointers, proof-layer limits and overlap candidates. code_test_evidence_reviewed_ids counts records with source/test/ci/workflow pointers, not formal audit or acceptance.",
     "roadmap_phase_mapped_ids": [
       "A0",
       "A1",
@@ -7274,6 +7497,10 @@
       "A39",
       "A40",
       "A41",
+      "A42",
+      "A43",
+      "A44",
+      "A45",
       "A68",
       "A69",
       "A70",
@@ -7318,9 +7545,9 @@
       "A111",
       "A112"
     ],
-    "current_branch_head": "1af689ab2dacbaff9ad7a08a26f1b4173cc328c4",
+    "current_branch_head": "42fa15b305ff1a5a046f15eba84460b7272fa2e7",
     "source_test_evidence_baseline_sha": null,
-    "current_head_note": "A38-A41 source/test/workflow pointers reviewed against validated snapshot 1af689ab2dacbaff9ad7a08a26f1b4173cc328c4. Per-file evidence SHA remains null; current_head_evidence_task_ids stays 0. The documentation commit after this snapshot must be checked independently.",
+    "current_head_note": "A42-A45 source/test/workflow pointers reviewed against validated snapshot 42fa15b305ff1a5a046f15eba84460b7272fa2e7. Per-file evidence SHA remains null; current_head_evidence_task_ids stays 0. New documentation commit must be checked independently.",
     "dashboard_claimed_requirement_level_reviewed_ids": 113
   }
 }
