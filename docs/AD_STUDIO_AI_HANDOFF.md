@@ -1,9 +1,14 @@
-# 【PLAN-003 AI 接手状态｜A57 冲突已厘清；全量去重继续｜2026-10-15】
+## 当前接手状态｜PLAN-003 全量语义去重继续｜2026-10-15
 
-- 唯一权威进度：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`；PR #32 Open/unmerged。
-- 本轮更新前最新已检查文档 HEAD `143d01f87c3161deee04cd2d3c821b1e915084d1` 的 CI PR 与 docs-sync PR success（38731016045 / 38731016172）；Push 未独立核实。源码/测试审计基线 `c77704d86d6131d13501448af76ce24afc56ad7b`。
-- A57 同编号双标题已厘清为一个编号槽位下的两个独立验收条款；源码/测试有四个对应测试，仍为 partial_evidence_mapping/not_audited。无合并、拆号或重编号。
-- A0–A112 已无新编号任务；下一步继续全量语义去重、历史状态/证据冲突核对与剩余当前源码/测试审计。下一次推进前必须核验本次文档更新后的最新 SHA 四项工作流；Push 若不可查询需明确标注。真实 Windows、素材、Provider/扣费、剪映与商业效果继续暂缓。
+- 分支：`feat/product-drama-visual-review`；PR #32 保持 Open / unmerged。
+- 本次核验基线 HEAD：`1f9bddda8266f7e0db91129004ea52dc2b9548f1`（本轮只做计划/证据审计与文档同步，不改产品代码）。
+- 当前 SHA 工作流分类：CI Push `38731571796` success；CI PR `38731578935` success；docs-sync PR `38731578972` success；docs-sync Push 未运行/未发现对应 run，不得记作通过。Netlify deploy-preview success 不替代 CI。
+- 权威进度：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`；任务台账：`docs/AD_STUDIO_TASK_REGISTER.json`。
+- PLAN-003 状态：A0–A112 共 113 个编号槽位；113 个有 evidence 指针、112 个有源码/测试证据、56 个绑定源码/测试快照；0 个完成完整代码/测试审计、0 个完成正式全量验收；语义去重仍未完成。以上是覆盖指标，不是完成率，权重与总体完成率保持关闭。
+- A57 冲突裁决：一个既有编号槽位包含两条不同验收条款（成本待核对 UI；打开项目恢复/成本对账）。保留两条独立合同，不拆号、不合并、不重编号；测试线索不等于正式验收通过。
+- 下一任务：继续跨来源语义去重与历史状态/证据冲突裁决，逐项对照验收计划、SOP、路线图、未来功能备忘、执行控制、任务台账和代码/测试快照。不重复开发已有功能，不新增 A113+，不改产品代码，不计算总体完成率。
+- 暂缓范围不变：Windows 真机、真实素材、真实 Provider/实际扣费与账单、剪映现场、真实投放和商业效果验证。
+- 本文记录的是本次文档更新前基线；提交后必须重新核验新 HEAD 的 CI Push、CI PR、docs-sync Push、docs-sync PR 四项，并明确区分未运行与通过。
 
 ---
 
