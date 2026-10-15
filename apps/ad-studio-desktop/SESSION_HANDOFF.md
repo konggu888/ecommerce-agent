@@ -1,7 +1,7 @@
 # 【当前优先级更新｜UXS-2 用户旅程证据映射进行中｜2026-10-15】
 
 - 审查入口：`docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md`；本轮已完成“创建入口、商品输入、费用授权顺序、项目持久化”的首轮静态证据映射（第 3A 节）。这是审计，不是新产品功能开发。
-- 首个重要风险：`apps/ad-studio-desktop/ad_studio/app.py::App.create()` 在显示 `AI创意与项目预算确认` 之前调用 `self.model_router.create_plan/create_plans`；`ad_studio/model_router.py::ModelRouter.create_plan()` 对九个创意阶段调用 `complete_json()`。若模型路由指向收费云端模型，可能在用户确认前产生调用/费用。此为 P0 候选/费用授权顺序风险；实际计费影响需进一步核对路由配置，且需对照 A0–A112 和既有合同，当前未修复、未新增验收编号、未改产品代码。
+- 首个重要合同/证据冲突候选：`App.create()` 在显示 `AI创意与项目预算确认` 前调用 `create_plan/create_plans`；`ModelRouter.create_plan()` 对九个阶段调用 `complete_json()`。HELP/PROJECT_LOGIC 当前允许确认前进行 AI 分析，但用户费用授权范围是否覆盖收费规划模型调用尚待裁决。若所有收费云端模型调用都必须先确认，则是 P0 候选阻断；若只限制视频/资产生成 Provider，则需核实规划调用费用是否披露/计入预算。实际收费影响依赖模型路由，当前未修复、未新增验收编号、未改产品代码。
 - 已查测试证据：`test_setup_form_grid_rows_do_not_overlap` 为 AST 布局检查；`test_product_parser.py` 覆盖解析器异常/回退；`test_budget_policy` 与 `test_cost_breakdown_is_auditable_and_configurable` 覆盖费用计算；`test_project_save_load`、`test_project_lifecycle_isolated_between_projects` 覆盖持久化/隔离。未发现 `test_desktop.py` 直接调用 `App.create()` 的测试；`test_a33_full_flow.py` 仅测试模拟最终交付，不证明创建前确认顺序。
 - 最新已提交的审查文档 SHA 需以 GitHub 分支实时 HEAD 为准。开始基线 `3bd083e73ea51aec26b2ab66c755aa6c83a929cf` 的 PR CI `38695479000` 与 PR docs-sync `38695478983` success；Push-triggered 两项未独立核实。每次新提交后重查可用的当前 SHA 工作流。
 - 下一项唯一任务：继续 UXS-2，完成费用/确认/取消/外部副作用路径及既有验收 ID 映射，再继续后续用户旅程。只审计和记录；未经用户明确授权不修改产品代码。不得删/重编号 A0–A112，不计算总体完成率。
