@@ -1645,7 +1645,7 @@ A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/
 
 ## PLAN-003 增量审计记录｜A110–A112｜2026-10-15
 
-- **源码/测试审计基线**：`c77704d86d6131d13501448af76ce24afc56ad7b`；文档更新前最近检查 HEAD `a9fe2d93d186bac79dafee294e518209d963f420` 的 CI PR [38730727069](https://github.com/konggu888/ecommerce-agent/actions/runs/38730727069) 与 docs-sync PR [38730727058](https://github.com/konggu888/ecommerce-agent/actions/runs/38730727058) 均 success。Push 触发工作流未独立核实，PR #32 Open/unmerged。
+- **源码/测试审计基线**：`c77704d86d6131d13501448af76ce24afc56ad7b`；A110–A112 文档更新前最后一次明确核验成功的工作流 HEAD `47479d41725cf726e1543524bda012fee8bdf890` 的 CI PR [38730727069](https://github.com/konggu888/ecommerce-agent/actions/runs/38730727069) 与 docs-sync PR [38730727058](https://github.com/konggu888/ecommerce-agent/actions/runs/38730727058) 均 success；本轮文档更新后的 HEAD `143d01f87c3161deee04cd2d3c821b1e915084d1` 的 CI PR [38731016045](https://github.com/konggu888/ecommerce-agent/actions/runs/38731016045) 与 docs-sync PR [38731016172](https://github.com/konggu888/ecommerce-agent/actions/runs/38731016172) 也均 success。Push 触发工作流未独立核实，PR #32 Open/unmerged。
 - **A110｜商业剪辑内容保护**：源码把口播/屏幕文字/商品角色/CTA 停留时间作为音乐卡点下限，低置信度和不安全计划回退；测试覆盖对话、屏幕文字、商品停留与安全回退。CTA 专门下限尚无独立断言，生产链整合测试缺失。
 - **A111｜逐边界局部音乐卡点规划**：算法逐镜头验证最短时长、最大变化、变速约束，仅回退冲突边界并记录 adjusted/reverted 边界；专项测试覆盖单/多相邻保护、无关安全边界仍可调整、总时长保持、低置信度和交叉溶解回退。尚无 build_final 整链测试或实际 FFmpeg 渲染。
 - **A112｜字幕实际时间窗参与内容保护**：SRT 解析校验 cue 顺序/范围/结束时间，最短 cue 时长进入卡点保护；生产代码检查字幕记录是否绑定当前源视频路径和时长，异常时回退。单测覆盖解析和 helper 边界，但没有生产级 applied/fallback 整链回归。
