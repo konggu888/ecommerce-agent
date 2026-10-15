@@ -1045,3 +1045,22 @@ A50–A67 的详细静态映射已存在；本轮将其规范台账行与该映�
 - 正式 SOP 的“补充验收门槛：云端授权、回退和费用未知状态”及 AD_STUDIO_EXECUTION_CONTROL.md 已明确要求：外部调用前告知费用与数据目的地；取消/拒绝后各类外部请求计数为 0；不得静默跨模型/云端回退；费用未知不得伪装为零；检查 endpoint、发送数据类别、重定向/私网/凭据边界以及 API Key 存储/日志/导出/备份/迁移。
 - 因此不能说这些控制要求完全不存在；当前缺口是它们与 A0–A112 的逐项映射、语义去重和直接测试证据尚未完成。A29 的来源/真实性合同不是等价覆盖，A0/A2 也不能未经逐项裁决就被认定覆盖全部授权与凭据安全条件。
 - 继续 PLAN-003，先核对现有合同与证据，不新增 A113+；保持 code_test_evidence_audit_completed_ids=0、fully_audited=0、semantic_dedup_completed=false，整体完成率关闭。
+
+
+## PLAN-003 状态冲突审计｜规范台账与权威进度页指标口径不一致｜2026-10-15
+
+本轮对照 `docs/AD_STUDIO_TASK_REGISTER.json` 与本文件顶部权威状态，发现台账字段的**口径/新鲜度冲突**。本次只记录并界定差异，不把旧证据伪装成当前 SHA 验收，也不因计数冲突而改写正式任务状态。
+
+| 检查项 | 权威进度页当前表述 | 规范任务台账实际内容 | 当前裁决 |
+|---|---|---|---|
+| 代码/测试证据映射计数 | 本页称 A0–A112 均已开始部分映射，计数为 113 | JSON 的 `counts.code_test_evidence_reviewed_ids=6`；仅 18 条任务记录有任何 evidence，其中 6 个编号有 `source/test/ci/workflow` 类型证据 | **不能把两个计数直接视为同一口径**。保留“跨文档已开始映射”的历史声明，但需逐项将证据记录写回规范台账或修正其统计定义 |
+| 证据是否绑定当前 HEAD | 本页的历史分批说明记录了旧 SHA/旧 CI；新一轮静态安全审计已更新本页 | JSON `generated_from_head=7a1ac049...`，其 18 条记录中没有一条 evidence SHA 等于当前 HEAD `73d66d7...` | 任务台账是旧快照，不是当前 HEAD 的证据清单；旧 SHA/历史 CI 不能代表当前代码验收 |
+| 路线图阶段映射 | 本页称阶段 2–6 的分批依赖映射已写入，但完整逐项裁决仍在 PLAN-003 | JSON 中 70/113 个任务的 `roadmap_phase` 仍是“待路线图映射” | 这是逐项映射落库/状态口径冲突；不在本轮猜填阶段，不把文档中的阶段关系推断成任务级映射完成 |
+| 正式验收/整体完成 | 本页与 JSON 均应保持未完成 | JSON 的 `fully_audited=0`、`code_test_evidence_audit_completed_ids=0`、`semantic_dedup_completed=false`、`weighting_completed=false` | 状态一致：不得宣称 PLAN-003 完成，不赋权，不计算总体完成率 |
+
+### 修正方向与停止条件
+
+1. 将 JSON 明确标注为历史生成快照，并把“跨文档初步映射计数”“规范台账中实际存在的证据记录数”“绑定当前 HEAD 的证据数”拆成不同字段。
+2. 后续按 A0–A112 逐项把现有来源、测试、CI、SHA、剩余条件和路线图阶段映射同步到规范台账；只补可定位证据，不根据历史标题或 CI 绿灯猜填。
+3. 在字段口径和所有任务的来源映射收敛前，`semantic_dedup_completed=false`、`code_test_evidence_audit_completed_ids=0`、`fully_audited=0` 保持；不新增 A113+，不修改产品代码。
+4. PR #32 保持 Open / unmerged；真实 Windows、真实素材、真实 Provider/扣费、剪映现场和真实投放继续暂缓。

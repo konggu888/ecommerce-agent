@@ -851,3 +851,11 @@ A109 转场安全补充：当前切点变速遇到显式“交叉溶解”时保
 - A13 的范围是 AI 生成路由/预算/失败状态/商品事实/人工复核；A30 的范围是失败恢复。两者现有测试不能代替逐次回退授权、预算确认前零外部调用、异常正文脱敏的直接断言。
 - A51–A65 是多个独立验收合同，不可整体合并。A57 的两个场景独立保留；A61/A62 不合并。详情见 `docs/PLAN003_UXS2_CREDENTIAL_AND_COST_EVIDENCE_2026-10-15.md` 和唯一权威台账 `docs/AD_STUDIO_PROGRESS_DASHBOARD.md`。
 - 下一步继续映射 A0–A112 其余正式合同，确认是否存在直接覆盖端点/外发告知、凭据存储与异常脱敏的条款；若没有，登记为既有计划的合同缺口，不新增 A113+。不开发产品功能，不发布总体完成率。PR #32 必须 Open / unmerged；真实 Provider/扣费、Windows 真机、真实素材、剪映和投放验证继续暂缓。
+
+
+## 接手提醒｜PLAN-003 发现台账指标口径冲突｜2026-10-15
+
+- 当前权威 dashboard 声称 A0–A112 的跨文档部分证据映射已开始（计数 113）；但规范 JSON 台账仅有 18 个任务含 evidence、其中 6 个编号含 source/test/CI/workflow 证据，且没有证据 SHA 绑定当前 HEAD。
+- JSON 台账仍有 70 个任务的 `roadmap_phase=待路线图映射`，与 dashboard 中“阶段 2–6 分批依赖映射已写入”的概括存在逐项落库/统计口径冲突。
+- 这是台账/指标一致性问题，不是产品功能验收。下一步逐项把已存在的映射和可定位证据同步到规范 JSON，区分跨文档已审阅数、台账结构化证据数和当前 HEAD 证据数；不要猜填阶段、不要把旧 CI 当当前证据。
+- 继续保持 `fully_audited=0`、`semantic_dedup_completed=false`、`code_test_evidence_audit_completed_ids=0`；不新增 A113+、不赋权、不发布总体完成率。PR #32 Open / unmerged，真实环境验收继续暂缓。

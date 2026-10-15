@@ -3,7 +3,7 @@
   "generated_from_head": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6",
   "audit_status": "all_113_numbered_task_titles_recovered_requirement_level_reviewed_cross_source_status_reconciliation_pending_current_head_code_test_evidence_audit_pending",
   "progress_percentages_enabled": false,
-  "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until cross-source scope reconciliation and weighting review. Historical A68-A74 and A99 task identities have been recovered; their current-HEAD evidence audit remains pending.",
+  "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until cross-source scope reconciliation and weighting review. Historical A68-A74 and A99 task identities have been recovered; their current-HEAD evidence audit remains pending. Cross-source status audit 2026-10-15 found the dashboard's 113 partial-mapping count and this JSON snapshot's 6 structured source/test/CI/workflow evidence task IDs are different metrics; 0 evidence records are bound to current HEAD. Do not silently treat them as equivalent. Roadmap phase is still pending for 70 task records; reconcile item-by-item.",
   "counts": {
     "numbered_slots": 113,
     "fully_audited": 0,
@@ -5313,5 +5313,20 @@
       ],
       "note": "Documentation/planning audit baseline; does not imply full acceptance of A0-A5."
     }
-  ]
+  ],
+  "last_reconciled_against_head": "73d66d7f294bdeb57c963851043392d84203ba6d",
+  "reconciliation_status": "historical_snapshot_metrics_conflict_with_authoritative_dashboard_pending_item_level_reconciliation",
+  "cross_source_reconciliation": {
+    "dashboard_claimed_code_test_evidence_reviewed_ids": 113,
+    "task_register_code_test_evidence_reviewed_ids": 6,
+    "task_records_with_any_evidence": 18,
+    "task_records_with_source_test_ci_or_workflow_evidence": 6,
+    "task_records_with_evidence_sha_matching_current_head": 0,
+    "task_records_with_roadmap_phase_pending": 70,
+    "semantic_dedup_completed": false,
+    "code_test_evidence_audit_completed_ids": 0,
+    "fully_audited": 0,
+    "weighting_completed": false,
+    "note": "Do not treat these counters as equivalent. The dashboard count means cross-document partial mapping was claimed; this JSON snapshot only stores structured evidence for 18 tasks and source/test/CI/workflow evidence for 6 task IDs. No evidence record is tied to the current branch HEAD. Roadmap phase remains pending on 70 task records despite phase/dependency mapping notes in the dashboard. Reconcile task-by-task before enabling completion percentages."
+  }
 }
