@@ -1,5 +1,20 @@
 # 【PLAN-003 当前状态｜A100–A104 部分证据映射｜2026-10-15】
 
+- **源码/测试审计基线**：分支 `feat/product-drama-visual-review` 的 HEAD `c77704d86d6131d13501448af76ce24afc56ad7b`；本轮文档更新前，CI PR [38729441932](https://github.com/konggu888/ecommerce-agent/actions/runs/38729441932) 与 docs-sync PR [38729441851](https://github.com/konggu888/ecommerce-agent/actions/runs/38729441851) 均 success。PR #32 Open/unmerged。
+- **本轮只审计源码、专项测试和 UI 证据边界，不改产品代码、不宣布正式验收通过。** `postprocess.py` / `test_postprocess.py` blobs：`36ce0e4a17d635e3ed381c3b0bada1428e0290c4` / `29141bb61ee3ec6ae5960395e81c7dc64ef79feb`；`ffmpeg.py` / `test_ffmpeg.py` blobs：`d13870a12eae682133995bac7305900e0a4ff767` / `e409cbded7db0c01a1962f722d54c615429f5e37`。
+- **A100** 淡出按变速后的输出时长定位，短镜头淡化长度受限；测试核对 FFmpeg 参数。真实渲染/听感未验证。
+- **A101** 视频 `setpts` 与音频 `atempo` 同步构造，常速不添加多余音频滤镜；真实素材同步/编码器兼容性未验证。
+- **A102** 三种画幅目标均为 1080P 级尺寸，低于目标的 ffprobe 元数据被拒绝；当前测试为 mock，未证明真实最终导出。
+- **A103** 视频淡入/淡出与原音轨 `afade` 同步，短镜头及变速后淡出有命令级测试；真实成片听感未验证。
+- **A104** 已实现 `xfade`/`acrossfade` 滤镜图和无音轨补静音；仍需验证混合模式中 0.001 秒硬切重叠的实际效果。静态 UI 检索未找到明确可编辑的转场选择器，是当前发现的 UI 核对项。
+- **映射覆盖（直接按任务台账统计，不是完成率）**：113 个编号任务；109 个有 evidence 指针；104 个含 source/test evidence；当前源码/测试快照审计计数 47；完整代码/测试审计 0；完整审计 0；语义去重未完成。权重与总体完成率关闭。
+- A100–A104 均为 `partial_evidence_mapping` / `not_audited`。历史 SHA 的旧勾选不自动继承；不新增 A113+，不删除/合并/重编号；PR #32 不合并；Windows 真机、真实素材、Provider/扣费、剪映现场与商业效果验收继续暂缓。
+- **下一批 A105–A109**。文档提交后须核验最新 SHA 的四项 CI/docs-sync；Push 状态若无法独立查询须如实说明。
+
+---
+
+# 【PLAN-003 当前状态｜A100–A104 部分证据映射｜2026-10-15】
+
 - **源码/测试审计基线**：`c77704d86d6131d13501448af76ce24afc56ad7b`；源码/测试 blobs 及逐项证据见任务台账。基线 CI PR [38729441932](https://github.com/konggu888/ecommerce-agent/actions/runs/38729441932) 与 docs-sync PR [38729441851](https://github.com/konggu888/ecommerce-agent/actions/runs/38729441851) 均 success；Push 工作流未独立核实。PR #32 Open/unmerged。
 - **A100** 淡出按变速后输出时长定位，短片段淡化时长不超过输出时长；仅验证 mocked FFmpeg 参数。
 - **A101** 非常速时视频 setpts 与音频 atempo 同步，常速避免不必要滤镜；未验证实际波形/音质。
