@@ -1,17 +1,14 @@
-# 【当前接手状态｜2026-10-15｜路由回退证据映射已补充】
+# 【当前接手入口｜2026-10-15｜规划控制体系优先】
 
-- 当前分支：`feat/product-drama-visual-review`；PR #32 必须保持 Open / unmerged。
-- 本轮已完成的唯一任务：静态核对 `ModelRouter.resolve_route()`、`CapabilityRouter.decide_llm/decide_asset/decide_video()` 与现有路由测试，结果已写入 `docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md` 的 UXS-2 路由回退专项节。
-- 结论：存在显式模型不可用后自动选择其他云端模型/本地模型的代码路径；CapabilityRouter 也会在本地服务不可用时选择已配置云端服务。本轮未找到每次跨 Provider/本地转云端前均需用户明确同意、且拒绝后外部调用为零的充分证据。这是 P1 风险线索，不代表已证实真实外发或扣费。
-- 现有 `test_all_nine_functions_use_their_selected_model` 使用 FakeRouter，创建 9 个模型并断言 9 次调用；当前 `FUNCTIONS` 有 13 项。该测试不能证明真实路由对所有 13 项覆盖完整，也不覆盖回退授权。
-- 本轮只做静态代码/测试/文档映射，没有修改产品代码，没有运行本地测试，没有真实模型/代理/扣费验证。
-- 本轮开始 HEAD `36bb49fb418ba9af29d999e271fefa04fe80b092` 的 PR 触发 CI run `38700104159` 与 docs-sync run `38700104220` 均 success。文档更新后必须重新核对新 HEAD 的 CI 与 docs-sync；不得沿用本基线绿灯。
-- 下一项唯一任务：继续 UXS-2，追踪 CapabilityRouter 决策结果的实际调用点与硬件执行模式 UI，并映射到 A0–A112 的既有授权合同/测试；之后按既定顺序审计密钥保存、费用未知值、外发告知和模型切换后的缓存/历史隔离。
-- 不开发产品功能、不新增正式验收编号、不计算总体完成率；保持 `code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false`。Windows 真机、真实素材、Provider/实际扣费、剪映现场和真实投放验证继续暂缓。
+- 仓库：`konggu888/ecommerce-agent`；项目：`apps/ad-studio-desktop`；分支：`feat/product-drama-visual-review`；PR #32 必须保持 Open / unmerged。
+- **唯一权威进度与下一项**：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`。本轮先完成规划/进度控制体系盘点与入口纠偏；之后按总台账把 A0–A112 规范化为唯一任务记录。
+- 当前最新已核对 HEAD（本轮文档修改前）：`9b52642fc2608fe24b0d4dba4ba0ef36d3ca8e67`；PR-triggered CI `38700695789` 与 docs-sync `38700695499` success，Netlify deploy-preview success；Push-triggered 两项未独立核实。提交本轮文档后必须重新检查新 HEAD。
+- 本轮不开发产品功能，不继续 UXS-2 专项细节，不删/重编号 A0–A112，不赋权、不计算总体完成率。真实 Windows、真实素材、Provider/扣费、剪映现场、真实投放与商业效果验证继续暂缓。
+- 下方历史快照仅供追溯；其中的旧 SHA 和“下一项”不得作为当前执行指令。冲突以总进度台账为准。
 
 ---
 
-# 【当前优先级更新｜UXS-2 用户旅程证据映射进行中｜2026-10-15】
+# 【历史接手快照｜UXS-2 用户旅程证据映射｜2026-10-15｜不可覆盖总进度台账】
 
 - 审查入口：`docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md`；本轮已完成“创建入口、商品输入、费用授权顺序、项目持久化”的首轮静态证据映射（第 3A 节）。这是审计，不是新产品功能开发。
 - 首个重要合同/证据冲突候选：`App.create()` 在显示 `AI创意与项目预算确认` 前调用 `create_plan/create_plans`；`ModelRouter.create_plan()` 对九个阶段调用 `complete_json()`。HELP/PROJECT_LOGIC 当前允许确认前进行 AI 分析，但用户费用授权范围是否覆盖收费规划模型调用尚待裁决。若所有收费云端模型调用都必须先确认，则是 P0 候选阻断；若只限制视频/资产生成 Provider，则需核实规划调用费用是否披露/计入预算。实际收费影响依赖模型路由，当前未修复、未新增验收编号、未改产品代码。
