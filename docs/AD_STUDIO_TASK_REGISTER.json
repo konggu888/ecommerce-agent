@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "c77704d86d6131d13501448af76ce24afc56ad7b",
-  "audit_status": "A0-A112 inventory maintained. A90-A112 partial source/test evidence mapped on source/test audit baseline c77704d86d6131d13501448af76ce24afc56ad7b. Last explicitly verified workflow HEAD before the A110-A112 docs batch 47479d41725cf726e1543524bda012fee8bdf890 had CI PR 38730727069 and docs-sync PR 38730727058 success; latest checked docs HEAD after that batch 143d01f87c3161deee04cd2d3c821b1e915084d1 has CI PR 38731016045 and docs-sync PR 38731016172 success. Push workflow pair not independently verified. Full code/test audit 0; full audit 0; semantic dedup pending; weighting and overall completion percentage disabled.",
+  "audit_status": "A0-A112 inventory maintained. A90-A112 have partial source/test evidence mappings; source/test audit baseline c77704d86d6131d13501448af76ce24afc56ad7b. Latest checked documentation HEAD before this reconciliation 143d01f87c3161deee04cd2d3c821b1e915084d1: CI PR 38731016045 and docs-sync PR 38731016172 succeeded. Push workflow pair not independently verified. Current audit coverage: 113 tasks have evidence pointers, 112 have source/test evidence, 56 source/test snapshot mappings; full code/test audit 0, full audit 0, semantic dedup pending, weighting and overall completion percentage disabled. Recheck the new branch HEAD after this documentation update.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until cross-source scope reconciliation and weighting review. Historical A68-A74 and A99 task identities have been recovered; their current-HEAD evidence audit remains pending. Cross-source status audit 2026-10-15 found the dashboard's 113 partial-mapping count and this JSON snapshot's 6 structured source/test/CI/workflow evidence task IDs are different metrics; 0 evidence records are bound to current HEAD. Do not silently treat them as equivalent. Roadmap phase is still pending for 70 task records; reconcile item-by-item. Incremental current-HEAD reconciliation 2026-10-15: A0-A6 roadmap_phase mapped to Phase 1 from roadmap goal chain; A5 depends on A4. A0-A4 source/test/workflow evidence refreshed to current HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1 and current CI/docs-sync runs attached. No acceptance status upgraded; full audit remains zero. Incremental reconciliation 2026-10-15: A0-A8 primary roadmap phases are mapped; explicit dependencies A5→A4, A7→A6, A8→A7 are recorded. A0-A8 source/test mappings were rechecked against current branch tree and bound to current HEAD CI Push/PR and PR docs-sync evidence. No task acceptance status upgraded; docs-sync Push evidence for current HEAD not found. PLAN-003 2026-10-15: A8 corrected to Phase 2. A9-A17 mapped to Phase 1; explicit dependencies A12→A5/A8, A13→A12, A14→A13, A15→A8/A9/A10/A11, A16→A8/A10/A11, A17→A7/A8/A9/A10/A11. Partial evidence only; acceptance statuses unchanged. PLAN-003 incremental reconciliation 2026-10-15: A18-A19 mapped to Phase 3; A20-A23 mapped to Phase 1. Partial source/test pointers recorded with evidence SHA null pending exact commit provenance. Dependencies recorded only where the documented flow supports them: A19→A18, A21→A20, A22→A21, A23→A20/A21/A22. No acceptance status upgraded; overall completion remains disabled. PLAN-003 update 2026-10-15: A24-A29 mapped to Phase 1. Evidence SHA left null pending per-file provenance; code_test_evidence_reviewed_ids counts records with source/test/ci/workflow pointers, not semantic review or acceptance. Requirement-level semantic review remains 113; no task status promoted, no overall completion metric. PLAN-003 update 2026-10-15: A30-A33 mapped to roadmap phases with partial source/test evidence and explicit proof limits. Related recovery/doc/handoff/end-to-end requirements are recorded as overlaps, not merged. Evidence SHA remains unpinned; no task status promoted and no overall completion metric. PLAN-003 update 2026-10-15: A34-A37 mapped to Phase 5; evidence SHA remains null pending per-file provenance. result_proof_layers and user_freedom_dimensions capture the limits of automation evidence and relevant authorization/cancellation freedoms. No formal acceptance promoted, no weighting or overall completion metric. PLAN-003 update 2026-10-15: A38-A41 mapped to Phase 0. A39 push/PR CI workflow evidence is tied to validated snapshot 1af689ab2dacbaff9ad7a08a26f1b4173cc328c4; it is not final-HEAD evidence. Keep all evidence SHA null pending per-file provenance; no formal acceptance promoted. PLAN-003 update 2026-10-15: A42-A45 mapped to their strategic phases; all remain not_audited. Current-HEAD evidence count remains zero pending per-file blob provenance. Do not assign weights or publish overall completion. PLAN-003 update 2026-10-15: A46-A49 mapped to Phase 1; recovery-related overlaps remain unresolved candidates. Evidence SHA remains null pending per-file provenance. No formal acceptance promoted, no weighting or overall completion metric. PLAN-003 update 2026-10-15: A46-A49 mapped to Stage 1. Related recovery evidence remains cross-referenced without merging IDs; per-file evidence SHA remains null; no formal acceptance or overall completion metric is inferred. PLAN-003 update 2026-10-15: A50-A53 mapped to Stage 1. A50/A56 prompt-linebreak relationship and A51/A52 cost concerns remain overlap candidates, not merged items; per-file evidence SHA remains null and no overall completion metric is inferred. PLAN-003 update 2026-10-15: A54-A57 task-register entries reconciled with the current dashboard/handoff. A57's two same-ID acceptance headings remain an explicit unresolved conflict; no scope merge or renumbering. Metric correction 2026-10-15: separate source/test evidence snapshot count from exact final-current-HEAD count. A58-A61 evidence SHA values point to 5fe7fe19..., not the current documentation HEAD; current_head_evidence_task_ids is therefore 0, while source_test_evidence_snapshot_task_ids=4. PLAN-003 2026-10-15 A66-A69: source/test file blob evidence was inspected at branch HEAD fe298b3ae6005b118d8b7b1adf775a261d228ffe; its CI Push/PR and docs-sync Push/PR all succeeded. This is partial evidence mapping only, not formal acceptance. A67's explicit delete/empty-after-pass invalidation test remains a gap; A68's complete invalid-reference/persistence/no-mutation assertions require full inspection; A69 still needs caller-level persistence rejection and legacy compatibility proof. Preserve A0-A112 IDs and keep overall completion disabled. Current documentation HEAD changes with each audit-note commit; current_head_evidence_task_ids counts only records proven against the final documentation HEAD, so it remains 0 until final SHA and file-level evidence are reconciled. PLAN-003 2026-10-15 A70-A74: source/test file blob evidence was inspected at branch HEAD 5c689a16530f30c38785435f2f0a10a9fc796d2c; its CI Push/PR and docs-sync Push/PR all succeeded. This is partial evidence mapping only, not formal acceptance. Preserve known test gaps for each task; do not infer story quality from structure checks, do not merge/renumber task IDs, and keep current_head_evidence_task_ids=0 until final documentation HEAD evidence is reconciled. PLAN-003 2026-10-15 A75-A79: source/test evidence was inspected at source/test snapshot 3138a34ecd0d7779eb6809b85a1c3449daf3c24a; four CI/docs-sync workflows succeeded on that snapshot. A75/A76 are mapped to Stage 4 based on their short-drama source/test context; this is a roadmap classification, not formal acceptance. Keep limitations on text-only product-fact/selling-point checks and storyboard/person-knowledge structural checks explicit. PLAN-003 2026-10-15 A80-A84: source/test evidence was inspected at source/test snapshot 4063ba5a452c0c883ff39c8ea1ce33499a80eaf4; four CI/docs-sync workflows succeeded on that snapshot. Partial mapping only; keep semantic continuity and real visual performance as separate proof layers. Preserve A0-A112 numbering and do not enable overall completion percentages.",
   "counts": {
@@ -16,7 +16,7 @@
     "code_test_evidence_reviewed_ids": 113,
     "roadmap_phase_mapped_ids": 113,
     "current_head_evidence_task_ids": 0,
-    "source_test_evidence_snapshot_task_ids": 55
+    "source_test_evidence_snapshot_task_ids": 56
   },
   "known_id_gaps": [],
   "tasks": [
@@ -4728,32 +4728,53 @@
         {
           "kind": "source",
           "path": "apps/ad-studio-desktop/ad_studio/app.py",
-          "detail": "Open-existing-project flow calls recovery before displaying the project and shows a recovery summary; generate-shot UI exposes a cost-pending state after successful video output with ledger failure.",
-          "sha": null
+          "sha": "7e88102f01a41c70c8a67e925daa24f4d71b90a7",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "Cost-pending UI preserves successful video status, shows project actual cost pending reconciliation, and suppresses normal project-actual-total text in that branch; opening a project invokes recovery before display."
         },
         {
           "kind": "source",
           "path": "apps/ad-studio-desktop/ad_studio/production.py",
-          "detail": "recover_project() reconciles actual cost from successful ledger rows and preserves legacy cost when no ledger rows exist.",
-          "sha": null
+          "sha": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "recover_project reconciles project/shot costs from successful ledger rows and preserves legacy cost fields when no ledger rows exist."
         },
         {
           "kind": "test",
           "path": "apps/ad-studio-desktop/test_desktop.py",
-          "detail": "test_a57_generate_shot_ui_surfaces_cost_reconciliation_state; test_a57_project_recovery_reconciles_actual_cost_from_ledger; test_a57_project_recovery_preserves_legacy_cost_when_no_ledger_rows_exist; test_a57_open_existing_project_runs_recovery_before_display.",
-          "sha": null
+          "sha": "357c54dad99f61b99891bcc365dd2f9efc1a1009",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "Direct tests: test_a57_generate_shot_ui_surfaces_cost_reconciliation_state; test_a57_project_recovery_reconciles_actual_cost_from_ledger; test_a57_project_recovery_preserves_legacy_cost_when_no_ledger_rows_exist; test_a57_open_existing_project_runs_recovery_before_display."
         },
         {
-          "kind": "contract_conflict",
-          "path": "docs/AD_STUDIO_ACCEPTANCE_PLAN.md; docs/AD_STUDIO_ACCEPTANCE_SOP.md",
-          "detail": "Two distinct headings use A57: '成本待核对状态界面对齐' and '项目恢复入口与成本对账'. Do not infer they are one contract; preserve both clauses without merging/splitting/renumbering until cross-source resolution.",
-          "sha": null
+          "kind": "ci_pr",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729017063",
+          "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "CI PR success on source/test audit baseline c77704d86d6131d13501448af76ce24afc56ad7b."
+        },
+        {
+          "kind": "docs_sync_pr",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729017091",
+          "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "docs-sync PR success on source/test audit baseline c77704d86d6131d13501448af76ce24afc56ad7b."
+        },
+        {
+          "kind": "pr_state",
+          "path": "https://github.com/konggu888/ecommerce-agent/pull/32",
+          "sha": "143d01f87c3161deee04cd2d3c821b1e915084d1",
+          "detail": "PR #32 remained open and unmerged on latest checked documentation HEAD 143d01f87c3161deee04cd2d3c821b1e915084d1."
+        },
+        {
+          "kind": "requirement_identity_resolution",
+          "path": "docs/AD_STUDIO_ACCEPTANCE_PLAN.md; docs/AD_STUDIO_ACCEPTANCE_SOP.md; docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md",
+          "sha": null,
+          "detail": "Two A57 clauses are retained as separate acceptance scenarios under one existing numbered slot; no merge, split or renumbering."
         }
       ],
       "remaining_conditions": [
-        "Unresolved P0 cross-source conflict: acceptance plan and SOP each contain two distinct A57 headings. Preserve both source clauses; do not merge scopes, split into new IDs, or renumber.",
-        "The four tests cover UI cost-pending state, successful-ledger reconciliation, legacy-cost preservation and recovery-before-display; they do not prove actual invoices or the complete Windows UI flow.",
-        "Per-file evidence SHA is not pinned; acceptance remains not_audited; real billing/Windows validation remains deferred."
+        "Verify the cost-pending UI clause and the open-project recovery/cost-reconciliation clause independently; both are implemented/tested at source/test level but remain one compound A57 slot.",
+        "Current source/test snapshot evidence is pinned to c77704d86d6131d13501448af76ce24afc56ad7b; current documentation HEAD evidence remains 0 until all task evidence is reconciled against a final documentation HEAD.",
+        "Real provider invoices, actual charges and Windows real-machine UI/recovery remain deferred."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -4771,9 +4792,9 @@
           "## A57：恢复流程接入 UI 与成本账本对账（待 CI）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_plus_partial_source_test_mapping_semantic_dedup_and_full_evidence_audit_pending",
-      "semantic_dedup_review_status": "reviewed_requirement_level",
-      "semantic_dedup_batch": "PLAN-003-DEDUP-005",
+      "source_inventory_status": "current_source_test_snapshot_mapped_to_c77704d86d6131d13501448af76ce24afc56ad7b; CI_PR_and_docs_sync_PR_success_on_source_test_baseline; latest_checked_doc_HEAD_143d01f87c3161deee04cd2d3c821b1e915084d1_CI_PR_and_docs_sync_PR_success; push_workflow_pair_not_independently_verified; full_acceptance_pending",
+      "semantic_dedup_review_status": "reviewed_requirement_level_compound_slot_two_distinct_clauses",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-008",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
       "relationship_to_other_tasks": [
         {
@@ -4801,16 +4822,25 @@
       },
       "audit_notes": "PLAN-003 incremental review 2026-10-15; code/test snapshot 4628fd7219f9d757be6458df2348c76853c167ff; per-file evidence SHA not independently pinned; not formal acceptance.",
       "source_heading_conflict": {
-        "status": "unresolved_duplicate_acceptance_heading_collision",
+        "status": "resolved_compound_slot_two_independent_acceptance_clauses",
         "source_documents": [
           "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
-          "docs/AD_STUDIO_ACCEPTANCE_SOP.md"
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
         ],
         "headings": [
           "A57｜成本待核对状态界面对齐",
           "A57｜项目恢复入口与成本对账"
         ],
-        "resolution_rule": "Preserve both original clauses under the existing A57 slot; do not merge, split into new IDs or renumber until cross-source reconciliation explicitly resolves the identity conflict."
+        "resolution": "Keep one existing A57 numbered slot with two separately testable acceptance clauses: (1) successful output plus ledger failure must show cost-pending UI and suppress the normal project actual total; (2) opening a project must recover state and reconcile costs from successful ledger rows while preserving legacy costs when no ledger exists. Do not merge the clauses, create new IDs, or renumber."
+      },
+      "current_head_evidence_reconciliation": {
+        "head": "c77704d86d6131d13501448af76ce24afc56ad7b",
+        "checked_on": "2026-10-15",
+        "source_test_paths_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": true,
+        "acceptance_status_preserved": "not_audited",
+        "note": "Two A57 clauses independently mapped to app.py/production.py/test_desktop.py. Exact source/test snapshot is c777; CI PR and docs-sync PR succeeded on c777. Latest checked docs HEAD 143d01f has CI PR/docs-sync PR success; Push workflows not independently verified."
       }
     },
     {
@@ -8577,15 +8607,15 @@
         },
         {
           "kind": "ci_pr",
-          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441932",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729017063",
           "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "CI PR success on audit baseline c77704d86d6131d13501448af76ce24afc56ad7b."
+          "detail": "CI PR success on exact source/test audit baseline c77704d86d6131d13501448af76ce24afc56ad7b (run 38729017063)."
         },
         {
           "kind": "docs_sync_pr",
-          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441851",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729017091",
           "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "docs-sync PR success on audit baseline c77704d86d6131d13501448af76ce24afc56ad7b."
+          "detail": "docs-sync PR success on exact source/test audit baseline c77704d86d6131d13501448af76ce24afc56ad7b (run 38729017091)."
         },
         {
           "kind": "pr_state",
@@ -8654,15 +8684,15 @@
         },
         {
           "kind": "ci_pr",
-          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441932",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729017063",
           "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "CI PR success on audit baseline."
+          "detail": "CI PR success on exact source/test audit baseline c77704d86d6131d13501448af76ce24afc56ad7b (run 38729017063)."
         },
         {
           "kind": "docs_sync_pr",
-          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441851",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729017091",
           "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "docs-sync PR success on audit baseline."
+          "detail": "docs-sync PR success on exact source/test audit baseline c77704d86d6131d13501448af76ce24afc56ad7b (run 38729017091)."
         },
         {
           "kind": "pr_state",
@@ -8745,15 +8775,15 @@
         },
         {
           "kind": "ci_pr",
-          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441932",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729017063",
           "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "CI PR success on audit baseline."
+          "detail": "CI PR success on exact source/test audit baseline c77704d86d6131d13501448af76ce24afc56ad7b (run 38729017063)."
         },
         {
           "kind": "docs_sync_pr",
-          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441851",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729017091",
           "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "docs-sync PR success on audit baseline."
+          "detail": "docs-sync PR success on exact source/test audit baseline c77704d86d6131d13501448af76ce24afc56ad7b (run 38729017091)."
         },
         {
           "kind": "pr_state",
@@ -8822,15 +8852,15 @@
         },
         {
           "kind": "ci_pr",
-          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441932",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729017063",
           "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "CI PR success on audit baseline."
+          "detail": "CI PR success on exact source/test audit baseline c77704d86d6131d13501448af76ce24afc56ad7b (run 38729017063)."
         },
         {
           "kind": "docs_sync_pr",
-          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441851",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729017091",
           "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "docs-sync PR success on audit baseline."
+          "detail": "docs-sync PR success on exact source/test audit baseline c77704d86d6131d13501448af76ce24afc56ad7b (run 38729017091)."
         },
         {
           "kind": "pr_state",
@@ -8913,15 +8943,15 @@
         },
         {
           "kind": "ci_pr",
-          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441932",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729017063",
           "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "CI PR success on audit baseline."
+          "detail": "CI PR success on exact source/test audit baseline c77704d86d6131d13501448af76ce24afc56ad7b (run 38729017063)."
         },
         {
           "kind": "docs_sync_pr",
-          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441851",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729017091",
           "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "docs-sync PR success on audit baseline."
+          "detail": "docs-sync PR success on exact source/test audit baseline c77704d86d6131d13501448af76ce24afc56ad7b (run 38729017091)."
         },
         {
           "kind": "pr_state",
@@ -9487,7 +9517,7 @@
           "### A110｜音乐卡点的口播、字幕与商品展示保护"
         ]
       },
-      "source_inventory_status": "current_source_test_snapshot_mapped_to_c77704d86d6131d13501448af76ce24afc56ad7b; CI_PR_and_docs_sync_PR_success_on_a9fe2d93d186bac79dafee294e518209d963f420; push_workflow_pair_not_independently_verified; full_acceptance_pending",
+      "source_inventory_status": "current_source_test_snapshot_mapped_to_c77704d86d6131d13501448af76ce24afc56ad7b; CI_PR_and_docs_sync_PR_success_on_143d01f87c3161deee04cd2d3c821b1e915084d1; push_workflow_pair_not_independently_verified; full_acceptance_pending",
       "semantic_dedup_review_status": "reviewed_related_music_subtitle_protection_cluster_no_cross_id_merge",
       "semantic_dedup_batch": "PLAN-003-DEDUP-004",
       "last_verified_date": "2026-10-15",
@@ -9586,7 +9616,7 @@
           "### A111 CI 修复记录"
         ]
       },
-      "source_inventory_status": "current_source_test_snapshot_mapped_to_c77704d86d6131d13501448af76ce24afc56ad7b; CI_PR_and_docs_sync_PR_success_on_a9fe2d93d186bac79dafee294e518209d963f420; push_workflow_pair_not_independently_verified; full_acceptance_pending",
+      "source_inventory_status": "current_source_test_snapshot_mapped_to_c77704d86d6131d13501448af76ce24afc56ad7b; CI_PR_and_docs_sync_PR_success_on_143d01f87c3161deee04cd2d3c821b1e915084d1; push_workflow_pair_not_independently_verified; full_acceptance_pending",
       "semantic_dedup_review_status": "reviewed_related_music_subtitle_protection_cluster_no_cross_id_merge",
       "semantic_dedup_batch": "PLAN-003-DEDUP-004",
       "last_verified_date": "2026-10-15",
@@ -9705,7 +9735,7 @@
           "## A112 自动化验收结果｜2026-10-14"
         ]
       },
-      "source_inventory_status": "current_source_test_snapshot_mapped_to_c77704d86d6131d13501448af76ce24afc56ad7b; CI_PR_and_docs_sync_PR_success_on_a9fe2d93d186bac79dafee294e518209d963f420; push_workflow_pair_not_independently_verified; full_acceptance_pending",
+      "source_inventory_status": "current_source_test_snapshot_mapped_to_c77704d86d6131d13501448af76ce24afc56ad7b; CI_PR_and_docs_sync_PR_success_on_143d01f87c3161deee04cd2d3c821b1e915084d1; push_workflow_pair_not_independently_verified; full_acceptance_pending",
       "semantic_dedup_review_status": "reviewed_related_music_subtitle_protection_cluster_no_cross_id_merge",
       "semantic_dedup_batch": "PLAN-003-DEDUP-004",
       "last_verified_date": "2026-10-15",
@@ -10498,6 +10528,44 @@
         "A55/A59/A60/A61/A63/A64/A65 share ledger failure/cost integrity themes; final cross-source semantic deduplication remains incomplete.",
         "No IDs merged, removed, or renumbered."
       ]
+    },
+    {
+      "batch_id": "PLAN-003-DEDUP-008",
+      "range": "A57",
+      "status": "resolved_requirement_identity_as_one_slot_two_distinct_clauses",
+      "reviewed_sources": [
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md",
+        "apps/ad-studio-desktop/ad_studio/app.py",
+        "apps/ad-studio-desktop/ad_studio/production.py",
+        "apps/ad-studio-desktop/test_desktop.py"
+      ],
+      "findings": [
+        {
+          "ids": [
+            "A57"
+          ],
+          "decision": "keep_one_existing_slot_with_two_independent_acceptance_clauses",
+          "reason": "Cost-pending UI after successful video output with ledger failure is a different observable contract from open-project recovery/cost reconciliation. Both have dedicated tests. Preserve both clauses under the existing A57 ID; do not merge acceptance criteria, split into new IDs or renumber."
+        }
+      ],
+      "evidence_snapshot": {
+        "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+        "source_blobs": {
+          "app_py": "7e88102f01a41c70c8a67e925daa24f4d71b90a7",
+          "production_py": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
+          "test_desktop_py": "357c54dad99f61b99891bcc365dd2f9efc1a1009"
+        },
+        "ci_pr_run": 38729017063,
+        "docs_sync_pr_run": 38729017091
+      },
+      "limitations": [
+        "Current source/test mapping only; formal acceptance remains not_audited.",
+        "Real invoices/charges and Windows real-machine UI/recovery remain deferred.",
+        "Push workflow pair is not independently verified by current workflow query."
+      ],
+      "next_batch": "Continue final cross-source status/duplicate reconciliation across A0-A112; do not create A113+."
     }
   ],
   "code_test_evidence_batches": [
@@ -10821,19 +10889,19 @@
       ]
     }
   ],
-  "last_reconciled_against_head": "47479d41725cf726e1543524bda012fee8bdf890",
-  "reconciliation_status": "item_level_reconciliation_in_progress_A0_A61_roadmap_phases_and_partial_evidence_mapped_with_A57_identity_conflict",
+  "last_reconciled_against_head": "143d01f87c3161deee04cd2d3c821b1e915084d1",
+  "reconciliation_status": "cross_source_reconciliation_in_progress_A0_A112; A57 same-ID heading conflict resolved as one numbered slot with two independently testable clauses; remaining historical status and current-head evidence reconciliation pending",
   "cross_source_reconciliation": {
-    "task_register_code_test_evidence_reviewed_ids": 62,
-    "task_records_with_any_evidence": 74,
-    "task_records_with_source_test_ci_or_workflow_evidence": 62,
+    "task_register_code_test_evidence_reviewed_ids": 113,
+    "task_records_with_any_evidence": 113,
+    "task_records_with_source_test_ci_or_workflow_evidence": 113,
     "task_records_with_evidence_sha_matching_current_head": 0,
-    "task_records_with_roadmap_phase_pending": 8,
+    "task_records_with_roadmap_phase_pending": 0,
     "semantic_dedup_completed": false,
     "code_test_evidence_audit_completed_ids": 0,
     "fully_audited": 0,
     "weighting_completed": false,
-    "note": "2026-10-15: Reconciled registry counters with A58-A61 dashboard evidence. 4 tasks have evidence pinned to source/test snapshot 5fe7fe19..., but 0 tasks have evidence SHA matching the final current branch HEAD. A57 duplicate-heading conflict remains unresolved.",
+    "note": "2026-10-15 current reconciliation. A57 identity conflict resolved as one existing task slot with two separate acceptance clauses; no IDs merged/split/renumbered. All 113 task records have some evidence pointer, 112 include source/test evidence, 56 have been bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b, and 0 are bound to the final documentation HEAD. Latest checked documentation HEAD before this update was 143d01f87c3161deee04cd2d3c821b1e915084d1; CI PR/docs-sync PR succeeded; Push workflows not independently verified.",
     "roadmap_phase_mapped_ids": [
       "A0",
       "A1",
@@ -10897,6 +10965,12 @@
       "A59",
       "A60",
       "A61",
+      "A62",
+      "A63",
+      "A64",
+      "A65",
+      "A66",
+      "A67",
       "A68",
       "A69",
       "A70",
@@ -10904,6 +10978,8 @@
       "A72",
       "A73",
       "A74",
+      "A75",
+      "A76",
       "A77",
       "A78",
       "A79",
@@ -10941,11 +11017,11 @@
       "A111",
       "A112"
     ],
-    "current_branch_head": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be",
-    "source_test_evidence_baseline_sha": "5fe7fe19b9827aad26787eb05ba93dc18e48b6be",
-    "current_head_note": "A58-A61 evidence records are pinned to source/test snapshot 5fe7fe19b9827aad26787eb05ba93dc18e48b6be (4 task records). Documentation branch HEAD at this reconciliation is 66ff0cc13c4d44017737bfaf224d9a39761bc2f4; evidence SHA does not equal that HEAD, so current_head_evidence_task_ids must be 0. This documentation-only reconciliation commit will change HEAD again; recheck the resulting SHA.",
+    "source_test_evidence_baseline_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+    "current_branch_head": "143d01f87c3161deee04cd2d3c821b1e915084d1",
+    "current_head_note": "Source/test evidence baseline is c77704d86d6131d13501448af76ce24afc56ad7b; documentation HEAD checked before this update is 143d01f87c3161deee04cd2d3c821b1e915084d1. Evidence is not bound to the exact final documentation HEAD, so current_head_evidence_task_ids remains 0. Recheck the resulting HEAD after this docs-only commit.",
     "dashboard_claimed_requirement_level_reviewed_ids": 113,
-    "task_records_with_evidence_sha_matching_source_test_snapshot": 4,
-    "final_documentation_head_at_reconciliation": "66ff0cc13c4d44017737bfaf224d9a39761bc2f4"
+    "task_records_with_evidence_sha_matching_source_test_snapshot": 56,
+    "final_documentation_head_at_reconciliation": "143d01f87c3161deee04cd2d3c821b1e915084d1"
   }
 }
