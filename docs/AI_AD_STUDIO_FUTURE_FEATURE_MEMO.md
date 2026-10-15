@@ -1,3 +1,5 @@
+> **PLAN-003 跨来源审计补充｜2026-10-16：** DEDUP-010 在源码/测试基线 `2f2bec716073716699a0d8916aa7b8457e862c8c` 核对 A52/A55/A59/A60/A63/A64/A65/A99。四项 CI/docs-sync 均 success。A59（有成功账本行时重算项目总额）与 A60（无成功行时保留旧成本）为互补分支；A99 是逐镜头陈旧成本清理；A52/A55/A63/A64/A65 分别处理失败尝试归因、视频/素材成功后的成本写入异常、迁移基线保护、账本原子持久化等不同合同。全部保持 `not_audited`，不等于正式验收；A63 保存重载、A64 完整入口行为、A65 临时文件清理等缺口仍在。真实 Provider/账单与 Windows 真机验证继续暂缓。权威进度见 `docs/AD_STUDIO_PROGRESS_DASHBOARD.md`。
+
 > **计划边界说明｜2026-10-14：** 本文件只记录未来能力，不决定当前开发顺序。当前唯一执行顺序见 `docs/AD_STUDIO_PRODUCT_ROADMAP.md`，任务范围规则见 `docs/AD_STUDIO_EXECUTION_CONTROL.md`，总进度见 `docs/AD_STUDIO_PROGRESS_DASHBOARD.md`。条目在核验代码、测试和证据前不得自动认定为已实现或未实现。暂缓的真实环境项目继续保留，未经用户许可不得启动。
 
 # AI 商品广告工厂｜后续功能备忘

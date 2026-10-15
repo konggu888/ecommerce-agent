@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_from_head": "c77704d86d6131d13501448af76ce24afc56ad7b",
-  "audit_status": "PLAN-003 cross-source reconciliation continued on docs baseline e73d4064141a86058c86ef9c12a3ebe9cca0749c. All four workflows on this exact SHA succeeded: CI Push 38732176115, CI PR 38732181502, docs-sync Push 38732175972, docs-sync PR 38732181453. These runs verify this documentation baseline only; no formal task acceptance is implied. Coverage: 113 task records have evidence pointers, 112 have source/test evidence, 56 are tied to source/test snapshot; full code/test audits 0, full formal audits 0. Semantic dedup remains incomplete; overall percentage/weights remain disabled. DEDUP-009 reconciles A50/A56 and A61/A62 as capability/remediation relationships, preserves A57 as one slot with two clauses, keeps A100-A112 distinct, and corrects stale A112 future-memo wording. Next: ledger/cost overlap review A52/A55/A59/A60/A63/A64/A65/A99. No new IDs; no product code changed.",
+  "generated_from_head": "2f2bec716073716699a0d8916aa7b8457e862c8c",
+  "audit_status": "PLAN-003 DEDUP-010 reviewed cost/ledger contracts A52/A55/A59/A60/A63/A64/A65/A99 against current HEAD 2f2bec716073716699a0d8916aa7b8457e862c8c. Four exact-SHA workflows succeeded. Relationships distinguished; formal acceptance remains pending.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -15,7 +15,7 @@
     "semantic_dedup_reviewed_task_ids": 113,
     "code_test_evidence_reviewed_ids": 113,
     "roadmap_phase_mapped_ids": 113,
-    "current_head_evidence_task_ids": 0,
+    "current_head_evidence_task_ids": 8,
     "source_test_evidence_snapshot_task_ids": 56
   },
   "known_id_gaps": [],
@@ -4409,7 +4409,7 @@
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
       "semantic_overlap_review": {
-        "status": "mapped_not_resolved",
+        "status": "reviewed_distinct_contracts_keep_separate",
         "related_ids": [
           "A51",
           "A55",
@@ -4420,9 +4420,28 @@
           "A64",
           "A99"
         ],
-        "note": "Related prompt/cost/recovery concerns share evidence but have distinct contracts; this is a candidate overlap map, not a duplicate verdict. Preserve all original IDs."
+        "note": "PLAN-003-DEDUP-010 checked current source/test blobs at 2f2bec716073716699a0d8916aa7b8457e862c8c. Distinct contract: A52 audits a failed video Provider attempt: retain an auditable failed row and exclude its quote from confirmed actual spend; it does not guarantee that a real provider did not charge after timeout/failure. Preserve original ID; this is not formal acceptance."
       },
-      "audit_notes": "PLAN-003 incremental review 2026-10-15 against source snapshot c14b9bf10ae80379c45e80b42224722aab8c31d7; per-file evidence SHA not independently pinned; not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15 against source snapshot c14b9bf10ae80379c45e80b42224722aab8c31d7; per-file evidence SHA not independently pinned; not formal acceptance.",
+      "current_head_evidence_reconciliation": {
+        "head": "2f2bec716073716699a0d8916aa7b8457e862c8c",
+        "checked_on": "2026-10-16",
+        "source_test_paths_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": true,
+        "acceptance_status_preserved": "not_audited",
+        "source_blobs": {
+          "apps/ad-studio-desktop/ad_studio/production.py": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
+          "apps/ad-studio-desktop/ad_studio/usage_ledger.py": "96d1240af26e31b5f08dc7a3474c1e76a2d4ad5c",
+          "apps/ad-studio-desktop/test_desktop.py": "357c54dad99f61b99891bcc365dd2f9efc1a1009"
+        },
+        "workflow_runs": {
+          "ci_push": 38732620640,
+          "ci_pr": 38732627710,
+          "docs_sync_push": 38732620714,
+          "docs_sync_pr": 38732627612
+        },
+        "note": "Current branch HEAD was checked directly; source/test paths resolve to the recorded blob SHAs at this SHA. All four workflows on this exact SHA succeeded. This is a bounded code/test evidence mapping and relationship decision, not full acceptance; known edge gaps remain."
+      }
     },
     {
       "task_id": "A53",
@@ -4616,7 +4635,7 @@
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
       "semantic_overlap_review": {
-        "status": "mapped_not_resolved",
+        "status": "reviewed_distinct_contracts_keep_separate",
         "related_ids": [
           "A52",
           "A57",
@@ -4627,9 +4646,28 @@
           "A65",
           "A99"
         ],
-        "note": "Shared cost/recovery/prompt concerns are overlap candidates only; preserve original IDs. A57 has an unresolved duplicate-heading collision across the acceptance plan and SOP."
+        "note": "PLAN-003-DEDUP-010 checked current source/test blobs at 2f2bec716073716699a0d8916aa7b8457e862c8c. Distinct contract: A55 handles a different failure boundary: a valid video has already been installed, then local ledger writing fails; preserve the video and mark reconciliation required instead of misclassifying generation as failed. Preserve original ID; this is not formal acceptance."
       },
-      "audit_notes": "PLAN-003 incremental review 2026-10-15; code/test snapshot 4628fd7219f9d757be6458df2348c76853c167ff; per-file evidence SHA not independently pinned; not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15; code/test snapshot 4628fd7219f9d757be6458df2348c76853c167ff; per-file evidence SHA not independently pinned; not formal acceptance.",
+      "current_head_evidence_reconciliation": {
+        "head": "2f2bec716073716699a0d8916aa7b8457e862c8c",
+        "checked_on": "2026-10-16",
+        "source_test_paths_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": true,
+        "acceptance_status_preserved": "not_audited",
+        "source_blobs": {
+          "apps/ad-studio-desktop/ad_studio/production.py": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
+          "apps/ad-studio-desktop/ad_studio/usage_ledger.py": "96d1240af26e31b5f08dc7a3474c1e76a2d4ad5c",
+          "apps/ad-studio-desktop/test_desktop.py": "357c54dad99f61b99891bcc365dd2f9efc1a1009"
+        },
+        "workflow_runs": {
+          "ci_push": 38732620640,
+          "ci_pr": 38732627710,
+          "docs_sync_push": 38732620714,
+          "docs_sync_pr": 38732627612
+        },
+        "note": "Current branch HEAD was checked directly; source/test paths resolve to the recorded blob SHAs at this SHA. All four workflows on this exact SHA succeeded. This is a bounded code/test evidence mapping and relationship decision, not full acceptance; known edge gaps remain."
+      }
     },
     {
       "task_id": "A56",
@@ -5014,15 +5052,26 @@
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
       "current_head_evidence_reconciliation": {
-        "head": "59cc175b40d8040c6e67fccba1b07186e625921e",
-        "checked_on": "2026-10-15",
+        "head": "2f2bec716073716699a0d8916aa7b8457e862c8c",
+        "checked_on": "2026-10-16",
         "source_test_paths_rechecked": true,
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
-        "note": "该 SHA 是源码/测试审计快照；本轮后续只提交文档，源代码/测试文件 blob 未变化。四项工作流已核对为 success。证据映射不等于正式验收，未覆盖边界按 remaining_conditions 保留。"
+        "source_blobs": {
+          "apps/ad-studio-desktop/ad_studio/production.py": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
+          "apps/ad-studio-desktop/ad_studio/usage_ledger.py": "96d1240af26e31b5f08dc7a3474c1e76a2d4ad5c",
+          "apps/ad-studio-desktop/test_desktop.py": "357c54dad99f61b99891bcc365dd2f9efc1a1009"
+        },
+        "workflow_runs": {
+          "ci_push": 38732620640,
+          "ci_pr": 38732627710,
+          "docs_sync_push": 38732620714,
+          "docs_sync_pr": 38732627612
+        },
+        "note": "Current branch HEAD was checked directly; source/test paths resolve to the recorded blob SHAs at this SHA. All four workflows on this exact SHA succeeded. This is a bounded code/test evidence mapping and relationship decision, not full acceptance; known edge gaps remain."
       },
       "semantic_overlap_review": {
-        "status": "mapped_not_resolved",
+        "status": "reviewed_distinct_contracts_keep_separate",
         "related_ids": [
           "A52",
           "A55",
@@ -5032,7 +5081,7 @@
           "A64",
           "A99"
         ],
-        "note": "登记关联/重叠候选，不合并、不删除、不重编号；全量跨来源语义去重仍待完成。"
+        "note": "PLAN-003-DEDUP-010 checked current source/test blobs at 2f2bec716073716699a0d8916aa7b8457e862c8c. Distinct contract: A59 makes successful ledger rows the authority for project-level actual-cost totals when successful rows exist; it addresses stale project snapshots, not failed-only compatibility. Preserve original ID; this is not formal acceptance."
       }
     },
     {
@@ -5112,15 +5161,26 @@
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
       "current_head_evidence_reconciliation": {
-        "head": "59cc175b40d8040c6e67fccba1b07186e625921e",
-        "checked_on": "2026-10-15",
+        "head": "2f2bec716073716699a0d8916aa7b8457e862c8c",
+        "checked_on": "2026-10-16",
         "source_test_paths_rechecked": true,
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
-        "note": "该 SHA 是源码/测试审计快照；本轮后续只提交文档，源代码/测试文件 blob 未变化。四项工作流已核对为 success。证据映射不等于正式验收，未覆盖边界按 remaining_conditions 保留。"
+        "source_blobs": {
+          "apps/ad-studio-desktop/ad_studio/production.py": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
+          "apps/ad-studio-desktop/ad_studio/usage_ledger.py": "96d1240af26e31b5f08dc7a3474c1e76a2d4ad5c",
+          "apps/ad-studio-desktop/test_desktop.py": "357c54dad99f61b99891bcc365dd2f9efc1a1009"
+        },
+        "workflow_runs": {
+          "ci_push": 38732620640,
+          "ci_pr": 38732627710,
+          "docs_sync_push": 38732620714,
+          "docs_sync_pr": 38732627612
+        },
+        "note": "Current branch HEAD was checked directly; source/test paths resolve to the recorded blob SHAs at this SHA. All four workflows on this exact SHA succeeded. This is a bounded code/test evidence mapping and relationship decision, not full acceptance; known edge gaps remain."
       },
       "semantic_overlap_review": {
-        "status": "mapped_not_resolved",
+        "status": "reviewed_distinct_contracts_keep_separate",
         "related_ids": [
           "A52",
           "A57",
@@ -5129,7 +5189,7 @@
           "A63",
           "A99"
         ],
-        "note": "登记关联/重叠候选，不合并、不删除、不重编号；全量跨来源语义去重仍待完成。"
+        "note": "PLAN-003-DEDUP-010 checked current source/test blobs at 2f2bec716073716699a0d8916aa7b8457e862c8c. Distinct contract: A60 preserves legacy totals when there are no successful ledger rows (including failed-only history). It is the complementary no-success branch to A59, not a duplicate. Preserve original ID; this is not formal acceptance."
       }
     },
     {
@@ -5417,22 +5477,33 @@
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
       "current_head_evidence_reconciliation": {
-        "head": "59cc175b40d8040c6e67fccba1b07186e625921e",
-        "checked_on": "2026-10-15",
+        "head": "2f2bec716073716699a0d8916aa7b8457e862c8c",
+        "checked_on": "2026-10-16",
         "source_test_paths_rechecked": true,
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
-        "note": "该 SHA 是源码/测试审计快照；本轮后续只提交文档，源代码/测试文件 blob 未变化。四项工作流已核对为 success。证据映射不等于正式验收，未覆盖边界按 remaining_conditions 保留。"
+        "source_blobs": {
+          "apps/ad-studio-desktop/ad_studio/production.py": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
+          "apps/ad-studio-desktop/ad_studio/usage_ledger.py": "96d1240af26e31b5f08dc7a3474c1e76a2d4ad5c",
+          "apps/ad-studio-desktop/test_desktop.py": "357c54dad99f61b99891bcc365dd2f9efc1a1009"
+        },
+        "workflow_runs": {
+          "ci_push": 38732620640,
+          "ci_pr": 38732627710,
+          "docs_sync_push": 38732620714,
+          "docs_sync_pr": 38732627612
+        },
+        "note": "Current branch HEAD was checked directly; source/test paths resolve to the recorded blob SHAs at this SHA. All four workflows on this exact SHA succeeded. This is a bounded code/test evidence mapping and relationship decision, not full acceptance; known edge gaps remain."
       },
       "semantic_overlap_review": {
-        "status": "mapped_not_resolved",
+        "status": "reviewed_distinct_contracts_keep_separate",
         "related_ids": [
           "A59",
           "A60",
           "A61",
           "A65"
         ],
-        "note": "登记关联/重叠候选，不合并、不删除、不重编号；全量跨来源语义去重仍待完成。"
+        "note": "PLAN-003-DEDUP-010 checked current source/test blobs at 2f2bec716073716699a0d8916aa7b8457e862c8c. Distinct contract: A63 protects a successfully migrated legacy baseline if the next new-charge ledger write fails; its remaining gap is save-and-reload persistence after the failure. Preserve original ID; this is not formal acceptance."
       }
     },
     {
@@ -5511,21 +5582,32 @@
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
       "current_head_evidence_reconciliation": {
-        "head": "59cc175b40d8040c6e67fccba1b07186e625921e",
-        "checked_on": "2026-10-15",
+        "head": "2f2bec716073716699a0d8916aa7b8457e862c8c",
+        "checked_on": "2026-10-16",
         "source_test_paths_rechecked": true,
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
-        "note": "该 SHA 是源码/测试审计快照；本轮后续只提交文档，源代码/测试文件 blob 未变化。四项工作流已核对为 success。证据映射不等于正式验收，未覆盖边界按 remaining_conditions 保留。"
+        "source_blobs": {
+          "apps/ad-studio-desktop/ad_studio/production.py": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
+          "apps/ad-studio-desktop/ad_studio/usage_ledger.py": "96d1240af26e31b5f08dc7a3474c1e76a2d4ad5c",
+          "apps/ad-studio-desktop/test_desktop.py": "357c54dad99f61b99891bcc365dd2f9efc1a1009"
+        },
+        "workflow_runs": {
+          "ci_push": 38732620640,
+          "ci_pr": 38732627710,
+          "docs_sync_push": 38732620714,
+          "docs_sync_pr": 38732627612
+        },
+        "note": "Current branch HEAD was checked directly; source/test paths resolve to the recorded blob SHAs at this SHA. All four workflows on this exact SHA succeeded. This is a bounded code/test evidence mapping and relationship decision, not full acceptance; known edge gaps remain."
       },
       "semantic_overlap_review": {
-        "status": "mapped_not_resolved",
+        "status": "reviewed_distinct_contracts_keep_separate",
         "related_ids": [
           "A55",
           "A59",
           "A63"
         ],
-        "note": "登记关联/重叠候选，不合并、不删除、不重编号；全量跨来源语义去重仍待完成。"
+        "note": "PLAN-003-DEDUP-010 checked current source/test blobs at 2f2bec716073716699a0d8916aa7b8457e862c8c. Distinct contract: A64 applies the successful-output/cost-write-failure boundary to generated assets and asset-library/recovery state, while A55 applies it to generated video output; current caller coverage includes source-text assertions rather than full behavioral flow. Preserve original ID; this is not formal acceptance."
       }
     },
     {
@@ -5603,22 +5685,33 @@
       "semantic_dedup_batch": "PLAN-003-DEDUP-002",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
       "current_head_evidence_reconciliation": {
-        "head": "59cc175b40d8040c6e67fccba1b07186e625921e",
-        "checked_on": "2026-10-15",
+        "head": "2f2bec716073716699a0d8916aa7b8457e862c8c",
+        "checked_on": "2026-10-16",
         "source_test_paths_rechecked": true,
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
-        "note": "该 SHA 是源码/测试审计快照；本轮后续只提交文档，源代码/测试文件 blob 未变化。四项工作流已核对为 success。证据映射不等于正式验收，未覆盖边界按 remaining_conditions 保留。"
+        "source_blobs": {
+          "apps/ad-studio-desktop/ad_studio/production.py": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
+          "apps/ad-studio-desktop/ad_studio/usage_ledger.py": "96d1240af26e31b5f08dc7a3474c1e76a2d4ad5c",
+          "apps/ad-studio-desktop/test_desktop.py": "357c54dad99f61b99891bcc365dd2f9efc1a1009"
+        },
+        "workflow_runs": {
+          "ci_push": 38732620640,
+          "ci_pr": 38732627710,
+          "docs_sync_push": 38732620714,
+          "docs_sync_pr": 38732627612
+        },
+        "note": "Current branch HEAD was checked directly; source/test paths resolve to the recorded blob SHAs at this SHA. All four workflows on this exact SHA succeeded. This is a bounded code/test evidence mapping and relationship decision, not full acceptance; known edge gaps remain."
       },
       "semantic_overlap_review": {
-        "status": "mapped_not_resolved",
+        "status": "reviewed_distinct_contracts_keep_separate",
         "related_ids": [
           "A59",
           "A61",
           "A63",
           "A64"
         ],
-        "note": "登记关联/重叠候选，不合并、不删除、不重编号；全量跨来源语义去重仍待完成。"
+        "note": "PLAN-003-DEDUP-010 checked current source/test blobs at 2f2bec716073716699a0d8916aa7b8457e862c8c. Distinct contract: A65 covers atomic ledger replacement and long-history retention, which supports the other contracts but is not equivalent to their project/video/asset state transitions. Preserve original ID; this is not formal acceptance."
       }
     },
     {
@@ -8569,12 +8662,28 @@
       "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
       "last_verified_date": "2026-10-15",
       "current_head_evidence_reconciliation": {
-        "head": "c77704d86d6131d13501448af76ce24afc56ad7b",
-        "checked_on": "2026-10-15",
+        "head": "2f2bec716073716699a0d8916aa7b8457e862c8c",
+        "checked_on": "2026-10-16",
         "source_test_paths_rechecked": true,
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
-        "note": "Source/test/workflow mappings rechecked on audit baseline. CI PR and docs-sync PR success; Push workflow pair not independently verified. This is not full acceptance."
+        "source_blobs": {
+          "apps/ad-studio-desktop/ad_studio/production.py": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
+          "apps/ad-studio-desktop/ad_studio/usage_ledger.py": "96d1240af26e31b5f08dc7a3474c1e76a2d4ad5c",
+          "apps/ad-studio-desktop/test_desktop.py": "357c54dad99f61b99891bcc365dd2f9efc1a1009"
+        },
+        "workflow_runs": {
+          "ci_push": 38732620640,
+          "ci_pr": 38732627710,
+          "docs_sync_push": 38732620714,
+          "docs_sync_pr": 38732627612
+        },
+        "note": "Current branch HEAD was checked directly; source/test paths resolve to the recorded blob SHAs at this SHA. All four workflows on this exact SHA succeeded. This is a bounded code/test evidence mapping and relationship decision, not full acceptance; known edge gaps remain."
+      },
+      "semantic_overlap_review": {
+        "status": "reviewed_distinct_contracts_keep_separate",
+        "related_ids": [],
+        "note": "PLAN-003-DEDUP-010 checked current source/test blobs at 2f2bec716073716699a0d8916aa7b8457e862c8c. Distinct contract: A99 reconciles per-shot costs and clears stale sibling-shot snapshots when at least one successful ledger row establishes ledger authority; A60 preserves legacy costs when no successful row exists. Distinct branches, both retained. Preserve original ID; this is not formal acceptance."
       }
     },
     {
@@ -10759,6 +10868,104 @@
         "Windows real-machine, real footage, Provider billing, Jianying on-site and commercial outcome validation remain deferred."
       ],
       "next_batch": "Continue final cross-source reconciliation for unresolved ledger/cost overlap candidates A52/A55/A59/A60/A63/A64/A65/A99, then audit current code/test evidence in bounded batches. Do not add A113+."
+    },
+    {
+      "batch_id": "PLAN-003-DEDUP-010",
+      "range": "A52/A55/A59/A60/A63/A64/A65/A99 cost and ledger contract overlap",
+      "status": "bounded_current_head_contract_review_complete_full_cross_source_dedup_pending",
+      "reviewed_sources": [
+        "docs/AD_STUDIO_TASK_REGISTER.json",
+        "docs/AD_STUDIO_PROGRESS_DASHBOARD.md",
+        "docs/AD_STUDIO_AI_HANDOFF.md",
+        "apps/ad-studio-desktop/SESSION_HANDOFF.md",
+        "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md",
+        "apps/ad-studio-desktop/ad_studio/production.py",
+        "apps/ad-studio-desktop/ad_studio/usage_ledger.py",
+        "apps/ad-studio-desktop/test_desktop.py"
+      ],
+      "findings": [
+        {
+          "ids": [
+            "A52"
+          ],
+          "decision": "keep_separate",
+          "reason": "A52 audits a failed video Provider attempt: retain an auditable failed row and exclude its quote from confirmed actual spend; it does not guarantee that a real provider did not charge after timeout/failure."
+        },
+        {
+          "ids": [
+            "A55"
+          ],
+          "decision": "keep_separate",
+          "reason": "A55 handles a different failure boundary: a valid video has already been installed, then local ledger writing fails; preserve the video and mark reconciliation required instead of misclassifying generation as failed."
+        },
+        {
+          "ids": [
+            "A59"
+          ],
+          "decision": "keep_separate",
+          "reason": "A59 makes successful ledger rows the authority for project-level actual-cost totals when successful rows exist; it addresses stale project snapshots, not failed-only compatibility."
+        },
+        {
+          "ids": [
+            "A60"
+          ],
+          "decision": "keep_separate_complementary_to_A59",
+          "reason": "A60 preserves legacy totals when there are no successful ledger rows (including failed-only history). It is the complementary no-success branch to A59, not a duplicate."
+        },
+        {
+          "ids": [
+            "A63"
+          ],
+          "decision": "keep_separate",
+          "reason": "A63 protects a successfully migrated legacy baseline if the next new-charge ledger write fails; its remaining gap is save-and-reload persistence after the failure."
+        },
+        {
+          "ids": [
+            "A64"
+          ],
+          "decision": "keep_separate_from_A55",
+          "reason": "A64 applies the successful-output/cost-write-failure boundary to generated assets and asset-library/recovery state, while A55 applies it to generated video output; current caller coverage includes source-text assertions rather than full behavioral flow."
+        },
+        {
+          "ids": [
+            "A65"
+          ],
+          "decision": "keep_separate_supporting_infrastructure_contract",
+          "reason": "A65 covers atomic ledger replacement and long-history retention, which supports the other contracts but is not equivalent to their project/video/asset state transitions."
+        },
+        {
+          "ids": [
+            "A99"
+          ],
+          "decision": "keep_separate_from_A59_A60",
+          "reason": "A99 reconciles per-shot costs and clears stale sibling-shot snapshots when at least one successful ledger row establishes ledger authority; A60 preserves legacy costs when no successful row exists. Distinct branches, both retained."
+        }
+      ],
+      "evidence_snapshot": {
+        "commit_sha": "2f2bec716073716699a0d8916aa7b8457e862c8c",
+        "source_blobs": {
+          "apps/ad-studio-desktop/ad_studio/production.py": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
+          "apps/ad-studio-desktop/ad_studio/usage_ledger.py": "96d1240af26e31b5f08dc7a3474c1e76a2d4ad5c",
+          "apps/ad-studio-desktop/test_desktop.py": "357c54dad99f61b99891bcc365dd2f9efc1a1009"
+        },
+        "workflow_runs": {
+          "ci_push": 38732620640,
+          "ci_pr": 38732627710,
+          "docs_sync_push": 38732620714,
+          "docs_sync_pr": 38732627612
+        }
+      },
+      "limitations": [
+        "A52 uses fake Provider behavior; real timeout/failure billing is unknown until invoice reconciliation.",
+        "A55 is a simulated local ledger-write failure, not an external invoice check.",
+        "A59/A60 are complementary successful-ledger versus no-success-ledger branches; save/reload combinations remain to be independently audited.",
+        "A63 test does not directly assert save/reload after migration succeeds and the next charge record fails.",
+        "A64 helper behavior is tested, but two production callers are covered by source-text assertions rather than complete asset-generation behavior tests.",
+        "A65 atomic replacement test does not directly assert temporary-file cleanup; recent(limit) behavior is not directly tested against ledger totals.",
+        "A99 has a direct recovery/save/reload test for a successful ledger and stale unbilled sibling shot; failed-only and no-success legacy cases remain separate boundaries.",
+        "All eight tasks remain acceptance_status=not_audited. This batch does not complete global semantic dedup or full code/test audit; real Provider billing and Windows validation remain deferred."
+      ],
+      "next_batch": "Continue bounded source/test evidence audit after the cost/ledger relationship mapping; preserve A0-A112 IDs, do not add A113+, and keep overall completion percentage disabled."
     }
   ],
   "code_test_evidence_batches": [
