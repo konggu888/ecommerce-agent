@@ -897,3 +897,8 @@ A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/
 ## PLAN-003 增量审计记录｜A100–A104｜2026-10-15
 
 当前源码/测试基线 `c77704d86d6131d13501448af76ce24afc56ad7b`。A100 淡出时间窗、A101 变速音画同步、A102 最终 1080P 级尺寸、A103 镜头淡入/淡出同步、A104 相邻镜头 xfade/acrossfade 均已定位源码与专项测试，全部只做部分证据映射。测试多为命令/滤镜图和 mock ffprobe 断言，未证明 Windows 真实成片效果。A104 静态 UI 检索未找到明确可编辑的转场选择器；混合转场模式中的 0.001 秒硬切重叠需真实输出验证。CI PR 与 docs-sync PR 在审计基线通过，Push 工作流未独立核实。下一批 A105–A109。
+
+
+## PLAN-003 增量审计记录｜A105–A109｜2026-10-15
+
+源码/测试基线 `c77704d86d6131d13501448af76ce24afc56ad7b`。A105 的节奏映射和 A106 的商业角色默认值由 `creative_engine.py` 与 `test_creative_engine.py` 覆盖；A107 的运行时字段映射进入 GenerationRequest 源码链存在，但没有直接测试最终请求时长；A108 的字幕自适应由 `subtitles.py`、`test_subtitles.py` 与 app.py 的 FFprobe→密度提示→SRT→烧录路径支撑，但缺少 UI 整链测试；A109 的音乐节拍、切点规划、受限变速与全局 BGM 生产路径存在，专项测试覆盖 helper，但缺少 build_final 整链回归。A109 不沿用历史 automation_passed，重新标记 partial_evidence_mapping/not_audited。真实 FFmpeg、Windows、Provider 与商业视听验收继续暂缓；最新检查 HEAD 的 CI PR 与 docs-sync PR 成功，Push 未独立核实。下一批 A110–A112。
