@@ -27,7 +27,7 @@
 每项至少记录唯一 ID、名称、阶段、父任务/依赖、权重、开发状态、验收状态、证据 SHA、测试/CI 链接、剩余条件、阻塞原因、暂缓原因、重复项映射、最后核验日期。CI/doc-sync 证据绑定 SHA；新提交必须重查四项。
 
 ## 3. 当前基线
-最近完整核验基线 SHA：`ba1a903ea7b53f577512f8ec81bb4c18a60e02f7`。该 SHA 的 CI Push `38691816207`、CI PR `38691821816`、docs-sync Push `38691816233`、docs-sync PR `38691821857` 均 success。PR #32 仍为 Open / unmerged。此后若有新提交，必须重新查新 HEAD 的四项工作流。
+最近完整核验基线 SHA：`464977a54e9784fff375ffe081985624688261e9`。该 SHA 的 CI Push `38692014399`、CI PR `38692013047`、docs-sync Push `38692014528`、docs-sync PR `38692013000` 均 success。PR #32 仍为 Open / unmerged。此后若有新提交，必须重新查新 HEAD 的四项工作流。
 A112（SRT cue 实际时间窗进入音乐卡点内容保护）在代码基线 `e8deb1ec4ef9edf7d999c79539762ea2627affab` 的四项检查通过；其后 `7cfabb23e9ab0c05c6189d31dcf6b7410f7934c7` 的四项也通过。仅代表自动化阶段，不代表真实素材、口播同步、字幕可读性或商业质量验收。
 
 ## 4. 阶段状态（初始盘点；暂不计算完成率）
@@ -99,3 +99,24 @@ PR #32 不合并。Windows 真机、真实素材、真实 Provider/扣费、剪�
 1. 按批次核对 A6–A17、A18–A33、A34–A67、A68–A89、A90–A112：每项记录计划原文、路线图/备忘/SOP 对应项、当前代码路径、专项测试、当前 SHA 证据、剩余验收条件。
 2. 先做语义关系与状态来源裁决，不以编号提及统计代替内容审计。
 3. 完成全量任务与依赖审计前，`fully_audited=0`、`semantic_dedup_completed=false`、`code_test_evidence_audit_completed_ids=0` 保持不变；不分配权重、不发布总体完成率。
+
+
+## PLAN-003 当前代码/测试证据审计：A6–A11｜2026-10-15｜部分映射
+
+核验基线为当前分支 SHA `464977a54e9784fff375ffe081985624688261e9`。本表只记录已查看的实现与测试线索；未运行本地测试，CI 通过只证明该 SHA 的工作流通过，不代表以下每项正式验收。
+
+| ID | 已查看的实现/测试证据 | 目前可作出的结论 | 仍需核验/补证 |
+|---|---|---|---|
+| A6 商品资料 | `ad_studio/product_parser.py` 有平台识别、HTML/浏览器 Skill 回退、商品资料保存、独立 `product-library` 持久化与用户确认事实合并；`test_product_parser.py` 覆盖无效 URL、平台识别、浏览器回退、项目资料保存；`test_desktop.py` 有 `test_product_library_round_trip_preserves_user_facts` 与 `test_product_library_merge_does_not_invent_missing_facts` | 存在商品解析/持久化实现与若干离线回归 | 未证明淘宝/京东/拼多多/1688/抖音真实链接均可解析；需核对缺失资料 UI 提示、用户资料与素材关联、各字段异常/损坏文件恢复；不以网络夹具冒充真实平台验证 |
+| A7 内容理解 | `test_desktop.py` 有 `test_ai_stage_prompts_preserve_product_fact_boundary`、`test_ai_create_plan_runs_full_understanding_to_asset_pipeline` | 存在阶段提示词事实边界与流水线路由测试 | 尚未证明真实模型语义质量、卖点排序正确性、镜头价值/重复镜头/口播价值判断准确；需逐条对应正式 A7 清单 |
+| A8 剪辑策略 | `test_desktop.py` 有 `test_three_task_types_have_distinct_deterministic_policies`、`test_footage_planner_uses_only_supplied_assets_and_respects_task_rules`、`test_footage_planner_rejects_missing_plan_output` | 已有三类任务策略、限定素材引用与无效计划失败路径的自动化证据 | 用户自定义条件覆盖、无法确定时人工确认、商品类型策略、自动时长与镜头排序仍需逐项映射；策略正确性与真实商业效果未验收 |
+| A9 真人口播 | `test_desktop.py` 有 `test_footage_plan_enforces_speech_filler_cleanup_and_timestamp_ranges`；`ad_studio/transcription.py` 实现音频提取及 OpenAI-compatible 转写入口 | 存在口播废话处理合同与转写入口 | 未发现本轮已核验到的转写失败/时间戳错位/核心卖点误删专项覆盖；真人与 AI 声音冲突规则需查明实际实现和测试；真实音频识别质量暂缓现场验收 |
+| A10 音频 | `ad_studio/audio.py` 实现 FFmpeg 人声轻度降噪、响度归一、循环 BGM 混音与缺失 FFmpeg 错误；`test_desktop.py` 有 `test_audio_mixing_preserves_voice_and_lowers_bgm` | 有混音主路径测试与 FFmpeg 缺失的显式错误路径实现线索 | 尚未看到独立覆盖所有音频失败、损坏输入、BGM 不存在/时长异常、降噪和响度归一质量的完整矩阵；用户音乐库、AI 配音的实际接入需单独确认 |
+| A11 字幕 | `ad_studio/subtitles.py` 与 `test_subtitles.py` 覆盖字幕分段、真实片段时长、密度警告、SRT cue 解析及无效/越界时间窗；`test_desktop.py` 有 `test_subtitles_use_real_timestamps_and_segment_long_speech` | 字幕时间窗与密度的离线回归证据较明确 | 尚未由本轮证据证明字幕与真实口播逐字一致、商品事实一致、字体授权来源可追踪及仅使用免费商用字体；中文可读性和真实成片效果待真实素材验收 |
+
+### A6–A11 状态纪律
+
+- 以上六项均是“证据已部分映射”，不是“正式验收通过”。
+- 未把测试名称或实现函数直接视为整项验收完成；缺少专项测试的项目记录为待补证/待核验，不在本轮直接增加或执行新的产品功能。
+- 本轮不改变 `fully_audited=0`、`semantic_dedup_completed=false`、`code_test_evidence_audit_completed_ids=0`；不分配权重、不发布总体完成率。
+- 下一批继续按正式验收计划核验 A12–A17（缺口判断、AI 生成、实拍+AI 混合制作、三类成片生产），并记录当前 SHA、测试路径与未覆盖条件。
