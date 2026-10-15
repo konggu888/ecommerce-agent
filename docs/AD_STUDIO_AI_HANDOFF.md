@@ -1,10 +1,10 @@
 # AI 接手当前状态｜PLAN-003 A46–A49 部分证据映射｜2026-10-15
 
-- 唯一权威进度/下一项：docs/AD_STUDIO_PROGRESS_DASHBOARD.md。本轮 A46–A49 仅完成部分路线图/源码/测试映射，不是正式验收。
-- A46–A49 均映射到阶段1「可靠的生产底座」。依赖：A46→A43；A47→A43/A46；A48→A43/A47；A49→A48/A30/A43。相关失败恢复证据只登记重叠候选，不合并 ID。
+- 唯一权威进度与下一项：docs/AD_STUDIO_PROGRESS_DASHBOARD.md。本轮 A46–A49 只完成部分路线图/源码/测试映射，不是正式验收。
+- A46 编辑旧版本保护、A47 素材解析失败恢复、A48 实拍裁剪失败保留输出、A49 多段中断文件清理均归阶段1「可靠的生产底座」。重叠关系只登记不裁决，不合并 ID。
+- 证据边界：A46 有编辑回调安全转移断言；A47 有资产解析失败恢复测试；A48 有裁剪失败不破坏既有输出测试；A49 有缺失源素材时清理分段残留测试。真实 FFmpeg/Windows/Provider、权限/磁盘异常和完整端到端路径仍未证明。
 - 指标：需求文本级复核 113；source/test/ci/workflow 指针记录 50；任意 evidence 记录 62；路线图映射 93；待映射 20；当前 HEAD 精确证据 0；完整代码/测试审计 0；完整审计 0；语义去重未完成。不得发布总体完成率、不得赋权。
-- 快照 1f5f1e8a6766b8bee32afc8471ddcc61d74a8601 的四项 CI/doc-sync 均 success；新文档提交后须重查四项。自动化仅证明局部旧版本保护与临时文件恢复，不证明真实 Windows、FFmpeg 或真实素材质量。
-- 下一批 A50–A53；不新增 A113+，不开发产品功能，真实环境验证继续暂缓。
+- 审计快照 `6fd36a58dcc4d8dec97be57c268b072bf14b3017` 四项 CI/doc-sync 均 success；文档提交后重新检查最终 HEAD 四项。下一批 A50–A53。PR #32 保持 Open/unmerged；不新增 A113+，不开发产品功能，真实环境验证继续暂缓。
 ---
 
 - 仓库/项目：`konggu888/ecommerce-agent/apps/ad-studio-desktop`；分支 `feat/product-drama-visual-review`；PR #32 保持 Open / unmerged。

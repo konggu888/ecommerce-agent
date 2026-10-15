@@ -3,7 +3,7 @@
   "generated_from_head": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6",
   "audit_status": "all_113_numbered_task_titles_recovered_requirement_level_reviewed_cross_source_status_reconciliation_pending_current_head_code_test_evidence_audit_pending",
   "progress_percentages_enabled": false,
-  "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until cross-source scope reconciliation and weighting review. Historical A68-A74 and A99 task identities have been recovered; their current-HEAD evidence audit remains pending. Cross-source status audit 2026-10-15 found the dashboard's 113 partial-mapping count and this JSON snapshot's 6 structured source/test/CI/workflow evidence task IDs are different metrics; 0 evidence records are bound to current HEAD. Do not silently treat them as equivalent. Roadmap phase is still pending for 70 task records; reconcile item-by-item. Incremental current-HEAD reconciliation 2026-10-15: A0-A6 roadmap_phase mapped to Phase 1 from roadmap goal chain; A5 depends on A4. A0-A4 source/test/workflow evidence refreshed to current HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1 and current CI/docs-sync runs attached. No acceptance status upgraded; full audit remains zero. Incremental reconciliation 2026-10-15: A0-A8 primary roadmap phases are mapped; explicit dependencies A5→A4, A7→A6, A8→A7 are recorded. A0-A8 source/test mappings were rechecked against current branch tree and bound to current HEAD CI Push/PR and PR docs-sync evidence. No task acceptance status upgraded; docs-sync Push evidence for current HEAD not found. PLAN-003 2026-10-15: A8 corrected to Phase 2. A9-A17 mapped to Phase 1; explicit dependencies A12→A5/A8, A13→A12, A14→A13, A15→A8/A9/A10/A11, A16→A8/A10/A11, A17→A7/A8/A9/A10/A11. Partial evidence only; acceptance statuses unchanged. PLAN-003 incremental reconciliation 2026-10-15: A18-A19 mapped to Phase 3; A20-A23 mapped to Phase 1. Partial source/test pointers recorded with evidence SHA null pending exact commit provenance. Dependencies recorded only where the documented flow supports them: A19→A18, A21→A20, A22→A21, A23→A20/A21/A22. No acceptance status upgraded; overall completion remains disabled. PLAN-003 update 2026-10-15: A24-A29 mapped to Phase 1. Evidence SHA left null pending per-file provenance; code_test_evidence_reviewed_ids counts records with source/test/ci/workflow pointers, not semantic review or acceptance. Requirement-level semantic review remains 113; no task status promoted, no overall completion metric. PLAN-003 update 2026-10-15: A30-A33 mapped to roadmap phases with partial source/test evidence and explicit proof limits. Related recovery/doc/handoff/end-to-end requirements are recorded as overlaps, not merged. Evidence SHA remains unpinned; no task status promoted and no overall completion metric. PLAN-003 update 2026-10-15: A34-A37 mapped to Phase 5; evidence SHA remains null pending per-file provenance. result_proof_layers and user_freedom_dimensions capture the limits of automation evidence and relevant authorization/cancellation freedoms. No formal acceptance promoted, no weighting or overall completion metric. PLAN-003 update 2026-10-15: A38-A41 mapped to Phase 0. A39 push/PR CI workflow evidence is tied to validated snapshot 1af689ab2dacbaff9ad7a08a26f1b4173cc328c4; it is not final-HEAD evidence. Keep all evidence SHA null pending per-file provenance; no formal acceptance promoted. PLAN-003 update 2026-10-15: A42-A45 mapped to their strategic phases; all remain not_audited. Current-HEAD evidence count remains zero pending per-file blob provenance. Do not assign weights or publish overall completion. PLAN-003 update 2026-10-15: A46-A49 mapped to Phase 1; recovery-related overlaps remain unresolved candidates. Evidence SHA remains null pending per-file provenance. No formal acceptance promoted, no weighting or overall completion metric.",
+  "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until cross-source scope reconciliation and weighting review. Historical A68-A74 and A99 task identities have been recovered; their current-HEAD evidence audit remains pending. Cross-source status audit 2026-10-15 found the dashboard's 113 partial-mapping count and this JSON snapshot's 6 structured source/test/CI/workflow evidence task IDs are different metrics; 0 evidence records are bound to current HEAD. Do not silently treat them as equivalent. Roadmap phase is still pending for 70 task records; reconcile item-by-item. Incremental current-HEAD reconciliation 2026-10-15: A0-A6 roadmap_phase mapped to Phase 1 from roadmap goal chain; A5 depends on A4. A0-A4 source/test/workflow evidence refreshed to current HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1 and current CI/docs-sync runs attached. No acceptance status upgraded; full audit remains zero. Incremental reconciliation 2026-10-15: A0-A8 primary roadmap phases are mapped; explicit dependencies A5→A4, A7→A6, A8→A7 are recorded. A0-A8 source/test mappings were rechecked against current branch tree and bound to current HEAD CI Push/PR and PR docs-sync evidence. No task acceptance status upgraded; docs-sync Push evidence for current HEAD not found. PLAN-003 2026-10-15: A8 corrected to Phase 2. A9-A17 mapped to Phase 1; explicit dependencies A12→A5/A8, A13→A12, A14→A13, A15→A8/A9/A10/A11, A16→A8/A10/A11, A17→A7/A8/A9/A10/A11. Partial evidence only; acceptance statuses unchanged. PLAN-003 incremental reconciliation 2026-10-15: A18-A19 mapped to Phase 3; A20-A23 mapped to Phase 1. Partial source/test pointers recorded with evidence SHA null pending exact commit provenance. Dependencies recorded only where the documented flow supports them: A19→A18, A21→A20, A22→A21, A23→A20/A21/A22. No acceptance status upgraded; overall completion remains disabled. PLAN-003 update 2026-10-15: A24-A29 mapped to Phase 1. Evidence SHA left null pending per-file provenance; code_test_evidence_reviewed_ids counts records with source/test/ci/workflow pointers, not semantic review or acceptance. Requirement-level semantic review remains 113; no task status promoted, no overall completion metric. PLAN-003 update 2026-10-15: A30-A33 mapped to roadmap phases with partial source/test evidence and explicit proof limits. Related recovery/doc/handoff/end-to-end requirements are recorded as overlaps, not merged. Evidence SHA remains unpinned; no task status promoted and no overall completion metric. PLAN-003 update 2026-10-15: A34-A37 mapped to Phase 5; evidence SHA remains null pending per-file provenance. result_proof_layers and user_freedom_dimensions capture the limits of automation evidence and relevant authorization/cancellation freedoms. No formal acceptance promoted, no weighting or overall completion metric. PLAN-003 update 2026-10-15: A38-A41 mapped to Phase 0. A39 push/PR CI workflow evidence is tied to validated snapshot 1af689ab2dacbaff9ad7a08a26f1b4173cc328c4; it is not final-HEAD evidence. Keep all evidence SHA null pending per-file provenance; no formal acceptance promoted. PLAN-003 update 2026-10-15: A42-A45 mapped to their strategic phases; all remain not_audited. Current-HEAD evidence count remains zero pending per-file blob provenance. Do not assign weights or publish overall completion. PLAN-003 update 2026-10-15: A46-A49 mapped to Phase 1; recovery-related overlaps remain unresolved candidates. Evidence SHA remains null pending per-file provenance. No formal acceptance promoted, no weighting or overall completion metric. PLAN-003 update 2026-10-15: A46-A49 mapped to Stage 1. Related recovery evidence remains cross-referenced without merging IDs; per-file evidence SHA remains null; no formal acceptance or overall completion metric is inferred.",
   "counts": {
     "numbered_slots": 113,
     "fully_audited": 0,
@@ -3873,32 +3873,32 @@
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [
-        "A43"
+        "A43",
+        "A51"
       ],
       "evidence": [
         {
           "kind": "source",
           "path": "apps/ad-studio-desktop/ad_studio/app.py",
-          "detail": "edit_shot() routes edits through mark_regenerate(project, shot_index), preserving the prior video path before version transition and saving the project.",
+          "detail": "The edit-shot save callback routes through mark_regenerate() before persisting, preserving the previous video path and avoiding direct video_path clearing/version increments.",
           "sha": null
         },
         {
           "kind": "source",
           "path": "apps/ad-studio-desktop/ad_studio/engine.py",
-          "detail": "mark_regenerate() is the shared safe transition for retaining previous_video_path, advancing version and clearing the active output path.",
+          "detail": "mark_regenerate() moves the active video path to previous_video_path before incrementing the version.",
           "sha": null
         },
         {
           "kind": "test",
           "path": "apps/ad-studio-desktop/test_desktop.py",
-          "detail": "test_a46_edit_shot_routes_through_safe_regeneration_transition reads the edit_shot source block and rejects direct video_path clearing or manual version increments.",
+          "detail": "test_a46_edit_shot_routes_through_safe_regeneration_transition checks that the edit UI uses the shared safe transition.",
           "sha": null
         }
       ],
       "remaining_conditions": [
-        "Test is a source-structure regression assertion, not a UI interaction test; it does not exercise the actual edit dialog, persistence, or provider failure in one end-to-end flow.",
-        "Pair with A43 recovery evidence to establish behavior after generation failure; shared recovery evidence is not a duplicate verdict.",
-        "Windows UI and real Provider validation remain deferred; evidence SHA is not pinned per file."
+        "Current regression is largely a source/transition assertion; it does not prove all edit fields, selected-shot isolation, save/reopen and subsequent failure recovery as one end-to-end sequence.",
+        "Pair with A43 recovery tests; shared evidence does not make A46 duplicate. Per-file evidence SHA is not pinned; acceptance remains not_audited; Windows/provider verification deferred."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -3924,10 +3924,9 @@
         "status": "mapped_not_resolved",
         "related_ids": [
           "A43",
-          "A47",
-          "A48"
+          "A51"
         ],
-        "note": "共享旧版本保护/失败恢复/临时文件清理属于候选关系；不静默合并或重编号正式验收项。"
+        "note": "Related failure/recovery paths share an invariant but have distinct trigger-stage contracts. This is not a duplicate verdict; preserve original IDs."
       },
       "result_proof_layers": {
         "applicable_layers": [
@@ -3948,7 +3947,7 @@
         "note": "层级定义见 docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md；临时文件夹/假 Provider 测试不等于真实素材与 Windows 验收。"
       },
       "user_freedom_dimensions": [],
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers mapped against validated snapshot 1f5f1e8a6766b8bee32afc8471ddcc61d74a8601. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15 against source snapshot 6fd36a58dcc4d8dec97be57c268b072bf14b3017; per-file evidence SHA not independently pinned; not formal acceptance."
     },
     {
       "task_id": "A47",
@@ -3970,20 +3969,25 @@
         {
           "kind": "source",
           "path": "apps/ad-studio-desktop/ad_studio/production.py",
-          "detail": "_render_with_provider() resolves required assets inside the protected render/recovery flow and restores a valid previous output on asset-resolution exceptions; temporary partial output is cleaned.",
+          "detail": "Asset resolution is within the shot-render recovery boundary; failures restore the previous usable video and clean unfinished outputs instead of marking the new version successful.",
+          "sha": null
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/app.py",
+          "detail": "Single-shot generation error handling preserves the shared failure/recovery state.",
           "sha": null
         },
         {
           "kind": "test",
           "path": "apps/ad-studio-desktop/test_desktop.py",
-          "detail": "test_a47_asset_resolution_failure_restores_previous_video injects resolve_assets() failure, uses a Provider that raises if called, and asserts old path/content/status survive plus project reload preserves the path.",
+          "detail": "test_a47_asset_resolution_failure_restores_previous_video exercises asset-resolution failure and prior-video restoration.",
           "sha": null
         }
       ],
       "remaining_conditions": [
-        "Fixture proves one injected asset-resolution exception and that the fake Provider is not called; it does not cover all asset classes, invalid locks, permission errors or disk-full behavior.",
-        "Need verify repeated recovery is idempotent and that every failure point before/after temporary output creation leaves cost ledger and asset state consistent; related A30/A43 cases remain separate.",
-        "Real assets, Windows UI and real Provider/charges remain deferred; evidence SHA is not pinned per file."
+        "Confirm the specific assertions prove no video Provider call, partial-output cleanup, persistence/reload and unchanged prior-file bytes; do not infer all outcomes from the test name.",
+        "Controlled fixtures do not cover a real asset library, Windows path/permission errors or real generation. Per-file evidence SHA is not pinned; acceptance remains not_audited."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -4009,9 +4013,11 @@
         "status": "mapped_not_resolved",
         "related_ids": [
           "A30",
-          "A43"
+          "A43",
+          "A46",
+          "A48"
         ],
-        "note": "共享旧版本保护/失败恢复/临时文件清理属于候选关系；不静默合并或重编号正式验收项。"
+        "note": "Related failure/recovery paths share an invariant but have distinct trigger-stage contracts. This is not a duplicate verdict; preserve original IDs."
       },
       "result_proof_layers": {
         "applicable_layers": [
@@ -4036,7 +4042,7 @@
         "note": "层级定义见 docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md；临时文件夹/假 Provider 测试不等于真实素材与 Windows 验收。"
       },
       "user_freedom_dimensions": [],
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers mapped against validated snapshot 1f5f1e8a6766b8bee32afc8471ddcc61d74a8601. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15 against source snapshot 6fd36a58dcc4d8dec97be57c268b072bf14b3017; per-file evidence SHA not independently pinned; not formal acceptance."
     },
     {
       "task_id": "A48",
@@ -4058,20 +4064,25 @@
         {
           "kind": "source",
           "path": "apps/ad-studio-desktop/ad_studio/production.py",
-          "detail": "render_footage_shot() writes trim/concatenation output to temporary files, validates before replacing the official render, and restores previous_video_path after failure while cleaning temporary output.",
+          "detail": "Filmed-footage trimming stages output in a temporary file and only replaces the existing target after successful non-empty validation; failures should leave the old target untouched.",
+          "sha": null
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/app.py",
+          "detail": "The filmed-footage render path uses ProductionStore and shared failure recovery.",
           "sha": null
         },
         {
           "kind": "test",
           "path": "apps/ad-studio-desktop/test_desktop.py",
-          "detail": "test_a48_footage_trim_failure_does_not_delete_existing_output patches trim_clip() to fail and checks old output bytes/path/status and persisted project state remain intact.",
+          "detail": "test_a48_footage_trim_failure_does_not_delete_existing_output simulates trim failure and checks preservation of the existing output.",
           "sha": null
         }
       ],
       "remaining_conditions": [
-        "Test patches trim_clip() failure; successful multi-range output, atomic replace edge cases, disk-full/permission failures and process termination at every write boundary are not fully covered by this single test.",
-        "Temporary output cleanup is checked for the principal .part.mp4 path; cross-platform filesystem replacement semantics and actual FFmpeg behavior remain unverified.",
-        "Real source footage, Windows file locks and media playback remain deferred; evidence SHA is not pinned per file."
+        "Verify the test assertions cover old bytes/path, temp cleanup, failure state and reload; the test name alone is insufficient.",
+        "Controlled trim fixtures do not establish real-media compatibility, Windows file locking, crash timing or disk-full atomicity. Per-file evidence SHA is not pinned; acceptance remains not_audited."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -4094,9 +4105,10 @@
         "status": "mapped_not_resolved",
         "related_ids": [
           "A43",
+          "A47",
           "A49"
         ],
-        "note": "共享旧版本保护/失败恢复/临时文件清理属于候选关系；不静默合并或重编号正式验收项。"
+        "note": "Related failure/recovery paths share an invariant but have distinct trigger-stage contracts. This is not a duplicate verdict; preserve original IDs."
       },
       "result_proof_layers": {
         "applicable_layers": [
@@ -4119,7 +4131,7 @@
         "note": "层级定义见 docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md；临时文件夹/假 Provider 测试不等于真实素材与 Windows 验收。"
       },
       "user_freedom_dimensions": [],
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers mapped against validated snapshot 1f5f1e8a6766b8bee32afc8471ddcc61d74a8601. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15 against source snapshot 6fd36a58dcc4d8dec97be57c268b072bf14b3017; per-file evidence SHA not independently pinned; not formal acceptance."
     },
     {
       "task_id": "A49",
@@ -4135,33 +4147,31 @@
       "weight": null,
       "dependencies": [
         "A48",
-        "A30",
         "A43"
       ],
       "evidence": [
         {
           "kind": "source",
           "path": "apps/ad-studio-desktop/ad_studio/production.py",
-          "detail": "recover_project() removes *.part*.mp4 files; render_footage_shot() also cleans stale split parts on missing-source/error paths and restores a valid previous video.",
+          "detail": "recover_project() removes interrupted *.part*.mp4 split outputs; when source footage is missing, recovery cleans stale split parts and may restore a still-valid previous video.",
+          "sha": null
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/production.py",
+          "detail": "Multi-part footage trimming stages output before final replacement; recovery operates under the current project's render directory.",
           "sha": null
         },
         {
           "kind": "test",
           "path": "apps/ad-studio-desktop/test_desktop.py",
-          "detail": "test_a49_missing_footage_source_cleans_stale_split_parts_and_keeps_old_video asserts stale .part01.mp4 cleanup, old-video preservation and recovered failure status.",
-          "sha": null
-        },
-        {
-          "kind": "test",
-          "path": "apps/ad-studio-desktop/test_desktop.py",
-          "detail": "test_a43_project_recovery_restores_previous_video_after_interrupted_regeneration creates .part.mp4 and .part01.mp4 and checks recovery removes both and restores the prior output.",
+          "detail": "test_a49_missing_footage_source_cleans_stale_split_parts_and_keeps_old_video covers stale split cleanup and previous-video preservation when source footage is missing.",
           "sha": null
         }
       ],
       "remaining_conditions": [
-        "A49 named test covers missing source plus a stale split part; the general recovery test covers interruption cleanup. Map their combined scenarios carefully without counting the same assertion as independent evidence twice.",
-        "Need test multiple part numbers, repeated restart/idempotence, inaccessible temp paths and corrupted prior outputs; A53/A54 provide adjacent coverage but do not close every A49 condition.",
-        "Real footage, Windows filesystem behavior and playback remain deferred; evidence SHA is not pinned per file."
+        "Map ordinary .part output and split-part naming patterns to cleanup; verify repeated recovery is idempotent and does not delete original footage or other projects' files.",
+        "The named test does not cover every crash point, concurrent write, permission error or disk-full case. Per-file evidence SHA is not pinned; acceptance remains not_audited; real Windows/footage validation deferred."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -4187,7 +4197,7 @@
           "A43",
           "A48"
         ],
-        "note": "共享旧版本保护/失败恢复/临时文件清理属于候选关系；不静默合并或重编号正式验收项。"
+        "note": "Related failure/recovery paths share an invariant but have distinct trigger-stage contracts. This is not a duplicate verdict; preserve original IDs."
       },
       "result_proof_layers": {
         "applicable_layers": [
@@ -4210,7 +4220,7 @@
         "note": "层级定义见 docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md；临时文件夹/假 Provider 测试不等于真实素材与 Windows 验收。"
       },
       "user_freedom_dimensions": [],
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers mapped against validated snapshot 1f5f1e8a6766b8bee32afc8471ddcc61d74a8601. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15 against source snapshot 6fd36a58dcc4d8dec97be57c268b072bf14b3017; per-file evidence SHA not independently pinned; not formal acceptance."
     },
     {
       "task_id": "A50",
@@ -7647,7 +7657,7 @@
       "note": "Documentation/planning audit baseline; does not imply full acceptance of A0-A5."
     }
   ],
-  "last_reconciled_against_head": "1f5f1e8a6766b8bee32afc8471ddcc61d74a8601",
+  "last_reconciled_against_head": "6fd36a58dcc4d8dec97be57c268b072bf14b3017",
   "reconciliation_status": "item_level_reconciliation_in_progress_A0_A49_roadmap_phases_and_partial_evidence_mapped",
   "cross_source_reconciliation": {
     "task_register_code_test_evidence_reviewed_ids": 50,
@@ -7659,7 +7669,7 @@
     "code_test_evidence_audit_completed_ids": 0,
     "fully_audited": 0,
     "weighting_completed": false,
-    "note": "2026-10-15: A46-A49 mapped to Phase 1 with source/test pointers, proof-layer limits and recovery-overlap candidates. code_test_evidence_reviewed_ids counts task records with source/test/ci/workflow pointers, not formal audit or acceptance.",
+    "note": "2026-10-15: A46-A49 mapped to Stage 1 with edit transition, asset-resolution recovery, filmed-trim output preservation and interrupted split cleanup evidence. Source/test pointers do not mean formal acceptance.",
     "roadmap_phase_mapped_ids": [
       "A0",
       "A1",
@@ -7755,9 +7765,9 @@
       "A111",
       "A112"
     ],
-    "current_branch_head": "1f5f1e8a6766b8bee32afc8471ddcc61d74a8601",
+    "current_branch_head": "6fd36a58dcc4d8dec97be57c268b072bf14b3017",
     "source_test_evidence_baseline_sha": null,
-    "current_head_note": "A46-A49 source/test pointers reviewed against validated snapshot 1f5f1e8a6766b8bee32afc8471ddcc61d74a8601. Per-file evidence SHA remains null; current_head_evidence_task_ids stays 0. New documentation commit must be checked independently.",
+    "current_head_note": "A42-A45 source/test/workflow pointers were reviewed against snapshot 42fa15b305ff1a5a046f15eba84460b7272fa2e7; A46-A49 source/test pointers were reviewed against snapshot 6fd36a58dcc4d8dec97be57c268b072bf14b3017. Per-file evidence SHA remains null; current_head_evidence_task_ids remains 0.",
     "dashboard_claimed_requirement_level_reviewed_ids": 113
   }
 }
