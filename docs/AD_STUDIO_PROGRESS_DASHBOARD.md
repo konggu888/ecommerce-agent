@@ -1029,3 +1029,12 @@ A50–A67 的详细静态映射已存在；本轮将其规范台账行与该映�
 5. **测试缺口**：静态检查 `test_model_router.py` 与 `test_desktop.py` 的相关用例，未找到直接证明异常正文脱敏、假 API Key 不进入账本/项目恢复数据、或预算确认前外部调用计数为零的专项测试。既有账本/恢复测试不等于上述安全合同测试。
 
 下一步仍为 PLAN-003：把发现逐条映射到 A0–A112 原始合同，重点核对 A13、A29、A30、A51–A65；裁决合同关系、直接测试证据与阶段退出条件。保持 `code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false`，不分配权重、不发布总体完成率、不新增 A113+。真实 Provider/扣费、Windows 真机、真实素材、剪映与真实投放继续暂缓；PR #32 保持 Open / unmerged。
+
+
+## PLAN-003 合同语义校准｜A29 与 A51–A65 不得泛化映射｜2026-10-15
+
+- 已重新读取正式验收计划与 SOP。A29 的真实合同是模拟/真实数据、AI推演/事实、用户输入/系统推断及平台数据来源边界；它**不等同于** API Key 存储、外发告知、endpoint/redirect 安全或异常脱敏。对应测试 `test_a29_real_data_boundary_requires_explicit_user_provenance_and_unverified_status` 仅能证明来源/真实性边界。
+- A13 关注 AI 生成路由、预算、失败状态、商品事实和人工复核；A30 关注失败恢复与明确下一步。现有 A30 恢复测试不能证明异常文本脱敏，A13 相关路由测试也不能代替“拒绝回退后零外部调用”断言。
+- A51–A65 是多个独立合同（报价校验、失败尝试记账、媒体恢复、账本故障保护、prompt 换行、成本 UI/对账、视觉输入校验、汇总、历史迁移、原子写入等），不可整体合并或整体判为通过。A57 双场景、A61/A62 独立性保持不变。
+- 当前尚未识别到 A0–A112 中直接等价覆盖“端点/数据外发告知、密钥存储与异常文本脱敏”的明确合同。继续对照其余原始合同；如发现缺口，只登记为映射/合同缺口，不新增 A113+。
+- 本次为静态阅读和测试名/断言映射，没有重新运行测试。保持 `code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false`、总体完成率关闭。
