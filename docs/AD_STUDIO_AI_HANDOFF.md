@@ -1,7 +1,7 @@
 # 【PLAN-003 AI 接手状态｜A90–A94 部分证据映射｜2026-10-15】
 
 - 唯一权威进度：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`；PR #32 Open/unmerged。
-- 当前核对 HEAD `a6e052fa7edefa7e2fb794166684547436ff90f6`。源码 blobs：production.py `e53968f47a6b8fd23df773dbd3a4ad553753e1e0`、short_drama.py `2506410d9621840ec34464fce1fa2746c7d798f4`；测试 blobs：test_desktop.py `357c54dad99f61b99891bcc365dd2f9efc1a1009`、test_short_drama.py `2995b5764f7a86ee8c274b6359ff2f09cdf7a288`。
+- 源码/测试审计基线 HEAD `a6e052fa7edefa7e2fb794166684547436ff90f6`；本轮文档更新后的最新 HEAD `64857c4f93a4b648c207328299e690f1ef932dca`。源码 blobs：production.py `e53968f47a6b8fd23df773dbd3a4ad553753e1e0`、short_drama.py `2506410d9621840ec34464fce1fa2746c7d798f4`；测试 blobs：test_desktop.py `357c54dad99f61b99891bcc365dd2f9efc1a1009`、test_short_drama.py `2995b5764f7a86ee8c274b6359ff2f09cdf7a288`。
 - 该 SHA 的 CI PR 与 docs-sync PR 成功（runs 38728582030 / 38728581662）；Push 工作流对本 SHA 尚未独立核实。文档提交后必须重新检查最新 SHA。
 - A90–A94 仅部分证据映射，正式验收状态保持 not_audited。下一批 A95–A99。台账覆盖指标和每项边界见总进度看板。
 - 不开发新功能、不新增 A113+、不删/合并/重编号 A0–A112；Windows 真机、真实素材、Provider/扣费、剪映现场和商业效果验收继续暂缓。
