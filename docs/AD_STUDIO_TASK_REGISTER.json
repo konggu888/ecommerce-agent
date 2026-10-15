@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_from_head": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4",
-  "audit_status": "A0-A112 requirement-level review complete; A80-A89 partial source/test mapping tied to source/test snapshot 4063ba5a452c0c883ff39c8ea1ce33499a80eaf4; four CI/docs-sync workflows succeeded on that snapshot; complete code/test audit remains 0; full audit remains 0; semantic dedup pending; weighting and overall completion percentage disabled.",
+  "generated_from_head": "a6e052fa7edefa7e2fb794166684547436ff90f6",
+  "audit_status": "A0-A112 heading/requirement inventory exists; A85-A94 partial source/test evidence mapped. A90-A94 source/test evidence bound to a6e052fa7edefa7e2fb794166684547436ff90f6; CI PR and docs-sync PR succeeded on that SHA; push workflow pair not independently verified via available run query. Complete code/test audit remains 0; full audit remains 0; semantic dedup pending; weighting and overall completion percentage disabled.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until cross-source scope reconciliation and weighting review. Historical A68-A74 and A99 task identities have been recovered; their current-HEAD evidence audit remains pending. Cross-source status audit 2026-10-15 found the dashboard's 113 partial-mapping count and this JSON snapshot's 6 structured source/test/CI/workflow evidence task IDs are different metrics; 0 evidence records are bound to current HEAD. Do not silently treat them as equivalent. Roadmap phase is still pending for 70 task records; reconcile item-by-item. Incremental current-HEAD reconciliation 2026-10-15: A0-A6 roadmap_phase mapped to Phase 1 from roadmap goal chain; A5 depends on A4. A0-A4 source/test/workflow evidence refreshed to current HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1 and current CI/docs-sync runs attached. No acceptance status upgraded; full audit remains zero. Incremental reconciliation 2026-10-15: A0-A8 primary roadmap phases are mapped; explicit dependencies A5→A4, A7→A6, A8→A7 are recorded. A0-A8 source/test mappings were rechecked against current branch tree and bound to current HEAD CI Push/PR and PR docs-sync evidence. No task acceptance status upgraded; docs-sync Push evidence for current HEAD not found. PLAN-003 2026-10-15: A8 corrected to Phase 2. A9-A17 mapped to Phase 1; explicit dependencies A12→A5/A8, A13→A12, A14→A13, A15→A8/A9/A10/A11, A16→A8/A10/A11, A17→A7/A8/A9/A10/A11. Partial evidence only; acceptance statuses unchanged. PLAN-003 incremental reconciliation 2026-10-15: A18-A19 mapped to Phase 3; A20-A23 mapped to Phase 1. Partial source/test pointers recorded with evidence SHA null pending exact commit provenance. Dependencies recorded only where the documented flow supports them: A19→A18, A21→A20, A22→A21, A23→A20/A21/A22. No acceptance status upgraded; overall completion remains disabled. PLAN-003 update 2026-10-15: A24-A29 mapped to Phase 1. Evidence SHA left null pending per-file provenance; code_test_evidence_reviewed_ids counts records with source/test/ci/workflow pointers, not semantic review or acceptance. Requirement-level semantic review remains 113; no task status promoted, no overall completion metric. PLAN-003 update 2026-10-15: A30-A33 mapped to roadmap phases with partial source/test evidence and explicit proof limits. Related recovery/doc/handoff/end-to-end requirements are recorded as overlaps, not merged. Evidence SHA remains unpinned; no task status promoted and no overall completion metric. PLAN-003 update 2026-10-15: A34-A37 mapped to Phase 5; evidence SHA remains null pending per-file provenance. result_proof_layers and user_freedom_dimensions capture the limits of automation evidence and relevant authorization/cancellation freedoms. No formal acceptance promoted, no weighting or overall completion metric. PLAN-003 update 2026-10-15: A38-A41 mapped to Phase 0. A39 push/PR CI workflow evidence is tied to validated snapshot 1af689ab2dacbaff9ad7a08a26f1b4173cc328c4; it is not final-HEAD evidence. Keep all evidence SHA null pending per-file provenance; no formal acceptance promoted. PLAN-003 update 2026-10-15: A42-A45 mapped to their strategic phases; all remain not_audited. Current-HEAD evidence count remains zero pending per-file blob provenance. Do not assign weights or publish overall completion. PLAN-003 update 2026-10-15: A46-A49 mapped to Phase 1; recovery-related overlaps remain unresolved candidates. Evidence SHA remains null pending per-file provenance. No formal acceptance promoted, no weighting or overall completion metric. PLAN-003 update 2026-10-15: A46-A49 mapped to Stage 1. Related recovery evidence remains cross-referenced without merging IDs; per-file evidence SHA remains null; no formal acceptance or overall completion metric is inferred. PLAN-003 update 2026-10-15: A50-A53 mapped to Stage 1. A50/A56 prompt-linebreak relationship and A51/A52 cost concerns remain overlap candidates, not merged items; per-file evidence SHA remains null and no overall completion metric is inferred. PLAN-003 update 2026-10-15: A54-A57 task-register entries reconciled with the current dashboard/handoff. A57's two same-ID acceptance headings remain an explicit unresolved conflict; no scope merge or renumbering. Metric correction 2026-10-15: separate source/test evidence snapshot count from exact final-current-HEAD count. A58-A61 evidence SHA values point to 5fe7fe19..., not the current documentation HEAD; current_head_evidence_task_ids is therefore 0, while source_test_evidence_snapshot_task_ids=4. PLAN-003 2026-10-15 A66-A69: source/test file blob evidence was inspected at branch HEAD fe298b3ae6005b118d8b7b1adf775a261d228ffe; its CI Push/PR and docs-sync Push/PR all succeeded. This is partial evidence mapping only, not formal acceptance. A67's explicit delete/empty-after-pass invalidation test remains a gap; A68's complete invalid-reference/persistence/no-mutation assertions require full inspection; A69 still needs caller-level persistence rejection and legacy compatibility proof. Preserve A0-A112 IDs and keep overall completion disabled. Current documentation HEAD changes with each audit-note commit; current_head_evidence_task_ids counts only records proven against the final documentation HEAD, so it remains 0 until final SHA and file-level evidence are reconciled. PLAN-003 2026-10-15 A70-A74: source/test file blob evidence was inspected at branch HEAD 5c689a16530f30c38785435f2f0a10a9fc796d2c; its CI Push/PR and docs-sync Push/PR all succeeded. This is partial evidence mapping only, not formal acceptance. Preserve known test gaps for each task; do not infer story quality from structure checks, do not merge/renumber task IDs, and keep current_head_evidence_task_ids=0 until final documentation HEAD evidence is reconciled. PLAN-003 2026-10-15 A75-A79: source/test evidence was inspected at source/test snapshot 3138a34ecd0d7779eb6809b85a1c3449daf3c24a; four CI/docs-sync workflows succeeded on that snapshot. A75/A76 are mapped to Stage 4 based on their short-drama source/test context; this is a roadmap classification, not formal acceptance. Keep limitations on text-only product-fact/selling-point checks and storyboard/person-knowledge structural checks explicit. PLAN-003 2026-10-15 A80-A84: source/test evidence was inspected at source/test snapshot 4063ba5a452c0c883ff39c8ea1ce33499a80eaf4; four CI/docs-sync workflows succeeded on that snapshot. Partial mapping only; keep semantic continuity and real visual performance as separate proof layers. Preserve A0-A112 numbering and do not enable overall completion percentages.",
   "counts": {
@@ -18,10 +18,10 @@
     "semantic_dedup_completed": false,
     "code_test_evidence_audit_completed_ids": 0,
     "semantic_dedup_reviewed_task_ids": 113,
-    "code_test_evidence_reviewed_ids": 90,
+    "code_test_evidence_reviewed_ids": 95,
     "roadmap_phase_mapped_ids": 113,
     "current_head_evidence_task_ids": 0,
-    "source_test_evidence_snapshot_task_ids": 32
+    "source_test_evidence_snapshot_task_ids": 37
   },
   "known_id_gaps": [],
   "tasks": [
@@ -7742,13 +7742,55 @@
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
       "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
-      "development_status": "not_audited",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+          "sha": "2506410d9621840ec34464fce1fa2746c7d798f4",
+          "commit_sha": "a6e052fa7edefa7e2fb794166684547436ff90f6",
+          "detail": "A90 production rows carry explicit series_asset_locks asset_id into actor_asset_id/scene_asset_id; no asset_id retains legacy tag matching."
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/production.py",
+          "sha": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
+          "commit_sha": "a6e052fa7edefa7e2fb794166684547436ff90f6",
+          "detail": "validate_series_asset_locks checks local index availability, exact ID existence, active/reusable status and asset type; resolve_assets preflights and fails closed; _render_with_provider validates lock before dispatch."
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_short_drama.py",
+          "sha": "2995b5764f7a86ee8c274b6359ff2f09cdf7a288",
+          "commit_sha": "a6e052fa7edefa7e2fb794166684547436ff90f6",
+          "detail": "A90 tests exact actor/scene ID transfer into production rows and legacy no-ID tag matching."
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_desktop.py",
+          "sha": "357c54dad99f61b99891bcc365dd2f9efc1a1009",
+          "commit_sha": "a6e052fa7edefa7e2fb794166684547436ff90f6",
+          "detail": "A91 disabled/retyped/nonreusable and reload preservation tests; A92 same physical actor/scene IDs across episodes plus save/reload; A93 counting Provider confirms zero dispatch and sibling-shot preservation; A94 restores original asset and retries exact ID without fallback."
+        },
+        {
+          "kind": "ci_pr",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38728582030",
+          "detail": "CI PR success on HEAD a6e052fa7edefa7e2fb794166684547436ff90f6.",
+          "sha": "a6e052fa7edefa7e2fb794166684547436ff90f6"
+        },
+        {
+          "kind": "docs_sync_pr",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38728581662",
+          "detail": "docs-sync PR success on HEAD a6e052fa7edefa7e2fb794166684547436ff90f6.",
+          "sha": "a6e052fa7edefa7e2fb794166684547436ff90f6"
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "The production-row test proves ID handoff, not full local-library resolution by itself; rely on A92/A91 integration tests for resolution.",
+        "No pixel-level identity consistency or real local user library/Windows verification is proven."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -7764,8 +7806,8 @@
           "## A90：跨集物理素材 ID 绑定（待最新 SHA 自动化验收）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
-      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "source_inventory_status": "source_test_and_pr_workflow_evidence_mapped_to_HEAD_a6e052fa7edefa7e2fb794166684547436ff90f6; push_workflow_pair_not_independently_verified_by_available_run_query; full_acceptance_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
       "semantic_dedup_batch": "PLAN-003-DEDUP-003"
     },
     {
@@ -7777,13 +7819,55 @@
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
       "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
-      "development_status": "not_audited",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+          "sha": "2506410d9621840ec34464fce1fa2746c7d798f4",
+          "commit_sha": "a6e052fa7edefa7e2fb794166684547436ff90f6",
+          "detail": "A90 production rows carry explicit series_asset_locks asset_id into actor_asset_id/scene_asset_id; no asset_id retains legacy tag matching."
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/production.py",
+          "sha": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
+          "commit_sha": "a6e052fa7edefa7e2fb794166684547436ff90f6",
+          "detail": "validate_series_asset_locks checks local index availability, exact ID existence, active/reusable status and asset type; resolve_assets preflights and fails closed; _render_with_provider validates lock before dispatch."
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_short_drama.py",
+          "sha": "2995b5764f7a86ee8c274b6359ff2f09cdf7a288",
+          "commit_sha": "a6e052fa7edefa7e2fb794166684547436ff90f6",
+          "detail": "A90 tests exact actor/scene ID transfer into production rows and legacy no-ID tag matching."
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_desktop.py",
+          "sha": "357c54dad99f61b99891bcc365dd2f9efc1a1009",
+          "commit_sha": "a6e052fa7edefa7e2fb794166684547436ff90f6",
+          "detail": "A91 disabled/retyped/nonreusable and reload preservation tests; A92 same physical actor/scene IDs across episodes plus save/reload; A93 counting Provider confirms zero dispatch and sibling-shot preservation; A94 restores original asset and retries exact ID without fallback."
+        },
+        {
+          "kind": "ci_pr",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38728582030",
+          "detail": "CI PR success on HEAD a6e052fa7edefa7e2fb794166684547436ff90f6.",
+          "sha": "a6e052fa7edefa7e2fb794166684547436ff90f6"
+        },
+        {
+          "kind": "docs_sync_pr",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38728581662",
+          "detail": "docs-sync PR success on HEAD a6e052fa7edefa7e2fb794166684547436ff90f6.",
+          "sha": "a6e052fa7edefa7e2fb794166684547436ff90f6"
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "Direct coverage exists for disabled, wrong-type, nonreusable, missing-on-reload and fail-before-fallback; verify all error variants and corrupted-index behavior in A95 separately.",
+        "Automated local fixture is not a real restart/Windows or concurrent library-mutation test."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -7798,8 +7882,8 @@
           "## A91 范围更新（2026-10-14）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
-      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "source_inventory_status": "source_test_and_pr_workflow_evidence_mapped_to_HEAD_a6e052fa7edefa7e2fb794166684547436ff90f6; push_workflow_pair_not_independently_verified_by_available_run_query; full_acceptance_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
       "semantic_dedup_batch": "PLAN-003-DEDUP-003"
     },
     {
@@ -7811,13 +7895,55 @@
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
       "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
-      "development_status": "not_audited",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+          "sha": "2506410d9621840ec34464fce1fa2746c7d798f4",
+          "commit_sha": "a6e052fa7edefa7e2fb794166684547436ff90f6",
+          "detail": "A90 production rows carry explicit series_asset_locks asset_id into actor_asset_id/scene_asset_id; no asset_id retains legacy tag matching."
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/production.py",
+          "sha": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
+          "commit_sha": "a6e052fa7edefa7e2fb794166684547436ff90f6",
+          "detail": "validate_series_asset_locks checks local index availability, exact ID existence, active/reusable status and asset type; resolve_assets preflights and fails closed; _render_with_provider validates lock before dispatch."
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_short_drama.py",
+          "sha": "2995b5764f7a86ee8c274b6359ff2f09cdf7a288",
+          "commit_sha": "a6e052fa7edefa7e2fb794166684547436ff90f6",
+          "detail": "A90 tests exact actor/scene ID transfer into production rows and legacy no-ID tag matching."
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_desktop.py",
+          "sha": "357c54dad99f61b99891bcc365dd2f9efc1a1009",
+          "commit_sha": "a6e052fa7edefa7e2fb794166684547436ff90f6",
+          "detail": "A91 disabled/retyped/nonreusable and reload preservation tests; A92 same physical actor/scene IDs across episodes plus save/reload; A93 counting Provider confirms zero dispatch and sibling-shot preservation; A94 restores original asset and retries exact ID without fallback."
+        },
+        {
+          "kind": "ci_pr",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38728582030",
+          "detail": "CI PR success on HEAD a6e052fa7edefa7e2fb794166684547436ff90f6.",
+          "sha": "a6e052fa7edefa7e2fb794166684547436ff90f6"
+        },
+        {
+          "kind": "docs_sync_pr",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38728581662",
+          "detail": "docs-sync PR success on HEAD a6e052fa7edefa7e2fb794166684547436ff90f6.",
+          "sha": "a6e052fa7edefa7e2fb794166684547436ff90f6"
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "The test resolves the same actor/scene IDs for two episodes and checks Shot IDs after save/reload.",
+        "The test is deterministic fixture coverage; it does not prove generated-video visual continuity or real library behavior."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -7841,8 +7967,8 @@
           "### A92/A93 自动化验收结果（2026-10-14；以本节为准）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
-      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "source_inventory_status": "source_test_and_pr_workflow_evidence_mapped_to_HEAD_a6e052fa7edefa7e2fb794166684547436ff90f6; push_workflow_pair_not_independently_verified_by_available_run_query; full_acceptance_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
       "semantic_dedup_batch": "PLAN-003-DEDUP-003"
     },
     {
@@ -7854,13 +7980,55 @@
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
       "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
-      "development_status": "not_audited",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+          "sha": "2506410d9621840ec34464fce1fa2746c7d798f4",
+          "commit_sha": "a6e052fa7edefa7e2fb794166684547436ff90f6",
+          "detail": "A90 production rows carry explicit series_asset_locks asset_id into actor_asset_id/scene_asset_id; no asset_id retains legacy tag matching."
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/production.py",
+          "sha": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
+          "commit_sha": "a6e052fa7edefa7e2fb794166684547436ff90f6",
+          "detail": "validate_series_asset_locks checks local index availability, exact ID existence, active/reusable status and asset type; resolve_assets preflights and fails closed; _render_with_provider validates lock before dispatch."
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_short_drama.py",
+          "sha": "2995b5764f7a86ee8c274b6359ff2f09cdf7a288",
+          "commit_sha": "a6e052fa7edefa7e2fb794166684547436ff90f6",
+          "detail": "A90 tests exact actor/scene ID transfer into production rows and legacy no-ID tag matching."
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_desktop.py",
+          "sha": "357c54dad99f61b99891bcc365dd2f9efc1a1009",
+          "commit_sha": "a6e052fa7edefa7e2fb794166684547436ff90f6",
+          "detail": "A91 disabled/retyped/nonreusable and reload preservation tests; A92 same physical actor/scene IDs across episodes plus save/reload; A93 counting Provider confirms zero dispatch and sibling-shot preservation; A94 restores original asset and retries exact ID without fallback."
+        },
+        {
+          "kind": "ci_pr",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38728582030",
+          "detail": "CI PR success on HEAD a6e052fa7edefa7e2fb794166684547436ff90f6.",
+          "sha": "a6e052fa7edefa7e2fb794166684547436ff90f6"
+        },
+        {
+          "kind": "docs_sync_pr",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38728581662",
+          "detail": "docs-sync PR success on HEAD a6e052fa7edefa7e2fb794166684547436ff90f6.",
+          "sha": "a6e052fa7edefa7e2fb794166684547436ff90f6"
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "Counting-provider test checks the render entry point, zero Provider calls, preserved original lock ID, and untouched sibling output.",
+        "Actual remote provider billing and production Windows execution remain deferred."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -7878,8 +8046,8 @@
           "### A92/A93 自动化验收结果（2026-10-14；以本节为准）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
-      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "source_inventory_status": "source_test_and_pr_workflow_evidence_mapped_to_HEAD_a6e052fa7edefa7e2fb794166684547436ff90f6; push_workflow_pair_not_independently_verified_by_available_run_query; full_acceptance_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
       "semantic_dedup_batch": "PLAN-003-DEDUP-003"
     },
     {
@@ -7891,13 +8059,55 @@
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
       "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
-      "development_status": "not_audited",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+          "sha": "2506410d9621840ec34464fce1fa2746c7d798f4",
+          "commit_sha": "a6e052fa7edefa7e2fb794166684547436ff90f6",
+          "detail": "A90 production rows carry explicit series_asset_locks asset_id into actor_asset_id/scene_asset_id; no asset_id retains legacy tag matching."
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/production.py",
+          "sha": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
+          "commit_sha": "a6e052fa7edefa7e2fb794166684547436ff90f6",
+          "detail": "validate_series_asset_locks checks local index availability, exact ID existence, active/reusable status and asset type; resolve_assets preflights and fails closed; _render_with_provider validates lock before dispatch."
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_short_drama.py",
+          "sha": "2995b5764f7a86ee8c274b6359ff2f09cdf7a288",
+          "commit_sha": "a6e052fa7edefa7e2fb794166684547436ff90f6",
+          "detail": "A90 tests exact actor/scene ID transfer into production rows and legacy no-ID tag matching."
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_desktop.py",
+          "sha": "357c54dad99f61b99891bcc365dd2f9efc1a1009",
+          "commit_sha": "a6e052fa7edefa7e2fb794166684547436ff90f6",
+          "detail": "A91 disabled/retyped/nonreusable and reload preservation tests; A92 same physical actor/scene IDs across episodes plus save/reload; A93 counting Provider confirms zero dispatch and sibling-shot preservation; A94 restores original asset and retries exact ID without fallback."
+        },
+        {
+          "kind": "ci_pr",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38728582030",
+          "detail": "CI PR success on HEAD a6e052fa7edefa7e2fb794166684547436ff90f6.",
+          "sha": "a6e052fa7edefa7e2fb794166684547436ff90f6"
+        },
+        {
+          "kind": "docs_sync_pr",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38728581662",
+          "detail": "docs-sync PR success on HEAD a6e052fa7edefa7e2fb794166684547436ff90f6.",
+          "sha": "a6e052fa7edefa7e2fb794166684547436ff90f6"
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "Test covers original asset disabled, a lookalike active, failure with no fallback, then recovery and exact original ID reuse.",
+        "Only local scheduling recovery is proven; not actual generation quality or billing."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -7915,8 +8125,8 @@
           "### A94 自动化验收结果（2026-10-14；以本节为准）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
-      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
+      "source_inventory_status": "source_test_and_pr_workflow_evidence_mapped_to_HEAD_a6e052fa7edefa7e2fb794166684547436ff90f6; push_workflow_pair_not_independently_verified_by_available_run_query; full_acceptance_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
       "semantic_dedup_batch": "PLAN-003-DEDUP-003"
     },
     {
