@@ -1,3 +1,13 @@
+# 【PLAN-003 最新接手状态｜A100–A112 部分证据映射｜2026-10-15】
+
+- 本轮开始基线 `14ac6d153cf2f9027d02ff71a82ff8facc643768`：CI Push、CI PR、docs-sync Push、docs-sync PR 四项均 success；PR #32 Open / unmerged。新提交后必须重查最新 SHA 的四项工作流。
+- 本轮完成 A100–A112 静态代码/测试证据映射；全部仅部分映射，不代表每项正式验收完成。台账 `code_test_evidence_reviewed_ids=113`（A0–A112 均已开始映射），`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false`。
+- 重点裁决：A100/A101/A103 单镜头淡化与音画同步分开；A104 是跨镜头 xfade/acrossfade；A105/A106/A107 分别是 pacing、角色决策、运行时字段执行；A108 字幕生成与 A112 实际 cue 保护分开；A109/A110/A111/A112 的音乐卡点链路仍保留独立合同。1080P 输出尺寸不等于真实细节增强。
+- 已找到专项测试线索：A100–A103 在 test_postprocess.py；A104 在 test_ffmpeg.py；A105–A107 在 test_creative_engine.py；A108 在 test_subtitles.py；A109–A112 在 test_music_sync.py；最终 1080P/媒体 QC 在 test_desktop.py。所有这些仍是静态证据映射，真实素材、Windows、真实口播/听感和商业质量暂缓。
+- 下一步唯一主任务：全量跨来源去重与状态裁决，对照 A0–A112 正式验收计划、路线图、未来功能备忘、验收 SOP、任务登记表和执行控制文档；核对重复段落、转义换行和历史状态冲突。不得删 ID、补造编号、计算总体完成率或开发新产品功能。
+
+---
+
 # 【PLAN-003 最新接手状态｜A83–A99 部分证据映射｜2026-10-15】
 
 - 本轮开始基线：`a2dd27fa6df1fb17cdaf2914b7633649809bd901`；CI Push、CI PR、docs-sync Push、docs-sync PR 四项均 success。新提交之后必须按最新 SHA 重查四项检查。PR #32 保持 Open / unmerged。

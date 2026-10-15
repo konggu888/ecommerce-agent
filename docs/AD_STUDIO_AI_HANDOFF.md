@@ -1,3 +1,10 @@
+
+
+## PLAN-003 审计进度更新｜A100–A112｜2026-10-15
+
+A100–A112 已完成静态代码/测试证据映射：淡出时间窗、变速音画同步、最低 1080P 输出、淡入/淡出、xfade/acrossfade、pacing、商业角色决策、运行时时长、字幕密度、音乐节拍、内容保护、逐边界局部回退和 SRT cue 时间窗。已定位专项测试文件：test_postprocess.py、test_ffmpeg.py、test_creative_engine.py、test_subtitles.py、test_music_sync.py、test_desktop.py。
+
+本批全部仅部分证据映射，不等于每项正式验收完成；1080P 尺寸放大不等于 AI 细节增强，真实素材/Windows/真实音乐口播/剪映与商业效果仍暂缓。台账 `code_test_evidence_reviewed_ids=113`，完整证据审计仍为 0、语义去重未完成、总体完成率关闭。下一步进入 A0–A112 与路线图、未来备忘、SOP、任务登记表、执行控制的全量跨来源去重/状态裁决。PR #32 保持 Open / unmerged。
 # 【PLAN-003 当前进度｜2026-10-15｜本段优先于下方历史记录】
 
 - 最新完整核验基线（本次接手前）：`1fd6d08dac970cb7886c59239b05c4f6e2128cf9`；CI Push `38691577983`、CI PR `38691582839`、docs-sync Push `38691577999`、docs-sync PR `38691582806` 均 success。PR #32 保持 Open / unmerged；任何新提交后必须重新核验四项结果。

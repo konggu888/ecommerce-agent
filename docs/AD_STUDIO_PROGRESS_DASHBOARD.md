@@ -7,7 +7,7 @@
 - A0–A5 当前代码/测试证据映射（核验到 SHA `1fd6d08dac970cb7886c59239b05c4f6e2128cf9`；仅证据盘点，不代表正式验收）：A0：`ad_studio/app.py` 中存在 `App.create()` 用户操作入口，但已检查的 desktop 测试未发现专门启动/创建操作端到端测试；A1：当前 CI 覆盖多个测试集，但台账仍缺任务级稳定性矩阵与可追溯的逐项证据；A2：`test_desktop.py` 有 `test_project_lifecycle_isolated_between_projects`、`test_project_save_load`，但未发现直接调用 `App.create()` 的编排测试；A3：有 `test_setup_form_grid_rows_do_not_overlap`、`test_three_task_types_have_distinct_deterministic_policies`、`test_task_type_is_persisted_and_not_replaced_by_platform`，但不能替代三类任务完整 UI 流程验收；A4：`test_footage.py` 覆盖素材排序扫描、不可解析文件注记、重复素材评分、废片归档与保护被引用源文件（`test_archive_analyzed_waste_protects_currently_referenced_source`），仍需对照验收清单补齐路径异常、源文件保护等完整矩阵；A5：`footage.py` 实现 `extract_keyframes()`、`build_visual_manifest()`、`footage_analysis_public()`，但全仓已检查的 desktop `test*.py` 未找到对前两者的直接专项测试，需补关键帧提取失败、清单生成失败与模型视觉分析失败/回退覆盖。六项均不标记正式验收通过。
 
 - A0–A112 共 113 个编号槽位的四份规划来源标题索引已建立；需求文本级语义复核覆盖 113 个已登记槽位。A68–A74 与 A99 的历史任务身份已从历史提交、测试及项目文档中恢复，不能再描述为“未知编号缺口”；但历史实现不等于当前 HEAD 已验收。
-- 当前仍未完成的是全量跨来源重复/状态材料合并审计，以及逐项代码、测试和当前 HEAD 证据审计。已确认的 A50/A56、A61/A62、A57、A99 关系仅为局部裁决；台账仍为 `fully_audited=0`、`semantic_dedup_completed=false`、`code_test_evidence_audit_completed_ids=0`；`code_test_evidence_reviewed_ids=100` 表示已开始部分映射，不表示六项已正式验收。权重仍为空，总体完成率保持关闭。
+- 当前仍未完成的是全量跨来源重复/状态材料合并审计，以及逐项代码、测试和当前 HEAD 证据审计。已确认的 A50/A56、A61/A62、A57、A99 关系仅为局部裁决；台账仍为 `fully_audited=0`、`semantic_dedup_completed=false`、`code_test_evidence_audit_completed_ids=0`；`code_test_evidence_reviewed_ids=113` 表示已开始部分映射，不表示六项已正式验收。权重仍为空，总体完成率保持关闭。
 - A88 是标题解析假缺口，已修正。跨来源关系的初步裁决（仍待全量核对）：A50/A56 是原始行为合同与回归修复，关联但不合并；A61/A62 是历史成本迁移能力与迁移相关断言修复，关联但不合并；A57 内含两个独立验收场景，必须分别核验；A99 的成功账本清除未计费兄弟镜头陈旧成本有独立行为与专项测试，与 A57/A59 相关但不重复。A80、A84/A85、A89、A92/A93、A111 等历史/状态材料及 A90–A98、A100–A112 的独立执行合同仍需逐项核对。此为保守初步映射，不代表全量语义去重完成，不授权删除任何 ID 或验收条件。
 - A0–A5 的代码/测试证据审计仅有部分映射，未正式验收。A3 设置区布局重叠问题已在 `f20bf426594a55ac74267641b53d9166acef6798` 修复并增加 AST 布局回归测试；`0bc079178c569502dc8f722ad04544a581f20290` 是该阶段的历史核验基线，不是当前 HEAD。当前最新完整核验基线为 `1fd6d08dac970cb7886c59239b05c4f6e2128cf9`，其 CI Push `38691577983`、CI PR `38691582839`、docs-sync Push `38691577999`、docs-sync PR `38691582806` 均 success。下一步不重复修复已解决的 A3 布局问题，而是继续 PLAN-003：完成跨来源重复/状态段审计，再逐项核验 A0–A5 及后续任务的代码、专项测试与当前 SHA 证据。
 
@@ -304,3 +304,33 @@ PR #32 不合并。Windows 真机、真实素材、真实 Provider/扣费、剪�
 - A84–A87 正式计划中仍存在未勾选项目；A88 计划文本出现字面转义换行与重复段落痕迹，需在跨来源文档清理阶段处理，不能将格式问题当成功能已验收。A89–A96 的历史 CI 记录绑定旧 SHA，不自动证明当前 HEAD。A97–A99 有直接测试名线索，仍需当前 SHA 运行和逐项断言审查。
 - 本批 A83–A99 全部记为“部分证据映射”。台账 `code_test_evidence_reviewed_ids=100` 仅表示 A0–A99 已开始映射；`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false` 保持不变。没有分配权重，不计算整体完成率。
 - 下一步继续审计 A100–A112，并同步检查商业剪辑专项和 A102 最低 1080P 导出条款的独立状态。仍不开发新产品功能；真实 Provider/扣费、Windows 真机、真实素材、剪映现场和真实投放继续暂缓。
+
+
+## PLAN-003 当前代码/测试证据映射：A100–A112｜2026-10-15｜部分映射
+
+本轮开始前已重新核对基线 `14ac6d153cf2f9027d02ff71a82ff8facc643768`：CI Push、CI PR、docs-sync Push、docs-sync PR 四项均 success；PR #32 Open / unmerged。本轮对验收计划、`PROJECT_LOGIC.md`、`test_postprocess.py`、`test_ffmpeg.py`、`test_music_sync.py`、`test_creative_engine.py`、`test_subtitles.py` 与 `test_desktop.py` 做静态证据映射。没有声称在本轮本地重新运行全部测试。
+
+| ID | 已找到的代码/测试证据 | 审计结论与剩余边界 |
+|---|---|---|
+| A100 淡出时间窗 | `test_fade_out_happens_at_end_after_speed_change`、`test_short_clip_fade_out_does_not_exceed_clip_duration` | 覆盖变速后末尾淡出与短片段边界；FFmpeg 命令断言不等于真实视频观感验收。 |
+| A101 变速音画同步 | `test_speed_change_keeps_audio_in_sync_with_video`、`test_normal_speed_does_not_add_unneeded_audio_tempo_filter` | 检查视频 setpts 与音频 atempo 命令参数；真实音画同步仍需媒体/Windows 验证。 |
+| A102 最低 1080P 输出 | `test_final_output_normalizer_targets_1080_class_resolution_and_keeps_audio`、`test_final_output_normalizer_supports_landscape_and_square_profiles`、`test_final_output_inspection_rejects_below_1080_class_resolution`、最终输出媒体 QC 测试 | 有尺寸归一化命令和低尺寸拒绝线索。不能将放大到 1080P 说成 AI 细节增强；最终实际 FFprobe/真实媒体链仍应按正式计划逐项确认，计划中验收勾选不能因历史记录自动变更。 |
+| A103 淡入/淡出音画同步 | `test_fade_in_synchronizes_video_and_audio`、`test_fade_out_synchronizes_audio_at_end_without_speed_change`、A100 变速淡出/短片段测试 | 有视频/音频滤镜合同；仍需核对缺失音轨、异常探测时长等边界是否在计划范围内。 |
+| A104 相邻镜头交叉溶解 | `test_crossfade_builds_video_and_audio_overlap_filters`、`test_crossfade_rejects_mismatched_transition_count`、`test_final_builder_uses_crossfade_only_when_requested`；生产路径 `ProductionStore.build_final()` → `concat_with_transitions()` | 已找到 xfade/acrossfade 与显式触发测试；真实素材编码器、无音轨静音补齐、短镜头与转场听感仍待真机验证。 |
+| A105 pacing 到实际速度 | `test_pacing_sets_executable_default_speed`、`test_explicit_speed_overrides_pacing_default`、`test_unknown_pacing_falls_back_to_standard`；后处理音轨同步测试 | 有映射和覆盖规则测试；仍需确认未知标签、schema 省略 speed 与运行时执行路径整体一致。 |
+| A106 商业角色默认剪辑决策 | `test_role_defaults_drive_duration_speed_and_transition`、`test_last_cta_defaults_to_fade_out`、`test_explicit_editing_decisions_override_role_defaults` | 有角色默认、CTA 和显式值优先测试；依据是文本关键词，不是视觉识别；需核对 rationale/basis/参数来源与实际执行参数完整一致。 |
+| A107 商业角色时长进入运行时请求 | `test_resolved_duration_and_editing_fields_reach_runtime_mapping` | 有运行时字段映射测试；不证明外部 Provider 严格按请求时长返回成片。 |
+| A108 字幕密度与时间轴 | `test_short_caption_spans_actual_clip_duration`、`test_long_caption_is_split_and_timed_across_clip`、`test_short_shot_reduces_caption_switching_and_reports_density`、`test_high_density_warning_does_not_rewrite_caption_words` | 有字幕时间轴、密度提示和原文保护测试；真实可读性、ASR/口播语义同步与 Windows 画面验收仍暂缓。 |
+| A109 音乐节拍与切点 | `test_detects_regular_synthetic_clicks`、`test_silence_has_no_confident_beats`、`test_low_confidence_preserves_original_timing`、`test_safe_beat_snap_changes_real_shot_durations`、`test_retime_command_keeps_audio_synced`、`test_global_bgm_uses_one_continuous_track_after_assembly`；生产路径含 `plan_beat_aligned_durations()`、`retime_clip()` 与全局 BGM 混合 | 有合成节拍、低置信度回退、时长变化、音轨同步和全局 BGM 测试线索；真实音乐、旧项目音轨兼容和主观听感仍未验收。 |
+| A110 商业内容保护 | `test_content_protection_estimates_dialogue_text_and_product_hold`、`test_beat_snap_preserves_dialogue_and_product_holds`、`test_underlength_dialogue_prevents_music_retiming` | 有台词/商品停留保护线索；文本估算不能替代真实字幕阅读时长或实际口播时长，需核对所有保护类型及无效元数据矩阵。 |
+| A111 逐边界局部卡点 | `test_local_beat_planning_keeps_safe_unrelated_boundary`、`test_multiple_protected_neighbors_revert_only_conflicting_boundaries`、`test_low_confidence_and_crossfade_still_fall_back`、`test_invalid_duration_and_extreme_speed_are_rejected` | 有局部回退、非冲突边界仍可调整、低置信度/交叉溶解保守回退测试；需要保持总时长、边界序号审计等合同与正式计划一致。 |
+| A112 字幕 cue 时间窗保护 | `test_actual_srt_windows_protect_shortest_caption_display_time`、`test_actual_srt_windows_allow_safe_shortening_when_cues_are_long_enough`、`test_invalid_srt_windows_fall_back`；`test_parses_single_and_multiple_real_cue_windows`、`test_accepts_dot_timestamp_fraction`、`test_rejects_out_of_range_and_mismatched_timeline`、`test_rejects_malformed_empty_and_missing_srt` | 有 cue 解析、0.65 秒最短显示保护、无效 SRT 回退测试线索；仍需确认版本/路径/时长匹配证据真实进入生产规划，不能宣称完成 ASR 或视觉可读性验收。 |
+
+### A100–A112 关系与状态裁决
+
+- A100 是变速后淡出时间窗，A101 是变速视频与原音轨同步，A103 是淡入/淡出音画合同，三者关联但验收对象不同；A104 是跨镜头拼接转场，不与单镜头淡入/淡出合并。
+- A105 pacing 映射、A106 文本角色默认决策、A107 将时长传入运行时请求是连续但独立的执行层；A108 字幕时间轴生成与 A112 将真实 SRT cue 送入内容保护也必须分别核验。
+- A109 音乐切点、A110 内容保护、A111 局部边界回退、A112 字幕 cue 保护形成链路，但每项有独立失败条件和测试合同。历史 CI 记录不能代替当前 SHA 证据；当前基线四项工作流为绿只证明当前提交的 CI/doc-sync 通过，不代表真实成片质量验收。
+- A102 1080P 尺寸底线与真实清晰度增强严格区分。路线图中阶段 2 仍未退出，真实音乐、真实口播、真实素材、Windows 播放/剪映与商业效果继续暂缓。
+- 本批 A100–A112 全部记为“部分证据映射”。台账 `code_test_evidence_reviewed_ids=113` 仅表示 A0–A112 已开始映射；`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false` 保持不变。不分配权重，不计算整体完成率。
+- 下一步转入全量跨来源去重与状态裁决：把 A0–A112 正式验收计划与路线图、未来功能备忘、验收 SOP、任务登记表及执行控制文档逐项交叉核对；优先处理已发现的重复段落/转义换行/历史状态冲突，并只在有来源证据时修正文档。不得删 ID、补造编号或开发新产品功能。
