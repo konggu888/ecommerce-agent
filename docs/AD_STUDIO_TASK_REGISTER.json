@@ -7364,14 +7364,54 @@
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
-      "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
-      "development_status": "not_audited",
+      "roadmap_phase": "阶段4｜AI 短剧能力",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+          "detail": "audit_short_drama() maintains a per-episode character_state_ledger keyed by character_name + dimension; validates persistence flags, evidence/shot references, cross-episode carry-forward, undeclared resets and transition evidence.",
+          "sha": "2506410d9621840ec34464fce1fa2746c7d798f4",
+          "commit_sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_short_drama.py",
+          "detail": "test_a85_accepts_persisting_character_relationship_state; test_a85_warns_when_persistent_state_disappears_in_next_episode; test_a85_warns_when_relationship_resets_without_declared_change; test_a85_requires_transition_evidence_for_declared_state_change; test_a85_rejects_non_boolean_persistence_flag_and_untraceable_evidence.",
+          "sha": "2995b5764f7a86ee8c274b6359ff2f09cdf7a288",
+          "commit_sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38727772398",
+          "detail": "CI Push success on source/test audit snapshot 4063ba5a452c0c883ff39c8ea1ce33499a80eaf4.",
+          "sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38727780540",
+          "detail": "CI PR success on source/test audit snapshot 4063ba5a452c0c883ff39c8ea1ce33499a80eaf4.",
+          "sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38727772643",
+          "detail": "docs-sync Push success on source/test audit snapshot 4063ba5a452c0c883ff39c8ea1ce33499a80eaf4.",
+          "sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38727780536",
+          "detail": "docs-sync PR success on source/test audit snapshot 4063ba5a452c0c883ff39c8ea1ce33499a80eaf4.",
+          "sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "Direct tests still need confirmation for unknown character, missing/duplicate dimension, invalid shot reference and legacy-plan compatibility.",
+        "Text matching cannot establish genuine psychological continuity; save/reload continuity is not proven by these test names."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -7389,7 +7429,7 @@
           "### A85 自动化验证结果"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "source_inventory_status": "partial_current_head_source_test_and_workflow_mapping_semantic_dedup_and_full_acceptance_pending",
       "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
       "semantic_dedup_batch": "PLAN-003-DEDUP-001"
     },
@@ -7401,14 +7441,54 @@
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
-      "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
-      "development_status": "not_audited",
+      "roadmap_phase": "阶段4｜AI 短剧能力",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+          "detail": "For status=changed, audit_short_drama() checks trigger, state-change, reaction and downstream-consequence evidence with ordered storyboard references.",
+          "sha": "2506410d9621840ec34464fce1fa2746c7d798f4",
+          "commit_sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_short_drama.py",
+          "detail": "test_a86_accepts_ordered_character_state_causal_chain; test_a86_warns_when_changed_state_has_no_trigger; test_a86_warns_when_trigger_follows_state_change; test_a86_warns_when_reaction_or_consequence_is_missing_or_out_of_order; test_a86_prompt_requires_causal_closure_for_changed_states.",
+          "sha": "2995b5764f7a86ee8c274b6359ff2f09cdf7a288",
+          "commit_sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38727772398",
+          "detail": "CI Push success on source/test audit snapshot 4063ba5a452c0c883ff39c8ea1ce33499a80eaf4.",
+          "sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38727780540",
+          "detail": "CI PR success on source/test audit snapshot 4063ba5a452c0c883ff39c8ea1ce33499a80eaf4.",
+          "sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38727772643",
+          "detail": "docs-sync Push success on source/test audit snapshot 4063ba5a452c0c883ff39c8ea1ce33499a80eaf4.",
+          "sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38727780536",
+          "detail": "docs-sync PR success on source/test audit snapshot 4063ba5a452c0c883ff39c8ea1ce33499a80eaf4.",
+          "sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "The visible test set combines some reaction/consequence failure conditions; independently isolate invalid reaction ordering, invalid references and legacy compatibility.",
+        "Ordered text references are not proof that the character's emotional transition is causally convincing."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -7423,7 +7503,7 @@
           "### A86 已实现能力（待最新 SHA 自动化验证）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "source_inventory_status": "partial_current_head_source_test_and_workflow_mapping_semantic_dedup_and_full_acceptance_pending",
       "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
       "semantic_dedup_batch": "PLAN-003-DEDUP-001"
     },
@@ -7435,14 +7515,54 @@
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
-      "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
-      "development_status": "not_audited",
+      "roadmap_phase": "阶段4｜AI 短剧能力",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+          "detail": "Changed character states require observable_manifestation and valid storyboard references; audit flags abstract emotion labels and manifestations not present in referenced shot text.",
+          "sha": "2506410d9621840ec34464fce1fa2746c7d798f4",
+          "commit_sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_short_drama.py",
+          "detail": "test_a87_accepts_observable_performance_for_changed_state; test_a87_warns_when_state_change_has_only_abstract_emotion_label; test_a87_warns_when_observable_manifestation_is_not_in_referenced_shot.",
+          "sha": "2995b5764f7a86ee8c274b6359ff2f09cdf7a288",
+          "commit_sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38727772398",
+          "detail": "CI Push success on source/test audit snapshot 4063ba5a452c0c883ff39c8ea1ce33499a80eaf4.",
+          "sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38727780540",
+          "detail": "CI PR success on source/test audit snapshot 4063ba5a452c0c883ff39c8ea1ce33499a80eaf4.",
+          "sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38727772643",
+          "detail": "docs-sync Push success on source/test audit snapshot 4063ba5a452c0c883ff39c8ea1ce33499a80eaf4.",
+          "sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38727780536",
+          "detail": "docs-sync PR success on source/test audit snapshot 4063ba5a452c0c883ff39c8ea1ce33499a80eaf4.",
+          "sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "A direct test for missing manifestation/reference and legacy compatibility was not established in this pass.",
+        "Textual action cues do not prove the generated actor actually performs the action; real-video visual review remains deferred."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -7457,7 +7577,7 @@
           "### A87 已加入实现（以最新 SHA CI 结果为准）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "source_inventory_status": "partial_current_head_source_test_and_workflow_mapping_semantic_dedup_and_full_acceptance_pending",
       "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
       "semantic_dedup_batch": "PLAN-003-DEDUP-001"
     },
@@ -7471,14 +7591,53 @@
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
       "audit_note": "已在验收计划、验收 SOP 与未来功能备忘中找到正式标题；此前因标题解析未归一化字面量反斜杠+n而被误报缺失。当前仍待独立核验实现、测试、当前 SHA 证据与验收状态。",
-      "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
-      "development_status": "not_audited",
+      "roadmap_phase": "阶段4｜AI 短剧能力",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+          "detail": "Optional cross_character_dependencies validates distinct defined characters, dependency/rule enums, duplicate keys, valid storyboard references, evidence and both character claims; detects contradictions only under same_understanding and requires a rationale for asymmetric_knowledge.",
+          "sha": "2506410d9621840ec34464fce1fa2746c7d798f4",
+          "commit_sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_short_drama.py",
+          "detail": "test_a88_checks_cross_character_consistency_but_allows_different_beliefs; test_a88_warns_for_unknown_character_and_invalid_reference.",
+          "sha": "2995b5764f7a86ee8c274b6359ff2f09cdf7a288",
+          "commit_sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38727772398",
+          "detail": "CI Push success on source/test audit snapshot 4063ba5a452c0c883ff39c8ea1ce33499a80eaf4.",
+          "sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38727780540",
+          "detail": "CI PR success on source/test audit snapshot 4063ba5a452c0c883ff39c8ea1ce33499a80eaf4.",
+          "sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38727772643",
+          "detail": "docs-sync Push success on source/test audit snapshot 4063ba5a452c0c883ff39c8ea1ce33499a80eaf4.",
+          "sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38727780536",
+          "detail": "docs-sync PR success on source/test audit snapshot 4063ba5a452c0c883ff39c8ea1ce33499a80eaf4.",
+          "sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        }
+      ],
       "remaining_conditions": [
-        "标题来源已通过转义换行归一化重新识别；仍需独立核验实现、测试、当前 SHA 证据与是否完成验收。"
+        "Direct isolated assertions remain to be confirmed for invalid enum values, duplicate dependency keys, missing claims/evidence and legacy compatibility; no semantic model of the characters' actual beliefs is proven."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -7493,7 +7652,7 @@
           "### A88 已加入实现（以最新 SHA CI 结果为准）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_completed_semantic_dedup_reviewed_code_evidence_pending",
+      "source_inventory_status": "partial_current_head_source_test_and_workflow_mapping_semantic_dedup_and_full_acceptance_pending",
       "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
       "semantic_dedup_batch": "PLAN-003-DEDUP-001"
     },
@@ -7505,14 +7664,54 @@
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
-      "roadmap_phase": "阶段 4｜AI 短剧能力（初步映射，待核验）",
-      "development_status": "not_audited",
+      "roadmap_phase": "阶段4｜AI 短剧能力",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+          "detail": "Root series_asset_locks validates and applies actor/scene identity descriptions to matching storyboard actor_requirements/scene_requirements and production-row tags; episode_numbers scopes applicability; missing targets warn.",
+          "sha": "2506410d9621840ec34464fce1fa2746c7d798f4",
+          "commit_sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_short_drama.py",
+          "detail": "test_a89_series_asset_locks_flow_into_production_requirements; test_a89_asset_locks_can_be_episode_scoped_and_bad_schema_is_rejected; test_a89_warns_when_asset_lock_target_does_not_match_any_shot.",
+          "sha": "2995b5764f7a86ee8c274b6359ff2f09cdf7a288",
+          "commit_sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38727772398",
+          "detail": "CI Push success on source/test audit snapshot 4063ba5a452c0c883ff39c8ea1ce33499a80eaf4.",
+          "sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38727780540",
+          "detail": "CI PR success on source/test audit snapshot 4063ba5a452c0c883ff39c8ea1ce33499a80eaf4.",
+          "sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38727772643",
+          "detail": "docs-sync Push success on source/test audit snapshot 4063ba5a452c0c883ff39c8ea1ce33499a80eaf4.",
+          "sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38727780536",
+          "detail": "docs-sync PR success on source/test audit snapshot 4063ba5a452c0c883ff39c8ea1ce33499a80eaf4.",
+          "sha": "4063ba5a452c0c883ff39c8ea1ce33499a80eaf4"
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "The acceptance document says continuation context carries series_asset_locks, but a dedicated direct regression assertion for continuation/save-reload was not confirmed in this pass.",
+        "This is text/asset-scheduling constraint evidence only; physical asset-ID binding belongs to A90, and generated-video identity consistency is not proven."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -7530,7 +7729,7 @@
           "### A89 自动化状态更新（2026-10-14）"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "source_inventory_status": "partial_current_head_source_test_and_workflow_mapping_semantic_dedup_and_full_acceptance_pending",
       "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
       "semantic_dedup_batch": "PLAN-003-DEDUP-001"
     },
