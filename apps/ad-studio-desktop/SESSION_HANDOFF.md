@@ -1,3 +1,13 @@
+# 【PLAN-003 最新接手状态｜A68–A82 部分证据映射｜2026-10-15】
+
+- 本轮开始基线：`c6c6294f0d1626cf6a8f65ccd364ae476a2e5520`；CI Push、CI PR、docs-sync Push、docs-sync PR 四项均 success。提交新 SHA 后必须重新查询四项检查。PR #32 保持 Open / unmerged。
+- 本轮已对 A68–A82 完成静态代码/测试/文档证据映射，全部仅部分映射。台账 `code_test_evidence_reviewed_ids=83`、`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false`。
+- 主要证据：A68 后续集影响报告；A69/A70 故事引擎与结构审查；A71/A72 备选方向和人物动机；A73/A74 因果链与文本证据；A75/A76 商品事实/卖点覆盖；A77–A82 镜头事件、行动依据、人物绑定、关系变化、状态连续性和知识时间线。
+- 重要缺口：A77–A80 在正式验收计划中仍有未勾选/开发中状态。不得因逻辑文档写有实现说明、测试文件里有相关用例或旧 SHA CI 曾绿，就改写为当前验收完成；需逐项核验专门正反例、调用链和最新 SHA 证据。A81/A82 的历史 SHA 记录不自动替代当前 HEAD 证据。
+- 下一项：完成新 SHA 四项 CI/doc-sync 核验；全绿后继续 PLAN-003 A83–A99。若失败先查日志修复。不得开发新产品功能、不得计算总体完成率；真实 Provider/账单、Windows 真机、真实素材、剪映和真实投放继续暂缓。
+
+---
+
 # 【PLAN-003 最新接手状态｜A50–A67 部分证据映射｜2026-10-15】
 
 - 本轮开始基线：`707758608e105840f21d4945aa40b3eb89b00522`；该 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR 均 success。新提交 `707758608e105840f21d4945aa40b3eb89b00522` 之后，四项新 SHA 工作流尚待核验；不要沿用旧 SHA 的绿灯结论。PR #32 保持 Open / unmerged。
