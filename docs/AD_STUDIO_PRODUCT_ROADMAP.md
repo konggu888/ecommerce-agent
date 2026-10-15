@@ -1,3 +1,11 @@
+## 【UX/安全完整性审查优先级补充｜2026-10-15｜当前执行入口】
+
+- 用户体验、端到端使用闭环、功能安全、异常恢复、跨功能状态一致性与商业结果质量审查，已作为 PLAN-003 的规划完整性审查工作单纳入。
+- 审查规范：`docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md`；它补充现有验收范围，不替代正式验收计划、SOP 或本路线图。
+- 在 UXS-1 至 UXS-5 完成并与 A0–A112 完成跨来源映射前，不开发新产品功能、不计算整体完成率、不分配未经审定的权重。
+- 本次开始基线 HEAD `04d27368a305d37ab3a42a82f96e42fc756463da`；该 SHA 的 CI Push/PR 与 docs-sync Push/PR 四项均 success。PR #32 必须保持 Open / unmerged。
+- 下方旧状态快照可能提到不同的历史 HEAD/“下一项”；仅作历史，不得覆盖此补充和 GitHub 实时状态。
+
 > **最新优先级声明｜2026-10-14：** A112 已完成自动化阶段。当前先按 `docs/AD_STUDIO_PROGRESS_DASHBOARD.md` 完成全量任务盘点、去重、证据核验与进度口径统一，随后复核阶段 2 退出条件；在此之前不追加新产品功能。旧正文中“当前下一项 A112”均为历史执行记录。AI 范围控制规则见 `docs/AD_STUDIO_EXECUTION_CONTROL.md`。
 
 

@@ -1,3 +1,16 @@
+# 用户体验与产品安全完整性审查更新｜2026-10-15
+
+本轮用户提出：现有规划可能没有完整覆盖用户体验、真实用户使用流程与功能安全。已将该议题纳入 PLAN-003 的规划完整性审查，不开发新产品功能。
+
+- 审查计划：`docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md`。
+- 当前阶段 UXS-1：确立八个审查维度、从首次启动到交付的用户旅程、P0–P3 风险分类、与 A0–A112 的映射规则和退出条件。
+- 后续：UXS-2 用户旅程证据映射 → UXS-3 安全与跨功能依赖矩阵 → UXS-4 与 A0–A112 及路线图/SOP/未来备忘/台账跨来源裁决 → UXS-5 统一纳入规划。
+- 本轮开始基线 `04d27368a305d37ab3a42a82f96e42fc756463da`；CI Push `38693984581`、CI PR `38693988861`、docs-sync Push `38693984682`、docs-sync PR `38693988917` 均 success。文档提交后必须重查新 SHA 四项工作流。
+- PR #32 保持 Open / unmerged；Windows 真机、真实素材、Provider/实际扣费、剪映现场、真实投放/商业效果仍暂缓。
+- A0–A112 静态映射不是正式验收。保持 `code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false`，不分配权重、不计算整体完成率。
+
+---
+
 
 
 ## PLAN-003 审计进度更新｜A100–A112｜2026-10-15

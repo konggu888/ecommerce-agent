@@ -1,3 +1,12 @@
+## 新增完整性审查主线｜UXS｜2026-10-15（优先级高于下方历史状态快照）
+
+- 用户提出产品规划可能未完整覆盖用户体验、使用流程与功能安全。本轮已建立正式审查入口：`docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md`。
+- 该审查并入 PLAN-003 的规划完整性工作，不是新产品功能开发，不另起冲突路线图。
+- 当前阶段 UXS-1：建立审查范围、用户旅程、风险分级和 A0–A112 映射规则；UXS-2 用户旅程证据映射、UXS-3 安全/跨功能依赖矩阵、UXS-4 跨来源裁决、UXS-5 统一纳入规划均未完成。
+- 当前基线 HEAD `04d27368a305d37ab3a42a82f96e42fc756463da`；PR #32 Open / unmerged。CI Push `38693984581`、CI PR `38693988861`、docs-sync Push `38693984682`、docs-sync PR `38693988917` 均 success。
+- A0–A112 的证据映射仍不等于正式验收；`code_test_evidence_reviewed_ids=113`、`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false` 保持不变。权重与整体完成率继续关闭。
+- 唯一执行顺序：先完成 UXS-1 规定的来源/职责基线；之后按用户旅程和风险矩阵开展证据映射，并与原 PLAN-003 跨来源去重合并推进。不得顺手开发产品功能；真实环境暂缓项不变。
+
 # AI 商品广告工厂｜总进度与任务台账
 
 版本日期：2026-10-15；仓库：`konggu888/ecommerce-agent`；项目：`apps/ad-studio-desktop`；分支：`feat/product-drama-visual-review`；PR #32 必须 Open / unmerged。
