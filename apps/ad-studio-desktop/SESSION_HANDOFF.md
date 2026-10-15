@@ -1,8 +1,8 @@
 # 【当前接手入口｜2026-10-15｜规划控制体系优先】
 
 - 仓库：`konggu888/ecommerce-agent`；项目：`apps/ad-studio-desktop`；分支：`feat/product-drama-visual-review`；PR #32 必须保持 Open / unmerged。
-- **唯一权威进度与下一项**：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`。本轮先完成规划/进度控制体系盘点与入口纠偏；之后按总台账把 A0–A112 规范化为唯一任务记录。
-- 当前最新已核对 HEAD（本轮文档修改前）：`9b52642fc2608fe24b0d4dba4ba0ef36d3ca8e67`；PR-triggered CI `38700695789` 与 docs-sync `38700695499` success，Netlify deploy-preview success；Push-triggered 两项未独立核实。提交本轮文档后必须重新检查新 HEAD。
+- **唯一权威进度与下一项**：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`。当前进入 PLAN-003 全量跨来源语义去重、状态冲突裁决与依赖/证据边界复核；A0–A112 台账及分批静态映射已存在，不能重建或重复从 A50 开始。
+- 本轮修改前 HEAD：`9b514be490a56037c0ff4c700ac3084ea5180793`；该 SHA 的 PR-triggered CI/doc-sync 状态应以实时 Actions 查询为准。Push-triggered 两项未由当前查询独立核实。提交后必须重新检查新 HEAD。
 - 本轮不开发产品功能，不继续 UXS-2 专项细节，不删/重编号 A0–A112，不赋权、不计算总体完成率。真实 Windows、真实素材、Provider/扣费、剪映现场、真实投放与商业效果验证继续暂缓。
 - **七层结果证明标准已纳入全项目证据规则**：软件运行、功能行为、端到端流程、普通用户可用、商品表达真实安全、商业成片质量、真实商业效果；详细定义和禁止替代关系见总进度台账及执行控制协议。台账规范化时逐项映射，不新增正式验收 ID。
 - **用户自由度已纳入 PLAN-003**：规范化 A0–A112 台账时必须映射选择/控制/知情/撤回纠正四个维度，核对模型与 Provider 选择、自动回退授权、数据外发告知、费用不确定性、密钥保存、缓存/历史隔离及取消后外部调用为零的证据。详见 UXS-2 与执行控制协议；不新增正式验收 ID，不启动产品功能开发。
@@ -16,7 +16,7 @@
 - 首个重要合同/证据冲突候选：`App.create()` 在显示 `AI创意与项目预算确认` 前调用 `create_plan/create_plans`；`ModelRouter.create_plan()` 对九个阶段调用 `complete_json()`。HELP/PROJECT_LOGIC 当前允许确认前进行 AI 分析，但用户费用授权范围是否覆盖收费规划模型调用尚待裁决。若所有收费云端模型调用都必须先确认，则是 P0 候选阻断；若只限制视频/资产生成 Provider，则需核实规划调用费用是否披露/计入预算。实际收费影响依赖模型路由，当前未修复、未新增验收编号、未改产品代码。
 - 已查测试证据：`test_setup_form_grid_rows_do_not_overlap` 为 AST 布局检查；`test_product_parser.py` 覆盖解析器异常/回退；`test_budget_policy` 与 `test_cost_breakdown_is_auditable_and_configurable` 覆盖费用计算；`test_project_save_load`、`test_project_lifecycle_isolated_between_projects` 覆盖持久化/隔离。未发现 `test_desktop.py` 直接调用 `App.create()` 的测试；`test_a33_full_flow.py` 仅测试模拟最终交付，不证明创建前确认顺序。
 - 本文件已与 UXS-2 首轮映射、进度台账和 AI handoff 同步；最新审查文档 SHA 需以 GitHub 分支实时 HEAD 为准。开始基线 `3bd083e73ea51aec26b2ab66c755aa6c83a929cf` 的 PR CI `38695479000` 与 PR docs-sync `38695478983` success；Push-triggered 两项未独立核实。每次新提交后重查可用的当前 SHA 工作流。
-- 下一项唯一任务：继续 UXS-2，完成费用/确认/取消/外部副作用路径及既有验收 ID 映射，再继续后续用户旅程。只审计和记录；未经用户明确授权不修改产品代码。不得删/重编号 A0–A112，不计算总体完成率。
+- 上述 UXS-2 任务文字属于历史接手快照，不能覆盖总进度台账。当前唯一任务以 `docs/AD_STUDIO_PROGRESS_DASHBOARD.md` 顶部为准：PLAN-003 全量跨来源关系/状态冲突裁决。只审计和记录；不得删/重编号 A0–A112，不计算总体完成率。
 - 状态口径保持：`code_test_evidence_reviewed_ids=113` 仅表示已开始映射；`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false`。Windows 真机、真实素材、Provider/实际扣费、剪映现场和真实投放/商业效果验证继续暂缓；PR #32 不合并。
 
 ---
