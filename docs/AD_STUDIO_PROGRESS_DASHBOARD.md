@@ -1,4 +1,20 @@
-# 【PLAN-003 当前状态｜A80–A84 部分证据映射｜2026-10-15】
+# 【PLAN-003 当前状态｜A85–A89 部分证据映射｜2026-10-15】
+
+- **本轮开始 HEAD**：`2b92072a1dd5335fe803955ffca11881ebf2dec3`；源码/测试审计快照：`4063ba5a452c0c883ff39c8ea1ce33499a80eaf4`。本轮对 A85–A89 只做静态源码与专项测试证据映射，不改产品代码，不宣称正式验收。
+- **快照四项工作流均 success**：CI Push [38727772398](https://github.com/konggu888/ecommerce-agent/actions/runs/38727772398)、CI PR [38727780540](https://github.com/konggu888/ecommerce-agent/actions/runs/38727780540)、docs-sync Push [38727772643](https://github.com/konggu888/ecommerce-agent/actions/runs/38727772643)、docs-sync PR [38727780536](https://github.com/konggu888/ecommerce-agent/actions/runs/38727780536)。文档更新后必须重查最终 SHA 四项工作流。
+- 源码 `apps/ad-studio-desktop/ad_studio/short_drama.py` blob `2506410d9621840ec34464fce1fa2746c7d798f4`；测试 `apps/ad-studio-desktop/test_short_drama.py` blob `2995b5764f7a86ee8c274b6359ff2f09cdf7a288`。
+- **A85** 人物长期状态：有延续状态正例、状态消失/未声明重置/changed 缺证据/无效持久化标志与不可定位证据负例。仍需确认未知人物、重复维度、无效镜头引用和旧方案兼容的直接测试，以及保存重载；文本命中不证明心理连续性。
+- **A86** 状态变化因果闭环：有触发→变化→反应→后果正例，及缺触发、触发晚于变化、反应/后果缺失或顺序错误的负例。部分条件共用测试，仍需独立核实无效引用、反应时序和旧方案兼容；文本顺序不证明情感因果成立。
+- **A87** 可观察表演：有具体动作表现正例、抽象心理标签和引用镜头中未出现所述动作的负例。未确认缺字段/引用与旧方案兼容的独立回归；不证明真实生成画面完成表演。
+- **A88** 多人物状态依赖：有 same_understanding 矛盾、different_beliefs_allowed 不误报、知识不对称缺原因、未知人物和无效镜头引用覆盖。非法枚举、重复依赖键、缺少双方状态/证据及旧方案兼容仍需独立断言；不代表模型真正理解人物认知。
+- **A89** 跨集演员/场景锁定：有锁定描述注入演员/场景需求及生产行、集号范围、非法布尔集号、目标未命中覆盖。续写上下文携带锁定列表尚缺独立直接回归证据；物理 asset_id 属于 A90，不能混为 A89，也不能据此证明成片视觉一致。
+- **台账指标（覆盖/映射，不是完成率）**：需求文本复核 113；含 source/test/CI/workflow 指针任务 90；任意 evidence 任务 102；路线图阶段映射 113/113；源码/测试快照绑定任务 32；最终文档 HEAD 精确绑定任务 0；完整代码/测试审计 0；完整审计 0；全量语义去重未完成。权重与总体完成率继续关闭。
+- A85–A89 均为 `partial_evidence_mapping`，正式验收状态仍为 `not_audited`。只审计 A0–A112，不开发新功能，不新增 A113+，不删除/合并/重编号任务。PR #32 保持 Open/unmerged；真实 Windows、素材、Provider/扣费、剪映和商业效果验收继续暂缓。
+- **下一批 A90–A94**。先核验本轮文档提交后最新 HEAD 的四项 CI/docs-sync 全部 success，再继续。
+
+---
+
+# 【历史快照｜PLAN-003 A80–A84 部分证据映射｜2026-10-15】
 
 - **源码/测试审计快照**：`4063ba5a452c0c883ff39c8ea1ce33499a80eaf4`；PR #32 保持 Open / unmerged。短剧源码 `apps/ad-studio-desktop/ad_studio/short_drama.py` blob `2506410d9621840ec34464fce1fa2746c7d798f4`；专项测试 `apps/ad-studio-desktop/test_short_drama.py` blob `2995b5764f7a86ee8c274b6359ff2f09cdf7a288`。
 - **该快照四项工作流均 success**：CI Push [38727374018](https://github.com/konggu888/ecommerce-agent/actions/runs/38727374018)、CI PR [38727379361](https://github.com/konggu888/ecommerce-agent/actions/runs/38727379361)、docs-sync Push [38727374031](https://github.com/konggu888/ecommerce-agent/actions/runs/38727374031)、docs-sync PR [38727379163](https://github.com/konggu888/ecommerce-agent/actions/runs/38727379163)。文档新提交后必须重新核验最终 HEAD 四项。
