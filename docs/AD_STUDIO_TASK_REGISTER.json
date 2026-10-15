@@ -3,7 +3,7 @@
   "generated_from_head": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6",
   "audit_status": "all_113_numbered_task_titles_recovered_requirement_level_reviewed_cross_source_status_reconciliation_pending_current_head_code_test_evidence_audit_pending",
   "progress_percentages_enabled": false,
-  "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until cross-source scope reconciliation and weighting review. Historical A68-A74 and A99 task identities have been recovered; their current-HEAD evidence audit remains pending. Cross-source status audit 2026-10-15 found the dashboard's 113 partial-mapping count and this JSON snapshot's 6 structured source/test/CI/workflow evidence task IDs are different metrics; 0 evidence records are bound to current HEAD. Do not silently treat them as equivalent. Roadmap phase is still pending for 70 task records; reconcile item-by-item. Incremental current-HEAD reconciliation 2026-10-15: A0-A6 roadmap_phase mapped to Phase 1 from roadmap goal chain; A5 depends on A4. A0-A4 source/test/workflow evidence refreshed to current HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1 and current CI/docs-sync runs attached. No acceptance status upgraded; full audit remains zero. Incremental reconciliation 2026-10-15: A0-A8 primary roadmap phases are mapped; explicit dependencies A5→A4, A7→A6, A8→A7 are recorded. A0-A8 source/test mappings were rechecked against current branch tree and bound to current HEAD CI Push/PR and PR docs-sync evidence. No task acceptance status upgraded; docs-sync Push evidence for current HEAD not found. PLAN-003 2026-10-15: A8 corrected to Phase 2. A9-A17 mapped to Phase 1; explicit dependencies A12→A5/A8, A13→A12, A14→A13, A15→A8/A9/A10/A11, A16→A8/A10/A11, A17→A7/A8/A9/A10/A11. Partial evidence only; acceptance statuses unchanged.",
+  "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until cross-source scope reconciliation and weighting review. Historical A68-A74 and A99 task identities have been recovered; their current-HEAD evidence audit remains pending. Cross-source status audit 2026-10-15 found the dashboard's 113 partial-mapping count and this JSON snapshot's 6 structured source/test/CI/workflow evidence task IDs are different metrics; 0 evidence records are bound to current HEAD. Do not silently treat them as equivalent. Roadmap phase is still pending for 70 task records; reconcile item-by-item. Incremental current-HEAD reconciliation 2026-10-15: A0-A6 roadmap_phase mapped to Phase 1 from roadmap goal chain; A5 depends on A4. A0-A4 source/test/workflow evidence refreshed to current HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1 and current CI/docs-sync runs attached. No acceptance status upgraded; full audit remains zero. Incremental reconciliation 2026-10-15: A0-A8 primary roadmap phases are mapped; explicit dependencies A5→A4, A7→A6, A8→A7 are recorded. A0-A8 source/test mappings were rechecked against current branch tree and bound to current HEAD CI Push/PR and PR docs-sync evidence. No task acceptance status upgraded; docs-sync Push evidence for current HEAD not found. PLAN-003 2026-10-15: A8 corrected to Phase 2. A9-A17 mapped to Phase 1; explicit dependencies A12→A5/A8, A13→A12, A14→A13, A15→A8/A9/A10/A11, A16→A8/A10/A11, A17→A7/A8/A9/A10/A11. Partial evidence only; acceptance statuses unchanged. PLAN-003 incremental reconciliation 2026-10-15: A18-A19 mapped to Phase 3; A20-A23 mapped to Phase 1. Partial source/test pointers recorded with evidence SHA null pending exact commit provenance. Dependencies recorded only where the documented flow supports them: A19→A18, A21→A20, A22→A21, A23→A20/A21/A22. No acceptance status upgraded; overall completion remains disabled.",
   "counts": {
     "numbered_slots": 113,
     "fully_audited": 0,
@@ -19,7 +19,7 @@
     "code_test_evidence_audit_completed_ids": 0,
     "semantic_dedup_reviewed_task_ids": 113,
     "code_test_evidence_reviewed_ids": 6,
-    "roadmap_phase_mapped_ids": 61,
+    "roadmap_phase_mapped_ids": 67,
     "current_head_evidence_task_ids": 0
   },
   "known_id_gaps": [],
@@ -1834,14 +1834,35 @@
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
-      "roadmap_phase": "待路线图映射",
-      "development_status": "not_audited",
+      "roadmap_phase": "阶段3｜AI 广告编导",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/app.py",
+          "detail": "App contains variant matrix, per-variant analysis, test-plan, performance-entry UI routes; source presence only.",
+          "sha": null
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/models.py",
+          "detail": "Project creative_plan persists variant_count and per-variant state; source presence only.",
+          "sha": null
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_desktop.py",
+          "detail": "Tests variant state persistence, plan switching/cache isolation and batch preflight; automated coverage is partial.",
+          "sha": null
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "需要逐条把 A18 原始验收清单映射到稳定版本 ID、独立输出、原始版本追踪、切换不丢状态等专项测试。",
+        "未完成完整 GUI/端到端和 Windows 真机验收；自动化测试不能证明普通用户体验。",
+        "代码/测试证据尚未绑定可复核的精确源码提交 SHA；不升级验收状态。"
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -1854,10 +1875,11 @@
           "## A18 · 多版本"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "source_inventory_status": "normalized_heading_inventory_plus_partial_source_test_mapping_semantic_dedup_and_full_evidence_audit_pending",
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
-      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: static source/test pointers mapped from current branch snapshot. Evidence SHA intentionally left null until exact source/test commit provenance is independently established; this is not formal acceptance."
     },
     {
       "task_id": "A19",
@@ -1866,14 +1888,37 @@
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
-      "roadmap_phase": "待路线图映射",
-      "development_status": "not_audited",
+      "roadmap_phase": "阶段3｜AI 广告编导",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
-      "dependencies": [],
-      "evidence": [],
+      "dependencies": [
+        "A18"
+      ],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/model_router.py",
+          "detail": "audit_ad_variant_set() compares creative mechanisms and build_creative_test_plan() defines test purpose/observations without inventing platform metrics.",
+          "sha": null
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/app.py",
+          "detail": "UI exposes creative variant analysis and creative test plan; actual platform performance is a separate user-entered data path.",
+          "sha": null
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_desktop.py",
+          "detail": "Tests distinguish mechanism from surface differences and assert pre-launch plans do not contain fabricated CTR/CVR/CPC/CPA/ROAS fields.",
+          "sha": null
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "需要核对 A19 所有原始检查点：单机制/多机制/表层差异/无明显差异、测试目的、观察指标与下一轮建议。",
+        "真实投放数据、归因与商业效果不在本轮自动化证据范围；用户录入数据的真实性仍未由平台 API 验证。",
+        "代码/测试证据尚未绑定可复核的精确源码提交 SHA；不升级验收状态。"
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -1886,10 +1931,11 @@
           "## A19 · 创意实验设计"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "source_inventory_status": "normalized_heading_inventory_plus_partial_source_test_mapping_semantic_dedup_and_full_evidence_audit_pending",
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
-      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: static source/test pointers mapped from current branch snapshot. Evidence SHA intentionally left null until exact source/test commit provenance is independently established; this is not formal acceptance."
     },
     {
       "task_id": "A20",
@@ -1898,14 +1944,35 @@
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
-      "roadmap_phase": "待路线图映射",
-      "development_status": "not_audited",
+      "roadmap_phase": "阶段1｜可靠的生产底座",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/model_router.py",
+          "detail": "audit_creative_factual_consistency() checks supported selling points, forbidden terms and high-risk absolute claims; visual/subtitle facts remain pending review when no direct evidence exists.",
+          "sha": null
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/app.py",
+          "detail": "Creative fact-check UI displays source-supported facts, unsupported claims, high-risk claims and visual/subtitle review boundaries.",
+          "sha": null
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_desktop.py",
+          "detail": "A20 final-delivery safety-gate regression checks unsupported selling points, forbidden terms and visual-risk blocking.",
+          "sha": null
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "需要映射全部创意事实检查点与边界/异常测试；不能把文本审计当作法律结论或真实视觉核验。",
+        "需核对缺少商品资料、未知事实、禁用词配置、人工修复后重检等正反例覆盖。",
+        "代码/测试证据尚未绑定可复核的精确源码提交 SHA；不升级验收状态。"
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -1919,10 +1986,11 @@
           "## A20 · 创意事实检查"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "source_inventory_status": "normalized_heading_inventory_plus_partial_source_test_mapping_semantic_dedup_and_full_evidence_audit_pending",
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
-      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: static source/test pointers mapped from current branch snapshot. Evidence SHA intentionally left null until exact source/test commit provenance is independently established; this is not formal acceptance."
     },
     {
       "task_id": "A21",
@@ -1931,14 +1999,37 @@
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
-      "roadmap_phase": "待路线图映射",
-      "development_status": "not_audited",
+      "roadmap_phase": "阶段1｜可靠的生产底座",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
-      "dependencies": [],
-      "evidence": [],
+      "dependencies": [
+        "A20"
+      ],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/model_router.py",
+          "detail": "audit_storyboard_fact_consistency() maps storyboard descriptions to provided selling-point facts and labels unsupported/missing facts for review.",
+          "sha": null
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/app.py",
+          "detail": "Storyboard fact-check UI presents per-shot covered facts and fact status.",
+          "sha": null
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_desktop.py",
+          "detail": "Tests cover fact-boundary behavior and delivery-gate/repair routing, but a complete A21-specific case matrix remains to be reconciled.",
+          "sha": null
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "需要按 A21 原始合同逐项确认商品资料、分镜、外观/功能/字幕可追溯关系及未知信息的处理。",
+        "文字匹配只证明字段/文本对应，不证明画面真实呈现商品，也不替代人工视觉检查。",
+        "代码/测试证据尚未绑定可复核的精确源码提交 SHA；不升级验收状态。"
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -1950,10 +2041,11 @@
           "## A21 · 分镜事实检查"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "source_inventory_status": "normalized_heading_inventory_plus_partial_source_test_mapping_semantic_dedup_and_full_evidence_audit_pending",
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
-      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: static source/test pointers mapped from current branch snapshot. Evidence SHA intentionally left null until exact source/test commit provenance is independently established; this is not formal acceptance."
     },
     {
       "task_id": "A22",
@@ -1962,14 +2054,37 @@
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
-      "roadmap_phase": "待路线图映射",
-      "development_status": "not_audited",
+      "roadmap_phase": "阶段1｜可靠的生产底座",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
-      "dependencies": [],
-      "evidence": [],
+      "dependencies": [
+        "A21"
+      ],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/model_router.py",
+          "detail": "audit_visual_fact_consistency() uses existing analyzed keyframe/clip results and flags unusable, blocked, blurred or shaky material; it does not claim to analyze absent footage.",
+          "sha": null
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/app.py",
+          "detail": "Visual fact-check UI displays source clip, status, visual tags, mapped selling points and risk/reason.",
+          "sha": null
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_desktop.py",
+          "detail": "Visual risks are included in final-delivery safety-gate regression; a full A22 risk taxonomy and real-frame verification matrix remains outstanding.",
+          "sha": null
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "需要核对遮挡、模糊、抖动、实际素材映射、风险追踪与未分析画面不得标记确认的全部边界测试。",
+        "当前证据是基于已有视觉分析结果的规则映射/自动化测试线索，不证明真实视觉模型准确率或商品视觉真实性。",
+        "真实素材与 Windows 真机检查继续暂缓；代码/测试证据尚未绑定精确源码提交 SHA。"
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -1981,10 +2096,11 @@
           "## A22 · 视觉事实检查"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "source_inventory_status": "normalized_heading_inventory_plus_partial_source_test_mapping_semantic_dedup_and_full_evidence_audit_pending",
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
-      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: static source/test pointers mapped from current branch snapshot. Evidence SHA intentionally left null until exact source/test commit provenance is independently established; this is not formal acceptance."
     },
     {
       "task_id": "A23",
@@ -1993,14 +2109,39 @@
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
-      "roadmap_phase": "待路线图映射",
-      "development_status": "not_audited",
+      "roadmap_phase": "阶段1｜可靠的生产底座",
+      "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
-      "dependencies": [],
-      "evidence": [],
+      "dependencies": [
+        "A20",
+        "A21",
+        "A22"
+      ],
+      "evidence": [
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/production.py",
+          "detail": "ProductionStore.final_render_gate() is documented as aggregating creative facts, visual facts and AI-shot review status before final delivery; direct function-level evidence still needs exact source/test binding.",
+          "sha": null
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/app.py",
+          "detail": "Final-delivery recheck routes factual, AI-review, visual and media risks to their respective repair steps.",
+          "sha": null
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_desktop.py",
+          "detail": "A20/A24 safety-gate regressions test explicit risk blocking and final-output prevention; A23-specific permission/dry-run/audit-log requirements require separate item-level coverage review.",
+          "sha": null
+        }
+      ],
       "remaining_conditions": [
-        "逐项核对代码、测试、最新提交证据、依赖与路线图归属后填写"
+        "需要逐项核对风险动作拦截、权限等级、人工批准、Dry-run、Audit Log 和未授权真实写操作禁止条件；不能因 A20/A24 测试覆盖部分风险就认定 A23 全部通过。",
+        "需检查真实写操作边界、审计记录持久化和失败路径的专项测试；不触发真实平台操作。",
+        "代码/测试证据尚未绑定可复核的精确源码提交 SHA；不升级验收状态。"
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -2014,10 +2155,11 @@
           "## A23 · 风险控制"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
+      "source_inventory_status": "normalized_heading_inventory_plus_partial_source_test_mapping_semantic_dedup_and_full_evidence_audit_pending",
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
-      "provisional_roadmap_phase": "阶段1｜可靠的生产底座"
+      "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: static source/test pointers mapped from current branch snapshot. Evidence SHA intentionally left null until exact source/test commit provenance is independently established; this is not formal acceptance."
     },
     {
       "task_id": "A24",
