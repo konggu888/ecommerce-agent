@@ -7,7 +7,7 @@
 - A0–A5 当前代码/测试证据映射（核验到 SHA `1fd6d08dac970cb7886c59239b05c4f6e2128cf9`；仅证据盘点，不代表正式验收）：A0：`ad_studio/app.py` 中存在 `App.create()` 用户操作入口，但已检查的 desktop 测试未发现专门启动/创建操作端到端测试；A1：当前 CI 覆盖多个测试集，但台账仍缺任务级稳定性矩阵与可追溯的逐项证据；A2：`test_desktop.py` 有 `test_project_lifecycle_isolated_between_projects`、`test_project_save_load`，但未发现直接调用 `App.create()` 的编排测试；A3：有 `test_setup_form_grid_rows_do_not_overlap`、`test_three_task_types_have_distinct_deterministic_policies`、`test_task_type_is_persisted_and_not_replaced_by_platform`，但不能替代三类任务完整 UI 流程验收；A4：`test_footage.py` 覆盖素材排序扫描、不可解析文件注记、重复素材评分、废片归档与保护被引用源文件（`test_archive_analyzed_waste_protects_currently_referenced_source`），仍需对照验收清单补齐路径异常、源文件保护等完整矩阵；A5：`footage.py` 实现 `extract_keyframes()`、`build_visual_manifest()`、`footage_analysis_public()`，但全仓已检查的 desktop `test*.py` 未找到对前两者的直接专项测试，需补关键帧提取失败、清单生成失败与模型视觉分析失败/回退覆盖。六项均不标记正式验收通过。
 
 - A0–A112 共 113 个编号槽位的四份规划来源标题索引已建立；需求文本级语义复核覆盖 113 个已登记槽位。A68–A74 与 A99 的历史任务身份已从历史提交、测试及项目文档中恢复，不能再描述为“未知编号缺口”；但历史实现不等于当前 HEAD 已验收。
-- 当前仍未完成的是全量跨来源重复/状态材料合并审计，以及逐项代码、测试和当前 HEAD 证据审计。已确认的 A50/A56、A61/A62、A57、A99 关系仅为局部裁决；台账仍为 `fully_audited=0`、`semantic_dedup_completed=false`、`code_test_evidence_audit_completed_ids=0`；`code_test_evidence_reviewed_ids=83` 表示已开始部分映射，不表示六项已正式验收。权重仍为空，总体完成率保持关闭。
+- 当前仍未完成的是全量跨来源重复/状态材料合并审计，以及逐项代码、测试和当前 HEAD 证据审计。已确认的 A50/A56、A61/A62、A57、A99 关系仅为局部裁决；台账仍为 `fully_audited=0`、`semantic_dedup_completed=false`、`code_test_evidence_audit_completed_ids=0`；`code_test_evidence_reviewed_ids=100` 表示已开始部分映射，不表示六项已正式验收。权重仍为空，总体完成率保持关闭。
 - A88 是标题解析假缺口，已修正。跨来源关系的初步裁决（仍待全量核对）：A50/A56 是原始行为合同与回归修复，关联但不合并；A61/A62 是历史成本迁移能力与迁移相关断言修复，关联但不合并；A57 内含两个独立验收场景，必须分别核验；A99 的成功账本清除未计费兄弟镜头陈旧成本有独立行为与专项测试，与 A57/A59 相关但不重复。A80、A84/A85、A89、A92/A93、A111 等历史/状态材料及 A90–A98、A100–A112 的独立执行合同仍需逐项核对。此为保守初步映射，不代表全量语义去重完成，不授权删除任何 ID 或验收条件。
 - A0–A5 的代码/测试证据审计仅有部分映射，未正式验收。A3 设置区布局重叠问题已在 `f20bf426594a55ac74267641b53d9166acef6798` 修复并增加 AST 布局回归测试；`0bc079178c569502dc8f722ad04544a581f20290` 是该阶段的历史核验基线，不是当前 HEAD。当前最新完整核验基线为 `1fd6d08dac970cb7886c59239b05c4f6e2128cf9`，其 CI Push `38691577983`、CI PR `38691582839`、docs-sync Push `38691577999`、docs-sync PR `38691582806` 均 success。下一步不重复修复已解决的 A3 布局问题，而是继续 PLAN-003：完成跨来源重复/状态段审计，再逐项核验 A0–A5 及后续任务的代码、专项测试与当前 SHA 证据。
 
@@ -272,3 +272,35 @@ PR #32 不合并。Windows 真机、真实素材、真实 Provider/扣费、剪�
 - A77–A80 在正式计划中仍有未勾选/开发中状态，即使逻辑文档已有实现说明或测试文件存在，也不能据此擅自改成完成；下一阶段需直接核对专项测试、实际审查调用链和当前 SHA CI 证据。
 - 本批 A68–A82 全部只记录为部分证据映射。台账 `code_test_evidence_reviewed_ids=83` 表示 A0–A82 已开始映射；`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false` 保持不变。未分配权重，不计算整体完成率。
 - 下一步按编号继续 A83–A99，优先辨别 A83/A84 跨集事项、A85–A87 人物状态因果闭环与 A90–A98 等历史身份，不合并相邻任务；继续核对 A99 独立账本行为。暂不开发新产品功能，真实 Provider/扣费、Windows 真机、真实素材、剪映和真实投放继续暂缓。
+
+
+## PLAN-003 当前代码/测试证据审计：A83–A99｜2026-10-15｜部分映射
+
+本轮开始基线 `a2dd27fa6df1fb17cdaf2914b7633649809bd901` 的 CI Push、CI PR、docs-sync Push、docs-sync PR 四项均 success；PR #32 Open / unmerged。已检查正式验收计划、`test_short_drama.py`、`test_desktop.py`、`PROJECT_LOGIC.md` 与当前台账。以下是静态证据映射，不代表本轮重新执行了所有测试，也不将旧 SHA 的通过记录视为当前 SHA 正式验收。
+
+| ID | 代码/测试证据 | 状态及剩余核验 |
+|---|---|---|
+| A83 承诺、误解与行动结果 | `test_a83_accepts_commitment_with_visible_later_fulfillment`、`test_a83_warns_when_promise_is_not_followed_through`、`test_a83_warns_on_invalid_or_nonchronological_obligation_references`、`test_a83_warns_when_obligation_references_unknown_character`、提示词合同测试 | 有正反例及来源/时间顺序检查。人物动机合理性、误解可信度和实际表演仍待语义评审。计划历史记录有旧 SHA 的自动化结果；不能代替当前 HEAD 检查。 |
+| A84 跨集剧情承接 | `test_a84_accepts_open_obligation_carried_across_episode_boundary`、`test_a84_warns_when_open_obligation_is_not_carried_to_next_episode`、无效标记及后续镜头引用测试 | 有跨集承接与断裂测试；正式计划多项仍未勾选，必须保留该状态，当前 SHA 的正式验收需复核。 |
+| A85 人物长期状态与关系 | `test_a85_accepts_persisting_character_relationship_state`、状态消失/未声明变化/缺转变证据/无效 persistence flag 与不可追踪证据测试 | 有多种正反例；旧方案兼容、完整字段异常矩阵与当前 SHA 正式验收仍需按计划逐项核对。 |
+| A86 状态变化因果闭环 | `test_a86_accepts_ordered_character_state_causal_chain`、触发缺失/顺序错误/反应与后果缺失测试、提示词字段合同测试 | 有因果顺序测试线索；需核对所有指定引用异常码与旧方案兼容，不等于剧情因果在语义上成立。 |
+| A87 状态到可观察表演 | `test_a87_accepts_observable_performance_for_changed_state`、抽象心理标签告警、表现未出现在引用镜头告警 | 有正反例；仍是文本定位，不是实际生成画面中的动作/表情/表演质量验收。 |
+| A88 多人物状态依赖 | `test_a88_checks_cross_character_consistency_but_allows_different_beliefs`、`test_a88_warns_for_unknown_character_and_invalid_reference` | 覆盖同理解矛盾、允许不同信念、认知不对称缺因和无效人物/镜头引用；需确认无人物状态台账时仍执行，且正式计划 CI 项状态。 |
+| A89 跨集演员/场景文本锁定 | `test_a89_series_asset_locks_flow_into_production_requirements`、集号范围/非法 schema 与未命中目标测试 | 结构与生产需求注入有测试；文本锁定不等于复用同一物理素材 ID，也不保证画面身份一致。计划记录历史 SHA 自动化通过。 |
+| A90 精确物理素材 ID | `test_a90_series_asset_ids_are_bound_to_production_rows`、`test_a90_legacy_series_asset_locks_keep_tag_matching` | 明确 ID 绑定和旧版无 ID 标签兼容有测试；需以当前 SHA 重核全部 CI，并区分调度绑定与最终画面一致。 |
+| A91 锁定资产失效预检 | A93/A95 生产入口与索引损坏测试线索覆盖 fail-closed、Provider 调用为零、原 ID 保留 | 与 A93/A95 相关但不合并；A91 的重开项目/恢复/重生成预检及所有失效类型需独立核验。 |
+| A92 锁定 ID 到实际镜头绑定 | A92/A93 历史验收记录：跨集精确 ID 绑定、相似标签不覆盖、保存/重开持久化 | 计划记录自动化完成，但当前 HEAD 仍须确认相关测试仍在、当前 CI 通过；真实画面身份一致继续暂缓。 |
+| A93 Provider 调用前阻断 | 历史专项测试记录锁定失效时 Provider 调用次数为 0，保留原 ID，其他镜头不受影响 | 有明确独立边界；当前 SHA 的自动化证据需重核，真实 Provider 视觉验证暂缓。 |
+| A94 恢复原资产后的安全重试 | 历史记录覆盖原 ID 恢复后重新绑定，禁止相似标签覆盖与 fallback | 自动化历史记录存在；需区分旧 SHA 记录与当前 HEAD 证据。 |
+| A95 素材索引损坏保护 | 历史专项测试记录无效 JSON 返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`、不调用 Provider、不影响其他镜头 | 失效保护有历史自动化证据；损坏/重载/当前 SHA 完整 CI 仍需重核。 |
+| A96 索引修复后重试 | 历史专项测试记录索引修复后恢复精确 ID、禁止标签替换和自动生成 | 自动化历史记录存在；当前 SHA 证据需要重核，真实资产库环境测试暂缓。 |
+| A97 恢复只重置缺失镜头 | `test_a97_project_recovery_only_requeues_missing_shot_and_preserves_valid_sibling` | 直接测试覆盖目标镜头恢复、有效兄弟镜头隔离；需确认保存/重载后版本、状态、费用等断言全覆盖及当前 SHA CI。 |
+| A98 重复恢复摘要稳定 | `test_a98_recovery_repeats_missing_shot_until_regenerated` | 测试覆盖未重新生成前持续列出缺失镜头；普通待生成镜头不应误报，需复核兄弟镜头保存/重载边界。 |
+| A99 成功账本清除兄弟镜头陈旧成本 | `test_a99_successful_ledger_clears_stale_cost_on_unbilled_sibling_shot`；`PROJECT_LOGIC.md` 说明仅在存在成功账本行时以账本为权威来源 | A99 与 A57/A59 相关但不合并：A99 独立规定存在成功账本后未计费兄弟镜头的陈旧快照应归零；失败-only/无成功账本时仍保留旧成本兼容。需核对恢复、保存、重载和多镜头场景。 |
+
+### A83–A99 关系与台账裁决
+
+- A83/A84 是单集叙事事项跟进与跨集承接；A85–A87 是长期状态、因果闭环与可观察表现；A88 是多人物依赖关系（独立于可选人物状态台账）；A89–A96 是从文本锁定、物理 ID、失效 fail-closed 到安全恢复的不同层次；A97/A98 是恢复摘要边界；A99 是成功账本下的陈旧镜头成本清理。相关依赖不代表同一验收合同，保留所有编号。
+- A84–A87 正式计划中仍存在未勾选项目；A88 计划文本出现字面转义换行与重复段落痕迹，需在跨来源文档清理阶段处理，不能将格式问题当成功能已验收。A89–A96 的历史 CI 记录绑定旧 SHA，不自动证明当前 HEAD。A97–A99 有直接测试名线索，仍需当前 SHA 运行和逐项断言审查。
+- 本批 A83–A99 全部记为“部分证据映射”。台账 `code_test_evidence_reviewed_ids=100` 仅表示 A0–A99 已开始映射；`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false` 保持不变。没有分配权重，不计算整体完成率。
+- 下一步继续审计 A100–A112，并同步检查商业剪辑专项和 A102 最低 1080P 导出条款的独立状态。仍不开发新产品功能；真实 Provider/扣费、Windows 真机、真实素材、剪映现场和真实投放继续暂缓。
