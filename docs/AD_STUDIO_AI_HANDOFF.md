@@ -1,9 +1,9 @@
-# 【PLAN-003 AI 接手状态｜A105–A109 部分证据映射｜2026-10-15】
+# 【PLAN-003 AI 接手状态｜A110–A112 部分证据映射｜2026-10-15】
 
 - 唯一权威进度：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`；PR #32 Open/unmerged。
-- 源码/测试审计基线 `c77704d86d6131d13501448af76ce24afc56ad7b`；文档更新前最近检查 HEAD `57ed689911025f2e31241ddf487e70143ffedbe0` 的 CI PR 与 docs-sync PR success（38730155209 / 38730155147），Push 未独立核实。
-- A105–A109 已做源码/测试映射但正式验收均 not_audited。关键缺口：A105 完整链集成测试；A106 所有角色与用户可编辑转场 UI；A107 Provider 请求时长直接断言；A108 UI 字幕加工整链测试；A109 build_final 节拍→变速→BGM 集成测试。真实 FFmpeg/Windows/Provider/商业视听继续暂缓。
-- 下一批 A110–A112。只推进 PLAN-003，不开发新功能、不新增 A113+、不删/合并/重编号 A0–A112。
+- 源码/测试基线 `c77704d86d6131d13501448af76ce24afc56ad7b`；文档更新前最近 HEAD `a9fe2d93d186bac79dafee294e518209d963f420` 的 CI PR / docs-sync PR success（38730727069 / 38730727058），Push 未独立核实。
+- A110–A112 重新审计后均标记 partial_evidence_mapping/not_audited，不继承历史 automation_passed。缺口：A110 CTA 下限专测与生产集成；A111 最终 build_final 整链测试/真实 FFmpeg；A112 字幕 applied/fallback 生产级回归。真实素材、Windows、音画与字幕可读性继续暂缓。
+- A0–A112 已无新编号任务；下一步回到 PLAN-003 全量语义去重、证据冲突核对和未审计范围复核。不得新增 A113+，不合并 PR #32。
 
 ---
 
@@ -744,3 +744,14 @@ A109 转场安全补充：当前切点变速遇到显式“交叉溶解”时保
 - A105–A109 均为 `partial_evidence_mapping` / `not_audited`。映射覆盖：113 个编号任务；source/test/CI/workflow 指针任务 110；任意 evidence 任务 112；路线图映射 113/113；源码/测试快照绑定任务 52；最终文档 HEAD 精确绑定 0；完整代码/测试审计 0；完整审计 0；语义去重未完成；权重与总体完成率关闭。
 - 本轮不改产品代码。Windows 真机、真实素材、Provider/扣费、剪映现场与商业效果继续暂缓。PR #32 不合并；不新增 A113+，不删除/合并/重编号 A0–A112。
 - 下一批按既有编号进入 **A110–A112**。文档提交后先核验最新 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR；Push 若无法独立查询须明确记录未核实。
+
+
+## PLAN-003 增量审计记录｜A110–A112｜2026-10-15
+
+- **源码/测试审计基线**：`c77704d86d6131d13501448af76ce24afc56ad7b`；文档更新前最近检查 HEAD `a9fe2d93d186bac79dafee294e518209d963f420` 的 CI PR [38730727069](https://github.com/konggu888/ecommerce-agent/actions/runs/38730727069) 与 docs-sync PR [38730727058](https://github.com/konggu888/ecommerce-agent/actions/runs/38730727058) 均 success。Push 触发工作流未独立核实，PR #32 Open/unmerged。
+- **A110｜商业剪辑内容保护**：源码把口播/屏幕文字/商品角色/CTA 停留时间作为音乐卡点下限，低置信度和不安全计划回退；测试覆盖对话、屏幕文字、商品停留与安全回退。CTA 专门下限尚无独立断言，生产链整合测试缺失。
+- **A111｜逐边界局部音乐卡点规划**：算法逐镜头验证最短时长、最大变化、变速约束，仅回退冲突边界并记录 adjusted/reverted 边界；专项测试覆盖单/多相邻保护、无关安全边界仍可调整、总时长保持、低置信度和交叉溶解回退。尚无 build_final 整链测试或实际 FFmpeg 渲染。
+- **A112｜字幕实际时间窗参与内容保护**：SRT 解析校验 cue 顺序/范围/结束时间，最短 cue 时长进入卡点保护；生产代码检查字幕记录是否绑定当前源视频路径和时长，异常时回退。单测覆盖解析和 helper 边界，但没有生产级 applied/fallback 整链回归。
+- A110–A112 历史 `automation_passed` 不直接继承；本轮全部改为 `partial_evidence_mapping` / `not_audited`，因为本轮源码/测试复核发现专项集成证据缺口，且当前查询未独立核实 Push 工作流。真实素材、Windows 真机、真实音画/字幕可读性与商业成片质量仍暂缓。
+- 映射覆盖：编号任务 113；任意 evidence 任务 113；source/test evidence 任务 112；源码/测试快照绑定任务 55；完整代码/测试审计 0；完整审计 0；语义去重未完成；权重与总体完成率关闭。
+- 本轮未改产品代码。PR #32 不合并；不新增 A113+，不删除/合并/重编号 A0–A112。下一步不再有新的编号任务；应回到 PLAN-003 对 A0–A112 做语义去重、证据冲突与未审计范围的统一核对，不得凭空扩展编号。
