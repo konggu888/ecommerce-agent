@@ -93,3 +93,32 @@
 - 不删除、合并或重新编号 A0–A112，不新增 A113+。
 - 不把 CI 绿灯、UI 掩码、估算金额或静态代码存在误当成安全验收。
 - PR #32 必须保持 Open / unmerged。
+
+
+## 补充静态核验｜异常文本持久化与预算前调用｜2026-10-15
+
+审计基线：`7aef91217e2db86a14d5361ee7d605dc65f415eb`。本节为静态代码证据，不是产品修复或正式验收。
+
+### 1. 已确认的异常文本持久化路径
+
+- `ModelRouter.complete_json()` 在请求失败时将 `str(exc)` 写入本地 `usage-ledger.json` 的 `error` 字段；响应 JSON 解析失败时也记录解析异常。
+- `GenericVideoProvider._request()` 会把 HTTP 错误响应体前 1000 字符拼入异常文本；`transcribe_openai_compatible()` 会把 HTTP 错误响应体前 800 字符拼入异常文本。
+- `App.create()` 的实拍素材流程会捕获转写异常，并把 `str(speech_error)` 放进项目 `creative_plan.footage_transcripts`；`production.py` 的成本结算恢复路径也会持久化异常文本。
+- 本轮检查的 `app.py`、`model_router.py`、`providers.py`、`production.py`、`usage_ledger.py` 未发现常规 `logging/logger` 调用；`app.py` 未发现显式导出/备份 UI 入口。该范围不等于全仓库、安装打包脚本或用户手工备份行为的完整盘点。
+- **重要边界：**没有证据证明服务端错误正文实际包含 API Key，或 API Key 已被这些异常字段泄露。已确认的是异常文本可能被持久化；是否存在凭据回显/泄露，必须用假密钥和模拟错误响应测试，不连接真实服务。
+
+### 2. 配置迁移/导出/备份范围
+
+- 模型、视频、资产 Provider 配置均存在普通 JSON 写入路径，UI 密码掩码不等于磁盘加密。
+- 本轮在桌面 UI 与生产模块中未发现自动将 Provider 配置复制到项目目录的明确路径；生产模块的旧成本账本迁移和项目恢复记录不等于凭据迁移。
+- 全仓库、打包脚本、Windows ACL 和用户手工备份仍未穷尽，不得声称凭据绝不会进入备份/导出。
+
+### 3. 预算确认前的调用顺序
+
+`App.create()` 先调用 `ModelRouter.create_plan/create_plans`；若选择“用户拍摄素材”，还会在预算确认弹窗之前执行视觉分析、可选口播转写和实拍剪辑规划。之后才显示 `AI创意与项目预算确认`。因此，取消弹窗不能撤销此前可能已经发出的模型请求。该顺序与既有“确认前零收费/零外发调用”合同冲突，但不证明本轮发生了真实请求或扣费。
+
+### 4. 测试证据边界与下一步
+
+静态检查 `test_model_router.py` 和 `test_desktop.py` 的相关测试后，未找到直接证明异常正文脱敏、假 API Key 不进入账本/项目恢复数据、或预算确认前外部调用计数为零的专项测试。既有账本/恢复测试不能替代上述合同测试。
+
+下一步继续将发现映射到 A0–A112 原始合同，重点逐条核对 A13、A29、A30、A51–A65。不得新增 A113+；保持 `fully_audited=0`、`semantic_dedup_completed=false`、总体完成率关闭；PR #32 保持 Open / unmerged。
