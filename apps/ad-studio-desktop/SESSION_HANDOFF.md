@@ -2,11 +2,11 @@
 
 - 用户要求先补审现有规划在用户体验、用户实际使用流程、功能安全、异常恢复和商业交付质量方面的完整性。正式审查计划：`docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md`。
 - 该工作属于规划完整性审计，不是新产品功能开发；不另起路线图，不改变 A0–A112 身份。
-- 当前阶段 UXS-1 已建立范围和方法；后续 UXS-2 至 UXS-5 未完成。将发现映射到现有正式验收 ID，只有证据证明为独立缺口后才讨论新增正式检查点。
-- 本轮开始 HEAD `04d27368a305d37ab3a42a82f96e42fc756463da`；PR #32 Open / unmerged；CI Push `38693984581`、CI PR `38693988861`、docs-sync Push `38693984682`、docs-sync PR `38693988917` 均 success。提交新 SHA 后必须重查。
-- A0–A112 证据映射不等于正式验收。保持完整证据审计 0、语义去重未完成、整体完成率关闭。
+- 当前审查计划已增加“目标有效性与结果证明”L1–L7 分层：软件运行正确、功能行为正确、端到端流程正确、普通用户可用、商品表达真实安全、商业成片质量、真实商业效果。各层证据不能互相替代；真实投放效果验证继续暂缓。详见 `docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md` 第 7A 节。
+- 最新提交 HEAD `25cd3311165d6450941996f73716e9182d1b9847`；该 SHA 的 PR CI run `38695214632` 与 PR docs-sync run `38695214635` 均 success。已确认 PR #32 head SHA 与该 HEAD 一致，状态 Open / unmerged；Netlify deploy-preview status success。当前连接器只返回 PR-triggered workflow runs，本轮未独立取得 Push-triggered 两项 run 的状态，因此不能将四项全部标成已核实；后续接手应补核 Push CI 与 Push docs-sync。
+- A0–A112 证据映射不等于正式验收。保持 `code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false`；权重和整体完成率继续关闭。
 - 真实 Windows、真实素材、Provider/扣费、剪映现场、真实投放/商业效果继续暂缓；不开发新产品功能；PR #32 不合并。
-- 下一项：完成 UXS-1 的来源/职责核对，随后按用户旅程逐段做代码、专项测试、UI和文档证据映射，并与 PLAN-003 跨来源去重合并推进。
+- 下一项唯一主任务：进入 UXS-2 用户旅程逐段证据映射，并与 PLAN-003 全量跨来源去重/状态裁决合并推进。每段记录代码入口、专项测试与关键断言、UI反馈、HELP/PROJECT_LOGIC 对应说明、当前 SHA CI 证据、异常/恢复路径及真实环境限制；不新增/删除/重编号 A0–A112。
 
 ---
 
