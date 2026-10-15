@@ -1,6 +1,6 @@
 # 【PLAN-003 当前状态｜A110–A112 部分证据映射｜2026-10-15】
 
-- **源码/测试审计基线**：`c77704d86d6131d13501448af76ce24afc56ad7b`；文档更新前最近检查 HEAD `a9fe2d93d186bac79dafee294e518209d963f420` 的 CI PR 与 docs-sync PR 均 success（runs 38730727069 / 38730727058）；Push 未独立核实。PR #32 Open/unmerged。
+- **源码/测试审计基线**：`c77704d86d6131d13501448af76ce24afc56ad7b`；本次状态校正前最新检查 HEAD `57fbd444f6c15e124692d49da9879e0b6b3d1aa6` 的 CI PR [38731226393](https://github.com/konggu888/ecommerce-agent/actions/runs/38731226393) 与 docs-sync PR [38731226370](https://github.com/konggu888/ecommerce-agent/actions/runs/38731226370) 均 success。Push 触发工作流未独立核实。PR #32 Open/unmerged。
 - **A110** 内容保护下限覆盖口播、屏幕文字、商品角色和 CTA 的源码规则；测试覆盖部分保护/回退场景，但 CTA 专门断言和生产链集成测试缺失。
 - **A111** 局部回退算法有单/多邻接冲突、总时长保持和安全边界专项测试；仍缺 build_final 整链测试与实际 FFmpeg 渲染。
 - **A112** 实际 SRT cue 时间窗进入卡点保护；解析和保护 helper 有单测，生产级 applied/fallback 整链测试缺失。
