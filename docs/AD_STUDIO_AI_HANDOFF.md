@@ -1,12 +1,13 @@
 # 【PLAN-003 AI 接手状态｜A75–A79 部分证据映射｜2026-10-15】
 
-- 唯一权威进度：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`；PR #32 必须保持 Open / unmerged。
-- 源码/测试快照 `3138a34ecd0d7779eb6809b85a1c3449daf3c24a` 的 `short_drama.py` 与 `test_short_drama.py` blob 分别为 `2506410d9621840ec34464fce1fa2746c7d798f4` / `2995b5764f7a86ee8c274b6359ff2f09cdf7a288`；该 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR 均 success。文档更新后必须重查最新 HEAD 四项。
-- A75–A79 已完成部分源码/测试映射，未正式验收。A75 商品事实锁文本交叉审查；A76 卖点与分镜文本覆盖；A77 剧情事件与镜头文本落地；A78 人物知识时间线；A79 人物行动依据与镜头人物绑定。
-- 已知缺口：文本匹配不证明商品事实/卖点真实；A76 正向测试尚待确认；A77 文本覆盖不证明画面演出；A78 不证明知识来源语义真实；A79 结构绑定不证明动机合理。
-- 台账覆盖数：需求文本复核 113；source/test/CI/workflow 指针 80；任意 evidence 92；路线图阶段映射 113/113；源码/测试快照绑定 22；最终文档 HEAD 精确绑定 0；完整代码/测试审计 0；完整审计 0；语义去重未完成。权重和总体完成率关闭。
-- 不开发新产品功能，不新增 A113+，不删/合并/重编号 A0–A112。真实 Windows、商品素材、Provider/扣费、剪映现场和商业效果验收继续暂缓。
-- 下一批 A80–A84。开始前先核验最终文档 HEAD 的 CI Push、CI PR、docs-sync Push、docs-sync PR 全部完成且 success；否则先处理 CI，不扩大批次。
+- 唯一权威进度：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`；PR #32 保持 Open / unmerged。
+- 源码/测试快照 `3138a34ecd0d7779eb6809b85a1c3449daf3c24a` 的 `short_drama.py` / `test_short_drama.py` blob 分别为 `2506410d9621840ec34464fce1fa2746c7d798f4` / `2995b5764f7a86ee8c274b6359ff2f09cdf7a288`；该 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR 均 success。文档提交后必须重查最终 HEAD 四项。
+- A75–A79 仅部分映射，正式验收未完成。A75 商品事实锁；A76 卖点文本覆盖；A77 剧情事件落镜头；A78 人物知识时间线；A79 行动依据与镜头角色绑定。
+- 台账：需求复核 113；source/test/CI/workflow 指针 80；任意 evidence 92；路线图阶段映射 113/113；源码/测试快照绑定 22；最终文档 HEAD 精确绑定 0；完整代码/测试审计 0；完整审计 0；语义去重未完成。权重与总体完成率关闭。
+- 下一批 A80–A84。先核验最新 HEAD 的 CI Push、CI PR、docs-sync Push、docs-sync PR 全部完成且 success。真实素材、Windows 真机、Provider/扣费、剪映和商业效果验收继续暂缓；不开发产品功能、不新增 A113+、不删/合并/重编号。
+
+---
+
 
 ---
 
