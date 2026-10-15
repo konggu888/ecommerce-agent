@@ -1,3 +1,13 @@
+# 【PLAN-003 最新接手状态｜A50–A67 部分证据映射｜2026-10-15】
+
+- 本轮开始基线：`707758608e105840f21d4945aa40b3eb89b00522`；该 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR 均 success。新提交 `707758608e105840f21d4945aa40b3eb89b00522` 之后，四项新 SHA 工作流尚待核验；不要沿用旧 SHA 的绿灯结论。PR #32 保持 Open / unmerged。
+- 本轮对 A50–A67 完成静态证据映射，全部只是部分映射，不宣称正式验收通过。台账 `code_test_evidence_reviewed_ids=68`、`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false`。
+- 关键证据：A50/A56 提示词真实换行行为合同与后续回归修复；A51 费用预估输入校验；A52 失败尝试成本去重；A53/A54 旧视频有效性与恢复；A55/A57/A59/A60/A61/A63/A64/A65 成本账本/恢复/迁移保护；A66/A67 人工视觉证据有效性与失效复查。
+- 保留裁决：A50/A56 不合并；A57 在正式计划中有两个独立场景（成本待核对 UI、项目恢复与成本对账）；A61/A62 不合并。A66 文件校验不能代替商品真实性判断，A67 历史 passed 状态不能覆盖证据失效。
+- 下一项：完成新 SHA 的四项 CI/doc-sync 检查；全部成功后继续 PLAN-003 A68–A82。若失败先读取日志并修复。不得开发新产品功能、不得计算整体完成率；真实 Provider/账单、Windows 真机、真实素材、剪映与真实投放继续暂缓。
+
+---
+
 # 【PLAN-003 最新接手状态｜A34–A49 部分证据映射｜2026-10-15】
 
 - 当前最新提交：`b48f7a9859476ed639bc9220035c986cd5e77c37`；该 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR 四项均成功；PR #32 Open / unmerged。

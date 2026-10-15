@@ -7,7 +7,7 @@
 - A0–A5 当前代码/测试证据映射（核验到 SHA `1fd6d08dac970cb7886c59239b05c4f6e2128cf9`；仅证据盘点，不代表正式验收）：A0：`ad_studio/app.py` 中存在 `App.create()` 用户操作入口，但已检查的 desktop 测试未发现专门启动/创建操作端到端测试；A1：当前 CI 覆盖多个测试集，但台账仍缺任务级稳定性矩阵与可追溯的逐项证据；A2：`test_desktop.py` 有 `test_project_lifecycle_isolated_between_projects`、`test_project_save_load`，但未发现直接调用 `App.create()` 的编排测试；A3：有 `test_setup_form_grid_rows_do_not_overlap`、`test_three_task_types_have_distinct_deterministic_policies`、`test_task_type_is_persisted_and_not_replaced_by_platform`，但不能替代三类任务完整 UI 流程验收；A4：`test_footage.py` 覆盖素材排序扫描、不可解析文件注记、重复素材评分、废片归档与保护被引用源文件（`test_archive_analyzed_waste_protects_currently_referenced_source`），仍需对照验收清单补齐路径异常、源文件保护等完整矩阵；A5：`footage.py` 实现 `extract_keyframes()`、`build_visual_manifest()`、`footage_analysis_public()`，但全仓已检查的 desktop `test*.py` 未找到对前两者的直接专项测试，需补关键帧提取失败、清单生成失败与模型视觉分析失败/回退覆盖。六项均不标记正式验收通过。
 
 - A0–A112 共 113 个编号槽位的四份规划来源标题索引已建立；需求文本级语义复核覆盖 113 个已登记槽位。A68–A74 与 A99 的历史任务身份已从历史提交、测试及项目文档中恢复，不能再描述为“未知编号缺口”；但历史实现不等于当前 HEAD 已验收。
-- 当前仍未完成的是全量跨来源重复/状态材料合并审计，以及逐项代码、测试和当前 HEAD 证据审计。已确认的 A50/A56、A61/A62、A57、A99 关系仅为局部裁决；台账仍为 `fully_audited=0`、`semantic_dedup_completed=false`、`code_test_evidence_audit_completed_ids=0`；`code_test_evidence_reviewed_ids=50` 表示已开始部分映射，不表示六项已正式验收。权重仍为空，总体完成率保持关闭。
+- 当前仍未完成的是全量跨来源重复/状态材料合并审计，以及逐项代码、测试和当前 HEAD 证据审计。已确认的 A50/A56、A61/A62、A57、A99 关系仅为局部裁决；台账仍为 `fully_audited=0`、`semantic_dedup_completed=false`、`code_test_evidence_audit_completed_ids=0`；`code_test_evidence_reviewed_ids=68` 表示已开始部分映射，不表示六项已正式验收。权重仍为空，总体完成率保持关闭。
 - A88 是标题解析假缺口，已修正。跨来源关系的初步裁决（仍待全量核对）：A50/A56 是原始行为合同与回归修复，关联但不合并；A61/A62 是历史成本迁移能力与迁移相关断言修复，关联但不合并；A57 内含两个独立验收场景，必须分别核验；A99 的成功账本清除未计费兄弟镜头陈旧成本有独立行为与专项测试，与 A57/A59 相关但不重复。A80、A84/A85、A89、A92/A93、A111 等历史/状态材料及 A90–A98、A100–A112 的独立执行合同仍需逐项核对。此为保守初步映射，不代表全量语义去重完成，不授权删除任何 ID 或验收条件。
 - A0–A5 的代码/测试证据审计仅有部分映射，未正式验收。A3 设置区布局重叠问题已在 `f20bf426594a55ac74267641b53d9166acef6798` 修复并增加 AST 布局回归测试；`0bc079178c569502dc8f722ad04544a581f20290` 是该阶段的历史核验基线，不是当前 HEAD。当前最新完整核验基线为 `1fd6d08dac970cb7886c59239b05c4f6e2128cf9`，其 CI Push `38691577983`、CI PR `38691582839`、docs-sync Push `38691577999`、docs-sync PR `38691582806` 均 success。下一步不重复修复已解决的 A3 布局问题，而是继续 PLAN-003：完成跨来源重复/状态段审计，再逐项核验 A0–A5 及后续任务的代码、专项测试与当前 SHA 证据。
 
@@ -206,3 +206,39 @@ PR #32 不合并。Windows 真机、真实素材、真实 Provider/扣费、剪�
 - A38–A42 是接手/CI/证据纪律类任务；实时 CI 绿灯是当前观察事实，但计划状态与历史文档一致性仍需核验。
 - 台账更新为 `code_test_evidence_reviewed_ids=50`，表示 A0–A49 已开始映射；`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false` 保持不变。未分配权重，不计算整体完成率。
 - 下一批按编号继续 A50–A67，重点保留 A50/A56（行为合同与回归修复）、A57（含两个独立场景）、A61/A62（历史迁移与断言修复）的既有“不合并”裁决，并继续核验 A68–A74 的历史身份及当前证据。
+
+
+## PLAN-003 当前代码/测试证据审计：A50–A67｜2026-10-15｜部分映射
+
+本轮开始基线：`707758608e105840f21d4945aa40b3eb89b00522`；CI Push、CI PR、docs-sync Push、docs-sync PR 四项均 success；PR #32 Open / unmerged。已检查正式验收计划 A50–A67、桌面测试、短剧测试、AI handoff 测试与逻辑文档。下列是静态证据映射，不等同于在本轮重新执行全部测试，也不自动改写正式验收状态。
+
+| ID | 已找到的代码/测试证据 | 结论与剩余核验 |
+|---|---|---|
+| A50 视频提示词换行合同 | `test_a50_video_prompt_uses_real_line_breaks` 捕获 Provider 请求文本，断言标题/画面/文案真实分行 | 自动化合同有直接测试。仍需真实 Provider 提示词效果验证；文本换行通过不代表广告效果通过。 |
+| A51 费用预估前置校验 | `test_a51_cost_estimate_is_validated_before_confirmation`；计划列明非数字、NaN、正负无穷、负数、空值 | 有非法费用拒绝测试线索；需核对每类输入是否逐一断言版本不变、Provider 零调用和 UI 错误反馈。 |
+| A52 失败尝试与成本去重 | `test_a52_failed_video_attempt_is_auditable_without_double_counting_actual_cost` | 失败记录保留、失败估算不算实际成本、成功重试独立记账有证据；真实 Provider 账单对账仍暂缓。 |
+| A53 旧视频恢复非空保护 | `test_a53_recovery_rejects_zero_byte_previous_video` | 有零字节旧视频拒绝与恢复回归。仍需核验缺失路径、非文件、持久化重载和 UI 状态的全边界。 |
+| A54 活动视频无效回退 | `test_a54_recovery_restores_valid_previous_video_when_active_video_is_zero_byte`、`test_a54_recovery_clears_zero_byte_active_video_without_previous_video` | 有有效旧版回退及无旧版安全降级测试。真实磁盘异常和 Windows 文件占用仍需独立环境验收。 |
+| A55 Provider 成功与账本失败分离 | `test_a55_ledger_failure_does_not_turn_successful_video_into_provider_failure` | 成功视频保留、状态转为成本待核对有专项测试；需继续检查账本修复后重新对账及恢复记录完整性。 |
+| A56 提示词换行回归修复 | A50 同一测试覆盖真实换行；逻辑文档记录双重转义故障及修复 | 与 A50 相关但不合并：A50 是原始行为合同，A56 是后续重构引入回归后的修复。要保留历史失败和修复证据，不以当前绿灯抹去原因。 |
+| A57 成本待核对 UI | `test_a57_generate_shot_ui_surfaces_cost_reconciliation_state` | 成功视频但成本异常时不显示正常实际累计金额有测试。 |
+| A57 项目恢复与成本对账 | `test_a57_project_recovery_reconciles_actual_cost_from_ledger`、`test_a57_project_recovery_preserves_legacy_cost_when_no_ledger_rows_exist`、`test_a57_open_existing_project_runs_recovery_before_display` | 账本重算、旧项目无账本时保留成本、打开项目触发恢复均有测试线索。该编号包含两个独立验收场景（UI 状态与项目恢复/对账），本台账分别映射，不合并成单一断言。 |
+| A58 视觉对比输入证据校验 | `test_ai_visual_comparison_rejects_missing_reference_and_wrong_mode`、`test_ai_visual_comparison_rejects_empty_and_unsupported_files` 等短剧测试 | 有无效参考/生成素材输入防护线索；真实视觉模型准确率、费用及真实生成素材验证仍暂缓。 |
+| A59 成本汇总单一事实源 | `test_a59_project_cost_total_comes_from_success_ledger_rows` | 项目成本按成功账本汇总的专项测试存在；需继续核对分类成本、项目快照和镜头字段的所有写入入口是否统一。 |
+| A60 失败-only 账本兼容 | `test_a60_failed_only_ledger_preserves_legacy_actual_cost` | 失败账本行不把旧项目实际成本清零，且估算失败成本不冒充实际支出有测试线索。 |
+| A61 旧成本迁移 | `test_a61_legacy_costs_migrate_once_before_first_successful_charge`、`test_a61_record_many_migration_keeps_ledger_rows_atomic` | 首次成功记账前迁移历史成本、避免重复迁移、批量写入原子性有专项测试；真实账单对账暂缓。 |
+| A62 迁移文案断言修复 | `test_handoff_mentions_a61_legacy_cost_migration` 及 AI handoff 文案约束测试；计划记录术语断言修复 | A61 是成本迁移行为，A62 是接手文案/测试断言修复；不合并。仍需保证测试词汇与文档语义一致，而非只追求字符串匹配。 |
+| A63 迁移基线保留 | `test_a63_migrated_legacy_cost_survives_when_new_charge_record_fails` | 迁移成功、后续费用写入失败时保留历史成本与账本行有测试证据；需核验重启恢复和再次记账幂等性。 |
+| A64 素材生成与成本记账分离 | `test_a64_asset_cost_record_failure_keeps_generated_asset_and_marks_reconciliation`、`test_a64_asset_generation_callers_distinguish_cost_failure_from_generation_failure` | 成功素材不会因账本失败被误报为生成失败，有调用入口测试；仍需核对所有素材类型与恢复入口一致性。 |
+| A65 账本原子写入和历史完整性 | `test_a65_single_ledger_record_uses_atomic_replace_and_preserves_old_file_on_failure`、`test_a65_ledger_retains_more_than_2000_cost_history_rows` | 原子替换失败保护和超过 2000 行历史保留有专项测试；并发写、异常终止与真实文件系统边界仍需检查。 |
+| A66 人工商品核验证据文件 | `test_manual_product_visual_review_rejects_missing_empty_or_unsupported_evidence`、`test_manual_product_visual_review_persists_real_evidence` | 无效证据拒绝、有效证据路径持久化有测试；文件存在只证明有证据文件，不证明商品外观/功能真实匹配。 |
+| A67 短剧核验证据失效保护 | `test_audit_rejects_stale_or_missing_manual_visual_evidence`、`test_passed_visual_status_without_manual_evidence_is_still_flagged` | 审查时重新验证证据路径、历史 passed 不能覆盖证据失效有测试。仍需真实素材/视觉判断与 Windows 操作验收。 |
+
+### A50–A67 关系与状态裁决
+
+- A50/A56 相关但不合并：行为合同与回归修复的职责不同。
+- A57 在正式计划中重复使用编号，但包含 UI 成本待核对状态与项目恢复/成本对账两个独立场景；本轮分别映射，后续应在跨来源索引中保留“同编号双场景”事实，不能自行重编号或丢掉任一场景。
+- A61/A62 相关但不合并：历史成本迁移能力 vs 文案断言修复。A63 是迁移后续写失败时保护基线，A64 是素材成功与成本记账失败分离，A65 是账本持久化完整性，分别有独立合同。
+- A66/A67 是人工商品视觉核验证据链：文件有效性与审查时证据仍有效不同，不能以文件扩展名校验冒充商品真实性认证。
+- 本轮 A50–A67 全部标记为“部分证据映射”，不重新盖章正式验收通过。台账 `code_test_evidence_reviewed_ids=68` 表示 A0–A67 已开始映射，不代表 68 项已完成审计；`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false` 保持不变。未分配权重，不计算整体完成率。
+- 下一步按既定计划继续 A68–A82；A68–A74 的短剧剧情结构、因果证据和商品事实边界要逐项核对当前代码/测试与正式计划。不要开发新产品功能；真实 Provider/扣费、Windows 真机、真实素材、剪映现场和真实投放继续暂缓。
