@@ -122,3 +122,31 @@
 静态检查 `test_model_router.py` 和 `test_desktop.py` 的相关测试后，未找到直接证明异常正文脱敏、假 API Key 不进入账本/项目恢复数据、或预算确认前外部调用计数为零的专项测试。既有账本/恢复测试不能替代上述合同测试。
 
 下一步继续将发现映射到 A0–A112 原始合同，重点逐条核对 A13、A29、A30、A51–A65。不得新增 A113+；保持 `fully_audited=0`、`semantic_dedup_completed=false`、总体完成率关闭；PR #32 保持 Open / unmerged。
+
+
+## 正式合同逐项映射补充｜A13、A29、A30、A51–A65｜2026-10-15
+
+本节为静态源码/测试名称与正式验收合同的关系校准，不是正式验收通过，也不把相关编号合并。
+
+| 正式 ID | 合同的实际范围 | 本轮可映射的代码/测试线索 | 与本轮凭据/授权审计的关系 |
+|---|---|---|---|
+| A13 | AI生成能力路由、预算、失败状态、商品事实边界、待复核与人工放行 | 有混合生成/缺口路由等相关测试，但未发现直接证明自动回退前逐次授权或拒绝回退后零外部调用的断言 | 仅部分相关；不是端点披露/凭据存储安全的完整合同 |
+| A29 | 模拟/真实数据分离、AI推演/真实事实分离、用户输入/系统推断分离、平台数据来源与不伪造结果 | `test_a29_real_data_boundary_requires_explicit_user_provenance_and_unverified_status` 直接对应来源/真实性边界 | **不等同于** API Key 存储、端点告知、外发授权或重定向安全 |
+| A30 | 损坏素材、路径失效、AI调用/生成失败、预算不足、输出失败、中断退出后的恢复与明确下一步 | `test_a30_recovery_records_failures_without_losing_project_state`、`test_a30_recovery_cleans_interrupted_assets_and_marks_corrupt_outputs`、`test_a30_budget_and_non_retryable_failures_have_explicit_next_actions` | 覆盖部分恢复/状态合同；不证明异常文本已脱敏 |
+| A51 | 单镜头 Provider 报价的有限、非负校验 | `test_a51_cost_estimate_is_validated_before_confirmation` | 不是 `App.create()` 中创意模型调用必须晚于预算确认的测试 |
+| A52 | 视频失败尝试审计与成功成本去重 | `test_a52_failed_video_attempt_is_auditable_without_double_counting_actual_cost` | 未证明异常正文脱敏 |
+| A53–A54 | 零字节/无效视频的恢复边界 | 对应恢复专项测试存在 | 与凭据流向仅间接相关 |
+| A55 | 成功视频在成本记账失败时仍被保留并标记待核对 | `test_a55_ledger_failure_does_not_turn_successful_video_into_provider_failure` | 不等于密钥脱敏 |
+| A56 | Provider prompt 换行回归 | 有独立回归记录 | 与凭据/端点安全不是同一合同 |
+| A57 | 成本待核对 UI，以及项目恢复/成本对账两个独立场景 | 有独立 UI、恢复/对账测试；保持双场景，不拆号、不合并 | 不证明费用未知与零成本完全区分，也不证明供应商账单已对账 |
+| A58 | 商品画面对比输入证据文件校验 | 有独立输入校验测试 | 与 API 凭据/端点授权不是同一合同 |
+| A59–A60 | 成本汇总的成功账本事实源、失败-only 历史成本兼容 | 有独立汇总/迁移兼容测试 | 账本内部一致性不等于真实账单核对 |
+| A61–A63 | 历史成本迁移、迁移原子性/文案断言、迁移基线在后续失败时保留 | 有迁移与失败恢复测试；A61/A62 保持独立 | 不等于 Provider API Key 的配置迁移 |
+| A64 | 素材已生成但成本写账失败的恢复 | 有资产成本失败保护测试 | 异常文本持久化需要单独脱敏断言 |
+| A65 | 本地用量账本原子写入与完整历史保留 | 有原子写入失败、长历史保留测试 | 不覆盖凭据脱敏或真实费用对账 |
+
+### 当前裁决
+
+1. A29 只覆盖来源/事实/模拟数据边界；本轮尚未找到直接等价覆盖外发数据告知、端点安全、密钥存储/异常脱敏的既有条款。继续检查 A0–A112 其余原始合同后再裁决，不新增 A113+。
+2. A51–A65 是多个独立合同，不可整体标记通过。A57 的两个独立场景分别核验，A61/A62 不合并。
+3. 以上只是静态映射；本轮没有重新运行这些测试。最新 SHA 的 CI/doc-sync 结果需另行检查，不得用历史 SHA 代替。
