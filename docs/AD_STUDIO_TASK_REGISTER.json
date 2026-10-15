@@ -20,7 +20,7 @@
     "semantic_dedup_reviewed_task_ids": 113,
     "code_test_evidence_reviewed_ids": 6,
     "roadmap_phase_mapped_ids": 61,
-    "current_head_evidence_task_ids": 9
+    "current_head_evidence_task_ids": 0
   },
   "known_id_gaps": [],
   "tasks": [
@@ -6323,7 +6323,7 @@
     "task_register_code_test_evidence_reviewed_ids": 6,
     "task_records_with_any_evidence": 30,
     "task_records_with_source_test_ci_or_workflow_evidence": 18,
-    "task_records_with_evidence_sha_matching_current_head": 9,
+    "task_records_with_evidence_sha_matching_current_head": 0,
     "task_records_with_roadmap_phase_pending": 52,
     "semantic_dedup_completed": false,
     "code_test_evidence_audit_completed_ids": 0,
@@ -6392,6 +6392,10 @@
       "A110",
       "A111",
       "A112"
-    ]
+    ],
+    "task_records_with_evidence_sha_matching_current_head_before_metric_refresh": 9,
+    "current_branch_head": "748c4bc8cd0b96d02c75e5b8bcf8ef83be977e93",
+    "source_test_evidence_baseline_sha": "5138685b3489fd249be5469fe86821b6374edde0",
+    "current_head_note": "The evidence SHA fields refer to the source/test review baseline, not this latest documentation-only HEAD. No task evidence record is claimed to have a SHA exactly matching the latest HEAD; code/test files were not changed by the subsequent documentation-only commits. Recheck CI/docs-sync for the final HEAD."
   }
 }
