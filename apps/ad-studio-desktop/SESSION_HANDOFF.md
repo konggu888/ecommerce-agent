@@ -1,10 +1,10 @@
-# 桌面项目接手状态｜PLAN-003 A46–A49 部分证据映射｜2026-10-15
+# 桌面项目接手状态｜PLAN-003 A50–A53 部分证据映射｜2026-10-15
 
 - 唯一权威进度与下一项：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`。PR #32 保持 Open/unmerged。
-- 本轮 A46–A49 已做部分映射，均保持 `acceptance_status=not_audited`，路线图阶段均为阶段1「可靠的生产底座」。
-- 关联候选：A46↔A43/A51；A47↔A30/A43/A46/A48；A48↔A43/A47/A49；A49↔A30/A43/A48。保留所有原始编号，不合并。
-- 指标：需求文本级复核 113；source/test/ci/workflow 指针记录 50；任意 evidence 62；路线图映射 93；待映射 20；当前 HEAD 精确证据 0；完整代码/测试审计 0；完整审计 0；语义去重未完成。evidence SHA 未逐文件绑定。
-- 审计快照 `6fd36a58dcc4d8dec97be57c268b072bf14b3017` 的 CI Push/PR 与 docs-sync Push/PR 均 success；新文档提交后重查四项。下一批 A50–A53。只做 PLAN-003 审计，不开发产品功能；真实 Windows/素材/Provider/扣费/剪映/投放继续暂缓。
+- 本轮 A50–A53 已做部分映射，均保持 `acceptance_status=not_audited`，路线图阶段均为阶段1「可靠的生产底座」。
+- 关联候选：A50↔A56；A51↔A52/A43；A52↔A51/A55/A57/A60/A61/A63/A64/A99；A53↔A43/A45/A54/A57。保留所有原始编号，不合并。
+- 指标：需求文本级复核 113；source/test/ci/workflow 指针记录 54；任意 evidence 66；路线图映射 97；待映射 16；当前 HEAD 精确证据 0；完整代码/测试审计 0；完整审计 0；语义去重未完成。evidence SHA 未逐文件绑定。
+- 审计快照 `c14b9bf10ae80379c45e80b42224722aab8c31d7` 的 CI Push/PR 与 docs-sync Push/PR 均 success；新文档提交后重查四项。下一批 A54–A57。只做 PLAN-003 审计，不开发产品功能；真实 Windows/素材/Provider/扣费/剪映/投放继续暂缓。
 - 下方既有内容均为历史接手快照；如与上述状态冲突，以总进度台账顶部为准。
 ---
 

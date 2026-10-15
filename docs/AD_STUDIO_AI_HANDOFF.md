@@ -1,10 +1,10 @@
-# AI 接手当前状态｜PLAN-003 A46–A49 部分证据映射｜2026-10-15
+# AI 接手当前状态｜PLAN-003 A50–A53 部分证据映射｜2026-10-15
 
-- 唯一权威进度与下一项：docs/AD_STUDIO_PROGRESS_DASHBOARD.md。本轮 A46–A49 只完成部分路线图/源码/测试映射，不是正式验收。
-- A46 编辑旧版本保护、A47 素材解析失败恢复、A48 实拍裁剪失败保留输出、A49 多段中断文件清理均归阶段1「可靠的生产底座」。重叠关系只登记不裁决，不合并 ID。
-- 证据边界：A46 有编辑回调安全转移断言；A47 有资产解析失败恢复测试；A48 有裁剪失败不破坏既有输出测试；A49 有缺失源素材时清理分段残留测试。真实 FFmpeg/Windows/Provider、权限/磁盘异常和完整端到端路径仍未证明。
-- 指标：需求文本级复核 113；source/test/ci/workflow 指针记录 50；任意 evidence 记录 62；路线图映射 93；待映射 20；当前 HEAD 精确证据 0；完整代码/测试审计 0；完整审计 0；语义去重未完成。不得发布总体完成率、不得赋权。
-- 审计快照 `6fd36a58dcc4d8dec97be57c268b072bf14b3017` 四项 CI/doc-sync 均 success；文档提交后重新检查最终 HEAD 四项。下一批 A50–A53。PR #32 保持 Open/unmerged；不新增 A113+，不开发产品功能，真实环境验证继续暂缓。
+- 唯一权威进度与下一项：docs/AD_STUDIO_PROGRESS_DASHBOARD.md。本轮 A50–A53 只完成部分路线图/源码/测试映射，不是正式验收。
+- A50 视频提示词真实换行、A51 费用预估校验、A52 失败 Provider 尝试成本去重、A53 零字节旧视频恢复均归阶段1「可靠的生产底座」。重叠关系只登记不裁决，不合并 ID。
+- 证据边界：A50 是捕获请求的确定性测试；A51 是费用值 helper 校验；A52 是本地 ledger 的失败/成功重试夹具；A53 是零字节 previous_video_path 恢复测试。均不证明真实 Provider、实际扣费、Windows 或真实媒体行为。
+- 指标：需求文本级复核 113；source/test/ci/workflow 指针记录 54；任意 evidence 记录 66；路线图映射 97；待映射 16；当前 HEAD 精确证据 0；完整代码/测试审计 0；完整审计 0；语义去重未完成。不得发布总体完成率、不得赋权。
+- 审计快照 `c14b9bf10ae80379c45e80b42224722aab8c31d7` 四项 CI/doc-sync 均 success；文档提交后重新检查最终 HEAD 四项。下一批 A54–A57。PR #32 保持 Open/unmerged；不新增 A113+，不开发产品功能，真实环境验证继续暂缓。
 ---
 
 - 仓库/项目：`konggu888/ecommerce-agent/apps/ad-studio-desktop`；分支 `feat/product-drama-visual-review`；PR #32 保持 Open / unmerged。
