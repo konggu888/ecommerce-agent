@@ -36,7 +36,7 @@
 - 本轮开始基线：`a2dd27fa6df1fb17cdaf2914b7633649809bd901`；CI Push、CI PR、docs-sync Push、docs-sync PR 四项均 success。新提交之后必须按最新 SHA 重查四项检查。PR #32 保持 Open / unmerged。
 - 本轮完成 A83–A99 静态代码/测试/文档证据映射；全部仅部分映射，不宣称正式验收完成。台账 `code_test_evidence_reviewed_ids=100`、`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false`。
 - 重要裁决：A83/A84 单集与跨集承诺承接分开；A85/A86/A87 状态持久化、因果闭环、可观察表演分开；A88 多人物依赖独立于可选状态台账；A89–A96 文本锁定/物理 ID/失效保护/恢复重试分层；A97/A98 恢复摘要稳定性分开；A99 成功账本下清除未计费兄弟镜头陈旧成本，和 A57/A59 相关但不合并。
-- A84–A87 计划仍有未勾选项；A89–A96 的通过记录来自历史 SHA，当前 HEAD 需重新验证；A97/A98/A99 的直接测试名已找到，但要确认所有断言及当前 SHA 运行结果。A88 计划中有转义换行/重复文本瑕疵，后续跨来源整理时修复。
+- A84–A87 计划仍有未勾选项；A89–A96 的通过记录来自历史 SHA，当前 HEAD 需重新验证；A97/A98/A99 的直接测试名已找到，但要确认所有断言及当前 SHA 运行结果。A88 计划/逻辑文档中的重复段落与字面量转义换行已在本轮统一清理；仍需按最新 SHA 检查文档同步和 CI。
 - 下一步：完成新 SHA 四项 CI/doc-sync 检查；全绿后继续 A100–A112 并检查商业剪辑专项/A102 1080P 条款。若失败先读日志修复。不得开发新产品功能、不得计算总体完成率；真实 Provider/扣费、Windows 真机、真实素材、剪映与真实投放继续暂缓。
 
 ---
@@ -525,7 +525,15 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - 新增测试：有效可观察表演、仅有抽象情绪标签、表演描述无法在引用镜头中定位。
 - 本节记录的是实现目标；提交后必须以最终 SHA 的 CI 和 docs-sync 结果更新验证状态。
 - PR #32 保持 open/unmerged；Windows 真机、真实 Provider、真实扣款/账单和剪映现场验收仍暂缓。
-\n\n## A88｜多人物状态依赖一致性\n- 新增每集可选 `continuity_state.cross_character_dependencies`，声明人物间知识、关系或承诺依赖。\n- 检查双方人物、规则、证据和镜头引用；`same_understanding` 陈述不一致时警告，`asymmetric_knowledge` 缺少原因时警告。\n- `different_beliefs_allowed` 允许不同信念，不将合理误解自动判成矛盾。\n- 新增直接冲突、不同信念、知识不对称、未知人物和无效镜头引用测试。提交后以最终 SHA 核验 CI/docs-sync。\n- PR #32 保持 open/unmerged；真实 Provider、Windows 真机、扣款/账单及剪映现场验收仍暂缓。\n
+
+
+## A88｜多人物状态依赖一致性
+- 新增每集可选 `continuity_state.cross_character_dependencies`，声明人物间知识、关系或承诺依赖。
+- 检查双方人物、规则、证据和镜头引用；`same_understanding` 陈述不一致时警告，`asymmetric_knowledge` 缺少原因时警告。
+- `different_beliefs_allowed` 允许不同信念，不将合理误解自动判成矛盾。
+- 新增直接冲突、不同信念、知识不对称、未知人物和无效镜头引用测试。提交后以最终 SHA 核验 CI/docs-sync。
+- PR #32 保持 open/unmerged；真实 Provider、Windows 真机、扣款/账单及剪映现场验收仍暂缓。
+
 
 ## A89｜跨集演员/场景资产锁定（自动化阶段）
 - 新增根级可选 `series_asset_locks`，可为重复人物/场景定义稳定 key、规范外观/布景描述和适用集数。
