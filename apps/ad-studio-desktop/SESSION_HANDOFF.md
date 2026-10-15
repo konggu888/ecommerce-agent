@@ -1,7 +1,7 @@
 # 【PLAN-003 AI 接手状态｜A105–A109 部分证据映射｜2026-10-15】
 
 - 权威进度入口：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`；PR #32 保持 Open/unmerged。
-- 源码/测试审计基线 `c77704d86d6131d13501448af76ce24afc56ad7b`；文档更新前最近 HEAD `57ed689911025f2e31241ddf487e70143ffedbe0` 的 CI PR / docs-sync PR success（38730155209 / 38730155147）；Push 状态未独立核实。
+- 源码/测试审计基线 `c77704d86d6131d13501448af76ce24afc56ad7b`；最近检查的文档 HEAD `d6b9ba6dd22213456d92a9172bd0579805280d7d` 的 CI PR / docs-sync PR success（38730552178 / 38730552190）；Push 状态未独立核实。
 - A105–A109 均只完成部分证据映射，正式验收仍 not_audited。A109 历史 automation_passed 已复核降级：目前有生产链源码和 helper 单测，但缺少 build_final 整链专项测试及 Push workflow 证据。A106 另需核对可编辑转场 UI。
 - 下一批 A110–A112；本轮未改产品代码，不改变真实机器测试暂停安排，不合并 PR #32。
 
