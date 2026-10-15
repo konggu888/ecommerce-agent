@@ -1016,3 +1016,16 @@ A50–A67 的详细静态映射已存在；本轮将其规范台账行与该映�
 4. **当前可支持的用户自由度范围**：文本模型通道以 OpenAI-compatible Chat Completions 为主；自训模型或 Token 代理需要暴露兼容协议才能复用当前通道。视频/图像资产服务是有限的通用 REST 适配器，不是任意协议自动适配。模型 UI 的 API Key 掩码不等于加密存储；目前已确认模型、视频、资产配置存在普通 JSON 写入路径，完整日志/导出/备份盘点仍未完成。
 5. **证据范围**：上述源码来自本轮核对的 `model_router.py` blob `8f5a94bce76b116767c24dbf3519b74cb43ae18b`、`capability.py` blob `5cd0bcb1337a0dcf8dd74539dfe71cd7525ca66c`、`providers.py` blob `6ea4548ff99d7135509e516a369b792ca175d092`。这是文件 blob SHA，不是提交 SHA；本轮没有连接真实模型/代理、触发外部调用或核对实际账单。
 6. **下一步**：继续 PLAN-003，将“拒绝自动回退后所有外部调用计数为零”“费用/usage 未知状态”“端点和图像/视频素材外发告知”“密钥写入/备份/迁移路径”逐项对照 A0–A112 原始合同、专项测试和 UX/SOP/路线图；未完成语义去重前不改产品代码、不新增 A113+。保持 `code_test_evidence_reviewed_ids=113`、`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false`，不分配权重、不发布总体完成率。PR #32 继续保持 Open / unmerged。
+
+
+## PLAN-003 / UXS-2 追加核验｜异常文本持久化与预算前调用｜2026-10-15
+
+审计基线：`8ab8a913f090b216fa719970b2704d127589bb41`（本次文档更新前的 PR #32 HEAD；静态源码证据，不是产品修复或正式验收）。
+
+1. **异常文本存在持久化路径**：`ModelRouter.complete_json()` 将请求失败的 `str(exc)` 写入 `usage-ledger.json`；实拍转写失败的异常文本可写入项目 `creative_plan.footage_transcripts`；生产成本结算恢复记录也会持久化异常文本。视频 Provider HTTP 错误正文前 1000 字符、转写接口 HTTP 错误正文前 800 字符会被拼入异常文本。
+2. **不能夸大为已泄露密钥**：本轮没有证据证明服务端错误正文实际包含 API Key。已确认的是异常文本可能持久化；是否回显敏感凭据、是否需要统一脱敏，必须通过假密钥/模拟错误响应专项测试验证。
+3. **日志/备份盘点范围**：本轮检查的 `app.py`、`model_router.py`、`providers.py`、`production.py`、`usage_ledger.py` 中未发现常规 logger 调用；桌面 UI 未发现显式导出/备份入口，生产代码有项目恢复与成本迁移，但未发现明确的 Provider 配置自动迁移到项目目录路径。以上不是全仓库、打包脚本或用户手工备份的完整证明。
+4. **预算授权顺序得到直接确认**：`App.create()` 在预算确认弹窗之前调用 `create_plan/create_plans`；实拍模式还会在弹窗前执行视觉分析、可选转写和剪辑规划。因此取消确认不能撤销之前可能已发出的模型请求。该顺序与“确认前零收费/零外发调用”的既有合同冲突，属于 P0 候选阻断；未证明本轮发生真实请求或扣费。
+5. **测试缺口**：静态检查 `test_model_router.py` 与 `test_desktop.py` 的相关用例，未找到直接证明异常正文脱敏、假 API Key 不进入账本/项目恢复数据、或预算确认前外部调用计数为零的专项测试。既有账本/恢复测试不等于上述安全合同测试。
+
+下一步仍为 PLAN-003：把发现逐条映射到 A0–A112 原始合同，重点核对 A13、A29、A30、A51–A65；裁决合同关系、直接测试证据与阶段退出条件。保持 `code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false`，不分配权重、不发布总体完成率、不新增 A113+。真实 Provider/扣费、Windows 真机、真实素材、剪映与真实投放继续暂缓；PR #32 保持 Open / unmerged。
