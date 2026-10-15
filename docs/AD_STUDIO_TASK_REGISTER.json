@@ -15,7 +15,7 @@
     "semantic_dedup_reviewed_task_ids": 113,
     "code_test_evidence_reviewed_ids": 113,
     "roadmap_phase_mapped_ids": 113,
-    "current_head_evidence_task_ids": 8,
+    "current_head_evidence_task_ids": 11,
     "source_test_evidence_snapshot_task_ids": 56
   },
   "known_id_gaps": [],
@@ -4807,6 +4807,13 @@
           "path": "docs/AD_STUDIO_ACCEPTANCE_PLAN.md; docs/AD_STUDIO_ACCEPTANCE_SOP.md; docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md",
           "sha": null,
           "detail": "Two A57 clauses are retained as separate acceptance scenarios under one existing numbered slot; no merge, split or renumbering."
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_desktop.py",
+          "sha": "3e4ebe003dbd6df48cbddd8a2accc83705860271",
+          "commit_sha": "8847ade2db6a75439b43d1eb6dfbedb64d9edd6d",
+          "detail": "DEDUP-013 adds post-recovery save/load assertions to test_a57_project_recovery_preserves_legacy_cost_when_no_ledger_rows_exist, confirming legacy project and shot costs survive reopening after recovery. Latest SHA CI pending."
         }
       ],
       "remaining_conditions": [
@@ -4873,12 +4880,16 @@
         "resolution": "Keep one existing A57 numbered slot with two separately testable acceptance clauses: (1) successful output plus ledger failure must show cost-pending UI and suppress the normal project actual total; (2) opening a project must recover state and reconcile costs from successful ledger rows while preserving legacy costs when no ledger exists. Do not merge the clauses, create new IDs, or renumber."
       },
       "current_head_evidence_reconciliation": {
-        "head": "c77704d86d6131d13501448af76ce24afc56ad7b",
-        "checked_on": "2026-10-15",
+        "head": "8847ade2db6a75439b43d1eb6dfbedb64d9edd6d",
+        "checked_on": "2026-10-16",
         "source_test_paths_rechecked": true,
-        "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
-        "note": "Two A57 clauses independently mapped to app.py/production.py/test_desktop.py. Exact source/test snapshot is c777; CI PR and docs-sync PR succeeded on c777. Latest checked docs HEAD 143d01f has CI PR/docs-sync PR success; Push workflows not independently verified."
+        "source_blobs": {
+          "apps/ad-studio-desktop/ad_studio/production.py": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
+          "apps/ad-studio-desktop/test_desktop.py": "6c9eb130788aed03c73ff745c93397dd2d92bacb"
+        },
+        "pending_child_test_blob": "3e4ebe003dbd6df48cbddd8a2accc83705860271",
+        "note": "At audit base, the existing in-memory recovery test covered this branch but did not reload the persisted project afterward. DEDUP-013 adds reload assertions; count as automated evidence only if the child commit's CI passes. No formal acceptance."
       }
     },
     {
@@ -5136,6 +5147,13 @@
           "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38724738744",
           "detail": "Documentation sync PR success for source/test audit snapshot 59cc175b40d8040c6e67fccba1b07186e625921e.",
           "sha": "59cc175b40d8040c6e67fccba1b07186e625921e"
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_desktop.py",
+          "sha": "3e4ebe003dbd6df48cbddd8a2accc83705860271",
+          "commit_sha": "8847ade2db6a75439b43d1eb6dfbedb64d9edd6d",
+          "detail": "DEDUP-013 adds post-recovery save/load assertions to test_a60_failed_only_ledger_preserves_legacy_actual_cost, including project/shot costs and actual-cost category summary. Latest SHA CI pending."
         }
       ],
       "remaining_conditions": [
@@ -5161,23 +5179,16 @@
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
       "current_head_evidence_reconciliation": {
-        "head": "2f2bec716073716699a0d8916aa7b8457e862c8c",
+        "head": "8847ade2db6a75439b43d1eb6dfbedb64d9edd6d",
         "checked_on": "2026-10-16",
         "source_test_paths_rechecked": true,
-        "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "source_blobs": {
           "apps/ad-studio-desktop/ad_studio/production.py": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
-          "apps/ad-studio-desktop/ad_studio/usage_ledger.py": "96d1240af26e31b5f08dc7a3474c1e76a2d4ad5c",
-          "apps/ad-studio-desktop/test_desktop.py": "357c54dad99f61b99891bcc365dd2f9efc1a1009"
+          "apps/ad-studio-desktop/test_desktop.py": "6c9eb130788aed03c73ff745c93397dd2d92bacb"
         },
-        "workflow_runs": {
-          "ci_push": 38732620640,
-          "ci_pr": 38732627710,
-          "docs_sync_push": 38732620714,
-          "docs_sync_pr": 38732627612
-        },
-        "note": "Current branch HEAD was checked directly; source/test paths resolve to the recorded blob SHAs at this SHA. All four workflows on this exact SHA succeeded. This is a bounded code/test evidence mapping and relationship decision, not full acceptance; known edge gaps remain."
+        "pending_child_test_blob": "3e4ebe003dbd6df48cbddd8a2accc83705860271",
+        "note": "At audit base, the existing in-memory recovery test covered this branch but did not reload the persisted project afterward. DEDUP-013 adds reload assertions; count as automated evidence only if the child commit's CI passes. No formal acceptance."
       },
       "semantic_overlap_review": {
         "status": "reviewed_distinct_contracts_keep_separate",
@@ -8624,8 +8635,9 @@
         }
       ],
       "remaining_conditions": [
-        "Current source uses successful ledger entries as authority for project and per-shot actual costs; if no successful entry exists it preserves legacy totals. Dedicated test covers successful ledger plus stale unbilled sibling cost reset.",
-        "Failed-only ledger and legacy project with no successful ledger require independent regression tests; current evidence does not fully verify those two boundary branches. No real billing/provider reconciliation."
+        "The successful-ledger/stale-sibling branch has a dedicated save/reload regression test. No-success branches are covered by A57 (no ledger rows) and A60 (failed-only ledger), with DEDUP-013 adding post-recovery reload assertions; latest SHA CI must pass.",
+        "These tests establish local recovery/persistence behavior only, not actual Provider billing or external invoice reconciliation.",
+        "A99 remains not_audited until the complete contract and applicable evidence layers are independently reviewed."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -8642,28 +8654,25 @@
       "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
       "last_verified_date": "2026-10-15",
       "current_head_evidence_reconciliation": {
-        "head": "2f2bec716073716699a0d8916aa7b8457e862c8c",
+        "head": "8847ade2db6a75439b43d1eb6dfbedb64d9edd6d",
         "checked_on": "2026-10-16",
         "source_test_paths_rechecked": true,
-        "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "source_blobs": {
           "apps/ad-studio-desktop/ad_studio/production.py": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
-          "apps/ad-studio-desktop/ad_studio/usage_ledger.py": "96d1240af26e31b5f08dc7a3474c1e76a2d4ad5c",
-          "apps/ad-studio-desktop/test_desktop.py": "357c54dad99f61b99891bcc365dd2f9efc1a1009"
+          "apps/ad-studio-desktop/test_desktop.py": "6c9eb130788aed03c73ff745c93397dd2d92bacb"
         },
-        "workflow_runs": {
-          "ci_push": 38732620640,
-          "ci_pr": 38732627710,
-          "docs_sync_push": 38732620714,
-          "docs_sync_pr": 38732627612
-        },
-        "note": "Current branch HEAD was checked directly; source/test paths resolve to the recorded blob SHAs at this SHA. All four workflows on this exact SHA succeeded. This is a bounded code/test evidence mapping and relationship decision, not full acceptance; known edge gaps remain."
+        "pending_child_test_blob": "3e4ebe003dbd6df48cbddd8a2accc83705860271",
+        "note": "Corrected prior gap statement: no-success branches already have tests under A57/A60; the uncovered persistence edge was post-recovery reload assertions, now added in DEDUP-013. A99's own successful-ledger branch remains separate. CI on the child commit must pass; no formal acceptance."
       },
       "semantic_overlap_review": {
         "status": "reviewed_distinct_contracts_keep_separate",
-        "related_ids": [],
-        "note": "PLAN-003-DEDUP-010 checked current source/test blobs at 2f2bec716073716699a0d8916aa7b8457e862c8c. Distinct contract: A99 reconciles per-shot costs and clears stale sibling-shot snapshots when at least one successful ledger row establishes ledger authority; A60 preserves legacy costs when no successful row exists. Distinct branches, both retained. Preserve original ID; this is not formal acceptance."
+        "related_ids": [
+          "A57",
+          "A59",
+          "A60"
+        ],
+        "note": "A99's unique contract is successful-ledger authority clearing stale per-shot snapshots. A57 covers legacy totals when no ledger rows exist; A60 covers failed-only ledger history. These are complementary branches, not duplicate A99 requirements. DEDUP-013 adds reload assertions to the A57/A60 branches; preserve all IDs and keep A99 not_audited."
       }
     },
     {
@@ -11020,6 +11029,40 @@
         "A64 remains acceptance_status=not_audited; this batch does not complete global semantic dedup or full code/test audit."
       ],
       "next_batch": "After the latest SHA's four CI/docs-sync workflows are checked, continue the next bounded PLAN-003 evidence audit. Do not add A113+, change A0-A112 IDs, or merge PR #32."
+    },
+    {
+      "batch_id": "PLAN-003-DEDUP-013",
+      "range": "A99/A57/A60 no-success cost-recovery persistence boundary cross-check",
+      "status": "test_assertions_added_ci_pending",
+      "reviewed_sources": [
+        "apps/ad-studio-desktop/ad_studio/production.py",
+        "apps/ad-studio-desktop/test_desktop.py",
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md"
+      ],
+      "findings": [
+        {
+          "ids": [
+            "A99",
+            "A57",
+            "A60"
+          ],
+          "decision": "correct_overlap_and_add_reload_assertions",
+          "reason": "A99's unique successful-ledger stale-sibling reset is distinct from A57's no-ledger legacy preservation and A60's failed-only legacy preservation. Existing A57/A60 tests covered in-memory recovery but lacked post-recovery reload assertions; those are added in the child test blob."
+        }
+      ],
+      "evidence_snapshot": {
+        "audit_base": "8847ade2db6a75439b43d1eb6dfbedb64d9edd6d",
+        "production_blob": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
+        "prior_test_blob": "6c9eb130788aed03c73ff745c93397dd2d92bacb",
+        "new_test_blob": "3e4ebe003dbd6df48cbddd8a2accc83705860271"
+      },
+      "limitations": [
+        "New reload assertions await CI on the child commit.",
+        "Local recovery tests do not prove real Provider charges or external invoices.",
+        "A57's two acceptance clauses remain separate under one A57 slot; A57/A60/A99 remain not_audited. No overall completion percentage."
+      ],
+      "next_batch": "After child SHA CI/docs-sync is checked, continue bounded PLAN-003 evidence/semantic audit. Do not add A113+, alter A0-A112 numbering, or merge PR #32."
     }
   ],
   "code_test_evidence_batches": [

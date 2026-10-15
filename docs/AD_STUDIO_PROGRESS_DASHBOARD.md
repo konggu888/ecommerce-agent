@@ -1,11 +1,15 @@
-# 【PLAN-003 当前状态｜DEDUP-012 A64 素材故障行为测试｜2026-10-16】
+# 【PLAN-003 当前状态｜DEDUP-013 A57/A60 恢复重载断言｜2026-10-16】
 
-- **审计基线**：`6ab04dab687b347daa3d4c37eb3a8c2ac9cbf69a`；分支 `feat/product-drama-visual-review`；PR #32 Open/unmerged。
-- **上一 HEAD 四项 CI/docs-sync**：全部 success。A64 新行为测试提交后的四项检查必须按新 SHA 重新确认。
-- **本轮推进**：A64 不再只依赖两个生产入口的源码文本断言；新增 `resolve_assets` 与 `generate_missing_asset` 两个行为级故障注入测试，验证资产文件/库记录、asset ID、镜头引用与重载后的成本待核对状态。
-- **边界**：未修改生产代码；本轮是模拟故障的测试补强，不能证明真实 Provider 实际扣款或账单对账。A64 仍保持 `not_audited`。
-- **总体台账**：A0–A112 共 113 个槽位；完整代码/测试审计 0；全局语义去重未完成；整体完成率继续关闭。
-- **下一步**：先检查最新 SHA 的 CI Push/PR 与 docs-sync Push/PR；失败则读取日志修复，成功后继续既有 PLAN-003。不得新增 A113+、更改任务编号或合并 PR #32。真实 Windows、素材和 Provider 账单验证继续暂缓。
+- **审计基线**：`8847ade2db6a75439b43d1eb6dfbedb64d9edd6d`；分支 `feat/product-drama-visual-review`；PR #32 Open/unmerged。
+- **上一个 HEAD 四项 CI/docs-sync**：全部 success。当前新增测试子提交的四项检查需重新核验。
+- **本轮推进**：纠正 A99 的过时缺口描述：无账本旧项目由 A57 测试覆盖，failed-only 账本由 A60 测试覆盖；A99 的独立行为是成功账本下清除未计费兄弟镜头陈旧成本。
+- **新增断言**：A57 与 A60 在恢复后重新加载项目，继续检查项目/镜头成本；A60 还检查 actual-cost 分类汇总。新断言以最新 SHA CI 成功为准。
+- **边界**：仅测试和文档变更，没有修改生产代码；A57/A60/A99 均保持 `not_audited`。真实 Provider 扣费与外部账单核验仍暂缓。
+- **总体台账**：A0–A112 共 113 个编号槽位；完整代码/测试审计 0；全局语义去重未完成；总体完成率关闭。
+- **下一步**：检查最新 SHA 四项 CI/docs-sync，失败则查日志修复；通过后继续既有 PLAN-003。不得新增 A113+、更改编号或合并 PR #32。
+
+---
+
 
 ---
 

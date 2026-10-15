@@ -1,10 +1,14 @@
-## 当前接手状态｜PLAN-003 DEDUP-012｜2026-10-16
+## 当前接手状态｜PLAN-003 DEDUP-013｜2026-10-16
 
-- 分支 `feat/product-drama-visual-review`；审计基线 `6ab04dab687b347daa3d4c37eb3a8c2ac9cbf69a`；PR #32 Open/unmerged。
-- 上一 SHA 四项 CI/docs-sync 均成功；新提交的四项工作流需重新查询。
-- A64 新增两个行为级故障注入测试，覆盖 `resolve_assets` 与 `generate_missing_asset` 的生成后成本记账失败分支，检查资产文件/库记录、镜头引用和保存重载状态。
-- 仅修改测试与文档，没有改生产代码。A64 保持 `not_audited`，真实 Provider/账单、Windows 真机、真实素材继续暂缓；整体完成率关闭。
-- 下一步先核验最新 SHA 四项 CI/doc-sync，再按既有 PLAN-003 继续。不新增 A113+，不改 A0–A112，不合并 PR #32。
+- 分支 `feat/product-drama-visual-review`；审计基线 `8847ade2db6a75439b43d1eb6dfbedb64d9edd6d`；PR #32 Open/unmerged。
+- 上一个 HEAD 四项 CI/docs-sync 全部成功；新子提交的 CI/docs-sync 必须重新查询。
+- A99 关系已纠正：A99 是成功账本下清除未计费兄弟镜头陈旧成本；A57 测无账本旧项目，A60 测 failed-only 账本，相关但不合并。
+- 新增 A57/A60 恢复后项目重载断言，检查项目/镜头成本；A60 另检查分类汇总。只改测试和文档，未改生产代码。
+- A57/A60/A99 保持 `not_audited`；真实 Provider 账单、Windows 真机和真实素材继续暂缓；整体完成率关闭。
+- 下一步核验最新 SHA 四项 CI/docs-sync，再继续 PLAN-003。不得新增 A113+、更改 A0–A112 或合并 PR #32。
+
+---
+
 
 ---
 

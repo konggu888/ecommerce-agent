@@ -1832,6 +1832,9 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertFalse(result["cost_reconciled"])
             self.assertAlmostEqual(project.actual_cost_rmb, 2.5)
             self.assertAlmostEqual(project.shots[0].actual_cost_rmb, 1.2)
+            restored = store.load(project.id)
+            self.assertAlmostEqual(restored.actual_cost_rmb, 2.5)
+            self.assertAlmostEqual(restored.shots[0].actual_cost_rmb, 1.2)
 
     def test_a57_open_existing_project_runs_recovery_before_display(self):
         source = (Path(__file__).resolve().parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
@@ -1864,6 +1867,11 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertAlmostEqual(shot.actual_cost_rmb, 1.2)
             self.assertAlmostEqual(project.cost_estimate["actual_cost_rmb"], 2.5)
             self.assertEqual(project.cost_estimate["actual"]["by_category"], {"video": 2.5})
+            restored = store.load(project.id)
+            self.assertAlmostEqual(restored.actual_cost_rmb, 2.5)
+            self.assertAlmostEqual(restored.shots[0].actual_cost_rmb, 1.2)
+            self.assertAlmostEqual(restored.cost_estimate["actual_cost_rmb"], 2.5)
+            self.assertEqual(restored.cost_estimate["actual"]["by_category"], {"video": 2.5})
 
 
     def test_a61_legacy_costs_migrate_once_before_first_successful_charge(self):
