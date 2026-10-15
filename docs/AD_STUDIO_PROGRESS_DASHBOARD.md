@@ -13,7 +13,7 @@
 
 ---
 
-# 【PLAN-003 当前状态｜A100–A104 部分证据映射｜2026-10-15】
+# 【历史快照｜PLAN-003 A100–A104 证据映射补充｜2026-10-15】
 
 - **源码/测试审计基线**：`c77704d86d6131d13501448af76ce24afc56ad7b`；源码/测试 blobs 及逐项证据见任务台账。基线 CI PR [38729441932](https://github.com/konggu888/ecommerce-agent/actions/runs/38729441932) 与 docs-sync PR [38729441851](https://github.com/konggu888/ecommerce-agent/actions/runs/38729441851) 均 success；Push 工作流未独立核实。PR #32 Open/unmerged。
 - **A100** 淡出按变速后输出时长定位，短片段淡化时长不超过输出时长；仅验证 mocked FFmpeg 参数。
