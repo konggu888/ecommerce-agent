@@ -1,4 +1,13 @@
-# 【PLAN-003 AI 接手状态｜A85–A89 部分证据映射｜2026-10-15】
+# 【PLAN-003 AI 接手状态｜A90–A94 部分证据映射｜2026-10-15】
+
+- 权威进度入口：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`；PR #32 保持 Open/unmerged。
+- 当前核对 HEAD `a6e052fa7edefa7e2fb794166684547436ff90f6`；源码/测试 blobs：`e53968f47a6b8fd23df773dbd3a4ad553753e1e0`、`2506410d9621840ec34464fce1fa2746c7d798f4`、`357c54dad99f61b99891bcc365dd2f9efc1a1009`、`2995b5764f7a86ee8c274b6359ff2f09cdf7a288`。CI PR 和 docs-sync PR success；Push 对应工作流本轮尚未独立核实。
+- A90–A94 完成部分源码/测试映射，正式验收仍 not_audited。详细证据边界见总进度台账。下一批 A95–A99；文档提交后先核验最新 SHA 四项 CI/docs-sync。
+- 不新增 A113+，不修改真实机器测试暂停安排，不合并 PR #32。
+
+---
+
+# 【历史快照｜PLAN-003 A85–A89 部分证据映射｜2026-10-15】
 
 - 唯一权威进度：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`；PR #32 保持 Open / unmerged。
 - 本轮开始 HEAD `2b92072a1dd5335fe803955ffca11881ebf2dec3`；源码/测试审计快照 `4063ba5a452c0c883ff39c8ea1ce33499a80eaf4`，`short_drama.py` / `test_short_drama.py` blobs 为 `2506410d9621840ec34464fce1fa2746c7d798f4` / `2995b5764f7a86ee8c274b6359ff2f09cdf7a288`。该快照 CI Push/PR、docs-sync Push/PR 四项均 success；本轮文档提交后须核验最终 SHA 的四项工作流。
