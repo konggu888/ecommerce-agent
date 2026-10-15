@@ -3,7 +3,7 @@
 - 仓库/项目：`konggu888/ecommerce-agent/apps/ad-studio-desktop`；分支 `feat/product-drama-visual-review`；PR #32 保持 Open / unmerged。
 - 唯一权威当前任务、下一项、状态和进度：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`。当前是 PLAN-003 全量跨来源语义去重、状态冲突裁决与依赖/证据边界复核；A0–A112 台账和分批静态映射已存在，不重建、不重复从 A50 开始。当前不开发产品功能。
 - 执行规则：`docs/AD_STUDIO_EXECUTION_CONTROL.md`；战略阶段与退出条件：`docs/AD_STUDIO_PRODUCT_ROADMAP.md`；正式范围：`docs/AD_STUDIO_ACCEPTANCE_PLAN.md`；验收方法：`docs/AD_STUDIO_ACCEPTANCE_SOP.md`。
-- 最近已核验 HEAD：`d2bd844313b06419402f761dcab222245a4f091b`；该 SHA 的 PR-triggered CI 与 docs-sync success，Netlify deploy-preview success；Push-triggered CI/docs-sync 未独立核实。此为接手快照而非永久状态；每次接手仍必须实时读取 PR #32 当前 HEAD、工作流与部署状态，不继承历史绿灯。
+- 最近一次已完整核验通过的基线：`8e2a714abfc77e6ce9f7e136a0ba41195f2c8fae`；该 SHA 的 PR-triggered CI 与 docs-sync success，Netlify deploy-preview success。之后又提交了审计/帮助/逻辑文档更新，因此这不是当前 HEAD 的通过证明。接手时必须实时查询最新 HEAD、CI、docs-sync 与部署状态；Push-triggered CI/docs-sync 未独立核实前必须明确注明。
 - 下方旧执行快照仅为历史证据，不能作为当前“下一项”指令。遇到冲突先登记到总进度台账，不自行选择旧任务、不扩展范围。
 - 禁止删除/重编号 A0–A112；规范化台账、去重、依赖和证据审计完成前不赋权、不计算总体完成率。真实环境/Provider/扣费/剪映/投放验证继续暂缓。
 - **七层结果证明标准已纳入全项目证据规则**：软件运行、功能行为、端到端流程、普通用户可用、商品表达真实安全、商业成片质量、真实商业效果；详细定义和禁止替代关系见总进度台账及执行控制协议。台账规范化时逐项映射，不新增正式验收 ID。
