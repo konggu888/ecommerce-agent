@@ -3,7 +3,7 @@
 - 审查入口：`docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md`；本轮已完成“创建入口、商品输入、费用授权顺序、项目持久化”的首轮静态证据映射（第 3A 节）。这是审计，不是新产品功能开发。
 - 首个重要合同/证据冲突候选：`App.create()` 在显示 `AI创意与项目预算确认` 前调用 `create_plan/create_plans`；`ModelRouter.create_plan()` 对九个阶段调用 `complete_json()`。HELP/PROJECT_LOGIC 当前允许确认前进行 AI 分析，但用户费用授权范围是否覆盖收费规划模型调用尚待裁决。若所有收费云端模型调用都必须先确认，则是 P0 候选阻断；若只限制视频/资产生成 Provider，则需核实规划调用费用是否披露/计入预算。实际收费影响依赖模型路由，当前未修复、未新增验收编号、未改产品代码。
 - 已查测试证据：`test_setup_form_grid_rows_do_not_overlap` 为 AST 布局检查；`test_product_parser.py` 覆盖解析器异常/回退；`test_budget_policy` 与 `test_cost_breakdown_is_auditable_and_configurable` 覆盖费用计算；`test_project_save_load`、`test_project_lifecycle_isolated_between_projects` 覆盖持久化/隔离。未发现 `test_desktop.py` 直接调用 `App.create()` 的测试；`test_a33_full_flow.py` 仅测试模拟最终交付，不证明创建前确认顺序。
-- 最新已提交的审查文档 SHA 需以 GitHub 分支实时 HEAD 为准。开始基线 `3bd083e73ea51aec26b2ab66c755aa6c83a929cf` 的 PR CI `38695479000` 与 PR docs-sync `38695478983` success；Push-triggered 两项未独立核实。每次新提交后重查可用的当前 SHA 工作流。
+- 本文件已与 UXS-2 首轮映射、进度台账和 AI handoff 同步；最新审查文档 SHA 需以 GitHub 分支实时 HEAD 为准。开始基线 `3bd083e73ea51aec26b2ab66c755aa6c83a929cf` 的 PR CI `38695479000` 与 PR docs-sync `38695478983` success；Push-triggered 两项未独立核实。每次新提交后重查可用的当前 SHA 工作流。
 - 下一项唯一任务：继续 UXS-2，完成费用/确认/取消/外部副作用路径及既有验收 ID 映射，再继续后续用户旅程。只审计和记录；未经用户明确授权不修改产品代码。不得删/重编号 A0–A112，不计算总体完成率。
 - 状态口径保持：`code_test_evidence_reviewed_ids=113` 仅表示已开始映射；`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false`。Windows 真机、真实素材、Provider/实际扣费、剪映现场和真实投放/商业效果验证继续暂缓；PR #32 不合并。
 
