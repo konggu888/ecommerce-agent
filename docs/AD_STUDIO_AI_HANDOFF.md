@@ -1,6 +1,15 @@
 # 【PLAN-003 AI 接手状态｜A100–A104 部分证据映射｜2026-10-15】
 
 - 唯一权威进度：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`；PR #32 Open/unmerged。
+- 源码/测试审计基线：`c77704d86d6131d13501448af76ce24afc56ad7b`。CI PR 与 docs-sync PR 已 success；Push 工作流未独立核实。文档提交后必须重新检查最新 SHA。
+- A100–A104 仅部分证据映射，正式验收均为 `not_audited`。重点缺口：真实 FFmpeg 成片/音画听感；A102 真实最终输出尺寸验证；A104 混合转场硬切 0.001 秒重叠与用户可编辑转场 UI 核实。
+- 下一批 A105–A109。继续只做 PLAN-003，不开发新功能、不新增 A113+、不删/合并/重编号 A0–A112。Windows 真机、真实素材、Provider/扣费、剪映现场和商业效果验收继续暂缓。
+
+---
+
+# 【PLAN-003 AI 接手状态｜A100–A104 部分证据映射｜2026-10-15】
+
+- 唯一权威进度：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`；PR #32 Open/unmerged。
 - 源码/测试审计基线：`c77704d86d6131d13501448af76ce24afc56ad7b`。CI PR [38729441932](https://github.com/konggu888/ecommerce-agent/actions/runs/38729441932) 与 docs-sync PR [38729441851](https://github.com/konggu888/ecommerce-agent/actions/runs/38729441851) 成功；Push 工作流未独立核实。
 - A100–A104 已完成源码/专项测试证据映射，但正式验收均保持 `not_audited`。实际 FFmpeg 渲染、Windows 真机、真实素材和视听质量仍暂缓；A102 尺寸放大不等于 AI 超分；A104 filter graph 目前由 mock 断言。
 - 下一批 A105–A109。文档提交后先核验最新 SHA 的四项 CI/docs-sync。只推进 PLAN-003，不开发新功能、不新增 A113+、不删/合并/重编号 A0–A112。
