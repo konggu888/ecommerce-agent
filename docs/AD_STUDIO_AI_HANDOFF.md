@@ -1,4 +1,13 @@
-# 【PLAN-003 AI 接手状态｜A95–A99 部分证据映射｜2026-10-15】
+# 【PLAN-003 AI 接手状态｜A100–A104 部分证据映射｜2026-10-15】
+
+- 唯一权威进度：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`；PR #32 Open/unmerged。
+- 源码/测试审计基线：`c77704d86d6131d13501448af76ce24afc56ad7b`。CI PR [38729441932](https://github.com/konggu888/ecommerce-agent/actions/runs/38729441932) 与 docs-sync PR [38729441851](https://github.com/konggu888/ecommerce-agent/actions/runs/38729441851) 成功；Push 工作流未独立核实。
+- A100–A104 已完成源码/专项测试证据映射，但正式验收均保持 `not_audited`。实际 FFmpeg 渲染、Windows 真机、真实素材和视听质量仍暂缓；A102 尺寸放大不等于 AI 超分；A104 filter graph 目前由 mock 断言。
+- 下一批 A105–A109。文档提交后先核验最新 SHA 的四项 CI/docs-sync。只推进 PLAN-003，不开发新功能、不新增 A113+、不删/合并/重编号 A0–A112。
+
+---
+
+# 【历史快照｜PLAN-003 A95–A99 部分证据映射｜2026-10-15】
 
 - 唯一权威进度：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`；PR #32 Open/unmerged。
 - 本轮源码/测试审计基线：`c77704d86d6131d13501448af76ce24afc56ad7b`。源码 blob `e53968f47a6b8fd23df773dbd3a4ad553753e1e0`；测试 blob `357c54dad99f61b99891bcc365dd2f9efc1a1009`。该基线 CI PR 与 docs-sync PR success；Push 工作流未独立核实。文档提交后必须重新核验最新 SHA。
