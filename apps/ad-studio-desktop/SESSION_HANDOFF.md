@@ -1,3 +1,16 @@
+# 【当前接手状态｜2026-10-15｜路由回退证据映射已补充】
+
+- 当前分支：`feat/product-drama-visual-review`；PR #32 必须保持 Open / unmerged。
+- 本轮已完成的唯一任务：静态核对 `ModelRouter.resolve_route()`、`CapabilityRouter.decide_llm/decide_asset/decide_video()` 与现有路由测试，结果已写入 `docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md` 的 UXS-2 路由回退专项节。
+- 结论：存在显式模型不可用后自动选择其他云端模型/本地模型的代码路径；CapabilityRouter 也会在本地服务不可用时选择已配置云端服务。本轮未找到每次跨 Provider/本地转云端前均需用户明确同意、且拒绝后外部调用为零的充分证据。这是 P1 风险线索，不代表已证实真实外发或扣费。
+- 现有 `test_all_nine_functions_use_their_selected_model` 使用 FakeRouter，创建 9 个模型并断言 9 次调用；当前 `FUNCTIONS` 有 13 项。该测试不能证明真实路由对所有 13 项覆盖完整，也不覆盖回退授权。
+- 本轮只做静态代码/测试/文档映射，没有修改产品代码，没有运行本地测试，没有真实模型/代理/扣费验证。
+- 本轮开始 HEAD `36bb49fb418ba9af29d999e271fefa04fe80b092` 的 PR 触发 CI run `38700104159` 与 docs-sync run `38700104220` 均 success。文档更新后必须重新核对新 HEAD 的 CI 与 docs-sync；不得沿用本基线绿灯。
+- 下一项唯一任务：继续 UXS-2，追踪 CapabilityRouter 决策结果的实际调用点与硬件执行模式 UI，并映射到 A0–A112 的既有授权合同/测试；之后按既定顺序审计密钥保存、费用未知值、外发告知和模型切换后的缓存/历史隔离。
+- 不开发产品功能、不新增正式验收编号、不计算总体完成率；保持 `code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false`。Windows 真机、真实素材、Provider/实际扣费、剪映现场和真实投放验证继续暂缓。
+
+---
+
 # 【当前优先级更新｜UXS-2 用户旅程证据映射进行中｜2026-10-15】
 
 - 审查入口：`docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md`；本轮已完成“创建入口、商品输入、费用授权顺序、项目持久化”的首轮静态证据映射（第 3A 节）。这是审计，不是新产品功能开发。
