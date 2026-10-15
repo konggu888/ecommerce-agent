@@ -1,13 +1,45 @@
-## 最新执行状态｜UXS-2 首轮用户旅程证据映射｜2026-10-15
+# 【规划与进度控制体系盘点｜2026-10-15｜权威当前状态】
 
-- 本轮开始 HEAD：`3bd083e73ea51aec26b2ab66c755aa6c83a929cf`；PR #32 Open / unmerged，head SHA 与当时基线一致。当前文档更新提交后必须重新检查最新 SHA 的工作流。
-- 该开始 SHA 的 PR CI `38695479000` 与 PR docs-sync `38695478983` success；Netlify deploy-preview status success。当前 GitHub 连接器的 commit-workflow 查询仅返回 PR 触发的 runs，Push 触发的两项未独立核实。
-- UXS-2 已完成“创建入口、商品输入、费用授权顺序、项目持久化”的首轮静态映射，详见 `docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md` 第 3A 节。
-- **重要合同/证据冲突候选（尚未正式归类/未修复）：** `App.create()` 在展示“AI创意与项目预算确认”之前调用 `ModelRouter.create_plan/create_plans`；`ModelRouter.create_plan()` 对九个创意阶段调用 `complete_json()`。HELP/PROJECT_LOGIC 当前允许预算确认前进行 AI 分析，但用户的费用授权要求需裁决是否也覆盖收费的规划模型调用。若所有收费云端模型调用都必须先确认，则为 P0 候选阻断；若只限制视频/资产生成 Provider，则需核实规划调用费用是否已披露/计入预算。实际收费影响取决于路由与授权范围，不能声称每次都会扣费。先对照 A0/A2、路线图、HELP/PROJECT_LOGIC 和用户授权合同；不擅自新增编号、不改产品代码。
-- 测试证据：`test_setup_form_grid_rows_do_not_overlap` 只验证 AST 布局；`test_product_parser.py` 覆盖解析器错误/回退；`test_budget_policy`、`test_cost_breakdown_is_auditable_and_configurable` 覆盖费用计算；`test_project_save_load` 与 `test_project_lifecycle_isolated_between_projects` 覆盖持久化/隔离。已查 `test_desktop.py` 未发现直接调用 `App.create()` 的测试；`test_a33_full_flow.py` 覆盖的是模拟最终交付，不覆盖创建前确认顺序。上述仅静态映射，未运行新 SHA 测试，也不等于正式验收。
-- 下一项唯一任务：继续 UXS-2 用户旅程证据映射，优先完成“预算/确认/取消/外部副作用”调用顺序与现有 A0–A112 合同映射，再继续资产、镜头、剪辑、质检、交付、重开恢复等阶段；不开发产品功能。
-- A0–A112 编号不变；`code_test_evidence_reviewed_ids=113` 仅表示已开始映射，`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false` 不变。权重与总体完成率继续关闭。
-- Windows 真机、真实素材、真实 Provider/扣费、剪映现场、真实投放/商业效果验证继续暂缓。PR #32 不合并。
+> **本文件是唯一权威进度源。** 当前任务、阶段状态、任务台账、依赖、权重、证据和下一项只以本文件为准。`SESSION_HANDOFF.md` 与 `docs/AD_STUDIO_AI_HANDOFF.md` 只提供接手入口和短摘要；路线图定义战略与阶段退出条件；验收计划定义范围；SOP 定义验收方法；执行控制协议定义 AI 行为。其他文件中的“当前状态/下一项”若与本文件冲突，一律视为历史快照，先登记冲突，不据此启动任务。
+
+- 仓库：`konggu888/ecommerce-agent`；项目：`apps/ad-studio-desktop`；分支：`feat/product-drama-visual-review`；PR #32 保持 Open / unmerged。
+- 本轮最新已核对 HEAD：`9b52642fc2608fe24b0d4dba4ba0ef36d3ca8e67`。该 SHA 的 PR-triggered `CI` run `38700695789` 与 `ad-studio-doc-sync` run `38700695499` 均 success；Netlify deploy-preview status success。当前连接器未独立核实 Push-triggered 两项，因此不得写成“四项全绿”。
+- 当前主线仍属 PLAN-003，但**本轮优先是规划/进度控制体系盘点与入口纠偏**，不是 UXS-2 的产品安全细节审计，更不是产品功能开发。
+- 本轮已核实的核心问题：项目已有路线图、正式验收计划、SOP、执行控制协议和进度台账；但当前状态和“下一项”被重复写入多份接手文件及路线图，存在旧 SHA 与互相冲突的下一步指令。总台账已有进度公式/字段定义，但没有完成全量 113 个槽位的规范化任务记录、依赖图、权重审定和自动一致性校验。
+- **本轮唯一任务**：完成控制体系文件盘点、确定权威来源并消除入口级状态冲突。完成后，PLAN-003 下一项为把 A0–A112 规范化为可审计的单一任务台账；在此之前不继续 UXS-2 细节、不开发产品功能、不计算总体完成率。
+- 不删/重编号 A0–A112，不自行增加正式验收 ID。真实 Windows、真实素材、真实 Provider/扣费、剪映现场、真实投放与商业效果验证继续暂缓。
+
+## 控制体系盘点结果（首轮）
+
+| 控制组件 | 当前已有内容 | 发现的缺口 / 纠偏方向 |
+|---|---|---|
+| 战略路线图 `docs/AD_STUDIO_PRODUCT_ROADMAP.md` | 产品终点、阶段顺序、各阶段目标与退出条件 | 历史实现状态和当前优先级容易混读；当前执行顺序必须只从本台账读取 |
+| 正式验收范围 `docs/AD_STUDIO_ACCEPTANCE_PLAN.md` | A0–A112 正式检查点和阶段范围 | 检查点尚未全部与唯一任务记录、依赖、当前 SHA 证据、验收层级逐项关联 |
+| 验收 SOP `docs/AD_STUDIO_ACCEPTANCE_SOP.md` | 验收步骤、代码反推、专项测试、CI 和文档要求 | 执行方法已较详细，但无法替代规范化任务台账与证据索引 |
+| 进度台账（本文件） | 任务字段要求、开发/验收状态、计算公式、阶段初步状态 | 全量任务记录、语义去重、依赖映射、权重依据与可复算进度尚未完成；PLAN-006 自动一致性检查待执行 |
+| AI 执行控制 `docs/AD_STUDIO_EXECUTION_CONTROL.md` 与 `AGENTS.md` | 单任务范围、禁止联想式扩展、停止条件、文档同步、CI 闸门 | 需明确冲突裁决顺序：状态/下一项由本台账唯一决定，接手文件不得另立并行“当前下一项” |
+| 接手入口 `apps/ad-studio-desktop/SESSION_HANDOFF.md`、`docs/AD_STUDIO_AI_HANDOFF.md` | 有当前状态和详细历史背景 | 多个顶部快照反复追加，存在过时 SHA 与互相冲突的“下一项”，容易让 AI 继续旧任务而形成循环 |
+| 未来功能备忘 `docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md` | 记录未来与暂缓能力 | 必须逐项映射到正式范围和代码证据；不能仅凭备忘文字推断已实现/未实现 |
+| UX/安全审计 `docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md` | UXS-1 至 UXS-5 审查方法与用户旅程线索 | 它应作为 PLAN-003 的一个子工作流，而不是覆盖整个规划控制体系的唯一当前任务 |
+| `HELP.md` / `PROJECT_LOGIC.md` | 面向用户的功能说明和面向 AI 的实现逻辑 | 作为代码行为/功能事实证据，不作为项目进度或当前下一项的权威来源 |
+
+### 控制体系必须补齐的缺口（按依赖顺序）
+
+1. **状态唯一性**：当前状态/下一项统一从本文件读取；接手文件改为短摘要与指针，历史内容明确标记为历史。
+2. **规范化任务台账**：保留全部 A0–A112 原 ID，为每个槽位建立唯一记录，字段至少包括来源映射、阶段、父任务/依赖、开发状态、验收状态、当前证据 SHA、测试与 CI 链接、剩余条件、阻塞/暂缓原因、重复关系、最后核验日期。
+3. **跨来源语义去重与状态裁决**：重复引用映射到 canonical 任务记录；不得静默删除或合并独立验收合同。
+4. **依赖与阶段门槛**：把路线图阶段目标/进入条件/退出条件映射到任务及证据，明确阻塞关系。
+5. **权重与进度公式**：完成任务审计和依赖映射后再审定权重；开发实现、自动化验收、模拟端到端、真实环境验收分别统计；暂缓项保留在总范围。
+6. **一致性自动检查（既有 PLAN-006）**：检查 ID 唯一、状态合法、依赖引用有效、权重和公式可复算、证据绑定 SHA、暂缓项未被误计为通过。
+7. **阶段退出复核（既有 PLAN-007）**：逐项证据化复核阶段 2；不以 A109–A112 CI 绿灯替代阶段退出或商业质量验收。
+
+### 本轮停止条件
+
+- 上述控制组件与缺口已记录。
+- 唯一权威来源与冲突裁决顺序已写清。
+- 当前任务和下一项在本文件只有一个版本。
+- 不在本轮给 A0–A112 赋权、不计算总体完成率、不开发产品功能。
+- 下一项正式任务：**PLAN-003｜建立 A0–A112 规范化任务台账与跨来源映射**。
 
 ---
 
@@ -15,7 +47,7 @@
 
 版本日期：2026-10-15；仓库：`konggu888/ecommerce-agent`；项目：`apps/ad-studio-desktop`；分支：`feat/product-drama-visual-review`；PR #32 必须 Open / unmerged。
 
-## PLAN-003 最新进展｜2026-10-15
+## PLAN-003 历史证据快照｜2026-10-15｜以文件顶部权威状态和任务顺序为准
 
 - A0–A5 当前代码/测试证据映射（核验到 SHA `1fd6d08dac970cb7886c59239b05c4f6e2128cf9`；仅证据盘点，不代表正式验收）：A0：`ad_studio/app.py` 中存在 `App.create()` 用户操作入口，但已检查的 desktop 测试未发现专门启动/创建操作端到端测试；A1：当前 CI 覆盖多个测试集，但台账仍缺任务级稳定性矩阵与可追溯的逐项证据；A2：`test_desktop.py` 有 `test_project_lifecycle_isolated_between_projects`、`test_project_save_load`，但未发现直接调用 `App.create()` 的编排测试；A3：有 `test_setup_form_grid_rows_do_not_overlap`、`test_three_task_types_have_distinct_deterministic_policies`、`test_task_type_is_persisted_and_not_replaced_by_platform`，但不能替代三类任务完整 UI 流程验收；A4：`test_footage.py` 覆盖素材排序扫描、不可解析文件注记、重复素材评分、废片归档与保护被引用源文件（`test_archive_analyzed_waste_protects_currently_referenced_source`），仍需对照验收清单补齐路径异常、源文件保护等完整矩阵；A5：`footage.py` 实现 `extract_keyframes()`、`build_visual_manifest()`、`footage_analysis_public()`，但全仓已检查的 desktop `test*.py` 未找到对前两者的直接专项测试，需补关键帧提取失败、清单生成失败与模型视觉分析失败/回退覆盖。六项均不标记正式验收通过。
 
@@ -40,8 +72,10 @@
 每项至少记录唯一 ID、名称、阶段、父任务/依赖、权重、开发状态、验收状态、证据 SHA、测试/CI 链接、剩余条件、阻塞原因、暂缓原因、重复项映射、最后核验日期。CI/doc-sync 证据绑定 SHA；新提交必须重查四项。
 
 ## 3. 当前基线
-最近完整核验基线 SHA：`177088ee6a743253d61dfe3ecb74842babe8e2a9`。该 SHA 的 CI Push `38692201275`、CI PR `38692208292`、docs-sync Push `38692201217`、docs-sync PR `38692208055` 均 success。PR #32 仍为 Open / unmerged。此后若有新提交，必须重新查新 HEAD 的四项工作流。
-A112（SRT cue 实际时间窗进入音乐卡点内容保护）在代码基线 `e8deb1ec4ef9edf7d999c79539762ea2627affab` 的四项检查通过；其后 `7cfabb23e9ab0c05c6189d31dcf6b7410f7934c7` 的四项也通过。仅代表自动化阶段，不代表真实素材、口播同步、字幕可读性或商业质量验收。
+
+- 当前最新已核对 HEAD：`9b52642fc2608fe24b0d4dba4ba0ef36d3ca8e67`；PR #32 Open / unmerged。
+- 该 SHA 的 PR-triggered CI `38700695789` 与 PR-triggered docs-sync `38700695499` success；Netlify deploy-preview success。Push-triggered 两项未独立核实。
+- 任何新提交后都必须重新查询当前 SHA 的可用 CI/doc-sync；旧 SHA 证据不得继承为新 SHA 通过。
 
 ## 4. 阶段状态（初始盘点；暂不计算完成率）
 | 阶段 | 目标 | 状态 | 需要核对的重点 | 完成率 |
@@ -69,16 +103,14 @@ A112（SRT cue 实际时间窗进入音乐卡点内容保护）在代码基线 `
 | PLAN-006 | 增加台账一致性自动检查 | 待执行 | ID 唯一、状态合法、权重/证据约束、暂缓可见、公式可复算 |
 | PLAN-007 | 复核阶段 2 退出条件 | 待执行 | 每项退出条件均有代码/测试/CI 证据或明确缺口 |
 
-## 6. 唯一下一项：PLAN-003
-1. A3 设置区布局修复与 AST 回归测试已在 `f20bf426594a55ac74267641b53d9166acef6798` 同步提交；CI Push/PR 与 docs-sync Push/PR 四项全部成功。
-2. A0–A5 代码/测试证据仅部分映射；继续逐项核对启动、稳定性、新建项目、任务选择、原始素材管理、素材视觉分析的全部验收条件。
-3. A68–A74、A99 的历史任务内容已恢复；下一步做跨来源重复/状态段最终合并审计，并按批次完成当前 HEAD 的代码/测试证据审计。
-4. 提取路线图各阶段目标、任务与退出条件。
-3. 提取未来功能备忘中未完成/暂缓项目。
-4. 对照 HELP、PROJECT_LOGIC、代码、测试核实每项状态，不能只看文档。
-5. 重复任务映射到 canonical ID，并保留旧 ID 引用；不得静默删除原验收要求。
-6. 证据不足标记“未盘点/待核验”，不猜测状态。
-7. 全量映射完成后再制定权重并计算百分比。
+## 6. 唯一下一项：PLAN-003｜规划控制体系盘点后建立规范化任务台账
+
+1. 当前轮先完成规划控制组件盘点、权威来源与状态冲突纠偏。
+2. 下一项把 A0–A112 的 113 个正式编号槽位规范化为唯一任务记录，逐条关联路线图、未来功能备忘、SOP、代码/测试证据。
+3. 逐项区分重复提及与独立验收合同；保留所有正式编号与原始要求，不静默删除或合并。
+4. 建立父任务/依赖、开发状态、验收状态、证据 SHA、测试/CI、剩余条件、阻塞/暂缓和最后核验日期。
+5. 任务台账和语义去重完成前，不分配权重、不启用总体完成率；不继续 UXS-2 细节、不开发产品功能。
+6. 台账规范化后再执行既有 PLAN-004 权重审定、PLAN-005 状态段清理、PLAN-006 自动一致性检查、PLAN-007 阶段 2 退出复核。不得另造新正式验收编号。
 
 ## 7. 固定边界
 PR #32 不合并。Windows 真机、真实素材、真实 Provider/扣费、剪映现场、真实投放和商业效果验收继续暂缓。最终输出至少 1080P 级。自动化通过不等于真实环境或商业质量通过。
