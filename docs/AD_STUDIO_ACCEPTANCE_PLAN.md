@@ -1588,3 +1588,16 @@ A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/
 - **A94｜恢复原锁定资产后安全重试**：原素材停用时失败并关闭 fallback；恢复同一 asset_id 后精确重绑定，标签相似素材不覆盖。仅验证本地调度恢复。
 - A90–A94 统一标记为 `partial_evidence_mapping` / `not_audited`，没有将历史验收计划勾选直接继承为本轮正式通过。当前台账：需求文本复核 113；source/test/CI/workflow 指针任务 95；任意 evidence 任务 107；路线图映射 113/113；源码/测试快照绑定任务 37；最终文档 HEAD 精确绑定 0；完整代码/测试审计 0；完整审计 0；语义去重未完成；权重和总体完成率关闭。
 - 下一批按既有编号进入 **A95–A99**，先核验本轮文档提交后最新 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR 四项。PR #32 不合并；真实 Windows、素材、Provider/扣费、剪映现场和商业效果验收继续暂缓。
+
+
+## PLAN-003 增量审计记录｜A95–A99｜2026-10-15
+
+- **源码/测试审计基线**：`c77704d86d6131d13501448af76ce24afc56ad7b`。源码 blob：`apps/ad-studio-desktop/ad_studio/production.py` `e53968f47a6b8fd23df773dbd3a4ad553753e1e0`；测试 blob：`apps/ad-studio-desktop/test_desktop.py` `357c54dad99f61b99891bcc365dd2f9efc1a1009`。本轮未改产品代码。
+- 基线 CI PR [38729017063](https://github.com/konggu888/ecommerce-agent/actions/runs/38729017063) 与 docs-sync PR [38729017091](https://github.com/konggu888/ecommerce-agent/actions/runs/38729017091) 均 success；PR #32 Open/unmerged。当前工作流查询未独立返回 Push 工作流，故不宣称 CI Push/docs-sync Push 已核实。文档提交后须重查最新 SHA。
+- **A95｜本地素材索引损坏时阻断生产**：测试覆盖截断 JSON、`SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`、关闭自动生成、不继续解析同镜头其他素材、Provider 调用数为 0、保留锁定 ID 和兄弟镜头输出。未覆盖所有目录/权限/损坏形态及 Windows 文件系统。
+- **A96｜修复素材索引后的安全重试**：索引损坏时 fail-closed；修复后精确绑定原 `asset_id`，相似标签资产不能替换且不触发自动生成。当前直接测试内存项目的重新解析，修复后保存/重载和并发素材库修改未独立测试。
+- **A97｜项目恢复仅重置损坏镜头**：测试验证缺失镜头转为待重新生成，且有效兄弟镜头的输出路径、状态、版本、费用保持不变；保存/加载后继续保留。真实视频及全部中断分支未验证。
+- **A98｜重复恢复仍列出待处理缺失镜头**：重复调用恢复时，缺失镜头持续出现在 `last_recovery.missing_media`，有效兄弟镜头不变并检查重载。普通从未生成的待生成镜头是否被误报，尚未找到独立断言；UI 恢复摘要未做真机验证。
+- **A99｜恢复时逐镜头费用对账**：源码仅在成功账本记录存在时以账本为逐镜头权威，并把没有镜头账本记录的成本归零；专测覆盖成功账本和未计费兄弟镜头陈旧金额清零。失败账本独存与旧项目没有成功账本两条边界尚缺独立回归，真实 Provider/账单不在本轮范围。
+- A95–A99 全部保持 `partial_evidence_mapping` / `not_audited`，不得因旧计划中的历史 `[x]` 或历史 CI 直接继承正式通过。更新后的映射指标：需求文本复核 113；source/test/CI/workflow 指针任务 100；任意 evidence 任务 112；路线图映射 113/113；源码/测试快照绑定任务 42；最终文档 HEAD 精确绑定 0；完整代码/测试审计 0；完整审计 0；语义去重未完成；权重与总体完成率关闭。
+- 下一批按原编号进入 **A100–A104**。文档提交后先核验最新 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR；若工具无法列出 Push 触发运行，须明确记录而不能猜测。PR #32 不合并；Windows 真机、真实素材、Provider/扣费、剪映现场和商业效果验收继续暂缓。
