@@ -1,6 +1,6 @@
 # 【PLAN-003 当前状态｜A90–A94 部分证据映射｜2026-10-15】
 
-- **当前核对分支/HEAD**：`feat/product-drama-visual-review` / `a6e052fa7edefa7e2fb794166684547436ff90f6`；PR #32 Open/unmerged，head 未变化。
+- **源码/测试审计基线**：分支 `feat/product-drama-visual-review` 的 HEAD `a6e052fa7edefa7e2fb794166684547436ff90f6`；本轮七份文档顺序提交后的最新 HEAD 为 `64857c4f93a4b648c207328299e690f1ef932dca`。PR #32 Open/unmerged。
 - **本轮只做源码/测试/证据映射，不改产品代码，不宣布正式验收通过。** 源码 `production.py` blob `e53968f47a6b8fd23df773dbd3a4ad553753e1e0`、`short_drama.py` blob `2506410d9621840ec34464fce1fa2746c7d798f4`；测试 `test_desktop.py` blob `357c54dad99f61b99891bcc365dd2f9efc1a1009`、`test_short_drama.py` blob `2995b5764f7a86ee8c274b6359ff2f09cdf7a288`。
 - 本 SHA 的 CI PR [38728582030](https://github.com/konggu888/ecommerce-agent/actions/runs/38728582030) 与 docs-sync PR [38728581662](https://github.com/konggu888/ecommerce-agent/actions/runs/38728581662) 已 success。当前可用工作流查询只返回 PR 触发项，CI Push/docs-sync Push 未独立核实；本轮文档提交后需再查最新 SHA。
 - **A90** 精确 actor/scene asset_id 进入制作行；旧方案未提供 ID 时保留标签匹配。未证明真实素材库和成片像素一致。
