@@ -8571,37 +8571,37 @@
           "path": "apps/ad-studio-desktop/ad_studio/postprocess.py",
           "sha": "36ce0e4a17d635e3ed381c3b0bada1428e0290c4",
           "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "process_shot computes output duration as probe_duration(input)/speed; fade duration is min(0.25, output duration), fade-out starts at max(0, output_duration-fade_duration)."
+          "detail": "process_shot calculates fade-out from probed input duration divided by speed; fade duration is min(0.25, output duration)."
         },
         {
           "kind": "test",
           "path": "apps/ad-studio-desktop/test_postprocess.py",
           "sha": "29141bb61ee3ec6ae5960395e81c7dc64ef79feb",
           "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "test_fade_out_happens_at_end_after_speed_change and test_short_clip_fade_out_does_not_exceed_clip_duration assert actual mocked FFmpeg filter arguments for 2x speed and 0.1-second clip."
+          "detail": "Tests assert FFmpeg -vf fade parameters for 2x speed and 0.1-second clips."
         },
         {
           "kind": "ci_pr",
           "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441932",
           "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "CI PR success on source/test audit baseline."
+          "detail": "CI PR success on audit baseline c77704d86d6131d13501448af76ce24afc56ad7b."
         },
         {
           "kind": "docs_sync_pr",
           "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441851",
           "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "docs-sync PR success on source/test audit baseline."
+          "detail": "docs-sync PR success on audit baseline c77704d86d6131d13501448af76ce24afc56ad7b."
         },
         {
           "kind": "pr_state",
           "path": "https://github.com/konggu888/ecommerce-agent/pull/32",
           "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "PR #32 Open/unmerged on source/test audit baseline."
+          "detail": "PR #32 remains open and unmerged."
         }
       ],
       "remaining_conditions": [
-        "Static code and mocked command assertions cover end-of-output timing, speed adjustment and very short clips; no actual FFmpeg render or decoded-frame/audio waveform check.",
-        "Windows real-media visual/audio acceptance remains deferred; does not establish commercial editing quality."
+        "Static command tests prove filter arguments only; real FFmpeg rendering, visual fade quality and audio listening on Windows remain deferred.",
+        "Historical A100 checkboxes refer to an earlier SHA and are not inherited as a fresh formal acceptance pass."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -8616,8 +8616,8 @@
           "### A100 自动化实现补充：淡出窗口修正（不代表路线图项目完成）"
         ]
       },
-      "source_inventory_status": "current_source_test_snapshot_mapped_to_c77704d86d6131d13501448af76ce24afc56ad7b; CI_PR_and_docs_sync_PR_success; push_workflow_pair_not_independently_verified; full_acceptance_pending",
-      "semantic_dedup_review_status": "reviewed_related_editing_cluster_no_cross_id_merge",
+      "source_inventory_status": "current_source_test_snapshot_mapped_to_c77704d86d6131d13501448af76ce24afc56ad7b; CI_PR_and_docs_sync_PR_success_on_audit_baseline; push_workflow_pair_not_independently_verified; full_acceptance_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
       "semantic_dedup_batch": "PLAN-003-DEDUP-004",
       "last_verified_date": "2026-10-15",
       "current_head_evidence_reconciliation": {
@@ -8626,7 +8626,7 @@
         "source_test_paths_rechecked": true,
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
-        "note": "Evidence is bound to source/test audit baseline. CI PR and docs-sync PR success; Push workflow pair not independently verified. Not full acceptance."
+        "note": "Static source/test evidence mapped to audit baseline; CI PR and docs-sync PR succeeded. Push workflow pair not independently verified. Not full acceptance."
       }
     },
     {
@@ -8648,37 +8648,37 @@
           "path": "apps/ad-studio-desktop/ad_studio/postprocess.py",
           "sha": "36ce0e4a17d635e3ed381c3b0bada1428e0290c4",
           "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "process_shot adds setpts video timing and atempo audio timing for non-1.0 speed, while avoiding -af when speed is 1.0 and no fade is requested."
+          "detail": "process_shot applies setpts for non-1x speed and inserts matching atempo; 1x skips audio tempo filter."
         },
         {
           "kind": "test",
           "path": "apps/ad-studio-desktop/test_postprocess.py",
           "sha": "29141bb61ee3ec6ae5960395e81c7dc64ef79feb",
           "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "test_speed_change_keeps_audio_in_sync_with_video asserts setpts/-af at 1.25x; test_normal_speed_does_not_add_unneeded_audio_tempo_filter asserts 1.0x has no -af."
+          "detail": "Tests inspect generated command for speed=1.25 atempo and confirm 1x adds no -af."
         },
         {
           "kind": "ci_pr",
           "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441932",
           "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "CI PR success on source/test audit baseline."
+          "detail": "CI PR success on audit baseline."
         },
         {
           "kind": "docs_sync_pr",
           "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441851",
           "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "docs-sync PR success on source/test audit baseline."
+          "detail": "docs-sync PR success on audit baseline."
         },
         {
           "kind": "pr_state",
           "path": "https://github.com/konggu888/ecommerce-agent/pull/32",
           "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "PR #32 Open/unmerged on source/test audit baseline."
+          "detail": "PR #32 remains open and unmerged."
         }
       ],
       "remaining_conditions": [
-        "Tests assert FFmpeg command construction only; no rendered media duration, waveform synchronization, pitch/audio quality or encoder compatibility test.",
-        "FFmpeg atempo constraints for unsupported extreme speeds are not validated by these tests; Windows real-media acceptance remains deferred."
+        "Command construction tests do not prove real source audio remains perceptually synchronized/clean after encoding; Windows real-footage and codec compatibility are deferred.",
+        "Push CI/docs-sync workflow pair is not independently exposed by the current workflow query."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -8693,8 +8693,8 @@
           "### A101 自动化实现补充：变速音画同步（不代表路线图项目完成）"
         ]
       },
-      "source_inventory_status": "current_source_test_snapshot_mapped_to_c77704d86d6131d13501448af76ce24afc56ad7b; CI_PR_and_docs_sync_PR_success; push_workflow_pair_not_independently_verified; full_acceptance_pending",
-      "semantic_dedup_review_status": "reviewed_related_editing_cluster_no_cross_id_merge",
+      "source_inventory_status": "current_source_test_snapshot_mapped_to_c77704d86d6131d13501448af76ce24afc56ad7b; CI_PR_and_docs_sync_PR_success_on_audit_baseline; push_workflow_pair_not_independently_verified; full_acceptance_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
       "semantic_dedup_batch": "PLAN-003-DEDUP-004",
       "last_verified_date": "2026-10-15",
       "current_head_evidence_reconciliation": {
@@ -8703,7 +8703,7 @@
         "source_test_paths_rechecked": true,
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
-        "note": "Evidence is bound to source/test audit baseline. CI PR and docs-sync PR success; Push workflow pair not independently verified. Not full acceptance."
+        "note": "Static source/test evidence mapped to audit baseline; CI PR and docs-sync PR succeeded. Push workflow pair not independently verified. Not full acceptance."
       }
     },
     {
@@ -8725,51 +8725,51 @@
           "path": "apps/ad-studio-desktop/ad_studio/postprocess.py",
           "sha": "36ce0e4a17d635e3ed381c3b0bada1428e0290c4",
           "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "normalize_output_resolution maps 9:16/16:9/1:1 to 1080x1920/1920x1080/1080x1080, scales/crops and retains AAC audio."
+          "detail": "normalize_output_resolution targets 1080x1920, 1920x1080, or 1080x1080 by aspect and preserves audio."
         },
         {
           "kind": "source",
           "path": "apps/ad-studio-desktop/ad_studio/production.py",
           "sha": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
           "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "build_final normalizes final concatenated output then inspect_final_output rejects output below the aspect-specific minimum."
+          "detail": "Final output inspection probes actual dimensions and rejects below 1080-class output."
         },
         {
           "kind": "test",
           "path": "apps/ad-studio-desktop/test_postprocess.py",
           "sha": "29141bb61ee3ec6ae5960395e81c7dc64ef79feb",
           "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "Tests assert portrait/landscape/square normalization filters and audio retention."
+          "detail": "Tests inspect normalizer filters for portrait, landscape and square dimensions."
         },
         {
           "kind": "test",
           "path": "apps/ad-studio-desktop/test_desktop.py",
           "sha": "357c54dad99f61b99891bcc365dd2f9efc1a1009",
           "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "test_final_output_inspection_rejects_below_1080_class_resolution rejects 720x1280; A102 test header explicitly says normalization output is mocked."
+          "detail": "Test rejects ffprobe metadata reporting 720x1280 and checks the 1080P rejection reason."
         },
         {
           "kind": "ci_pr",
           "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441932",
           "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "CI PR success on source/test audit baseline."
+          "detail": "CI PR success on audit baseline."
         },
         {
           "kind": "docs_sync_pr",
           "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441851",
           "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "docs-sync PR success on source/test audit baseline."
+          "detail": "docs-sync PR success on audit baseline."
         },
         {
           "kind": "pr_state",
           "path": "https://github.com/konggu888/ecommerce-agent/pull/32",
           "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "PR #32 Open/unmerged on source/test audit baseline."
+          "detail": "PR #32 remains open and unmerged."
         }
       ],
       "remaining_conditions": [
-        "Output dimensions are normalized and a below-minimum ffprobe result is rejected in mocked tests; no actual FFmpeg/ffprobe encode/decode integration run was performed in this audit.",
-        "Upscaling guarantees pixel dimensions, not recovered detail or AI super-resolution; visual quality and Windows real-machine checks remain deferred."
+        "Tests mock ffmpeg execution and ffprobe metadata; they do not prove a real final export file has the claimed dimensions in an actual FFmpeg run.",
+        "Upscaling guarantees dimensions, not restored source detail; AI super-resolution is not demonstrated. Windows/real footage remain deferred."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -8784,8 +8784,8 @@
           "### A102 已落地的基础输出底线（不代表商业画质增强完成）"
         ]
       },
-      "source_inventory_status": "current_source_test_snapshot_mapped_to_c77704d86d6131d13501448af76ce24afc56ad7b; CI_PR_and_docs_sync_PR_success; push_workflow_pair_not_independently_verified; full_acceptance_pending",
-      "semantic_dedup_review_status": "reviewed_related_editing_cluster_no_cross_id_merge",
+      "source_inventory_status": "current_source_test_snapshot_mapped_to_c77704d86d6131d13501448af76ce24afc56ad7b; CI_PR_and_docs_sync_PR_success_on_audit_baseline; push_workflow_pair_not_independently_verified; full_acceptance_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
       "semantic_dedup_batch": "PLAN-003-DEDUP-004",
       "last_verified_date": "2026-10-15",
       "current_head_evidence_reconciliation": {
@@ -8794,7 +8794,7 @@
         "source_test_paths_rechecked": true,
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
-        "note": "Evidence is bound to source/test audit baseline. CI PR and docs-sync PR success; Push workflow pair not independently verified. Not full acceptance."
+        "note": "Static source/test evidence mapped to audit baseline; CI PR and docs-sync PR succeeded. Push workflow pair not independently verified. Not full acceptance."
       }
     },
     {
@@ -8816,37 +8816,37 @@
           "path": "apps/ad-studio-desktop/ad_studio/postprocess.py",
           "sha": "36ce0e4a17d635e3ed381c3b0bada1428e0290c4",
           "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "process_shot uses matching video fade and audio afade windows; fade timing is calculated after speed adjustment and duration is clamped."
+          "detail": "process_shot applies synchronized video fade and audio afade; duration is computed in output-time after speed change."
         },
         {
           "kind": "test",
           "path": "apps/ad-studio-desktop/test_postprocess.py",
           "sha": "29141bb61ee3ec6ae5960395e81c7dc64ef79feb",
           "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "Tests cover accelerated fade-out, short-clip fade-in, normal-speed fade-out, and short-clip fade-out via mocked FFmpeg commands."
+          "detail": "Tests cover fade-in, normal-speed fade-out, 2x-speed fade-out and short-clip fade duration."
         },
         {
           "kind": "ci_pr",
           "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441932",
           "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "CI PR success on source/test audit baseline."
+          "detail": "CI PR success on audit baseline."
         },
         {
           "kind": "docs_sync_pr",
           "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441851",
           "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "docs-sync PR success on source/test audit baseline."
+          "detail": "docs-sync PR success on audit baseline."
         },
         {
           "kind": "pr_state",
           "path": "https://github.com/konggu888/ecommerce-agent/pull/32",
           "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "PR #32 Open/unmerged on source/test audit baseline."
+          "detail": "PR #32 remains open and unmerged."
         }
       ],
       "remaining_conditions": [
-        "Video/audio filter strings are asserted but actual decoded black/silent ramps, perceived synchronization, and real FFmpeg output are not tested.",
-        "Windows real media and listening/viewing acceptance remains deferred."
+        "Tests assert command filters rather than rendered black/quiet fade behavior and actual audio/video synchronization; Windows real-footage listening remains deferred.",
+        "FFmpeg's three-decimal fade duration formatting and actual codec output should be validated with real short clips."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -8861,8 +8861,8 @@
           "### A103：镜头淡入/淡出音画同步（代码实现待 CI）"
         ]
       },
-      "source_inventory_status": "current_source_test_snapshot_mapped_to_c77704d86d6131d13501448af76ce24afc56ad7b; CI_PR_and_docs_sync_PR_success; push_workflow_pair_not_independently_verified; full_acceptance_pending",
-      "semantic_dedup_review_status": "reviewed_related_editing_cluster_no_cross_id_merge",
+      "source_inventory_status": "current_source_test_snapshot_mapped_to_c77704d86d6131d13501448af76ce24afc56ad7b; CI_PR_and_docs_sync_PR_success_on_audit_baseline; push_workflow_pair_not_independently_verified; full_acceptance_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
       "semantic_dedup_batch": "PLAN-003-DEDUP-004",
       "last_verified_date": "2026-10-15",
       "current_head_evidence_reconciliation": {
@@ -8871,7 +8871,7 @@
         "source_test_paths_rechecked": true,
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
-        "note": "Evidence is bound to source/test audit baseline. CI PR and docs-sync PR success; Push workflow pair not independently verified. Not full acceptance."
+        "note": "Static source/test evidence mapped to audit baseline; CI PR and docs-sync PR succeeded. Push workflow pair not independently verified. Not full acceptance."
       }
     },
     {
@@ -8893,45 +8893,52 @@
           "path": "apps/ad-studio-desktop/ad_studio/ffmpeg.py",
           "sha": "d13870a12eae682133995bac7305900e0a4ff767",
           "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "concat_with_transitions probes duration/audio, normalizes scale/crop/fps/timebase/pixel format, creates silence for clips without audio, and builds xfade/acrossfade filters."
-        },
-        {
-          "kind": "source",
-          "path": "apps/ad-studio-desktop/ad_studio/production.py",
-          "sha": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
-          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "build_final calls concat_with_transitions only when a non-first shot explicitly requests 交叉溶解; otherwise it retains concat path."
+          "detail": "concat_with_transitions builds normalized 30fps/settb/PTS-reset video streams, xfade and acrossfade graphs, and silent audio for clips without audio; overlap shortens to 40% of either adjacent clip."
         },
         {
           "kind": "test",
           "path": "apps/ad-studio-desktop/test_ffmpeg.py",
           "sha": "e409cbded7db0c01a1962f722d54c615429f5e37",
           "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "test_crossfade_builds_video_and_audio_overlap_filters checks xfade/acrossfade, silent audio, output profile and filter graph; other tests cover transition-count mismatch and opt-in builder routing."
+          "detail": "Tests assert xfade/acrossfade filter graph, silent audio, aspect normalization, mismatch rejection, and final builder trigger condition."
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/production.py",
+          "sha": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "Final builder invokes concat_with_transitions only when a non-first shot requests 交叉溶解; otherwise uses the ordinary concat path."
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/app.py",
+          "sha": "7e88102f01a41c70c8a67e925daa24f4d71b90a7",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "Current app.py search finds transition displayed in shot details and loaded from shot data, but no explicit user-editable transition selector was located in this static pass; UI entry requires follow-up."
         },
         {
           "kind": "ci_pr",
           "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441932",
           "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "CI PR success on source/test audit baseline."
+          "detail": "CI PR success on audit baseline."
         },
         {
           "kind": "docs_sync_pr",
           "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38729441851",
           "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "docs-sync PR success on source/test audit baseline."
+          "detail": "docs-sync PR success on audit baseline."
         },
         {
           "kind": "pr_state",
           "path": "https://github.com/konggu888/ecommerce-agent/pull/32",
           "sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-          "detail": "PR #32 Open/unmerged on source/test audit baseline."
+          "detail": "PR #32 remains open and unmerged."
         }
       ],
       "remaining_conditions": [
-        "Tests mock ffprobe metadata and subprocess.run; they do not execute the actual FFmpeg filter graph, so runtime compatibility and output integrity remain unproven.",
-        "For a mixed transition list, hard-cut entries are represented as 0.001-second xfade/acrossfade overlaps rather than a literal zero-overlap cut; perceptual impact needs actual render review.",
-        "Windows real media visual/audio acceptance remains deferred."
+        "Unit tests inspect filter graph and routing but do not execute real FFmpeg transitions on real footage; tiny 0.001-second xfade used for hard-cut entries in mixed transition mode merits real output verification.",
+        "Static app.py scan did not find a clear user-editable transition selector; verify the actual UI path before treating user-facing transition choice as complete.",
+        "No Windows visual/audio test."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -8946,8 +8953,8 @@
           "### A104：相邻镜头真实交叉溶解（自动化待验）"
         ]
       },
-      "source_inventory_status": "current_source_test_snapshot_mapped_to_c77704d86d6131d13501448af76ce24afc56ad7b; CI_PR_and_docs_sync_PR_success; push_workflow_pair_not_independently_verified; full_acceptance_pending",
-      "semantic_dedup_review_status": "reviewed_related_editing_cluster_no_cross_id_merge",
+      "source_inventory_status": "current_source_test_snapshot_mapped_to_c77704d86d6131d13501448af76ce24afc56ad7b; CI_PR_and_docs_sync_PR_success_on_audit_baseline; push_workflow_pair_not_independently_verified; full_acceptance_pending",
+      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
       "semantic_dedup_batch": "PLAN-003-DEDUP-004",
       "last_verified_date": "2026-10-15",
       "current_head_evidence_reconciliation": {
@@ -8956,7 +8963,7 @@
         "source_test_paths_rechecked": true,
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
-        "note": "Evidence is bound to source/test audit baseline. CI PR and docs-sync PR success; Push workflow pair not independently verified. Not full acceptance."
+        "note": "Static source/test evidence mapped to audit baseline; CI PR and docs-sync PR succeeded. Push workflow pair not independently verified. Not full acceptance."
       }
     },
     {
