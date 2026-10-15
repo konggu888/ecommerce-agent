@@ -1573,3 +1573,16 @@ A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/
 - A100–A104 均更新为 `partial_evidence_mapping` / `not_audited`，不能把历史计划勾选直接当成本轮正式验收。Windows 真机、真实素材、实际 FFmpeg 渲染与视听质量仍暂缓。
 - 映射覆盖指标：需求复核 113；source/test/CI/workflow 指针任务 105；任意 evidence 任务 112；路线图映射 113/113；源码/测试快照绑定任务 47；最终文档 HEAD 精确绑定 0；完整代码/测试审计 0；完整审计 0；语义去重未完成；权重和总体完成率关闭。
 - 下一批按原编号进入 **A105–A109**。文档提交后先核验最新 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR；无法独立查到 Push 运行时必须明确标记未核实。PR #32 不合并，不新增 A113+，不删除/合并/重编号 A0–A112。
+
+
+### PLAN-003 本轮证据记录｜A100–A104｜2026-10-15
+
+- **源码/测试审计基线**：`c77704d86d6131d13501448af76ce24afc56ad7b`。源码/测试 blobs：`postprocess.py` `36ce0e4a17d635e3ed381c3b0bada1428e0290c4`、`test_postprocess.py` `29141bb61ee3ec6ae5960395e81c7dc64ef79feb`、`ffmpeg.py` `d13870a12eae682133995bac7305900e0a4ff767`、`test_ffmpeg.py` `e409cbded7db0c01a1962f722d54c615429f5e37`、`production.py` `e53968f47a6b8fd23df773dbd3a4ad553753e1e0`、`test_desktop.py` `357c54dad99f61b99891bcc365dd2f9efc1a1009`、`app.py` `7e88102f01a41c70c8a67e925daa24f4d71b90a7`。
+- 基线 CI PR [38729441932](https://github.com/konggu888/ecommerce-agent/actions/runs/38729441932) 与 docs-sync PR [38729441851](https://github.com/konggu888/ecommerce-agent/actions/runs/38729441851) 均 success；PR #32 Open/unmerged。当前 workflow 查询只暴露 PR 触发项，CI Push/docs-sync Push 未独立核实。文档提交后需重新检查最新 SHA。
+- **A100｜商业剪辑淡出时间窗**：源码按输入时长/速度计算输出时长，淡出长度限制为 0.25 秒或输出时长的较小值；测试检查 2 倍速与 0.1 秒短镜头的实际 `-vf` 参数。仅证明命令构造，不证明真实画面听感。历史计划里的旧 SHA 自动化勾选不作为本轮正式验收。
+- **A101｜变速时音画同步**：非 1 倍速同时设置视频 `setpts` 与音频 `atempo`；常速不额外添加音频变速滤镜。测试检查命令参数；真实编码后音画同步、音质与 Windows 编码器兼容性未验证。
+- **A102｜最终导出最低 1080P 级分辨率**：归一化目标为竖屏 1080×1920、横屏 1920×1080、方形 1080×1080；成片检查会拒绝 720×1280 等低于目标的输出。测试通过 mock 检查滤镜与 ffprobe 元数据，未真实执行最终导出。尺寸放大不等于恢复真实细节或完成 AI 超分。
+- **A103｜镜头淡入/淡出音画同步**：淡入/淡出视频滤镜与原音轨 `afade` 同步；淡出时间按变速后输出时长计算，短镜头时长受限。测试覆盖短淡入、常速淡出和 2 倍速淡出；尚未对真实 FFmpeg 成片进行画面/听感验证。
+- **A104｜相邻镜头真实交叉溶解**：最终拼接在非首镜头显式选择交叉溶解时调用 `xfade` / `acrossfade`，无音轨时补静音，统一画幅、30fps、时间基准和像素格式，并按相邻短镜头时长缩短重叠。测试检查滤镜图和生产入口触发条件。边界：混合转场模式下硬切用 0.001 秒 xfade，真实成片需确认；静态检查未找到清晰的用户可编辑转场选择器，仅看到镜头详情显示/读取字段，须后续核对 UI。
+- A100–A104 全部统一记为 `partial_evidence_mapping` / `not_audited`。本轮没有更改产品代码。当前任务台账直接统计：113 个编号任务中 109 个有 evidence 指针；104 个含 source/test evidence；其中 47 个任务已纳入当前源码/测试快照审计计数；完整代码/测试审计 0、完整审计 0、全量语义去重未完成，权重和总体完成率关闭。
+- 下一批按既有编号进入 **A105–A109**。文档提交后先检查最新 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR；Push 工作流若无法独立查询，必须明确记录而非猜测。PR #32 不合并；Windows 真机、真实素材、真实 Provider/扣费、剪映现场和商业效果验收继续暂缓。
