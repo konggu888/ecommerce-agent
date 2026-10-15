@@ -1,11 +1,10 @@
-# AI 接手当前状态｜PLAN-003 A30–A33 部分证据映射｜2026-10-15
+# AI 接手当前状态｜PLAN-003 A34–A37 部分证据映射｜2026-10-15
 
-- 唯一权威进度与下一项：docs/AD_STUDIO_PROGRESS_DASHBOARD.md。本轮完成 A30–A33 部分路线图/源码/测试映射，不是正式验收。
-- A30 失败恢复→阶段1；A31 帮助文档→阶段0；A32 AI接手能力→阶段0；A33 完整用户流程→阶段1。A30 与 A43/A53/A54/A57/A97/A98 存在恢复证据重叠候选；保留所有原 ID，未裁决前不合并。
-- 指标：需求文本级复核 113；有 source/test/ci/workflow 指针的任务记录 34；路线图映射 77/113；当前 HEAD 精确证据绑定 0；完整代码/测试审计 0；语义去重未完成。不得发布总体完成率、不得赋权。
-- A30/A31/A32/A33 的自动化证据分别只证明局部恢复行为、文档锚点、接手文件静态内容和 ProductionStore 夹具流程，不证明真实 Windows UI、独立 AI 接手成功或真实商业成片质量。
-- 当前源码快照基线 57d02abd2e1d67ed88bc3e12035d7dbee9cdeaef；文档提交后重新检查 CI Push、CI PR、docs-sync Push、docs-sync PR。PR #32 Open/unmerged。
-- 下一批 A34–A37；不新增 A113+，不开发产品功能。真实 Windows、真实素材、Provider/扣费、剪映与投放继续暂缓。
+- 唯一权威进度/下一项：docs/AD_STUDIO_PROGRESS_DASHBOARD.md。本轮 A34–A37 仅完成部分路线图/源码/测试映射，不是正式验收。
+- A34–A37 均暂映射到阶段5「资产与制作效率深化」。A34→A20/A21/A22；A35→A34/A43；A36→A34/A35；A37→A36。依赖与重叠只供审计，不表示通过或重复项裁决。
+- 指标：需求文本级复核 113；source/test/ci/workflow 指针记录 38；任意 evidence 记录 50；路线图映射 81；待映射 32；当前 HEAD 精确证据 0；完整代码/测试审计 0；完整审计 0；语义去重未完成。不得发布总体完成率、不得赋权。
+- 已发现 A34 视频抽帧/取消/持久化测试缺口，A35 局部修复问题清单与失败恢复缺口，A36 UI取消与 Provider 零调用端到端证据缺口，A37 仅证明 helper 换行而非真实 UI。详见规范台账。
+- 源码快照 6a930adc83348dec3776fb40dc2d505f1d826841；文档提交后重新检查 CI Push、CI PR、docs-sync Push、docs-sync PR。PR #32 Open/unmerged。下一批 A38–A41；不新增 A113+，不开发产品功能，真实环境验证继续暂缓。
 ---
 
 - 仓库/项目：`konggu888/ecommerce-agent/apps/ad-studio-desktop`；分支 `feat/product-drama-visual-review`；PR #32 保持 Open / unmerged。
