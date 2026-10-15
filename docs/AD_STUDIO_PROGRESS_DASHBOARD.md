@@ -1,17 +1,17 @@
-# 【PLAN-003 当前状态｜A62–A65 部分证据映射｜2026-10-15】
+# 【PLAN-003 当前状态｜A66–A69 部分证据映射｜2026-10-15】
 
-- **源码/测试审计快照**：`59cc175b40d8040c6e67fccba1b07186e625921e`。PR #32 仍 Open / unmerged。该快照与前一审计快照 `5fe7fe19b9827aad26787eb05ba93dc18e48b6be` 的 production.py、usage_ledger.py、test_desktop.py、test_ai_handoff.py、HELP.md、PROJECT_LOGIC.md blob SHA 完全一致；本批仅做既有 A0–A112 的证据映射与文档同步，不改产品代码、不调用真实 Provider、不产生真实扣费。
-- **该源码/测试快照四项工作流全部 success**：CI Push [38724733476](https://github.com/konggu888/ecommerce-agent/actions/runs/38724733476)、CI PR [38724738644](https://github.com/konggu888/ecommerce-agent/actions/runs/38724738644)、docs-sync Push [38724733595](https://github.com/konggu888/ecommerce-agent/actions/runs/38724733595)、docs-sync PR [38724738744](https://github.com/konggu888/ecommerce-agent/actions/runs/38724738744)。本轮文档提交改变 HEAD 后，必须再核验最终文档 HEAD 的四项检查；不能将此处的快照结果冒充最终文档提交结果。
-- **A62｜历史成本迁移文案断言修复**：`test_ai_handoff.py::test_handoff_mentions_a61_legacy_cost_migration` 检查根级 AI 接手文档包含 A61 与准确术语“历史实际成本迁移”。这是测试/文案修复记录，不是独立产品能力。关联 A61 但不合并编号。
-- **A63｜迁移基线在后续记账失败时保留**：测试模拟历史迁移成功、随后新费用账本写入失败，断言旧项目成本 2.50、镜头成本 1.20、旧 `cost_estimate` 成本及两条迁移记录保留。**缺口：**专项测试未直接保存并重载项目，虽然 SOP 要求这一项；因此只记录部分证据。
-- **A64｜素材成本账本失败保护**：`_record_asset_cost()` 将素材生成成功但账本失败与生成失败分离，写恢复历史及核对下一步。专项 helper 测试检查错误与恢复状态；两个调用入口目前主要由源码文本断言覆盖。**缺口：**未完整行为验证两个入口中的资产库文件、asset ID 和镜头引用都持久保留。
-- **A65｜用量账本原子写入与完整历史保留**：`record()`/`record_many()` 通过同目录临时文件和原子替换写入；测试验证替换失败时旧账本内容不变，以及 2001 条历史记录仍完整、汇总成本为 20.01。**缺口：**替换失败测试未直接断言临时文件清理，未找到 `recent(limit)` 不影响底层历史/汇总的直接回归测试。
-- **台账指标（映射数量，不是完成率）**：需求文本级复核 113；含 source/test/CI/workflow 指针的任务 66；任意 evidence 的任务 78；路线图主阶段映射 109/113；待映射 4；源码/测试证据快照绑定任务 8；最终文档 HEAD 精确绑定任务 0；完整代码/测试审计 0；完整审计 0；全量语义去重未完成。权重和总体完成率继续关闭。
-- A62–A65 均保持 `acceptance_status=not_audited`；不新增 A113+，不删/合并/重编号 A0–A112，不擅自把关联升级成重复项。PR #32 保持 Open / unmerged。真实 Windows、真实素材、Provider/扣费、剪映现场与真实投放验证继续暂缓。
-- **下一项**：A66–A69。先核对人工商品画面证据文件校验、短剧人工证据失效保护、跨集剧情影响分析、故事引擎与留存设计的当前源码/专项测试/依赖/文档；仍只做现有合同审计，不开发新产品功能。
-
+- **本轮源码/测试审计快照**：`fe298b3ae6005b118d8b7b1adf775a261d228ffe`；PR #32 保持 Open / unmerged。源码文件 `apps/ad-studio-desktop/ad_studio/short_drama.py` blob `2506410d9621840ec34464fce1fa2746c7d798f4`，专项测试 `apps/ad-studio-desktop/test_short_drama.py` blob `2995b5764f7a86ee8c274b6359ff2f09cdf7a288`。
+- **该快照四项工作流均 success**：CI Push [38725243430](https://github.com/konggu888/ecommerce-agent/actions/runs/38725243430)、CI PR [38725248390](https://github.com/konggu888/ecommerce-agent/actions/runs/38725248390)、docs-sync Push [38725243379](https://github.com/konggu888/ecommerce-agent/actions/runs/38725243379)、docs-sync PR [38725248456](https://github.com/konggu888/ecommerce-agent/actions/runs/38725248456)。这些结果只绑定该源码/测试快照；后续文档提交改变 HEAD 后必须重新核验最终 HEAD 四项工作流。
+- **A66｜人工商品画面核验证据文件校验**：`record_product_visual_verification()` 校验状态、镜头/模式、受支持扩展名、文件存在且非空，并保存规范化绝对路径、人工方式与备注。专项测试覆盖缺失、零字节、不支持扩展名及有效证据。边界：只检查文件有效性，不检查图像内容，也不认证商品真实性。
+- **A67｜短剧人工核验证据失效保护**：`audit_short_drama()` 重新检查持久化证据文件与人工方式/备注；历史 `passed` 但证据无效会产生 `PRODUCT_VISUAL_NOT_VERIFIED`。测试覆盖缺失旧路径和有效非空文件。**缺口**：SOP 还要求先通过后删除/清空证据，再复查；当前映射到的测试未直接覆盖该顺序。
+- **A68｜AI 短剧后续剧情影响分析**：`analyze_episode_continuity_impact()` 选择源集并只向模型提供实际存在的后续集、系列设定、连续性台账和商品事实锁，要求风险、依据、建议且禁止直接改写。已有有效后续集和非法/非后续集专项测试线索。**缺口**：需逐项核对所有非法引用、报告持久化与不修改原集的直接断言，不能只凭测试名下结论。
+- **A69｜AI 编导故事引擎与留存设计**：新生成方案要求故事引擎、至少三步冲突升级、开场疑问/结尾兑现、至少两个留存装置和可追溯因果链；专项测试覆盖缺字段、冲突步骤不足、提示词和审核警告。**缺口**：需继续确认所有必填字段、旧方案读取兼容及调用方拒绝保存的行为链。
+- **指标（均为台账覆盖/映射数，不是完成率）**：需求文本级复核 113；含 source/test/CI/workflow 指针任务 70；任意 evidence 任务 82；路线图主阶段映射 111/113，待映射 2；源码/测试证据快照绑定任务 12；最终文档 HEAD 精确绑定任务 0；完整代码/测试审计 0；完整审计 0；全量语义去重未完成。权重和总体完成率继续关闭。
+- A66–A69 均保持 `acceptance_status=not_audited`；本批只做现有 A0–A112 的代码/测试/路线图证据映射，不开发新产品功能，不新增 A113+，不删除/合并/重编号。真实 Windows、真实素材、真实 Provider/扣费、剪映现场与真实投放/商业效果验证继续暂缓。
+- **下一项**：先核对本轮文档提交后的最新 HEAD 与四项 CI/docs-sync；全绿后继续总进度台账指定的下一批，不能跳过 A66–A69 已知缺口，也不能把本轮部分映射说成正式验收通过。
 
 ---
+
 
 # 【规划与进度控制体系盘点｜2026-10-15｜权威当前状态】
 
