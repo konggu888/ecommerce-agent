@@ -780,3 +780,14 @@ A109 转场安全补充：当前切点变速遇到显式“交叉溶解”时保
 - A33：三类用户流程离线回归存在，但媒体拼接、归一化和探针使用夹具/mock；不等于真实端到端或 Windows 实机验收。
 - 本轮共覆盖 A18–A33 的部分映射；台账 `code_test_evidence_reviewed_ids=34`，`code_test_evidence_audit_completed_ids=0`，总体完成率关闭。
 - 唯一下一项：PLAN-003 继续审计 A34–A49；不开发新产品功能。PR #32 保持 Open / unmerged。真实素材、Provider/扣费、Windows、剪映现场和真实投放继续暂缓。
+
+
+
+## 2026-10-15 接手更新｜用户自由度 / 模型与 Provider 接入审计
+- 当前审计分支 HEAD 基线：`aa825eaa106810e6a56b463b894053145f719864`。开始本轮时 PR #32 仍为 Open / unmerged；本轮提交后必须重新核对 PR head 与分支 ref 是否一致，不能沿用旧 SHA 状态。
+- 已对 `model_router.py`、`providers.py`、`capability.py`、`app.py::model_settings` 与 `test_model_router.py` 做静态首轮审查，并将发现写入 `docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md` 的 UXS-2 专项节。
+- 当前可证实：多模型池、按功能路由、自定义 Base URL / 模型 ID / API Key、OpenAI-compatible 本地服务通道、部分通用 REST 视频/资产 Provider；不能把它描述为任意模型/任意 API 无条件即插即用。
+- 重点风险：规划模型可能在预算确认前调用；路由可能自动切换本地/云端；模型配置 JSON 保存完整 API Key；usage/价格缺失时成本估算可能为 0；外发数据告知、端点安全、换 Provider 后缓存/历史隔离证据不足。
+- 证据限制：本轮为静态审查，没有运行测试，没有连接真实模型/Token 代理，没有核对实际账单。不得声称这些风险已修复或完成正式验收。
+- 正式 ID 规则：不新增 A113+，不删/改号 A0–A112；先做语义去重和跨来源映射。完成率继续关闭，`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false` 保持不变。
+- 唯一下一步：继续 UXS-2 / PLAN-003，检查路由回退授权、密钥存储/导出、预算授权时点、外发数据提示、缓存键/历史项目可迁移性，并逐项映射 A0–A112。暂不开发产品功能；PR #32 必须保持 Open / unmerged；Windows 真机、真实 Provider/代理、真实账单、剪映和投放验证继续暂缓。
