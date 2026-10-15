@@ -1,7 +1,7 @@
 # 【PLAN-003 AI 接手状态｜A90–A94 部分证据映射｜2026-10-15】
 
 - 权威进度入口：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`；PR #32 保持 Open/unmerged。
-- 当前核对 HEAD `a6e052fa7edefa7e2fb794166684547436ff90f6`；源码/测试 blobs：`e53968f47a6b8fd23df773dbd3a4ad553753e1e0`、`2506410d9621840ec34464fce1fa2746c7d798f4`、`357c54dad99f61b99891bcc365dd2f9efc1a1009`、`2995b5764f7a86ee8c274b6359ff2f09cdf7a288`。CI PR 和 docs-sync PR success；Push 对应工作流本轮尚未独立核实。
+- 源码/测试审计基线 HEAD `a6e052fa7edefa7e2fb794166684547436ff90f6`；本轮文档更新后的最新 HEAD `64857c4f93a4b648c207328299e690f1ef932dca`；源码/测试 blobs：`e53968f47a6b8fd23df773dbd3a4ad553753e1e0`、`2506410d9621840ec34464fce1fa2746c7d798f4`、`357c54dad99f61b99891bcc365dd2f9efc1a1009`、`2995b5764f7a86ee8c274b6359ff2f09cdf7a288`。CI PR 和 docs-sync PR success；Push 对应工作流本轮尚未独立核实。
 - A90–A94 完成部分源码/测试映射，正式验收仍 not_audited。详细证据边界见总进度台账。下一批 A95–A99；文档提交后先核验最新 SHA 四项 CI/docs-sync。
 - 不新增 A113+，不修改真实机器测试暂停安排，不合并 PR #32。
 
