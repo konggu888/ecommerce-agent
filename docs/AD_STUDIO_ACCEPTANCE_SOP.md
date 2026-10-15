@@ -1610,3 +1610,14 @@ A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/
 - A110–A112 历史 `automation_passed` 不直接继承；本轮全部改为 `partial_evidence_mapping` / `not_audited`，因为本轮源码/测试复核发现专项集成证据缺口，且当前查询未独立核实 Push 工作流。真实素材、Windows 真机、真实音画/字幕可读性与商业成片质量仍暂缓。
 - 映射覆盖：编号任务 113；任意 evidence 任务 113；source/test evidence 任务 112；源码/测试快照绑定任务 55；完整代码/测试审计 0；完整审计 0；语义去重未完成；权重与总体完成率关闭。
 - 本轮未改产品代码。PR #32 不合并；不新增 A113+，不删除/合并/重编号 A0–A112。下一步不再有新的编号任务；应回到 PLAN-003 对 A0–A112 做语义去重、证据冲突与未审计范围的统一核对，不得凭空扩展编号。
+
+
+## PLAN-003 跨来源去重与状态核对｜A57｜2026-10-15
+
+- 最新检查的文档 HEAD（本轮写入前）为 `143d01f87c3161deee04cd2d3c821b1e915084d1`；CI PR [38731016045](https://github.com/konggu888/ecommerce-agent/actions/runs/38731016045) 与 docs-sync PR [38731016172](https://github.com/konggu888/ecommerce-agent/actions/runs/38731016172) 均 success。Push 工作流未被当前查询接口独立返回；PR #32 Open/unmerged。
+- **A57 的同编号双标题冲突已解决为“一个编号槽位、两个独立验收条款”**，不合并条款、不拆出新编号、不重编号：
+  1. 成片已成功但账本记账失败时，界面保留成功视频状态，显示“项目实际成本待核对”，且不显示正常项目实际累计金额。
+  2. 打开已有项目时先执行恢复并展示恢复摘要；从成功账本重建项目/镜头成本，同时在无账本记录的旧项目中保留旧成本字段。
+- 源码/测试证据绑定基线 `c77704d86d6131d13501448af76ce24afc56ad7b`：`app.py` blob `7e88102f01a41c70c8a67e925daa24f4d71b90a7`、`production.py` blob `e53968f47a6b8fd23df773dbd3a4ad553753e1e0`、`test_desktop.py` blob `357c54dad99f61b99891bcc365dd2f9efc1a1009`。四个专项测试分别覆盖待核对 UI、成功账本重建、无账本旧成本兼容和打开项目先恢复。CI PR [38729017063](https://github.com/konggu888/ecommerce-agent/actions/runs/38729017063) 与 docs-sync PR [38729017091](https://github.com/konggu888/ecommerce-agent/actions/runs/38729017091) 在该源码/测试基线上 success。
+- **结论仅为语义身份冲突已厘清及部分证据映射，不是 A57 正式验收通过。** 真实账单/扣费与 Windows 真机流程继续暂缓。A57 保持 `partial_evidence_mapping` / `not_audited`；其余 A0–A112 的语义去重和当前 HEAD 证据冲突核对仍未完成。
+- 本轮同步后的台账指标：113 个任务有 evidence 指针；112 个含 source/test evidence；56 个绑定当前源码/测试快照；0 个绑定最终文档 HEAD；完整代码/测试审计 0；完整验收 0；全量语义去重未完成；权重和总体完成率关闭。
