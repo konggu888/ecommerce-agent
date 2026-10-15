@@ -907,3 +907,7 @@ A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/
 ## PLAN-003 增量审计记录｜A110–A112｜2026-10-15
 
 源码/测试基线 `c77704d86d6131d13501448af76ce24afc56ad7b`。A110 内容保护函数使用台词、屏幕文字、商品角色和 CTA 推导最短停留时间，测试覆盖部分边界，但缺少 CTA 专门断言；A111 逐边界局部撤销有较全面 helper 单测；A112 真实 SRT cue 窗口通过解析与保护 helper 接入最终剪辑链，但没有生产级字幕 applied/fallback 整链回归。三项此前的 automation_passed 仅绑定历史 SHA，本轮重新核验后统一标记 partial_evidence_mapping/not_audited；最新检查 HEAD 的 CI PR 与 docs-sync PR 成功，Push 未独立核实。真实素材、Windows 与商业视听验收继续暂缓。A0–A112 已无新增编号，后续回到全量语义去重、证据冲突核对和剩余未审计范围复核。
+
+
+### PLAN-003 工作流引用校正｜2026-10-15
+源码/测试审计基线仍为 `c77704d86d6131d13501448af76ce24afc56ad7b`。为避免把旧运行绑定到错误提交：CI PR `38730727069` 与 docs-sync PR `38730727058` 对应的已核验 HEAD 是 `47479d41725cf726e1543524bda012fee8bdf890`；本轮 A110–A112 文档更新后的 HEAD `143d01f87c3161deee04cd2d3c821b1e915084d1` 的 CI PR `38731016045` 与 docs-sync PR `38731016172` 均 success。Push 工作流仍未独立核实。
