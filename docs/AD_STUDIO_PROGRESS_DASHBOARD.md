@@ -7,7 +7,7 @@
 - A0–A5 当前代码/测试证据映射（核验到 SHA `1fd6d08dac970cb7886c59239b05c4f6e2128cf9`；仅证据盘点，不代表正式验收）：A0：`ad_studio/app.py` 中存在 `App.create()` 用户操作入口，但已检查的 desktop 测试未发现专门启动/创建操作端到端测试；A1：当前 CI 覆盖多个测试集，但台账仍缺任务级稳定性矩阵与可追溯的逐项证据；A2：`test_desktop.py` 有 `test_project_lifecycle_isolated_between_projects`、`test_project_save_load`，但未发现直接调用 `App.create()` 的编排测试；A3：有 `test_setup_form_grid_rows_do_not_overlap`、`test_three_task_types_have_distinct_deterministic_policies`、`test_task_type_is_persisted_and_not_replaced_by_platform`，但不能替代三类任务完整 UI 流程验收；A4：`test_footage.py` 覆盖素材排序扫描、不可解析文件注记、重复素材评分、废片归档与保护被引用源文件（`test_archive_analyzed_waste_protects_currently_referenced_source`），仍需对照验收清单补齐路径异常、源文件保护等完整矩阵；A5：`footage.py` 实现 `extract_keyframes()`、`build_visual_manifest()`、`footage_analysis_public()`，但全仓已检查的 desktop `test*.py` 未找到对前两者的直接专项测试，需补关键帧提取失败、清单生成失败与模型视觉分析失败/回退覆盖。六项均不标记正式验收通过。
 
 - A0–A112 共 113 个编号槽位的四份规划来源标题索引已建立；需求文本级语义复核覆盖 113 个已登记槽位。A68–A74 与 A99 的历史任务身份已从历史提交、测试及项目文档中恢复，不能再描述为“未知编号缺口”；但历史实现不等于当前 HEAD 已验收。
-- 当前仍未完成的是全量跨来源重复/状态材料合并审计，以及逐项代码、测试和当前 HEAD 证据审计。已确认的 A50/A56、A61/A62、A57、A99 关系仅为局部裁决；台账仍为 `fully_audited=0`、`semantic_dedup_completed=false`、`code_test_evidence_audit_completed_ids=0`；`code_test_evidence_reviewed_ids=6` 表示已开始部分映射，不表示六项已正式验收。权重仍为空，总体完成率保持关闭。
+- 当前仍未完成的是全量跨来源重复/状态材料合并审计，以及逐项代码、测试和当前 HEAD 证据审计。已确认的 A50/A56、A61/A62、A57、A99 关系仅为局部裁决；台账仍为 `fully_audited=0`、`semantic_dedup_completed=false`、`code_test_evidence_audit_completed_ids=0`；`code_test_evidence_reviewed_ids=18` 表示已开始部分映射，不表示六项已正式验收。权重仍为空，总体完成率保持关闭。
 - A88 是标题解析假缺口，已修正。跨来源关系的初步裁决（仍待全量核对）：A50/A56 是原始行为合同与回归修复，关联但不合并；A61/A62 是历史成本迁移能力与迁移相关断言修复，关联但不合并；A57 内含两个独立验收场景，必须分别核验；A99 的成功账本清除未计费兄弟镜头陈旧成本有独立行为与专项测试，与 A57/A59 相关但不重复。A80、A84/A85、A89、A92/A93、A111 等历史/状态材料及 A90–A98、A100–A112 的独立执行合同仍需逐项核对。此为保守初步映射，不代表全量语义去重完成，不授权删除任何 ID 或验收条件。
 - A0–A5 的代码/测试证据审计仅有部分映射，未正式验收。A3 设置区布局重叠问题已在 `f20bf426594a55ac74267641b53d9166acef6798` 修复并增加 AST 布局回归测试；`0bc079178c569502dc8f722ad04544a581f20290` 是该阶段的历史核验基线，不是当前 HEAD。当前最新完整核验基线为 `1fd6d08dac970cb7886c59239b05c4f6e2128cf9`，其 CI Push `38691577983`、CI PR `38691582839`、docs-sync Push `38691577999`、docs-sync PR `38691582806` 均 success。下一步不重复修复已解决的 A3 布局问题，而是继续 PLAN-003：完成跨来源重复/状态段审计，再逐项核验 A0–A5 及后续任务的代码、专项测试与当前 SHA 证据。
 
@@ -27,7 +27,7 @@
 每项至少记录唯一 ID、名称、阶段、父任务/依赖、权重、开发状态、验收状态、证据 SHA、测试/CI 链接、剩余条件、阻塞原因、暂缓原因、重复项映射、最后核验日期。CI/doc-sync 证据绑定 SHA；新提交必须重查四项。
 
 ## 3. 当前基线
-最近完整核验基线 SHA：`464977a54e9784fff375ffe081985624688261e9`。该 SHA 的 CI Push `38692014399`、CI PR `38692013047`、docs-sync Push `38692014528`、docs-sync PR `38692013000` 均 success。PR #32 仍为 Open / unmerged。此后若有新提交，必须重新查新 HEAD 的四项工作流。
+最近完整核验基线 SHA：`177088ee6a743253d61dfe3ecb74842babe8e2a9`。该 SHA 的 CI Push `38692201275`、CI PR `38692208292`、docs-sync Push `38692201217`、docs-sync PR `38692208055` 均 success。PR #32 仍为 Open / unmerged。此后若有新提交，必须重新查新 HEAD 的四项工作流。
 A112（SRT cue 实际时间窗进入音乐卡点内容保护）在代码基线 `e8deb1ec4ef9edf7d999c79539762ea2627affab` 的四项检查通过；其后 `7cfabb23e9ab0c05c6189d31dcf6b7410f7934c7` 的四项也通过。仅代表自动化阶段，不代表真实素材、口播同步、字幕可读性或商业质量验收。
 
 ## 4. 阶段状态（初始盘点；暂不计算完成率）
@@ -120,3 +120,24 @@ PR #32 不合并。Windows 真机、真实素材、真实 Provider/扣费、剪�
 - 未把测试名称或实现函数直接视为整项验收完成；缺少专项测试的项目记录为待补证/待核验，不在本轮直接增加或执行新的产品功能。
 - 本轮不改变 `fully_audited=0`、`semantic_dedup_completed=false`、`code_test_evidence_audit_completed_ids=0`；不分配权重、不发布总体完成率。
 - 下一批继续按正式验收计划核验 A12–A17（缺口判断、AI 生成、实拍+AI 混合制作、三类成片生产），并记录当前 SHA、测试路径与未覆盖条件。
+
+
+## PLAN-003 当前代码/测试证据审计：A12–A17｜2026-10-15｜部分映射
+
+核验基线：`177088ee6a743253d61dfe3ecb74842babe8e2a9`。依据当前代码、测试文件与正式验收计划进行静态证据映射；不代表本轮在本地重新运行了所有测试，也不等于逐项正式验收。
+
+| ID | 已查看的实现/测试证据 | 目前可作出的结论 | 仍需核验/补证 |
+|---|---|---|---|
+| A12 缺口判断 | `ad_studio/hybrid_router.py` 的 `route_footage_gap_tasks()` 对商品/真人证据、真人口播辅助画面、通用画面、Provider 可用性和预算进行分流；`test_desktop.py` 有 `test_hybrid_gap_router_blocks_product_evidence_and_respects_budget` | 存在确定性缺口路由与预算/证据保护的专项测试线索 | 关键词规则是否覆盖语义变体、分类误报/漏报矩阵、UI 是否清楚显示“需要补拍/人工确认”仍需核验；不能把路由建议等同于实际补拍已完成 |
+| A13 AI 生成 | `ad_studio/hybrid_generation.py` 接入配置的视频/图片 Provider、预算闸门与费用账本；`test_hybrid_generation.py` 覆盖 Provider 未配置不冒称成功及商品证据生成拦截；`test_desktop.py` 有生成失败状态、待复核阻止交付和预算测试 | 已有能力缺失、证据拦截、失败状态和待复核闭环的自动化线索 | 真实 Provider 请求/轮询/超时/扣费对账、输出媒体有效性、每种错误恢复及图片生成预算边界仍需逐项检查；真实 Provider/实际扣费按用户要求暂缓 |
+| A14 实拍+AI 混合制作 | 混合路由与生成桥接保存来源类型、生成路径、费用和待复核状态；`test_desktop.py` 有 `test_hybrid_generated_shot_requires_human_review_before_acceptance`、`test_reviewed_hybrid_task_persists_into_project`、`test_final_render_inputs_are_ordered_and_pending_hybrid_is_excluded`、`test_a23_hybrid_review_to_final_render_is_closed_loop` | 自动化证据覆盖来源/审核状态持久化及待复核素材不得进入最终输出的关键路径 | 需进一步逐项确认实拍来源同样保留、最终成片逐镜头来源清单是否完整、跨项目/版本/异常恢复后来源和审核状态是否始终一致；真实混合成片检查暂缓 |
+| A15 电商短视频生产 | `test_desktop.py` 有三类任务策略、素材计划、音频混音、字幕时间戳、最终输出媒体质检、1080P 级尺寸检查和输出清单相关测试；生产代码包含镜头渲染、拼接、后处理和最终门禁 | 主链组件与若干交付安全合同有自动化证据 | 尚不能证明 A15 全部要求（自动选片、镜头排序、卖点表达、真人口播、字幕、音频、画幅、时长、成片输出）在一个完整场景中全部通过；需建立逐项到测试/输出证据的映射 |
+| A16 商品主图视频生产 | 共用商品资料、镜头规划、商品事实边界和最终渲染链；已有 `test_product_library_merge_does_not_invent_missing_facts`、`test_ai_stage_prompts_preserve_product_fact_boundary` 等相关测试 | 有商品事实保护与通用生产链证据，但尚未发现本轮核验到的 A16 专项视觉验收测试 | 商品主体持续清晰、不被字幕遮挡、展示顺序、细节镜头有效性、参数一致性和画面适配均需单独验收；不得仅凭共享渲染链宣称商品主图视频合格 |
+| A17 广告投放视频生产 | `test_desktop.py` 有创意版本独立状态、创意差异机制分析、禁止虚构投放指标、性能指标计算/持久化及版本切换隔离等测试 | 多版本状态隔离与创意分析有自动化证据 | Hook、卖点组合、证明方式、CTA 与创意差异是否在最终产物中可辨识，需映射到明确输入/输出断言；CTR/CVR 的计算或模拟数据不代表真实投放效果，商业验证仍暂缓 |
+
+### A12–A17 状态纪律
+
+- 六项均标记为“证据已部分映射”，不标记正式验收通过。
+- 相关测试可能覆盖共享生产组件，不等于 A15/A16/A17 每个业务目标均被完整验证。
+- 进度台账的 `code_test_evidence_reviewed_ids` 更新为 18（A0–A17 已进行部分映射）；`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false` 保持不变。该计数只表示开始查看过的编号数，不代表覆盖完整或验收完成。
+- 下一批按计划审计 A18–A33，并同步检查各编号是否独立、相关或疑似重复；不删编号、不加新产品功能、不分配权重、不计算整体完成率。
