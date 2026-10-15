@@ -1,26 +1,22 @@
 {
   "schema_version": 1,
-  "generated_from_head": "57ed689911025f2e31241ddf487e70143ffedbe0",
-  "audit_status": "A0-A112 inventory maintained. A90-A109 partial source/test evidence mapped on source/test audit baseline c77704d86d6131d13501448af76ce24afc56ad7b. Most recent independently checked documentation HEAD before this handoff refresh: 47479d41725cf726e1543524bda012fee8bdf890; CI PR 38730727069 and docs-sync PR 38730727058 succeeded. Push workflow pair not independently verified. Current audit coverage: 113 tasks have evidence pointers, 109 have source/test evidence, source/test snapshot audit count 52. Full code/test audit 0; full audit 0; semantic dedup pending; weighting and overall completion percentage disabled. Recheck new branch HEAD after this documentation update before next batch.",
+  "generated_from_head": "c77704d86d6131d13501448af76ce24afc56ad7b",
+  "audit_status": "A0-A112 inventory maintained. A90-A112 partial source/test evidence mapped on source/test audit baseline c77704d86d6131d13501448af76ce24afc56ad7b. Latest checked HEAD before this documentation batch a9fe2d93d186bac79dafee294e518209d963f420 has CI PR 38730727069 and docs-sync PR 38730727058 success; Push workflow pair not independently verified. Full code/test audit 0; full audit 0; semantic dedup pending; weighting and overall completion percentage disabled.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until cross-source scope reconciliation and weighting review. Historical A68-A74 and A99 task identities have been recovered; their current-HEAD evidence audit remains pending. Cross-source status audit 2026-10-15 found the dashboard's 113 partial-mapping count and this JSON snapshot's 6 structured source/test/CI/workflow evidence task IDs are different metrics; 0 evidence records are bound to current HEAD. Do not silently treat them as equivalent. Roadmap phase is still pending for 70 task records; reconcile item-by-item. Incremental current-HEAD reconciliation 2026-10-15: A0-A6 roadmap_phase mapped to Phase 1 from roadmap goal chain; A5 depends on A4. A0-A4 source/test/workflow evidence refreshed to current HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1 and current CI/docs-sync runs attached. No acceptance status upgraded; full audit remains zero. Incremental reconciliation 2026-10-15: A0-A8 primary roadmap phases are mapped; explicit dependencies A5→A4, A7→A6, A8→A7 are recorded. A0-A8 source/test mappings were rechecked against current branch tree and bound to current HEAD CI Push/PR and PR docs-sync evidence. No task acceptance status upgraded; docs-sync Push evidence for current HEAD not found. PLAN-003 2026-10-15: A8 corrected to Phase 2. A9-A17 mapped to Phase 1; explicit dependencies A12→A5/A8, A13→A12, A14→A13, A15→A8/A9/A10/A11, A16→A8/A10/A11, A17→A7/A8/A9/A10/A11. Partial evidence only; acceptance statuses unchanged. PLAN-003 incremental reconciliation 2026-10-15: A18-A19 mapped to Phase 3; A20-A23 mapped to Phase 1. Partial source/test pointers recorded with evidence SHA null pending exact commit provenance. Dependencies recorded only where the documented flow supports them: A19→A18, A21→A20, A22→A21, A23→A20/A21/A22. No acceptance status upgraded; overall completion remains disabled. PLAN-003 update 2026-10-15: A24-A29 mapped to Phase 1. Evidence SHA left null pending per-file provenance; code_test_evidence_reviewed_ids counts records with source/test/ci/workflow pointers, not semantic review or acceptance. Requirement-level semantic review remains 113; no task status promoted, no overall completion metric. PLAN-003 update 2026-10-15: A30-A33 mapped to roadmap phases with partial source/test evidence and explicit proof limits. Related recovery/doc/handoff/end-to-end requirements are recorded as overlaps, not merged. Evidence SHA remains unpinned; no task status promoted and no overall completion metric. PLAN-003 update 2026-10-15: A34-A37 mapped to Phase 5; evidence SHA remains null pending per-file provenance. result_proof_layers and user_freedom_dimensions capture the limits of automation evidence and relevant authorization/cancellation freedoms. No formal acceptance promoted, no weighting or overall completion metric. PLAN-003 update 2026-10-15: A38-A41 mapped to Phase 0. A39 push/PR CI workflow evidence is tied to validated snapshot 1af689ab2dacbaff9ad7a08a26f1b4173cc328c4; it is not final-HEAD evidence. Keep all evidence SHA null pending per-file provenance; no formal acceptance promoted. PLAN-003 update 2026-10-15: A42-A45 mapped to their strategic phases; all remain not_audited. Current-HEAD evidence count remains zero pending per-file blob provenance. Do not assign weights or publish overall completion. PLAN-003 update 2026-10-15: A46-A49 mapped to Phase 1; recovery-related overlaps remain unresolved candidates. Evidence SHA remains null pending per-file provenance. No formal acceptance promoted, no weighting or overall completion metric. PLAN-003 update 2026-10-15: A46-A49 mapped to Stage 1. Related recovery evidence remains cross-referenced without merging IDs; per-file evidence SHA remains null; no formal acceptance or overall completion metric is inferred. PLAN-003 update 2026-10-15: A50-A53 mapped to Stage 1. A50/A56 prompt-linebreak relationship and A51/A52 cost concerns remain overlap candidates, not merged items; per-file evidence SHA remains null and no overall completion metric is inferred. PLAN-003 update 2026-10-15: A54-A57 task-register entries reconciled with the current dashboard/handoff. A57's two same-ID acceptance headings remain an explicit unresolved conflict; no scope merge or renumbering. Metric correction 2026-10-15: separate source/test evidence snapshot count from exact final-current-HEAD count. A58-A61 evidence SHA values point to 5fe7fe19..., not the current documentation HEAD; current_head_evidence_task_ids is therefore 0, while source_test_evidence_snapshot_task_ids=4. PLAN-003 2026-10-15 A66-A69: source/test file blob evidence was inspected at branch HEAD fe298b3ae6005b118d8b7b1adf775a261d228ffe; its CI Push/PR and docs-sync Push/PR all succeeded. This is partial evidence mapping only, not formal acceptance. A67's explicit delete/empty-after-pass invalidation test remains a gap; A68's complete invalid-reference/persistence/no-mutation assertions require full inspection; A69 still needs caller-level persistence rejection and legacy compatibility proof. Preserve A0-A112 IDs and keep overall completion disabled. Current documentation HEAD changes with each audit-note commit; current_head_evidence_task_ids counts only records proven against the final documentation HEAD, so it remains 0 until final SHA and file-level evidence are reconciled. PLAN-003 2026-10-15 A70-A74: source/test file blob evidence was inspected at branch HEAD 5c689a16530f30c38785435f2f0a10a9fc796d2c; its CI Push/PR and docs-sync Push/PR all succeeded. This is partial evidence mapping only, not formal acceptance. Preserve known test gaps for each task; do not infer story quality from structure checks, do not merge/renumber task IDs, and keep current_head_evidence_task_ids=0 until final documentation HEAD evidence is reconciled. PLAN-003 2026-10-15 A75-A79: source/test evidence was inspected at source/test snapshot 3138a34ecd0d7779eb6809b85a1c3449daf3c24a; four CI/docs-sync workflows succeeded on that snapshot. A75/A76 are mapped to Stage 4 based on their short-drama source/test context; this is a roadmap classification, not formal acceptance. Keep limitations on text-only product-fact/selling-point checks and storyboard/person-knowledge structural checks explicit. PLAN-003 2026-10-15 A80-A84: source/test evidence was inspected at source/test snapshot 4063ba5a452c0c883ff39c8ea1ce33499a80eaf4; four CI/docs-sync workflows succeeded on that snapshot. Partial mapping only; keep semantic continuity and real visual performance as separate proof layers. Preserve A0-A112 numbering and do not enable overall completion percentages.",
   "counts": {
     "numbered_slots": 113,
     "fully_audited": 0,
-    "automation_verified_ids": [
-      "A110",
-      "A111",
-      "A112"
-    ],
+    "automation_verified_ids": [],
     "weighting_completed": false,
     "heading_inventory_completed_ids": 113,
     "semantic_dedup_completed": false,
     "code_test_evidence_audit_completed_ids": 0,
     "semantic_dedup_reviewed_task_ids": 113,
-    "code_test_evidence_reviewed_ids": 110,
+    "code_test_evidence_reviewed_ids": 113,
     "roadmap_phase_mapped_ids": 113,
     "current_head_evidence_task_ids": 0,
-    "source_test_evidence_snapshot_task_ids": 52
+    "source_test_evidence_snapshot_task_ids": 55
   },
   "known_id_gaps": [],
   "tasks": [
@@ -9425,22 +9421,54 @@
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
       "roadmap_phase": "阶段 2｜商业级剪辑决策层",
-      "development_status": "implemented_automation",
-      "acceptance_status": "automation_passed",
+      "development_status": "partial_evidence_mapping",
+      "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [
         {
-          "sha": "7cfabb23e9ab0c05c6189d31dcf6b7410f7934c7",
-          "ci_push": "38571014259",
-          "ci_pr": "38571022693",
-          "docs_sync_push": "38571014277",
-          "docs_sync_pr": "38571022758",
-          "note": "证据绑定历史 SHA；后续文档提交的 CI 需独立核验。仅自动化阶段，真实商业质量未验收"
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/music_sync.py",
+          "sha": "2b6f8c2af1204b8b1e34c171e647f2f480cfc3a5",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "derive_content_minimum_durations estimates dialogue, on-screen text, product-role and CTA holds; plan_beat_aligned_durations refuses unsafe plans and retains content lower bounds."
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/production.py",
+          "sha": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "build_final constructs storyboard metadata, applies dialogue/product content minimums and combines them with actual SRT cue-window protection before beat planning."
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_music_sync.py",
+          "sha": "9e1c8286515adaf455cabd54836bf6eae3cbaec0",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "Tests cover dialogue/text/product holds, safe beat snapping, underlength dialogue protection, low-confidence fallback and crossfade fallback."
+        },
+        {
+          "kind": "ci_pr",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38730727069",
+          "sha": "a9fe2d93d186bac79dafee294e518209d963f420",
+          "detail": "CI PR success on the latest checked branch HEAD before this documentation batch."
+        },
+        {
+          "kind": "docs_sync_pr",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38730727058",
+          "sha": "a9fe2d93d186bac79dafee294e518209d963f420",
+          "detail": "docs-sync PR success on the latest checked branch HEAD before this documentation batch."
+        },
+        {
+          "kind": "pr_state",
+          "path": "https://github.com/konggu888/ecommerce-agent/pull/32",
+          "sha": "a9fe2d93d186bac79dafee294e518209d963f420",
+          "detail": "PR #32 Open/unmerged on the latest checked branch HEAD."
         }
       ],
       "remaining_conditions": [
-        "按阶段2退出条件复核实际生产链证据；真实环境验收继续暂缓"
+        "There is no explicit assertion for cta_role/role=cta minimum hold, although source implements cta_hold; more role-specific regression coverage is needed.",
+        "Tests primarily exercise planning helpers; no production build_final integration test or real audio/video/Windows quality acceptance."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -9459,9 +9487,20 @@
           "### A110｜音乐卡点的口播、字幕与商品展示保护"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
-      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
-      "semantic_dedup_batch": "PLAN-003-DEDUP-004"
+      "source_inventory_status": "current_source_test_snapshot_mapped_to_c77704d86d6131d13501448af76ce24afc56ad7b; CI_PR_and_docs_sync_PR_success_on_a9fe2d93d186bac79dafee294e518209d963f420; push_workflow_pair_not_independently_verified; full_acceptance_pending",
+      "semantic_dedup_review_status": "reviewed_related_music_subtitle_protection_cluster_no_cross_id_merge",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-004",
+      "last_verified_date": "2026-10-15",
+      "current_head_evidence_reconciliation": {
+        "head": "a9fe2d93d186bac79dafee294e518209d963f420",
+        "checked_on": "2026-10-15",
+        "source_test_paths_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": true,
+        "ci_pr_run_id": "38730727069",
+        "docs_sync_pr_run_id": "38730727058",
+        "acceptance_status_preserved": "not_audited",
+        "note": "Source/test blobs bound to audit baseline c77704d86d6131d13501448af76ce24afc56ad7b; latest checked HEAD has CI PR and docs-sync PR success; Push pair not independently verified. Not full acceptance."
+      }
     },
     {
       "task_id": "A111",
@@ -9473,22 +9512,54 @@
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
       "roadmap_phase": "阶段 2｜商业级剪辑决策层",
-      "development_status": "implemented_automation",
-      "acceptance_status": "automation_passed",
+      "development_status": "partial_evidence_mapping",
+      "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [
         {
-          "sha": "7cfabb23e9ab0c05c6189d31dcf6b7410f7934c7",
-          "ci_push": "38571014259",
-          "ci_pr": "38571022693",
-          "docs_sync_push": "38571014277",
-          "docs_sync_pr": "38571022758",
-          "note": "证据绑定历史 SHA；后续文档提交的 CI 需独立核验。仅自动化阶段，真实商业质量未验收"
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/music_sync.py",
+          "sha": "2b6f8c2af1204b8b1e34c171e647f2f480cfc3a5",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "plan_beat_aligned_durations evaluates each proposed boundary, locally cancels unsafe adjacent shifts, records adjusted/reverted boundaries and applies final safety guards."
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/production.py",
+          "sha": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "build_final consumes planned durations and retimes only changed clips; transition safety disables retiming for crossfade projects."
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_music_sync.py",
+          "sha": "9e1c8286515adaf455cabd54836bf6eae3cbaec0",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "Tests cover a single protected shot, multiple neighboring protected shots, safe unrelated boundary movement, reverted boundary indexes, preserved total duration, low-confidence and crossfade fallback."
+        },
+        {
+          "kind": "ci_pr",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38730727069",
+          "sha": "a9fe2d93d186bac79dafee294e518209d963f420",
+          "detail": "CI PR success on the latest checked branch HEAD before this documentation batch."
+        },
+        {
+          "kind": "docs_sync_pr",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38730727058",
+          "sha": "a9fe2d93d186bac79dafee294e518209d963f420",
+          "detail": "docs-sync PR success on the latest checked branch HEAD before this documentation batch."
+        },
+        {
+          "kind": "pr_state",
+          "path": "https://github.com/konggu888/ecommerce-agent/pull/32",
+          "sha": "a9fe2d93d186bac79dafee294e518209d963f420",
+          "detail": "PR #32 Open/unmerged on the latest checked branch HEAD."
         }
       ],
       "remaining_conditions": [
-        "按阶段2退出条件复核实际生产链证据；真实环境验收继续暂缓"
+        "Unit tests strongly cover the planner's local rollback invariants, but no direct end-to-end build_final regression asserts planner output, retimed files and final assembly together.",
+        "FFmpeg is mocked in retime/mix command tests; actual encode/decode, audio quality and Windows playback remain deferred."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -9515,9 +9586,20 @@
           "### A111 CI 修复记录"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
-      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
-      "semantic_dedup_batch": "PLAN-003-DEDUP-004"
+      "source_inventory_status": "current_source_test_snapshot_mapped_to_c77704d86d6131d13501448af76ce24afc56ad7b; CI_PR_and_docs_sync_PR_success_on_a9fe2d93d186bac79dafee294e518209d963f420; push_workflow_pair_not_independently_verified; full_acceptance_pending",
+      "semantic_dedup_review_status": "reviewed_related_music_subtitle_protection_cluster_no_cross_id_merge",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-004",
+      "last_verified_date": "2026-10-15",
+      "current_head_evidence_reconciliation": {
+        "head": "a9fe2d93d186bac79dafee294e518209d963f420",
+        "checked_on": "2026-10-15",
+        "source_test_paths_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": true,
+        "ci_pr_run_id": "38730727069",
+        "docs_sync_pr_run_id": "38730727058",
+        "acceptance_status_preserved": "not_audited",
+        "note": "Source/test blobs bound to audit baseline c77704d86d6131d13501448af76ce24afc56ad7b; latest checked HEAD has CI PR and docs-sync PR success; Push pair not independently verified. Not full acceptance."
+      }
     },
     {
       "task_id": "A112",
@@ -9529,22 +9611,75 @@
         "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
       ],
       "roadmap_phase": "阶段 2｜商业级剪辑决策层",
-      "development_status": "implemented_automation",
-      "acceptance_status": "automation_passed",
+      "development_status": "partial_evidence_mapping",
+      "acceptance_status": "not_audited",
       "weight": null,
       "dependencies": [],
       "evidence": [
         {
-          "sha": "7cfabb23e9ab0c05c6189d31dcf6b7410f7934c7",
-          "ci_push": "38571014259",
-          "ci_pr": "38571022693",
-          "docs_sync_push": "38571014277",
-          "docs_sync_pr": "38571022758",
-          "note": "证据绑定历史 SHA；后续文档提交的 CI 需独立核验。仅自动化阶段，真实商业质量未验收"
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/subtitles.py",
+          "sha": "aed4dd171cbbec2e3b626fbe30b4344aed889614",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "parse_srt_cues parses real cue windows and validates cue order, clip bounds and timeline end; invalid or missing SRT raises ValueError."
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/music_sync.py",
+          "sha": "2b6f8c2af1204b8b1e34c171e647f2f480cfc3a5",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "derive_subtitle_minimum_duration validates cue windows and derives a safe minimum duration from the shortest actual cue."
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/production.py",
+          "sha": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "build_final checks subtitle_timing_by_shot is bound to the current source video path and duration, parses SRT cues and applies subtitle protection; invalid/mismatched metadata records fallback."
+        },
+        {
+          "kind": "source",
+          "path": "apps/ad-studio-desktop/ad_studio/app.py",
+          "sha": "7e88102f01a41c70c8a67e925daa24f4d71b90a7",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "Desktop subtitle processing records SRT path, source video path and probed source duration for later final-render validation."
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_subtitles.py",
+          "sha": "04a4e441cab8e693c8fbb2f8a4f8a246668dbe40",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "Tests cover single/multiple cue parsing, comma/dot timestamps, malformed/empty/missing SRT, out-of-range cue and mismatched timeline."
+        },
+        {
+          "kind": "test",
+          "path": "apps/ad-studio-desktop/test_music_sync.py",
+          "sha": "9e1c8286515adaf455cabd54836bf6eae3cbaec0",
+          "commit_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
+          "detail": "Tests cover shortest cue display-time protection, safe shortening with long cues and invalid cue fallback."
+        },
+        {
+          "kind": "ci_pr",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38730727069",
+          "sha": "a9fe2d93d186bac79dafee294e518209d963f420",
+          "detail": "CI PR success on the latest checked branch HEAD before this documentation batch."
+        },
+        {
+          "kind": "docs_sync_pr",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38730727058",
+          "sha": "a9fe2d93d186bac79dafee294e518209d963f420",
+          "detail": "docs-sync PR success on the latest checked branch HEAD before this documentation batch."
+        },
+        {
+          "kind": "pr_state",
+          "path": "https://github.com/konggu888/ecommerce-agent/pull/32",
+          "sha": "a9fe2d93d186bac79dafee294e518209d963f420",
+          "detail": "PR #32 Open/unmerged on the latest checked branch HEAD."
         }
       ],
       "remaining_conditions": [
-        "按阶段2退出条件复核实际生产链证据；真实环境验收继续暂缓"
+        "No dedicated production-level regression covers subtitle_timing_by_shot applied/fallback branches for current-path mismatch, source-duration mismatch, missing/corrupt SRT, and final shot duration interaction.",
+        "Unit tests do not prove rendered subtitle readability, real speech alignment or Windows final-video playback."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -9570,9 +9705,20 @@
           "## A112 自动化验收结果｜2026-10-14"
         ]
       },
-      "source_inventory_status": "normalized_heading_inventory_only_semantic_dedup_and_code_evidence_pending",
-      "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet_related_cluster_recorded",
-      "semantic_dedup_batch": "PLAN-003-DEDUP-004"
+      "source_inventory_status": "current_source_test_snapshot_mapped_to_c77704d86d6131d13501448af76ce24afc56ad7b; CI_PR_and_docs_sync_PR_success_on_a9fe2d93d186bac79dafee294e518209d963f420; push_workflow_pair_not_independently_verified; full_acceptance_pending",
+      "semantic_dedup_review_status": "reviewed_related_music_subtitle_protection_cluster_no_cross_id_merge",
+      "semantic_dedup_batch": "PLAN-003-DEDUP-004",
+      "last_verified_date": "2026-10-15",
+      "current_head_evidence_reconciliation": {
+        "head": "a9fe2d93d186bac79dafee294e518209d963f420",
+        "checked_on": "2026-10-15",
+        "source_test_paths_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": true,
+        "ci_pr_run_id": "38730727069",
+        "docs_sync_pr_run_id": "38730727058",
+        "acceptance_status_preserved": "not_audited",
+        "note": "Source/test blobs bound to audit baseline c77704d86d6131d13501448af76ce24afc56ad7b; latest checked HEAD has CI PR and docs-sync PR success; Push pair not independently verified. Not full acceptance."
+      }
     }
   ],
   "source_inventory": {
