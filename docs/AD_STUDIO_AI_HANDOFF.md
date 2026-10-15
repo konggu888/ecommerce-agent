@@ -1,12 +1,14 @@
-## 当前接手状态｜PLAN-003 DEDUP-010 成本/账本关系批次｜2026-10-16
+## 当前接手状态｜PLAN-003 DEDUP-011｜2026-10-16
 
-- 分支：`feat/product-drama-visual-review`；审计基线 HEAD：`2f2bec716073716699a0d8916aa7b8457e862c8c`；PR #32 保持 Open/unmerged。
-- 基线 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR 均 success：38732620640、38732627710、38732620714、38732627612。
-- 本轮已完成 `PLAN-003-DEDUP-010`：当前 HEAD 的 `production.py`、`usage_ledger.py`、`test_desktop.py` blob 已直接核对。A52/A55/A59/A60/A63/A64/A65/A99 关系已分清并记录到权威任务台账。
-- 裁决摘要：A59 与 A60 是互补分支；A99 的逐镜头成功账本对账独立；A52 失败尝试归因、A55 视频成本写入失败保护、A64 素材成本写入失败保护、A63 迁移基线保护、A65 账本原子持久化均保留独立合同。没有删除、合并、拆分或重编号任务。
-- 8 项均保持 `acceptance_status=not_audited`；完整代码/测试审计 0、总体完成率继续关闭。当前 HEAD 源码/测试映射任务数记为 8，不代表完成率。
-- 剩余关键缺口：A63 后续记账失败后的保存重载；A64 完整生产入口行为验证；A65 临时文件清理/recent(limit) 边界；真实 Provider 失败/超时账单核对继续暂缓。
-- 下一步：继续既有 PLAN-003 的有界源码/测试证据审计，不开发新产品功能、不新增 A113+，不合并 PR #32。真实 Windows、素材、Provider 账单、剪映现场和商业效果验收继续暂缓。
+- 分支 `feat/product-drama-visual-review`；本轮审计基线 `994ceabb4d9a9a70ba5b607936838da819dc9927`；PR #32 Open/unmerged。
+- 上一 SHA 四项 CI/docs-sync 均成功；本轮提交后的 CI/docs-sync 必须重新查询，不能继承旧结果。
+- 已纠正 A63 证据描述：现有测试包含模拟记账失败后 save/load 与项目/镜头成本保留断言。
+- 已补强 A65 测试：原子替换失败后临时文件清理；2001 条历史中调用 `recent(10)` 后账本总行数和项目汇总不变。
+- 本轮仅测试与文档变更，未改生产代码。A63/A65 仍为 `not_audited`；真实 Provider 账单和 Windows 真机等继续暂缓；总体完成率关闭。
+- 下一步先检查最新 SHA 的四项 CI/doc-sync，成功后继续既有 PLAN-003 有界证据审计。不新增 A113+，不更改 A0–A112，不合并 PR #32。
+
+---
+
 
 ---
 

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_from_head": "2f2bec716073716699a0d8916aa7b8457e862c8c",
-  "audit_status": "PLAN-003 DEDUP-010 reviewed cost/ledger contracts A52/A55/A59/A60/A63/A64/A65/A99 against current HEAD 2f2bec716073716699a0d8916aa7b8457e862c8c. Four exact-SHA workflows succeeded. Relationships distinguished; formal acceptance remains pending.",
+  "generated_from_head": "994ceabb4d9a9a70ba5b607936838da819dc9927",
+  "audit_status": "PLAN-003 DEDUP-011 corrects an inaccurate A63 gap note and strengthens A65 atomic ledger failure and history-display regression tests. This is not formal acceptance; latest SHA CI/docs-sync must be checked.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -5477,23 +5477,11 @@
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
       "current_head_evidence_reconciliation": {
-        "head": "2f2bec716073716699a0d8916aa7b8457e862c8c",
+        "head": "994ceabb4d9a9a70ba5b607936838da819dc9927",
         "checked_on": "2026-10-16",
         "source_test_paths_rechecked": true,
-        "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
-        "source_blobs": {
-          "apps/ad-studio-desktop/ad_studio/production.py": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
-          "apps/ad-studio-desktop/ad_studio/usage_ledger.py": "96d1240af26e31b5f08dc7a3474c1e76a2d4ad5c",
-          "apps/ad-studio-desktop/test_desktop.py": "357c54dad99f61b99891bcc365dd2f9efc1a1009"
-        },
-        "workflow_runs": {
-          "ci_push": 38732620640,
-          "ci_pr": 38732627710,
-          "docs_sync_push": 38732620714,
-          "docs_sync_pr": 38732627612
-        },
-        "note": "Current branch HEAD was checked directly; source/test paths resolve to the recorded blob SHAs at this SHA. All four workflows on this exact SHA succeeded. This is a bounded code/test evidence mapping and relationship decision, not full acceptance; known edge gaps remain."
+        "note": "Correction to DEDUP-010: test_a63_migrated_legacy_cost_survives_when_new_charge_record_fails already calls store.save(project), reloads via store.load(project.id), and asserts preserved project and shot costs. This boundary is covered by a simulated local ledger-write failure; it is not real Provider invoice reconciliation."
       },
       "semantic_overlap_review": {
         "status": "reviewed_distinct_contracts_keep_separate",
@@ -5664,8 +5652,9 @@
         }
       ],
       "remaining_conditions": [
-        "替换失败测试未直接断言临时文件清理；未找到 recent(limit) 不影响底层账本/汇总的直接回归测试。",
-        "A65 为账本原子持久化与历史完整性，支撑 A61 迁移，但不等于真实供应商账单对账。"
+        "The newly added regression assertions require latest-SHA CI success before they count as automated evidence.",
+        "Real Provider invoice reconciliation remains separate; local atomic persistence tests cannot prove external billing.",
+        "A65 remains not_audited until the full task contract and all applicable evidence layers are independently reviewed."
       ],
       "duplicate_mapping": null,
       "deferred": false,
@@ -5685,23 +5674,15 @@
       "semantic_dedup_batch": "PLAN-003-DEDUP-002",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
       "current_head_evidence_reconciliation": {
-        "head": "2f2bec716073716699a0d8916aa7b8457e862c8c",
+        "head": "994ceabb4d9a9a70ba5b607936838da819dc9927",
         "checked_on": "2026-10-16",
         "source_test_paths_rechecked": true,
-        "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "source_blobs": {
-          "apps/ad-studio-desktop/ad_studio/production.py": "e53968f47a6b8fd23df773dbd3a4ad553753e1e0",
           "apps/ad-studio-desktop/ad_studio/usage_ledger.py": "96d1240af26e31b5f08dc7a3474c1e76a2d4ad5c",
           "apps/ad-studio-desktop/test_desktop.py": "357c54dad99f61b99891bcc365dd2f9efc1a1009"
         },
-        "workflow_runs": {
-          "ci_push": 38732620640,
-          "ci_pr": 38732627710,
-          "docs_sync_push": 38732620714,
-          "docs_sync_pr": 38732627612
-        },
-        "note": "Current branch HEAD was checked directly; source/test paths resolve to the recorded blob SHAs at this SHA. All four workflows on this exact SHA succeeded. This is a bounded code/test evidence mapping and relationship decision, not full acceptance; known edge gaps remain."
+        "note": "At audit base, implementation removes temp files in exception path; existing tests did not assert cleanup or explicitly compare project totals before/after recent(limit). New regression assertions are added in this commit; this base snapshot is not evidence that those new assertions passed."
       },
       "semantic_overlap_review": {
         "status": "reviewed_distinct_contracts_keep_separate",
@@ -10959,13 +10940,53 @@
         "A52 uses fake Provider behavior; real timeout/failure billing is unknown until invoice reconciliation.",
         "A55 is a simulated local ledger-write failure, not an external invoice check.",
         "A59/A60 are complementary successful-ledger versus no-success-ledger branches; save/reload combinations remain to be independently audited.",
-        "A63 test does not directly assert save/reload after migration succeeds and the next charge record fails.",
+        "Correction after rereading exact test body: A63 already asserts save and reload after the new-charge record fails, including project and shot totals; remaining limitation is simulated local failure, not real Provider billing.",
         "A64 helper behavior is tested, but two production callers are covered by source-text assertions rather than complete asset-generation behavior tests.",
-        "A65 atomic replacement test does not directly assert temporary-file cleanup; recent(limit) behavior is not directly tested against ledger totals.",
+        "At audit base 994ceabb4d9a9a70ba5b607936838da819dc9927, A65 tests did not directly assert temporary-file cleanup or recent(limit) independence; DEDUP-011 adds these assertions and awaits latest-SHA CI.",
         "A99 has a direct recovery/save/reload test for a successful ledger and stale unbilled sibling shot; failed-only and no-success legacy cases remain separate boundaries.",
         "All eight tasks remain acceptance_status=not_audited. This batch does not complete global semantic dedup or full code/test audit; real Provider billing and Windows validation remain deferred."
       ],
       "next_batch": "Continue bounded source/test evidence audit after the cost/ledger relationship mapping; preserve A0-A112 IDs, do not add A113+, and keep overall completion percentage disabled."
+    },
+    {
+      "batch_id": "PLAN-003-DEDUP-011",
+      "range": "Correct A63 evidence note; strengthen A65 ledger atomic-failure and recent(limit) regression tests",
+      "status": "test_and_documentation_changes_committed_ci_pending",
+      "reviewed_sources": [
+        "apps/ad-studio-desktop/test_desktop.py",
+        "apps/ad-studio-desktop/ad_studio/usage_ledger.py",
+        "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+        "docs/AD_STUDIO_ACCEPTANCE_SOP.md"
+      ],
+      "findings": [
+        {
+          "ids": [
+            "A63"
+          ],
+          "decision": "correct_previous_gap_statement",
+          "reason": "Existing A63 test already saves and reloads the project after a simulated next-charge ledger-write failure, asserting preserved project and shot totals. Prior DEDUP-010 limitation was inaccurate and is corrected; acceptance remains not_audited."
+        },
+        {
+          "ids": [
+            "A65"
+          ],
+          "decision": "add_direct_regression_assertions",
+          "reason": "Added an assertion that atomic replace failure leaves no temp-file orphan, and assertions that recent(10) does not change 2001-row persistence or project summary totals. Latest-SHA CI must pass before these are considered automated evidence."
+        }
+      ],
+      "evidence_snapshot": {
+        "audit_base": "994ceabb4d9a9a70ba5b607936838da819dc9927",
+        "source_blobs": {
+          "apps/ad-studio-desktop/ad_studio/usage_ledger.py": "96d1240af26e31b5f08dc7a3474c1e76a2d4ad5c",
+          "apps/ad-studio-desktop/test_desktop.py": "357c54dad99f61b99891bcc365dd2f9efc1a1009"
+        }
+      },
+      "limitations": [
+        "New test assertions have not yet been executed on the commit being created; wait for latest SHA CI.",
+        "No production code changed; local tests cannot establish actual Provider billing.",
+        "A65 and A63 remain acceptance_status=not_audited; no overall completion percentage."
+      ],
+      "next_batch": "After current SHA CI/docs-sync results, continue only the next bounded PLAN-003 source/test evidence task. Do not add A113+, change A0-A112 IDs, or merge PR #32."
     }
   ],
   "code_test_evidence_batches": [

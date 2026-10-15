@@ -1999,6 +1999,8 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(ledger.path.read_text(encoding="utf-8"), original)
             self.assertEqual(len(ledger.recent(10)), 1)
             self.assertEqual(ledger.recent(10)[0]["function"], "既有记录")
+            # The failed atomic replacement must not leave an orphaned temp file.
+            self.assertEqual(list(ledger.path.parent.glob(f".{ledger.path.name}.*.tmp")), [])
 
     def test_a65_ledger_retains_more_than_2000_cost_history_rows(self):
         with tempfile.TemporaryDirectory() as td:
@@ -2012,6 +2014,11 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(summary["entries"], 2001)
             self.assertAlmostEqual(summary["actual_cost_rmb"], 20.01)
             self.assertEqual(len(ledger._load()), 2001)
+            # recent(limit) is only a display slice; it must not truncate the ledger or totals.
+            self.assertEqual(len(ledger.recent(10)), 10)
+            summary_after_recent = ledger.project_summary("p")
+            self.assertEqual(summary_after_recent["entries"], 2001)
+            self.assertAlmostEqual(summary_after_recent["actual_cost_rmb"], 20.01)
 
 
 
