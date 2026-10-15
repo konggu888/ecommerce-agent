@@ -3,7 +3,7 @@
   "generated_from_head": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6",
   "audit_status": "all_113_numbered_task_titles_recovered_requirement_level_reviewed_cross_source_status_reconciliation_pending_current_head_code_test_evidence_audit_pending",
   "progress_percentages_enabled": false,
-  "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until cross-source scope reconciliation and weighting review. Historical A68-A74 and A99 task identities have been recovered; their current-HEAD evidence audit remains pending. Cross-source status audit 2026-10-15 found the dashboard's 113 partial-mapping count and this JSON snapshot's 6 structured source/test/CI/workflow evidence task IDs are different metrics; 0 evidence records are bound to current HEAD. Do not silently treat them as equivalent. Roadmap phase is still pending for 70 task records; reconcile item-by-item.",
+  "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to current SHA. Acceptance source section is not automatically the product roadmap phase. Weights remain null until cross-source scope reconciliation and weighting review. Historical A68-A74 and A99 task identities have been recovered; their current-HEAD evidence audit remains pending. Cross-source status audit 2026-10-15 found the dashboard's 113 partial-mapping count and this JSON snapshot's 6 structured source/test/CI/workflow evidence task IDs are different metrics; 0 evidence records are bound to current HEAD. Do not silently treat them as equivalent. Roadmap phase is still pending for 70 task records; reconcile item-by-item. Incremental current-HEAD reconciliation 2026-10-15: A0-A6 roadmap_phase mapped to Phase 1 from roadmap goal chain; A5 depends on A4. A0-A4 source/test/workflow evidence refreshed to current HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1 and current CI/docs-sync runs attached. No acceptance status upgraded; full audit remains zero.",
   "counts": {
     "numbered_slots": 113,
     "fully_audited": 0,
@@ -18,7 +18,9 @@
     "semantic_dedup_completed": false,
     "code_test_evidence_audit_completed_ids": 0,
     "semantic_dedup_reviewed_task_ids": 113,
-    "code_test_evidence_reviewed_ids": 6
+    "code_test_evidence_reviewed_ids": 6,
+    "roadmap_phase_mapped_ids": 50,
+    "current_head_evidence_task_ids": 5
   },
   "known_id_gaps": [],
   "tasks": [
@@ -29,7 +31,7 @@
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
-      "roadmap_phase": "待路线图映射",
+      "roadmap_phase": "阶段1｜可靠的生产底座",
       "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
@@ -39,13 +41,37 @@
           "kind": "source",
           "path": "apps/ad-studio-desktop/run.py",
           "detail": "Entrypoint calls App().mainloop() only when run as __main__.",
-          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
         },
         {
           "kind": "source",
           "path": "apps/ad-studio-desktop/ad_studio/app.py",
           "detail": "App.__init__ initializes Tk title/geometry/minsize, local library/store/model router, then UI and refresh routines.",
-          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38715013730",
+          "detail": "CI Push success for current audited HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1.",
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38715018943",
+          "detail": "CI PR success for current audited HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1.",
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38715014102",
+          "detail": "Documentation sync Push success for current audited HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1.",
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38715018777",
+          "detail": "Documentation sync PR success for current audited HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1.",
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
         }
       ],
       "remaining_conditions": [
@@ -68,7 +94,15 @@
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
-      "last_verified_date": "2026-10-15"
+      "last_verified_date": "2026-10-15",
+      "current_head_evidence_reconciliation": {
+        "head": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1",
+        "checked_on": "2026-10-15",
+        "source_test_paths_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": true,
+        "acceptance_status_preserved": "not_audited",
+        "note": "Current-SHA evidence refreshed for mapped source/test/workflow paths and current CI/docs-sync runs. This does not mean the task's full acceptance checklist passed."
+      }
     },
     {
       "task_id": "A1",
@@ -77,7 +111,7 @@
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
-      "roadmap_phase": "待路线图映射",
+      "roadmap_phase": "阶段1｜可靠的生产底座",
       "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
@@ -87,7 +121,7 @@
           "kind": "workflow",
           "path": ".github/workflows/ci.yml",
           "detail": "CI workflow runs frontend syntax, desktop Python compileall, desktop core unit tests, TypeScript, engine and risk-controller tests.",
-          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
         },
         {
           "kind": "ci",
@@ -112,6 +146,30 @@
           "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38634432326",
           "detail": "docs-sync PR success for audited base SHA",
           "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38715013730",
+          "detail": "CI Push success for current audited HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1.",
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38715018943",
+          "detail": "CI PR success for current audited HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1.",
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38715014102",
+          "detail": "Documentation sync Push success for current audited HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1.",
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38715018777",
+          "detail": "Documentation sync PR success for current audited HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1.",
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
         }
       ],
       "remaining_conditions": [
@@ -133,7 +191,15 @@
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
-      "last_verified_date": "2026-10-15"
+      "last_verified_date": "2026-10-15",
+      "current_head_evidence_reconciliation": {
+        "head": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1",
+        "checked_on": "2026-10-15",
+        "source_test_paths_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": true,
+        "acceptance_status_preserved": "not_audited",
+        "note": "Current-SHA evidence refreshed for mapped source/test/workflow paths and current CI/docs-sync runs. This does not mean the task's full acceptance checklist passed."
+      }
     },
     {
       "task_id": "A2",
@@ -142,7 +208,7 @@
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
-      "roadmap_phase": "待路线图映射",
+      "roadmap_phase": "阶段1｜可靠的生产底座",
       "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
@@ -152,19 +218,19 @@
           "kind": "source",
           "path": "apps/ad-studio-desktop/ad_studio/app.py",
           "detail": "App.create() validates URL/budget/variant count, scans user footage with explicit error paths, parses/merges product facts and starts plan generation.",
-          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
         },
         {
           "kind": "source",
           "path": "apps/ad-studio-desktop/ad_studio/engine.py",
           "detail": "new_project() builds a Project and initial shots.",
-          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
         },
         {
           "kind": "test",
           "path": "apps/ad-studio-desktop/test_desktop.py",
           "detail": "test_project_lifecycle_isolated_between_projects; test_project_save_load; test_task_type_is_persisted_and_not_replaced_by_platform; test_ai_create_plan_runs_full_understanding_to_asset_pipeline.",
-          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
         },
         {
           "kind": "ci",
@@ -189,6 +255,30 @@
           "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38634432326",
           "detail": "docs-sync PR success for audited base SHA",
           "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38715013730",
+          "detail": "CI Push success for current audited HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1.",
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38715018943",
+          "detail": "CI PR success for current audited HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1.",
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38715014102",
+          "detail": "Documentation sync Push success for current audited HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1.",
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38715018777",
+          "detail": "Documentation sync PR success for current audited HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1.",
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
         }
       ],
       "remaining_conditions": [
@@ -210,7 +300,15 @@
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
-      "last_verified_date": "2026-10-15"
+      "last_verified_date": "2026-10-15",
+      "current_head_evidence_reconciliation": {
+        "head": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1",
+        "checked_on": "2026-10-15",
+        "source_test_paths_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": true,
+        "acceptance_status_preserved": "not_audited",
+        "note": "Current-SHA evidence refreshed for mapped source/test/workflow paths and current CI/docs-sync runs. This does not mean the task's full acceptance checklist passed."
+      }
     },
     {
       "task_id": "A3",
@@ -219,7 +317,7 @@
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
-      "roadmap_phase": "待路线图映射",
+      "roadmap_phase": "阶段1｜可靠的生产底座",
       "development_status": "implemented_automation_layout_contract_passed_full_task_acceptance_pending",
       "acceptance_status": "partial_automation_layout_contract_passed_other_acceptance_pending",
       "weight": null,
@@ -229,13 +327,13 @@
           "kind": "source",
           "path": "apps/ad-studio-desktop/ad_studio/app.py",
           "detail": "App.ui() separates fields/actions containers; task type, video form, variants and footage controls occupy distinct grid cells; App.create() stores task_type in creative_plan.",
-          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
         },
         {
           "kind": "test",
           "path": "apps/ad-studio-desktop/test_desktop.py",
           "detail": "test_setup_form_grid_rows_do_not_overlap AST checks seven control positions and action-grid separation; test_three_task_types_have_distinct_deterministic_policies; test_task_type_is_persisted_and_not_replaced_by_platform.",
-          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
         },
         {
           "kind": "ci",
@@ -260,6 +358,30 @@
           "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38634432326",
           "detail": "docs-sync PR success for audited base SHA",
           "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38715013730",
+          "detail": "CI Push success for current audited HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1.",
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38715018943",
+          "detail": "CI PR success for current audited HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1.",
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38715014102",
+          "detail": "Documentation sync Push success for current audited HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1.",
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38715018777",
+          "detail": "Documentation sync PR success for current audited HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1.",
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
         }
       ],
       "remaining_conditions": [
@@ -281,7 +403,15 @@
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
-      "last_verified_date": "2026-10-15"
+      "last_verified_date": "2026-10-15",
+      "current_head_evidence_reconciliation": {
+        "head": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1",
+        "checked_on": "2026-10-15",
+        "source_test_paths_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": true,
+        "acceptance_status_preserved": "partial_automation_layout_contract_passed_other_acceptance_pending",
+        "note": "Current-SHA evidence refreshed for mapped source/test/workflow paths and current CI/docs-sync runs. This does not mean the task's full acceptance checklist passed."
+      }
     },
     {
       "task_id": "A4",
@@ -290,7 +420,7 @@
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
-      "roadmap_phase": "待路线图映射",
+      "roadmap_phase": "阶段1｜可靠的生产底座",
       "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
@@ -300,25 +430,25 @@
           "kind": "source",
           "path": "apps/ad-studio-desktop/ad_studio/app.py",
           "detail": "App.create() validates the footage folder, calls scan_footage(), handles FootageError/no-usable-file cases and saves footage_folder.",
-          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
         },
         {
           "kind": "source",
           "path": "apps/ad-studio-desktop/ad_studio/footage.py",
           "detail": "scan_footage(), probe_clip(), archive_analyzed_waste(), trim_clip() and footage-plan validation.",
-          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
         },
         {
           "kind": "test",
           "path": "apps/ad-studio-desktop/test_footage.py",
           "detail": "test_missing_folder_raises; test_lists_sorted_video_files; test_unparsable_file_gets_note; test_archives_ai_rejected_and_unparsable_but_keeps_good; plan/source validation cases.",
-          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
         },
         {
           "kind": "test",
           "path": "apps/ad-studio-desktop/test_desktop.py",
           "detail": "test_footage_planner_uses_only_supplied_assets_and_respects_task_rules; test_footage_planner_rejects_missing_plan_output; test_footage_plan_enforces_speech_filler_cleanup_and_timestamp_ranges.",
-          "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
         },
         {
           "kind": "ci",
@@ -343,6 +473,30 @@
           "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38634432326",
           "detail": "docs-sync PR success for audited base SHA",
           "sha": "7a1ac049b8c6c2ca267f17849594ffa9519cb5d6"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38715013730",
+          "detail": "CI Push success for current audited HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1.",
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
+        },
+        {
+          "kind": "ci",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38715018943",
+          "detail": "CI PR success for current audited HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1.",
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38715014102",
+          "detail": "Documentation sync Push success for current audited HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1.",
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
+        },
+        {
+          "kind": "docs_sync",
+          "path": "https://github.com/konggu888/ecommerce-agent/actions/runs/38715018777",
+          "detail": "Documentation sync PR success for current audited HEAD c5497fd29ab2aafd071dfc6acc80fcef4558b5a1.",
+          "sha": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1"
         }
       ],
       "remaining_conditions": [
@@ -364,7 +518,15 @@
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
-      "last_verified_date": "2026-10-15"
+      "last_verified_date": "2026-10-15",
+      "current_head_evidence_reconciliation": {
+        "head": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1",
+        "checked_on": "2026-10-15",
+        "source_test_paths_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": true,
+        "acceptance_status_preserved": "not_audited",
+        "note": "Current-SHA evidence refreshed for mapped source/test/workflow paths and current CI/docs-sync runs. This does not mean the task's full acceptance checklist passed."
+      }
     },
     {
       "task_id": "A5",
@@ -373,11 +535,13 @@
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
-      "roadmap_phase": "待路线图映射",
+      "roadmap_phase": "阶段1｜可靠的生产底座",
       "development_status": "partial_evidence_mapping",
       "acceptance_status": "not_audited",
       "weight": null,
-      "dependencies": [],
+      "dependencies": [
+        "A4"
+      ],
       "evidence": [
         {
           "kind": "source",
@@ -456,7 +620,7 @@
       "sources": [
         "docs/AD_STUDIO_ACCEPTANCE_PLAN.md"
       ],
-      "roadmap_phase": "待路线图映射",
+      "roadmap_phase": "阶段1｜可靠的生产底座",
       "development_status": "not_audited",
       "acceptance_status": "not_audited",
       "weight": null,
@@ -5314,19 +5478,71 @@
       "note": "Documentation/planning audit baseline; does not imply full acceptance of A0-A5."
     }
   ],
-  "last_reconciled_against_head": "73d66d7f294bdeb57c963851043392d84203ba6d",
-  "reconciliation_status": "historical_snapshot_metrics_conflict_with_authoritative_dashboard_pending_item_level_reconciliation",
+  "last_reconciled_against_head": "c5497fd29ab2aafd071dfc6acc80fcef4558b5a1",
+  "reconciliation_status": "item_level_reconciliation_in_progress_current_head_evidence_refreshed_for_A0_A4_and_roadmap_phase_mapped_A0_A6",
   "cross_source_reconciliation": {
     "dashboard_claimed_code_test_evidence_reviewed_ids": 113,
     "task_register_code_test_evidence_reviewed_ids": 6,
     "task_records_with_any_evidence": 18,
     "task_records_with_source_test_ci_or_workflow_evidence": 6,
-    "task_records_with_evidence_sha_matching_current_head": 0,
-    "task_records_with_roadmap_phase_pending": 70,
+    "task_records_with_evidence_sha_matching_current_head": 5,
+    "task_records_with_roadmap_phase_pending": 63,
     "semantic_dedup_completed": false,
     "code_test_evidence_audit_completed_ids": 0,
     "fully_audited": 0,
     "weighting_completed": false,
-    "note": "Do not treat these counters as equivalent. The dashboard count means cross-document partial mapping was claimed; this JSON snapshot only stores structured evidence for 18 tasks and source/test/CI/workflow evidence for 6 task IDs. No evidence record is tied to the current branch HEAD. Roadmap phase remains pending on 70 task records despite phase/dependency mapping notes in the dashboard. Reconcile task-by-task before enabling completion percentages."
+    "note": "2026-10-15 incremental reconciliation: verified roadmap phase 1 against product roadmap for A0-A6; A5 dependency on A4 is explicit in dashboard mapping. Rechecked source/test/workflow paths for A0-A4 and bound those task records to current HEAD plus current CI/docs-sync runs. This is partial evidence mapping only; acceptance statuses remain unchanged. Continue item by item.",
+    "roadmap_phase_mapped_ids": [
+      "A0",
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "A5",
+      "A6",
+      "A68",
+      "A69",
+      "A70",
+      "A71",
+      "A72",
+      "A73",
+      "A74",
+      "A77",
+      "A78",
+      "A79",
+      "A80",
+      "A81",
+      "A82",
+      "A83",
+      "A84",
+      "A85",
+      "A86",
+      "A87",
+      "A88",
+      "A89",
+      "A90",
+      "A91",
+      "A92",
+      "A93",
+      "A94",
+      "A95",
+      "A96",
+      "A97",
+      "A98",
+      "A99",
+      "A100",
+      "A101",
+      "A102",
+      "A103",
+      "A104",
+      "A105",
+      "A106",
+      "A107",
+      "A108",
+      "A109",
+      "A110",
+      "A111",
+      "A112"
+    ]
   }
 }

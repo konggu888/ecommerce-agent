@@ -1064,3 +1064,14 @@ A50–A67 的详细静态映射已存在；本轮将其规范台账行与该映�
 2. 后续按 A0–A112 逐项把现有来源、测试、CI、SHA、剩余条件和路线图阶段映射同步到规范台账；只补可定位证据，不根据历史标题或 CI 绿灯猜填。
 3. 在字段口径和所有任务的来源映射收敛前，`semantic_dedup_completed=false`、`code_test_evidence_audit_completed_ids=0`、`fully_audited=0` 保持；不新增 A113+，不修改产品代码。
 4. PR #32 保持 Open / unmerged；真实 Windows、真实素材、真实 Provider/扣费、剪映现场和真实投放继续暂缓。
+
+
+## PLAN-003 增量落库｜A0–A6 阶段映射与 A0–A4 当前 HEAD 证据刷新｜2026-10-15
+
+本轮以当前分支 HEAD `c5497fd29ab2aafd071dfc6acc80fcef4558b5a1` 为基准，直接更新规范 JSON 台账，而非只增加说明文字：
+
+- 已按 `docs/AD_STUDIO_PRODUCT_ROADMAP.md` 阶段 1“商品输入→商品分析→广告策略→资产→分镜→生产→质检/交付”的核心生产底座范围，将 A0–A6 的主路线图阶段映射落库为“阶段1｜可靠的生产底座”。此映射是任务主阶段，不代表其能力已实现或验收通过。
+- A5 的输入前置依赖 A4 已写入台账；A0–A6 其余关系不因“相关”而擅自添加依赖。
+- 已重新读取当前 HEAD 的 `run.py`、`ad_studio/app.py`、`engine.py`、`footage.py`、`test_desktop.py`、`test_footage.py` 和 `.github/workflows/ci.yml`。A0–A4 的对应 source/test/workflow 证据 SHA 已更新至当前 HEAD，并附加当前 SHA 的 CI Push/PR 与 docs-sync Push/PR 记录。
+- 当前 HEAD 四项工作流：CI Push 1864、CI PR 1865、docs-sync Push 1680、docs-sync PR 1681 均 success。它们只证明自动化工作流通过，不替代各任务的完整验收清单。
+- 本轮后，台账有 7 个任务已填写主路线图阶段（A0–A6），A0–A4 五个任务含绑定当前 HEAD 的证据；仍有 63 个任务的路线图阶段待映射。验收状态不升级，`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false`、`weighting_completed=false` 保持。
