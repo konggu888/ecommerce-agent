@@ -1,15 +1,15 @@
-# 【最新接手更新｜2026-10-15｜UXS-2 路由回退审计】
+# 【AI 接手短入口｜2026-10-15｜规划控制体系优先】
 
-- 当前唯一主线仍为 PLAN-003 / UXS-2 用户旅程证据映射；不是产品功能开发。
-- 已静态核对 `ModelRouter.resolve_route()` 与 `CapabilityRouter`：存在显式路由不可用后自动选取其他模型、以及本地服务不可用时选择云端服务的代码路径。尚无充分证据证明每次跨 Provider/本地转云端之前都取得明确授权，或用户拒绝后保证外部调用数为零。
-- `test_all_nine_functions_use_their_selected_model` 采用 FakeRouter，只创建并断言 9 个模型/调用；当前功能列表为 13 项，因此不得将该测试描述为完整真实路由覆盖，也不能当作回退授权测试。
-- 详细证据、边界和暂定规则见 `docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md` 的“UXS-2 路由回退专项证据映射”。
-- 下一项唯一任务：继续追踪 CapabilityRouter 的实际调用点、硬件执行模式 UI，并将路由回退/数据外发授权映射到 A0–A112；之后再按顺序检查密钥存储、费用未知值、外发告知、缓存和历史项目隔离。
-- 不修改产品代码、不新增正式验收编号、不删/重编号 A0–A112、不计算总体完成率。PR #32 保持 Open / unmerged；Windows 真机、真实 Provider/代理和真实账单继续暂缓。
+- 仓库/项目：`konggu888/ecommerce-agent/apps/ad-studio-desktop`；分支 `feat/product-drama-visual-review`；PR #32 保持 Open / unmerged。
+- 唯一权威当前任务、下一项、状态和进度：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`。本轮先盘点并纠偏规划控制体系；下一项是建立 A0–A112 规范化任务台账。当前不开发产品功能、不继续 UXS-2 专项细节。
+- 执行规则：`docs/AD_STUDIO_EXECUTION_CONTROL.md`；战略阶段与退出条件：`docs/AD_STUDIO_PRODUCT_ROADMAP.md`；正式范围：`docs/AD_STUDIO_ACCEPTANCE_PLAN.md`；验收方法：`docs/AD_STUDIO_ACCEPTANCE_SOP.md`。
+- 本轮修改前最新已核对 HEAD `9b52642fc2608fe24b0d4dba4ba0ef36d3ca8e67` 的 PR-triggered CI 与 docs-sync 均 success，Netlify status success；Push-triggered 两项未独立核实。每次提交后重新核对新 SHA。
+- 下方旧执行快照仅为历史证据，不能作为当前“下一项”指令。遇到冲突先登记到总进度台账，不自行选择旧任务、不扩展范围。
+- 禁止删除/重编号 A0–A112；规范化台账、去重、依赖和证据审计完成前不赋权、不计算总体完成率。真实环境/Provider/扣费/剪映/投放验证继续暂缓。
 
 ---
 
-# 最新接手状态｜UXS-2 用户旅程证据映射进行中｜2026-10-15
+# 【历史接手快照｜UXS-2 用户旅程证据映射｜2026-10-15｜不可覆盖总进度台账】
 
 - 当前审查计划：`docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md`，第 3A 节已记录创建入口、商品输入、费用授权顺序、项目持久化的首轮静态映射。
 - 重要待裁决的合同/证据冲突：`App.create()` 在显示 `AI创意与项目预算确认` 前调用 `ModelRouter.create_plan/create_plans`；`ModelRouter.create_plan()` 对九个创意阶段调用 `complete_json()`。HELP/PROJECT_LOGIC 允许确认前进行 AI 分析，但用户费用授权是否覆盖收费的规划模型调用尚未明确。若所有收费云端模型调用都须先确认，则是 P0 候选阻断；若仅限制视频/资产生成 Provider，则需核实规划调用费用是否披露/计入预算。需进一步核对路由/计费并映射到 A0/A2 与既有正式合同；不开发产品功能、不新增正式编号、不声称已发生实际扣费。
@@ -49,7 +49,7 @@ A100–A112 已完成静态代码/测试证据映射：淡出时间窗、变速�
 
 ---
 
-# 【最新接手指令｜规划体系优先｜2026-10-14】
+# 【历史接手指令快照｜规划体系优先｜2026-10-14｜当前执行顺序以总进度台账为准】
 
 先读取 `apps/ad-studio-desktop/SESSION_HANDOFF.md`，再读本文件、`docs/AD_STUDIO_EXECUTION_CONTROL.md`、`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`、路线图、AGENTS、HELP、PROJECT_LOGIC、验收计划与 SOP。
 规划体系实施前 HEAD：`7cfabb23e9ab0c05c6189d31dcf6b7410f7934c7`，四项 CI/doc-sync 均 success；新提交后必须重新查询最新 HEAD 与四项状态。
