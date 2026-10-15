@@ -1,4 +1,13 @@
-# 【PLAN-003 AI 接手状态｜A90–A94 部分证据映射｜2026-10-15】
+# 【PLAN-003 AI 接手状态｜A95–A99 部分证据映射｜2026-10-15】
+
+- 权威进度入口：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`；PR #32 保持 Open/unmerged。
+- 本轮源码/测试审计基线 `c77704d86d6131d13501448af76ce24afc56ad7b`；`production.py` / `test_desktop.py` blobs：`e53968f47a6b8fd23df773dbd3a4ad553753e1e0` / `357c54dad99f61b99891bcc365dd2f9efc1a1009`。基线 CI PR 与 docs-sync PR success；Push 结果未独立核实。
+- A95–A99 均只完成部分证据映射，正式验收仍 not_audited；细项与缺口见进度看板和任务台账。下一批 A100–A104；文档提交后先核验最新 SHA 四项 CI/docs-sync。
+- 不新增 A113+，不更改真实机器测试暂停安排，不合并 PR #32。
+
+---
+
+# 【历史快照｜PLAN-003 A90–A94 部分证据映射｜2026-10-15】
 
 - 权威进度入口：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`；PR #32 保持 Open/unmerged。
 - 源码/测试审计基线 HEAD `a6e052fa7edefa7e2fb794166684547436ff90f6`；本轮文档更新后的最新 HEAD `64857c4f93a4b648c207328299e690f1ef932dca`；源码/测试 blobs：`e53968f47a6b8fd23df773dbd3a4ad553753e1e0`、`2506410d9621840ec34464fce1fa2746c7d798f4`、`357c54dad99f61b99891bcc365dd2f9efc1a1009`、`2995b5764f7a86ee8c274b6359ff2f09cdf7a288`。CI PR 和 docs-sync PR success；Push 对应工作流本轮尚未独立核实。
