@@ -1,7 +1,7 @@
 # 【PLAN-003 AI 接手状态｜A110–A112 部分证据映射｜2026-10-15】
 
 - 权威进度入口：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`；PR #32 保持 Open/unmerged。
-- 源码/测试审计基线 `c77704d86d6131d13501448af76ce24afc56ad7b`；文档更新前最近 HEAD `a9fe2d93d186bac79dafee294e518209d963f420` 的 CI PR / docs-sync PR success（38730727069 / 38730727058）；Push 未独立核实。
+- 源码/测试审计基线 `c77704d86d6131d13501448af76ce24afc56ad7b`；A110–A112 文档更新前最后一次明确核验成功的工作流 HEAD `47479d41725cf726e1543524bda012fee8bdf890`（CI PR / docs-sync PR 38730727069 / 38730727058）；文档更新后的 HEAD `143d01f87c3161deee04cd2d3c821b1e915084d1` 的 CI PR / docs-sync PR 38731016045 / 38731016172 也 success；Push 未独立核实。
 - A110–A112 全部重新标记 partial_evidence_mapping/not_audited。A110 缺 CTA 专测与生产集成；A111 缺 build_final 整链回归；A112 缺字幕记录 applied/fallback 整链回归。真实 Windows/素材/Provider/商业视听继续暂缓。
 - A0–A112 已无新编号任务；下一步进行全量语义去重、证据冲突与未审计范围复核。不得新增 A113+，不合并 PR #32。
 
