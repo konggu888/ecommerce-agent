@@ -1025,7 +1025,7 @@
 - [x] 区分素材生成失败与生成成功后的成本账本失败。
 - [x] 账本失败时保留已生成素材并标记成本待核对，记录恢复历史与下一步动作。
 - [x] 增加 helper 行为测试与两个调用入口的源码文本断言。
-- [ ] 补充 `resolve_assets` 与 `generate_missing_asset` 两入口的行为级故障注入测试，直接确认素材文件、asset ID 和镜头引用保留。
+- [x] 已增加 `resolve_assets` 与 `generate_missing_asset` 两入口的行为级故障注入测试，直接确认素材文件、asset ID 和镜头引用保留；新增断言需以最新 SHA CI 成功为准。
 - [x] 源码/测试审计快照 `59cc175b40d8040c6e67fccba1b07186e625921e` 的 CI Push/PR 与 docs-sync Push/PR 均通过；最终文档 HEAD 的四项检查以总进度台账记录为准。
 ### 最近自动化验收基线
 A61（旧成本迁移）、A62（接手文案断言）、A63（迁移基线持久化）在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 的完整 CI 与 docs-sync 均通过。真实 Provider 账单核对与 Windows 真机仍暂缓。

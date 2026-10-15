@@ -1983,6 +1983,94 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertIn("self._record_asset_cost", generate_body)
         self.assertIn("成本待核对", generate_body)
 
+    def test_a64_resolve_assets_keeps_generated_asset_when_cost_record_fails(self):
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        from ad_studio.models import Asset
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            project.creative_plan = {"shots": [{
+                "index": shot.index,
+                "asset_resolution": {
+                    "actor_tags": ["test-actor"], "scene_tags": [], "product_tags": [],
+                    "generation_if_missing": True,
+                },
+            }]}
+            generated_path = root / "generated-actor.png"
+            generated_path.write_bytes(b"fake-generated-actor")
+
+            class FakeGenerator:
+                def __init__(self, *args, **kwargs):
+                    pass
+                def configured(self, kind):
+                    return kind == "演员"
+                def generate(self, kind, name, prompt, tags, request_id):
+                    asset = Asset("a64-generated-actor", name, kind, "ai_generated", str(generated_path), tags)
+                    return SimpleNamespace(asset=asset, cost_rmb=0.72, provider="测试 Provider")
+
+            store._record_asset_cost = lambda *args, **kwargs: (False, "模拟账本只读")
+
+            with patch("ad_studio.production.AssetGenerator", FakeGenerator):
+                resolution = store.resolve_assets(project, shot)
+
+            actor_result = resolution["演员"]
+            self.assertEqual(actor_result["source"], "已生成并入库（成本待核对）")
+            self.assertEqual(actor_result["cost_status"], "pending")
+            self.assertEqual(actor_result["asset"], "a64-generated-actor")
+            self.assertEqual(shot.actor_id, "a64-generated-actor")
+            self.assertTrue(generated_path.is_file())
+            library_items = LocalLibrary(root / "library").all()
+            self.assertTrue(any(item.id == "a64-generated-actor" for item in library_items))
+            restored = store.load(project.id)
+            self.assertEqual(restored.shots[0].actor_id, "a64-generated-actor")
+            self.assertEqual(restored.creative_plan["asset_resolution"][shot.id]["演员"]["cost_status"], "pending")
+
+    def test_a64_generate_missing_asset_keeps_asset_when_cost_record_fails(self):
+        from types import SimpleNamespace
+        from unittest.mock import patch
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+
+            class FakeCapabilityRouter:
+                def __init__(self, *args, **kwargs):
+                    pass
+                def decide_asset(self, kind):
+                    return SimpleNamespace(target="local", endpoint="http://127.0.0.1/test", reason="test")
+
+            class FakeLocalBackend:
+                def __init__(self, endpoint):
+                    self.endpoint = endpoint
+                def generate_asset(self, prompt, output):
+                    output.parent.mkdir(parents=True, exist_ok=True)
+                    output.write_bytes(b"fake-generated-asset")
+                    return output
+
+            store._record_asset_cost = lambda *args, **kwargs: (False, "模拟账本只读")
+
+            with patch("ad_studio.production.CapabilityRouter", FakeCapabilityRouter), \
+                 patch("ad_studio.production.LocalAssetBackend", FakeLocalBackend):
+                item = store.generate_missing_asset(
+                    project, shot, "演员", "test actor", root / "asset-generation.json"
+                )
+
+            self.assertEqual(shot.actor_id, item.id)
+            self.assertEqual(shot.status, "演员已生成并入库（成本待核对）")
+            self.assertIn("成本待核对：模拟账本只读", shot.generated_from_request)
+            self.assertTrue(Path(item.path).is_file())
+            self.assertTrue(any(asset.id == item.id for asset in LocalLibrary(root / "library").all()))
+            restored = store.load(project.id)
+            self.assertEqual(restored.shots[0].actor_id, item.id)
+            self.assertEqual(restored.shots[0].status, "演员已生成并入库（成本待核对）")
+            self.assertIn("成本待核对：模拟账本只读", restored.shots[0].generated_from_request)
+
 
     def test_a65_single_ledger_record_uses_atomic_replace_and_preserves_old_file_on_failure(self):
         from unittest.mock import patch

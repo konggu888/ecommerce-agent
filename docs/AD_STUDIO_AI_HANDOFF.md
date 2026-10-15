@@ -1,11 +1,13 @@
-## 当前接手状态｜PLAN-003 DEDUP-011｜2026-10-16
+## 当前接手状态｜PLAN-003 DEDUP-012｜2026-10-16
 
-- 分支 `feat/product-drama-visual-review`；本轮审计基线 `994ceabb4d9a9a70ba5b607936838da819dc9927`；PR #32 Open/unmerged。
-- 上一 SHA 四项 CI/docs-sync 均成功；本轮提交后的 CI/docs-sync 必须重新查询，不能继承旧结果。
-- 已纠正 A63 证据描述：现有测试包含模拟记账失败后 save/load 与项目/镜头成本保留断言。
-- 已补强 A65 测试：原子替换失败后临时文件清理；2001 条历史中调用 `recent(10)` 后账本总行数和项目汇总不变。
-- 本轮仅测试与文档变更，未改生产代码。A63/A65 仍为 `not_audited`；真实 Provider 账单和 Windows 真机等继续暂缓；总体完成率关闭。
-- 下一步先检查最新 SHA 的四项 CI/doc-sync，成功后继续既有 PLAN-003 有界证据审计。不新增 A113+，不更改 A0–A112，不合并 PR #32。
+- 分支 `feat/product-drama-visual-review`；审计基线 `6ab04dab687b347daa3d4c37eb3a8c2ac9cbf69a`；PR #32 Open/unmerged。
+- 上一 SHA 四项 CI/docs-sync 均成功；新提交的四项工作流需重新查询。
+- A64 新增两个行为级故障注入测试，覆盖 `resolve_assets` 与 `generate_missing_asset` 的生成后成本记账失败分支，检查资产文件/库记录、镜头引用和保存重载状态。
+- 仅修改测试与文档，没有改生产代码。A64 保持 `not_audited`，真实 Provider/账单、Windows 真机、真实素材继续暂缓；整体完成率关闭。
+- 下一步先核验最新 SHA 四项 CI/doc-sync，再按既有 PLAN-003 继续。不新增 A113+，不改 A0–A112，不合并 PR #32。
+
+---
+
 
 ---
 

@@ -1560,3 +1560,10 @@ A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/
 
 - A63 的现有回归测试已在新费用账本写入失败后执行 `store.save(project)` 与 `store.load(project.id)`，并核对项目总成本和镜头成本保留。因此 DEDUP-010 中“缺少保存重载断言”的描述已更正；模拟故障仍不等于真实 Provider 账单核验。
 - A65 新增原子替换失败后临时文件清理断言；2001 条记录场景中调用 `recent(10)` 后，再次核对完整记录数与项目成本汇总不变。最新 SHA CI 通过前，不把新增断言标记为自动化通过。
+
+
+## 2026-10-16｜A64 素材成本故障生产入口测试
+
+- `test_a64_resolve_assets_keeps_generated_asset_when_cost_record_fails` 对自动解析/生成入口注入成本记账失败，检查生成资产文件、库记录、镜头 actor_id 与重载状态。
+- `test_a64_generate_missing_asset_keeps_asset_when_cost_record_fails` 对缺失素材生成入口注入成本记账失败，检查资产文件、库记录、镜头引用、生成请求提示与重载状态。
+- 这些测试覆盖本地模拟故障，不等于真实 Provider 账单核验；最新 SHA CI 通过前不得声称新增测试已通过。

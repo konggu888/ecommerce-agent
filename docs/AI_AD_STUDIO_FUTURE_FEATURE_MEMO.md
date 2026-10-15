@@ -1,3 +1,5 @@
+> **PLAN-003 DEDUP-012 补充｜2026-10-16：** A64 新增 `resolve_assets` 与 `generate_missing_asset` 两个行为级故障注入测试，验证素材生成后成本记账失败时资产文件、库记录、镜头引用与重载状态仍保留。此为模拟故障测试，不是实际 Provider 账单核验；最新 SHA CI 需实时确认。A64 仍未正式验收，Windows 真机、真实素材与真实账单继续暂缓。权威状态见 `docs/AD_STUDIO_PROGRESS_DASHBOARD.md`。
+
 > **PLAN-003 DEDUP-011 补充｜2026-10-16：** 更正 A63 的证据说明：既有测试已覆盖模拟新费用记账失败后的项目保存/重载与成本保留。A65 新增原子替换失败后临时文件清理断言，以及调用 `recent(10)` 后完整账本/项目汇总保持不变的断言。新提交的 CI 需按最新 SHA 实时核验；A63/A65 仍未正式验收，真实 Provider 账单与 Windows 真机验证继续暂缓。权威状态见 `docs/AD_STUDIO_PROGRESS_DASHBOARD.md`。
 
 > **PLAN-003 跨来源审计补充｜2026-10-16：** DEDUP-010 在源码/测试基线 `2f2bec716073716699a0d8916aa7b8457e862c8c` 核对 A52/A55/A59/A60/A63/A64/A65/A99。四项 CI/docs-sync 均 success。A59（有成功账本行时重算项目总额）与 A60（无成功行时保留旧成本）为互补分支；A99 是逐镜头陈旧成本清理；A52/A55/A63/A64/A65 分别处理失败尝试归因、视频/素材成功后的成本写入异常、迁移基线保护、账本原子持久化等不同合同。全部保持 `not_audited`，不等于正式验收；A63 保存重载、A64 完整入口行为、A65 临时文件清理等缺口仍在。真实 Provider/账单与 Windows 真机验证继续暂缓。权威进度见 `docs/AD_STUDIO_PROGRESS_DASHBOARD.md`。
