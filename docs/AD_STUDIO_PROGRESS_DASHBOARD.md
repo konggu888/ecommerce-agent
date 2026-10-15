@@ -3,7 +3,7 @@
 > **本文件是唯一权威进度源。** 当前任务、阶段状态、任务台账、依赖、权重、证据和下一项只以本文件为准。`SESSION_HANDOFF.md` 与 `docs/AD_STUDIO_AI_HANDOFF.md` 只提供接手入口和短摘要；路线图定义战略与阶段退出条件；验收计划定义范围；SOP 定义验收方法；执行控制协议定义 AI 行为。其他文件中的“当前状态/下一项”若与本文件冲突，一律视为历史快照，先登记冲突，不据此启动任务。
 
 - 仓库：`konggu888/ecommerce-agent`；项目：`apps/ad-studio-desktop`；分支：`feat/product-drama-visual-review`；PR #32 保持 Open / unmerged。
-- 本轮最新已核对 HEAD：`9b52642fc2608fe24b0d4dba4ba0ef36d3ca8e67`。该 SHA 的 PR-triggered `CI` run `38700695789` 与 `ad-studio-doc-sync` run `38700695499` 均 success；Netlify deploy-preview status success。当前连接器未独立核实 Push-triggered 两项，因此不得写成“四项全绿”。
+- 本轮文档盘点开始前的核验基线 HEAD：`9b52642fc2608fe24b0d4dba4ba0ef36d3ca8e67`。该基线的 PR-triggered `CI` run `38700695789` 与 `ad-studio-doc-sync` run `38700695499` 均 success；Netlify deploy-preview status success。此记录不是本轮新文档提交的 CI 结果；提交后的状态必须实时查询，Push-triggered 两项未独立核实。
 - 当前主线仍属 PLAN-003，但**本轮优先是规划/进度控制体系盘点与入口纠偏**，不是 UXS-2 的产品安全细节审计，更不是产品功能开发。
 - 本轮已核实的核心问题：项目已有路线图、正式验收计划、SOP、执行控制协议和进度台账；但当前状态和“下一项”被重复写入多份接手文件及路线图，存在旧 SHA 与互相冲突的下一步指令。总台账已有进度公式/字段定义，但没有完成全量 113 个槽位的规范化任务记录、依赖图、权重审定和自动一致性校验。
 - **本轮唯一任务**：完成控制体系文件盘点、确定权威来源并消除入口级状态冲突。完成后，PLAN-003 下一项为把 A0–A112 规范化为可审计的单一任务台账；在此之前不继续 UXS-2 细节、不开发产品功能、不计算总体完成率。
@@ -73,7 +73,7 @@
 
 ## 3. 当前基线
 
-- 当前最新已核对 HEAD：`9b52642fc2608fe24b0d4dba4ba0ef36d3ca8e67`；PR #32 Open / unmerged。
+- 本轮文档修改前的核验基线：`9b52642fc2608fe24b0d4dba4ba0ef36d3ca8e67`；PR #32 Open / unmerged。该基线之后的提交需单独查询，不继承其 CI 结果。
 - 该 SHA 的 PR-triggered CI `38700695789` 与 PR-triggered docs-sync `38700695499` success；Netlify deploy-preview success。Push-triggered 两项未独立核实。
 - 任何新提交后都必须重新查询当前 SHA 的可用 CI/doc-sync；旧 SHA 证据不得继承为新 SHA 通过。
 
