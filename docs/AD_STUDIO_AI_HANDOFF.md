@@ -3,11 +3,11 @@
 - 仓库/项目：`konggu888/ecommerce-agent/apps/ad-studio-desktop`；分支 `feat/product-drama-visual-review`；PR #32 保持 Open / unmerged。
 - 唯一权威当前任务、下一项、状态和进度：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`。当前是 PLAN-003 全量跨来源语义去重、状态冲突裁决与依赖/证据边界复核；A0–A112 台账和分批静态映射已存在，不重建、不重复从 A50 开始。当前不开发产品功能。
 - 执行规则：`docs/AD_STUDIO_EXECUTION_CONTROL.md`；战略阶段与退出条件：`docs/AD_STUDIO_PRODUCT_ROADMAP.md`；正式范围：`docs/AD_STUDIO_ACCEPTANCE_PLAN.md`；验收方法：`docs/AD_STUDIO_ACCEPTANCE_SOP.md`。
-- 旧 HEAD/CI 描述属于历史快照；每次接手必须实时读取 PR #32 当前 HEAD、PR-triggered CI/doc-sync 与部署状态，不把历史绿灯继承为当前证据。Push-triggered 两项如未独立查询，必须明确注明。
+- 最近已核验 HEAD：`d2bd844313b06419402f761dcab222245a4f091b`；该 SHA 的 PR-triggered CI 与 docs-sync success，Netlify deploy-preview success；Push-triggered CI/docs-sync 未独立核实。此为接手快照而非永久状态；每次接手仍必须实时读取 PR #32 当前 HEAD、工作流与部署状态，不继承历史绿灯。
 - 下方旧执行快照仅为历史证据，不能作为当前“下一项”指令。遇到冲突先登记到总进度台账，不自行选择旧任务、不扩展范围。
 - 禁止删除/重编号 A0–A112；规范化台账、去重、依赖和证据审计完成前不赋权、不计算总体完成率。真实环境/Provider/扣费/剪映/投放验证继续暂缓。
 - **七层结果证明标准已纳入全项目证据规则**：软件运行、功能行为、端到端流程、普通用户可用、商品表达真实安全、商业成片质量、真实商业效果；详细定义和禁止替代关系见总进度台账及执行控制协议。台账规范化时逐项映射，不新增正式验收 ID。
-- **用户自由度已纳入 PLAN-003 台账映射要求**：选择自由、控制自由、知情自由、撤回/纠正自由。必须把 UXS-2 中模型/Provider/Token 中转、本地与云端路由、自动回退授权、费用披露、数据外发、密钥保存、缓存/历史隔离逐项映射到既有 A0–A112 合同；不得静默跨 Provider/本地转云端，不得把未知费用当作零成本。此为审计维度，不新增正式验收 ID，不启动产品功能开发。
+- **用户自由度已纳入 PLAN-003 台账映射要求**：选择自由、控制自由、知情自由、撤回/纠正自由。预算/数据目的地确认必须先于任何可能收费或外发数据的云端调用，包括 LLM 分析/规划；取消后所有外部调用计数必须为 0。不得静默跨 Provider/本地转云端，不得把未知费用当作零成本。此为既有合同的严格解释与审计维度，不新增正式验收 ID，不启动产品功能开发。
 
 ---
 
