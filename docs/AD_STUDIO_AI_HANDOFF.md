@@ -1,4 +1,12 @@
-# 【AI 接手短入口｜2026-10-15｜规划控制体系优先】
+# AI 接手当前状态｜PLAN-003 A18–A23 增量映射｜2026-10-15
+
+- 当前唯一进度与下一项仍以 docs/AD_STUDIO_PROGRESS_DASHBOARD.md 为准。本轮 A18–A23 仅完成部分路线图/源码/测试指针映射，未正式验收任何任务。
+- 路线图阶段：A18–A19 → 阶段3「AI 广告编导」；A20–A23 → 阶段1「可靠的生产底座」。依赖：A19→A18、A21→A20、A22→A21、A23→A20/A21/A22。
+- 当前 HEAD 核验：9034d06c05c56f6fe05b268332d8c8268f3db7c1；CI Push/PR 与 docs-sync PR success；docs-sync Push 未找到对应运行记录。新提交后重新查四项。
+- 台账仍保持 current_head_evidence_task_ids=0、code_test_evidence_audit_completed_ids=0、fully_audited=0、semantic_dedup_completed=false；不赋权、不计算总体完成率、不新增 A113+。
+- 下一批：A24–A29。真实 Windows、素材、Provider/扣费、剪映和真实投放/商业效果验证继续暂缓；PR #32 不合并。
+
+---
 
 - 仓库/项目：`konggu888/ecommerce-agent/apps/ad-studio-desktop`；分支 `feat/product-drama-visual-review`；PR #32 保持 Open / unmerged。
 - 唯一权威当前任务、下一项、状态和进度：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`。当前是 PLAN-003 全量跨来源语义去重、状态冲突裁决与依赖/证据边界复核；A0–A112 台账和分批静态映射已存在，不重建、不重复从 A50 开始。当前不开发产品功能。
