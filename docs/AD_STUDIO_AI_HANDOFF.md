@@ -1,10 +1,10 @@
-# AI 接手当前状态｜PLAN-003 A34–A37 部分证据映射｜2026-10-15
+# AI 接手当前状态｜PLAN-003 A38–A41 部分证据映射｜2026-10-15
 
-- 唯一权威进度/下一项：docs/AD_STUDIO_PROGRESS_DASHBOARD.md。本轮 A34–A37 仅完成部分路线图/源码/测试映射，不是正式验收。
-- A34–A37 均暂映射到阶段5「资产与制作效率深化」。A34→A20/A21/A22；A35→A34/A43；A36→A34/A35；A37→A36。依赖与重叠只供审计，不表示通过或重复项裁决。
-- 指标：需求文本级复核 113；source/test/ci/workflow 指针记录 38；任意 evidence 记录 50；路线图映射 81；待映射 32；当前 HEAD 精确证据 0；完整代码/测试审计 0；完整审计 0；语义去重未完成。不得发布总体完成率、不得赋权。
-- 已发现 A34 视频抽帧/取消/持久化测试缺口，A35 局部修复问题清单与失败恢复缺口，A36 UI取消与 Provider 零调用端到端证据缺口，A37 仅证明 helper 换行而非真实 UI。详见规范台账。
-- 源码快照 6a930adc83348dec3776fb40dc2d505f1d826841；文档提交后重新检查 CI Push、CI PR、docs-sync Push、docs-sync PR。PR #32 Open/unmerged。下一批 A38–A41；不新增 A113+，不开发产品功能，真实环境验证继续暂缓。
+- 唯一权威进度/下一项：docs/AD_STUDIO_PROGRESS_DASHBOARD.md。本轮 A38–A41 仅完成部分路线图/源码/测试/工作流映射，不是正式验收。
+- A38–A41 均映射到阶段0「路线与证据基线」。依赖：A38→A31/A32；A39→A38；A40→A38/A39；A41→A38/A40。
+- 指标：需求文本级复核 113；source/test/ci/workflow 指针记录 42；任意 evidence 记录 54；路线图映射 85；待映射 28；当前 HEAD 精确证据 0；完整代码/测试审计 0；完整审计 0；语义去重未完成。不得发布总体完成率、不得赋权。
+- 已核验快照 1af689ab2dacbaff9ad7a08a26f1b4173cc328c4 的 CI Push/PR 均 success；docs-sync Push/PR 也 success。该 SHA 是本轮 A38–A41 的验证基线，新文档提交后仍须重查四项工作流。旧 handoff SHA/文案仅作历史，不作实时状态。
+- 下一批 A42–A45；不新增 A113+，不开发产品功能。真实 Windows、素材、Provider/扣费、剪映与投放继续暂缓。
 ---
 
 - 仓库/项目：`konggu888/ecommerce-agent/apps/ad-studio-desktop`；分支 `feat/product-drama-visual-review`；PR #32 保持 Open / unmerged。
