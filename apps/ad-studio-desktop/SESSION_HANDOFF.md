@@ -1,4 +1,13 @@
-# 【PLAN-003 AI 接手状态｜A110–A112 部分证据映射｜2026-10-15】
+# 【PLAN-003 AI 接手状态｜A57 冲突已厘清；全量去重继续｜2026-10-15】
+
+- 权威进度入口：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`；PR #32 Open/unmerged。
+- 本轮更新前最新已检查文档 HEAD `143d01f87c3161deee04cd2d3c821b1e915084d1` 的 CI PR / docs-sync PR success（38731016045 / 38731016172）；Push 状态未独立核实。源码/测试审计基线 `c77704d86d6131d13501448af76ce24afc56ad7b`。
+- A57 保留一个编号槽位、两条独立验收条款；四个专项测试覆盖 UI 待核对成本、成功账本重建、旧成本兼容、打开项目先恢复。仍不正式验收，真实账单与 Windows 流程暂缓。
+- A0–A112 没有新编号任务。下一步：全量语义去重、历史状态/证据冲突核对、剩余源码/测试审计；不新增 A113+，不合并 PR #32。文档更新后的最新 SHA 必须重新检查。
+
+---
+
+# 【历史快照｜PLAN-003 A110–A112 部分证据映射｜2026-10-15】
 
 - 权威进度入口：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`；PR #32 保持 Open/unmerged。
 - 源码/测试审计基线 `c77704d86d6131d13501448af76ce24afc56ad7b`；A110–A112 文档更新前最后一次明确核验成功的工作流 HEAD `47479d41725cf726e1543524bda012fee8bdf890`（CI PR / docs-sync PR 38730727069 / 38730727058）；文档更新后的 HEAD `143d01f87c3161deee04cd2d3c821b1e915084d1` 的 CI PR / docs-sync PR 38731016045 / 38731016172 也 success；Push 未独立核实。
