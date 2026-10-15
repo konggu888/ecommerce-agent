@@ -7,7 +7,7 @@
 - A0–A5 当前代码/测试证据映射（核验到 SHA `1fd6d08dac970cb7886c59239b05c4f6e2128cf9`；仅证据盘点，不代表正式验收）：A0：`ad_studio/app.py` 中存在 `App.create()` 用户操作入口，但已检查的 desktop 测试未发现专门启动/创建操作端到端测试；A1：当前 CI 覆盖多个测试集，但台账仍缺任务级稳定性矩阵与可追溯的逐项证据；A2：`test_desktop.py` 有 `test_project_lifecycle_isolated_between_projects`、`test_project_save_load`，但未发现直接调用 `App.create()` 的编排测试；A3：有 `test_setup_form_grid_rows_do_not_overlap`、`test_three_task_types_have_distinct_deterministic_policies`、`test_task_type_is_persisted_and_not_replaced_by_platform`，但不能替代三类任务完整 UI 流程验收；A4：`test_footage.py` 覆盖素材排序扫描、不可解析文件注记、重复素材评分、废片归档与保护被引用源文件（`test_archive_analyzed_waste_protects_currently_referenced_source`），仍需对照验收清单补齐路径异常、源文件保护等完整矩阵；A5：`footage.py` 实现 `extract_keyframes()`、`build_visual_manifest()`、`footage_analysis_public()`，但全仓已检查的 desktop `test*.py` 未找到对前两者的直接专项测试，需补关键帧提取失败、清单生成失败与模型视觉分析失败/回退覆盖。六项均不标记正式验收通过。
 
 - A0–A112 共 113 个编号槽位的四份规划来源标题索引已建立；需求文本级语义复核覆盖 113 个已登记槽位。A68–A74 与 A99 的历史任务身份已从历史提交、测试及项目文档中恢复，不能再描述为“未知编号缺口”；但历史实现不等于当前 HEAD 已验收。
-- 当前仍未完成的是全量跨来源重复/状态材料合并审计，以及逐项代码、测试和当前 HEAD 证据审计。已确认的 A50/A56、A61/A62、A57、A99 关系仅为局部裁决；台账仍为 `fully_audited=0`、`semantic_dedup_completed=false`、`code_test_evidence_audit_completed_ids=0`；`code_test_evidence_reviewed_ids=34` 表示已开始部分映射，不表示六项已正式验收。权重仍为空，总体完成率保持关闭。
+- 当前仍未完成的是全量跨来源重复/状态材料合并审计，以及逐项代码、测试和当前 HEAD 证据审计。已确认的 A50/A56、A61/A62、A57、A99 关系仅为局部裁决；台账仍为 `fully_audited=0`、`semantic_dedup_completed=false`、`code_test_evidence_audit_completed_ids=0`；`code_test_evidence_reviewed_ids=50` 表示已开始部分映射，不表示六项已正式验收。权重仍为空，总体完成率保持关闭。
 - A88 是标题解析假缺口，已修正。跨来源关系的初步裁决（仍待全量核对）：A50/A56 是原始行为合同与回归修复，关联但不合并；A61/A62 是历史成本迁移能力与迁移相关断言修复，关联但不合并；A57 内含两个独立验收场景，必须分别核验；A99 的成功账本清除未计费兄弟镜头陈旧成本有独立行为与专项测试，与 A57/A59 相关但不重复。A80、A84/A85、A89、A92/A93、A111 等历史/状态材料及 A90–A98、A100–A112 的独立执行合同仍需逐项核对。此为保守初步映射，不代表全量语义去重完成，不授权删除任何 ID 或验收条件。
 - A0–A5 的代码/测试证据审计仅有部分映射，未正式验收。A3 设置区布局重叠问题已在 `f20bf426594a55ac74267641b53d9166acef6798` 修复并增加 AST 布局回归测试；`0bc079178c569502dc8f722ad04544a581f20290` 是该阶段的历史核验基线，不是当前 HEAD。当前最新完整核验基线为 `1fd6d08dac970cb7886c59239b05c4f6e2128cf9`，其 CI Push `38691577983`、CI PR `38691582839`、docs-sync Push `38691577999`、docs-sync PR `38691582806` 均 success。下一步不重复修复已解决的 A3 布局问题，而是继续 PLAN-003：完成跨来源重复/状态段审计，再逐项核验 A0–A5 及后续任务的代码、专项测试与当前 SHA 证据。
 
@@ -173,3 +173,36 @@ PR #32 不合并。Windows 真机、真实素材、真实 Provider/扣费、剪�
 - A31/A32 是文档与接手能力合同；A33 是夹具隔离的离线流程回归。两者都不能替代真实环境验收。
 - `code_test_evidence_reviewed_ids=34` 表示 A0–A33 已开始证据映射，不代表 34 项审计完整；`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false` 继续保持。未分配权重，不计算整体完成率。
 - 下一批按既定顺序继续 A34–A49；每项仍需检查正式原文、当前实现、专项测试、任务依赖与是否重复，并保留历史验收记录与当前基线的区别。
+
+
+## PLAN-003 当前代码/测试证据审计：A34–A49｜2026-10-15｜部分映射
+
+本轮开始基线：`b48f7a9859476ed639bc9220035c986cd5e77c37`；该 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR 四项均成功，PR #32 为 Open / unmerged。审计来源包括正式验收计划、桌面测试、短剧测试、PROJECT_LOGIC、AI handoff 与当前进度台账。下列是静态证据映射，不是对每项重新执行测试后的正式验收。
+
+| ID | 已找到的代码/测试/文档证据 | 审计结论与剩余核验 |
+|---|---|---|
+| A34 商品画面对比 | `test_short_drama.py` 有 `test_ai_visual_comparison_flags_mismatch_without_auto_approval`、`test_ai_visual_comparison_never_auto_approves_a_match`、`test_ai_visual_comparison_rejects_missing_reference_and_wrong_mode`、`test_ai_visual_comparison_rejects_empty_and_unsupported_files`；也有模型路由、证据和待复核状态相关实现 | 有疑似不匹配拦截、匹配也不自动通过、输入错误防护的测试证据。需进一步核验视频代表帧提取与清理、独立模型路由配置、费用取消无副作用、持久化全字段和当前 SHA 下的专项执行结果。Windows/真实 Provider 暂缓。 |
+| A35 问题镜头仅重生成 | `test_product_drama_regeneration_changes_only_selected_shot_and_preserves_history`、`test_product_drama_regeneration_rejects_wrong_mode_and_empty_correction`；验收计划记录确认费用后仅准备待重生成，不自动调用 Provider | 单镜头作用域和历史保留有测试证据。失败恢复、未选中镜头/其他项目/原始资产不变的完整矩阵需独立映射；不得把“准备重生成”说成已完成真实生成。 |
+| A36 视觉结果辅助修复 | `test_product_visual_correction_suggestion_uses_review_findings_as_editable_draft`、`test_product_drama_regeneration_rejects_non_finite_cost_and_invalid_version` | 可编辑修正草稿、异常费用/版本防护有专项测试线索。仍需确认取消无版本变化、费用确认前零 Provider 调用、核验历史保留和当前版本状态重置全部有直接断言。 |
+| A37 草稿换行 | `test_a50_video_prompt_uses_real_line_breaks` 与短剧修正草稿生成相关测试；handoff 记录真实换行回归历史 | 有真实换行回归测试线索，但 A37 目标是视觉修正草稿显示，不能仅凭 A50 视频提示词测试视为完全等价。需确认 A37 测试直接覆盖摘要和 issues 的实际换行显示。 |
+| A38 跨会话接手 | `test_ai_handoff.py` 检查 handoff 章节、CI 边界和接手约束 | 接手文档关键结构有测试。当前文件仍包含多个历史 SHA/PR 状态段落；顶部当前状态与实时 HEAD 对齐很重要，后续应在全量审计中检查历史段落是否可能误导新 AI。 |
+| A39 功能分支 CI | 当前分支已触发 CI Push 与 CI PR，且本轮开始基线四项检查全绿；执行控制协议规定所有新 SHA 重新核验 | 当前基线证明分支触发有效；正式计划里 A39 仍是待勾选的历史条目，需在台账中区分“当前 CI 事实已观察到”与“正式验收记录/计划勾选已同步”。 |
+| A40 接手测试路径 | `test_ai_handoff.py` 有路径基准相关约束，handoff 记录了此前路径失败修复 | 有路径约束线索；仍需在全量审计中确认测试实际检查的是仓库根目录 ROOT 解析，不仅是文本存在性。 |
+| A41 接手文案断言 | handoff 测试包含多条关键文案断言；历史记录记载曾修复文案断言失败 | 当前 CI 绿说明当前测试通过，但不等于所有断言都能抵抗语义漂移。后续需逐条核对计划中的关键断言和对应文件语句，不删除有效回归测试来换绿灯。 |
+| A42 CI 绑定 SHA | 本轮重新核对实时 HEAD 与四项工作流，未把旧 SHA 结果套用到当前提交 | 本轮操作符合 A42 的原则；计划内的 `443f713...` 只是历史基准，不能作为当前 HEAD 的验收证据。 |
+| A43 重生成失败恢复 | `test_a43_regeneration_failure_restores_previous_good_video_and_persists_it`、`test_a43_project_recovery_restores_previous_video_after_interrupted_regeneration`；计划记录旧视频路径、Provider 失败恢复和中断恢复 | 有旧视频保护、重载与中断恢复证据。仍需逐项核对旧文件缺失/空文件、临时文件清理、状态和错误原因等边界，部分内容由 A53/A54 后续任务补充，不可把相关任务合并。 |
+| A44 短剧镜头映射 | `test_product_drama_shot_mapping_uses_stable_storyboard_index_after_insertions`、`test_product_drama_legacy_shot_mapping_uses_unique_title_and_episode`、`test_product_drama_ambiguous_legacy_mapping_fails_closed` | 稳定编号、旧项目唯一匹配与歧义拒绝有直接测试线索。仍需确认生成、修正草稿等所有调用点都使用该映射；不能用项目显示序号替代源 storyboard 编号。 |
+| A45 失败恢复 UI | `test_a45_ui_failure_state_keeps_recovered_previous_video_status` | 已找到 UI 状态测试。仍需核验恢复标记、文件存在、文件非空三条件同时满足时才显示恢复成功，且缺失证据时不误报。 |
+| A46 编辑镜头旧版保护 | `test_a46_edit_shot_routes_through_safe_regeneration_transition` | 编辑入口调用统一版本转换有测试线索。需检查保存旧视频路径、版本递增和编辑取消的边界；历史 CI 失败记录需与当前结果分开保留。 |
+| A47 素材解析失败恢复 | `test_a47_asset_resolution_failure_restores_previous_video` | 有素材解析失败后恢复旧视频的测试。需核验失败时不调用视频 Provider、清理临时输出、重新加载状态准确。 |
+| A48 实拍裁剪安全输出 | `test_a48_footage_trim_failure_does_not_delete_existing_output` | 有裁剪失败不破坏正式输出的测试。需核验临时文件、非空校验、原子替换及多段拼接异常边界；夹具测试不能替代真实素材验收。 |
+| A49 多段实拍中断清理 | `test_a49_missing_footage_source_cleans_stale_split_parts_and_keeps_old_video`；计划记录项目恢复清理普通临时输出与多段分段文件 | 有源素材缺失后清理残留并保留旧视频的测试线索。需确认进程中断、项目重载、分段文件完整覆盖，以及不会误删仍被引用的源文件。 |
+
+### A34–A49 关系与进度裁决
+
+- A34–A49 共 16 项均为“部分证据映射”，不是本轮正式验收通过。A34/A35/A36 形成视觉核验→单镜头修复链路，但分别具有独立输入、费用、状态和安全合同，不合并。
+- A43–A49 形成重生成失败恢复、稳定镜头映射、UI 状态、素材解析、裁剪输出和中断清理等连续修复链路；相互相关但失败阶段与回退条件不同，不合并任务 ID。
+- A37 的草稿换行与 A50/A56 的 Provider 提示词换行是相关回归问题，但对象不同；不得仅凭名称相似就认定相同验收条件。
+- A38–A42 是接手/CI/证据纪律类任务；实时 CI 绿灯是当前观察事实，但计划状态与历史文档一致性仍需核验。
+- 台账更新为 `code_test_evidence_reviewed_ids=50`，表示 A0–A49 已开始映射；`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false` 保持不变。未分配权重，不计算整体完成率。
+- 下一批按编号继续 A50–A67，重点保留 A50/A56（行为合同与回归修复）、A57（含两个独立场景）、A61/A62（历史迁移与断言修复）的既有“不合并”裁决，并继续核验 A68–A74 的历史身份及当前证据。
