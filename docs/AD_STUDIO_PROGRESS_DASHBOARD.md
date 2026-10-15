@@ -1,15 +1,27 @@
 # 【规划与进度控制体系盘点｜2026-10-15｜权威当前状态】
 
+## PLAN-003 增量审计记录｜A24–A29｜2026-10-15
+
+- 本轮核对 PR #32 实际 HEAD、四项 CI/doc-sync 工作流、A24–A29 原始验收合同、路线图阶段门槛、生产层/模型层/UI 源码及专项测试。只做 PLAN-003 证据与状态映射，不改产品代码，不调用真实 Provider/扣费/投放。
+- A24 最终安全闸门、A25 媒体质量、A26 成片版本历史、A27 成片交付中心、A28 本地项目数据、A29 数据边界均映射至阶段1「可靠的生产底座」。A24 依赖 A20–A23；A25→A24；A26→A25；A27→A25/A26；A28→A26/A27；A29 与 A6/A19 有数据来源/指标边界关系。依赖仅用于审计排序，不代表验收通过。
+- 已登记源码/专项测试指针：A24 风险汇总与禁止最终输出；A25 文件/视频流/时长/尺寸/画幅/1080P 级尺寸与失败清理；A26 修订/方案/画幅历史隔离；A27 阻塞提示、修复路由与无重新生成复查；A28 项目保存重载与项目隔离；A29 用户来源、unverified 状态和禁止伪造平台指标。
+- 证据边界：A24 风险组合覆盖仍需逐项核对；A25 尺寸放大不等于 AI 细节增强或真实画质；A26/A27 自动化不证明 Windows UI 可用性；A28 仍需损坏数据、路径迁移和磁盘异常边界；A29 单项测试不证明所有数据入口统一执行边界。真实 Windows、素材、Provider/扣费、剪映和投放仍暂缓。
+- 指标口径已纠正：semantic_dedup_reviewed_task_ids=113 是需求文本级复核；code_test_evidence_reviewed_ids=30 是具有 source/test/ci/workflow 指针的任务记录数；当前 HEAD 精确证据绑定数=0。路线图映射数=73/113，仍不发布总体完成率；code_test_evidence_audit_completed_ids=0、fully_audited=0、semantic_dedup_completed=false 保持。
+- 本轮审查的源码快照基线为 168bd507430af347de805c96735793c200a9802c；文档提交后的最终 HEAD 必须重新核验四项 workflow。PR #32 保持 Open/unmerged。
+- 下一批按编号继续 A30–A33，继续完整 PLAN-003 语义去重/冲突裁决/依赖证据边界复核；不新增 A113+、不赋权、不发布总体完成率。
+
+---
+
 > **本文件是唯一权威进度源。** 当前任务、阶段状态、任务台账、依赖、权重、证据和下一项只以本文件为准。`SESSION_HANDOFF.md` 与 `docs/AD_STUDIO_AI_HANDOFF.md` 只提供接手入口和短摘要；路线图定义战略与阶段退出条件；验收计划定义范围；SOP 定义验收方法；执行控制协议定义 AI 行为。其他文件中的“当前状态/下一项”若与本文件冲突，一律视为历史快照，先登记冲突，不据此启动任务。
 
 - 仓库：`konggu888/ecommerce-agent`；项目：`apps/ad-studio-desktop`；分支：`feat/product-drama-visual-review`；PR #32 保持 Open / unmerged。
 - 历史快照（已过时）：曾在 HEAD `103518a3574429812101407123b142a553d977c5` 核验 PR-triggered CI/docs-sync 与 deploy preview。此后分支继续产生审计文档提交；该旧 SHA 不代表当前状态。每次接手须从 PR #32 实时读取 HEAD，并逐项查该 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR；不得从本文的历史记录推断当前绿灯。
 - 当前唯一主线仍属 PLAN-003：**对 A0–A112 全量跨来源关系、状态冲突和证据边界作最终裁决**。控制体系盘点、113 个编号槽位的规范化登记及 A0–A112 部分静态证据映射已经存在；不得重复启动“重新建立台账”或从 A50 重新做同一批映射。
-- 当前已核实的核心问题：A0–A112 的 113 个槽位已有标题索引、规范化登记和分批静态证据映射；`code_test_evidence_reviewed_ids=113` 只代表每个编号均开始映射，绝不代表完成审计。真正未完成的是跨来源语义去重/状态冲突的全量裁决、任务依赖与阶段退出条件的逐项关联、证据局限与状态字段完整性复核，以及后续权重/自动一致性检查。多个接手文件与路线图顶部仍保留过时“当前任务/下一项”，正是本轮要收敛的循环来源。
+- 当前已核实的核心问题：A0–A112 的 113 个槽位已有标题索引、规范化登记和分批静态证据映射；`semantic_dedup_reviewed_task_ids=113` 代表 113 个编号已进行需求文本级复核；规范台账的 `code_test_evidence_reviewed_ids` 按存在 source/test/ci/workflow 证据指针的任务记录计数，两者不能混用。该计数不代表完成审计。真正未完成的是跨来源语义去重/状态冲突的全量裁决、任务依赖与阶段退出条件的逐项关联、证据局限与状态字段完整性复核，以及后续权重/自动一致性检查。多个接手文件与路线图顶部仍保留过时“当前任务/下一项”，正是本轮要收敛的循环来源。
 - **当前唯一任务**：继续 PLAN-003，对 A0–A112 全量跨来源语义关系、状态冲突、依赖和证据边界作最终裁决。规范化槽位登记、A0–A112 分批静态映射及权威入口纠偏已完成；现在不能重复这些前置工作，也不能把“入口纠偏”本身误报成 PLAN-003 完成。完成全量语义去重和依赖/证据审计后，才进入 PLAN-004 权重审定、PLAN-005 状态段清理、PLAN-006 自动一致性检查和 PLAN-007 阶段 2 退出复核。
 - 不删/重编号 A0–A112，不自行增加正式验收 ID。真实 Windows、真实素材、真实 Provider/扣费、剪映现场、真实投放与商业效果验证继续暂缓。
 
-## PLAN-003 增量审计记录｜A18–A23｜2026-10-15
+## PLAN-003 增量审计记录｜A18–A23｜历史批次（2026-10-15）
 
 - 本轮实际复核当前分支中的 A18–A23 验收合同、model_router.py、app.py、production.py、test_desktop.py 与相关创意引擎测试线索；只更新静态证据映射，不修改产品代码、不运行真实 Provider/扣费/投放。
 - 路线图映射：A18 多版本、A19 创意实验设计 → 阶段3「AI 广告编导」；A20 创意事实、A21 分镜事实、A22 视觉事实、A23 风险控制 → 阶段1「可靠的生产底座」。验收计划中的“第八阶段/第九阶段”是验收编排章节，不自动等同于产品路线图战略阶段。
@@ -17,7 +29,7 @@
 - A18–A23 仍全部 not_audited；新增源码/测试路径只是局部证据指针，精确源码提交 SHA 尚未独立追溯，因此 evidence sha 留空；current_head_evidence_task_ids=0、code_test_evidence_audit_completed_ids=0、fully_audited=0、semantic_dedup_completed=false 保持不变。路线图映射数更新为 67/113，但不发布总体完成率。
 - 已确认的覆盖边界：A18 有版本状态/缓存隔离测试线索，但完整 UI 与逐项独立输出仍待审；A19 有创意机制差异和禁止虚构投放指标测试，但真实投放/归因不在此证据内；A20–A22 的文本/视觉规则审计不能替代真实画面核验；A23 的部分最终安全闸门测试不能证明权限等级、Dry-run、Audit Log 等原始合同全部满足。
 - 当前 HEAD 9034d06c05c56f6fe05b268332d8c8268f3db7c1：CI Push 38717119962、CI PR 38717127760、docs-sync PR 38717127996 均 success；截至本轮查询未找到该 SHA 的 docs-sync Push 运行记录。不能宣称四项全绿。PR #32 继续 Open/unmerged。
-- 下一批按编号顺序继续 PLAN-003：A24–A29，先对照原始合同、路线图、代码/测试及现有重复关系；不得新增 A113+、不赋权、不计算总体完成率。
+- 本批后续已由 A24–A29 审计批次承接；本段仅保留历史记录。不得新增 A113+、不赋权、不计算总体完成率。
 
 ---
 
@@ -104,7 +116,7 @@
 - A0–A5 当前代码/测试证据映射（核验到 SHA `1fd6d08dac970cb7886c59239b05c4f6e2128cf9`；仅证据盘点，不代表正式验收）：A0：`ad_studio/app.py` 中存在 `App.create()` 用户操作入口，但已检查的 desktop 测试未发现专门启动/创建操作端到端测试；A1：当前 CI 覆盖多个测试集，但台账仍缺任务级稳定性矩阵与可追溯的逐项证据；A2：`test_desktop.py` 有 `test_project_lifecycle_isolated_between_projects`、`test_project_save_load`，但未发现直接调用 `App.create()` 的编排测试；A3：有 `test_setup_form_grid_rows_do_not_overlap`、`test_three_task_types_have_distinct_deterministic_policies`、`test_task_type_is_persisted_and_not_replaced_by_platform`，但不能替代三类任务完整 UI 流程验收；A4：`test_footage.py` 覆盖素材排序扫描、不可解析文件注记、重复素材评分、废片归档与保护被引用源文件（`test_archive_analyzed_waste_protects_currently_referenced_source`），仍需对照验收清单补齐路径异常、源文件保护等完整矩阵；A5：`footage.py` 实现 `extract_keyframes()`、`build_visual_manifest()`、`footage_analysis_public()`，但全仓已检查的 desktop `test*.py` 未找到对前两者的直接专项测试，需补关键帧提取失败、清单生成失败与模型视觉分析失败/回退覆盖。六项均不标记正式验收通过。
 
 - A0–A112 共 113 个编号槽位的四份规划来源标题索引已建立；需求文本级语义复核覆盖 113 个已登记槽位。A68–A74 与 A99 的历史任务身份已从历史提交、测试及项目文档中恢复，不能再描述为“未知编号缺口”；但历史实现不等于当前 HEAD 已验收。
-- 当前仍未完成的是全量跨来源重复/状态材料合并审计，以及逐项代码、测试和当前 HEAD 证据审计。已确认的 A50/A56、A61/A62、A57、A99 关系仅为局部裁决；台账仍为 `fully_audited=0`、`semantic_dedup_completed=false`、`code_test_evidence_audit_completed_ids=0`；`code_test_evidence_reviewed_ids=113` 表示已开始部分映射，不表示六项已正式验收。权重仍为空，总体完成率保持关闭。
+- 当前仍未完成的是全量跨来源重复/状态材料合并审计，以及逐项代码、测试和当前 HEAD 证据审计。已确认的 A50/A56、A61/A62、A57、A99 关系仅为局部裁决；台账仍为 `fully_audited=0`、`semantic_dedup_completed=false`、`code_test_evidence_audit_completed_ids=0`；`semantic_dedup_reviewed_task_ids=113` 表示已进行需求文本级复核，不表示六项已正式验收。权重仍为空，总体完成率保持关闭。
 - A88 是标题解析假缺口，已修正；2026-10-15 又清理了 A88 逻辑章节的重复段落，并将验收计划、SOP、接手文件中的字面量转义换行规范为真实 Markdown 换行。此为文档可读性/同步修复，不改变 A88 验收合同，不表示功能验收通过。跨来源关系的初步裁决（仍待全量核对）：A50/A56 是原始行为合同与回归修复，关联但不合并；A61/A62 是历史成本迁移能力与迁移相关断言修复，关联但不合并；A57 内含两个独立验收场景，必须分别核验；A99 的成功账本清除未计费兄弟镜头陈旧成本有独立行为与专项测试，与 A57/A59 相关但不重复。A80、A84/A85、A89、A92/A93、A111 等历史/状态材料及 A90–A98、A100–A112 的独立执行合同仍需逐项核对。此为保守初步映射，不代表全量语义去重完成，不授权删除任何 ID 或验收条件。
 - A0–A5 的代码/测试证据审计仅有部分映射，未正式验收。A3 设置区布局重叠问题已在 `f20bf426594a55ac74267641b53d9166acef6798` 修复并增加 AST 布局回归测试；`0bc079178c569502dc8f722ad04544a581f20290` 是该阶段的历史核验基线，不是当前 HEAD。当前最新完整核验基线为 `1fd6d08dac970cb7886c59239b05c4f6e2128cf9`，其 CI Push `38691577983`、CI PR `38691582839`、docs-sync Push `38691577999`、docs-sync PR `38691582806` 均 success。下一步不重复修复已解决的 A3 布局问题，而是继续 PLAN-003：完成跨来源重复/状态段审计，再逐项核验 A0–A5 及后续任务的代码、专项测试与当前 SHA 证据。
 
@@ -429,7 +441,7 @@ PR #32 不合并。Windows 真机、真实素材、真实 Provider/扣费、剪�
 - A105 pacing 映射、A106 文本角色默认决策、A107 将时长传入运行时请求是连续但独立的执行层；A108 字幕时间轴生成与 A112 将真实 SRT cue 送入内容保护也必须分别核验。
 - A109 音乐切点、A110 内容保护、A111 局部边界回退、A112 字幕 cue 保护形成链路，但每项有独立失败条件和测试合同。历史 CI 记录不能代替当前 SHA 证据；当前基线四项工作流为绿只证明当前提交的 CI/doc-sync 通过，不代表真实成片质量验收。
 - A102 1080P 尺寸底线与真实清晰度增强严格区分。路线图中阶段 2 仍未退出，真实音乐、真实口播、真实素材、Windows 播放/剪映与商业效果继续暂缓。
-- 本批 A100–A112 全部记为“部分证据映射”。台账 `code_test_evidence_reviewed_ids=113` 仅表示 A0–A112 已开始映射；`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false` 保持不变。不分配权重，不计算整体完成率。
+- 本批 A100–A112 全部记为“部分证据映射”。台账 `semantic_dedup_reviewed_task_ids=113` 仅表示 A0–A112 已开始映射；`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false` 保持不变。不分配权重，不计算整体完成率。
 - 下一步转入全量跨来源去重与状态裁决：把 A0–A112 正式验收计划与路线图、未来功能备忘、验收 SOP、任务登记表及执行控制文档逐项交叉核对；优先处理已发现的重复段落/转义换行/历史状态冲突，并只在有来源证据时修正文档。不得删 ID、补造编号或开发新产品功能。
 
 ---
@@ -741,7 +753,7 @@ A50–A67 的详细静态映射已存在；本轮将其规范台账行与该映�
 - **规划依赖映射：本批已完成。**
 - **自动化功能/当前 HEAD 逐项证据审计：未完成。** 本轮未逐项重跑专项测试，且部分映射仍引用历史 SHA。
 - **路线图阶段退出：未满足/不可宣布。** 当前规划主线 PLAN-003 尚未完成；Push-triggered 工作流未核实；真实媒体、Windows、口播/听感、商品视觉与商业质量仍暂缓。
-- 计数保持：`code_test_evidence_reviewed_ids=113`、`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false`。不赋权、不计算总体完成率。
+- 计数保持：`semantic_dedup_reviewed_task_ids=113`、`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false`。不赋权、不计算总体完成率。
 
 ### 下一项
 历史指令（已由后续批次执行）：本段当时计划先映射阶段 0 与阶段 1；对应映射现已记录于本文件后续“第二批：阶段 0 与阶段 1”章节。该历史顺序不可再次执行；当前批次和下一项以本文件顶部唯一当前状态为准。
@@ -914,7 +926,7 @@ A50–A67 的详细静态映射已存在；本轮将其规范台账行与该映�
 - **规划依赖映射：本批已完成。**
 - **阶段 5 退出：未判定。** 部分路线图深化项可能没有被现有 A0–A112 合同完整覆盖，需要在 PLAN-003 全量语义裁决中确认缺口，不得擅自新增正式编号。
 - **阶段 6 退出：未启动、暂缓。** 不可由 CI 或规划文档判定通过。
-- code_test_evidence_reviewed_ids=113、code_test_evidence_audit_completed_ids=0、fully_audited=0、semantic_dedup_completed=false 均保持；不赋权、不计算总体完成率。
+- semantic_dedup_reviewed_task_ids=113、code_test_evidence_audit_completed_ids=0、fully_audited=0、semantic_dedup_completed=false 均保持；不赋权、不计算总体完成率。
 
 ### 历史下一项说明与当前下一项
 本批之前的“下一项：阶段 5/6”现已执行，作为历史指令保留。下一项仍在 PLAN-003：进行**跨来源状态冲突与证据绑定审计**，优先处理已知接手文件的过时 HEAD/PR/“下一项”冲突，以及 UXS-2 中预算授权时点、自动 Provider/本地转云端回退、密钥保存、未知费用、外发数据告知和模型切换缓存隔离等高风险事项；每项必须映射到现有 A0–A112，说明当前代码/测试证据、证据 SHA、用户拒绝时是否能证明外部调用为 0，以及缺失的正反例测试。此项只做审计与台账裁决，不开发产品功能，不启动真实环境，不新增正式验收 ID。
@@ -945,7 +957,7 @@ A50–A67 的详细静态映射已存在；本轮将其规范台账行与该映�
 1. 当前确认的是源码中存在的调用顺序、路由回退分支和 JSON 明文配置保存路径；没有据此推断每次调用一定产生费用或一定发生外发。
 2. 自动化测试证据与完整 UI/E2E 证据分开；本轮没有在本地执行测试。当前 SHA 的 CI 通过只能说明工作流成功，不能代替上述每项行为合同的专项验收。
 3. 下一项仍属 PLAN-003：将本节候选映射与 A0–A112 规范台账逐项交叉核对，尤其核准“费用确认是否涵盖创意 LLM 调用”的唯一合同解释，并继续追踪实际调用点、用户拒绝路径和零外部调用断言。不得新增正式验收 ID、开发产品功能或启动真实 Provider/扣费、Windows 真机、真实素材、剪映现场与真实投放验收。
-4. 状态保持：`code_test_evidence_reviewed_ids=113` 不变；`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false` 不变；不赋权、不计算总体完成率。PR #32 保持 Open / unmerged。
+4. 状态保持：`semantic_dedup_reviewed_task_ids=113` 不变；`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false` 不变；不赋权、不计算总体完成率。PR #32 保持 Open / unmerged。
 
 
 ## PLAN-003 授权合同冲突裁决与当前证据复核｜2026-10-15
@@ -1065,9 +1077,9 @@ A50–A67 的详细静态映射已存在；本轮将其规范台账行与该映�
 
 | 检查项 | 权威进度页当前表述 | 规范任务台账实际内容 | 当前裁决 |
 |---|---|---|---|
-| 代码/测试证据映射计数 | 本页称 A0–A112 均已开始部分映射，计数为 113 | JSON 的 `counts.code_test_evidence_reviewed_ids=6`；仅 18 条任务记录有任何 evidence，其中 6 个编号有 `source/test/ci/workflow` 类型证据 | **不能把两个计数直接视为同一口径**。保留“跨文档已开始映射”的历史声明，但需逐项将证据记录写回规范台账或修正其统计定义 |
+| 代码/测试证据映射计数 | 本页历史文字曾将需求文本级复核计数写作 113，容易与代码/测试证据指针数混淆 | 旧 JSON 的 `counts.code_test_evidence_reviewed_ids=6` 与任务记录中的代码/测试指针数不一致；本轮已按当前任务台账重新定义并重算该指标 | **不能把两个计数直接视为同一口径**。保留“跨文档已开始映射”的历史声明，但需逐项将证据记录写回规范台账或修正其统计定义 |
 | 证据是否绑定当前 HEAD | 本页的历史分批说明记录了旧 SHA/旧 CI；新一轮静态安全审计已更新本页 | JSON `generated_from_head=7a1ac049...`，其 18 条记录中没有一条 evidence SHA 等于当前 HEAD `73d66d7...` | 任务台账是旧快照，不是当前 HEAD 的证据清单；旧 SHA/历史 CI 不能代表当前代码验收 |
-| 路线图阶段映射 | 本页称阶段 2–6 的分批依赖映射已写入，但完整逐项裁决仍在 PLAN-003 | JSON 中 70/113 个任务的 `roadmap_phase` 仍是“待路线图映射” | 这是逐项映射落库/状态口径冲突；不在本轮猜填阶段，不把文档中的阶段关系推断成任务级映射完成 |
+| 路线图阶段映射 | 本页称阶段 2–6 的分批依赖映射已写入，但完整逐项裁决仍在 PLAN-003 | 旧 JSON 中 70/113 个任务的 `roadmap_phase` 曾是“待路线图映射”；本批落库后以最新台账实时统计为准 | 这是逐项映射落库/状态口径冲突；不在本轮猜填阶段，不把文档中的阶段关系推断成任务级映射完成 |
 | 正式验收/整体完成 | 本页与 JSON 均应保持未完成 | JSON 的 `fully_audited=0`、`code_test_evidence_audit_completed_ids=0`、`semantic_dedup_completed=false`、`weighting_completed=false` | 状态一致：不得宣称 PLAN-003 完成，不赋权，不计算总体完成率 |
 
 ### 修正方向与停止条件

@@ -1,10 +1,9 @@
-# 桌面项目接手状态｜PLAN-003 A18–A23 增量映射｜2026-10-15
+# 桌面项目接手状态｜PLAN-003 A24–A29 部分证据映射｜2026-10-15
 
-- 唯一权威进度与下一项：docs/AD_STUDIO_PROGRESS_DASHBOARD.md。当前 HEAD 9034d06c05c56f6fe05b268332d8c8268f3db7c1，PR #32 Open/unmerged。
-- 本轮完成 A18–A23 部分映射，不是正式验收：A18/A19→阶段3；A20–A23→阶段1。依赖：A19→A18、A21→A20、A22→A21、A23→A20/A21/A22。源码/测试证据 SHA 尚未独立追溯，不能升级状态。
-- 审计开始基线 9034d06c05c56f6fe05b268332d8c8268f3db7c1 的 docs-sync Push 当时未找到记录；后续文档提交会改变 HEAD，因此该状态只作历史背景。每次更新后必须实时核验最终 SHA 的 CI Push/PR 与 docs-sync Push/PR。
-- 保持 current_head_evidence_task_ids=0、code_test_evidence_audit_completed_ids=0、fully_audited=0、semantic_dedup_completed=false。下一批 A24–A29。只做 PLAN-003 文档/证据审计，不开发产品功能；真实环境验证继续暂缓。
-
+- 唯一权威进度/下一项：docs/AD_STUDIO_PROGRESS_DASHBOARD.md。PR #32 必须保持 Open/unmerged。
+- 本轮已对 A24–A29 完成部分路线图/源码/测试指针映射，均属阶段1「可靠的生产底座」，未正式验收任何任务。A24→A20/A21/A22/A23；A25→A24；A26→A25；A27→A25/A26；A28→A26/A27；A29 与 A6/A19 有数据边界关系。
+- 台账指标已区分：需求文本级复核 113；source/test/ci/workflow 指针记录 30；当前 HEAD 精确证据 0；完整代码/测试审计 0；语义去重未完成。证据 SHA 未逐文件追溯，不得升级状态或发布总体完成率。
+- 源码快照审查基线 168bd507430af347de805c96735793c200a9802c；提交后重新核验 CI Push、CI PR、docs-sync Push、docs-sync PR。下一批 A30–A33。只做 PLAN-003 文档/证据审计，不开发产品功能；真实环境验证继续暂缓。
 ---
 
 
