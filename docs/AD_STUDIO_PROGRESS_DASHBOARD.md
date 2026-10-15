@@ -1,4 +1,18 @@
-# 【PLAN-003 当前状态｜A95–A99 部分证据映射｜2026-10-15】
+# 【PLAN-003 当前状态｜A100–A104 部分证据映射｜2026-10-15】
+
+- **源码/测试审计基线**：`c77704d86d6131d13501448af76ce24afc56ad7b`；源码/测试 blobs 及逐项证据见任务台账。基线 CI PR [38729441932](https://github.com/konggu888/ecommerce-agent/actions/runs/38729441932) 与 docs-sync PR [38729441851](https://github.com/konggu888/ecommerce-agent/actions/runs/38729441851) 均 success；Push 工作流未独立核实。PR #32 Open/unmerged。
+- **A100** 淡出按变速后输出时长定位，短片段淡化时长不超过输出时长；仅验证 mocked FFmpeg 参数。
+- **A101** 非常速时视频 setpts 与音频 atempo 同步，常速避免不必要滤镜；未验证实际波形/音质。
+- **A102** 竖/横/方画幅归一化至 1080P 级尺寸，并拒绝低于门槛的输出；测试模拟归一化，不代表 AI 超分或细节恢复。
+- **A103** 淡入/淡出使用匹配的画面 fade 与音频 afade 时间窗；仅验证命令构造。
+- **A104** 明确选用交叉溶解时走 xfade/acrossfade，统一画幅/fps/时间基准/像素格式并为无音轨补静音；默认仍 concat。实际 FFmpeg filter graph 未执行，混合硬切采用 1ms overlap。
+- A100–A104 均为 `partial_evidence_mapping` / `not_audited`。映射覆盖：需求复核 113；source/test/CI/workflow 指针任务 105；任意 evidence 任务 112；路线图映射 113/113；源码/测试快照绑定 47；最终文档 HEAD 精确绑定 0；完整代码/测试审计 0；完整审计 0；语义去重未完成；权重和总体完成率关闭。
+- 本轮未改产品代码。Windows 真机、真实素材、实际 FFmpeg 渲染、视听质量继续暂缓。PR #32 不合并，不新增 A113+，不删除/合并/重编号。
+- **下一批 A105–A109**。文档提交后先核验最新 SHA 的四项 CI/docs-sync；Push 若无法独立查询需如实说明。
+
+---
+
+# 【历史快照｜PLAN-003 A95–A99 部分证据映射｜2026-10-15】
 
 - **源码/测试审计基线**：分支 `feat/product-drama-visual-review` 的 HEAD `c77704d86d6131d13501448af76ce24afc56ad7b`；本轮文档更新前，最新 CI PR 与 docs-sync PR 均已 success（run 38729017063 / 38729017091）。PR #32 Open/unmerged。
 - **本轮仅审计现有代码、测试和证据边界，不改产品代码、不宣布正式验收通过。** 源码 `production.py` blob `e53968f47a6b8fd23df773dbd3a4ad553753e1e0`；测试 `test_desktop.py` blob `357c54dad99f61b99891bcc365dd2f9efc1a1009`。
