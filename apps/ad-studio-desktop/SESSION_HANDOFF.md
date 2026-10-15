@@ -1,4 +1,13 @@
-# 【PLAN-003 AI 接手状态｜A95–A99 部分证据映射｜2026-10-15】
+# 【PLAN-003 AI 接手状态｜A100–A104 部分证据映射｜2026-10-15】
+
+- 权威进度入口：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`；PR #32 保持 Open/unmerged。
+- 本轮源码/测试基线 `c77704d86d6131d13501448af76ce24afc56ad7b`；关键 blobs：`postprocess.py` `36ce0e4a17d635e3ed381c3b0bada1428e0290c4`、`ffmpeg.py` `d13870a12eae682133995bac7305900e0a4ff767`、`production.py` `e53968f47a6b8fd23df773dbd3a4ad553753e1e0`；测试 `test_postprocess.py` `29141bb61ee3ec6ae5960395e81c7dc64ef79feb`、`test_ffmpeg.py` `e409cbded7db0c01a1962f722d54c615429f5e37`、`test_desktop.py` `357c54dad99f61b99891bcc365dd2f9efc1a1009`。
+- A100–A104 均只完成部分证据映射，正式验收仍 not_audited。基线 CI PR 与 docs-sync PR 成功；Push 未独立核实。真实 FFmpeg/Windows 视听验收仍暂缓。
+- 下一批 A105–A109；文档提交后先核验最新 SHA 四项 CI/docs-sync。不新增 A113+，不更改真实机器测试暂停安排，不合并 PR #32。
+
+---
+
+# 【历史快照｜PLAN-003 A95–A99 部分证据映射｜2026-10-15】
 
 - 权威进度入口：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`；PR #32 保持 Open/unmerged。
 - 本轮源码/测试审计基线 `c77704d86d6131d13501448af76ce24afc56ad7b`；`production.py` / `test_desktop.py` blobs：`e53968f47a6b8fd23df773dbd3a4ad553753e1e0` / `357c54dad99f61b99891bcc365dd2f9efc1a1009`。基线 CI PR 与 docs-sync PR success；Push 结果未独立核实。
