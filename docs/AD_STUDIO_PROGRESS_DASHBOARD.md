@@ -1004,3 +1004,15 @@ A50–A67 的详细静态映射已存在；本轮将其规范台账行与该映�
 3. 当前确认的明文 JSON 写入和 `App.create()` 先规划后预算确认属于静态实现风险，不代表本轮发生实际扣款或实际泄露。
 4. 下一步继续 PLAN-003：对 A0/A2/A13/A29/A30/A34–A36/A51–A65 的正式合同逐项确认适用范围，并继续盘点资产 Provider、模型日志/导出/备份及缓存隔离路径。只做映射、状态冲突与证据边界审计；不修产品代码、不启动真实服务、不新增 A113+。
 5. 保持 `code_test_evidence_reviewed_ids=113`、`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false`；不赋权、不计算总体完成率。PR #32 保持 Open / unmerged。
+
+
+## PLAN-003 续审记录｜路由回退、未知成本与自定义端点边界｜2026-10-15
+
+本轮继续对照当前分支源码、既有验收计划和 UXS-2 风险表，新增以下明确裁决；本节为静态证据审计，不是功能验收或安全认证。
+
+1. **模型路由回退合同**：`ModelRouter.resolve_route()` 在显式模型不可用时，若硬件策略为 `cloud_first`，会遍历模型池并选择已启用且带 API Key 的云端模型；否则会尝试首个启用的本地模型。`CapabilityRouter.decide_asset()` 与 `decide_video()` 也存在本地服务不可用时选择已配置云端服务的分支。代码可证明存在自动选择路径，不能证明切换前已征求用户同意。需映射至 A13/A29/A30 等既有合同，分别核对文本、资产、视频三个路径；不新建 ID。
+2. **费用未知不能等于免费**：`ModelProfile` 的输入/输出单价默认值为 0，`complete_json()` 根据响应 `usage` 和已配置单价计算估算成本。缺少 usage 或单价为 0 时，数值账本可能记录 0，但这不证明供应商免费或实际费用为零。现有 A51 只覆盖费用输入的合法性，不覆盖未知费用语义；A52–A65 的账本与恢复测试也不能代替真实账单对账。
+3. **外发数据范围**：`complete_json()` 将提示词发送到配置的 Base URL；启用视觉输入时会把最多 32 张存在的图片编码成 data URI 随请求发送。`GenericVideoProvider` 与 `GenericAssetProvider` 会向各自配置的 endpoint 发送 JSON 请求；视频参考素材可能按配置嵌入请求。现有静态证据没有证明每次请求前都向用户说明实际接收方、数据类别和费用，也没有证明自定义 URL、重定向、私网地址及跨主机凭据转发风险已被全面防护。不得把“可自定义 Base URL”当作端点安全验收。
+4. **当前可支持的用户自由度范围**：文本模型通道以 OpenAI-compatible Chat Completions 为主；自训模型或 Token 代理需要暴露兼容协议才能复用当前通道。视频/图像资产服务是有限的通用 REST 适配器，不是任意协议自动适配。模型 UI 的 API Key 掩码不等于加密存储；目前已确认模型、视频、资产配置存在普通 JSON 写入路径，完整日志/导出/备份盘点仍未完成。
+5. **证据范围**：上述源码来自本轮核对的 `model_router.py` blob `8f5a94bce76b116767c24dbf3519b74cb43ae18b`、`capability.py` blob `5cd0bcb1337a0dcf8dd74539dfe71cd7525ca66c`、`providers.py` blob `6ea4548ff99d7135509e516a369b792ca175d092`。这是文件 blob SHA，不是提交 SHA；本轮没有连接真实模型/代理、触发外部调用或核对实际账单。
+6. **下一步**：继续 PLAN-003，将“拒绝自动回退后所有外部调用计数为零”“费用/usage 未知状态”“端点和图像/视频素材外发告知”“密钥写入/备份/迁移路径”逐项对照 A0–A112 原始合同、专项测试和 UX/SOP/路线图；未完成语义去重前不改产品代码、不新增 A113+。保持 `code_test_evidence_reviewed_ids=113`、`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false`，不分配权重、不发布总体完成率。PR #32 继续保持 Open / unmerged。
