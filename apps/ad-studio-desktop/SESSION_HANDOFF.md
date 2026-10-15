@@ -1,7 +1,7 @@
 # 【当前接手状态｜PLAN-003 A54–A57 部分证据映射｜2026-10-15】
 
 - 项目：`apps/ad-studio-desktop`；PR #32 必须保持 Open/unmerged。
-- 本轮代码/测试审计快照：`4628fd7219f9d757be6458df2348c76853c167ff`。本轮仅静态审计与文档更新，未改产品代码、未运行真实 Provider、未产生扣费。
+- 本轮代码/测试审计快照：`4628fd7219f9d757be6458df2348c76853c167ff`。本轮仅静态审计与文档更新，未改产品代码、未调用真实 Provider、未产生扣费。
 - 已完成 A54–A57 部分证据映射，状态均为 `not_audited`，不可称为正式验收通过。详见 `docs/AD_STUDIO_PROGRESS_DASHBOARD.md` 顶部。
 - 关键发现：A54 覆盖活动零字节视频的有/无上一版恢复分支；A55 覆盖成本账本写入失败时保留成功视频与重载状态；A56 的真实换行测试由 A50 测试覆盖，属于重叠候选；A57 在正式验收计划中有两份同编号合同（成本待核对 UI、项目恢复成本对账），已登记编号/状态冲突，未擅自合并或重编号。
 - 基线 SHA `4628fd7219f9d757be6458df2348c76853c167ff` 的 CI Push `38723085979`、CI PR `38723094346`、docs-sync Push `38723086043`、docs-sync PR `38723094505` 均 success；该结果只证明基线 SHA。之后新增了审计台账文档提交 `0a09aae3ef69e4ab2df3c84ed4e7033649dc991a`，必须重新查询最终 HEAD 的四项工作流，未核验前不得声称最终 SHA 通过。
@@ -461,7 +461,6 @@ A61-A63 已在 SHA e6b4789d70cfa0abebfe2b20105b80049154dcbe 完整 CI 与 docs-s
 - Added warning code `PRODUCT_SELLING_POINT_NOT_SHOWN` when confirmed selling points are absent from storyboard action, product integration, dialogue, and generation prompt text.
 - This is a text coverage check, not visual verification. Recheck CI and docs-sync for the new SHA.
 
-
 ## 2026-10-11 接手进度：A77
 
 - 基线：A76 文档同步提交 `95b57fcb32860c02c0deece035684b4004ba07f6`；当时 CI 与 docs-sync 均成功，PR #31 未合并。
@@ -760,7 +759,6 @@ A102 后续修正：首轮 CI 暴露测试夹具没有模拟归一化阶段输�
 - 新增测试覆盖变速淡出音频滤镜、短片段淡入及常速淡出。
 - 这项是单镜头淡化；相邻镜头交叉溶解、节奏分析和音乐卡点仍未完成。
 - 当前提交的完整 CI 与 docs-sync push/PR 结果待确认；PR #32 保持 open/unmerged。
-
 
 ## A104：相邻镜头真实交叉溶解（当前提交待 CI）
 - 最新改动在 ffmpeg.concat_with_transitions() 中使用真实 xfade 画面交叠和 acrossfade 音频交叠，按镜头实际时长计算 offset；无音轨输入生成等长静音。
