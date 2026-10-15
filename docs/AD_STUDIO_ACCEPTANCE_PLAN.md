@@ -1575,3 +1575,16 @@ A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/
 - A89：已定位 actor/scene 锁定描述注入、制作行标签、集号范围、非法布尔集号与目标未命中测试。续写上下文携带锁定列表尚缺独立直接回归证据；不等于物理素材 ID 复用（A90）或成片人物/场景视觉一致。
 - 五项均只做部分证据映射，`development_status=partial_evidence_mapping`、`acceptance_status=not_audited`；未正式验收、未合并编号。台账指针任务数更新为 90，任意证据任务数更新为 102，源码/测试快照绑定任务数更新为 32；精确绑定最终文档 HEAD 为 0，完整代码/测试审计为 0，完整审计为 0，语义去重未完成，权重与总体完成率关闭。
 - 下一批：A90–A94。先核验本轮文档提交后最新 HEAD 的 CI Push、CI PR、docs-sync Push、docs-sync PR 四项结果，再继续。PR #32 保持 Open/unmerged；Windows 真机、真实素材、Provider/扣费、剪映现场与真实商业效果仍暂缓。
+
+
+## PLAN-003 增量审计记录｜A90–A94｜2026-10-15
+
+- 本轮源码/测试审计基线：PR #32 HEAD `a6e052fa7edefa7e2fb794166684547436ff90f6`。源码 blob：`ad_studio/production.py` `e53968f47a6b8fd23df773dbd3a4ad553753e1e0`、`ad_studio/short_drama.py` `2506410d9621840ec34464fce1fa2746c7d798f4`；测试 blob：`test_desktop.py` `357c54dad99f61b99891bcc365dd2f9efc1a1009`、`test_short_drama.py` `2995b5764f7a86ee8c274b6359ff2f09cdf7a288`。
+- 此 SHA 的 CI PR run [38728582030](https://github.com/konggu888/ecommerce-agent/actions/runs/38728582030) 与 docs-sync PR run [38728581662](https://github.com/konggu888/ecommerce-agent/actions/runs/38728581662) 均 success；PR #32 head 仍为该 SHA、Open/unmerged。当前工具查询仅返回 PR 触发的工作流，故本轮不声称已独立核实同 SHA 的 CI Push 与 docs-sync Push。文档提交后必须重新核验最新 SHA。
+- **A90｜跨集物理素材 ID 绑定**：源码将根级锁定 ID 传入制作行的 actor/scene asset_id；专项测试覆盖精确 ID 传递与未指定 ID 的旧标签匹配兼容。证据边界：行级传递不单独证明素材库解析正确，需结合 A91/A92；不证明真实成片像素一致。
+- **A91｜锁定素材失效检测**：测试覆盖停用、类型不匹配、不可复用、重载后素材消失仍保留原 ID并记录需处理状态，以及锁定失败时在补素材/fallback 前拦截。损坏索引分支另由 A95 审计；真实 Windows 重启/并发变更未验证。
+- **A92｜跨集物理素材绑定落地**：两集镜头使用同一 actor/scene 精确 ID，排除相似标签素材，保存/重开后检查两集 Shot.actor_id/scene_id 保留。仅证明确定性本地夹具和持久化，不证明真实视频视觉连续性。
+- **A93｜Provider 前拦截与镜头隔离**：生产入口级计数 Provider 测试确认失效锁定时调用数为 0、保留原 ID、不静默换演员，其他镜头状态/路径不变。真实 Provider 与账单仍暂缓。
+- **A94｜恢复原锁定资产后安全重试**：原素材停用时失败并关闭 fallback；恢复同一 asset_id 后精确重绑定，标签相似素材不覆盖。仅验证本地调度恢复。
+- A90–A94 统一标记为 `partial_evidence_mapping` / `not_audited`，没有将历史验收计划勾选直接继承为本轮正式通过。当前台账：需求文本复核 113；source/test/CI/workflow 指针任务 95；任意 evidence 任务 107；路线图映射 113/113；源码/测试快照绑定任务 37；最终文档 HEAD 精确绑定 0；完整代码/测试审计 0；完整审计 0；语义去重未完成；权重和总体完成率关闭。
+- 下一批按既有编号进入 **A95–A99**，先核验本轮文档提交后最新 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR 四项。PR #32 不合并；真实 Windows、素材、Provider/扣费、剪映现场和商业效果验收继续暂缓。
