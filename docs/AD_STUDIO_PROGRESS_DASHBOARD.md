@@ -965,3 +965,10 @@ A50–A67 的详细静态映射已存在；本轮将其规范台账行与该映�
 - 代码风险未解决前，不得将预算授权/用户自由度标记通过。优先后续任务：先补充调用计数与取消零副作用测试，明确创建流程授权闸门，再按测试证据决定实现修复；但仍须服从 PLAN-003 全量跨来源审计的当前单任务边界，不在本轮顺手开发。
 - 最新核验 HEAD：`d2bd844313b06419402f761dcab222245a4f091b`；PR-triggered CI 与 docs-sync 均 success，Netlify deploy-preview success；Push-triggered CI/docs-sync 尚未独立核实。该 SHA 只证明本轮文档提交的自动化门槛，不替代本节的行为专项测试。
 - PR #32 保持 Open / unmerged。状态字段保持 `code_test_evidence_reviewed_ids=113`、`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false`；不赋权、不计算总体完成率。
+
+
+### 补充交叉来源发现｜模型路由测试命名与覆盖口径
+
+- 当前 `model_router.py::FUNCTIONS` 静态列出 13 个功能路由；`test_model_router.py::test_all_nine_functions_use_their_selected_model` 名称仍称“nine functions”。测试动态为全部 13 个路由键建立映射，但实际调用 `create_plan()` 并只断言其中 9 次创意阶段调用。因此它能证明这 9 个规划阶段按预期选模，**不能证明 13 个功能路由全部在真实调用路径中正确执行**，尤其不能自动证明素材剪辑导演、口播转写、AI短剧编导、商品画面视觉核验均已端到端覆盖。
+- 候选关联：A13（能力路由）、A32（接手/文档完整性）、以及视觉核验相关既有合同；最终 ID 归属仍需与每项正式合同语义核对，不因测试名或路由列表自动新建/合并 ID。
+- HELP 与 PROJECT_LOGIC 已补充记录“预算确认前可能先发生创意规划 LLM 请求”的已知限制和严格授权目标；这是透明披露，不是代码修复。正式验收仍缺 App.create 编排测试、所有外部调用的取消零调用计数、回退拒绝和未知费用测试。
