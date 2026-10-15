@@ -1,4 +1,20 @@
-# 【PLAN-003 当前状态｜A85–A89 部分证据映射｜2026-10-15】
+# 【PLAN-003 当前状态｜A90–A94 部分证据映射｜2026-10-15】
+
+- **当前核对分支/HEAD**：`feat/product-drama-visual-review` / `a6e052fa7edefa7e2fb794166684547436ff90f6`；PR #32 Open/unmerged，head 未变化。
+- **本轮只做源码/测试/证据映射，不改产品代码，不宣布正式验收通过。** 源码 `production.py` blob `e53968f47a6b8fd23df773dbd3a4ad553753e1e0`、`short_drama.py` blob `2506410d9621840ec34464fce1fa2746c7d798f4`；测试 `test_desktop.py` blob `357c54dad99f61b99891bcc365dd2f9efc1a1009`、`test_short_drama.py` blob `2995b5764f7a86ee8c274b6359ff2f09cdf7a288`。
+- 本 SHA 的 CI PR [38728582030](https://github.com/konggu888/ecommerce-agent/actions/runs/38728582030) 与 docs-sync PR [38728581662](https://github.com/konggu888/ecommerce-agent/actions/runs/38728581662) 已 success。当前可用工作流查询只返回 PR 触发项，CI Push/docs-sync Push 未独立核实；本轮文档提交后需再查最新 SHA。
+- **A90** 精确 actor/scene asset_id 进入制作行；旧方案未提供 ID 时保留标签匹配。未证明真实素材库和成片像素一致。
+- **A91** 覆盖停用、类型错误、不可复用、重载后素材消失、失效时拦截 fallback；损坏索引另由 A95 审计。真实 Windows/并发变更未验证。
+- **A92** 两集绑定相同物理 actor/scene ID，排除相似标签资产，并检查保存/重开后绑定；不证明生成视频的视觉一致性。
+- **A93** 生产入口级计数 Provider 测试确认无效锁定调用 Provider 为 0、保留原 ID、不影响其他镜头。
+- **A94** 恢复原 asset_id 后精确重试，不能被相似标签资产替换；仅证明本地调度恢复。
+- **台账指标（映射覆盖，不是完成率）**：需求复核 113；source/test/CI/workflow 指针任务 95；任意 evidence 任务 107；路线图映射 113/113；源码/测试快照绑定 37；最终文档 HEAD 精确绑定 0；完整代码/测试审计 0；完整审计 0；全量语义去重未完成。权重和总体完成率关闭。
+- A90–A94 状态均为 `partial_evidence_mapping` / `not_audited`。不新增 A113+，不删/合并/重编号；PR #32 不合并；真实 Windows、素材、Provider/扣费、剪映现场与商业效果验收继续暂缓。
+- **下一批 A95–A99**。先核验本轮文档提交后最新 SHA 四项 CI/docs-sync。
+
+---
+
+# 【历史快照｜PLAN-003 A85–A89 部分证据映射｜2026-10-15】
 
 - **本轮开始 HEAD**：`2b92072a1dd5335fe803955ffca11881ebf2dec3`；源码/测试审计快照：`4063ba5a452c0c883ff39c8ea1ce33499a80eaf4`。本轮对 A85–A89 只做静态源码与专项测试证据映射，不改产品代码，不宣称正式验收。
 - **快照四项工作流均 success**：CI Push [38727772398](https://github.com/konggu888/ecommerce-agent/actions/runs/38727772398)、CI PR [38727780540](https://github.com/konggu888/ecommerce-agent/actions/runs/38727780540)、docs-sync Push [38727772643](https://github.com/konggu888/ecommerce-agent/actions/runs/38727772643)、docs-sync PR [38727780536](https://github.com/konggu888/ecommerce-agent/actions/runs/38727780536)。文档更新后必须重查最终 SHA 四项工作流。
