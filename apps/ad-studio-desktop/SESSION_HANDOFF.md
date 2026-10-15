@@ -1,5 +1,16 @@
 # 【当前接手入口｜2026-10-15｜规划控制体系优先】
 
+
+## 最新接手状态｜PLAN-003 凭据异常文本与预算授权顺序｜2026-10-15
+
+- 文档审计基线：`c0eb959e1b281d22a6905b155904ef131d0267e8`。本轮只做静态证据核验与文档同步，不改产品代码、不运行本地测试、不连接真实 Provider/代理、不产生真实扣费。
+- 新确认：`ModelRouter.complete_json()` 将请求失败的 `str(exc)` 写入 `usage-ledger.json`；实拍转写异常可持久化到项目 `creative_plan.footage_transcripts`；成本结算恢复记录也会保存异常文本。视频 Provider HTTP 错误正文前 1000 字符、转写 HTTP 错误正文前 800 字符会进入异常文本。
+- 没有证据证明 API Key 实际被错误正文回显或泄露；结论只能是“异常文本可能持久化，脱敏行为尚未验收”。本轮检查的核心模块未发现常规 logger 调用，桌面 UI 未发现显式导出/备份入口，但全仓库、打包脚本与手工备份盘点未完成。
+- 已直接确认 `App.create()` 在预算确认前调用创意模型；实拍模式还会先执行视觉分析、可选转写和剪辑规划。因此取消预算弹窗不能撤销之前可能已发出的模型请求，属于既有授权合同的 P0 候选阻断。
+- 静态检查 `test_model_router.py` 与 `test_desktop.py` 的相关用例，未找到直接证明异常正文脱敏、假 API Key 不进入账本/项目恢复数据、或预算确认前外部调用计数为零的专项测试。
+- 下一步唯一主线：将以上证据逐条对照 A0–A112 原始合同，重点 A13、A29、A30、A51–A65；核对合同、直接测试和状态冲突。保持 `fully_audited=0`、`semantic_dedup_completed=false`、`code_test_evidence_audit_completed_ids=0`；不新增 A113+、不发布总体完成率、不开发产品功能。PR #32 保持 Open / unmerged；真实环境验收继续暂缓。
+
+
 - 仓库：`konggu888/ecommerce-agent`；项目：`apps/ad-studio-desktop`；分支：`feat/product-drama-visual-review`；PR #32 必须保持 Open / unmerged。
 - **唯一权威进度与下一项**：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`。当前进入 PLAN-003 全量跨来源语义去重、状态冲突裁决与依赖/证据边界复核；A0–A112 台账及分批静态映射已存在，不能重建或重复从 A50 开始。
 - 最近一次已完整核验通过的基线：`8e2a714abfc77e6ce9f7e136a0ba41195f2c8fae`；该 SHA 的 PR-triggered CI 与 docs-sync 均 success，Netlify deploy-preview success。之后又提交了审计/帮助/逻辑文档更新，因此该状态**不是当前 HEAD 的通过证明**；接手时必须实时查最新 HEAD、CI、docs-sync、部署预览，Push-triggered CI/docs-sync 未独立核实前必须注明。
