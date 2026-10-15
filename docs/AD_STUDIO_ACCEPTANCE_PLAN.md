@@ -1628,3 +1628,16 @@ A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/
 - **A104｜相邻镜头真实交叉溶解**：最终拼接在非首镜头显式选择交叉溶解时调用 `xfade` / `acrossfade`，无音轨时补静音，统一画幅、30fps、时间基准和像素格式，并按相邻短镜头时长缩短重叠。测试检查滤镜图和生产入口触发条件。边界：混合转场模式下硬切用 0.001 秒 xfade，真实成片需确认；静态检查未找到清晰的用户可编辑转场选择器，仅看到镜头详情显示/读取字段，须后续核对 UI。
 - A100–A104 全部统一记为 `partial_evidence_mapping` / `not_audited`。本轮没有更改产品代码。当前任务台账直接统计：113 个编号任务中 109 个有 evidence 指针；104 个含 source/test evidence；其中 47 个任务已纳入当前源码/测试快照审计计数；完整代码/测试审计 0、完整审计 0、全量语义去重未完成，权重和总体完成率关闭。
 - 下一批按既有编号进入 **A105–A109**。文档提交后先检查最新 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR；Push 工作流若无法独立查询，必须明确记录而非猜测。PR #32 不合并；Windows 真机、真实素材、真实 Provider/扣费、剪映现场和商业效果验收继续暂缓。
+
+
+## PLAN-003 增量审计记录｜A105–A109｜2026-10-15
+
+- **源码/测试审计基线**：`c77704d86d6131d13501448af76ce24afc56ad7b`；文档更新前最近检查的分支 HEAD 为 `57ed689911025f2e31241ddf487e70143ffedbe0`。该 HEAD 的 CI PR [38730155209](https://github.com/konggu888/ecommerce-agent/actions/runs/38730155209) 与 docs-sync PR [38730155147](https://github.com/konggu888/ecommerce-agent/actions/runs/38730155147) 均 success；Push 触发工作流未被当前查询接口独立返回，不能宣称四项均已核实。PR #32 Open/unmerged。
+- **A105｜分镜节奏映射**：慢/标准/快/极快默认速度、显式速度优先、未知标签回退有单测；后处理命令同步 setpts/atempo。真实渲染和完整 UI 到成片链未集成测试。
+- **A106｜商业角色默认剪辑**：源码按分镜文本关键词推断角色、时长/节奏/速度/转场，并记录 rationale/basis/参数来源；测试覆盖 hook、商品细节、演示、证据和末镜 CTA，以及显式参数优先。pain_point/reaction/story_beat 等角色与歧义关键词未全面测试；不是视觉语义识别。UI 仅发现展示转场值，未找到明确的可编辑转场选择器。
+- **A107｜推断时长进入生成请求**：CreativeShot → runtime Shot 的字段映射存在，生产入口将 runtime `duration_seconds` 传入 GenerationRequest；目前测试止于 runtime mapping，没有直接断言 Provider 请求最终收到推断时长。真实 Provider 仍不调用。
+- **A108｜字幕自适应**：按 FFprobe 实际时长生成 SRT，拆分长文案、限制短镜头字幕切换并显示密度警告；桌面路径可见 probe → analyze → write_srt → burn_subtitles。单测覆盖规划器/SRT，但没有 app 级整链集成测试；真实阅读舒适度和 Windows 烧录效果未验证。
+- **A109｜音乐节拍与实际切点**：生产源码把节拍分析、切点规划、内容/字幕保护、镜头变速、拼接后一次性混入全局 BGM 接入最终导出链；专项测试覆盖合成节拍、静音/低置信度回退、时长变化、内容保护、变速命令和 BGM 混音命令。但没有直接测试最终 build_final 的完整调度链，实际 FFmpeg 渲染/视听仍未验证。台账中历史 `automation_passed` 已降为 `partial_evidence_mapping` / `not_audited`，因为验收计划四项 workflow gate 尚未完整核实，且生产集成证据仍有缺口。
+- A105–A109 均为 `partial_evidence_mapping` / `not_audited`。映射覆盖：113 个编号任务；source/test/CI/workflow 指针任务 110；任意 evidence 任务 112；路线图映射 113/113；源码/测试快照绑定任务 52；最终文档 HEAD 精确绑定 0；完整代码/测试审计 0；完整审计 0；语义去重未完成；权重与总体完成率关闭。
+- 本轮不改产品代码。Windows 真机、真实素材、Provider/扣费、剪映现场与商业效果继续暂缓。PR #32 不合并；不新增 A113+，不删除/合并/重编号 A0–A112。
+- 下一批按既有编号进入 **A110–A112**。文档提交后先核验最新 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR；Push 若无法独立查询须明确记录未核实。
