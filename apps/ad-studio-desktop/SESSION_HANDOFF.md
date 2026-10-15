@@ -1047,3 +1047,13 @@ A109 转场安全补充：当前切点变速遇到显式“交叉溶解”时保
 - A110–A112 历史 `automation_passed` 不直接继承；本轮全部改为 `partial_evidence_mapping` / `not_audited`，因为本轮源码/测试复核发现专项集成证据缺口，且当前查询未独立核实 Push 工作流。真实素材、Windows 真机、真实音画/字幕可读性与商业成片质量仍暂缓。
 - 映射覆盖：编号任务 113；任意 evidence 任务 113；source/test evidence 任务 112；源码/测试快照绑定任务 55；完整代码/测试审计 0；完整审计 0；语义去重未完成；权重与总体完成率关闭。
 - 本轮未改产品代码。PR #32 不合并；不新增 A113+，不删除/合并/重编号 A0–A112。下一步不再有新的编号任务；应回到 PLAN-003 对 A0–A112 做语义去重、证据冲突与未审计范围的统一核对，不得凭空扩展编号。
+
+## PLAN-003 增量审计｜A52 / A55 源码与测试证据边界｜2026-10-16
+
+- 审计源码/测试快照：分支当前已核实的 HEAD `e4fa3365b4a44aa7ddb62a492826afc66a2a191b`；产品代码未修改。PR #32 仍 Open / unmerged。
+- **当前 SHA 的 PR 触发工作流**：CI #2230 success，docs-sync #1907 success；部署预览 status success。当前可用 connector 的 commit-workflow 查询只返回 PR 触发项，Push 触发的 CI 与 docs-sync 未独立核实，因此不得宣称四项都已核实通过。
+- **A52｜Provider 失败尝试与成本去重：部分证据映射，not_audited。** `production.py::_render_with_provider` 在 Provider 调用开始后捕获生成异常，尝试写 failed video ledger row；失败报价进入 `unit_cost_rmb`、`estimated_cost_rmb=0`，成功行才进入实际成本汇总。专项测试 `test_a52_failed_video_attempt_is_auditable_without_double_counting_actual_cost` 覆盖一次失败+一次成功重试、失败行类别/报价字段、失败成本为零及成功成本仅计一次。**未直接断言**失败行的 project_id/shot_id/provider/error 全字段，失败后旧视频仍可用，以及重新创建 Store/重新加载后失败行仍存在；不能把“账本文件写入实现”代替这些行为断言。
+- **A55｜视频成功但成本记账失败：部分证据映射，not_audited。** 源码把 Provider 生成/替换和成功记账分成两个异常边界；账本异常时保留输出路径，设置“已生成（成本待核对）”，记录 recovery history 并尝试保存项目。专项测试 `test_a55_ledger_failure_does_not_turn_successful_video_into_provider_failure` 覆盖新视频文件、活动路径、待核对状态、恢复记录和项目重载后的视频路径/状态。**尚未直接断言**该场景不会新增 failed Provider 记录、不会产生重复 success ledger 行，以及账本恢复后对账动作是否安全幂等；真实账单核对仍暂缓。
+- 本轮没有发现足以证明生产实现必须立即修改的缺陷；发现的是正式验收断言缺口。因此不改产品代码、不把 A52/A55 标为正式通过，也不继承验收计划中历史 SHA 的自动化通过标签作为当前 HEAD 的完整证据。
+- **后续主线**：回到 PLAN-003 对 A0–A112 的跨来源语义重复、状态冲突、依赖和证据边界做统一裁决；A52/A55 的上述缺口作为待补证据保留。不得新增 A113+、删/合并/重编号既有任务、赋权或发布总体完成率。Windows 真机、真实 Provider/扣费账单、剪映和真实投放仍暂缓。
+
