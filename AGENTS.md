@@ -235,3 +235,7 @@ A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/
 - 在 `resolve_assets` 与 `generate_missing_asset` 两入口加入行为级故障注入测试，验证生成资产文件、库记录、asset ID、镜头引用和重载后的成本待核对状态。
 - 仅模拟本地成本记账失败，不代表真实 Provider 账单验证；新测试需以最新 SHA 的 CI 结果为准。
 - 不新增正式任务编号、不改变 A0–A112、不标记 A64 正式验收通过、不计算总体完成率。
+
+
+## PLAN-003 evidence updates (2026-10-16)
+When touching desktop tests, update this file, `apps/ad-studio-desktop/HELP.md`, and `apps/ad-studio-desktop/PROJECT_LOGIC.md` in the same change, along with the canonical acceptance plan/SOP, task register, progress dashboard, and handoff files as applicable. DEDUP-013 adds post-recovery reload assertions for A57 (legacy project with no ledger rows) and A60 (failed-only ledger); do not mark A57/A60/A99 accepted until current-HEAD CI and the full evidence contract are reviewed. Keep A99's successful-ledger stale sibling reset distinct from A57/A60's no-success branches.

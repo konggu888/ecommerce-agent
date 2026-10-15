@@ -1567,3 +1567,8 @@ A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/
 - `test_a64_resolve_assets_keeps_generated_asset_when_cost_record_fails` 对自动解析/生成入口注入成本记账失败，检查生成资产文件、库记录、镜头 actor_id 与重载状态。
 - `test_a64_generate_missing_asset_keeps_asset_when_cost_record_fails` 对缺失素材生成入口注入成本记账失败，检查资产文件、库记录、镜头引用、生成请求提示与重载状态。
 - 这些测试覆盖本地模拟故障，不等于真实 Provider 账单核验；最新 SHA CI 通过前不得声称新增测试已通过。
+
+
+## 2026-10-16｜PLAN-003 DEDUP-013 成本恢复重载回归
+
+本轮仅补充自动化测试：A57 无账本旧项目恢复后重新加载仍保留项目/镜头成本；A60 failed-only 账本恢复后重新加载仍保留项目/镜头成本与成本分类汇总。A99 的成功账本清除未计费兄弟镜头陈旧成本仍为独立行为。新增断言须以最新 SHA 的 CI 通过为准；本地模拟测试不证明真实 Provider 账单。A57/A60/A99 仍未正式验收。

@@ -1,3 +1,5 @@
+> **DEDUP-013 docs-sync remediation｜2026-10-16：** A57/A60 post-recovery reload assertions were added. Initial Push docs-sync failed because AGENTS.md, HELP.md and PROJECT_LOGIC.md were unchanged; those required documents are now updated. Recheck the remediation SHA's four CI/docs-sync workflows. No formal acceptance or real Provider invoice verification is implied.
+
 > **PLAN-003 DEDUP-013 补充｜2026-10-16：** 纠正 A99 的边界说明：A57 已覆盖无账本旧项目，A60 已覆盖 failed-only 账本；本轮为两项恢复测试补充保存/重载后的成本保留断言。A99 独立覆盖成功账本下未计费兄弟镜头陈旧成本清零。最新 SHA CI 需核验；A57/A60/A99 仍未正式验收，真实 Provider 账单与 Windows 真机继续暂缓。权威状态见 `docs/AD_STUDIO_PROGRESS_DASHBOARD.md`。
 
 > **PLAN-003 DEDUP-012 补充｜2026-10-16：** A64 新增 `resolve_assets` 与 `generate_missing_asset` 两个行为级故障注入测试，验证素材生成后成本记账失败时资产文件、库记录、镜头引用与重载状态仍保留。此为模拟故障测试，不是实际 Provider 账单核验；最新 SHA CI 需实时确认。A64 仍未正式验收，Windows 真机、真实素材与真实账单继续暂缓。权威状态见 `docs/AD_STUDIO_PROGRESS_DASHBOARD.md`。
