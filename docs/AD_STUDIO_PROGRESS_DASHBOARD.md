@@ -7,7 +7,7 @@
 - A0–A5 当前代码/测试证据映射（核验到 SHA `1fd6d08dac970cb7886c59239b05c4f6e2128cf9`；仅证据盘点，不代表正式验收）：A0：`ad_studio/app.py` 中存在 `App.create()` 用户操作入口，但已检查的 desktop 测试未发现专门启动/创建操作端到端测试；A1：当前 CI 覆盖多个测试集，但台账仍缺任务级稳定性矩阵与可追溯的逐项证据；A2：`test_desktop.py` 有 `test_project_lifecycle_isolated_between_projects`、`test_project_save_load`，但未发现直接调用 `App.create()` 的编排测试；A3：有 `test_setup_form_grid_rows_do_not_overlap`、`test_three_task_types_have_distinct_deterministic_policies`、`test_task_type_is_persisted_and_not_replaced_by_platform`，但不能替代三类任务完整 UI 流程验收；A4：`test_footage.py` 覆盖素材排序扫描、不可解析文件注记、重复素材评分、废片归档与保护被引用源文件（`test_archive_analyzed_waste_protects_currently_referenced_source`），仍需对照验收清单补齐路径异常、源文件保护等完整矩阵；A5：`footage.py` 实现 `extract_keyframes()`、`build_visual_manifest()`、`footage_analysis_public()`，但全仓已检查的 desktop `test*.py` 未找到对前两者的直接专项测试，需补关键帧提取失败、清单生成失败与模型视觉分析失败/回退覆盖。六项均不标记正式验收通过。
 
 - A0–A112 共 113 个编号槽位的四份规划来源标题索引已建立；需求文本级语义复核覆盖 113 个已登记槽位。A68–A74 与 A99 的历史任务身份已从历史提交、测试及项目文档中恢复，不能再描述为“未知编号缺口”；但历史实现不等于当前 HEAD 已验收。
-- 当前仍未完成的是全量跨来源重复/状态材料合并审计，以及逐项代码、测试和当前 HEAD 证据审计。已确认的 A50/A56、A61/A62、A57、A99 关系仅为局部裁决；台账仍为 `fully_audited=0`、`semantic_dedup_completed=false`、`code_test_evidence_audit_completed_ids=0`；`code_test_evidence_reviewed_ids=18` 表示已开始部分映射，不表示六项已正式验收。权重仍为空，总体完成率保持关闭。
+- 当前仍未完成的是全量跨来源重复/状态材料合并审计，以及逐项代码、测试和当前 HEAD 证据审计。已确认的 A50/A56、A61/A62、A57、A99 关系仅为局部裁决；台账仍为 `fully_audited=0`、`semantic_dedup_completed=false`、`code_test_evidence_audit_completed_ids=0`；`code_test_evidence_reviewed_ids=34` 表示已开始部分映射，不表示六项已正式验收。权重仍为空，总体完成率保持关闭。
 - A88 是标题解析假缺口，已修正。跨来源关系的初步裁决（仍待全量核对）：A50/A56 是原始行为合同与回归修复，关联但不合并；A61/A62 是历史成本迁移能力与迁移相关断言修复，关联但不合并；A57 内含两个独立验收场景，必须分别核验；A99 的成功账本清除未计费兄弟镜头陈旧成本有独立行为与专项测试，与 A57/A59 相关但不重复。A80、A84/A85、A89、A92/A93、A111 等历史/状态材料及 A90–A98、A100–A112 的独立执行合同仍需逐项核对。此为保守初步映射，不代表全量语义去重完成，不授权删除任何 ID 或验收条件。
 - A0–A5 的代码/测试证据审计仅有部分映射，未正式验收。A3 设置区布局重叠问题已在 `f20bf426594a55ac74267641b53d9166acef6798` 修复并增加 AST 布局回归测试；`0bc079178c569502dc8f722ad04544a581f20290` 是该阶段的历史核验基线，不是当前 HEAD。当前最新完整核验基线为 `1fd6d08dac970cb7886c59239b05c4f6e2128cf9`，其 CI Push `38691577983`、CI PR `38691582839`、docs-sync Push `38691577999`、docs-sync PR `38691582806` 均 success。下一步不重复修复已解决的 A3 布局问题，而是继续 PLAN-003：完成跨来源重复/状态段审计，再逐项核验 A0–A5 及后续任务的代码、专项测试与当前 SHA 证据。
 
@@ -141,3 +141,35 @@ PR #32 不合并。Windows 真机、真实素材、真实 Provider/扣费、剪�
 - 相关测试可能覆盖共享生产组件，不等于 A15/A16/A17 每个业务目标均被完整验证。
 - 进度台账的 `code_test_evidence_reviewed_ids` 更新为 18（A0–A17 已进行部分映射）；`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false` 保持不变。该计数只表示开始查看过的编号数，不代表覆盖完整或验收完成。
 - 下一批按计划审计 A18–A33，并同步检查各编号是否独立、相关或疑似重复；不删编号、不加新产品功能、不分配权重、不计算整体完成率。
+
+
+## PLAN-003 当前代码/测试证据审计：A18–A33｜2026-10-15｜部分映射
+
+核验基线：`53800b7845a9db49c329242506d80f6a1747281c`。本轮已检查正式验收计划 A18–A33、`test_desktop.py`、`test_a33_full_flow.py`、`test_ai_handoff.py` 与逻辑文档中的相关说明。以下是静态证据映射；历史验收记录、当前测试名称或 CI 绿灯本身均不自动构成本轮逐项重新验收结论。
+
+| ID | 已找到的代码/测试证据 | 本轮结论与仍需核验 |
+|---|---|---|
+| A18 多版本 | `test_desktop.py`: `test_creative_variants_keep_independent_variant_state`、`test_variant_state_survives_plan_switch`、`test_batch_generation_captures_original_variant_before_preflight`、`test_variant_render_paths_are_physically_isolated`；逻辑文档记录 `variant_shot_cache` / `variant_outputs` | 有版本状态隔离、切换和物理路径隔离证据。仍需映射原始版本可追溯及每版本独立输出的完整合同，并检查版本缺镜头、失败恢复、输出清单之间的关系。 |
+| A19 创意实验设计 | `test_creative_variant_audit_distinguishes_mechanism_from_surface_changes`、`test_creative_variant_analysis_does_not_assume_platform_or_fabricate_metrics`；版本性能指标有独立持久化测试 | 投放前创意机制差异和不虚构平台指标有证据。仍需逐条核验单机制/多机制/仅表层/无明显差异分类、测试目的/观察项/下一轮建议的结果字段和边界；真实平台效果不在本轮验收范围。 |
+| A20 创意事实检查 | 相关测试包括 `test_a20_final_delivery_safety_gate_blocks_unverified_risks`、商品事实边界提示词测试 | 最终闸门能拦截部分未验证风险；仍需把卖点依据、禁用词、绝对化表达、资料缺失提示和不编造商品事实分别映射到输入与断言，不能仅以最终闸门代替全部创意事实检查。 |
+| A21 分镜事实检查 | `test_ai_stage_prompts_preserve_product_fact_boundary` 与最终交付安全相关测试 | 有商品事实边界与交付安全证据；分镜每项功能/外观的来源追溯、字幕事实一致性以及“文本检查不冒充视觉检查”仍需独立核验。 |
+| A22 视觉事实检查 | `test_a20_final_delivery_safety_gate_blocks_unverified_risks`、`test_a24_final_safety_gate_blocks_all_explicit_risk_classes`；项目包含视觉复核相关数据与人工核验能力 | 有安全闸门阻断和复核状态证据；遮挡、模糊、抖动、实际素材映射、风险追踪及未分析不标为确认，需逐项核验其真实输入、状态转换和测试覆盖。 |
+| A23 风险控制 | `test_a24_final_safety_gate_blocks_all_explicit_risk_classes`、`test_a24_build_final_cannot_write_output_when_safety_gate_blocks`、`test_a23_hybrid_review_to_final_render_is_closed_loop` | 风险阻断、未复核镜头不进入最终渲染的关键路径有测试。权限等级、人工批准、dry-run、audit log 与未授权真实写操作需按正式 A23 原文逐项映射，不能仅凭最终安全闸门断言整项完成。 |
+| A24 最终安全闸门 | `test_a24_final_safety_gate_blocks_all_explicit_risk_classes`、`test_a24_build_final_cannot_write_output_when_safety_gate_blocks` | 有显式风险分类和禁止写出最终文件的专项测试。仍需确认每个风险来源都被汇总、原因可追踪、不同风险组合不会被覆盖；历史通过记录需在当前 HEAD 独立重核。 |
+| A25 媒体质量检查 | `test_a25_media_qc_rejects_missing_empty_and_no_video_stream`、`test_a25_media_qc_rejects_zero_duration_and_invalid_dimensions`、`test_a25_media_qc_failure_never_marks_manifest_deliverable`、`test_a25_build_final_deletes_invalid_output_and_writes_no_manifest`；另有 1080P 级尺寸测试 | 文件/视频流/时长/尺寸/失败交付状态有专项证据。尺寸归一化、ffprobe 复核和 AI 细节增强的区别必须分别核验；1080P 像素尺寸不能证明细节恢复或商业画质。 |
+| A26 成片版本历史 | `test_a26_final_output_history_keeps_revisions_independent`、`test_final_output_history_is_separated_by_variant_and_aspect` | 版本、画幅及修订历史独立有测试证据。历史字段是否完整覆盖输出路径、时长、镜头数、交付状态和创建时间，需逐字段检查。 |
+| A27 成片交付中心 | `test_a27_delivery_recheck_reports_blocker_then_recovers_without_regeneration`、`test_final_delivery_repair_routes_point_back_to_correct_stage` | 阻塞报告、修复路由、复查不触发重新生成有证据。仍需检查 UI 呈现、每类问题定位与恢复路径映射；纯数据层测试不等于 Windows UI 验收。 |
+| A28 本地项目数据 | `test_a28_project_persistence_restores_versions_material_status_review_and_output_history`、`test_a28_two_projects_do_not_share_persistent_state` | 项目隔离及版本、素材、审核、输出历史恢复有专项测试。异常/部分损坏数据、升级兼容、用户自定义路径及跨版本持久化边界仍需核验。 |
+| A29 数据边界 | `test_a29_real_data_boundary_requires_explicit_user_provenance_and_unverified_status`；逻辑文档规定用户提供来源与 `verification_status=unverified` | 用户输入数据与系统验证状态的边界有专项证据。仍需检查所有指标/来源入口是否统一执行边界，不将用户提供误标为平台 API 已验证；真实平台数据仍暂缓。 |
+| A30 失败恢复 | `test_a30_recovery_records_failures_without_losing_project_state`、`test_a30_recovery_cleans_interrupted_assets_and_marks_corrupt_outputs`、`test_a30_budget_and_non_retryable_failures_have_explicit_next_actions` | 中断恢复、损坏输出、预算与不可重试失败有专项证据。正式清单中的全部故障注入项（路径失效、AI 调用/生成失败、输出失败、重开、中途退出等）需逐项核对覆盖，不推定全覆盖。 |
+| A31 帮助文档 | `test_a31_handoff_docs_contain_project_map_progress_acceptance_tests_and_safety_boundaries`；计划中有 HELP/PROJECT_LOGIC/关键文档同步要求 | 有接手文档内容测试。仍需验证每次相关代码/流程变更后文档确实同步到当前 SHA，文档覆盖检查不等于内容语义永远正确。 |
+| A32 AI 接手能力 | `test_ai_handoff.py` 包含 `test_a32_history_blind_ai_can_recover_required_project_context` 及多项 handoff 约束检查 | 自动化检查会验证接手入口、架构、进度和安全边界等关键文本；它不能单独证明文档所有状态都与最新代码一致，因此本次接手文件与实时 HEAD 仍需持续校准。 |
+| A33 完整用户流程 | `test_a33_full_flow.py` 覆盖三类任务正常、异常、安全拦截、修复复查和交付；测试对 concat、normalize 与 ffprobe 使用 mock/夹具 | 有离线流程合同证据，但该测试明确模拟媒体操作，不是完整真实媒体端到端，更不是真实模型、Provider、Windows 桌面或商业成片验收。三类流程的实际素材与现场验证仍按用户要求暂缓。 |
+
+### A18–A33 审计状态与后续
+
+- A18–A33 共 16 项均只标记为“证据已部分映射”；本轮不重新盖章为正式验收通过。
+- A20–A25 的安全/交付检查存在交叉覆盖，但不因此合并 ID；A26–A30 分别涉及历史、交付交互、持久化、数据边界和恢复，不能以单一通用测试替代。
+- A31/A32 是文档与接手能力合同；A33 是夹具隔离的离线流程回归。两者都不能替代真实环境验收。
+- `code_test_evidence_reviewed_ids=34` 表示 A0–A33 已开始证据映射，不代表 34 项审计完整；`code_test_evidence_audit_completed_ids=0`、`fully_audited=0`、`semantic_dedup_completed=false` 继续保持。未分配权重，不计算整体完成率。
+- 下一批按既定顺序继续 A34–A49；每项仍需检查正式原文、当前实现、专项测试、任务依赖与是否重复，并保留历史验收记录与当前基线的区别。
