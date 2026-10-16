@@ -93,6 +93,35 @@ def run_after_explicit_authorization(confirm, operation):
     return True, operation()
 
 
+def build_provider_execution_consent(decision, task_label, estimated_cost_rmb, details=""):
+    """Build a per-action destination disclosure before any asset/video provider call."""
+    target = str(getattr(decision, "target", "unavailable") or "unavailable")
+    endpoint = _safe_endpoint_display(getattr(decision, "endpoint", ""))
+    reason = str(getattr(decision, "reason", "") or "")
+    mode = {"local": "本地服务", "cloud": "云端服务", "unavailable": "不可用"}.get(target, target)
+    cost = float(estimated_cost_rmb or 0.0)
+    lines = [
+        f"任务：{task_label}",
+        f"实际执行目标：{mode}",
+        f"请求端点：{endpoint}",
+        f"路由原因：{reason}",
+        f"本次预估费用：¥{cost:.2f}",
+    ]
+    if target == "cloud":
+        lines.extend([
+            "数据边界：确认后将把当前镜头的标题、画面描述、文案及生成所需素材引用发送到上方云端 Provider。",
+            "费用提示：配置价为 ¥0 或 usage 缺失不代表服务免费，实际费用可能未知。",
+        ])
+    elif target == "local":
+        lines.append("数据边界：按当前路由向本机服务发送生成请求；不会因本地请求失败而自动改用云端。")
+    else:
+        lines.append("没有可用的已配置 Provider；本次不会发起生成请求。")
+    if details:
+        lines.append(str(details))
+    lines.extend(["", "只有确认后才会调用此端点；取消不会发起本次生成请求。", "是否继续？"])
+    return "\n".join(lines)
+
+
 def build_creation_preflight_detail(url, budget, variant_count, model_router):
     """Disclose external destinations and configured prices before link fetch or model calls."""
     lines = [
@@ -1690,6 +1719,20 @@ class App(tk.Tk):
         s=self.selected()
         if not s:return messagebox.showinfo('提示','先选择一个镜头。')
         try:
+            decision = None
+            if getattr(s,'clip_source','ai_generated') != 'filmed':
+                decision = CapabilityRouter(ROOT).decide_video()
+                if decision.target == 'unavailable':
+                    raise RuntimeError(f'镜头生成不可用：{decision.reason}')
+                provider = load_video_provider(ROOT/'video-provider.json') if decision.target == 'cloud' else None
+                rate = float(getattr(provider, 'cost_per_shot_rmb', 0.72)) if provider else 0.0
+                disclosure = build_provider_execution_consent(
+                    decision, f'镜头 {s.index} 视频生成', rate,
+                    f'镜头标题：{s.title}\n当前版本：v{s.version}。旧版本会保留。',
+                )
+                if not messagebox.askyesno('确认生成端点与费用', disclosure, parent=self):
+                    self.detail.set('已取消镜头生成；没有调用本地/云端视频 Provider，镜头状态和版本未改变。')
+                    return
             s.status='生成中…'; self.store.save(self.project); self.refresh_shots()
             self.update_idletasks()
             if getattr(s,'clip_source','ai_generated')=='filmed':
@@ -1698,10 +1741,9 @@ class App(tk.Tk):
                 out=self.store.render_footage_shot(self.project,s)
                 self.refresh_shots(); self.detail.set(f'镜头 {s.index} 已从拍摄素材裁剪 v{s.version}：{out}')
             else:
-                decision=CapabilityRouter(ROOT).decide_video()
                 mode={'local':'本地','cloud':'云端','unavailable':'不可用'}.get(decision.target,decision.target)
                 self.detail.set(f'镜头 {s.index} 正在{mode}生成…')
-                out=self.store.render_shot(self.project,s,config_root=ROOT)
+                out=self.store.render_shot(self.project,s,config_root=ROOT,decision=decision)
                 self.refresh_shots()
                 if s.status == "已生成（成本待核对）":
                     self.cost.set(f'项目实际成本待核对 · 预估 ¥{self.project.cost_estimate.get("总计",0):.2f}')
