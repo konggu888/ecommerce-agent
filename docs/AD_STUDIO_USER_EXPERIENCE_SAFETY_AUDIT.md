@@ -404,3 +404,10 @@
 - 提交 `a005c119499da4f5e8d6862a9cf7a29cd6f3a02f` 的 CI #2351 与 docs-sync #1996 曾成功；其后的文档同步提交仍需检查最新 SHA。
 - 本轮只收紧文本/视觉模型路由；`CapabilityRouter.decide_asset/decide_video` 仍有独立的本地/云端回退决策，尚未证明用户能逐次拒绝且拒绝后零调用。下一步只审计并补齐这条独立路径，不把两类路由混为一谈。
 
+### L. 单镜头视频 Provider 的逐次目的地授权｜2026-10-16
+
+- App.generate_shot() 现先计算实际视频路由，再弹出“确认生成端点与费用”，展示本地/云端、脱敏 endpoint、路由原因、预估费用和云端数据类别；确认前不将镜头状态写为生成中。
+- 用户拒绝时直接返回，不调用 Provider、不变更镜头状态/版本。用户同意后将同一决策快照传入 ProductionStore.render_shot()，避免确认后重新探测导致目的地漂移。
+- 新增离线测试覆盖云端目的地披露与 URL query 秘密脱敏、本地/不可用说明、授权先于状态写入/Provider 调用以及路由快照传递。
+- 仍未覆盖：ProductionStore.resolve_assets() 内 AssetGenerator.generate() 的直接资产 Provider 调用；generate_missing_asset() 的资产能力路由；最终成片批量生成与短剧商品镜头重生成。不能将本项描述为所有视频/资产入口已封闭。
+- 最新代码 SHA bb337ce7be236ad5148a9dd59120defd0efd67e5 尚待 CI/docs-sync 结果；此前 d1f7e54db2f511ba2dde900a14d848657adbbc3d 的 CI #2365 与 docs-sync #2006 通过，不适用于新代码。
