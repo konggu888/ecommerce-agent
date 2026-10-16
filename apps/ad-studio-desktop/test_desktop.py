@@ -2673,6 +2673,74 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertLess(consent, render)
         self.assertIn("decision = decision or CapabilityRouter(config_root or self.root.parent).decide_video()", production_source)
 
+
+    def test_asset_generator_requires_explicit_cloud_consent_before_provider_call(self):
+        import json
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        from ad_studio.asset_generation import AssetGenerator
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            config = root / "asset-generation.json"
+            config.write_text(json.dumps({
+                "演员": {
+                    "endpoint": "https://asset.example/generate?secret=do-not-show",
+                    "api_key": "test-secret",
+                    "price_rmb": 0.8,
+                }
+            }, ensure_ascii=False), encoding="utf-8")
+            decision = SimpleNamespace(
+                target="cloud", endpoint="https://asset.example/generate?secret=do-not-show",
+                reason="本地服务不可用，转云端",
+            )
+            generator = AssetGenerator(config, root / "library", capability=SimpleNamespace(decide_asset=lambda kind: decision))
+            with patch.object(generator, "_cloud_generate") as cloud_call:
+                with self.assertRaisesRegex(RuntimeError, "没有获得明确授权"):
+                    generator.generate("演员", "演员A", "测试提示词")
+                cloud_call.assert_not_called()
+                self.assertFalse((root / "library" / "assets").exists())
+
+                result = object()
+                cloud_call.return_value = result
+                returned = generator.generate(
+                    "演员", "演员A", "测试提示词",
+                    authorize_cloud=lambda route, kind: route.target == "cloud" and kind == "演员",
+                )
+                self.assertIs(returned, result)
+                cloud_call.assert_called_once()
+
+    def test_generate_missing_asset_rejects_cloud_without_consent_before_mutation(self):
+        from types import SimpleNamespace
+        from unittest.mock import patch
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            original_status = shot.status
+
+            class FakeCapabilityRouter:
+                def __init__(self, *args, **kwargs):
+                    pass
+                def decide_asset(self, kind):
+                    return SimpleNamespace(
+                        target="cloud", endpoint="https://asset.example/generate",
+                        reason="本地服务不可用，转云端",
+                    )
+
+            with patch("ad_studio.production.CapabilityRouter", FakeCapabilityRouter), \
+                 patch("ad_studio.production.load_asset_provider") as load_provider:
+                with self.assertRaisesRegex(RuntimeError, "没有获得明确授权"):
+                    store.generate_missing_asset(
+                        project, shot, "演员", "test actor", root / "asset-generation.json"
+                    )
+                load_provider.assert_not_called()
+                self.assertEqual(shot.status, original_status)
+                self.assertFalse((root / "library" / "assets").exists())
+
+
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.
