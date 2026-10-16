@@ -92,7 +92,7 @@ class AssetGenerator:
         except Exception:
             return 0.0
 
-    def generate(self, kind, name, prompt, tags=None, request_id=""):
+    def generate(self, kind, name, prompt, tags=None, request_id="", authorize_cloud=None):
         cfg = self._cfg(kind)
         if not cfg.get("endpoint"):
             raise RuntimeError(f"未配置{kind}自动生成服务（本地或云端）")
@@ -100,6 +100,8 @@ class AssetGenerator:
         if decision.target == "local":
             return self._local_generate(kind, name, prompt, tags or [], cfg)
         if decision.target == "cloud":
+            if not callable(authorize_cloud) or not bool(authorize_cloud(decision, kind)):
+                raise RuntimeError(f"{kind} 生成需要调用云端 Provider，但本次没有获得明确授权；未发送请求。请在展示 endpoint、数据类别和费用后由用户确认，再显式传入授权回调。")
             return self._cloud_generate(kind, name, prompt, tags or [], cfg)
         raise RuntimeError(f"{kind}自动生成服务不可用：{decision.reason}")
 
