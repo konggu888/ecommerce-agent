@@ -1116,3 +1116,11 @@ A109 转场安全补充：当前切点变速遇到显式“交叉溶解”时保
 - 当前 SHA bb337ce7be236ad5148a9dd59120defd0efd67e5 尚待 CI/docs-sync。不要把此前 d1f7e54db2f511ba2dde900a14d848657adbbc3d 的绿灯用于当前代码。
 - 下一步：资产 Provider 逐次授权。重点检查 ProductionStore.resolve_assets()→AssetGenerator.generate() 和 generate_missing_asset()；授权前不发外部请求，拒绝后 Provider 调用计数为 0、无素材落盘/镜头绑定。随后覆盖批量成片与短剧商品镜头重生成。
 - PR #32 保持 Open/unmerged；A0–A112 不新增/删除/合并/重编号；真实 Provider/扣费与 Windows 真机继续暂缓。
+
+## UXS-2 资产授权闸门接手说明｜2026-10-16
+
+- 资产云端生成层已要求 authorize_cloud 回调；无回调/拒绝时不调用云端 Provider、不创建生成文件、不绑定资产/改镜头状态。
+- 该回调尚未接入正式 UI，因此云端资产自动生成目前 fail-closed；本地服务路径仍可使用。
+- 单镜头视频已有端点/费用确认与确认时路由快照传递。
+- 当前 SHA 77ccc7a6e978fc8c6144a18b8f2958bf981ad2d6 的 CI/docs-sync 待最终结果；此前首轮 CI 失败是旧测试夹具不兼容与目录创建假设错误，已修正。
+- **下一步：**接入资产 Provider 授权 UI；展示脱敏 endpoint、数据类别、配置价格与未知费用提醒；拒绝时 Provider 调用为 0，且没有素材文件、资产库记录、镜头 ID/状态变化。之后覆盖批量视频与短剧商品镜头重生成。
