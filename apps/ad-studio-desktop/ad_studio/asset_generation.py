@@ -13,6 +13,7 @@ class AssetGenerationResult:
     cost_rmb: float
     provider: str
     source: str = "cloud"   # 'local' / 'cloud'
+    endpoint: str = ""
 
 
 class LocalAssetBackend:
@@ -116,7 +117,7 @@ class AssetGenerator:
         out = self._asset_path(kind, aid + ".png")
         LocalAssetBackend(endpoint).generate_asset(prompt, out)
         asset = Asset(aid, name, kind, "ai_generated", str(out), tags)
-        return AssetGenerationResult(asset=asset, cost_rmb=0.0, provider="本地图像服务", source="local")
+        return AssetGenerationResult(asset=asset, cost_rmb=0.0, provider="本地图像服务", source="local", endpoint=endpoint)
 
     def _cloud_generate(self, kind, name, prompt, tags, cfg):
         endpoint = (cfg.get("endpoint") or "").strip()
@@ -133,4 +134,4 @@ class AssetGenerator:
         )
         provider.generate_asset(GenerationRequest(prompt=prompt, output=out, reference_assets=[]))
         asset = Asset(aid, name, kind, "ai_generated", str(out), tags)
-        return AssetGenerationResult(asset=asset, cost_rmb=self.price(kind), provider=provider.provider_name, source="cloud")
+        return AssetGenerationResult(asset=asset, cost_rmb=self.price(kind), provider=provider.provider_name, source="cloud", endpoint=endpoint)
