@@ -108,6 +108,43 @@ class ModelRouterRoutingTest(unittest.TestCase):
             urlopen.assert_not_called()
 
 
+    def _assert_unavailable_route_fails_closed(self, selected, alternatives):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "model-config.json"
+            models = [selected, *alternatives]
+            path.write_text(json.dumps({
+                "default_model": selected["id"],
+                "models": models,
+                "routes": {"商品理解": selected["id"]},
+            }, ensure_ascii=False), encoding="utf-8")
+            router = ModelRouter(path)
+            with self.assertRaisesRegex(RuntimeError, "不会自动回退"):
+                router.resolve_route("商品理解")
+
+    def test_unavailable_cloud_route_does_not_fallback_to_another_cloud_model(self):
+        self._assert_unavailable_route_fails_closed(
+            {"id": "selected-cloud", "name": "用户所选云模型", "provider": "openai_compatible",
+             "base_url": "https://selected.example/v1", "model": "selected", "api_key": "", "enabled": True},
+            [{"id": "other-cloud", "name": "其他云模型", "provider": "openai_compatible",
+              "base_url": "https://other.example/v1", "model": "other", "api_key": "other-key", "enabled": True}],
+        )
+
+    def test_unavailable_cloud_route_does_not_fallback_to_local_model(self):
+        self._assert_unavailable_route_fails_closed(
+            {"id": "selected-cloud", "name": "用户所选云模型", "provider": "openai_compatible",
+             "base_url": "https://selected.example/v1", "model": "selected", "api_key": "", "enabled": True},
+            [{"id": "local-model", "name": "本地模型", "provider": "local_openai",
+              "base_url": "http://127.0.0.1:11434/v1", "model": "local", "api_key": "", "enabled": True}],
+        )
+
+    def test_unavailable_selected_route_fails_when_no_alternative_is_usable(self):
+        self._assert_unavailable_route_fails_closed(
+            {"id": "disabled-cloud", "name": "已停用模型", "provider": "openai_compatible",
+             "base_url": "https://disabled.example/v1", "model": "disabled", "api_key": "configured-key", "enabled": False},
+            [],
+        )
+
+
 class CreativeVariantAuditTest(unittest.TestCase):
     def test_non_platform_creative_audit_requires_single_mechanism_for_clean_test(self):
         plans = [
