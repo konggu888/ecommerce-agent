@@ -344,7 +344,7 @@ class ProductionStore:
                 shot.actual_cost_rmb = shot_cost
         return True
 
-    def _record_actual_cost(self, project: Project, *, shot: Shot | None, category: str, amount_rmb: float, provider: str, quantity: float = 1.0, unit_cost_rmb: float = 0.0, function: str = "生成任务"):
+    def _record_actual_cost(self, project: Project, *, shot: Shot | None, category: str, amount_rmb: float, provider: str, quantity: float = 1.0, unit_cost_rmb: float = 0.0, function: str = "生成任务", endpoint: str = "", cost_status: str = "unknown", usage_status: str = "not_applicable"):
         amount = round(float(amount_rmb or 0), 6)
         self._ensure_legacy_cost_migrated(project)
         self.ledger.record(
@@ -352,6 +352,7 @@ class ProductionStore:
             status="success", estimated_cost_rmb=amount,
             project_id=project.id, shot_id=shot.id if shot else "",
             category=category, quantity=quantity, unit_cost_rmb=unit_cost_rmb,
+            endpoint=endpoint, cost_status=cost_status, usage_status=usage_status,
         )
         summary = self.ledger.project_summary(project.id)
         # The usage ledger is authoritative; never increment a possibly stale project total.
@@ -388,6 +389,7 @@ class ProductionStore:
             category="video",
             quantity=1,
             unit_cost_rmb=round(quoted_rate, 6),
+            endpoint=getattr(provider, "endpoint", ""), cost_status="unknown", usage_status="unavailable",
             error=error,
         )
         # Failed rows remain auditable without counting an unconfirmed charge
@@ -412,7 +414,7 @@ class ProductionStore:
         self.save(project)
         return next((shot for shot in shots if str(shot.id) == str(task.get("accepted_shot_id"))), None)
 
-    def _record_asset_cost(self, project: Project, shot: Shot, kind: str, amount_rmb: float, provider: str):
+    def _record_asset_cost(self, project: Project, shot: Shot, kind: str, amount_rmb: float, provider: str, endpoint: str = "", cost_status: str = "unknown"):
         """Keep successfully generated assets available when their cost write needs reconciliation."""
         try:
             self._record_actual_cost(
@@ -423,7 +425,7 @@ class ProductionStore:
                 provider=provider,
                 quantity=1,
                 unit_cost_rmb=amount_rmb,
-                function=f"{kind}素材生成",
+                function=f"{kind}素材生成", endpoint=endpoint, cost_status=cost_status, usage_status="not_applicable",
             )
             return True, ""
         except Exception as exc:
@@ -492,7 +494,7 @@ class ProductionStore:
                         result=generator.generate(kind,project.product_name+'-'+kind,shot.visual+'；需求：'+'、'.join(tags),tags,shot.id,authorize_cloud=authorize_cloud)
                         library._write(library.all()+[result.asset])
                         item.update({'asset':result.asset.id,'source':'已生成并入库','cost_rmb':result.cost_rmb})
-                        cost_recorded, cost_error = self._record_asset_cost(project, shot, kind, result.cost_rmb, result.provider)
+                        cost_recorded, cost_error = self._record_asset_cost(project, shot, kind, result.cost_rmb, result.provider, getattr(result, "endpoint", ""), getattr(result, "cost_status", "unknown"))
                         if not cost_recorded:
                             item.update({
                                 'source': '已生成并入库（成本待核对）',
@@ -550,7 +552,7 @@ class ProductionStore:
         elif kind=='场景': shot.scene_id=item.id
         elif kind=='商品素材': shot.product_asset_ids.append(item.id)
         shot.asset_source='ai_generated'
-        cost_recorded, cost_error = self._record_asset_cost(project, shot, kind, cost, provider_name)
+        cost_recorded, cost_error = self._record_asset_cost(project, shot, kind, cost, provider_name, getattr(decision, "endpoint", "") if decision.target == "local" else getattr(provider, "endpoint", ""), "local_no_provider_charge" if decision.target == "local" else ("estimated_from_configured_price" if "price_rmb" in (json.loads(asset_provider_path.read_text(encoding="utf-8")) if asset_provider_path.exists() else {}) else "price_missing"))
         shot.provider = provider_name
         shot.status = f'{kind}已生成并入库' if cost_recorded else f'{kind}已生成并入库（成本待核对）'
         if not cost_recorded:
@@ -682,6 +684,9 @@ class ProductionStore:
                 quantity=1,
                 unit_cost_rmb=video_cost,
                 function="视频镜头生成",
+                endpoint=getattr(provider, "endpoint", ""),
+                cost_status=("local_no_provider_charge" if getattr(provider, "provider_name", "") == "本地视频服务" else ("estimated_from_configured_price" if getattr(provider, "cost_price_configured", True) else "price_missing")),
+                usage_status="not_applicable",
             )
             self.mark_ready(project, shot, out)
         except Exception as ledger_exc:
