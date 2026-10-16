@@ -454,7 +454,7 @@ class ProductionStore:
         plan_shots=project.creative_plan.get("shots", []) if project.creative_plan else []
         ai=next((x for x in plan_shots if int(x.get("index", -1)) == shot.index), {})
         req=ai.get("asset_resolution", {}) or {}
-        generator=AssetGenerator(self.library_root/'asset-generation.json',self.library_root)
+        generator=AssetGenerator(self.root.parent/'asset-generation.json',self.library_root)
         # Preflight all locks before resolving anything else. A stale series lock must
         # not cause unrelated missing assets to be generated as a side effect.
         preflight_issues = self.validate_series_asset_locks(project, shot.index)
