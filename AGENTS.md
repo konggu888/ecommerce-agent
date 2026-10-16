@@ -254,3 +254,7 @@ AssetGenerator.generate、ProductionStore.resolve_assets、ProductionStore.gener
 ## UXS-2 单镜头资产授权接线完成范围｜2026-10-16
 
 单镜头生成按钮已逐次确认视频端点/费用，并为每个需要云端生成的资产显示端点（脱敏）、数据类别与价格。拒绝资产授权须在镜头状态变更前返回且阻止视频 Provider 调用。下一步审计 AI补镜头、批量创意方案生成、短剧商品镜头重生成，逐入口补拒绝后零调用和状态不变测试。不得将单镜头路径通过视为全部 Provider 授权通过；所有代码改动仍须同步帮助、逻辑、验收计划/SOP、handoff、未来备忘录与 dashboard。
+
+## UXS-2 多入口授权接线状态｜2026-10-16
+
+统一授权流程现覆盖单镜头生成、AI补镜头、批量创意方案生成及其中需要的云端资产生成；确认时路由快照传入生产层，拒绝时不先修改镜头状态、不发起该次视频请求。短剧商品镜头重生成的准备阶段不调用 Provider，真正生成走单镜头入口。下一步处理未知费用语义与 endpoint provenance，确保缺失价格/usage 不等于免费，历史可追溯实际目标但不包含密钥。继续同步 HELP、PROJECT_LOGIC、验收计划/SOP、handoff、未来备忘录与 dashboard；不新增 A113+。
