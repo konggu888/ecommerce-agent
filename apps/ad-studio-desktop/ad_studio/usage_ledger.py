@@ -208,6 +208,12 @@ class UsageLedger:
     def project_summary(self, project_id: str) -> dict[str, Any]:
         rows = [x for x in self._load() if x.get("project_id") == project_id]
         success = [x for x in rows if x.get("status") == "success"]
+        unknown_cost_rows = [
+            x for x in rows
+            if x.get("status") == "success"
+            and x.get("cost_status", "legacy_known" if "estimated_cost_rmb" in x else "unknown")
+            in {"unknown", "usage_missing", "price_missing", "price_and_usage_missing", "unavailable"}
+        ]
         return {
             "project_id": project_id,
             "entries": len(rows),
@@ -215,6 +221,8 @@ class UsageLedger:
             "failed": len(rows) - len(success),
             "tokens": sum(int(x.get("total_tokens", 0) or 0) for x in rows),
             "actual_cost_rmb": round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in success), 6),
+            "unknown_cost_entries": len(unknown_cost_rows),
+            "has_unknown_cost": bool(unknown_cost_rows),
             "by_category": {category: round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in success if x.get("category") == category), 6) for category in sorted({x.get("category", "model") for x in success})},
         }
 
@@ -233,10 +241,22 @@ class UsageLedger:
     def summary(self) -> dict[str, Any]:
         rows = self._load()
         success = [x for x in rows if x.get("status") == "success"]
+        unknown_cost_rows = [
+            x for x in rows
+            if x.get("cost_status", "legacy_known" if "estimated_cost_rmb" in x else "unknown")
+            in {"unknown", "usage_missing", "price_missing", "price_and_usage_missing", "unavailable"}
+        ]
+        known_cost_rows = [
+            x for x in rows
+            if x.get("cost_status", "legacy_known" if "estimated_cost_rmb" in x else "unknown")
+            not in {"unknown", "usage_missing", "price_missing", "price_and_usage_missing", "unavailable"}
+        ]
         return {
             "calls": len(rows),
             "success": len(success),
             "failed": len(rows) - len(success),
             "tokens": sum(int(x.get("total_tokens", 0) or 0) for x in rows),
-            "estimated_cost_rmb": round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in rows), 6),
+            "estimated_cost_rmb": round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in known_cost_rows), 6),
+            "unknown_cost_entries": len(unknown_cost_rows),
+            "has_unknown_cost": bool(unknown_cost_rows),
         }
