@@ -239,3 +239,10 @@ A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/
 
 ## PLAN-003 evidence updates (2026-10-16)
 When touching desktop tests, update this file, `apps/ad-studio-desktop/HELP.md`, and `apps/ad-studio-desktop/PROJECT_LOGIC.md` in the same change, along with the canonical acceptance plan/SOP, task register, progress dashboard, and handoff files as applicable. DEDUP-013 adds post-recovery reload assertions for A57 (legacy project with no ledger rows) and A60 (failed-only ledger); do not mark A57/A60/A99 accepted until current-HEAD CI and the full evidence contract are reviewed. Keep A99's successful-ledger stale sibling reset distinct from A57/A60's no-success branches.
+
+## UXS-2 Provider 授权规则增量｜2026-10-16
+
+- 单镜头视频生成：在镜头状态变更前展示实际路由目标、脱敏 endpoint、路由原因、费用和数据边界；用户取消时不调用 Provider；确认后必须把同一决策快照传入生产层，禁止确认后静默重路由。
+- 资产云端生成：AssetGenerator.generate() 和 ProductionStore.generate_missing_asset() 只有收到明确 authorize_cloud 回调且回调同意时才能走云端。无回调/拒绝时必须在外部请求前失败，不创建生成文件、不绑定资产、不改镜头状态。
+- 调用方不得用默认 True 绕过授权；任何 UI 接入都必须展示 endpoint（隐藏 URL userinfo/query/fragment）、数据类型与费用，并对取消后 Provider 调用计数为 0 做 mock 验证。
+- 仍需覆盖最终成片批量视频、短剧商品镜头重生成等入口。不得将单镜头授权或资产 helper 测试等同于所有 Provider 授权闭环通过；不新增 A113+，A0–A112 正式状态不因代码/文档存在而自动改变。
