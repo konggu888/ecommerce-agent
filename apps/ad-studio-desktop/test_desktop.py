@@ -2567,6 +2567,11 @@ class DesktopCoreTests(unittest.TestCase):
                 enabled=True, input_price_rmb_per_1k=0, output_price_rmb_per_1k=0,
             )
             router.add_or_update(profile)
+            router.add_or_update(ModelProfile(
+                id="fallback-model", name="潜在回退模型",
+                provider="openai_compatible", base_url="https://fallback.example/v1",
+                model="fallback-model", api_key="fallback-secret", enabled=True,
+            ))
             router.set_route("商品理解", profile.id)
             detail = build_creation_preflight_detail(
                 "https://item.example/product/1", 5.0, 2, router
