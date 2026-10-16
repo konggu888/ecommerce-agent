@@ -1339,14 +1339,14 @@ class App(tk.Tk):
         frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
         summary=self.model_router.usage_summary()
         ttk.Label(frm,text='AI调用记录',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
-        ttk.Label(frm,text=f"累计调用：{summary['calls']}  成功：{summary['success']}  失败：{summary['failed']}  Token：{summary['tokens']:,}  已记录模型成本：¥{summary['estimated_cost_rmb']:.4f}").pack(anchor='w',pady=(2,10))
+        ttk.Label(frm,text=f"累计调用：{summary['calls']}  成功：{summary['success']}  失败：{summary['failed']}  Token：{summary['tokens']:,}  已知估算成本：¥{summary['estimated_cost_rmb']:.4f}  未知费用记录：{summary.get('unknown_cost_entries', 0)}（不能视为免费）").pack(anchor='w',pady=(2,10))
         ttk.Label(frm,text='成本为模型返回 Token × 本机配置单价；未配置单价的模型显示 ¥0，不代表供应商永久免费。').pack(anchor='w',pady=(0,8))
-        tree=ttk.Treeview(frm,columns=('time','function','model','provider','status','tokens','cost','duration'),show='headings')
-        for col,title,w in [('time','时间',135),('function','功能',120),('model','实际模型',180),('provider','提供方式',100),('status','状态',70),('tokens','Token',90),('cost','估算成本',90),('duration','耗时',80)]:
+        tree=ttk.Treeview(frm,columns=('time','function','model','provider','endpoint','status','tokens','cost','cost_status','duration'),show='headings')
+        for col,title,w in [('time','时间',135),('function','功能',120),('model','实际模型',150),('provider','提供方式',100),('endpoint','实际端点（脱敏）',220),('status','状态',70),('tokens','Token',80),('cost','估算成本',90),('cost_status','费用可信状态',150),('duration','耗时',80)]:
             tree.heading(col,text=title); tree.column(col,width=w)
         tree.pack(fill='both',expand=True)
         for x in self.model_router.recent_usage(150):
-            tree.insert('', 'end', values=(x.get('time',''),x.get('function',''),x.get('model_name',''),x.get('provider',''),x.get('status',''),x.get('total_tokens',0),f"¥{float(x.get('estimated_cost_rmb',0)):.4f}",f"{int(x.get('duration_ms',0))}ms"))
+            tree.insert('', 'end', values=(x.get('time',''),x.get('function',''),x.get('model_name',''),x.get('provider',''),x.get('endpoint','未记录'),x.get('status',''),x.get('total_tokens',0),f"¥{float(x.get('estimated_cost_rmb',0)):.4f}",x.get('cost_status','旧记录/未知'),f"{int(x.get('duration_ms',0))}ms"))
         ttk.Button(frm,text='刷新',command=lambda:(win.destroy(),self.usage_view())).pack(anchor='e',pady=8)
 
     def refresh_gpu(self):
