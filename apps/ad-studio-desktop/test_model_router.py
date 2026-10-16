@@ -2,6 +2,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 from ad_studio.model_router import FUNCTIONS, ModelProfile, ModelRouter, audit_ad_variant_set, build_creative_test_plan, audit_creative_factual_consistency, audit_storyboard_fact_consistency, audit_visual_fact_consistency
 
@@ -68,6 +69,43 @@ class ModelRouterRoutingTest(unittest.TestCase):
             self.assertEqual(plan["video_form"], "真人+产品")
             self.assertEqual(len(plan["shots"]), 1)
             self.assertIn("creative_stages", plan)
+
+
+    def test_local_transcription_allows_missing_api_key_without_authorization_header(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            router = ModelRouter(Path(tmp) / "model-config.json")
+            audio = Path(tmp) / "sample.wav"
+            audio.write_bytes(b"fake wav bytes")
+            profile = ModelProfile(
+                id="local-transcribe", name="本地转写",
+                provider="local_openai", base_url="http://127.0.0.1:11434/v1",
+                model="whisper-local", api_key="", enabled=True,
+                transcription_enabled=True,
+            )
+            response = MagicMock()
+            response.__enter__.return_value.read.return_value = b'{"text":"本地转写成功","segments":[]}'
+            with patch("ad_studio.transcription.urllib.request.urlopen", return_value=response) as urlopen:
+                result = router.transcribe_footage_audio(audio, profile)
+            self.assertEqual(result["text"], "本地转写成功")
+            request = urlopen.call_args.args[0]
+            self.assertIsNone(request.get_header("Authorization"))
+            self.assertTrue(request.full_url.endswith("/audio/transcriptions"))
+
+    def test_remote_transcription_without_api_key_is_rejected_before_request(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            router = ModelRouter(Path(tmp) / "model-config.json")
+            audio = Path(tmp) / "sample.wav"
+            audio.write_bytes(b"fake wav bytes")
+            profile = ModelProfile(
+                id="remote-transcribe", name="远程转写",
+                provider="openai_compatible", base_url="https://provider.invalid/v1",
+                model="whisper-remote", api_key="", enabled=True,
+                transcription_enabled=True,
+            )
+            with patch("ad_studio.transcription.urllib.request.urlopen") as urlopen:
+                with self.assertRaisesRegex(RuntimeError, "没有可用凭据"):
+                    router.transcribe_footage_audio(audio, profile)
+            urlopen.assert_not_called()
 
 
 class CreativeVariantAuditTest(unittest.TestCase):
