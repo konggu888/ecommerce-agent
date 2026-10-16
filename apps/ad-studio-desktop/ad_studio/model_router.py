@@ -10,7 +10,7 @@ import base64
 import urllib.request
 import time
 
-from .usage_ledger import UsageLedger, sanitize_endpoint
+from .usage_ledger import UsageLedger
 from .footage import normalize_footage_analysis, rank_footage_analysis, audit_footage_coverage
 from .creative_engine import CREATIVE_SYSTEM_PROMPT
 
