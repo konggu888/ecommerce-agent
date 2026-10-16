@@ -271,3 +271,9 @@ AssetGenerator.generate、ProductionStore.resolve_assets、ProductionStore.gener
 - 若 Provider 没有显式配置单价，授权弹窗必须显示“暂无法可靠估算（未知）”，不能用默认单价或 ¥0 冒充精确报价。
 - 若资产配置没有 price_rmb，必须显示未知费用；显式配置为 0 与未配置价格是不同状态。
 - 修改后仍需 mock 验证提示文本；账本和 UI 里的 0 数值字段不能覆盖 cost_status 的未知语义。
+
+## UXS-2 转写账本与项目上下文｜2026-10-16
+
+- ModelRouter 必须初始化 current_project_id，并提供 set_project_context()；新建/打开项目时更新上下文，不能因账本字段缺失而在真实模型调用后抛出 AttributeError。
+- 口播转写必须写入本地调用账本，记录模型、Provider、脱敏 endpoint、耗时与未知费用状态；不得因接口未返回 usage 而把费用当作免费。
+- 以上仅为本地账本与 mock 证据，不代表转写 Provider 账单已核实。

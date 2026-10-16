@@ -1630,3 +1630,9 @@ App.generate_shot() 先确认视频目标/费用，再调用 ProductionStore.res
 - build_provider_execution_consent() 接受 None 表示未知报价，并显示“暂无法可靠估算（未知）”；只有显式已配置的视频/资产价格才显示数值。
 - 云端资产读取 kind 专属配置或 asset_generation 通用配置；没有 price_rmb 时保持未知，不能默认为 ¥0。
 - 视频 Provider 的 cost_price_configured 标志用于区分配置缺价与明确写入价格；默认字段值不是用户确认过的报价。
+
+### 口播转写的调用记录与项目上下文｜2026-10-16
+
+- ModelRouter 初始化 current_project_id 为空值，并通过 set_project_context(project_id) 绑定活动项目；新建和打开项目均应设置上下文，避免第一次模型调用记录失败。
+- transcribe_footage_audio 对成功/失败请求记录 category=transcription、model/provider、脱敏 endpoint、耗时与 usage/cost 状态。由于当前转写响应没有 token usage 与计费数据，成功记录标记 usage_missing，不能当成免费。
+- 转写 API Key 不写入账本；endpoint 由 UsageLedger 统一脱敏。

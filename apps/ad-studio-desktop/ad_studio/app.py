@@ -1544,6 +1544,7 @@ class App(tk.Tk):
         self.detail.set(f'商品资料采集：{info.name} · {info.platform}\n来源：{info.source or "未完成"}\n{info.description[:180] or "未读取到商品描述"}')
         self.project=new_project(url,level,form if form!='AI自动选择' else 'AI自动选择')
         self.model_router.set_project_context(self.project.id)
+        self.model_router.set_project_context(self.project.id)
         self.project.product_info=info.to_dict()
         self.project.creative_plan['task_type']=task_type
         try:

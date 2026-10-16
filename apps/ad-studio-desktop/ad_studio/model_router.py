@@ -65,6 +65,7 @@ class ModelRouter:
         self.data = self._load()
         self._ensure_defaults()
         self.ledger = UsageLedger(self.config_path.parent / "usage-ledger.json")
+        self.current_project_id = ""
 
     def _load(self) -> dict[str, Any]:
         if not self.config_path.exists():
@@ -98,6 +99,10 @@ class ModelRouter:
         for function in FUNCTIONS:
             routes.setdefault(function, self.data["default_model"])
         self.save()
+
+    def set_project_context(self, project_id: str | None) -> None:
+        """Associate subsequent local usage rows with the active project."""
+        self.current_project_id = str(project_id or "")
 
     def profiles(self) -> list[ModelProfile]:
         fields = {f.name for f in __import__("dataclasses").fields(ModelProfile)}
@@ -304,9 +309,28 @@ class ModelRouter:
         if not profile.api_key and profile.provider != "local_openai":
             raise RuntimeError(f"口播转写模型「{profile.name}」没有可用凭据。")
         endpoint = profile.base_url.rstrip("/") + "/audio/transcriptions"
-        result = transcribe_openai_compatible(
-            audio_path, endpoint, profile.api_key, profile.model,
-            allow_missing_api_key=profile.provider == "local_openai",
+        started = time.perf_counter()
+        try:
+            result = transcribe_openai_compatible(
+                audio_path, endpoint, profile.api_key, profile.model,
+                allow_missing_api_key=profile.provider == "local_openai",
+            )
+        except Exception as exc:
+            self.ledger.record(
+                function="口播转写", model_id=profile.id, model_name=profile.name,
+                provider=profile.provider, model=profile.model, status="failed",
+                duration_ms=int((time.perf_counter() - started) * 1000),
+                error=str(exc), category="transcription",
+                project_id=getattr(self, "current_project_id", ""),
+                endpoint=endpoint, cost_status="unknown", usage_status="unavailable",
+            )
+            raise
+        self.ledger.record(
+            function="口播转写", model_id=profile.id, model_name=profile.name,
+            provider=profile.provider, model=profile.model, status="success",
+            duration_ms=int((time.perf_counter() - started) * 1000),
+            category="transcription", project_id=getattr(self, "current_project_id", ""),
+            endpoint=endpoint, cost_status="usage_missing", usage_status="missing",
         )
         return {"text": result.text, "segments": [
             {"start": x.start, "end": x.end, "text": x.text} for x in result.segments

@@ -2833,7 +2833,7 @@ class DesktopCoreTests(unittest.TestCase):
                 "routes": {"商品理解": "priced"}
             }, ensure_ascii=False), encoding="utf-8")
             router = ModelRouter(config_path)
-            router.current_project_id = "ledger-test-project"
+            router.set_project_context("ledger-test-project")
             profile = router.get("priced")
             response = MagicMock()
             response.__enter__.return_value.read.return_value = json.dumps({

@@ -90,6 +90,11 @@ class ModelRouterRoutingTest(unittest.TestCase):
             request = urlopen.call_args.args[0]
             self.assertIsNone(request.get_header("Authorization"))
             self.assertTrue(request.full_url.endswith("/audio/transcriptions"))
+            row = router.ledger.recent(1)[0]
+            self.assertEqual(row["function"], "口播转写")
+            self.assertEqual(row["endpoint"], "http://127.0.0.1:11434/v1/audio/transcriptions")
+            self.assertEqual(row["cost_status"], "usage_missing")
+            self.assertEqual(row["usage_status"], "missing")
 
     def test_remote_transcription_without_api_key_is_rejected_before_request(self):
         with tempfile.TemporaryDirectory() as tmp:

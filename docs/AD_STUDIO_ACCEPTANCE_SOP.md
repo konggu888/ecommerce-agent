@@ -1674,3 +1674,9 @@ A57 的无账本旧项目、A60 的 failed-only 账本均已有恢复行为测�
 
 - 视频 Provider 未配置价格、资产 Provider 未配置 price_rmb 时，确认弹窗必须显示“暂无法可靠估算（未知）”。
 - 显式 ¥0 仍展示配置价，但必须同时提示这不是供应商免费承诺；不能把默认值当作用户明确配置的价格。
+
+### 口播转写账本验收补充｜2026-10-16
+
+- mock 成功/失败转写均须生成账本行，记录模型、Provider、脱敏 endpoint、耗时、project_id 和费用可信状态。
+- 当前接口无 usage 时状态应为 usage_missing/unknown，不能当作免费；账本不能含 API Key 或 endpoint query 参数。
+- 新建项目与打开项目后都要核对 ModelRouter 的项目上下文绑定。

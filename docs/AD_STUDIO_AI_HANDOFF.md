@@ -899,3 +899,7 @@ A109 转场安全补充：当前切点变速遇到显式“交叉溶解”时保
 ## UXS-2 未知报价弹窗补充｜2026-10-16
 
 授权 UI 不得将未配置的 Provider 单价显示为确定价格。视频通过 cost_price_configured 区分缺价与显式价格；资产按 kind 配置或 asset_generation 通用配置读取 price_rmb。None 显示为“暂无法可靠估算（未知）”，显式 0 仍有不代表免费的说明。请以本次最新 HEAD 的 CI/docs-sync 为准。
+
+## UXS-2 转写账本增量｜2026-10-16
+
+ModelRouter 现有项目上下文默认值与 set_project_context()，新建项目和打开项目时绑定 project_id；口播转写成功/失败写入账本，保存脱敏 endpoint、模型/Provider、耗时和未知费用状态。需要在最新 CI 中确认 mock 回归。下一步继续检查视觉分析与其他未入账入口，再审计本地 API Key 存储。
