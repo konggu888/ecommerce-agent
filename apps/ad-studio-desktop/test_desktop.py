@@ -2520,7 +2520,7 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertAlmostEqual(restored_by_id[uncharged.id].actual_cost_rmb, 0.0)
 
 
-    def test_a103_asset_generation_config_uses_app_config_root_not_custom_library_root(self):
+    def test_asset_generation_config_uses_app_config_root_not_custom_library_root(self):
         from unittest.mock import patch
 
         with tempfile.TemporaryDirectory() as td:
