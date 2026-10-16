@@ -1010,7 +1010,16 @@ class App(tk.Tk):
                 generated_from_request=f'实拍缺口任务 {task_id}：{task.get("reason","")}',
             )
             try:
-                out=self.store.render_shot(self.project,shot,config_root=ROOT)
+                decision = self._authorize_shot_generation(shot, f'AI补镜头 {task_id}')
+                if decision is None:
+                    task['status'] = '用户取消'
+                    task['generation_error'] = '用户取消视频/素材 Provider 授权；未发起本次视频请求。'
+                    failures.append(f'{task_id}：用户取消授权')
+                    continue
+                out=self.store.render_shot(
+                    self.project, shot, config_root=ROOT, decision=decision,
+                    authorize_cloud=lambda asset_decision, kind: self._confirm_asset_cloud_generation(asset_decision, kind, shot),
+                )
                 task['generated_path']=str(out)
                 task['status']='AI补镜头已生成'
                 task['generation_cost_rmb']=round(float(getattr(shot,'actual_cost_rmb',rate) or 0),4)
@@ -2088,11 +2097,19 @@ class App(tk.Tk):
                     if shot.video_path and Path(shot.video_path).exists():
                         continue
                     try:
-                        shot.status='生成中…'; self.store.save(self.project); self.refresh_shots(); self.update_idletasks()
                         if shot.clip_source=='filmed':
+                            shot.status='生成中…'; self.store.save(self.project); self.refresh_shots(); self.update_idletasks()
                             self.store.render_footage_shot(self.project,shot)
                         else:
-                            self.store.render_shot(self.project,shot,config_root=ROOT)
+                            decision = self._authorize_shot_generation(shot, f'方案{self.active_variant_index} 镜头 {shot.index} 视频生成')
+                            if decision is None:
+                                failed.append(f'方案{self.active_variant_index}-镜头{shot.index}：用户取消授权（未调用视频 Provider）')
+                                continue
+                            shot.status='生成中…'; self.store.save(self.project); self.refresh_shots(); self.update_idletasks()
+                            self.store.render_shot(
+                                self.project, shot, config_root=ROOT, decision=decision,
+                                authorize_cloud=lambda asset_decision, kind: self._confirm_asset_cloud_generation(asset_decision, kind, shot),
+                            )
                         done.append(f'方案{self.active_variant_index}-镜头{shot.index}')
                     except Exception as exc:
                         failed.append(f'方案{self.active_variant_index}-镜头{shot.index}：{exc}')
