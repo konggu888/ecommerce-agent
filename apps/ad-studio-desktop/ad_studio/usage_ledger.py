@@ -210,8 +210,7 @@ class UsageLedger:
         success = [x for x in rows if x.get("status") == "success"]
         unknown_cost_rows = [
             x for x in rows
-            if x.get("status") == "success"
-            and x.get("cost_status", "legacy_known" if "estimated_cost_rmb" in x else "unknown")
+            if x.get("cost_status", "legacy_known" if "estimated_cost_rmb" in x else "unknown")
             in {"unknown", "usage_missing", "price_missing", "price_and_usage_missing", "unavailable"}
         ]
         return {
