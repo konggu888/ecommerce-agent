@@ -592,23 +592,23 @@ class ProductionStore:
         return self._render_with_provider(project, shot, provider)
 
     def _render_with_provider(self, project: Project, shot: Shot, provider, authorize_cloud=None):
-        # Resolve/reuse assets before changing shot state; cloud asset generation requires its own consent.
-        resolution = self.resolve_assets(project, shot, authorize_cloud=authorize_cloud)
-        # A rejected asset-consent prompt must stop the video request too, not silently continue without assets.
-        denied = [item for item in resolution.values() if "没有获得明确授权" in str(item.get("error", ""))]
-        if denied:
-            raise RuntimeError("用户拒绝或未授权云端素材生成；已阻止后续视频 Provider 调用。")
         out = self.render_path(project, shot)
         temp = out.with_suffix(".part.mp4")
-        if temp.exists():
-            temp.unlink()
         previous_path = shot.video_path or getattr(shot, "previous_video_path", None)
         prompt = '\n'.join([f"标题：{shot.title}", f"画面：{shot.visual}", f"文案：{shot.script}"])
-        shot.status = "生成中…"
-        shot.provider = getattr(provider, "provider_name", "Generic REST")
-        shot.generated_from_request = prompt
         provider_call_started = False
         try:
+            # Resolve/reuse assets before changing shot state; cloud asset generation requires its own consent.
+            # A rejected asset-consent prompt must stop the video request too, not silently continue without assets.
+            resolution = self.resolve_assets(project, shot, authorize_cloud=authorize_cloud)
+            denied = [item for item in resolution.values() if "没有获得明确授权" in str(item.get("error", ""))]
+            if denied:
+                raise RuntimeError("用户拒绝或未授权云端素材生成；已阻止后续视频 Provider 调用。")
+            if temp.exists():
+                temp.unlink()
+            shot.status = "生成中…"
+            shot.provider = getattr(provider, "provider_name", "Generic REST")
+            shot.generated_from_request = prompt
             self.save(project)
             # Re-check immediately before Provider dispatch; asset state may have changed since load.
             lock_issues = self.validate_series_asset_locks(project, shot.index)
@@ -639,6 +639,10 @@ class ProductionStore:
                 raise RuntimeError("视频 Provider 返回成功，但生成文件不存在或为空。")
             result.replace(out)
         except Exception as exc:
+            if "没有获得明确授权" in str(exc) or "用户拒绝或未授权云端素材生成" in str(exc):
+                # Consent cancellation is not a provider failure and must not mutate shot state/version.
+                temp.unlink(missing_ok=True)
+                raise
             temp.unlink(missing_ok=True)
             previous_is_valid = bool(
                 previous_path and Path(previous_path).is_file() and Path(previous_path).stat().st_size > 0
