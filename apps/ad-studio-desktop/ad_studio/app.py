@@ -1713,6 +1713,30 @@ class App(tk.Tk):
                 f'BGM：{getattr(s, "bgm_intensity", "低")} · 音量 {getattr(s, "bgm_volume", 0.16):.2f}'
             )
 
+    def _authorize_shot_generation(self, shot, action_label):
+        """Authorize the actual video route and any cloud asset requests before mutating shot state."""
+        decision = CapabilityRouter(ROOT).decide_video()
+        if decision.target == 'unavailable':
+            raise RuntimeError(f'镜头生成不可用：{decision.reason}')
+        provider = load_video_provider(ROOT/'video-provider.json') if decision.target == 'cloud' else None
+        rate = float(getattr(provider, 'cost_per_shot_rmb', 0.72)) if provider else 0.0
+        detail = build_provider_execution_consent(
+            decision, action_label, rate,
+            f'镜头标题：{shot.title}\\n当前版本：v{shot.version}。旧版本会保留。',
+        )
+        if not messagebox.askyesno('确认生成端点与费用', detail, parent=self):
+            return None
+        try:
+            self.store.resolve_assets(
+                self.project, shot,
+                authorize_cloud=lambda asset_decision, kind: self._confirm_asset_cloud_generation(asset_decision, kind, shot),
+            )
+        except Exception as asset_exc:
+            if "没有获得明确授权" in str(asset_exc) or "用户拒绝或未授权云端素材生成" in str(asset_exc):
+                return None
+            raise
+        return decision
+
     def _confirm_asset_cloud_generation(self, decision, kind, shot):
         """Ask per-asset consent before sending an asset prompt to a cloud Provider."""
         config_path = ROOT / 'asset-generation.json'
@@ -1744,29 +1768,10 @@ class App(tk.Tk):
         try:
             decision = None
             if getattr(s,'clip_source','ai_generated') != 'filmed':
-                decision = CapabilityRouter(ROOT).decide_video()
-                if decision.target == 'unavailable':
-                    raise RuntimeError(f'镜头生成不可用：{decision.reason}')
-                provider = load_video_provider(ROOT/'video-provider.json') if decision.target == 'cloud' else None
-                rate = float(getattr(provider, 'cost_per_shot_rmb', 0.72)) if provider else 0.0
-                disclosure = build_provider_execution_consent(
-                    decision, f'镜头 {s.index} 视频生成', rate,
-                    f'镜头标题：{s.title}\n当前版本：v{s.version}。旧版本会保留。',
-                )
-                if not messagebox.askyesno('确认生成端点与费用', disclosure, parent=self):
-                    self.detail.set('已取消镜头生成；没有调用本地/云端视频 Provider，镜头状态和版本未改变。')
+                decision = self._authorize_shot_generation(s, f'镜头 {s.index} 视频生成')
+                if decision is None:
+                    self.detail.set('已取消本次生成；未继续调用视频 Provider，镜头状态和版本未改变。此前明确授权完成的素材可能已入库。')
                     return
-            if getattr(s,'clip_source','ai_generated') != 'filmed':
-                try:
-                    self.store.resolve_assets(
-                        self.project, s,
-                        authorize_cloud=lambda asset_decision, kind: self._confirm_asset_cloud_generation(asset_decision, kind, s),
-                    )
-                except Exception as asset_exc:
-                    if "没有获得明确授权" in str(asset_exc):
-                        self.detail.set('已取消云端素材生成；没有调用素材/视频 Provider，也未修改镜头状态或版本。')
-                        return
-                    raise
             s.status='生成中…'; self.store.save(self.project); self.refresh_shots()
             self.update_idletasks()
             if getattr(s,'clip_source','ai_generated')=='filmed':
