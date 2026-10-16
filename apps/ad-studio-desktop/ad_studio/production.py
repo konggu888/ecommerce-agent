@@ -447,7 +447,7 @@ class ProductionStore:
                 })
             return False, str(exc)
 
-    def resolve_assets(self, project: Project, shot: Shot):
+    def resolve_assets(self, project: Project, shot: Shot, authorize_cloud=None):
         """本地优先；缺失时返回明确的生成需求。真正生成由对应生成器执行。"""
         library=LocalLibrary(self.library_root)
         resolution={}
@@ -489,7 +489,7 @@ class ProductionStore:
                 if generator.configured(kind):
                     item['source']='自动生成中'
                     try:
-                        result=generator.generate(kind,project.product_name+'-'+kind,shot.visual+'；需求：'+'、'.join(tags),tags,shot.id)
+                        result=generator.generate(kind,project.product_name+'-'+kind,shot.visual+'；需求：'+'、'.join(tags),tags,shot.id,authorize_cloud=authorize_cloud)
                         library._write(library.all()+[result.asset])
                         item.update({'asset':result.asset.id,'source':'已生成并入库','cost_rmb':result.cost_rmb})
                         cost_recorded, cost_error = self._record_asset_cost(project, shot, kind, result.cost_rmb, result.provider)
@@ -513,10 +513,16 @@ class ProductionStore:
         self.save(project)
         return resolution
 
-    def generate_missing_asset(self, project: Project, shot: Shot, kind: str, request_text: str, asset_provider_path: Path):
+    def generate_missing_asset(self, project: Project, shot: Shot, kind: str, request_text: str, asset_provider_path: Path, authorize_cloud=None):
         """缺少本地素材时自动生成，并永久登记到本地库。"""
         library=LocalLibrary(self.library_root)
         decision = CapabilityRouter(self.root.parent).decide_asset(kind)
+        if decision.target == 'cloud' and (
+            not callable(authorize_cloud) or not bool(authorize_cloud(decision, kind))
+        ):
+            raise RuntimeError(
+                f'{kind}生成需要调用云端 Provider，但本次没有获得明确授权；未发送请求、未创建素材文件、未修改镜头状态。'
+            )
         aid=shot.id + '-' + kind
         ext='.png'
         out=self.library_root/'assets'/kind/(aid+ext)
