@@ -1713,6 +1713,29 @@ class App(tk.Tk):
                 f'BGM：{getattr(s, "bgm_intensity", "低")} · 音量 {getattr(s, "bgm_volume", 0.16):.2f}'
             )
 
+    def _confirm_asset_cloud_generation(self, decision, kind, shot):
+        """Ask per-asset consent before sending an asset prompt to a cloud Provider."""
+        config_path = ROOT / 'asset-generation.json'
+        data = {}
+        try:
+            data = json.loads(config_path.read_text(encoding='utf-8')) if config_path.exists() else {}
+        except Exception:
+            data = {}
+        cfg = data.get(kind, {}) if isinstance(data, dict) else {}
+        try:
+            rate = float((cfg or {}).get('price_rmb', 0.0) or 0.0)
+        except (TypeError, ValueError):
+            rate = 0.0
+        detail = build_provider_execution_consent(
+            decision,
+            f'{kind}素材生成（镜头 {shot.index}）',
+            rate,
+            f'商品：{self.project.product_name if self.project else ""}\\n'
+            f'镜头标题：{shot.title}\\n画面需求：{shot.visual}\\n'
+            '云端请求将包含素材生成提示词；不会把 API Key 显示在此窗口。',
+        )
+        return bool(messagebox.askyesno('确认云端素材端点与费用', detail, parent=self))
+
     @ui_action
     def generate_shot(self):
         if not self._ui_execution_gate(): return
@@ -1733,6 +1756,17 @@ class App(tk.Tk):
                 if not messagebox.askyesno('确认生成端点与费用', disclosure, parent=self):
                     self.detail.set('已取消镜头生成；没有调用本地/云端视频 Provider，镜头状态和版本未改变。')
                     return
+            if getattr(s,'clip_source','ai_generated') != 'filmed':
+                try:
+                    self.store.resolve_assets(
+                        self.project, s,
+                        authorize_cloud=lambda asset_decision, kind: self._confirm_asset_cloud_generation(asset_decision, kind, s),
+                    )
+                except Exception as asset_exc:
+                    if "没有获得明确授权" in str(asset_exc):
+                        self.detail.set('已取消云端素材生成；没有调用素材/视频 Provider，也未修改镜头状态或版本。')
+                        return
+                    raise
             s.status='生成中…'; self.store.save(self.project); self.refresh_shots()
             self.update_idletasks()
             if getattr(s,'clip_source','ai_generated')=='filmed':
@@ -1743,7 +1777,7 @@ class App(tk.Tk):
             else:
                 mode={'local':'本地','cloud':'云端','unavailable':'不可用'}.get(decision.target,decision.target)
                 self.detail.set(f'镜头 {s.index} 正在{mode}生成…')
-                out=self.store.render_shot(self.project,s,config_root=ROOT,decision=decision)
+                out=self.store.render_shot(self.project,s,config_root=ROOT,decision=decision,authorize_cloud=lambda asset_decision, kind: self._confirm_asset_cloud_generation(asset_decision, kind, s))
                 self.refresh_shots()
                 if s.status == "已生成（成本待核对）":
                     self.cost.set(f'项目实际成本待核对 · 预估 ¥{self.project.cost_estimate.get("总计",0):.2f}')
