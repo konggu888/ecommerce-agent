@@ -552,7 +552,19 @@ class ProductionStore:
         elif kind=='场景': shot.scene_id=item.id
         elif kind=='商品素材': shot.product_asset_ids.append(item.id)
         shot.asset_source='ai_generated'
-        cost_recorded, cost_error = self._record_asset_cost(project, shot, kind, cost, provider_name, getattr(decision, "endpoint", "") if decision.target == "local" else getattr(provider, "endpoint", ""), "local_no_provider_charge" if decision.target == "local" else ("estimated_from_configured_price" if "price_rmb" in (json.loads(asset_provider_path.read_text(encoding="utf-8")) if asset_provider_path.exists() else {}) else "price_missing"))
+        endpoint = getattr(decision, "endpoint", "") if decision.target == "local" else getattr(provider, "endpoint", "")
+        if decision.target == "local":
+            cost_status = "local_no_provider_charge"
+        else:
+            try:
+                provider_config = json.loads(asset_provider_path.read_text(encoding="utf-8")) if asset_provider_path.exists() else {}
+                kind_config = provider_config.get(kind) or provider_config.get("asset_generation") or {}
+                cost_status = "estimated_from_configured_price" if "price_rmb" in kind_config else "price_missing"
+            except Exception:
+                cost_status = "price_missing"
+        cost_recorded, cost_error = self._record_asset_cost(
+            project, shot, kind, cost, provider_name, endpoint, cost_status
+        )
         shot.provider = provider_name
         shot.status = f'{kind}已生成并入库' if cost_recorded else f'{kind}已生成并入库（成本待核对）'
         if not cost_recorded:
