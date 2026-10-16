@@ -1741,3 +1741,9 @@ A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/
 - AssetGenerator.generate、ProductionStore.resolve_assets、ProductionStore.generate_missing_asset 增加 authorize_cloud 回调；未明确授权时 fail-closed，在云端 Provider 请求前停止，不生成文件、不绑定素材、不改镜头状态。
 - 新增离线 mock 覆盖未授权零云端调用与无文件/状态副作用，并保留原 A64 记账失败合同。
 - **下一步：**将授权回调接入正式 UI，展示端点（脱敏）、数据类型、费用/未知费用；拒绝后证明 Provider 调用计数为 0。然后覆盖最终成片批量视频与短剧商品镜头重生成。A0–A112 状态不变。
+
+## PLAN-003 / UXS-2 单镜头资产授权 UI 接线｜2026-10-16
+
+- 已接入 App.generate_shot()：先确认视频目的地/费用，再对每个需要云端生成的资产调用 authorize_cloud UI 回调，披露脱敏 endpoint、数据类别和配置价格。
+- 用户拒绝素材授权时，在镜头状态变更前停止；生产层不得继续调用视频 Provider。离线测试覆盖拒绝零调用、镜头状态/版本保持和 UI 顺序。
+- 仍未覆盖批量创意方案生成、AI补镜头与短剧商品镜头重生成；下一项逐入口补授权与拒绝后零调用测试。A0–A112 状态不变。
