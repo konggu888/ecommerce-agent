@@ -47,6 +47,7 @@ def transcribe_openai_compatible(
     api_key: str,
     model: str,
     timeout: int = 180,
+    allow_missing_api_key: bool = False,
 ) -> Transcript:
     """调用常见 OpenAI-compatible /audio/transcriptions 接口。
 
@@ -55,7 +56,7 @@ def transcribe_openai_compatible(
     """
     if not endpoint.strip():
         raise RuntimeError("未配置语音转写 endpoint。")
-    if not api_key.strip():
+    if not api_key.strip() and not allow_missing_api_key:
         raise RuntimeError("未配置语音转写 API Key。")
     audio = Path(audio)
     if not audio.exists():
@@ -87,13 +88,13 @@ def transcribe_openai_compatible(
     body.extend(raw)
     body.extend(f"\r\n--{boundary}--\r\n".encode())
 
+    headers = {"Content-Type": f"multipart/form-data; boundary={boundary}"}
+    if api_key.strip():
+        headers["Authorization"] = f"Bearer {api_key}"
     req = urllib.request.Request(
         endpoint,
         data=bytes(body),
-        headers={
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": f"multipart/form-data; boundary={boundary}",
-        },
+        headers=headers,
         method="POST",
     )
     try:
