@@ -1599,3 +1599,9 @@ A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/
 - 用户取消时立即返回；此分支不修改镜头版本/状态、不调用 Provider。用户确认后把同一 ExecutionDecision 快照传给 ProductionStore.render_shot(..., decision=decision)，生产层不重新探测并改选另一目的地。
 - 此合同仅覆盖单镜头视频生成按钮。资产生成、最终成片批量路径、短剧商品镜头重生成等路径仍需独立审查，特别是资产解析可能在 AssetGenerator.generate() 中直接调用云端。
 - 测试覆盖脱敏目的地/费用说明、取消确认顺序及路由快照传递；不代表真实 Provider/账单/Windows 真机已验收。
+
+## 2026-10-16｜资产 Provider 云端调用必须显式授权
+
+- AssetGenerator.generate(..., authorize_cloud=None)：只有能力决策为 cloud 且 authorize_cloud 是可调用并返回 True 的回调时，才进入云端生成；缺失/拒绝回调时在 _cloud_generate 前抛出错误。
+- ProductionStore.resolve_assets(..., authorize_cloud=None) 将授权回调传入 AssetGenerator；ProductionStore.generate_missing_asset(..., authorize_cloud=None) 在创建资产输出目录、修改镜头状态或加载云端 Provider 前拒绝未授权云端路由。
+- 这两条路径当前没有正式 UI 授权回调接入，所以云端自动资产生成暂时 fail-closed；不能绕过闸门默认授权。下一步接入逐次 UI 确认，并用 mock 验证取消后无请求、无文件、无资产 ID/镜头状态变更。
