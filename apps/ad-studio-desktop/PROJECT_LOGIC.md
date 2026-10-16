@@ -1592,3 +1592,10 @@ A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/
 - `ModelRouter.resolve_route(function)` 仅返回用户显式选择且当前可用的模型；若该模型停用或远程模型缺少 API Key，抛出说明性 RuntimeError，不再按硬件模式自动切换到其他云端/本地模型。
 - 新增离线测试覆盖云→云、云→本地与无可用替代模型三种情况。测试只证明路由层不会返回其他模型，不代表真实 endpoint 可达或供应商服务可用。
 - 资产/视频仍由 `CapabilityRouter.decide_asset/decide_video` 负责独立路由；本次没有改变其回退行为。下一步应把这些 Provider 的用户授权和拒绝后零调用作为独立合同。
+
+## 2026-10-16｜逐镜头视频 Provider 目的地授权
+
+- App.generate_shot() 在更改镜头状态或保存“生成中”之前，先计算 CapabilityRouter.decide_video() 决策并显示目的地、脱敏 endpoint、路由原因、预估费用和数据边界。
+- 用户取消时立即返回；此分支不修改镜头版本/状态、不调用 Provider。用户确认后把同一 ExecutionDecision 快照传给 ProductionStore.render_shot(..., decision=decision)，生产层不重新探测并改选另一目的地。
+- 此合同仅覆盖单镜头视频生成按钮。资产生成、最终成片批量路径、短剧商品镜头重生成等路径仍需独立审查，特别是资产解析可能在 AssetGenerator.generate() 中直接调用云端。
+- 测试覆盖脱敏目的地/费用说明、取消确认顺序及路由快照传递；不代表真实 Provider/账单/Windows 真机已验收。
