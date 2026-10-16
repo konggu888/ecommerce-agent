@@ -124,7 +124,7 @@ def build_creation_preflight_detail(url, budget, variant_count, model_router):
         if p.enabled and p.id not in selected_ids
     ]
     if alternatives:
-        lines.extend(["", "其他已启用模型（现有路由逻辑在所选模型不可用时可能回退到其他模型；下列端点也可能成为请求目标）："])
+        lines.extend(["", "其他已启用模型（文本/视觉模型路由不会因所选模型不可用而自动切换到这些端点；如需切换，请在模型设置中手动选择。资产/视频 Provider 的本地/云端回退属于独立流程，后续执行前还需单独确认）："])
         for profile in alternatives:
             lines.append(
                 f"- {profile.name}（{profile.provider}）→ {_safe_endpoint_display(profile.base_url)}"
