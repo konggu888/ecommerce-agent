@@ -5,6 +5,24 @@ from pathlib import Path
 from typing import Any
 import json
 import uuid
+from urllib.parse import urlsplit, urlunsplit
+
+
+def sanitize_endpoint(value: Any) -> str:
+    """Persist endpoint provenance without URL credentials, query parameters, or fragments."""
+    raw = str(value or "").strip()
+    if not raw:
+        return ""
+    try:
+        parts = urlsplit(raw)
+        if not parts.scheme or not parts.hostname:
+            return "自定义 endpoint（无法安全解析）"
+        host = parts.hostname
+        if parts.port:
+            host = f"{host}:{parts.port}"
+        return urlunsplit((parts.scheme, host, parts.path.rstrip("/"), "", ""))
+    except Exception:
+        return "自定义 endpoint（无法安全解析）"
 
 
 class UsageLedger:
@@ -48,6 +66,9 @@ class UsageLedger:
         asset_kind: str = "",
         quantity: float = 1.0,
         unit_cost_rmb: float = 0.0,
+        cost_status: str = "unknown",
+        usage_status: str = "unknown",
+        endpoint: str = "",
     ) -> dict[str, Any]:
         item = {
             "id": uuid.uuid4().hex[:12],
@@ -70,6 +91,9 @@ class UsageLedger:
             "estimated_cost_rmb": round(float(estimated_cost_rmb or 0), 6),
             "duration_ms": int(duration_ms or 0),
             "error": error,
+            "cost_status": str(cost_status or "unknown"),
+            "usage_status": str(usage_status or "unknown"),
+            "endpoint": sanitize_endpoint(endpoint),
         }
         rows = self._load()
         rows.append(item)
@@ -104,6 +128,9 @@ class UsageLedger:
                 "estimated_cost_rmb": round(float(values.get("estimated_cost_rmb", 0) or 0), 6),
                 "duration_ms": int(values.get("duration_ms", 0) or 0),
                 "error": str(values.get("error", "") or ""),
+                "cost_status": str(values.get("cost_status", "unknown") or "unknown"),
+                "usage_status": str(values.get("usage_status", "unknown") or "unknown"),
+                "endpoint": sanitize_endpoint(values.get("endpoint", "")),
             }
             items.append(item)
         rows.extend(items)
