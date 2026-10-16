@@ -2553,6 +2553,45 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(seen["library_root"], custom_library)
             self.assertNotEqual(seen["config_path"], custom_library / "asset-generation.json")
 
+
+    def test_creation_preflight_discloses_model_destinations_without_secrets(self):
+        from ad_studio.app import build_creation_preflight_detail
+
+        with tempfile.TemporaryDirectory() as td:
+            router = ModelRouter(Path(td) / "model-config.json")
+            profile = ModelProfile(
+                id="custom-proxy", name="自定义代理",
+                provider="openai_compatible",
+                base_url="https://proxy.example/v1?token=do-not-display",
+                model="custom-model", api_key="do-not-display-key",
+                enabled=True, input_price_rmb_per_1k=0, output_price_rmb_per_1k=0,
+            )
+            router.add_or_update(profile)
+            router.set_route("商品理解", profile.id)
+            detail = build_creation_preflight_detail(
+                "https://item.example/product/1", 5.0, 2, router
+            )
+            self.assertIn("AI创意规划与数据去向", detail)
+            self.assertIn("https://proxy.example/v1", detail)
+            self.assertIn("商品理解", detail)
+            self.assertIn("不代表服务免费", detail)
+            self.assertNotIn("do-not-display", detail)
+            self.assertIn("其他已启用模型", detail)
+
+    def test_creation_preflight_is_before_product_parse_and_model_planning(self):
+        source = (Path(__file__).resolve().parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        create_start = source.index("    def create(self):")
+        create_end = source.index("    def refresh_shots(self):", create_start)
+        body = source[create_start:create_end]
+        consent = body.index("askyesno('AI创意规划与数据去向授权'")
+        product_parse = body.index("info=parse_product_url(url)")
+        model_plan = body.index("self.model_router.create_plans(")
+        self.assertLess(consent, product_parse)
+        self.assertLess(consent, model_plan)
+        cancel_branch = body[consent:product_parse]
+        self.assertIn("return", cancel_branch)
+        self.assertIn("未读取商品页面、未调用 AI 模型/Provider", cancel_branch)
+
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.
