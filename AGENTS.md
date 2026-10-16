@@ -258,3 +258,10 @@ AssetGenerator.generate、ProductionStore.resolve_assets、ProductionStore.gener
 ## UXS-2 多入口授权接线状态｜2026-10-16
 
 统一授权流程现覆盖单镜头生成、AI补镜头、批量创意方案生成及其中需要的云端资产生成；确认时路由快照传入生产层，拒绝时不先修改镜头状态、不发起该次视频请求。短剧商品镜头重生成的准备阶段不调用 Provider，真正生成走单镜头入口。下一步处理未知费用语义与 endpoint provenance，确保缺失价格/usage 不等于免费，历史可追溯实际目标但不包含密钥。继续同步 HELP、PROJECT_LOGIC、验收计划/SOP、handoff、未来备忘录与 dashboard；不新增 A113+。
+
+## UXS-2 成本可信度与 Provider 溯源规则｜2026-10-16
+
+- 新的调用账本必须区分按显式配置单价估算、usage 缺失、单价缺失、两者都缺失、请求失败后费用未知；不得把缺失值展示成“免费”或确定的 ¥0。
+- 账本可记录实际 provider/model/endpoint，但 endpoint 必须先脱敏：删除 URL userinfo、query、fragment；禁止记录 API Key、Authorization 头或原始凭据。
+- 项目重载后必须能读取费用状态与脱敏 endpoint；旧记录没有这些字段时明确显示“旧记录/未知”，不伪造历史端点。
+- 修改桌面代码时必须在同一个提交同步 HELP、PROJECT_LOGIC、验收计划、验收 SOP、SESSION_HANDOFF、AI_HANDOFF、路线图和本规则；不新增 A113+，不更改 A0–A112 正式状态。

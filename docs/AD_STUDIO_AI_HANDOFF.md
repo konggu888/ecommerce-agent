@@ -889,3 +889,9 @@ A109 转场安全补充：当前切点变速遇到显式“交叉溶解”时保
 单镜头、AI补镜头和批量创意方案生成已接入统一的视频目的地/费用确认；云端资产生成也逐次确认。拒绝分支不先修改镜头状态、不发起本次视频请求，确认时路由快照传入生产层。短剧商品镜头重生成的准备步骤不调用 Provider，真正生成走单镜头入口。
 
 **下一步：**审计未知费用语义和 endpoint provenance：将真实零成本、缺失价格、缺失 usage、不可估算区分开；记录实际 provider/model/endpoint 来源并在项目重载后可追溯，绝不把 API Key 写入历史。当前最新代码/测试 SHA 37e8d3f4a63d98d6a4f98459de8dbeb0970f0a28 的 CI 通过，文档同步后重查最新 HEAD。PR #32 保持 Open/unmerged；A0–A112 不新增/删除/合并/重编号。
+
+## UXS-2 接手更新｜成本可信度与 Provider 溯源｜2026-10-16
+
+本轮把未知费用与端点来源写入本地账本。UsageLedger 的 endpoint 会删除 URL userinfo、query 和 fragment；文本模型调用区分 usage_missing、price_missing、price_and_usage_missing 与 estimated_from_configured_prices。视频/资产生成也开始记录脱敏 endpoint 和价格状态；UI 将未知费用记录数与已知估算金额分开展示。测试需在最新 HEAD CI 中确认。
+
+不要把账本估算当成供应商实际账单；不要把缺失 usage/单价转换成“免费”。旧历史不补造 endpoint。下一步检查最新 CI/docs-sync，然后补转写、视觉等未入账入口的 provenance/成本状态，最后审计本地 API Key 存储。PR #32 不合并，A0–A112 不改编号/正式状态，真实 Provider/扣费和 Windows 真机继续暂缓。

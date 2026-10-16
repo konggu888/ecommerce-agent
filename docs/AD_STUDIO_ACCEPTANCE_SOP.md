@@ -1661,3 +1661,11 @@ A57 的无账本旧项目、A60 的 failed-only 账本均已有恢复行为测�
 - 验证确认时的 ExecutionDecision 快照传入生产层，不在确认后重新路由。
 - 短剧商品镜头重生成准备阶段必须零 Provider 调用；实际生成应经过单镜头授权。
 - 下一步重点是未知费用与历史 endpoint provenance；任何缺失价格/usage 不得当作免费，历史记录不保存 API Key。
+
+### UXS-2：成本可信度与 endpoint provenance 专项（2026-10-16）
+
+1. 对 usage 存在/缺失、单价存在/缺失的组合分别注入 mock；只有 usage 与显式配置单价均存在，才允许标记按配置价格估算。
+2. 验证 usage 缺失、价格缺失、两者同时缺失、请求失败的账本行均不被解释为“供应商免费”；汇总要单独显示未知费用记录数。
+3. endpoint 写入前删除 URL userinfo、query、fragment；断言 API Key、密码、token/signature 参数不进入账本文件。
+4. 重载 UsageLedger/项目后核对 endpoint 和 cost_status 仍可追溯；旧行缺字段必须显示旧记录/未知，不得猜测历史 endpoint。
+5. 以上只证明离线控制流与本地账本，不证明供应商实际扣费；不得因此正式标记 A13/A29/A51–A65 通过。

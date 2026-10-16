@@ -1616,3 +1616,11 @@ App.generate_shot() 先确认视频目标/费用，再调用 ProductionStore.res
 - 单镜头生成、AI补镜头和批量创意方案生成都传递确认时的 ExecutionDecision 快照，并提供 authorize_cloud 回调；拒绝分支不调用本次视频 Provider，镜头状态/版本保持不变。
 - 短剧商品镜头重生成只准备修正内容，真正生成仍由单镜头生成入口执行授权；不能把“准备重生成”视为已调用 Provider。
 - 剩余审计：未知价格/usage 的账本语义、实际 endpoint 与项目重载后的可追溯性，以及真实 Provider/账单（暂缓）。
+
+## 2026-10-16｜成本可信状态与 Provider endpoint provenance
+
+- UsageLedger 记录 cost_status、usage_status 和经过 sanitize_endpoint() 处理的 endpoint；脱敏会移除 URL 用户信息、query 和 fragment，避免 API Key/签名参数进入历史。
+- 文本模型调用只有在响应提供 usage 且所选模型配置中明确存在输入/输出单价时，才按配置价格计算估算金额；否则金额字段为 0 仅作数值兼容，cost_status 必须指出缺失项，不能解释为免费。
+- 视频与资产生成账本记录脱敏 endpoint，并标记本地无 Provider 费用、按配置价格估算或价格缺失。失败请求费用可能未知，因此汇总单独统计未知费用记录。
+- 项目重载沿用本地 usage-ledger.json；历史旧行缺少新字段时不伪造 endpoint，UI 标示旧记录/未知。
+- 本合同不覆盖供应商账单核验，也不宣称转写、视觉、所有 Provider 路径已完全接入。

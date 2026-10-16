@@ -434,3 +434,11 @@
 - 短剧商品镜头重生成流程先获取修正要求并准备新版本；真正生成仍通过单镜头授权入口。
 - 现有离线测试与当前 SHA CI 通过，证明控制流与 mock 边界，不证明真实供应商、费用或账单准确。
 - 下一项转向未知费用语义与 endpoint provenance：缺失价格/usage 必须与真实零成本区分；项目历史应记录实际 provider/model/endpoint（不得保存 API Key），并验证重载后可追溯。
+
+### P. 未知费用语义与 endpoint provenance｜2026-10-16
+
+- UsageLedger 新增 cost_status、usage_status 与脱敏 endpoint；脱敏删除 URL userinfo、query、fragment。
+- 文本模型调用仅在 usage 存在且模型配置明确包含输入/输出价格字段时标记 estimated_from_configured_prices。缺失 usage、缺失价格或两者都缺失时分别标记，不把数值字段的 0 解释为免费。
+- 视频/资产生成记录开始保留脱敏端点和成本可信状态；AI调用记录界面单独展示未知费用条目。
+- mock 回归覆盖 endpoint 密钥脱敏、账本重载后状态持久化、usage 缺失、价格缺失。
+- 边界：供应商实际账单未核对；转写、视觉和其他未接入入口尚待审计；旧历史不补造 endpoint。

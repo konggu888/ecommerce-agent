@@ -1340,7 +1340,7 @@ class App(tk.Tk):
         summary=self.model_router.usage_summary()
         ttk.Label(frm,text='AI调用记录',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
         ttk.Label(frm,text=f"累计调用：{summary['calls']}  成功：{summary['success']}  失败：{summary['failed']}  Token：{summary['tokens']:,}  已知估算成本：¥{summary['estimated_cost_rmb']:.4f}  未知费用记录：{summary.get('unknown_cost_entries', 0)}（不能视为免费）").pack(anchor='w',pady=(2,10))
-        ttk.Label(frm,text='成本为模型返回 Token × 本机配置单价；未配置单价的模型显示 ¥0，不代表供应商永久免费。').pack(anchor='w',pady=(0,8))
+        ttk.Label(frm,text='金额为本机估算，不是供应商账单；缺少 usage/单价会标记为未知费用，¥0 不代表供应商永久免费。').pack(anchor='w',pady=(0,8))
         tree=ttk.Treeview(frm,columns=('time','function','model','provider','endpoint','status','tokens','cost','cost_status','duration'),show='headings')
         for col,title,w in [('time','时间',135),('function','功能',120),('model','实际模型',150),('provider','提供方式',100),('endpoint','实际端点（脱敏）',220),('status','状态',70),('tokens','Token',80),('cost','估算成本',90),('cost_status','费用可信状态',150),('duration','耗时',80)]:
             tree.heading(col,text=title); tree.column(col,width=w)
