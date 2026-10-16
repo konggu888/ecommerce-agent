@@ -2578,17 +2578,40 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertNotIn("do-not-display", detail)
             self.assertIn("其他已启用模型", detail)
 
+    def test_explicit_authorization_gate_runs_no_operation_when_declined(self):
+        from ad_studio.app import run_after_explicit_authorization
+
+        calls = []
+        authorized, result = run_after_explicit_authorization(
+            lambda: False,
+            lambda: calls.append("external") or "unexpected",
+        )
+        self.assertFalse(authorized)
+        self.assertIsNone(result)
+        self.assertEqual(calls, [])
+
+        authorized, result = run_after_explicit_authorization(
+            lambda: True,
+            lambda: calls.append("external") or "allowed",
+        )
+        self.assertTrue(authorized)
+        self.assertEqual(result, "allowed")
+        self.assertEqual(calls, ["external"])
+
     def test_creation_preflight_is_before_product_parse_and_model_planning(self):
         source = (Path(__file__).resolve().parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
         create_start = source.index("    def create(self):")
         create_end = source.index("    def refresh_shots(self):", create_start)
         body = source[create_start:create_end]
+        gate = body.index("run_after_explicit_authorization(")
         consent = body.index("askyesno('AI创意规划与数据去向授权'")
-        product_parse = body.index("info=parse_product_url(url)")
+        product_parse = body.index("lambda: parse_product_url(url)")
         model_plan = body.index("self.model_router.create_plans(")
+        self.assertLess(gate, consent)
         self.assertLess(consent, product_parse)
-        self.assertLess(consent, model_plan)
-        cancel_branch = body[consent:product_parse]
+        self.assertLess(gate, model_plan)
+        cancel_branch = body[product_parse:model_plan]
+        self.assertIn("if not authorized:", cancel_branch)
         self.assertIn("return", cancel_branch)
         self.assertIn("未读取商品页面、未调用 AI 模型/Provider", cancel_branch)
 
