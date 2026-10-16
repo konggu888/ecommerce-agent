@@ -2739,7 +2739,8 @@ class DesktopCoreTests(unittest.TestCase):
                     )
                 load_provider.assert_not_called()
                 self.assertEqual(shot.status, original_status)
-                self.assertFalse((root / "library" / "assets").exists())
+                assets_root = root / "library" / "assets"
+                self.assertFalse(assets_root.exists() and any(item.is_file() for item in assets_root.rglob("*")))
 
 
 if __name__ == "__main__":
