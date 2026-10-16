@@ -36,7 +36,7 @@
 → 本地硬件能力调度 / FFmpeg
 → 最终拼接
 
-预算确认应是任何可能收费或向外部服务发送用户数据的云端调用闸门，范围包括商品分析/创意规划 LLM，不只包括素材/视频 Provider。完全本地且无外部副作用的处理可在确认前进行。**当前实现缺口（2026-10-15，未修复）：** `App.create()` 在展示预算确认前先调用 `ModelRouter.create_plan/create_plans`，后者会按功能路由调用 `complete_json()`；若路由到云端，可能在确认前发出请求。故不得声称当前取消路径可保证外部调用为零。后续修复必须先补 App.create 编排测试，验证未同意前没有任何模型/Provider 请求，取消后所有外部调用计数为 0，并覆盖本地不可用时的云端回退拒绝分支。
+任何可能收费或向外部服务发送用户数据的操作都必须有前置授权。2026-10-16 已在 `App.create()` 增加第一阶段“AI创意规划与数据去向授权”，位于 `parse_product_url()` 和 `create_plan/create_plans()` 之前；拒绝时通过 `run_after_explicit_authorization()` 返回，不执行被门控操作。该弹窗列出当前各功能路由、endpoint（不显示 URL query/凭据）、配置单价和其他启用模型的潜在回退目标。计划生成后保留第二阶段详细视频/演员/场景/商品素材费用确认，且明确此前规划模型调用可能产生费用。当前已有 helper 零操作回归和源码顺序测试，但完整 GUI/每个 Provider 的运行时调用计数、回退拒绝路径尚未独立验收；不能仅凭 UI 文案宣布费用授权正式通过。
 
 ## 3. LLM 决策逻辑
 
@@ -1579,3 +1579,10 @@ A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/
 - `ProductionStore.resolve_assets()` 的 `AssetGenerator` 配置路径改为 `self.root.parent / "asset-generation.json"`，与应用以 `ROOT/projects` 作为项目目录、以 `ROOT/asset-generation.json` 保存 UI 配置的布局一致；`library_root` 继续只决定资产库文件位置。用户自定义资产库目录不应改变 Provider 配置来源。
 - 新增离线 mock 回归：本地转写无 Key、远程无 Key 零请求、自定义资产库路径下配置读取根目录不变。测试通过后仍不等于真实服务兼容性验收。
 - **P0 尚未修复：**`App.create()` 在预算确认弹窗前调用 `create_plan/create_plans`，可能提前调用云端模型。下一步必须优先重构授权时序，并用编排级调用计数测试证明首次同意前、用户取消后没有任何外部请求。真实 Provider、真实扣费和 Windows 真机继续暂缓。
+
+## 2026-10-16｜创建前两阶段授权实现
+
+- `build_creation_preflight_detail()` 只读取本地路由配置并构建告知，不发请求；endpoint 展示会去掉 URL userinfo、query 和 fragment，避免把嵌在 URL 中的凭据显示出来。
+- `run_after_explicit_authorization(confirm, operation)` 在拒绝时返回 `(False, None)`，不会执行商品解析回调；`App.create()` 仅在授权通过后才调用 `parse_product_url()`，之后才会进入创意规划模型调用。
+- 最终费用确认保留为第二道闸门；取消该阶段不会撤销已授权的规划调用，但会阻止未确认的新项目保存/后续素材视频生成。
+- 证据范围：离线 helper 测试、UI 源码顺序测试和 CI。后续需增加直接的编排/调用计数测试，覆盖文本、视觉、转写、资产、视频入口，以及显式模型不可用/回退拒绝；真实 Provider、账单与 Windows 真机继续暂缓。
