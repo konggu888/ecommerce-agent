@@ -1,4 +1,5 @@
 from pathlib import Path
+from urllib.parse import urlsplit, urlunsplit
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import shutil
@@ -61,6 +62,76 @@ class UnconfiguredCreativeLLM:
 ROOT=Path(__file__).resolve().parents[1]/'data'/'ad-studio'
 PROJECTS=ROOT/'projects'
 LIBRARY_CONFIG=ROOT/'library-location.json'
+
+
+def _safe_endpoint_display(value):
+    """Display endpoint host/path without URL userinfo, query strings, or fragments."""
+    raw = str(value or "").strip()
+    if not raw:
+        return "未配置 endpoint"
+    try:
+        parsed = urlsplit(raw)
+        if not parsed.scheme or not parsed.netloc:
+            return raw.split("?", 1)[0].split("#", 1)[0]
+        host = parsed.hostname or parsed.netloc
+        if ":" in host and not host.startswith("["):
+            host = f"[{host}]"
+        try:
+            if parsed.port:
+                host = f"{host}:{parsed.port}"
+        except ValueError:
+            pass
+        return urlunsplit((parsed.scheme, host, parsed.path, "", ""))
+    except Exception:
+        return "自定义 endpoint（无法安全展示完整地址）"
+
+
+def build_creation_preflight_detail(url, budget, variant_count, model_router):
+    """Disclose external destinations and configured prices before link fetch or model calls."""
+    lines = [
+        "本确认仅授权读取商品链接并执行 AI 商品理解/创意规划，不授权后续视频或素材生成。",
+        f"商品链接：{url}",
+        f"本次预算上限：¥{float(budget):.2f}；创意方案数：{int(variant_count)}。",
+        "",
+        "各功能当前选择的模型与请求目标：",
+    ]
+    selected_ids = set()
+    for function in FUNCTIONS:
+        try:
+            profile = model_router.route(function)
+            selected_ids.add(profile.id)
+            endpoint = _safe_endpoint_display(profile.base_url)
+            host = (urlsplit(str(profile.base_url or "")).hostname or "").lower()
+            location = "本机/回环端点" if host in {"localhost", "127.0.0.1", "::1"} else "自定义网络端点（请核实其实际部署位置）"
+            if profile.provider == "local_openai" and location != "本机/回环端点":
+                location = "local_openai 配置但非本机回环地址；请核实实际部署位置"
+            lines.append(f"- {function}：{profile.name}（{profile.provider}）→ {endpoint}；{location}")
+            if profile.input_price_rmb_per_1k or profile.output_price_rmb_per_1k:
+                lines.append(f"  配置单价：输入 ¥{profile.input_price_rmb_per_1k:.6f}/1K，输出 ¥{profile.output_price_rmb_per_1k:.6f}/1K")
+            else:
+                lines.append("  配置单价为 0/未配置；不代表服务免费，实际费用可能未知。")
+        except Exception as exc:
+            lines.append(f"- {function}：路由配置不可用（{exc}）；请先检查模型设置。")
+    alternatives = [
+        p for p in model_router.profiles()
+        if p.enabled and p.id not in selected_ids
+    ]
+    if alternatives:
+        lines.extend(["", "其他已启用模型（现有路由逻辑在所选模型不可用时可能回退到其他模型；下列端点也可能成为请求目标）："])
+        for profile in alternatives:
+            lines.append(
+                f"- {profile.name}（{profile.provider}）→ {_safe_endpoint_display(profile.base_url)}"
+            )
+    lines.extend([
+        "",
+        "本阶段可能向商品页面发出网络请求，并向上述模型端点发送商品资料、提示词；用户拍摄素材模式还可能发送关键帧图片和音频。",
+        "规划模型费用无法在生成计划前准确确定；配置单价为 0 或服务未返回 usage 时，不应理解为免费。",
+        "同意后才会读取商品页面并执行创意规划。规划完成后还会单独展示视频、演员、场景、商品素材费用并请求确认；拒绝第二次确认会阻止后续项目保存/素材视频生成，但不会撤销本阶段已发生的模型调用。",
+        "如果不同意，请取消；取消后不读取商品页面、不调用模型或 Provider，也不创建项目。",
+        "",
+        "是否授权本阶段的商品链接读取与 AI 创意规划？",
+    ])
+    return "\n".join(lines)
 
 
 class App(tk.Tk):
@@ -1398,6 +1469,10 @@ class App(tk.Tk):
             variant_count=max(1,min(3,int(self.variant_count.get())))
         except ValueError:
             return messagebox.showerror('参数格式错误','请输入有效的预算和创意方案数。')
+        preflight_detail = build_creation_preflight_detail(url, budget, variant_count, self.model_router)
+        if not messagebox.askyesno('AI创意规划与数据去向授权', preflight_detail):
+            self.detail.set('已取消：未读取商品页面、未调用 AI 模型/Provider，也未创建项目。')
+            return
         info=parse_product_url(url)
         saved_product=load_product_library(url, ROOT)
         info=merge_product_library(info, saved_product)
@@ -1563,10 +1638,10 @@ class App(tk.Tk):
                 *[f"{x['项目']}：{x['数量']} × ¥{x['单价']:.2f} = ¥{x['小计']:.2f}" for x in c['明细'] if x['数量']],
                 '',f"本次预算：¥{c['预算']:.2f}",('⚠ 预计超过本次预算。' if c['超预算'] else '✓ 预计不超过本次预算。'),c['计价说明'],
                 '说明：多个创意方案是同一商品的不同广告打法；云端视频/素材费用按当前选中的方案单独计算。','',
-                '超过预算不会自动降质、换模型或减少镜头。是否现在开始？'
+                '本次确认仅授权后续项目保存/素材视频生成；此前创意规划模型调用已在单独授权后执行，可能产生模型费用。\n' '超过预算不会自动降质、换模型或减少镜头。是否现在开始？'
             ])
         if not messagebox.askyesno('AI创意与项目预算确认',detail):
-            self.project=None; self.detail.set('已取消项目创建，尚未产生生成费用。'); return
+            self.project=None; self.detail.set('已取消后续项目保存/素材视频生成；此前已授权的创意规划模型调用可能产生费用。'); return
         self.store.save(self.project); save_product(info,ROOT,self.project.id); save_product_library(info,ROOT); self.refresh_shots()
         if footage_mode=='用户拍摄素材':
             self.detail.set(f"素材剪辑方案已确认：{info.name} → {len(plan.shots)}镜头。素材文件夹：{folder}。可逐个「生成本镜头」裁剪，或直接「生成最终成片」。")
