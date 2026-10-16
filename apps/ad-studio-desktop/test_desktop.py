@@ -2836,7 +2836,7 @@ class DesktopCoreTests(unittest.TestCase):
             profile = router.get("priced")
             response = MagicMock()
             response.__enter__.return_value.read.return_value = json.dumps({
-                "choices": [{"message": {"content": "{\\"ok\\": true}"}}]
+                "choices": [{"message": {"content": "{\"ok\": true}"}}]
             }).encode("utf-8")
             with patch("ad_studio.model_router.urllib.request.urlopen", return_value=response):
                 router.complete_json(profile, "test prompt", function="商品理解")
@@ -2849,7 +2849,7 @@ class DesktopCoreTests(unittest.TestCase):
             response2 = MagicMock()
             response2.__enter__.return_value.read.return_value = json.dumps({
                 "usage": {"prompt_tokens": 1000, "completion_tokens": 0},
-                "choices": [{"message": {"content": "{\\"ok\\": true}"}}]
+                "choices": [{"message": {"content": "{\"ok\": true}"}}]
             }).encode("utf-8")
             with patch("ad_studio.model_router.urllib.request.urlopen", return_value=response2):
                 router.complete_json(unpriced, "test prompt", function="商品理解")
