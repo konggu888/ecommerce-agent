@@ -411,3 +411,11 @@
 - 新增离线测试覆盖云端目的地披露与 URL query 秘密脱敏、本地/不可用说明、授权先于状态写入/Provider 调用以及路由快照传递。
 - 仍未覆盖：ProductionStore.resolve_assets() 内 AssetGenerator.generate() 的直接资产 Provider 调用；generate_missing_asset() 的资产能力路由；最终成片批量生成与短剧商品镜头重生成。不能将本项描述为所有视频/资产入口已封闭。
 - 最新代码 SHA bb337ce7be236ad5148a9dd59120defd0efd67e5 尚待 CI/docs-sync 结果；此前 d1f7e54db2f511ba2dde900a14d848657adbbc3d 的 CI #2365 与 docs-sync #2006 通过，不适用于新代码。
+
+### M. 资产 Provider 云端调用 fail-closed｜2026-10-16
+
+- AssetGenerator.generate() 新增 authorize_cloud 回调；云端目标未获得显式授权时，在 _cloud_generate 前拒绝。
+- ProductionStore.resolve_assets() 透传授权回调；generate_missing_asset() 在云端授权前阻止创建输出目录/文件、修改镜头状态或加载 Provider。
+- 新增离线 mock 测试：缺失授权回调时云端生成函数调用数为 0；拒绝资产 Provider 时无输出文件/镜头状态变化；明确允许回调才进入 mock 生成函数。
+- 现有 A64 成本记账失败测试的 FakeGenerator 已按新增回调参数更新。CI 首轮发现两处夹具不兼容/目录初始化假设错误，已修正；以最新 SHA CI 结果为准。
+- 尚未完成：正式 UI 资产授权入口；最终成片批量视频、短剧商品镜头重生成及其他视频入口授权；真实 Provider/账单与 Windows 真机。此 guard 只是安全边界，不等于完整资产生成 UX 已完成。
