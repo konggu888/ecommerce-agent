@@ -1478,3 +1478,9 @@ A9–A17 的可定位源码/测试线索、基线 CI/docs-sync 记录和剩余�
 - ModelRouter 新增默认项目上下文与 set_project_context()；新建/打开项目时绑定 project_id。
 - 口播转写成功/失败记录脱敏 endpoint、模型/Provider、耗时与未知费用状态，未返回 usage 时不把 ¥0 当作免费。
 - 最新 HEAD CI/docs-sync 必须重新确认；下一步继续审计视觉分析和未入账 Provider。
+
+## 【UXS-2 下一项｜API Key 本地存储保护静态审计｜2026-10-16】
+
+- 最新代码/测试 HEAD `cd2c034fc4feb26a10de1c07e7107c06907109be` 的 CI 与 docs-sync 均 success。
+- 静态审计确认模型配置保存、`video-provider.json`、`asset-generation.json` 当前可能以明文 JSON 保存 API Key；UI 输入遮挡不等于磁盘加密。尚无密钥泄漏事件证据。
+- 下一步：设计本地凭据保护方案，优先 Windows DPAPI/系统凭据库；覆盖旧配置迁移、三类配置保存/读取、重载和无明文回写的 mock 测试。暂不做 Windows 真机测试；不新增 A113+，不改 A0–A112 正式状态。

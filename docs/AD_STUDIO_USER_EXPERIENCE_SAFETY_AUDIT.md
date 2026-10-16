@@ -454,3 +454,10 @@
 - ModelRouter 为 current_project_id 提供安全默认值并暴露 set_project_context()；创建和打开项目绑定上下文。
 - 转写成功/失败都会写入本地 usage ledger，endpoint 经脱敏后保存；无 usage 时标记费用未知，不能用零成本误导。
 - 此处只覆盖转写记录控制流，不代表实际供应商账单准确或所有视觉/音频入口都已接入。
+
+### S. API Key 本地明文存储静态审计｜2026-10-16
+
+- 已确认 `ModelRouter.save()` 将 `self.data` 整体序列化到模型配置 JSON，其中可能包含原始 `api_key`。
+- 视频 Provider 设置将含 `api_key` 的 payload 直接写入 `video-provider.json`；资产 Provider 设置将每类配置（含 API Key）直接写入 `asset-generation.json`。Entry 的 `show='*'` 仅遮挡屏幕输入，不保护磁盘文件。
+- 这是本地明文存储风险，不是 API Key 已泄漏或被外部访问的证据；目前未发现任何密钥被发送到调用账本的路径，账本 endpoint 已做 query/userinfo/fragment 脱敏。
+- 下一步应设计并实现 Windows DPAPI（当前登录用户保护）或系统凭据库；先覆盖模型/视频/资产三类配置，支持旧明文配置迁移、项目重载、无明文回写与日志脱敏。Windows 真机验证仍按既定要求暂缓。

@@ -1156,3 +1156,10 @@ A109 转场安全补充：当前切点变速遇到显式“交叉溶解”时保
 - 修正 ModelRouter 项目上下文：初始化 current_project_id，提供 set_project_context()；新建项目与打开项目时绑定项目 ID。
 - 口播转写成功/失败会记录脱敏 endpoint、模型/Provider、耗时与未知费用状态。当前转写响应不提供可用 usage，因此不把 0 视为免费。
 - 下一步检查最新 CI/docs-sync；若通过，继续核对视觉分析调用、其他未入账 Provider 与本地 API Key 存储。
+
+## UXS-2 最新接手状态｜API Key 本地存储保护｜2026-10-16
+
+- 最新已验证基线：`cd2c034fc4feb26a10de1c07e7107c06907109be`，typecheck-and-test 与 docs-sync 均 success；PR #32 仍 Open/unmerged。
+- 静态审计确认 `ModelRouter.save()` 可能将模型配置中的原始 API Key 写入 JSON；视频 Provider 设置写 `video-provider.json`，资产 Provider 设置写 `asset-generation.json`，两者都可能包含明文 Key。UI 密码框仅遮挡显示。
+- 没有密钥泄漏事件证据；账本 endpoint 已脱敏，当前问题是本地静态存储保护不足。
+- **下一步：**先实现/评估 Windows DPAPI 或系统凭据库方案，覆盖模型、视频和资产三类 Key；设计旧明文配置迁移、无明文回写、项目重载与错误日志脱敏测试。真实 Windows 机器测试暂缓；不新增 A113+，A0–A112 正式状态不变。

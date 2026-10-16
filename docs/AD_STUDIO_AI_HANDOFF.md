@@ -903,3 +903,9 @@ A109 转场安全补充：当前切点变速遇到显式“交叉溶解”时保
 ## UXS-2 转写账本增量｜2026-10-16
 
 ModelRouter 现有项目上下文默认值与 set_project_context()，新建项目和打开项目时绑定 project_id；口播转写成功/失败写入账本，保存脱敏 endpoint、模型/Provider、耗时和未知费用状态。需要在最新 CI 中确认 mock 回归。下一步继续检查视觉分析与其他未入账入口，再审计本地 API Key 存储。
+
+## UXS-2 下一项｜API Key 本地存储保护｜2026-10-16
+
+最新代码基线 `cd2c034fc4feb26a10de1c07e7107c06907109be` 的 CI 与 docs-sync 已通过。静态审计发现模型配置保存、视频 Provider JSON 与资产 Provider JSON 可能明文存储 API Key；密码框遮挡不是磁盘保护。没有证据表明密钥已泄漏。
+
+下一步优先设计 Windows DPAPI/系统凭据库方案，覆盖三类配置的保存/读取、旧明文配置迁移、迁移后无明文回写、重载可用性和错误日志脱敏。只做离线 mock 测试，不做真实 Provider/扣费或 Windows 真机测试。PR #32 不合并；A0–A112 不改编号/正式状态，不新增 A113+。
