@@ -2666,11 +2666,17 @@ class DesktopCoreTests(unittest.TestCase):
         start = app_source.index("    def generate_shot(self):")
         end = app_source.index("    def regen_shot(self):", start)
         body = app_source[start:end]
-        consent = body.index("askyesno('确认生成端点与费用'")
+        helper_start = app_source.index("    def _authorize_shot_generation(self, shot, action_label):")
+        helper_end = app_source.index("    def _confirm_asset_cloud_generation(self, decision, kind, shot):", helper_start)
+        helper = app_source[helper_start:helper_end]
+        authorize = body.index("self._authorize_shot_generation(s,")
         mutate = body.index("s.status='生成中…'")
         render = body.index("self.store.render_shot(self.project,s,config_root=ROOT,decision=decision,authorize_cloud=")
-        self.assertLess(consent, mutate)
-        self.assertLess(consent, render)
+        consent = helper.index("askyesno('确认生成端点与费用'")
+        resolve = helper.index("self.store.resolve_assets(")
+        self.assertLess(consent, resolve)
+        self.assertLess(authorize, mutate)
+        self.assertLess(mutate, render)
         self.assertIn("decision = decision or CapabilityRouter(config_root or self.root.parent).decide_video()", production_source)
 
 
@@ -2768,12 +2774,17 @@ class DesktopCoreTests(unittest.TestCase):
         start = source.index("    def generate_shot(self):")
         end = source.index("    def regen_shot(self):", start)
         body = source[start:end]
-        asset_resolve = body.index("self.store.resolve_assets(")
-        asset_consent = body.index("self._confirm_asset_cloud_generation(asset_decision, kind, s)")
+        helper_start = source.index("    def _authorize_shot_generation(self, shot, action_label):")
+        helper_end = source.index("    def _confirm_asset_cloud_generation(self, decision, kind, shot):", helper_start)
+        helper = source[helper_start:helper_end]
+        authorize = body.index("self._authorize_shot_generation(s,")
         status_mutation = body.index("s.status='生成中…'")
         video_dispatch = body.index("self.store.render_shot(self.project,s,config_root=ROOT,decision=decision,authorize_cloud=")
-        self.assertLess(asset_resolve, status_mutation)
-        self.assertLess(asset_consent, status_mutation)
+        asset_resolve = helper.index("self.store.resolve_assets(")
+        asset_consent = helper.index("self._confirm_asset_cloud_generation(asset_decision, kind, shot)")
+        self.assertLess(asset_resolve, asset_consent)
+        self.assertLess(asset_consent, body.index("s.status='生成中…'"))
+        self.assertLess(authorize, status_mutation)
         self.assertLess(status_mutation, video_dispatch)
 
 if __name__ == "__main__":
