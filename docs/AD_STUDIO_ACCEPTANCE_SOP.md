@@ -1669,3 +1669,8 @@ A57 的无账本旧项目、A60 的 failed-only 账本均已有恢复行为测�
 3. endpoint 写入前删除 URL userinfo、query、fragment；断言 API Key、密码、token/signature 参数不进入账本文件。
 4. 重载 UsageLedger/项目后核对 endpoint 和 cost_status 仍可追溯；旧行缺字段必须显示旧记录/未知，不得猜测历史 endpoint。
 5. 以上只证明离线控制流与本地账本，不证明供应商实际扣费；不得因此正式标记 A13/A29/A51–A65 通过。
+
+### 未配置报价的 UI 验收补充｜2026-10-16
+
+- 视频 Provider 未配置价格、资产 Provider 未配置 price_rmb 时，确认弹窗必须显示“暂无法可靠估算（未知）”。
+- 显式 ¥0 仍展示配置价，但必须同时提示这不是供应商免费承诺；不能把默认值当作用户明确配置的价格。

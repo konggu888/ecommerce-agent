@@ -265,3 +265,9 @@ AssetGenerator.generate、ProductionStore.resolve_assets、ProductionStore.gener
 - 账本可记录实际 provider/model/endpoint，但 endpoint 必须先脱敏：删除 URL userinfo、query、fragment；禁止记录 API Key、Authorization 头或原始凭据。
 - 项目重载后必须能读取费用状态与脱敏 endpoint；旧记录没有这些字段时明确显示“旧记录/未知”，不伪造历史端点。
 - 修改桌面代码时必须在同一个提交同步 HELP、PROJECT_LOGIC、验收计划、验收 SOP、SESSION_HANDOFF、AI_HANDOFF、路线图和本规则；不新增 A113+，不更改 A0–A112 正式状态。
+
+## UXS-2 未配置价格的授权弹窗规则｜2026-10-16
+
+- 若 Provider 没有显式配置单价，授权弹窗必须显示“暂无法可靠估算（未知）”，不能用默认单价或 ¥0 冒充精确报价。
+- 若资产配置没有 price_rmb，必须显示未知费用；显式配置为 0 与未配置价格是不同状态。
+- 修改后仍需 mock 验证提示文本；账本和 UI 里的 0 数值字段不能覆盖 cost_status 的未知语义。

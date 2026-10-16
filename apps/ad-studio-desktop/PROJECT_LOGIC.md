@@ -1624,3 +1624,9 @@ App.generate_shot() 先确认视频目标/费用，再调用 ProductionStore.res
 - 视频与资产生成账本记录脱敏 endpoint，并标记本地无 Provider 费用、按配置价格估算或价格缺失。失败请求费用可能未知，因此汇总单独统计未知费用记录。
 - 项目重载沿用本地 usage-ledger.json；历史旧行缺少新字段时不伪造 endpoint，UI 标示旧记录/未知。
 - 本合同不覆盖供应商账单核验，也不宣称转写、视觉、所有 Provider 路径已完全接入。
+
+### 授权弹窗的未知报价处理｜2026-10-16
+
+- build_provider_execution_consent() 接受 None 表示未知报价，并显示“暂无法可靠估算（未知）”；只有显式已配置的视频/资产价格才显示数值。
+- 云端资产读取 kind 专属配置或 asset_generation 通用配置；没有 price_rmb 时保持未知，不能默认为 ¥0。
+- 视频 Provider 的 cost_price_configured 标志用于区分配置缺价与明确写入价格；默认字段值不是用户确认过的报价。

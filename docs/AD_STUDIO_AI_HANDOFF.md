@@ -895,3 +895,7 @@ A109 转场安全补充：当前切点变速遇到显式“交叉溶解”时保
 本轮把未知费用与端点来源写入本地账本。UsageLedger 的 endpoint 会删除 URL userinfo、query 和 fragment；文本模型调用区分 usage_missing、price_missing、price_and_usage_missing 与 estimated_from_configured_prices。视频/资产生成也开始记录脱敏 endpoint 和价格状态；UI 将未知费用记录数与已知估算金额分开展示。测试需在最新 HEAD CI 中确认。
 
 不要把账本估算当成供应商实际账单；不要把缺失 usage/单价转换成“免费”。旧历史不补造 endpoint。下一步检查最新 CI/docs-sync，然后补转写、视觉等未入账入口的 provenance/成本状态，最后审计本地 API Key 存储。PR #32 不合并，A0–A112 不改编号/正式状态，真实 Provider/扣费和 Windows 真机继续暂缓。
+
+## UXS-2 未知报价弹窗补充｜2026-10-16
+
+授权 UI 不得将未配置的 Provider 单价显示为确定价格。视频通过 cost_price_configured 区分缺价与显式价格；资产按 kind 配置或 asset_generation 通用配置读取 price_rmb。None 显示为“暂无法可靠估算（未知）”，显式 0 仍有不代表免费的说明。请以本次最新 HEAD 的 CI/docs-sync 为准。

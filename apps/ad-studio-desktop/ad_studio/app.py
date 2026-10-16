@@ -99,13 +99,13 @@ def build_provider_execution_consent(decision, task_label, estimated_cost_rmb, d
     endpoint = _safe_endpoint_display(getattr(decision, "endpoint", ""))
     reason = str(getattr(decision, "reason", "") or "")
     mode = {"local": "本地服务", "cloud": "云端服务", "unavailable": "不可用"}.get(target, target)
-    cost = float(estimated_cost_rmb or 0.0)
+    cost_text = "暂无法可靠估算（未知）" if estimated_cost_rmb is None else f"¥{float(estimated_cost_rmb):.2f}"
     lines = [
         f"任务：{task_label}",
         f"实际执行目标：{mode}",
         f"请求端点：{endpoint}",
         f"路由原因：{reason}",
-        f"本次预估费用：¥{cost:.2f}",
+        f"本次预估费用：{cost_text}",
     ]
     if target == "cloud":
         lines.extend([
@@ -1728,7 +1728,7 @@ class App(tk.Tk):
         if decision.target == 'unavailable':
             raise RuntimeError(f'镜头生成不可用：{decision.reason}')
         provider = load_video_provider(ROOT/'video-provider.json') if decision.target == 'cloud' else None
-        rate = float(getattr(provider, 'cost_per_shot_rmb', 0.72)) if provider else 0.0
+        rate = (float(getattr(provider, 'cost_per_shot_rmb', 0.72)) if getattr(provider, 'cost_price_configured', True) else None) if provider else 0.0
         detail = build_provider_execution_consent(
             decision, action_label, rate,
             f'镜头标题：{shot.title}\\n当前版本：v{shot.version}。旧版本会保留。',
@@ -1754,11 +1754,11 @@ class App(tk.Tk):
             data = json.loads(config_path.read_text(encoding='utf-8')) if config_path.exists() else {}
         except Exception:
             data = {}
-        cfg = data.get(kind, {}) if isinstance(data, dict) else {}
+        cfg = (data.get(kind) or data.get('asset_generation') or {}) if isinstance(data, dict) else {}
         try:
-            rate = float((cfg or {}).get('price_rmb', 0.0) or 0.0)
+            rate = float((cfg or {}).get('price_rmb')) if 'price_rmb' in (cfg or {}) and (cfg or {}).get('price_rmb') is not None else None
         except (TypeError, ValueError):
-            rate = 0.0
+            rate = None
         detail = build_provider_execution_consent(
             decision,
             f'{kind}素材生成（镜头 {shot.index}）',
