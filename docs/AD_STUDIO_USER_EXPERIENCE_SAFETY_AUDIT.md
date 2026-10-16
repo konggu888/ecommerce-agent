@@ -340,3 +340,14 @@
 
 **下一步：**继续审计缓存键、历史记录和实际生成调用方是否记录真实 model/provider/endpoint；同时核对预算确认前各阶段的外部调用计数合同，并查清 asset Provider 的真实调用链。先完成合同映射与 mock 测试设计，再决定是否修改产品代码。
 
+### F. 继续核对：资产配置根目录与调用历史可追溯性
+
+- `App.asset_generation_settings()` 固定读写 `ROOT/'asset-generation.json'`；但 `ProductionStore.resolve_assets()` 创建 `AssetGenerator(self.library_root/'asset-generation.json', self.library_root)`，而 `self.library_root` 可由 `library-location.json` 改为用户指定的独立磁盘路径。`AssetGenerator` 又从传入的 `config_path` 读取设置并以其父目录创建 `CapabilityRouter`。因此，当用户自定义资产库路径且该目录下没有同步配置文件时，UI 中已保存的资产生成设置与 `resolve_assets()` 实际读取的配置位置不一致，可能表现为“界面配置已保存，但自动素材生成看不到配置”。这是由路径数据流支持的静态缺陷候选；本轮没有执行真实生成。
+- `generate_missing_asset()` 是另一条调用路径：它接受外部传入的 `asset_provider_path`，调用 `CapabilityRouter(self.root.parent).decide_asset(kind)` 决策，再用传入路径加载云端 Provider。必须把这条路径与 `resolve_assets()` 的 `AssetGenerator` 路径分开测试，不能因为一条路径可用就推断另一条可用。
+- 生成历史可追溯性方面：文本模型 usage ledger 记录 `model_id`、`model_name`、`provider`、`model`，但不记录实际 `base_url/endpoint`；视频镜头的 `shot.provider` 和视频账本主要记录 provider 名称，视频/资产账本行的 `model_id`、`model` 为空。自定义代理站或同名 Provider 变更 endpoint 后，当前历史记录未必足以复原当时真实请求目的地。这是审计追溯缺口，不代表已有调用被错误路由。
+- 缓存/镜头状态中也应区分“显示 Provider 名称”与“实际 model/endpoint”。下一轮需验证缓存命中、单镜头重生成、项目重载后是否保留足够的实际路由证据，且不把 API Key 写进历史记录。
+
+### G. 下一步 mock 测试设计边界
+
+优先形成一份不联网的测试矩阵，覆盖：① 显式模型不可用时云→云、云→本地、无可用模型三类路由；② 用户拒绝回退/预算确认前取消后所有外部调用计数为零；③ 本地语音转写无 API Key；④ 自定义资产库路径下 UI 配置与生产读取位置一致；⑤ 文本/视觉/转写/视频/资产的 mock payload 目的地、数据类型与路由记录；⑥ 缺失价格/usage 与真实零成本的不同状态；⑦ 项目重载后模型/provider/endpoint 证据可追溯且不包含密钥。该矩阵须逐项映射现有 A0–A112，不新增编号；合同未裁决前不改产品代码。
+
