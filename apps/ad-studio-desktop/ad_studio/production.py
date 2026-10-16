@@ -548,7 +548,7 @@ class ProductionStore:
         self.save(project)
         return item
 
-    def render_shot(self, project: Project, shot: Shot, provider_path: Path | None = None, config_root: Path | None = None):
+    def render_shot(self, project: Project, shot: Shot, provider_path: Path | None = None, config_root: Path | None = None, decision=None):
         """本地/云端视频生成统一入口。
 
         clip_source == 'filmed' 时走用户拍摄素材剪辑（本地 FFmpeg 裁剪），
@@ -559,7 +559,7 @@ class ProductionStore:
         """
         if shot.clip_source == 'filmed':
             return self.render_footage_shot(project, shot)
-        decision = CapabilityRouter(config_root or self.root.parent).decide_video()
+        # UI may pass the exact route snapshot the user approved; do not silently re-resolve to a different endpoint after consent.\n        decision = decision or CapabilityRouter(config_root or self.root.parent).decide_video()
         if decision.target == 'local':
             from .providers import GenericVideoProvider
             provider = GenericVideoProvider(
