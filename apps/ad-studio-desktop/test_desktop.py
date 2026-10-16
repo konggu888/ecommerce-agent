@@ -1542,7 +1542,7 @@ class DesktopCoreTests(unittest.TestCase):
 
     def test_a47_asset_resolution_failure_restores_previous_video(self):
         class FailingAssetStore(ProductionStore):
-            def resolve_assets(self, project, shot):
+            def resolve_assets(self, project, shot, authorize_cloud=None):
                 raise RuntimeError("模拟素材解析失败")
 
         class UnusedProvider:
@@ -2668,7 +2668,7 @@ class DesktopCoreTests(unittest.TestCase):
         body = app_source[start:end]
         consent = body.index("askyesno('确认生成端点与费用'")
         mutate = body.index("s.status='生成中…'")
-        render = body.index("self.store.render_shot(self.project,s,config_root=ROOT,decision=decision)")
+        render = body.index("self.store.render_shot(self.project,s,config_root=ROOT,decision=decision,authorize_cloud=")
         self.assertLess(consent, mutate)
         self.assertLess(consent, render)
         self.assertIn("decision = decision or CapabilityRouter(config_root or self.root.parent).decide_video()", production_source)
