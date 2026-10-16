@@ -500,6 +500,10 @@ class ProductionStore:
                                 'cost_error': cost_error,
                             })
                     except Exception as exc:
+                        if "没有获得明确授权" in str(exc):
+                            # A declined consent is control flow, not an ordinary generation failure.
+                            # Stop before trying other assets or dispatching a video Provider.
+                            raise
                         item.update({'source':'自动生成失败','error':str(exc)})
                 else:
                     item['source']='未配置生成服务'
