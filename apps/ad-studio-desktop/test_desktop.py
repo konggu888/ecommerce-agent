@@ -2620,6 +2620,59 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertIn("return", cancel_branch)
         self.assertIn("未读取商品页面、未调用 AI 模型/Provider", cancel_branch)
 
+
+    def test_per_shot_provider_consent_discloses_destination_and_redacts_secrets(self):
+        from types import SimpleNamespace
+        from ad_studio.app import build_provider_execution_consent
+
+        decision = SimpleNamespace(
+            target="cloud",
+            endpoint="https://provider.example/v1/generate?api_key=must-not-display",
+            reason="本地视频服务不可用，转云端",
+        )
+        detail = build_provider_execution_consent(
+            decision, "镜头 1 视频生成", 1.25, "商品标题：测试商品"
+        )
+        self.assertIn("实际执行目标：云端服务", detail)
+        self.assertIn("https://provider.example/v1/generate", detail)
+        self.assertIn("本地视频服务不可用，转云端", detail)
+        self.assertIn("本次预估费用：¥1.25", detail)
+        self.assertIn("数据边界", detail)
+        self.assertIn("只有确认后才会调用此端点", detail)
+        self.assertNotIn("must-not-display", detail)
+        self.assertNotIn("api_key=", detail)
+
+    def test_per_shot_provider_consent_distinguishes_local_and_unavailable(self):
+        from types import SimpleNamespace
+        from ad_studio.app import build_provider_execution_consent
+
+        local = build_provider_execution_consent(
+            SimpleNamespace(target="local", endpoint="http://127.0.0.1:8188/generate", reason="本机服务可达"),
+            "镜头 1", 0.0,
+        )
+        self.assertIn("本地服务", local)
+        self.assertIn("不会因本地请求失败而自动改用云端", local)
+
+        unavailable = build_provider_execution_consent(
+            SimpleNamespace(target="unavailable", endpoint="", reason="没有可用 Provider"),
+            "镜头 1", 0.0,
+        )
+        self.assertIn("没有可用的已配置 Provider", unavailable)
+        self.assertIn("不会发起生成请求", unavailable)
+
+    def test_video_generation_uses_the_route_snapshot_that_was_confirmed(self):
+        app_source = (Path(__file__).resolve().parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        production_source = (Path(__file__).resolve().parent / "ad_studio" / "production.py").read_text(encoding="utf-8")
+        start = app_source.index("    def generate_shot(self):")
+        end = app_source.index("    def regen_shot(self):", start)
+        body = app_source[start:end]
+        consent = body.index("askyesno('确认生成端点与费用'")
+        mutate = body.index("s.status='生成中…'")
+        render = body.index("self.store.render_shot(self.project,s,config_root=ROOT,decision=decision)")
+        self.assertLess(consent, mutate)
+        self.assertLess(consent, render)
+        self.assertIn("decision = decision or CapabilityRouter(config_root or self.root.parent).decide_video()", production_source)
+
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.
