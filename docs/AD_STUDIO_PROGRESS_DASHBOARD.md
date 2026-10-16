@@ -1432,3 +1432,9 @@ A9–A17 的可定位源码/测试线索、基线 CI/docs-sync 记录和剩余�
 - 两阶段授权流程仍保留：读取商品页面/创意规划前先展示目的地与配置价格；计划完成后再展示视频/演员/场景/商品素材费用。当前已有拒绝零操作 helper 测试和源码顺序测试，但完整 GUI/所有 Provider 的调用计数仍未正式验收。
 - **当前唯一下一步：**审计 `CapabilityRouter.decide_asset/decide_video` 的独立本地/云端回退，明确用户允许/拒绝规则，拒绝后 Provider 调用数必须为 0；然后补未知费用语义与 endpoint 历史追溯。
 - PR #32 Open/unmerged；A0–A112 不删除/合并/重编号，不新增 A113+，不计算整体完成率；真实 Provider、真实扣费、Windows 真机继续暂缓。
+
+## 【UXS-2 最新增量｜单镜头视频目的地确认｜2026-10-16】
+
+- App.generate_shot() 在改写镜头状态前展示本次视频路由目标、脱敏 endpoint、路由原因、费用与数据类别；拒绝不调用 Provider；同意后把同一 ExecutionDecision 快照传入 ProductionStore.render_shot()。
+- 新增离线测试覆盖目的地说明、秘密脱敏、拒绝/状态顺序与路由快照传递。当前 SHA bb337ce7be236ad5148a9dd59120defd0efd67e5 的 CI/docs-sync 尚未返回；此前 SHA 的绿灯不能挪用。
+- 范围限制：资产自动生成、最终成片批量生成、短剧商品镜头重生成尚未纳入此授权闸门。下一项只推进资产 Provider 的前置授权与拒绝零调用测试。
