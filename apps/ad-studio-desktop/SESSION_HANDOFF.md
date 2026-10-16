@@ -1108,3 +1108,11 @@ A109 转场安全补充：当前切点变速遇到显式“交叉溶解”时保
 - 资产库路径：自动素材解析读取应用配置根目录的 `asset-generation.json`；本地转写无 Key 仅对 `local_openai` 放行且不发送 Authorization；远程无 Key 仍在请求前拒绝。
 - **唯一下一步：**审计 `CapabilityRouter.decide_asset/decide_video` 的本地/云端回退并增加拒绝后零调用 mock；之后处理未知费用语义、endpoint 历史追溯与密钥存储合同。
 - PR #32 Open/unmerged；A0–A112 不删除/合并/重编号；不新增 A113+；真实 Provider/扣费、Windows 真机继续暂缓。
+
+## UXS-2 最新接手状态｜2026-10-16
+
+- 单镜头视频生成按钮已增加逐次目的地/费用确认；拒绝时在镜头状态变更前返回，同意后将确认时的 ExecutionDecision 快照传给生产层，避免再次路由。
+- 测试覆盖脱敏 endpoint、云端数据边界、取消不改状态的顺序与路由快照传递。
+- 当前 SHA bb337ce7be236ad5148a9dd59120defd0efd67e5 尚待 CI/docs-sync。不要把此前 d1f7e54db2f511ba2dde900a14d848657adbbc3d 的绿灯用于当前代码。
+- 下一步：资产 Provider 逐次授权。重点检查 ProductionStore.resolve_assets()→AssetGenerator.generate() 和 generate_missing_asset()；授权前不发外部请求，拒绝后 Provider 调用计数为 0、无素材落盘/镜头绑定。随后覆盖批量成片与短剧商品镜头重生成。
+- PR #32 保持 Open/unmerged；A0–A112 不新增/删除/合并/重编号；真实 Provider/扣费与 Windows 真机继续暂缓。
