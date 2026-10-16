@@ -1438,3 +1438,10 @@ A9–A17 的可定位源码/测试线索、基线 CI/docs-sync 记录和剩余�
 - App.generate_shot() 在改写镜头状态前展示本次视频路由目标、脱敏 endpoint、路由原因、费用与数据类别；拒绝不调用 Provider；同意后把同一 ExecutionDecision 快照传入 ProductionStore.render_shot()。
 - 新增离线测试覆盖目的地说明、秘密脱敏、拒绝/状态顺序与路由快照传递。当前 SHA bb337ce7be236ad5148a9dd59120defd0efd67e5 的 CI/docs-sync 尚未返回；此前 SHA 的绿灯不能挪用。
 - 范围限制：资产自动生成、最终成片批量生成、短剧商品镜头重生成尚未纳入此授权闸门。下一项只推进资产 Provider 的前置授权与拒绝零调用测试。
+
+## 【UXS-2 最新增量｜资产云端授权闸门｜2026-10-16】
+
+- AssetGenerator.generate、ProductionStore.resolve_assets、ProductionStore.generate_missing_asset 已加入 authorize_cloud 回调闸门；云端未授权时在请求前 fail-closed，阻止素材文件/镜头绑定/状态副作用。
+- 单镜头视频 UI 已有逐次端点/费用确认，并固定确认时路由快照。
+- 当前剩余的首要工作是把资产授权回调接入正式 UI（展示脱敏 endpoint、数据类别和费用/未知费用），并用调用计数验证拒绝后零请求；随后覆盖批量视频和短剧重生成。
+- 代码 SHA 77ccc7a6e978fc8c6144a18b8f2958bf981ad2d6 的 CI/docs-sync 正在运行；先前失败的 CI 对应旧夹具，修复后必须以此 SHA 最终结果为准。
