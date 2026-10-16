@@ -322,7 +322,10 @@ class ModelRouter:
         if not profile.api_key and profile.provider != "local_openai":
             raise RuntimeError(f"口播转写模型「{profile.name}」没有可用凭据。")
         endpoint = profile.base_url.rstrip("/") + "/audio/transcriptions"
-        result = transcribe_openai_compatible(audio_path, endpoint, profile.api_key, profile.model)
+        result = transcribe_openai_compatible(
+            audio_path, endpoint, profile.api_key, profile.model,
+            allow_missing_api_key=profile.provider == "local_openai",
+        )
         return {"text": result.text, "segments": [
             {"start": x.start, "end": x.end, "text": x.text} for x in result.segments
         ]}
