@@ -1572,3 +1572,10 @@ A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/
 ## 2026-10-16｜PLAN-003 DEDUP-013 成本恢复重载回归
 
 本轮仅补充自动化测试：A57 无账本旧项目恢复后重新加载仍保留项目/镜头成本；A60 failed-only 账本恢复后重新加载仍保留项目/镜头成本与成本分类汇总。A99 的成功账本清除未计费兄弟镜头陈旧成本仍为独立行为。新增断言须以最新 SHA 的 CI 通过为准；本地模拟测试不证明真实 Provider 账单。A57/A60/A99 仍未正式验收。
+
+## 2026-10-16｜UXS-2 本地转写与资产配置路径修复
+
+- `ModelRouter.transcribe_footage_audio()` 仅对 `provider == "local_openai"` 传递 `allow_missing_api_key=True`；转写 helper 默认仍拒绝缺失凭据，且只有在 key 非空时才加入 Authorization 头。测试同时验证本地模拟端点收到请求、请求没有 Authorization 头，以及远程无 Key 在请求前失败。
+- `ProductionStore.resolve_assets()` 的 `AssetGenerator` 配置路径改为 `self.root.parent / "asset-generation.json"`，与应用以 `ROOT/projects` 作为项目目录、以 `ROOT/asset-generation.json` 保存 UI 配置的布局一致；`library_root` 继续只决定资产库文件位置。用户自定义资产库目录不应改变 Provider 配置来源。
+- 新增离线 mock 回归：本地转写无 Key、远程无 Key 零请求、自定义资产库路径下配置读取根目录不变。测试通过后仍不等于真实服务兼容性验收。
+- **P0 尚未修复：**`App.create()` 在预算确认弹窗前调用 `create_plan/create_plans`，可能提前调用云端模型。下一步必须优先重构授权时序，并用编排级调用计数测试证明首次同意前、用户取消后没有任何外部请求。真实 Provider、真实扣费和 Windows 真机继续暂缓。
