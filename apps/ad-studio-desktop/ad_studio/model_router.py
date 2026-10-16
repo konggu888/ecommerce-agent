@@ -10,7 +10,7 @@ import base64
 import urllib.request
 import time
 
-from .usage_ledger import UsageLedger
+from .usage_ledger import UsageLedger, sanitize_endpoint
 from .footage import normalize_footage_analysis, rank_footage_analysis, audit_footage_coverage
 from .creative_engine import CREATIVE_SYSTEM_PROMPT
 
@@ -521,16 +521,32 @@ class ModelRouter:
                 provider=profile.provider, model=profile.model, status="failed",
                 duration_ms=int((time.perf_counter() - started) * 1000), error=str(exc),
                 project_id=self.current_project_id, category="model",
+                endpoint=url, cost_status="unknown", usage_status="unavailable",
             )
             raise RuntimeError(f"模型「{profile.name}」调用失败：{exc}") from exc
 
-        usage = body.get("usage") or {}
+        usage_value = body.get("usage")
+        usage = usage_value if isinstance(usage_value, dict) else {}
+        usage_present = isinstance(usage_value, dict) and bool(usage)
         prompt_tokens = int(usage.get("prompt_tokens", usage.get("input_tokens", 0)) or 0)
         completion_tokens = int(usage.get("completion_tokens", usage.get("output_tokens", 0)) or 0)
         total_tokens = int(usage.get("total_tokens", prompt_tokens + completion_tokens) or 0)
+        configured_prices = next(
+            (item for item in self.data.get("models", []) if item.get("id") == profile.id), {}
+        )
+        prices_present = (
+            "input_price_rmb_per_1k" in configured_prices
+            and "output_price_rmb_per_1k" in configured_prices
+        )
         estimated_cost = (
             prompt_tokens / 1000 * float(profile.input_price_rmb_per_1k)
             + completion_tokens / 1000 * float(profile.output_price_rmb_per_1k)
+        ) if usage_present and prices_present else 0.0
+        usage_status = "reported" if usage_present else "missing"
+        cost_status = "estimated_from_configured_prices" if usage_present and prices_present else (
+            "usage_missing" if not usage_present and prices_present else (
+                "price_missing" if usage_present and not prices_present else "price_and_usage_missing"
+            )
         )
         try:
             content = body["choices"][0]["message"]["content"]
@@ -543,6 +559,7 @@ class ModelRouter:
                 total_tokens=total_tokens, estimated_cost_rmb=estimated_cost,
                 duration_ms=int((time.perf_counter() - started) * 1000), error=str(exc),
                 project_id=self.current_project_id, category="model",
+                endpoint=url, cost_status=cost_status, usage_status=usage_status,
             )
             raise RuntimeError(f"模型「{profile.name}」返回的不是有效 JSON") from exc
 
@@ -553,6 +570,7 @@ class ModelRouter:
             total_tokens=total_tokens, estimated_cost_rmb=estimated_cost,
             duration_ms=int((time.perf_counter() - started) * 1000),
             project_id=self.current_project_id, category="model",
+            endpoint=url, cost_status=cost_status, usage_status=usage_status,
         )
         return result
 
