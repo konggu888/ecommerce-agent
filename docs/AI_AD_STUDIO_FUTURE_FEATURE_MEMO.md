@@ -933,3 +933,11 @@ A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/
 - 源码/测试证据绑定基线 `c77704d86d6131d13501448af76ce24afc56ad7b`：`app.py` blob `7e88102f01a41c70c8a67e925daa24f4d71b90a7`、`production.py` blob `e53968f47a6b8fd23df773dbd3a4ad553753e1e0`、`test_desktop.py` blob `357c54dad99f61b99891bcc365dd2f9efc1a1009`。四个专项测试分别覆盖待核对 UI、成功账本重建、无账本旧成本兼容和打开项目先恢复。CI PR [38729017063](https://github.com/konggu888/ecommerce-agent/actions/runs/38729017063) 与 docs-sync PR [38729017091](https://github.com/konggu888/ecommerce-agent/actions/runs/38729017091) 在该源码/测试基线上 success。
 - **结论仅为语义身份冲突已厘清及部分证据映射，不是 A57 正式验收通过。** 真实账单/扣费与 Windows 真机流程继续暂缓。A57 保持 `partial_evidence_mapping` / `not_audited`；其余 A0–A112 的语义去重和当前 HEAD 证据冲突核对仍未完成。
 - 本轮同步后的台账指标：113 个任务有 evidence 指针；112 个含 source/test evidence；56 个绑定当前源码/测试快照；0 个绑定最终文档 HEAD；完整代码/测试审计 0；完整验收 0；全量语义去重未完成；权重和总体完成率关闭。
+
+## PLAN-003 用户自由度增量｜逐次 Provider 授权｜2026-10-16
+
+- 已进入代码：单镜头视频生成在镜头状态变更前展示目的地/脱敏 endpoint/费用/数据类别，拒绝不调用 Provider；同意后固定同一决策快照。
+- 已进入代码：资产生成层增加 authorize_cloud 显式回调；没有回调或拒绝时 fail-closed，不发送云端请求、不创建生成文件、不绑定资产。
+- 尚未完成：为资产自动生成提供正式 UI 确认入口；为最终成片批量视频、短剧商品镜头重生成、其他视觉/转写入口补齐逐次授权和零调用测试；区分未知费用与真实零成本；历史记录保存可追溯 endpoint（不得存储密钥）。
+- 后续执行顺序：资产 Provider 授权 UI/调用计数 → 批量视频/短剧重生成授权 → 未知费用语义 → endpoint 来源与项目重载可追溯性。真实 Provider、账单/扣费和 Windows 真机仍按用户要求暂缓。
+- 仅映射现有 A13/A29/A51–A65 合同，不新增 A113+，不自动更改 A0–A112 的验收状态。
