@@ -246,3 +246,7 @@ When touching desktop tests, update this file, `apps/ad-studio-desktop/HELP.md`,
 - 资产云端生成：AssetGenerator.generate() 和 ProductionStore.generate_missing_asset() 只有收到明确 authorize_cloud 回调且回调同意时才能走云端。无回调/拒绝时必须在外部请求前失败，不创建生成文件、不绑定资产、不改镜头状态。
 - 调用方不得用默认 True 绕过授权；任何 UI 接入都必须展示 endpoint（隐藏 URL userinfo/query/fragment）、数据类型与费用，并对取消后 Provider 调用计数为 0 做 mock 验证。
 - 仍需覆盖最终成片批量视频、短剧商品镜头重生成等入口。不得将单镜头授权或资产 helper 测试等同于所有 Provider 授权闭环通过；不新增 A113+，A0–A112 正式状态不因代码/文档存在而自动改变。
+
+## UXS-2 资产 Provider 授权实现状态｜2026-10-16
+
+AssetGenerator.generate、ProductionStore.resolve_assets、ProductionStore.generate_missing_asset 已使用 authorize_cloud 回调闸门。未授权云端请求必须 fail-closed，且拒绝时不得创建生成文件、绑定资产或改变镜头状态。正式 UI 尚未接入回调；下一步补 UI 的端点/数据/费用披露和拒绝后零调用测试，再覆盖批量视频/短剧重生成。任何实现必须同步 HELP、PROJECT_LOGIC、验收计划/SOP、任务台账、dashboard 与 handoff；不新增 A113+，不更改 A0–A112 正式状态。
