@@ -2777,13 +2777,17 @@ class DesktopCoreTests(unittest.TestCase):
         helper_start = source.index("    def _authorize_shot_generation(self, shot, action_label):")
         helper_end = source.index("    def _confirm_asset_cloud_generation(self, decision, kind, shot):", helper_start)
         helper = source[helper_start:helper_end]
+        asset_prompt_start = helper_end
+        asset_prompt_end = source.index("    @ui_action", asset_prompt_start)
+        asset_prompt_helper = source[asset_prompt_start:asset_prompt_end]
         authorize = body.index("self._authorize_shot_generation(s,")
         status_mutation = body.index("s.status='生成中…'")
         video_dispatch = body.index("self.store.render_shot(self.project,s,config_root=ROOT,decision=decision,authorize_cloud=")
         asset_resolve = helper.index("self.store.resolve_assets(")
-        asset_consent = helper.index("self._confirm_asset_cloud_generation(asset_decision, kind, shot)")
-        self.assertLess(asset_resolve, asset_consent)
-        self.assertLess(asset_consent, body.index("s.status='生成中…'"))
+        asset_callback = helper.index("self._confirm_asset_cloud_generation(asset_decision, kind, shot)")
+        asset_prompt = asset_prompt_helper.index("askyesno('确认云端素材端点与费用'")
+        self.assertLess(asset_resolve, asset_callback)
+        self.assertGreater(asset_prompt, 0)
         self.assertLess(authorize, status_mutation)
         self.assertLess(status_mutation, video_dispatch)
 
