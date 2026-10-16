@@ -1,14 +1,17 @@
 # A102 final-render fixtures mock the normalization output file explicitly.
 import ast
+import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 from ad_studio.engine import detect_platform, estimate_cost, new_project, mark_regenerate
 from ad_studio.library import LocalLibrary
 from ad_studio.production import ProductionStore, generation_failure_ui_state, normalize_cost_estimate_rmb
 from ad_studio.product_parser import ProductInfo, save_product_library, load_product_library, merge_product_library
 from ad_studio.model_router import ModelRouter, ModelProfile, build_stage_prompt
+from ad_studio.usage_ledger import UsageLedger
 
 
 class DesktopCoreTests(unittest.TestCase):
@@ -2790,6 +2793,72 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertGreater(asset_prompt, 0)
         self.assertLess(authorize, status_mutation)
         self.assertLess(status_mutation, video_dispatch)
+
+
+    def test_usage_ledger_sanitizes_endpoint_and_retains_cost_certainty_after_reload(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ledger_path = Path(tmp) / "usage-ledger.json"
+            ledger = UsageLedger(ledger_path)
+            row = ledger.record(
+                function="test", model_id="m1", model_name="模型一",
+                provider="openai_compatible", model="model-1", status="success",
+                estimated_cost_rmb=0.0, cost_status="usage_missing",
+                usage_status="missing",
+                endpoint="https://user:password@provider.example/v1/chat/completions?api_key=do-not-store#frag",
+            )
+            self.assertEqual(row["endpoint"], "https://provider.example/v1/chat/completions")
+            self.assertNotIn("password", ledger_path.read_text(encoding="utf-8"))
+            self.assertNotIn("do-not-store", ledger_path.read_text(encoding="utf-8"))
+            restored = UsageLedger(ledger_path).recent(1)[0]
+            self.assertEqual(restored["cost_status"], "usage_missing")
+            self.assertEqual(restored["usage_status"], "missing")
+            summary = UsageLedger(ledger_path).summary()
+            self.assertTrue(summary["has_unknown_cost"])
+            self.assertEqual(summary["unknown_cost_entries"], 1)
+
+    def test_model_router_distinguishes_missing_usage_from_missing_price(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            config_path = Path(tmp) / "model-config.json"
+            config_path.write_text(json.dumps({
+                "default_model": "priced",
+                "models": [
+                    {"id": "priced", "name": "价格已配置", "provider": "openai_compatible",
+                     "base_url": "https://user:pass@priced.example/v1?token=hide",
+                     "model": "priced-model", "api_key": "key",
+                     "input_price_rmb_per_1k": 0, "output_price_rmb_per_1k": 0, "enabled": True},
+                    {"id": "unpriced", "name": "价格缺失", "provider": "openai_compatible",
+                     "base_url": "https://unpriced.example/v1", "model": "unpriced-model",
+                     "api_key": "key", "enabled": True}
+                ],
+                "routes": {"商品理解": "priced"}
+            }, ensure_ascii=False), encoding="utf-8")
+            router = ModelRouter(config_path)
+            profile = router.get("priced")
+            response = MagicMock()
+            response.__enter__.return_value.read.return_value = json.dumps({
+                "choices": [{"message": {"content": "{\\"ok\\": true}"}}]
+            }).encode("utf-8")
+            with patch("ad_studio.model_router.urllib.request.urlopen", return_value=response):
+                router.complete_json(profile, "test prompt", function="商品理解")
+            first = router.ledger.recent(1)[0]
+            self.assertEqual(first["cost_status"], "usage_missing")
+            self.assertEqual(first["usage_status"], "missing")
+            self.assertEqual(first["endpoint"], "https://priced.example/v1/chat/completions")
+
+            unpriced = router.get("unpriced")
+            response2 = MagicMock()
+            response2.__enter__.return_value.read.return_value = json.dumps({
+                "usage": {"prompt_tokens": 1000, "completion_tokens": 0},
+                "choices": [{"message": {"content": "{\\"ok\\": true}"}}]
+            }).encode("utf-8")
+            with patch("ad_studio.model_router.urllib.request.urlopen", return_value=response2):
+                router.complete_json(unpriced, "test prompt", function="商品理解")
+            second = router.ledger.recent(1)[0]
+            self.assertEqual(second["cost_status"], "price_missing")
+            self.assertEqual(second["usage_status"], "reported")
+            self.assertEqual(second["estimated_cost_rmb"], 0.0)
+            self.assertTrue(router.ledger.summary()["has_unknown_cost")
+
 
 if __name__ == "__main__":
     unittest.main()
