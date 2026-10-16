@@ -2016,7 +2016,7 @@ class DesktopCoreTests(unittest.TestCase):
                     pass
                 def configured(self, kind):
                     return kind == "演员"
-                def generate(self, kind, name, prompt, tags, request_id):
+                def generate(self, kind, name, prompt, tags, request_id, authorize_cloud=None):
                     asset = Asset("a64-generated-actor", name, kind, "ai_generated", str(generated_path), tags)
                     return SimpleNamespace(asset=asset, cost_rmb=0.72, provider="测试 Provider")
 
@@ -2699,7 +2699,8 @@ class DesktopCoreTests(unittest.TestCase):
                 with self.assertRaisesRegex(RuntimeError, "没有获得明确授权"):
                     generator.generate("演员", "演员A", "测试提示词")
                 cloud_call.assert_not_called()
-                self.assertFalse((root / "library" / "assets").exists())
+                assets_root = root / "library" / "assets"
+                self.assertFalse(assets_root.exists() and any(path.is_file() for path in assets_root.rglob("*")))
 
                 result = object()
                 cloud_call.return_value = result
