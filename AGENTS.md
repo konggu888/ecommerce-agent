@@ -250,3 +250,7 @@ When touching desktop tests, update this file, `apps/ad-studio-desktop/HELP.md`,
 ## UXS-2 资产 Provider 授权实现状态｜2026-10-16
 
 AssetGenerator.generate、ProductionStore.resolve_assets、ProductionStore.generate_missing_asset 已使用 authorize_cloud 回调闸门。未授权云端请求必须 fail-closed，且拒绝时不得创建生成文件、绑定资产或改变镜头状态。正式 UI 尚未接入回调；下一步补 UI 的端点/数据/费用披露和拒绝后零调用测试，再覆盖批量视频/短剧重生成。任何实现必须同步 HELP、PROJECT_LOGIC、验收计划/SOP、任务台账、dashboard 与 handoff；不新增 A113+，不更改 A0–A112 正式状态。
+
+## UXS-2 单镜头资产授权接线完成范围｜2026-10-16
+
+单镜头生成按钮已逐次确认视频端点/费用，并为每个需要云端生成的资产显示端点（脱敏）、数据类别与价格。拒绝资产授权须在镜头状态变更前返回且阻止视频 Provider 调用。下一步审计 AI补镜头、批量创意方案生成、短剧商品镜头重生成，逐入口补拒绝后零调用和状态不变测试。不得将单镜头路径通过视为全部 Provider 授权通过；所有代码改动仍须同步帮助、逻辑、验收计划/SOP、handoff、未来备忘录与 dashboard。
