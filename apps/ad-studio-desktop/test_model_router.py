@@ -83,10 +83,10 @@ class ModelRouterRoutingTest(unittest.TestCase):
                 transcription_enabled=True,
             )
             response = MagicMock()
-            response.__enter__.return_value.read.return_value = b'{"text":"本地转写成功","segments":[]}'
+            response.__enter__.return_value.read.return_value = b'{"text":"local transcript","segments":[]}'
             with patch("ad_studio.transcription.urllib.request.urlopen", return_value=response) as urlopen:
                 result = router.transcribe_footage_audio(audio, profile)
-            self.assertEqual(result["text"], "本地转写成功")
+            self.assertEqual(result["text"], "local transcript")
             request = urlopen.call_args.args[0]
             self.assertIsNone(request.get_header("Authorization"))
             self.assertTrue(request.full_url.endswith("/audio/transcriptions"))
