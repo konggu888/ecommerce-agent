@@ -86,6 +86,13 @@ def _safe_endpoint_display(value):
         return "自定义 endpoint（无法安全展示完整地址）"
 
 
+def run_after_explicit_authorization(confirm, operation):
+    """Run an external operation only after explicit user authorization."""
+    if not confirm():
+        return False, None
+    return True, operation()
+
+
 def build_creation_preflight_detail(url, budget, variant_count, model_router):
     """Disclose external destinations and configured prices before link fetch or model calls."""
     lines = [
@@ -1470,10 +1477,13 @@ class App(tk.Tk):
         except ValueError:
             return messagebox.showerror('参数格式错误','请输入有效的预算和创意方案数。')
         preflight_detail = build_creation_preflight_detail(url, budget, variant_count, self.model_router)
-        if not messagebox.askyesno('AI创意规划与数据去向授权', preflight_detail):
+        authorized, info = run_after_explicit_authorization(
+            lambda: messagebox.askyesno('AI创意规划与数据去向授权', preflight_detail),
+            lambda: parse_product_url(url),
+        )
+        if not authorized:
             self.detail.set('已取消：未读取商品页面、未调用 AI 模型/Provider，也未创建项目。')
             return
-        info=parse_product_url(url)
         saved_product=load_product_library(url, ROOT)
         info=merge_product_library(info, saved_product)
         footage_mode=self.footage_mode.get().strip()
