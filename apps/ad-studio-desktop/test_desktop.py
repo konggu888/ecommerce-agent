@@ -2823,7 +2823,7 @@ class DesktopCoreTests(unittest.TestCase):
                 "default_model": "priced",
                 "models": [
                     {"id": "priced", "name": "价格已配置", "provider": "openai_compatible",
-                     "base_url": "https://user:pass@priced.example/v1?token=hide",
+                     "base_url": "https://user:pass@priced.example/v1",
                      "model": "priced-model", "api_key": "key",
                      "input_price_rmb_per_1k": 0, "output_price_rmb_per_1k": 0, "enabled": True},
                     {"id": "unpriced", "name": "价格缺失", "provider": "openai_compatible",
