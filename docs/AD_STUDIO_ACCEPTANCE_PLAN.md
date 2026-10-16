@@ -1685,3 +1685,7 @@ A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/
 ## PLAN-003 路由与 Provider 入口核对旁注｜2026-10-16
 
 本旁注仅记录合同/证据缺口，不改变既有验收状态。静态检查发现：`ModelRouter.resolve_route()` 在显式模型不可用时可能自动选择其他模型，当前检查范围内没有回退前确认及拒绝后零调用的直接测试；视觉分析会把关键帧作为 data URI 发往配置 Base URL；转写 helper 无条件要求 API Key，与路由层允许无 Key 的 `local_openai` 不一致；模型、视频、资产配置均把凭据写入本地 JSON；缺失 usage/单价在账本估算中归零，尽管 UI 已提示零成本不代表免费。详细范围和证据矩阵见 `docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md`。本旁注不是产品代码修复、正式失败判定、真实 Provider 调用或账单验证。
+
+## PLAN-003 补充：资产配置路径与历史路由证据｜2026-10-16
+
+静态数据流核对另发现：资产设置 UI 固定写入 `ROOT/asset-generation.json`，但 `ProductionStore.resolve_assets()` 将 `self.library_root/asset-generation.json` 传给 `AssetGenerator`；用户自定义资产库根目录后，两处可能不一致，导致自动素材生成读取不到 UI 配置。另，视频/资产账本与镜头历史主要保存 Provider 名称，未保存实际 endpoint/model；文本模型账本有 model/provider 字段但无 Base URL。以上为候选缺陷/追溯缺口，不代表已发生外发错误。本计划不改变任何验收 ID/勾选。下一步先建立不联网的 mock 测试矩阵并映射现有 A0–A112，合同裁决前不改产品代码。
