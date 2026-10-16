@@ -1605,3 +1605,7 @@ A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/
 - AssetGenerator.generate(..., authorize_cloud=None)：只有能力决策为 cloud 且 authorize_cloud 是可调用并返回 True 的回调时，才进入云端生成；缺失/拒绝回调时在 _cloud_generate 前抛出错误。
 - ProductionStore.resolve_assets(..., authorize_cloud=None) 将授权回调传入 AssetGenerator；ProductionStore.generate_missing_asset(..., authorize_cloud=None) 在创建资产输出目录、修改镜头状态或加载云端 Provider 前拒绝未授权云端路由。
 - 这两条路径当前没有正式 UI 授权回调接入，所以云端自动资产生成暂时 fail-closed；不能绕过闸门默认授权。下一步接入逐次 UI 确认，并用 mock 验证取消后无请求、无文件、无资产 ID/镜头状态变更。
+
+## 2026-10-16｜单镜头生成的资产授权编排
+
+App.generate_shot() 先确认视频目标/费用，再调用 ProductionStore.resolve_assets(..., authorize_cloud=...)；云端资产生成通过 _confirm_asset_cloud_generation() 逐次披露端点、数据和费用。若拒绝，resolve_assets 立即停止，UI 在将镜头状态写为“生成中”前返回；ProductionStore._render_with_provider() 也在修改镜头状态和视频请求前解析资产，并阻止未授权资产错误继续进入视频 Provider。单镜头路径已接线；批量成片、AI补镜头、短剧商品镜头重生成仍需独立授权。
