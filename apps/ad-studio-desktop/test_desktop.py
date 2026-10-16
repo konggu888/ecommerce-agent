@@ -2743,6 +2743,39 @@ class DesktopCoreTests(unittest.TestCase):
                 self.assertFalse(assets_root.exists() and any(item.is_file() for item in assets_root.rglob("*")))
 
 
+
+    def test_declined_asset_consent_blocks_video_provider_before_shot_state_mutation(self):
+        from unittest.mock import Mock
+
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td) / "projects", library_root=Path(td) / "library")
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            original_status = shot.status
+            original_version = shot.version
+            provider = Mock()
+            store.resolve_assets = Mock(side_effect=RuntimeError("用户拒绝或未授权云端素材生成；未发送请求。"))
+
+            with self.assertRaisesRegex(RuntimeError, "已阻止后续视频 Provider 调用|未授权云端素材生成"):
+                store._render_with_provider(project, shot, provider, authorize_cloud=lambda decision, kind: False)
+
+            provider.generate.assert_not_called()
+            self.assertEqual(shot.status, original_status)
+            self.assertEqual(shot.version, original_version)
+
+    def test_ui_requests_asset_consent_before_marking_shot_generating(self):
+        source = (Path(__file__).resolve().parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        start = source.index("    def generate_shot(self):")
+        end = source.index("    def regen_shot(self):", start)
+        body = source[start:end]
+        asset_resolve = body.index("self.store.resolve_assets(")
+        asset_consent = body.index("self._confirm_asset_cloud_generation(asset_decision, kind, s)")
+        status_mutation = body.index("s.status='生成中…'")
+        video_dispatch = body.index("self.store.render_shot(self.project,s,config_root=ROOT,decision=decision,authorize_cloud=")
+        self.assertLess(asset_resolve, status_mutation)
+        self.assertLess(asset_consent, status_mutation)
+        self.assertLess(status_mutation, video_dispatch)
+
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.
