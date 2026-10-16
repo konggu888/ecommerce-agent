@@ -1609,3 +1609,10 @@ A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/
 ## 2026-10-16｜单镜头生成的资产授权编排
 
 App.generate_shot() 先确认视频目标/费用，再调用 ProductionStore.resolve_assets(..., authorize_cloud=...)；云端资产生成通过 _confirm_asset_cloud_generation() 逐次披露端点、数据和费用。若拒绝，resolve_assets 立即停止，UI 在将镜头状态写为“生成中”前返回；ProductionStore._render_with_provider() 也在修改镜头状态和视频请求前解析资产，并阻止未授权资产错误继续进入视频 Provider。单镜头路径已接线；批量成片、AI补镜头、短剧商品镜头重生成仍需独立授权。
+
+## 2026-10-16｜视频/资产授权流程跨入口复用
+
+- App._authorize_shot_generation() 统一完成视频路由与费用确认，再调用 resolve_assets 并逐个授权云端资产；只有全部必要授权通过后，调用方才能把镜头状态改为“生成中”。
+- 单镜头生成、AI补镜头和批量创意方案生成都传递确认时的 ExecutionDecision 快照，并提供 authorize_cloud 回调；拒绝分支不调用本次视频 Provider，镜头状态/版本保持不变。
+- 短剧商品镜头重生成只准备修正内容，真正生成仍由单镜头生成入口执行授权；不能把“准备重生成”视为已调用 Provider。
+- 剩余审计：未知价格/usage 的账本语义、实际 endpoint 与项目重载后的可追溯性，以及真实 Provider/账单（暂缓）。
