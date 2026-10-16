@@ -2857,7 +2857,7 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(second["cost_status"], "price_missing")
             self.assertEqual(second["usage_status"], "reported")
             self.assertEqual(second["estimated_cost_rmb"], 0.0)
-            self.assertTrue(router.ledger.summary()["has_unknown_cost")
+            self.assertTrue(router.ledger.summary()["has_unknown_cost"])
 
 
 if __name__ == "__main__":
