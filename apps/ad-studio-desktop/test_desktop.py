@@ -2519,6 +2519,40 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertAlmostEqual(restored.actual_cost_rmb, 0.72)
             self.assertAlmostEqual(restored_by_id[uncharged.id].actual_cost_rmb, 0.0)
 
+
+    def test_a103_asset_generation_config_uses_app_config_root_not_custom_library_root(self):
+        from unittest.mock import patch
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            projects_root = root / "projects"
+            custom_library = root / "custom-library"
+            store = ProductionStore(projects_root, library_root=custom_library)
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            project.creative_plan = {"shots": [{
+                "index": shot.index,
+                "asset_resolution": {
+                    "actor_tags": [], "scene_tags": [], "product_tags": [],
+                    "generation_if_missing": False,
+                },
+            }]}
+            seen = {}
+
+            class CapturingGenerator:
+                def __init__(self, config_path, library_root):
+                    seen["config_path"] = Path(config_path)
+                    seen["library_root"] = Path(library_root)
+                def configured(self, kind):
+                    return False
+
+            with patch("ad_studio.production.AssetGenerator", CapturingGenerator):
+                store.resolve_assets(project, shot)
+
+            self.assertEqual(seen["config_path"], projects_root.parent / "asset-generation.json")
+            self.assertEqual(seen["library_root"], custom_library)
+            self.assertNotEqual(seen["config_path"], custom_library / "asset-generation.json")
+
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.
