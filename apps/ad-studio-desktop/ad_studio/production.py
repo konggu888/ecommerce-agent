@@ -554,7 +554,7 @@ class ProductionStore:
         self.save(project)
         return item
 
-    def render_shot(self, project: Project, shot: Shot, provider_path: Path | None = None, config_root: Path | None = None, decision=None):
+    def render_shot(self, project: Project, shot: Shot, provider_path: Path | None = None, config_root: Path | None = None, decision=None, authorize_cloud=None):
         """本地/云端视频生成统一入口。
 
         clip_source == 'filmed' 时走用户拍摄素材剪辑（本地 FFmpeg 裁剪），
@@ -575,7 +575,7 @@ class ProductionStore:
                 provider_name='本地视频服务',
                 require_key=False,
             )
-            return self._render_with_provider(project, shot, provider)
+            return self._render_with_provider(project, shot, provider, authorize_cloud=authorize_cloud)
         if decision.target == 'cloud':
             provider = load_video_provider(provider_path or (config_root or self.root.parent)/'video-provider.json')
             if isinstance(provider, type(load_video_provider(Path('__missing__')))):
@@ -587,7 +587,13 @@ class ProductionStore:
         provider=load_video_provider(provider_path)
         return self._render_with_provider(project, shot, provider)
 
-    def _render_with_provider(self, project: Project, shot: Shot, provider):
+    def _render_with_provider(self, project: Project, shot: Shot, provider, authorize_cloud=None):
+        # Resolve/reuse assets before changing shot state; cloud asset generation requires its own consent.
+        resolution = self.resolve_assets(project, shot, authorize_cloud=authorize_cloud)
+        # A rejected asset-consent prompt must stop the video request too, not silently continue without assets.
+        denied = [item for item in resolution.values() if "没有获得明确授权" in str(item.get("error", ""))]
+        if denied:
+            raise RuntimeError("用户拒绝或未授权云端素材生成；已阻止后续视频 Provider 调用。")
         out = self.render_path(project, shot)
         temp = out.with_suffix(".part.mp4")
         if temp.exists():
@@ -600,7 +606,6 @@ class ProductionStore:
         provider_call_started = False
         try:
             self.save(project)
-            resolution = self.resolve_assets(project, shot)
             # Re-check immediately before Provider dispatch; asset state may have changed since load.
             lock_issues = self.validate_series_asset_locks(project, shot.index)
             resolution_issues = [item for item in resolution.values()
