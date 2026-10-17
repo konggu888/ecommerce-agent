@@ -1,10 +1,13 @@
 ## 【实时接手状态｜2026-10-17｜以此段优先】
 
-- 仓库 `konggu888/ecommerce-agent`；分支 `feat/product-drama-visual-review`；PR #32 保持 Open/unmerged。
-- 本轮开始时 PR HEAD：`3f8c78c6199b79ed2413e53efc34efb8653c8388`。该 SHA 的 PR 触发 CI（run 39011860648）与 docs-sync（run 39011861064）均 success；连接器只返回 PR 触发的 workflow runs，Push 触发的两项未独立核实。
-- 本轮推进：`App.create()` 的第二道预算确认改用显式授权门，确认拒绝时不执行项目/商品资料/商品库持久化与 UI 刷新；新增 mock 调用计数测试和 create() 源码顺序测试。
-- 本轮提交后必须重新读取最新分支 HEAD，并核验该 SHA 的 CI PR、docs-sync PR；Push 两项如仍无法通过连接器独立获取，明确记录为未核实，不得宣称四项全绿。
-- 下一步：根据最终 SHA 的 CI/doc-sync 结果修复失败项；通过后检查测试证据与文档同步覆盖。A0–A112 不变，不新增 A113+；PR #32 不合并。真实 Provider/实际扣费与账单、Windows 真机、剪映现场和真实投放继续暂缓。
+- 仓库：`konggu888/ecommerce-agent`；分支：`feat/product-drama-visual-review`；PR #32 当前 Open、未合并。
+- 本窗口开始时的上一窗口基线为 `3f8c78c6199b79ed2413e53efc34efb8653c8388`：当时用户报告 CI Push #39011857814、CI PR #39011860648、docs-sync Push #39011857829、docs-sync PR #39011861064 四项全绿。此为上一窗口提供的历史状态，不是当前 HEAD 的检查证明。
+- 本窗口新增提交后，当前代码 HEAD 为 `2138a24af70ea41ec0eb40451f1f6c409de314df`。该 SHA 的 CI PR run #39012203130 与 docs-sync PR run #39012203128 已完成并 Success；CI 的 Python 语法、桌面核心测试、TypeScript、Engine、Risk Controller 均通过。当前连接器只返回这两个 PR 触发的工作流，未独立核实该 SHA 的 Push 两项。
+- 本窗口代码改动：`App.create()` 第二道预算确认现在通过授权门控制项目、商品资料、商品库保存和 UI 刷新；新增首次拒绝外部操作计数、预算拒绝持久化计数，以及创建流程顺序测试。代码/测试提交见 `2138a24af70ea41ec0eb40451f1f6c409de314df`。
+- 已更新 `HELP.md`、`PROJECT_LOGIC.md`、本文件和 `docs/AD_STUDIO_PROGRESS_DASHBOARD.md`。文档同步 PR run #39012203128 已通过。
+- **下一步唯一任务：**按上一窗口明确的顺序，先对照既有 A13、A29、A51–A65 合同核对授权、外发数据与费用记录边界；再盘点剩余 Provider 入口，检查是否存在未经明确授权的外部调用。将 `CapabilityRouter.decide_asset/decide_video` 本地/云端回退、用户拒绝后的零调用、费用确认先于 Provider 调用、未知价格语义和 endpoint 历史追溯纳入该审计，不另起新验收编号。
+- 完成合同/入口审计后，再根据证据决定是否补测试或修复；每次提交后重新核验新 HEAD 的 CI 与 docs-sync。Push 两项如无法独立查询，必须写明未核实，不能称四项全绿。
+- 验收边界：A0–A112 状态不变，不新增 A113+；PR #32 不合并；真实 Provider、实际扣费/账单、Windows 真机、剪映现场和真实投放继续暂缓。
 
 ---
 
