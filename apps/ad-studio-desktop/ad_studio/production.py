@@ -572,7 +572,7 @@ class ProductionStore:
         self.save(project)
         return item
 
-    def render_shot(self, project: Project, shot: Shot, provider_path: Path | None = None, config_root: Path | None = None, decision=None, authorize_cloud=None):
+    def render_shot(self, project: Project, shot: Shot, provider_path: Path | None = None, config_root: Path | None = None, decision=None, authorize_cloud=None, video_authorized: bool = False):
         """本地/云端视频生成统一入口。
 
         clip_source == 'filmed' 时走用户拍摄素材剪辑（本地 FFmpeg 裁剪），
@@ -584,6 +584,8 @@ class ProductionStore:
         if shot.clip_source == 'filmed':
             return self.render_footage_shot(project, shot)
         # UI may pass the exact route snapshot the user approved; do not silently re-resolve to a different endpoint after consent.\n        decision = decision or CapabilityRouter(config_root or self.root.parent).decide_video()
+        if decision.target == 'cloud' and not video_authorized:
+            raise RuntimeError('云端视频 Provider 调用需要先完成本次端点与费用授权；未发送请求。')
         if decision.target == 'local':
             from .providers import GenericVideoProvider
             provider = GenericVideoProvider(
@@ -601,7 +603,9 @@ class ProductionStore:
             return self._render_with_provider(project, shot, provider, authorize_cloud=authorize_cloud)
         raise RuntimeError(f'镜头生成不可用：{decision.reason}')
 
-    def render_cloud_shot(self, project: Project, shot: Shot, provider_path: Path, authorize_cloud=None):
+    def render_cloud_shot(self, project: Project, shot: Shot, provider_path: Path, authorize_cloud=None, video_authorized: bool = False):
+        if not video_authorized:
+            raise RuntimeError('云端视频 Provider 调用需要先完成本次端点与费用授权；未发送请求。')
         provider=load_video_provider(provider_path)
         return self._render_with_provider(project, shot, provider, authorize_cloud=authorize_cloud)
 
