@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Finite closure contract active. C1 cross-source decisions cover 38/113 unique formal IDs (33.6%); last closed batch C1-FOUNDATION-004 (A15-A19). C2 direct current-source/test audits cover A0-A4 (5/113=4.4%) with documented evidence gaps; no task is formally accepted by this audit batch. Overall task closure coverage remains 0/113. C3 blocker denominator has not been fixed; identified gaps must be triaged into a bounded remediation batch, and zero must not be interpreted as no defects. Duplicate historical batch entries were deduplicated by batch_id; formal task IDs/statuses unchanged.",
+  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 38/113. C2 direct source/test audit coverage 10/113; A5-A9 audited with partial gaps recorded; formal acceptance states unchanged.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -1028,12 +1028,12 @@
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
       "last_verified_date": "2026-10-15",
       "current_head_evidence_reconciliation": {
-        "head": "b11ab5306e4b4992b982fe2f2393fac43861d93e",
-        "checked_on": "2026-10-15",
+        "head": "a7888dcb1e61f87c7e503ccf0f0aa51b9b47410f",
+        "checked_on": "2026-10-17",
         "source_test_paths_rechecked": true,
-        "current_ci_and_docs_sync_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": false,
         "acceptance_status_preserved": "not_audited",
-        "note": "Source/test mappings refreshed against the current branch tree; this is partial evidence, not full task acceptance."
+        "note": "C2 direct source/test audit recorded in C2-FOUNDATION-002; latest-head CI/docs-sync must be checked after the documentation update. Partial findings are not formal acceptance."
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
@@ -1061,6 +1061,42 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "batch_id": "C2-FOUNDATION-002",
+        "audited_at": "2026-10-17",
+        "audit_head": "a7888dcb1e61f87c7e503ccf0f0aa51b9b47410f",
+        "status": "partial_audit_gaps_found",
+        "source_test_file_shas": {
+          "sources": [
+            [
+              "apps/ad-studio-desktop/ad_studio/footage.py",
+              "b94ae2ddfe779e5cf951bc541ab07a29012f7083"
+            ],
+            [
+              "apps/ad-studio-desktop/ad_studio/app.py",
+              "799976408ea15fbdea58729ffce81d1c82c5710f"
+            ],
+            [
+              "apps/ad-studio-desktop/ad_studio/model_router.py",
+              "6c69b0b7087f47ea9b2ae09ac7965fa3c1d7625e"
+            ]
+          ],
+          "tests": [
+            [
+              "apps/ad-studio-desktop/test_footage.py",
+              "8ff007acfd3f174ce6c181c53a2dc96e68fa0337"
+            ],
+            [
+              "apps/ad-studio-desktop/test_model_router.py",
+              "2a4d19aacb970637d11b19688ce72ce95a801d35"
+            ]
+          ]
+        },
+        "finding": "Visual manifest/keyframe extraction code exists; ranking/coverage/gap-classification tests exercise analysis normalization, not the complete keyframe extraction plus provider-analysis path. No dedicated deterministic test mapped for frame extraction success/failure, empty/corrupt frames or analyze_footage provider failure/fallback. Real visual truth/blur/occlusion/shake fidelity remains unproven.",
+        "next_action": "Add deterministic tests for extract_keyframes/build_visual_manifest success/failure, empty/corrupt frames, provider failure/fallback and source/frame traceability; reserve real visual accuracy for C5.",
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_pass_claim": false
       }
     },
     {
@@ -1139,12 +1175,12 @@
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
       "last_verified_date": "2026-10-15",
       "current_head_evidence_reconciliation": {
-        "head": "b11ab5306e4b4992b982fe2f2393fac43861d93e",
-        "checked_on": "2026-10-15",
+        "head": "a7888dcb1e61f87c7e503ccf0f0aa51b9b47410f",
+        "checked_on": "2026-10-17",
         "source_test_paths_rechecked": true,
-        "current_ci_and_docs_sync_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": false,
         "acceptance_status_preserved": "not_audited",
-        "note": "Source/test mappings refreshed against the current branch tree; this is partial evidence, not full task acceptance."
+        "note": "C2 direct source/test audit recorded in C2-FOUNDATION-002; latest-head CI/docs-sync must be checked after the documentation update. Partial findings are not formal acceptance."
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
@@ -1172,6 +1208,38 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "batch_id": "C2-FOUNDATION-002",
+        "audited_at": "2026-10-17",
+        "audit_head": "a7888dcb1e61f87c7e503ccf0f0aa51b9b47410f",
+        "status": "partial_audit_gaps_found",
+        "source_test_file_shas": {
+          "sources": [
+            [
+              "apps/ad-studio-desktop/ad_studio/product_parser.py",
+              "aaba94aeb4e4f3149cb75e8e33425784257181e3"
+            ],
+            [
+              "apps/ad-studio-desktop/ad_studio/app.py",
+              "799976408ea15fbdea58729ffce81d1c82c5710f"
+            ]
+          ],
+          "tests": [
+            [
+              "apps/ad-studio-desktop/test_product_parser.py",
+              "0c4f7c5ef6f35811f8707d8b14ddec242595e7ce"
+            ],
+            [
+              "apps/ad-studio-desktop/test_desktop.py",
+              "9bc36587e24f17047333443a69452aaf69f9212a"
+            ]
+          ]
+        },
+        "finding": "ProductInfo parsing and persistence/merge paths exist. Tests cover invalid URL safety, platform detection without network, browser-skill fallback, product info persistence, round-trip of user-confirmed facts, and avoiding invented missing facts. Complete selling-point/spec/forbidden-word ingestion and explicit missing-info UI are not all mapped to focused assertions; no live marketplace scrape is proven.",
+        "next_action": "Map each A6 checklist item to focused tests, especially missing-info feedback, forbidden terms and source/material association; live platform extraction remains separate.",
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_pass_claim": false
       }
     },
     {
@@ -1253,12 +1321,12 @@
       "provisional_roadmap_phase": "阶段3｜AI广告编导",
       "last_verified_date": "2026-10-15",
       "current_head_evidence_reconciliation": {
-        "head": "b11ab5306e4b4992b982fe2f2393fac43861d93e",
-        "checked_on": "2026-10-15",
+        "head": "a7888dcb1e61f87c7e503ccf0f0aa51b9b47410f",
+        "checked_on": "2026-10-17",
         "source_test_paths_rechecked": true,
-        "current_ci_and_docs_sync_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": false,
         "acceptance_status_preserved": "not_audited",
-        "note": "Source/test mappings refreshed against the current branch tree; this is partial evidence, not full task acceptance."
+        "note": "C2 direct source/test audit recorded in C2-FOUNDATION-002; latest-head CI/docs-sync must be checked after the documentation update. Partial findings are not formal acceptance."
       },
       "normalized_roadmap_phase": "阶段3｜AI广告编导",
       "phase_normalization_original": "阶段3｜AI广告编导",
@@ -1286,6 +1354,42 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "batch_id": "C2-FOUNDATION-002",
+        "audited_at": "2026-10-17",
+        "audit_head": "a7888dcb1e61f87c7e503ccf0f0aa51b9b47410f",
+        "status": "partial_audit_gaps_found",
+        "source_test_file_shas": {
+          "sources": [
+            [
+              "apps/ad-studio-desktop/ad_studio/model_router.py",
+              "6c69b0b7087f47ea9b2ae09ac7965fa3c1d7625e"
+            ],
+            [
+              "apps/ad-studio-desktop/ad_studio/app.py",
+              "799976408ea15fbdea58729ffce81d1c82c5710f"
+            ]
+          ],
+          "tests": [
+            [
+              "apps/ad-studio-desktop/test_desktop.py",
+              "9bc36587e24f17047333443a69452aaf69f9212a"
+            ],
+            [
+              "apps/ad-studio-desktop/test_model_router.py",
+              "2a4d19aacb970637d11b19688ce72ce95a801d35"
+            ],
+            [
+              "apps/ad-studio-desktop/test_footage.py",
+              "8ff007acfd3f174ce6c181c53a2dc96e68fa0337"
+            ]
+          ]
+        },
+        "finding": "ModelRouter.create_plan runs creative stages; tests cover staged pipeline, product-fact boundaries, unsupported claims and some visual-risk-to-variant mapping. Fake-model tests prove routing/contracts, not semantic quality across real products or all material-understanding, duplicate-shot and selling-point-priority cases.",
+        "next_action": "Map A7 clauses to direct assertions; add fake-model cases for duplicate detection, selling-point ranking and no unsupported factual inference; real semantic quality needs separate evaluation.",
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_pass_claim": false
       }
     },
     {
@@ -1360,12 +1464,12 @@
       "provisional_roadmap_phase": "阶段3｜AI广告编导",
       "last_verified_date": "2026-10-15",
       "current_head_evidence_reconciliation": {
-        "head": "b11ab5306e4b4992b982fe2f2393fac43861d93e",
-        "checked_on": "2026-10-15",
+        "head": "a7888dcb1e61f87c7e503ccf0f0aa51b9b47410f",
+        "checked_on": "2026-10-17",
         "source_test_paths_rechecked": true,
-        "current_ci_and_docs_sync_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": false,
         "acceptance_status_preserved": "not_audited",
-        "note": "Source/test mappings refreshed against the current branch tree; this is partial evidence, not full task acceptance."
+        "note": "C2 direct source/test audit recorded in C2-FOUNDATION-002; latest-head CI/docs-sync must be checked after the documentation update. Partial findings are not formal acceptance."
       },
       "normalized_roadmap_phase": "阶段2｜商业级剪辑决策层",
       "phase_normalization_original": "阶段2｜商业级剪辑决策层",
@@ -1396,6 +1500,34 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "batch_id": "C2-FOUNDATION-002",
+        "audited_at": "2026-10-17",
+        "audit_head": "a7888dcb1e61f87c7e503ccf0f0aa51b9b47410f",
+        "status": "partial_audit_gaps_found",
+        "source_test_file_shas": {
+          "sources": [
+            [
+              "apps/ad-studio-desktop/ad_studio/model_router.py",
+              "6c69b0b7087f47ea9b2ae09ac7965fa3c1d7625e"
+            ],
+            [
+              "apps/ad-studio-desktop/ad_studio/app.py",
+              "799976408ea15fbdea58729ffce81d1c82c5710f"
+            ]
+          ],
+          "tests": [
+            [
+              "apps/ad-studio-desktop/test_desktop.py",
+              "9bc36587e24f17047333443a69452aaf69f9212a"
+            ]
+          ]
+        },
+        "finding": "Task-specific planning and footage planner code exists. Tests cover distinct deterministic policies for three task types, supplied-asset restrictions, missing plan output, speech-filler cleanup and timestamp ranges. User constraints overriding model defaults and uncertainty triggering manual confirmation are not fully mapped end-to-end.",
+        "next_action": "Add/map explicit user-constraint override and uncertainty/manual-confirmation tests; distinguish strategy planning from actual render execution.",
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_pass_claim": false
       }
     },
     {
@@ -1481,12 +1613,12 @@
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
       "last_verified_date": "2026-10-15",
       "current_head_evidence_reconciliation": {
-        "head": "5138685b3489fd249be5469fe86821b6374edde0",
-        "checked_on": "2026-10-15",
+        "head": "a7888dcb1e61f87c7e503ccf0f0aa51b9b47410f",
+        "checked_on": "2026-10-17",
         "source_test_paths_rechecked": true,
-        "ci_docs_sync_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": false,
         "acceptance_status_preserved": "not_audited",
-        "note": "Partial source/test mapping only; distributed tests do not equal full task acceptance."
+        "note": "C2 direct source/test audit recorded in C2-FOUNDATION-002; latest-head CI/docs-sync must be checked after the documentation update. Partial findings are not formal acceptance."
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
@@ -1512,6 +1644,38 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "batch_id": "C2-FOUNDATION-002",
+        "audited_at": "2026-10-17",
+        "audit_head": "a7888dcb1e61f87c7e503ccf0f0aa51b9b47410f",
+        "status": "partial_audit_gaps_found",
+        "source_test_file_shas": {
+          "sources": [
+            [
+              "apps/ad-studio-desktop/ad_studio/transcription.py",
+              "9e93b4dab20dcf24cc9e79ebd83290d975ab38ae"
+            ],
+            [
+              "apps/ad-studio-desktop/ad_studio/model_router.py",
+              "6c69b0b7087f47ea9b2ae09ac7965fa3c1d7625e"
+            ]
+          ],
+          "tests": [
+            [
+              "apps/ad-studio-desktop/test_desktop.py",
+              "9bc36587e24f17047333443a69452aaf69f9212a"
+            ],
+            [
+              "apps/ad-studio-desktop/test_footage.py",
+              "8ff007acfd3f174ce6c181c53a2dc96e68fa0337"
+            ]
+          ]
+        },
+        "finding": "Audio extraction and OpenAI-compatible transcription entry points exist; footage planning tests cover speech-filler cleanup and timestamp ranges. No test_transcription.py exists at this path; provider request/response parsing, failure handling, timestamp fidelity and core selling-point retention are not directly verified. Structure tests do not prove ASR accuracy.",
+        "next_action": "Create direct tests for transcription request/response, invalid output, timeout/error mapping, timestamp ordering and key-selling-point retention; real ASR quality remains separate.",
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_pass_claim": false
       }
     },
     {
@@ -13160,6 +13324,69 @@
         "A65 does not directly assert temporary-file cleanup or recent(limit) independence.",
         "Provider billing, Windows filesystem, real assets and real production environment remain deferred."
       ]
+    },
+    {
+      "batch_id": "C2-FOUNDATION-002",
+      "range": "A5-A9",
+      "status": "partial_current_source_test_audit_gaps_recorded",
+      "audited_at": "2026-10-17",
+      "audit_head": "a7888dcb1e61f87c7e503ccf0f0aa51b9b47410f",
+      "reviewed_sources": [
+        "apps/ad-studio-desktop/ad_studio/footage.py",
+        "apps/ad-studio-desktop/ad_studio/app.py",
+        "apps/ad-studio-desktop/ad_studio/product_parser.py",
+        "apps/ad-studio-desktop/ad_studio/model_router.py",
+        "apps/ad-studio-desktop/ad_studio/transcription.py",
+        "apps/ad-studio-desktop/ad_studio/audio.py",
+        "apps/ad-studio-desktop/ad_studio/subtitles.py"
+      ],
+      "reviewed_tests": [
+        "apps/ad-studio-desktop/test_footage.py",
+        "apps/ad-studio-desktop/test_product_parser.py",
+        "apps/ad-studio-desktop/test_model_router.py",
+        "apps/ad-studio-desktop/test_desktop.py",
+        "apps/ad-studio-desktop/test_subtitles.py",
+        "apps/ad-studio-desktop/test_music_sync.py"
+      ],
+      "tasks": [
+        {
+          "id": "A5",
+          "status": "partial_audit_gaps_found",
+          "finding": "Visual manifest/keyframe extraction code exists; ranking/coverage/gap-classification tests exercise analysis normalization, not the complete keyframe extraction plus provider-analysis path. No dedicated deterministic test mapped for frame extraction success/failure, empty/corrupt frames or analyze_footage provider failure/fallback. Real visual truth/blur/occlusion/shake fidelity remains unproven.",
+          "next_action": "Add deterministic tests for extract_keyframes/build_visual_manifest success/failure, empty/corrupt frames, provider failure/fallback and source/frame traceability; reserve real visual accuracy for C5."
+        },
+        {
+          "id": "A6",
+          "status": "partial_audit_gaps_found",
+          "finding": "ProductInfo parsing and persistence/merge paths exist. Tests cover invalid URL safety, platform detection without network, browser-skill fallback, product info persistence, round-trip of user-confirmed facts, and avoiding invented missing facts. Complete selling-point/spec/forbidden-word ingestion and explicit missing-info UI are not all mapped to focused assertions; no live marketplace scrape is proven.",
+          "next_action": "Map each A6 checklist item to focused tests, especially missing-info feedback, forbidden terms and source/material association; live platform extraction remains separate."
+        },
+        {
+          "id": "A7",
+          "status": "partial_audit_gaps_found",
+          "finding": "ModelRouter.create_plan runs creative stages; tests cover staged pipeline, product-fact boundaries, unsupported claims and some visual-risk-to-variant mapping. Fake-model tests prove routing/contracts, not semantic quality across real products or all material-understanding, duplicate-shot and selling-point-priority cases.",
+          "next_action": "Map A7 clauses to direct assertions; add fake-model cases for duplicate detection, selling-point ranking and no unsupported factual inference; real semantic quality needs separate evaluation."
+        },
+        {
+          "id": "A8",
+          "status": "partial_audit_gaps_found",
+          "finding": "Task-specific planning and footage planner code exists. Tests cover distinct deterministic policies for three task types, supplied-asset restrictions, missing plan output, speech-filler cleanup and timestamp ranges. User constraints overriding model defaults and uncertainty triggering manual confirmation are not fully mapped end-to-end.",
+          "next_action": "Add/map explicit user-constraint override and uncertainty/manual-confirmation tests; distinguish strategy planning from actual render execution."
+        },
+        {
+          "id": "A9",
+          "status": "partial_audit_gaps_found",
+          "finding": "Audio extraction and OpenAI-compatible transcription entry points exist; footage planning tests cover speech-filler cleanup and timestamp ranges. No test_transcription.py exists at this path; provider request/response parsing, failure handling, timestamp fidelity and core selling-point retention are not directly verified. Structure tests do not prove ASR accuracy.",
+          "next_action": "Create direct tests for transcription request/response, invalid output, timeout/error mapping, timestamp ordering and key-selling-point retention; real ASR quality remains separate."
+        }
+      ],
+      "limitations": [
+        "Direct source/test inspection only; no local test execution via connector.",
+        "A5 visual-analysis fidelity and A9 ASR/timestamp accuracy are not proven by structural/fake-model tests.",
+        "A6 live marketplace extraction and full forbidden-term/missing-info UI mapping remain unproven.",
+        "Formal acceptance states unchanged; Windows and real media evaluation remain deferred."
+      ],
+      "next_step": "Continue C2 audit with A10-A14 or implement the identified deterministic tests under the existing A5-A9 IDs; do not invent new acceptance IDs."
     }
   ],
   "last_reconciled_against_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
@@ -13724,10 +13951,10 @@
         "id": "C2",
         "name": "当前代码与专项测试审计",
         "status": "in_progress",
-        "completed_slots": 5,
+        "completed_slots": 10,
         "total_slots": 113,
         "exit": "all 113 slots have current source/test evidence and explicit audit result",
-        "last_completed_batch": "C2-FOUNDATION-001"
+        "last_completed_batch": "C2-FOUNDATION-002"
       },
       {
         "id": "C3",
@@ -13762,10 +13989,10 @@
         "definition": "Unique formal task IDs with documented cross-source identity/status decisions; repeated IDs count once. This is not code/test audit or formal acceptance."
       },
       "c2_current_code_test_audit": {
-        "numerator": 5,
+        "numerator": 10,
         "denominator": 113,
-        "percent": 4.4,
-        "definition": "Slots for which current source and mapped tests were directly inspected and a written audit result recorded; audit completion does not imply acceptance passed."
+        "percent": 8.8,
+        "definition": "Slots with direct current source/test inspection and a written audit result; partial findings count as audit coverage, not acceptance pass."
       },
       "c3_blocking_defects": {
         "total": null,
