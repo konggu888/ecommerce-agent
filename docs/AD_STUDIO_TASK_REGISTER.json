@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Stage progress metrics v1 recorded against branch HEAD 08af9d8d5c46fc6b1c03df76046a3a2170e39b12; metrics are inventory/evidence coverage only, not overall product completion. Full audit, semantic dedup and weighting remain incomplete.",
+  "audit_status": "Stage progress v1 plus roadmap phase label normalization v1 recorded. Six normalized phase categories; 18 mappings remain provisional. Overall completion remains disabled.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -11981,7 +11981,7 @@
       "numerator": 113,
       "denominator": 113,
       "percent": 100,
-      "meaning": "所有编号槽位均有路线阶段映射；阶段名称尚有重复变体，阶段完成率暂不发布。"
+      "meaning": "所有 113 个编号槽位均已映射，并通过标准化字段归并为 6 个类别；其中 18 项仍标记为初步/待核验映射。映射覆盖率不代表阶段完成率。"
     },
     "any_evidence_pointer": {
       "numerator": 113,
@@ -12029,19 +12029,69 @@
     "weighting_completed": false,
     "overall_completion_percentage": null,
     "overall_completion_percentage_enabled": false,
-    "caveat": "这些是台账/证据阶段指标，不是产品总体完成率。总体完成率须在跨来源语义去重、状态冲突裁决、权重审定和证据边界复核完成后计算。"
+    "caveat": "These are inventory/evidence coverage metrics, not overall product completion. Phase labels are normalized into six categories, but 18 task mappings remain provisional; phase completion percentages are withheld until status reconciliation and evidence review.",
+    "normalized_phase_categories": {
+      "numerator": 6,
+      "denominator": 6,
+      "percent": 100,
+      "meaning": "阶段标签写法已归一化为 6 类；这是分类标签标准化进度，不是产品阶段完成率。"
+    },
+    "provisional_phase_mapping": {
+      "numerator": 18,
+      "denominator": 113,
+      "percent": 15.9,
+      "meaning": "18 项保留初步/待核验映射状态，不能仅因标签归一化而视为已确认。"
+    },
+    "phase_distribution": [
+      {
+        "phase": "阶段0｜路线与证据基线",
+        "task_slots": 7,
+        "provisional_slots": 0,
+        "completion_percentage": null
+      },
+      {
+        "phase": "阶段1｜可靠的生产底座",
+        "task_slots": 52,
+        "provisional_slots": 0,
+        "completion_percentage": null
+      },
+      {
+        "phase": "阶段2｜商业级剪辑决策层",
+        "task_slots": 14,
+        "provisional_slots": 9,
+        "completion_percentage": null
+      },
+      {
+        "phase": "阶段3｜AI广告编导",
+        "task_slots": 3,
+        "provisional_slots": 0,
+        "completion_percentage": null
+      },
+      {
+        "phase": "阶段4｜AI短剧能力",
+        "task_slots": 32,
+        "provisional_slots": 9,
+        "completion_percentage": null
+      },
+      {
+        "phase": "阶段5｜资产与制作效率深化",
+        "task_slots": 5,
+        "provisional_slots": 0,
+        "completion_percentage": null
+      }
+    ]
   },
   "phase_normalization": {
     "version": "phase-normalization-v1",
     "completed_on": "2026-10-17",
     "method": "Normalize whitespace variants and remove provisional wording only in normalized_roadmap_phase; preserve roadmap_phase and phase_normalization_original unchanged; retain phase_mapping_confidence=provisional for uncertain mappings.",
     "canonical_phase_counts": {
-      "阶段1｜可靠的生产底座": 52,
-      "阶段3｜AI广告编导": 3,
-      "阶段2｜商业级剪辑决策层": 14,
       "阶段0｜路线与证据基线": 7,
-      "阶段5｜资产与制作效率深化": 5,
-      "阶段4｜AI短剧能力": 32
+      "阶段1｜可靠的生产底座": 52,
+      "阶段2｜商业级剪辑决策层": 14,
+      "阶段3｜AI广告编导": 3,
+      "阶段4｜AI短剧能力": 32,
+      "阶段5｜资产与制作效率深化": 5
     },
     "confidence_counts": {
       "mapped": 95,
