@@ -546,7 +546,8 @@ def prepare_product_drama_shot_regeneration(
     *,
     previous_version: int,
     previous_video_path: str | None = None,
-    estimated_cost_rmb: float = 0.0,
+    estimated_cost_rmb: float | None = 0.0,
+    estimated_cost_status: str | None = None,
 ) -> dict[str, Any]:
     """Prepare one product-drama shot for regeneration without calling a provider."""
     if plan.get("drama_business_mode") != "product_short_drama_ad":
@@ -558,12 +559,19 @@ def prepare_product_drama_shot_regeneration(
     if not isinstance(shots, list) or shot_number < 1 or shot_number > len(shots):
         raise ShortDramaPlanError("指定镜头编号不存在。")
     try:
-        estimated_cost = float(estimated_cost_rmb)
+        estimated_cost = None if estimated_cost_rmb is None else float(estimated_cost_rmb)
         old_version = int(previous_version)
     except (TypeError, ValueError, OverflowError) as exc:
         raise ShortDramaPlanError("预计生成费用或旧版本号无效。") from exc
-    if not math.isfinite(estimated_cost) or estimated_cost < 0:
+    if estimated_cost is not None and (not math.isfinite(estimated_cost) or estimated_cost < 0):
         raise ShortDramaPlanError("预计生成费用必须是有限的非负数。")
+    cost_status = str(estimated_cost_status or ("unknown" if estimated_cost is None else "estimated"))
+    if cost_status not in {"unknown", "local_no_provider_charge", "configured_estimate", "price_missing"}:
+        raise ShortDramaPlanError("预计生成费用状态无效。")
+    if cost_status == "unknown" and estimated_cost is not None:
+        raise ShortDramaPlanError("未知费用不能用数字金额伪装。")
+    if cost_status != "unknown" and estimated_cost is None:
+        raise ShortDramaPlanError("已知费用状态必须包含有效金额。")
     if old_version < 1:
         raise ShortDramaPlanError("旧版本号必须是正整数。")
     updated = json.loads(json.dumps(plan, ensure_ascii=False))
@@ -573,7 +581,8 @@ def prepare_product_drama_shot_regeneration(
         "version": old_version,
         "video_path": str(previous_video_path or ""),
         "correction_note": note,
-        "estimated_cost_rmb": round(estimated_cost, 4),
+        "estimated_cost_rmb": round(estimated_cost, 4) if estimated_cost is not None else None,
+        "estimated_cost_status": cost_status,
         "visual_verification": shot.get("visual_verification", "not_checked"),
         "visual_verification_method": shot.get("visual_verification_method", ""),
         "visual_verification_evidence": shot.get("visual_verification_evidence", ""),
