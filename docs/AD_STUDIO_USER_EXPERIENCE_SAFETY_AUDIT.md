@@ -500,3 +500,10 @@
 - **修复**：两入口新增 `video_authorized` 参数，默认 `False`；云端路径在加载 Provider/分发前 fail-closed。UI 在确认当前端点/费用后，把同一 `ExecutionDecision` 快照与授权标记传入生产层。资产云端生成仍由独立授权回调控制。
 - **回归证据**：新增 `test_cloud_video_entrypoints_fail_closed_without_explicit_authorization`，断言 `render_shot` 与 `render_cloud_shot` 在无授权时不加载 Provider、不调用 `_render_with_provider`，且镜头状态/版本保持不变。该测试必须以最终 HEAD 的 CI 运行结果确认；不能仅因测试已提交就标为通过。
 - **边界**：本地视频路径不要求云端授权标记；真实 Provider、真实账单、Windows 真机仍暂缓。未新增正式验收编号，A0–A112 状态不变，PR #32 不合并。
+
+
+### UXS-2 验证补记｜2026-10-17
+
+- 基线 `ecce52c904044db4b2618a1faefa5692fa727a40` 的 PR CI run `39013274826` 与 docs-sync PR run `39013274821` 均 success；Push 触发项未独立核实。
+- 中间提交 `1b5c5aedb4233f65ab4d5b227cb6ef512621123f` 的一次 CI 失败来自正向测试夹具未声明新增的 `video_authorized=True`，不是产品代码运行失败。修正测试调用后重跑通过。
+- 后续更新交接/看板文档会产生新的 HEAD，仍须重新查询新 SHA 的 CI/docs-sync；不能把本基线结果视为未来文档提交的验证。
