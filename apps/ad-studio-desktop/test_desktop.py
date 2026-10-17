@@ -3009,7 +3009,7 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertLess(parse, planning)
         self.assertLess(planning, budget_gate)
         self.assertLess(budget_gate, persist)
-        self.assertLess(denial, persist)
+        self.assertLess(persist, denial)
 
 if __name__ == "__main__":
     unittest.main()
