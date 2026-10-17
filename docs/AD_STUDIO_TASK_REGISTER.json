@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 67/113; C2 direct current source/test audits 25/113; strict task closure 0/113. Both tracked cross-cutting P0 blocker families have bounded fixes and latest CI/docs-sync success. Formal acceptance states unchanged.",
+  "audit_status": "Finite closure contract active. C1 cross-source decisions 67/113; C2 direct current source/test audits 30/113; strict task closure 0/113. Both tracked cross-cutting P0 blocker families have bounded fixes and latest CI/docs-sync success. Formal acceptance states unchanged.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -3967,6 +3967,49 @@
         "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-006",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_media_qc_contract_with_enhancement_semantics_gap",
+        "severity": "P1 media delivery contract gap; real visual quality deferred",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/app.py",
+            "blob_sha": "a5fe9fe67b5e0c2e5183a72091de257a006d4bff",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic test assertions inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "ProductionStore.inspect_final_output and build_final perform technical checks for existence/non-empty output, video stream, duration, dimensions, aspect, minimum 1080-class dimensions and removal/no-manifest on failed QC. Tests cover missing/empty/no-video, zero duration/invalid dimensions, wrong aspect, below-threshold output and failed-output cleanup. The explicit distinction between upscaling dimensions and AI detail enhancement is not directly asserted; ffprobe metadata also cannot prove perceptual clarity.",
+        "confirmed_gaps": [
+          "ProductionStore.inspect_final_output and build_final perform technical checks for existence/non-empty output, video stream, duration, dimensions, aspect, minimum 1080-class dimensions and removal/no-manifest on failed QC. Tests cover missing/empty/no-video, zero duration/invalid dimensions, wrong aspect, below-threshold output and failed-output cleanup. The explicit distinction between upscaling dimensions and AI detail enhancement is not directly asserted; ffprobe metadata also cannot prove perceptual clarity."
+        ],
+        "next_action": "Add a deterministic manifest/UI assertion distinguishing output-size normalization from AI detail enhancement and map every required aspect's exact minimum dimensions; leave perceptual quality to real-media C5.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded. Windows/real media/platform data remain separate."
       }
     },
     {
@@ -4042,6 +4085,49 @@
         "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-006",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_output_history_field_mapping_gap",
+        "severity": "P1 delivery traceability gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/app.py",
+            "blob_sha": "a5fe9fe67b5e0c2e5183a72091de257a006d4bff",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic test assertions inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "Output history is isolated by variant and aspect, preserves revisions and records path/quality/version metadata; tests cover variant/aspect separation, independent revisions and manifest quality/version. The full A26 field list—duration, shot count, delivery status and creation timestamp—has not been mapped field-by-field to persistence and UI assertions in one focused contract test.",
+        "confirmed_gaps": [
+          "Output history is isolated by variant and aspect, preserves revisions and records path/quality/version metadata; tests cover variant/aspect separation, independent revisions and manifest quality/version. The full A26 field list—duration, shot count, delivery status and creation timestamp—has not been mapped field-by-field to persistence and UI assertions in one focused contract test."
+        ],
+        "next_action": "Add/map a table-driven history contract test for variant, aspect, output path, duration, shot count, status and created_at; ensure a new revision never destroys the prior valid output.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded. Windows/real media/platform data remain separate."
       }
     },
     {
@@ -4124,6 +4210,49 @@
         "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-006",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_delivery_center_ui_evidence_gap",
+        "severity": "P1 acceptance evidence gap; Windows UI deferred",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/app.py",
+            "blob_sha": "a5fe9fe67b5e0c2e5183a72091de257a006d4bff",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic test assertions inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "The delivery recheck reports blockers, maps them to repair routes and can recheck an existing output without regenerating; tests cover blocked-then-recovered recheck and repair-route mapping. This is helper/state evidence, not proof that the rendered Tk history list, buttons, current status and path are discoverable/readable/correctly refreshed in the actual desktop UI.",
+        "confirmed_gaps": [
+          "The delivery recheck reports blockers, maps them to repair routes and can recheck an existing output without regenerating; tests cover blocked-then-recovered recheck and repair-route mapping. This is helper/state evidence, not proof that the rendered Tk history list, buttons, current status and path are discoverable/readable/correctly refreshed in the actual desktop UI."
+        ],
+        "next_action": "Map each delivery blocker category to its expected repair route and status/path fields; add deterministic controller tests for missing history, stale path and recheck without generation. Windows UI discoverability remains C5.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded. Windows/real media/platform data remain separate."
       }
     },
     {
@@ -4208,6 +4337,49 @@
         "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-006",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_project_persistence_and_compatibility_gap",
+        "severity": "P1 persistence acceptance gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/engine.py",
+            "blob_sha": "17f94bc822c3fe1ec72c4dacaa58dee41cfa79b6",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic test assertions inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "ProductionStore round-trip tests preserve variant/version data, material state, review state and output history; separate projects do not share persisted state. Corrupt project JSON, legacy schema compatibility, moved/custom library roots, permission-denied and disk-full recovery are not fully mapped to focused assertions.",
+        "confirmed_gaps": [
+          "ProductionStore round-trip tests preserve variant/version data, material state, review state and output history; separate projects do not share persisted state. Corrupt project JSON, legacy schema compatibility, moved/custom library roots, permission-denied and disk-full recovery are not fully mapped to focused assertions."
+        ],
+        "next_action": "Map each required persisted field to save/reopen assertions and add deterministic corrupt/legacy-project and custom-root tests under A28; keep real filesystem fault injection/Windows locking separate.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded. Windows/real media/platform data remain separate."
       }
     },
     {
@@ -4291,6 +4463,54 @@
         "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-006",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_provenance_boundary_coverage",
+        "severity": "P1 data-integrity acceptance gap; real platform data deferred",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/app.py",
+            "blob_sha": "a5fe9fe67b5e0c2e5183a72091de257a006d4bff",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/model_router.py",
+            "blob_sha": "6c69b0b7087f47ea9b2ae09ac7965fa3c1d7625e",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic test assertions inspected; latest PR CI scoped to recorded HEAD."
+          },
+          {
+            "path": "apps/ad-studio-desktop/test_model_router.py",
+            "blob_sha": "2a4d19aacb970637d11b19688ce72ce95a801d35",
+            "claim": "Existing deterministic test assertions inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "Tests cover manually supplied platform metrics, calculated CTR/CVR/CPC/CPA/ROAS persistence, and an explicit real-data provenance/unverified-status boundary; creative test plans do not fabricate platform metrics. The full app's every data source/metric entry point has not been enumerated, so the suite does not prove all inferred, simulated, user-entered and platform-verified values stay separated.",
+        "confirmed_gaps": [
+          "Tests cover manually supplied platform metrics, calculated CTR/CVR/CPC/CPA/ROAS persistence, and an explicit real-data provenance/unverified-status boundary; creative test plans do not fabricate platform metrics. The full app's every data source/metric entry point has not been enumerated, so the suite does not prove all inferred, simulated, user-entered and platform-verified values stay separated."
+        ],
+        "next_action": "Enumerate the existing metric/provenance entry points and add focused negative assertions preventing AI-inferred or simulated metrics from being labeled platform-verified; real platform API validation and ad attribution remain deferred.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded. Windows/real media/platform data remain separate."
       }
     },
     {
@@ -14955,6 +15175,69 @@
         "Formal acceptance states remain unchanged."
       ],
       "next_step": "C2-FOUNDATION-006: audit A25-A29 against direct media QC, output history, local persistence and provenance tests; separately triage the confirmed A23/A20-A24 gaps into bounded C3 remediation batches linked to existing IDs."
+    },
+    {
+      "batch_id": "C2-FOUNDATION-006",
+      "range": "A25-A29",
+      "status": "partial_current_source_test_audit_gaps_recorded",
+      "audited_at": "2026-10-17",
+      "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+      "latest_ci": {
+        "pr_ci_run_id": 39018653867,
+        "pr_ci_conclusion": "success",
+        "pr_docs_sync_run_id": 39018653864,
+        "pr_docs_sync_conclusion": "success",
+        "push_runs": "not_independently_verified_by_available_workflow_query"
+      },
+      "reviewed_sources": [
+        "apps/ad-studio-desktop/ad_studio/production.py",
+        "apps/ad-studio-desktop/ad_studio/app.py",
+        "apps/ad-studio-desktop/ad_studio/engine.py",
+        "apps/ad-studio-desktop/ad_studio/model_router.py"
+      ],
+      "reviewed_tests": [
+        "apps/ad-studio-desktop/test_desktop.py",
+        "apps/ad-studio-desktop/test_model_router.py"
+      ],
+      "tasks": [
+        {
+          "id": "A25",
+          "status": "partial_media_qc_contract_with_enhancement_semantics_gap",
+          "finding": "ProductionStore.inspect_final_output and build_final perform technical checks for existence/non-empty output, video stream, duration, dimensions, aspect, minimum 1080-class dimensions and removal/no-manifest on failed QC. Tests cover missing/empty/no-video, zero duration/invalid dimensions, wrong aspect, below-threshold output and failed-output cleanup. The explicit distinction between upscaling dimensions and AI detail enhancement is not directly asserted; ffprobe metadata also cannot prove perceptual clarity.",
+          "next_action": "Add a deterministic manifest/UI assertion distinguishing output-size normalization from AI detail enhancement and map every required aspect's exact minimum dimensions; leave perceptual quality to real-media C5."
+        },
+        {
+          "id": "A26",
+          "status": "partial_output_history_field_mapping_gap",
+          "finding": "Output history is isolated by variant and aspect, preserves revisions and records path/quality/version metadata; tests cover variant/aspect separation, independent revisions and manifest quality/version. The full A26 field list—duration, shot count, delivery status and creation timestamp—has not been mapped field-by-field to persistence and UI assertions in one focused contract test.",
+          "next_action": "Add/map a table-driven history contract test for variant, aspect, output path, duration, shot count, status and created_at; ensure a new revision never destroys the prior valid output."
+        },
+        {
+          "id": "A27",
+          "status": "partial_delivery_center_ui_evidence_gap",
+          "finding": "The delivery recheck reports blockers, maps them to repair routes and can recheck an existing output without regenerating; tests cover blocked-then-recovered recheck and repair-route mapping. This is helper/state evidence, not proof that the rendered Tk history list, buttons, current status and path are discoverable/readable/correctly refreshed in the actual desktop UI.",
+          "next_action": "Map each delivery blocker category to its expected repair route and status/path fields; add deterministic controller tests for missing history, stale path and recheck without generation. Windows UI discoverability remains C5."
+        },
+        {
+          "id": "A28",
+          "status": "partial_project_persistence_and_compatibility_gap",
+          "finding": "ProductionStore round-trip tests preserve variant/version data, material state, review state and output history; separate projects do not share persisted state. Corrupt project JSON, legacy schema compatibility, moved/custom library roots, permission-denied and disk-full recovery are not fully mapped to focused assertions.",
+          "next_action": "Map each required persisted field to save/reopen assertions and add deterministic corrupt/legacy-project and custom-root tests under A28; keep real filesystem fault injection/Windows locking separate."
+        },
+        {
+          "id": "A29",
+          "status": "partial_provenance_boundary_coverage",
+          "finding": "Tests cover manually supplied platform metrics, calculated CTR/CVR/CPC/CPA/ROAS persistence, and an explicit real-data provenance/unverified-status boundary; creative test plans do not fabricate platform metrics. The full app's every data source/metric entry point has not been enumerated, so the suite does not prove all inferred, simulated, user-entered and platform-verified values stay separated.",
+          "next_action": "Enumerate the existing metric/provenance entry points and add focused negative assertions preventing AI-inferred or simulated metrics from being labeled platform-verified; real platform API validation and ad attribution remain deferred."
+        }
+      ],
+      "limitations": [
+        "Source/test inspection only; no local test execution through the connector.",
+        "CI proves technical metadata and deterministic state transitions, not perceptual quality or Windows desktop usability.",
+        "Real platform API data, ad attribution and commercial outcomes remain deferred.",
+        "Formal acceptance states unchanged."
+      ],
+      "next_step": "C2-FOUNDATION-007: audit A30-A34 across recovery, asset/library integrity, handoff automation and visual comparison. After C2-FOUNDATION-007, start C3 remediation for confirmed deterministic test gaps under existing A20-A24/A25-A29 IDs."
     }
   ],
   "last_reconciled_against_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
@@ -15643,10 +15926,10 @@
         "id": "C2",
         "name": "当前代码与专项测试审计",
         "status": "in_progress",
-        "completed_slots": 25,
+        "completed_slots": 30,
         "total_slots": 113,
         "exit": "all 113 slots have current source/test evidence and explicit audit result",
-        "last_completed_batch": "C2-FOUNDATION-005"
+        "last_completed_batch": "C2-FOUNDATION-006"
       },
       {
         "id": "C3",
@@ -15682,9 +15965,9 @@
         "definition": "Unique formal task IDs with documented cross-source identity/status decisions; repeated IDs count once. This is not code/test audit or formal acceptance."
       },
       "c2_current_code_test_audit": {
-        "numerator": 25,
+        "numerator": 30,
         "denominator": 113,
-        "percent": 22.1,
+        "percent": 26.5,
         "definition": "Slots with direct current source/test inspection and a written audit result; partial findings count as audit coverage, not acceptance pass."
       },
       "c3_blocking_defects": {
