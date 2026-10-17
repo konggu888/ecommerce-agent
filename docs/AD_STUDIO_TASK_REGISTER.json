@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 73/113; C2 direct current source/test audits 70/113; strict task closure 0/113. Both tracked cross-cutting P0 blocker families have bounded fixes and latest CI/docs-sync success. A63/A67/A34/A58 deterministic gaps are queued for bounded C3 remediation. Formal acceptance states unchanged.",
+  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 73/113; C2 direct current source/test audits 75/113; strict task closure 0/113. Both tracked cross-cutting P0 blocker families have bounded fixes and latest CI/docs-sync success. Formal acceptance states unchanged.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -11087,7 +11087,45 @@
       ],
       "normalized_roadmap_phase": "阶段4｜AI短剧能力",
       "phase_normalization_original": "阶段4｜AI 短剧能力",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-015",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "partial_evidence_mapping_not_fully_accepted",
+        "acceptance_status_changed": false,
+        "result": "partial_story_engine_field_matrix_gap",
+        "severity": "P1 generation contract gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+            "blob_sha": "ea9254063b1370e31106b56405d2c2733ebc7546",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_short_drama.py",
+            "blob_sha": "c5800b533ea0bbc33aaf0b363cf7bd7ef5665027",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "audit_short_drama warns for missing story_engine, weak conflict escalation, missing hook/payoff and retention elements, and legacy plans remain readable. Tests cover absent story engine and insufficient escalation, but do not independently remove every required story_engine field or prove caller-level non-persistence for each invalid field.",
+        "confirmed_gaps": [
+          "audit_short_drama warns for missing story_engine, weak conflict escalation, missing hook/payoff and retention elements, and legacy plans remain readable. Tests cover absent story engine and insufficient escalation, but do not independently remove every required story_engine field or prove caller-level non-persistence for each invalid field."
+        ],
+        "next_action": "Add table-driven negative tests for each existing required story_engine/hook field and one caller-level test that invalid generated plans are rejected before save; keep narrative quality as human review.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
+      }
     },
     {
       "task_id": "A71",
@@ -11190,7 +11228,45 @@
       ],
       "normalized_roadmap_phase": "阶段4｜AI短剧能力",
       "phase_normalization_original": "阶段4｜AI 短剧能力",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-015",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "partial_evidence_mapping_not_fully_accepted",
+        "acceptance_status_changed": false,
+        "result": "partial_story_direction_count_and_semantic_difference_gap",
+        "severity": "P1 generation contract gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+            "blob_sha": "ea9254063b1370e31106b56405d2c2733ebc7546",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_short_drama.py",
+            "blob_sha": "c5800b533ea0bbc33aaf0b363cf7bd7ef5665027",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "New plans require at least two directions, complete direction fields and reject exact duplicate signatures across conflict source/protagonist choice/reversal mechanism. Tests cover missing fields and exact duplicate signatures; direct coverage for fewer-than-two directions and old-plan audit warning is not established, and exact field signatures cannot prove natural-language semantic difference.",
+        "confirmed_gaps": [
+          "New plans require at least two directions, complete direction fields and reject exact duplicate signatures across conflict source/protagonist choice/reversal mechanism. Tests cover missing fields and exact duplicate signatures; direct coverage for fewer-than-two directions and old-plan audit warning is not established, and exact field signatures cannot prove natural-language semantic difference."
+        ],
+        "next_action": "Add a minimum-count test for zero/one direction and a legacy audit-warning test; retain explicit human review for semantic similarity.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
+      }
     },
     {
       "task_id": "A72",
@@ -11293,7 +11369,45 @@
       ],
       "normalized_roadmap_phase": "阶段4｜AI短剧能力",
       "phase_normalization_original": "阶段4｜AI 短剧能力",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-015",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "partial_evidence_mapping_not_fully_accepted",
+        "acceptance_status_changed": false,
+        "result": "partial_character_required_field_matrix_gap",
+        "severity": "P1 generation contract gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+            "blob_sha": "ea9254063b1370e31106b56405d2c2733ebc7546",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_short_drama.py",
+            "blob_sha": "c5800b533ea0bbc33aaf0b363cf7bd7ef5665027",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "New generated characters require name, role, goal, motivation, fear/secret, relationship, relationship dynamics, decision pressure and arc; legacy audits warn for missing motivation fields. Direct negative tests remove motivation, but do not independently cover relationship dynamics, decision pressure, fear/secret and each other required field; field presence does not prove believable psychology.",
+        "confirmed_gaps": [
+          "New generated characters require name, role, goal, motivation, fear/secret, relationship, relationship dynamics, decision pressure and arc; legacy audits warn for missing motivation fields. Direct negative tests remove motivation, but do not independently cover relationship dynamics, decision pressure, fear/secret and each other required field; field presence does not prove believable psychology."
+        ],
+        "next_action": "Use a table-driven test removing each declared required character field one at a time and verify generation validation rejects it while legacy audit remains warning-only.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
+      }
     },
     {
       "task_id": "A73",
@@ -11396,7 +11510,45 @@
       ],
       "normalized_roadmap_phase": "阶段4｜AI短剧能力",
       "phase_normalization_original": "阶段4｜AI 短剧能力",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-015",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "partial_evidence_mapping_not_fully_accepted",
+        "acceptance_status_changed": false,
+        "result": "partial_causal_chain_order_and_field_matrix_gap",
+        "severity": "P1 generation contract gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+            "blob_sha": "ea9254063b1370e31106b56405d2c2733ebc7546",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_short_drama.py",
+            "blob_sha": "c5800b533ea0bbc33aaf0b363cf7bd7ef5665027",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "The generation validator requires a causal_chain with at least three steps and checks required event/consequence/reference structure; tests cover missing chain, missing consequence and legacy warning. No direct test proves out-of-order/non-contiguous steps and every required field (cause, character choice, observable state change) is individually rejected.",
+        "confirmed_gaps": [
+          "The generation validator requires a causal_chain with at least three steps and checks required event/consequence/reference structure; tests cover missing chain, missing consequence and legacy warning. No direct test proves out-of-order/non-contiguous steps and every required field (cause, character choice, observable state change) is individually rejected."
+        ],
+        "next_action": "Add table-driven missing-field tests and an out-of-order/non-contiguous step sequence; separately keep human semantic causality review distinct from deterministic structure.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
+      }
     },
     {
       "task_id": "A74",
@@ -11499,7 +11651,45 @@
       ],
       "normalized_roadmap_phase": "阶段4｜AI短剧能力",
       "phase_normalization_original": "阶段4｜AI 短剧能力",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-015",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "partial_evidence_mapping_not_fully_accepted",
+        "acceptance_status_changed": false,
+        "result": "partial_causal_evidence_index_validity_semantic_mapping_gap",
+        "severity": "P1 narrative traceability gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+            "blob_sha": "ea9254063b1370e31106b56405d2c2733ebc7546",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_short_drama.py",
+            "blob_sha": "c5800b533ea0bbc33aaf0b363cf7bd7ef5665027",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "Validation requires each script_evidence to be an exact substring of full_script and storyboard_indices to refer to existing root-level shots; tests cover text mismatch, invalid index and an audit warning when a causal event is not shown in its referenced shot. Fixtures reuse a single shot for multiple causal steps, so they do not establish distinct event-to-shot mapping or semantic correspondence across a multi-step chain.",
+        "confirmed_gaps": [
+          "Validation requires each script_evidence to be an exact substring of full_script and storyboard_indices to refer to existing root-level shots; tests cover text mismatch, invalid index and an audit warning when a causal event is not shown in its referenced shot. Fixtures reuse a single shot for multiple causal steps, so they do not establish distinct event-to-shot mapping or semantic correspondence across a multi-step chain."
+        ],
+        "next_action": "Add a multi-event fixture with distinct referenced shots and negative tests for repeated/mismatched shot mapping; assert both generation rejection and legacy audit warnings without modifying existing plan state.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
+      }
     },
     {
       "task_id": "A75",
@@ -17577,6 +17767,64 @@
         "Formal acceptance states unchanged."
       ],
       "next_step": "C2-FOUNDATION-015: audit A70-A74. C2 has now reached A0-A69; begin C3 remediation in bounded batches on the confirmed A63 save/reload gap, A67 evidence invalidation, and A34/A58 visual-comparison zero-call/persistence gaps."
+    },
+    {
+      "batch_id": "C2-FOUNDATION-015",
+      "range": "A70-A74",
+      "status": "partial_current_source_test_audit_gaps_recorded",
+      "audited_at": "2026-10-17",
+      "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+      "latest_ci": {
+        "pr_ci_run_id": 39018653867,
+        "pr_ci_conclusion": "success",
+        "pr_docs_sync_run_id": 39018653864,
+        "pr_docs_sync_conclusion": "success",
+        "push_runs": "not_independently_verified_by_available_workflow_query"
+      },
+      "reviewed_sources": [
+        "apps/ad-studio-desktop/ad_studio/short_drama.py"
+      ],
+      "reviewed_tests": [
+        "apps/ad-studio-desktop/test_short_drama.py"
+      ],
+      "tasks": [
+        {
+          "id": "A70",
+          "status": "partial_story_engine_field_matrix_gap",
+          "finding": "audit_short_drama warns for missing story_engine, weak conflict escalation, missing hook/payoff and retention elements, and legacy plans remain readable. Tests cover absent story engine and insufficient escalation, but do not independently remove every required story_engine field or prove caller-level non-persistence for each invalid field.",
+          "next_action": "Add table-driven negative tests for each existing required story_engine/hook field and one caller-level test that invalid generated plans are rejected before save; keep narrative quality as human review."
+        },
+        {
+          "id": "A71",
+          "status": "partial_story_direction_count_and_semantic_difference_gap",
+          "finding": "New plans require at least two directions, complete direction fields and reject exact duplicate signatures across conflict source/protagonist choice/reversal mechanism. Tests cover missing fields and exact duplicate signatures; direct coverage for fewer-than-two directions and old-plan audit warning is not established, and exact field signatures cannot prove natural-language semantic difference.",
+          "next_action": "Add a minimum-count test for zero/one direction and a legacy audit-warning test; retain explicit human review for semantic similarity."
+        },
+        {
+          "id": "A72",
+          "status": "partial_character_required_field_matrix_gap",
+          "finding": "New generated characters require name, role, goal, motivation, fear/secret, relationship, relationship dynamics, decision pressure and arc; legacy audits warn for missing motivation fields. Direct negative tests remove motivation, but do not independently cover relationship dynamics, decision pressure, fear/secret and each other required field; field presence does not prove believable psychology.",
+          "next_action": "Use a table-driven test removing each declared required character field one at a time and verify generation validation rejects it while legacy audit remains warning-only."
+        },
+        {
+          "id": "A73",
+          "status": "partial_causal_chain_order_and_field_matrix_gap",
+          "finding": "The generation validator requires a causal_chain with at least three steps and checks required event/consequence/reference structure; tests cover missing chain, missing consequence and legacy warning. No direct test proves out-of-order/non-contiguous steps and every required field (cause, character choice, observable state change) is individually rejected.",
+          "next_action": "Add table-driven missing-field tests and an out-of-order/non-contiguous step sequence; separately keep human semantic causality review distinct from deterministic structure."
+        },
+        {
+          "id": "A74",
+          "status": "partial_causal_evidence_index_validity_semantic_mapping_gap",
+          "finding": "Validation requires each script_evidence to be an exact substring of full_script and storyboard_indices to refer to existing root-level shots; tests cover text mismatch, invalid index and an audit warning when a causal event is not shown in its referenced shot. Fixtures reuse a single shot for multiple causal steps, so they do not establish distinct event-to-shot mapping or semantic correspondence across a multi-step chain.",
+          "next_action": "Add a multi-event fixture with distinct referenced shots and negative tests for repeated/mismatched shot mapping; assert both generation rejection and legacy audit warnings without modifying existing plan state."
+        }
+      ],
+      "limitations": [
+        "Deterministic schema checks do not prove story quality, causal coherence or retention effectiveness.",
+        "Current connector allowed direct source/test inspection but not local test execution.",
+        "Formal acceptance states unchanged."
+      ],
+      "next_step": "C2-FOUNDATION-016: audit A75-A79. C2 has reached A0-A74; after A75-A79, start C3 remediation with A63 save/reload and A67 evidence invalidation, then A34/A58 visual-comparison call-count/persistence gaps. Do not add new acceptance IDs."
     }
   ],
   "last_reconciled_against_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
@@ -18301,10 +18549,10 @@
         "id": "C2",
         "name": "当前代码与专项测试审计",
         "status": "in_progress",
-        "completed_slots": 70,
+        "completed_slots": 75,
         "total_slots": 113,
         "exit": "all 113 slots have current source/test evidence and explicit audit result",
-        "last_completed_batch": "C2-FOUNDATION-014"
+        "last_completed_batch": "C2-FOUNDATION-015"
       },
       {
         "id": "C3",
@@ -18340,9 +18588,9 @@
         "definition": "Unique formal task IDs with documented cross-source identity/status decisions; repeated IDs count once. This is not code/test audit or formal acceptance."
       },
       "c2_current_code_test_audit": {
-        "numerator": 70,
+        "numerator": 75,
         "denominator": 113,
-        "percent": 61.9,
+        "percent": 66.4,
         "definition": "Slots with direct current source/test inspection and a written audit result; partial findings count as audit coverage, not acceptance pass."
       },
       "c3_blocking_defects": {
