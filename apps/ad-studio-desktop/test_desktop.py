@@ -2904,6 +2904,52 @@ class DesktopCoreTests(unittest.TestCase):
                 project, shot, provider, authorize_cloud=callback
             )
 
+
+    def test_footage_reanalysis_consent_discloses_routes_and_data_without_secrets(self):
+        from types import SimpleNamespace
+        from ad_studio.app import build_footage_reanalysis_consent_detail
+
+        director = SimpleNamespace(
+            name="视觉导演", provider="openai_compatible",
+            base_url="https://vision.example/v1?api_key=hidden-vision",
+            input_price_rmb_per_1k=0.0, output_price_rmb_per_1k=0.0,
+        )
+        speech = SimpleNamespace(
+            name="本地转写", provider="local_openai",
+            base_url="http://127.0.0.1:1234/v1", enabled=True,
+            transcription_enabled=True,
+        )
+        class FakeRouter:
+            def resolve_route(self, function):
+                self.asserted_function = function
+                return director
+            def route(self, function):
+                return speech
+
+        detail = build_footage_reanalysis_consent_detail(FakeRouter(), Path("/private/customer-footage"))
+        self.assertIn("https://vision.example/v1", detail)
+        self.assertIn("关键帧图片", detail)
+        self.assertIn("音频文件", detail)
+        self.assertIn("本机/回环端点", detail)
+        self.assertIn("实际费用可能未知", detail)
+        self.assertIn("取消后不会扫描", detail)
+        self.assertNotIn("hidden-vision", detail)
+        self.assertNotIn("api_key=", detail)
+        self.assertNotIn("/private/customer-footage", detail)
+
+    def test_footage_reanalysis_consent_precedes_scan_manifest_and_external_analysis(self):
+        source = (Path(__file__).resolve().parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        start = source.index("    def reanalyze_footage(self):")
+        end = source.index("    @ui_action", start + 10)
+        body = source[start:end]
+        consent = body.index("askyesno('重新分析实拍素材与数据去向授权'")
+        scan = body.index("clips=scan_footage(folder)")
+        manifest = body.index("build_visual_manifest(")
+        analysis = body.index("self.model_router.analyze_footage(")
+        self.assertLess(consent, scan)
+        self.assertLess(consent, manifest)
+        self.assertLess(consent, analysis)
+
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.
