@@ -5,6 +5,24 @@ from pathlib import Path
 from typing import Any
 import json
 import uuid
+from urllib.parse import urlsplit, urlunsplit
+
+
+def sanitize_endpoint(value: Any) -> str:
+    """Persist endpoint provenance without URL credentials, query parameters, or fragments."""
+    raw = str(value or "").strip()
+    if not raw:
+        return ""
+    try:
+        parts = urlsplit(raw)
+        if not parts.scheme or not parts.hostname:
+            return "自定义 endpoint（无法安全解析）"
+        host = parts.hostname
+        if parts.port:
+            host = f"{host}:{parts.port}"
+        return urlunsplit((parts.scheme, host, parts.path.rstrip("/"), "", ""))
+    except Exception:
+        return "自定义 endpoint（无法安全解析）"
 
 
 class UsageLedger:
@@ -48,6 +66,9 @@ class UsageLedger:
         asset_kind: str = "",
         quantity: float = 1.0,
         unit_cost_rmb: float = 0.0,
+        cost_status: str = "unknown",
+        usage_status: str = "unknown",
+        endpoint: str = "",
     ) -> dict[str, Any]:
         item = {
             "id": uuid.uuid4().hex[:12],
@@ -70,6 +91,9 @@ class UsageLedger:
             "estimated_cost_rmb": round(float(estimated_cost_rmb or 0), 6),
             "duration_ms": int(duration_ms or 0),
             "error": error,
+            "cost_status": str(cost_status or "unknown"),
+            "usage_status": str(usage_status or "unknown"),
+            "endpoint": sanitize_endpoint(endpoint),
         }
         rows = self._load()
         rows.append(item)
@@ -104,6 +128,9 @@ class UsageLedger:
                 "estimated_cost_rmb": round(float(values.get("estimated_cost_rmb", 0) or 0), 6),
                 "duration_ms": int(values.get("duration_ms", 0) or 0),
                 "error": str(values.get("error", "") or ""),
+                "cost_status": str(values.get("cost_status", "unknown") or "unknown"),
+                "usage_status": str(values.get("usage_status", "unknown") or "unknown"),
+                "endpoint": sanitize_endpoint(values.get("endpoint", "")),
             }
             items.append(item)
         rows.extend(items)
@@ -128,9 +155,10 @@ class UsageLedger:
         shot_id: str = "",
         asset_kind: str,
         provider: str,
-        cost_rmb: float,
+        cost_rmb: float | None,
         status: str = "success",
         error: str = "",
+        cost_status: str | None = None,
     ) -> dict[str, Any]:
         return self.record(
             function=f"{asset_kind}素材生成",
@@ -145,7 +173,7 @@ class UsageLedger:
             shot_id=shot_id,
             asset_kind=asset_kind,
             quantity=1,
-            unit_cost_rmb=cost_rmb,
+            unit_cost_rmb=cost_rmb if cost_rmb is not None else 0.0,
             error=error,
         )
 
@@ -155,9 +183,10 @@ class UsageLedger:
         project_id: str,
         shot_id: str,
         provider: str,
-        cost_rmb: float,
+        cost_rmb: float | None,
         status: str = "success",
         error: str = "",
+        cost_status: str | None = None,
     ) -> dict[str, Any]:
         return self.record(
             function="视频镜头生成",
@@ -166,12 +195,13 @@ class UsageLedger:
             provider=provider,
             model="",
             status=status,
-            estimated_cost_rmb=cost_rmb,
+            estimated_cost_rmb=cost_rmb if cost_rmb is not None else 0.0,
+            cost_status=cost_status or ("unknown" if cost_rmb is None else "configured_estimate"),
             category="video",
             project_id=project_id,
             shot_id=shot_id,
             quantity=1,
-            unit_cost_rmb=cost_rmb,
+            unit_cost_rmb=cost_rmb if cost_rmb is not None else 0.0,
             error=error,
         )
 
@@ -181,6 +211,11 @@ class UsageLedger:
     def project_summary(self, project_id: str) -> dict[str, Any]:
         rows = [x for x in self._load() if x.get("project_id") == project_id]
         success = [x for x in rows if x.get("status") == "success"]
+        unknown_cost_rows = [
+            x for x in rows
+            if x.get("cost_status", "legacy_known" if "estimated_cost_rmb" in x else "unknown")
+            in {"unknown", "usage_missing", "price_missing", "price_and_usage_missing", "unavailable"}
+        ]
         return {
             "project_id": project_id,
             "entries": len(rows),
@@ -188,6 +223,8 @@ class UsageLedger:
             "failed": len(rows) - len(success),
             "tokens": sum(int(x.get("total_tokens", 0) or 0) for x in rows),
             "actual_cost_rmb": round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in success), 6),
+            "unknown_cost_entries": len(unknown_cost_rows),
+            "has_unknown_cost": bool(unknown_cost_rows),
             "by_category": {category: round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in success if x.get("category") == category), 6) for category in sorted({x.get("category", "model") for x in success})},
         }
 
@@ -206,10 +243,22 @@ class UsageLedger:
     def summary(self) -> dict[str, Any]:
         rows = self._load()
         success = [x for x in rows if x.get("status") == "success"]
+        unknown_cost_rows = [
+            x for x in rows
+            if x.get("cost_status", "legacy_known" if "estimated_cost_rmb" in x else "unknown")
+            in {"unknown", "usage_missing", "price_missing", "price_and_usage_missing", "unavailable"}
+        ]
+        known_cost_rows = [
+            x for x in rows
+            if x.get("cost_status", "legacy_known" if "estimated_cost_rmb" in x else "unknown")
+            not in {"unknown", "usage_missing", "price_missing", "price_and_usage_missing", "unavailable"}
+        ]
         return {
             "calls": len(rows),
             "success": len(success),
             "failed": len(rows) - len(success),
             "tokens": sum(int(x.get("total_tokens", 0) or 0) for x in rows),
-            "estimated_cost_rmb": round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in rows), 6),
+            "estimated_cost_rmb": round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in known_cost_rows), 6),
+            "unknown_cost_entries": len(unknown_cost_rows),
+            "has_unknown_cost": bool(unknown_cost_rows),
         }

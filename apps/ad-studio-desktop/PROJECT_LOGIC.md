@@ -1,3 +1,37 @@
+## 2026-10-17｜创建项目两阶段费用预审合同
+
+- 第一阶段 `build_creation_preflight_detail()` 在 `parse_product_url()` 和 `ModelRouter.create_plan(s)()` 前执行。它通过 `estimate_creation_planning_cost()` 估算计划调用数（每个方案 9 个创意阶段），仅对同功能/同模型、成功且 usage 完整的历史记录求参考均值；无样本、单价或 usage 不完整的功能保持 unknown。
+- 首次授权展示模型端点、数据去向和规划阶段参考估算；在用户拍摄素材模式下，还明确披露关键帧视觉分析、已启用口播转写与实拍剪辑规划可能产生费用。首次授权前不得读取商品页面或调用模型/Provider。
+- AI 规划完成后，第二阶段才可计算最终镜头数和演员/场景/商品素材库缺口；最终成本/预算确认必须先于项目保存、商品资料库写入以及视频/资产生成。
+- 取消边界：首次取消不发生外部调用；第二次取消不发生项目持久化或视频/资产生成，但无法撤销第一次授权后已经发生的规划/分析调用。因此首次弹窗必须明确说明该风险；历史均值不是报价或费用上限。
+
+---
+
+## 【C3-COST-PREFLIGHT-ORDER-001｜规划成本前置授权｜2026-10-17】
+
+- `estimate_creation_planning_cost(model_router, variant_count)` 只估算每个创意方案的 9 个规划阶段调用，不猜测最终镜头数或生产费用。
+- 估算优先使用同一功能/同一模型最近最多 20 条成功、usage 完整且成本按配置单价计算的历史记录；远程模型价格或可比 usage 不足时返回未知并显示已知小计，不把未知视为免费。
+- `build_creation_preflight_detail()` 在商品链接解析、创意规划模型调用之前展示规划调用数、历史参考估算/未知项、模型目的地和数据边界；用户拒绝则不执行被授权操作。
+- 规划完成后仍保留第二阶段的最终视频/演员/场景/商品素材费用确认。第二阶段拒绝阻止新项目保存和后续生产生成，但无法撤销第一阶段已授权并发生的规划模型费用。
+- 此估算是历史参考，不是供应商报价或费用上限；如果模型价格/usage 不可用，必须显式提示未知，不能编造精确总价。
+
+**状态：** 实现与回归测试已写入分支，等待最新 HEAD CI/docs-sync。只有两项检查通过且预授权顺序/拒绝无调用测试通过后，才可关闭 `C3-COST-PREFLIGHT-ORDER-001`。
+
+---
+
+## 【C3-UNKNOWN-PRICE-001｜未知视频单价 fail-closed 规则｜2026-10-17】
+
+1. `configured_video_price(provider)` 只接受显式 `cost_price_configured=True` 且单价有限、非负的 Provider；缺少标志、缺少单价或校验失败一律返回 `None`。Provider 数据类的占位单价默认不代表已配置报价。
+2. `estimate_cost(..., {'cloud_video_per_shot': None})` 返回 `费用未知=True`、`总计=None`、`超预算=None`；视频明细的单价/小计为 `None`，`已知小计` 不含未知视频费用。UI 必须显示“无法可靠估算（视频单价未知）”，不得对 `None` 做金额格式化。
+3. `route_footage_gap_tasks()` 收到未知价格时将 AI 缺口标为 `price_missing`、`needs_cost_confirmation=True`、`generation_allowed=False`、`estimated_cost_rmb=None`。已明确配置的 `0.0` 是已知零价，不等于未知。
+4. `execute_ai_gap_generation()` 的默认单价是未知；未知价格且没有 `cost_price_confirmed=True` 时，不得调用生成器。明确确认后可以继续，但实际预估仍保持未知，不能将未知费用累计为已确认的零成本。
+5. 项目创建、短剧制作项目创建、一键批量生成、实拍缺口补镜头和单镜头授权入口必须显示未知费用警告并请求用户确认。预算超出时请求用户确认是否继续，不得自动阻断或静默改策略。
+6. 新增回归覆盖：未知价路由不自动批准、执行层未知价无确认不调用生成器、用户确认后可继续但费用仍标未知、显式零价仍作为已知价、成本估算不伪造总价，以及 Provider 默认占位价不视为配置价。
+
+**当前状态：** 代码与回归测试已写入分支，等待最新 HEAD 的完整 CI 和 docs-sync 确认后，才可关闭 C3-UNKNOWN-PRICE-001。这个修复不代表真实供应商账单已核对。另一个既有 P0——`App.create()` 的创意规划模型调用发生在详细项目成本确认之前——仍是独立问题，不能与未知价格修复混为一谈。
+
+---
+
 # AI 商品广告工厂：代码逻辑与系统地图
 
 本文不是用户手册，而是给接手项目的 AI/开发者看的系统级逻辑说明。修改代码后必须同步维护。
@@ -36,7 +70,7 @@
 → 本地硬件能力调度 / FFmpeg
 → 最终拼接
 
-预算确认是云端生成的闸门。确认前只能做采集、AI分析和估算，不应开始实际云端素材生成。
+任何可能收费或向外部服务发送用户数据的操作都必须有前置授权。2026-10-16 已在 `App.create()` 增加第一阶段“AI创意规划与数据去向授权”，位于 `parse_product_url()` 和 `create_plan/create_plans()` 之前；拒绝时通过 `run_after_explicit_authorization()` 返回，不执行被门控操作。该弹窗列出当前各功能路由、endpoint（不显示 URL query/凭据）、配置单价和其他启用模型的潜在回退目标。计划生成后保留第二阶段详细视频/演员/场景/商品素材费用确认，且明确此前规划模型调用可能产生费用。当前已有 helper 零操作回归和源码顺序测试，但完整 GUI/每个 Provider 的运行时调用计数、回退拒绝路径尚未独立验收；不能仅凭 UI 文案宣布费用授权正式通过。
 
 ## 3. LLM 决策逻辑
 
@@ -220,6 +254,8 @@ postprocess.py 根据 Shot 参数执行：
 - transition
 - subtitle
 - audio/BGM
+
+字幕逻辑在 subtitles.py：`plan_subtitle_timing()` 根据真实镜头时长与文案长度生成多段时间轴，优先在标点处分段；短镜头无法容纳常规段数时减少切换频率，并通过 `analyze_subtitle_density()` 返回字/秒与风险提示。桌面字幕加工必须用 FFprobe 获取实际媒体时长，警告后仍允许用户继续，最终通过现有 `burn_subtitles()` 烧录生成的 SRT。该规则不会改写/删减文案，也不能代替真实素材可读性评估。
 
 ffmpeg.py 根据实际硬件动态选择可用 H.264 硬件编码器（NVENC/AMF/QSV/VideoToolbox），无硬件编码器时使用 CPU 编码。
 
@@ -629,6 +665,10 @@ _activate_plan 的状态转换规则为：读取旧方案 → 提取所有 varia
 
 新增 `visual_fact_audit`：把已有“关键帧视觉模型分析”映射到每个创意方案实际采用的素材，检查商品遮挡、模糊、抖动、不可用素材和卖点对应。该层不重新假装分析未提供的画面；风险仍保留为“需复核”。
 
+
+## 最终成片分辨率归一化与交付质检
+
+`ProductionStore.build_final()` 不再把原始 concat 结果直接作为交付文件：先拼接到临时文件，再由 `postprocess.normalize_output_resolution()` 进行最终转码。最低配置固定为竖屏 1080×1920、横屏 1920×1080、方形 1080×1080；之后 `inspect_final_output()` 用 ffprobe 检查文件、视频流、时长、画幅和最低分辨率。任一条件不满足即拒绝输出。该步骤保证导出像素尺寸，不等于 AI 超分或真实细节恢复。
 
 ## 最终成片交付质检
 
@@ -1229,3 +1269,440 @@ A78 实现注意：人物行动依据审查必须在 `shot_texts` 构建完成�
 
 
 A81 测试夹具边界：因果链按步骤独立审查 state_continuity。测试“明确无后续影响”时必须给每一步都设置该对象，否则其他步骤仍应产生 STATE_CONTINUITY_UNSPECIFIED。
+
+
+## A82｜人物信息掌握与时间线一致性审查
+- 每个 `character_action_basis` 新增 `knowledge_origin` 和 `knowledge_source_storyboard_indices`。
+- `knowledge_origin=storyboard` 时，信息来源镜头必须有效、严格早于当前镜头，并且来源原文必须出现在被引用镜头文本中。
+- `knowledge_origin=preexisting` 时，来源镜头列表必须为空，并应填写 `known_information`。
+- 产生 warning 的情况包括时间线未声明、来源列表格式/位置无效、信息来源在后续才揭示、来源原文无法在引用镜头中找到，以及预先已知信息仍引用剧情内镜头。
+- 旧方案仍可读取；此规则是结构、顺序和文本覆盖检查，不是对人物心理的完整语义判断。
+
+
+### A83：人物承诺、误解与行动结果连续性审查
+- 输入：短剧根级 `narrative_obligations` 列表；每项包含事项类型、人物、描述、来源镜头位置/原文证据、预期后续结果、后续镜头引用、状态和必要的放弃理由。
+- 决策：`audit_short_drama()` 进行确定性字段、人物引用、来源证据、镜头顺序和文本覆盖检查；不调用模型、不产生额外费用。
+- 检查项：`NARRATIVE_OBLIGATIONS_UNSPECIFIED`、`NARRATIVE_OBLIGATION_KIND_INVALID`、`NARRATIVE_OBLIGATION_UNKNOWN_CHARACTER`、`NARRATIVE_OBLIGATION_ORIGIN_INVALID`、`NARRATIVE_OBLIGATION_ORIGIN_NOT_SHOWN`、`NARRATIVE_OBLIGATION_FOLLOW_SHOTS_INVALID`、`NARRATIVE_OBLIGATION_FOLLOW_SHOTS_NOT_LATER`、`NARRATIVE_OBLIGATION_FOLLOW_THROUGH_NOT_SHOWN` 等。
+- 状态：缺少列表仅产生 warning，兼容旧方案；不会自动改写剧情或阻止项目读取。
+- 边界：检查依赖显式声明与字符串匹配，不能证明承诺是否真实可信、误解是否合乎心理逻辑、后果是否具有语义上的因果关系；仍需人工/模型复核。
+- 更新记录（2026-10-13）：新增承诺/误解/行动后果的结构化追踪与回归测试；CI 和 docs-sync 需以本次最终 SHA 的结果为准。
+
+
+### A83 测试夹具边界修正
+时间顺序检查只在来源镜头索引有效时判断；无效来源位置与同镜/倒序引用分别测试，避免测试把无效索引当成可比较的时间点。
+
+### A83 验证记录
+代码与回归测试 SHA `f57c0eb02249439ea42cc3d46dd2d94e87bab1c1` 的完整 CI push/PR 和 docs-sync push/PR 均通过。后续若修改代码或文档，仍须按最新 HEAD 重新检查 CI/doc-sync；文本覆盖警告不代表语义或画面已被证明。
+
+### A84：跨集剧情承接事项与连续性台账对照
+- `narrative_obligations` 新增可选布尔字段 `cross_episode_required`；仅为 `true` 的事项启用跨集强校验，旧方案兼容。
+- 根据根级 storyboard 的 `episode_number` 将来源镜头和后续引用映射到具体集；跨集事项必须引用来源集之后的镜头。
+- 对状态为 `open` 的跨集事项，检查来源集的 `continuity_state`（`unresolved_threads`、`next_episode_requirements` 或 `ending_state`）和下一集的 `opening_state` / `unresolved_threads` 是否以明确文本承接事项描述或预期结果。
+- 新 warning codes：`NARRATIVE_OBLIGATION_CROSS_EPISODE_TARGET_MISSING`、`NARRATIVE_OBLIGATION_CROSS_EPISODE_FOLLOW_THROUGH_MISSING`、`NARRATIVE_OBLIGATION_NOT_IN_EPISODE_HANDOFF`、`NARRATIVE_OBLIGATION_NOT_CARRIED_FORWARD`。
+- 这仍是确定性结构/文本匹配，不等于剧情语义审查。新增回归覆盖有效跨集承接、承接断裂、后续镜头仍引用本集的错误情况。代码 SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 的最新 CI/doc-sync 尚待核实。
+
+
+### A84 补充：跨集标记类型
+`cross_episode_required` 是可选布尔字段。字段缺失视为旧方案/仅本集事项；字段存在但不是布尔值时输出 `NARRATIVE_OBLIGATION_CROSS_EPISODE_FLAG_INVALID`，不把字符串等值隐式转换为 true。回归测试覆盖错误类型。
+
+
+### A84 自动化验收记录（2026-10-13）
+代码与回归测试 SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 的完整 CI push/PR 和 docs-sync push/PR 均通过：`38308777852`、`38308783208`、`38308777939`、`38308783195`。结构/文本匹配不等于剧情语义、真实画面或商业成片验收。
+
+
+### A85：人物长期状态、秘密、认知、承诺和关系跨集一致性
+- 每集 `continuity_state.character_state_ledger` 是可选结构；记录 `character_name`、`dimension`、`state_description`、`status`、`must_persist`、`evidence`、本集 `storyboard_indices`，状态变化时补 `transition_evidence`。
+- 状态维度可描述心理/认知/秘密/承诺/关系等；关系维度建议使用 `relationship:人物A-人物B关系` 形式，避免人物配对歧义。
+- `must_persist=true` 且状态未解决时，下一集必须继续记录同一人物/维度；状态文本变化但未标记 changed/resolved 时输出 `CHARACTER_STATE_CHANGED_WITHOUT_DECLARATION`；标记 changed 却无可定位转变证据时输出 `CHARACTER_STATE_CHANGE_UNJUSTIFIED`。
+- 同时检查人物是否存在、字段类型、重复维度、状态证据能否在本集剧本/分镜定位、引用的本集镜头位置是否有效。旧方案未提供该台账时兼容读取。
+- 新增 warning codes：`CHARACTER_STATE_LEDGER_INVALID`、`CHARACTER_STATE_RECORD_INVALID`、`CHARACTER_STATE_UNKNOWN_CHARACTER`、`CHARACTER_STATE_DIMENSION_MISSING`、`CHARACTER_STATE_DESCRIPTION_MISSING`、`CHARACTER_STATE_STATUS_INVALID`、`CHARACTER_STATE_PERSIST_FLAG_INVALID`、`CHARACTER_STATE_EVIDENCE_MISSING`、`CHARACTER_STATE_EVIDENCE_UNTRACEABLE`、`CHARACTER_STATE_SHOTS_INVALID`、`CHARACTER_STATE_SHOTS_MISSING`、`CHARACTER_STATE_DUPLICATE_DIMENSION`、`CHARACTER_STATE_NOT_CARRIED_FORWARD`、`CHARACTER_STATE_CHANGED_WITHOUT_DECLARATION`、`CHARACTER_STATE_CHANGE_UNJUSTIFIED`。
+- 限制：文本状态相等/变化检测是确定性检查，不证明人物行为心理合理；必须结合人工/更强语义审查。
+
+
+### A85 自动化验证记录
+代码/测试 SHA `6128fabc3c530c6072dfe72e05a956fe7733065f` 的完整 CI push/PR（`38309397555`、`38309402963`）及 docs-sync push/PR（`38309397567`、`38309403129`）均成功。人物状态文本一致性仍需语义/人工复核。
+
+
+### A86｜人物状态变化因果闭环
+A86 在 A85 状态台账基础上增加触发事件、状态改变镜头、人物反应与后续影响字段；仅对 `status=changed` 的记录执行强检查。触发镜头必须早于状态改变镜头，反应及后续影响必须在变化之后，证据须能在剧本或对应镜头文本中定位。旧方案无台账时兼容。新增警告码：`CHARACTER_STATE_TRIGGER_MISSING`、`CHARACTER_STATE_TRIGGER_NOT_BEFORE_CHANGE`、`CHARACTER_STATE_CHANGE_SHOTS_MISSING`、`CHARACTER_STATE_REACTION_MISSING`、`CHARACTER_STATE_REACTION_NOT_LATER`、`CHARACTER_STATE_CONSEQUENCE_MISSING`、`CHARACTER_STATE_CONSEQUENCE_NOT_LATER`，以及对应分镜引用无效码。
+
+
+### A87｜人物状态到分镜表演的可观察性
+A87 在 A86 因果闭环上新增可观察表演字段与审查：`observable_manifestation`、`observable_storyboard_indices`。缺少描述/引用、证据无法在指定分镜或剧本中定位、只写抽象心理状态时分别发出 warning。检查对象是动作/台词/表情/互动的文本可定位性，不宣称理解表演质量或视觉事实。旧方案不提供可选状态台账时兼容。
+\n\n### A88｜多人物状态依赖一致性
+
+人物间依赖审查独立于可选的 `character_state_ledger`，必须在没有人物状态台账时也运行。每集 `continuity_state.cross_character_dependencies` 的每项包含 `character_a`、`character_b`、`dependency_key`、`dependency_type`、`consistency_rule`、双方 claim、`evidence` 和 `storyboard_indices`。规则支持 `same_understanding`、`asymmetric_knowledge`、`different_beliefs_allowed`。从分集级 `storyboard` 检查人物、规则、证据、镜头引用和重复项；仅在明确要求理解一致却陈述不同时报告直接矛盾。
+
+### A89｜跨集演员/场景资产文本锁定
+- 根级可选 `series_asset_locks` 声明 actor/scene、稳定 key、目标人物/地点、规范描述与适用集数。
+- `validate_short_drama()` 将锁定描述注入匹配分镜的 actor/scene requirements；现有 `short_drama_production_rows()` 会把约束送入既有资产调度字段。
+- 锁定目标未命中任何适用分镜时，审查输出 `SERIES_ASSET_LOCK_TARGET_NOT_FOUND`；错误 schema/集号类型拒绝。
+- 这是文本级锁定，物理素材 ID 复用和生成画面身份仍需单独验证。
+
+
+### A89 验收修正
+锁定注入由 `validate_short_drama()` 统一执行，覆盖直接校验、审查及 `short_drama_production_rows()` 转换路径。集号范围测试使用合法的第1集方案验证第2集限定锁定不会应用；无效布尔集号仍必须被拒绝。
+
+
+### A89 自动化验证记录（2026-10-14）
+SHA `9bcb19ac950f0addcc5a0bfab599dd060c11ec1e`：299 项 Desktop Core 测试、Python/前端语法、Typecheck、Engine、Risk Controller 全部通过；CI push/PR 与 docs-sync push/PR 均成功（run IDs：`38465502064`、`38465509232`、`38465502037`、`38465509210`）。物理资产 ID 复用与真实画面一致性尚未验收。
+
+
+## A90：跨集物理素材 ID 绑定（待最新 SHA 自动化验收）
+跨集演员/场景锁定可选指定本地素材库 asset_id，并将精确 ID 传入制作行。生产解析按 ID 验证资产存在、启用、可复用且类型匹配；无效时明确返回 SERIES_LOCKED_ASSET_INVALID，禁止静默替换或自动生成。未提供 ID 的 A89 旧方案保持标签匹配兼容。此约束只保证素材调度选择，不保证生成画面像素级一致。最新 SHA 的完整 CI/docs-sync 必须重新核验；PR #32 保持 open/unmerged，Windows 真机与真实 Provider 验收继续暂缓。
+
+
+### A90：跨集精确素材绑定
+跨集演员/场景锁定可选提供 asset_id。生产解析只接受本地库中存在、启用、可复用且类型正确的精确记录；无效时写入 SERIES_LOCKED_ASSET_INVALID 并禁止自动替换/自动生成。没有 ID 的 A89 锁定继续按标签解析。调度层复用同一资产记录并不保证生成画面完全一致，仍需人工视觉核验。
+
+
+### A90 测试边界补充
+`generation_if_missing` 是非锁定资产的全局兼容开关；锁定演员/场景自身由生产解析器按精确 ID 分支强制关闭 fallback/生成，而其他未锁定资产仍可按原策略补齐。回归测试验证精确 ID 绑定与未锁定资产的兼容行为。
+
+
+## A91｜跨集物理锁定失效检测与恢复保护
+- `ProductionStore.validate_series_asset_locks()` 在项目加载、`recover_project()` 和镜头 Provider 调用前重新核验锁定演员/场景的精确 ID。
+- 检查索引可读、ID 存在、active=true、reusable=true、kind 与锁定类型匹配；不可读时 fail-closed。
+- 失效问题写入 `creative_plan.recovery.history`，保留原 ID，阻止当前镜头调用 Provider；不自动替换/生成，也不重生成整部短剧。
+
+A91 补充：`resolve_assets()` 在处理未锁定素材之前先执行当前镜头锁定预检；任一锁定失效即记录恢复状态并提前返回，避免无关素材自动生成副作用。
+
+## A92｜跨集锁定 ID 到实际镜头绑定的端到端一致性
+- 对连续多集的目标镜头逐镜调用 `resolve_assets()`，确认 `actor_asset_id` / `scene_asset_id` 最终写入镜头 `actor_id` / `scene_id`。
+- 即使素材库存在标签相似的替代演员/场景，明确锁定 ID 也必须优先且唯一；锁定 ID 不可用时由 A91 fail-closed 保护阻断。
+- 保存、重新打开项目后，镜头绑定 ID 不变；本验收证明的是本地素材调度 ID 一致，不保证生成画面像素级一致。
+
+### A92 CI 失败修正记录
+CI 首次执行发现测试在解析绑定后未保存项目便重载，导致持久化断言不成立。测试已修正为先保存再加载，以真正覆盖序列化/反序列化边界。修复后的 SHA 仍须以完整 CI 和 docs-sync 结果为准。
+
+
+### A92 CI 根因修正
+A92 测试误把追加镜头视为 `shots[1]`，但 `new_project()` 已包含多个默认镜头。现将测试项目镜头列表明确设为两镜头，并在重载后按 `shot.id` 查找，避免列表位置假设导致假失败/假通过。
+
+
+## A93｜跨集锁定 fail-closed 的 Provider 边界
+单镜头生成入口 _render_with_provider() 必须在实际 provider.generate() 前完成素材解析与锁定复核。若锁定资产已失效，必须抛出 SERIES_LOCKED_ASSET_INVALID 并保持 Provider 调用次数为 0；不得对该镜头的其他缺失素材做副作用生成，不得用相似标签资产覆盖锁定 ID。该错误应仅影响目标镜头，不得清除或重写其他镜头的状态/已有输出。原 asset_id 与恢复记录必须保留。
+
+
+### A92/A93 自动化验收结果（2026-10-14；以本节为准）
+- 最终代码与测试 SHA：`db8c2a4e80bdbd6a5d308848e84905c1c2a348d0`。
+- CI push run `38470175403`、CI PR run `38470184669`、docs-sync push run `38470175408`、docs-sync PR run `38470184505` 均 success。
+- A92 跨集锁定 actor/scene 精确 ID 已验证解析绑定、相似标签不覆盖、保存/重开后绑定持久化。
+- A93 从 `_render_with_provider()` 入口验证失效锁定素材在 Provider 调用前拦截，Provider 调用次数为 0；保留原锁定 ID，不绑定替代演员，不影响其他镜头已有状态/路径。
+- PR #32 保持 open/unmerged。以上仅为自动化测试；Windows 真机、真实 Provider、真实账单/扣款、剪映现场及生成画面视觉一致性继续暂缓。
+
+
+## A94｜失效恢复后重试规则
+锁定素材恢复为 active、reusable 且 kind 匹配后，再次调用 resolve_assets() 应能成功绑定原锁定 ID；恢复前的失败记录不能导致永久阻断，也不能授权使用相似标签资产。锁定 ID 存在时，generation_if_missing 必须保持 false。此处只验证本地素材解析恢复，不替代实际 Provider 或视觉验收。
+
+
+### A94 自动化验收结果（2026-10-14；以本节为准）
+- 代码与测试 SHA：`289cc0954cb93ce1a218436d2a6137317a7c6130`。
+- CI push run `38470748908`、CI PR run `38470757428`、docs-sync push run `38470748944`、docs-sync PR run `38470757442` 均 success。
+- 失效阶段确认锁定素材错误并关闭生成；恢复同一 asset_id 后可重试并精确绑定原 ID，即使存在同标签相似资产也不替换；锁定 ID 仍禁止 fallback/自动生成。
+- PR #32 保持 open/unmerged；真实 Provider、Windows 真机、账单/扣款、剪映现场与画面视觉一致性仍暂缓。
+
+
+## A95｜素材索引不可解析的保护边界
+`LocalLibrary.all()` 读取索引时若发生 JSON 解码/文件读取异常，`validate_series_asset_locks()` 必须将其转换为 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`，并对本次涉及的锁定演员/场景 fail-closed。`resolve_assets()` 不得继续处理该镜头其他素材；Provider 入口在 `provider.generate()` 之前必须阻断。该状态不同于“原资产不存在”：不能改绑相似资产、不能生成替代资产、不能清除锁定 ID。索引修复后才允许重试。
+
+
+### A95 自动化验收结果（2026-10-14；测试代码 SHA `6b225e09adac63265d53b27eae3ed6a54a51f49e`）
+- CI push run `38471501401`、CI PR run `38471510428`、docs-sync push run `38471501250`、docs-sync PR run `38471510506` 全部 success。
+- 无效/截断 `library.json` 返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`；素材解析提前停止，不继续处理其他素材；Provider 调用次数为 0。
+- 原锁定 ID 保留，非目标镜头状态及已有输出路径保持不变。
+- PR #32 保持 open/unmerged。真实 Provider、Windows 真机、实际账单/扣款、剪映现场和生成画面视觉一致性继续暂缓。
+
+
+## A96｜索引修复后的恢复语义
+`SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE` 是可恢复的素材库读取故障，不应让项目永久阻断。索引修复且原锁定资产重新可读、active、reusable、kind 匹配后，再次 `resolve_assets()` 必须绑定原 ID；不能改绑相似项或开启 `generation_if_missing`。本测试只验证本地索引/资产解析恢复。
+
+
+### A96 自动化验收结果（2026-10-14；测试代码 SHA `fc01ace4eeb90ccb2f2df10b44a57f8b3c69f134`）
+- CI push run `38471876626`、CI PR run `38471884325`、docs-sync push run `38471876601`、docs-sync PR run `38471884345` 全部 success。
+- 索引损坏时返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE` 并禁止 fallback；索引恢复后，重新解析精确绑定原锁定资产 ID，标签相似资产不能替换，且不触发自动生成。
+- PR #32 继续保持 open/unmerged。真实 Provider、Windows 真机、账单/扣款、剪映现场与生成画面视觉一致性继续暂缓。
+
+
+## A97｜项目恢复的单镜头隔离边界（2026-10-14）
+`recover_project()` 遇到成片文件缺失时，只把该镜头加入 `missing_media` 并清除该镜头无效的输出路径；兄弟镜头的有效视频路径、已生成状态、版本号和镜头实际费用不得被重置。回归测试保存并重载项目，按稳定 shot.id 验证目标镜头与未受影响镜头。此项验证恢复数据隔离，不触发 Provider，也不替代真机/真实生成验收。
+
+
+## A98｜重复恢复摘要保持稳定（2026-10-14）
+首次恢复发现成片缺失后，目标镜头会进入“待重新生成/重新选择素材”。修复后，后续重复调用 `recover_project()` 仍会将该镜头列入 `missing_media`，直到它被重新生成或用户完成其他修复；不能因 `video_path` 已清空而从恢复摘要中消失。该分支仅识别明确的恢复待处理状态，不将普通“待生成”镜头视为异常。有效兄弟镜头保持原输出、状态与版本。
+
+
+## 2026-10-14：A99 恢复阶段逐镜头费用对账
+ProductionStore._sync_actual_cost() 在发现成功账本记录后，会为所有镜头重算账本金额；没有对应成功记录的镜头归零，不再保留过期的 Shot.actual_cost_rmb 快照。此规则只在账本已成为实际费用权威来源时生效；仅有失败记录或旧项目无成功账本时，仍保留历史兼容逻辑。测试覆盖恢复、保存和重新加载。
+
+
+## 2026-10-14：商业剪辑决策层——焦点参数执行闭环
+- `creative_engine.CreativeShot.focus_x/focus_y` 是归一化构图焦点（0–1）。
+- `postprocess.process_shot()` 必须将焦点参数传入 `_focus_crop_filter()`，通过 FFmpeg crop 的 x/y 表达式决定裁切窗口位置，不得只接收参数却固定居中裁切。
+- 输入越界坐标夹紧到 0–1；非数值、NaN、Infinity 回退到 0.5 中心值。
+- 回归测试在 `test_postprocess.py` 检查生成的实际 FFmpeg 命令，而不只检查函数返回值。
+- 此项是商业剪辑能力的一项具体修复，不等于音乐节奏匹配、转场质量判断、动态节奏、情绪/转化联合优化或剪后视觉反馈已经实现。
+
+
+## 商业剪辑焦点坐标的精确定义（2026-10-14）
+- `CreativeShot.focus_x/focus_y` 是缩放后源画面中主体/视觉焦点的归一化坐标（0–1），并非裁切窗口偏移比例。
+- `postprocess._focus_crop_filter()` 先将源画面缩放到覆盖目标画幅，再计算裁切起点：`crop_x = clamp(iw * focus_x - target_width / 2, 0, iw - target_width)`，纵向同理。这样在边界允许时尽量将焦点放到输出画面中心。
+- 当某轴不存在多余画面时，该轴裁切起点为 0，无法仅靠裁切将焦点移到中心；不得声称所有输入比例下焦点都能被完全居中。
+- `adapt_aspect()` 是独立中心裁切路径，不执行 AI 焦点定位；`process_shot()` 才执行焦点驱动裁切。
+- 单元测试检查真实 FFmpeg `-vf` 命令字符串及无效值处理；仍需真实成片视觉检查来验证最终画面效果。
+
+## 2026-10-14：文档同步 CI 契约
+`tools/check_ad_studio_docs.py` 的必需文档清单覆盖八个文件：根目录 `AGENTS.md`、`HELP.md`、`PROJECT_LOGIC.md`、验收计划、验收 SOP、`SESSION_HANDOFF.md`、`docs/AD_STUDIO_AI_HANDOFF.md` 和根目录未来功能备忘。只要桌面端代码/测试有变化，以上文件都必须在同一差异范围内更新。该脚本仅检查文件是否被同步修改，不替代人工检查内容是否准确、完整。
+
+
+## A100｜淡出时间窗与变速语义
+`process_shot()` 在 `setpts` 变速后再应用淡出，因此淡出起点必须基于 `probe_duration(input_path) / speed` 得到的输出时长计算。淡出时长为 `min(0.25, output_duration)`，起点为 `max(0, output_duration - fade_duration)`。旧实现将 `fade=t=out:st=0` 固定放在开头，会造成“淡出”实际在镜头开始时变暗；A100 修正此行为。测试验证变速后的时间窗和极短镜头边界。该修正仅保证滤镜参数逻辑，仍需真机视觉验收。
+
+
+## A101｜视频变速与原音轨同步
+`process_shot()` 使用 `setpts=1/speed*PTS` 调整视频时长。此前音轨没有对应处理，因此只变速画面时，音轨仍保持原始时长，可能出现声音与画面不同步。现在当 `speed != 1.0` 时添加 `-af atempo=<speed>`，让音轨时长按同一速度变化；正常速度不添加滤镜。测试检查非 1.0 倍速确实携带 `atempo` 参数，1.0 倍速不携带该参数。自动化测试不等于真实音画同步验收。
+
+
+## 2026-10-14：A102 最终导出分辨率底线
+`build_final()` 先 concat 到临时文件，再调用 `normalize_output_resolution()` 统一转码至所选画幅的最低 1080P 级配置，之后由 ffprobe 校验尺寸和画幅。低于目标尺寸的输出不可交付。此能力只保证像素尺寸，不等于 AI 超分或细节恢复。
+
+A102 测试边界补充：最终输出测试必须模拟 `normalize_output_resolution()` 写出目标临时文件；真实生产路径仍执行 FFmpeg 转码，不能把 mock 当成实际媒体验证。
+
+
+## A103：淡入/淡出音画同步
+`process_shot()` 对淡入/淡出统一探测源时长，并以 `source_duration / speed` 计算输出时间窗；画面使用 `fade`，原音轨使用 `afade`。变速时音频滤镜顺序为 `atempo` 后接 `afade`，确保淡出发生在变速后的末尾。短片段的淡化时长限制为 `min(0.25s, output_duration)`。这是镜头内部的音画淡化，不应描述为相邻镜头的交叉溶解。
+
+
+## A104：最终成片相邻镜头交叉溶解
+ProductionStore.build_final() 检查每个非首镜头的 Shot.transition；只有显式请求“交叉溶解”时才调用 ffmpeg.concat_with_transitions()，其他项目保留原 concat 路径。新拼接器用 ffprobe 读取时长/音轨，按所选画幅预先统一尺寸、30fps、时间基准和像素格式，再用 xfade 做画面交叠、acrossfade 做音频交叠；无音轨镜头用等长静音补齐。交叉溶解最长 0.35 秒，短镜头缩短；非交叉边界用 1ms 过渡以维持统一滤镜链。该执行逻辑已接入最终输出路径，但真实媒体兼容性/主观剪辑质量仍需真机验收。
+
+
+## A105：分镜 pacing 到实际播放速度的执行闭环
+`creative_engine.validate_plan()` 在规范化分镜时校验 `pacing`；缺失 `speed` 时将慢/标准/快/极快映射为 0.85/1.0/1.15/1.3 倍速，未知 pacing 回退标准。分镜 schema 中 `speed` 为可选项；若 LLM 显式返回 `speed`，显式值经既有 0.75–1.5 范围夹紧后优先。该 `CreativeShot.speed` 会进入现有单镜头后处理并同时调整视频时间戳与原音轨速度。该项修复了 pacing 标签与执行参数脱节的问题，但没有实现按画面动作、情绪曲线、台词密度或音乐节拍自动决定每镜头节奏。
+
+
+## A106：基于商业镜头角色的可追溯默认剪辑决策
+`creative_engine.resolve_editing_intent()` 根据镜头 objective/visual/dialogue/cta_role/generation_prompt 中的文本关键词，将镜头归类为 hook、product_detail、demonstration、proof、pain_point、reaction、cta 或 story_beat，并给出默认时长、pacing/speed、transition 与理由。仅在对应字段缺失时采用默认值；显式 duration/speed/transition 保持优先。结果存入 `CreativeShot.editing_intent`，包含参数来源与“文本规则而非视觉识别”的边界说明。当前 production 已消费同一分镜的 duration、speed 与 transition，因此这些默认值进入既有生成/后处理/拼接链。关键词规则会受文本措辞影响，不能替代真实画面分析、音乐卡点、字幕密度优化或剪后质量反馈。
+
+
+A106 修复补充：未知 `pacing` 标签继续按 A105 既有契约回退“标准”，不能回退到推断角色的默认节奏；`editing_intent` 同时记录最终生效的时长、节奏、速度和转场，避免理由字段与实际执行值不一致。
+
+## A107：商业剪辑时长进入运行时生产对象
+创意引擎根据商业角色得到的 `CreativeShot.duration_seconds` 必须复制到桌面运行时 `models.Shot.duration_seconds`，否则 `ProductionStore.generate_shot()` 的 `GenerationRequest.duration` 会读到模型默认的 3 秒，导致角色决策只存在于计划中。统一通过 `runtime_shot_editing_fields()` 映射时长、pacing、speed、transition，`app._activate_plan()` 创建每个运行时 Shot 时消费该映射。回归测试验证角色默认时长和相关字段进入运行时映射。该闭环只保证本地请求参数一致，不保证外部 Provider 实际输出时长与请求完全一致。
+
+
+## A108：字幕密度与镜头时长执行闭环（当前 SHA 自动化验收中）
+`write_srt()` 不再把任意字幕固定写为单条 3 秒，而是依据视频实际时长构建 SRT 时间轴；文本较长时优先按标点拆分，并在短镜头里降低字幕切换频率。`analyze_subtitle_density()` 计算无空格字数/秒、字幕段数和风险说明，UI 会提示高密度/长单条字幕。实际路径位于字幕加工 UI：`probe_duration()` → 密度分析 → 自适应 SRT → `burn_subtitles()`。测试只验证时间轴与规则输出，不替代真实视频的阅读舒适度验收。
+
+
+## 产品路线图与 AI 执行控制（2026-10-14）
+项目战略阶段、优先级与退出条件统一由 `docs/AD_STUDIO_PRODUCT_ROADMAP.md` 定义。当前主攻阶段为商业级剪辑决策层，下一工作单元 A109 需要沿真实生产链审查音乐节拍分析、实际切点调整、全局 BGM 连续性、原音轨/口播同步、转场与最终归一化输出之间的依赖。禁止把仅存在于创意计划/审计报告中的决策视为已执行；必须证明其影响实际时间轴/渲染链并由专项测试覆盖。自动化证据与真实素材/Windows 验收必须分开记录。PR #32 不合并，真实环境验收继续暂缓。
+
+### 路线图维护记录
+- 2026-10-14：新增正式产品路线图与阶段门槛；指定 A109 为当前商业剪辑主线的下一项工作。
+
+### A109｜全局BGM与音乐节拍联动
+- `finish_selected()` 负责字幕烧录，并将所选 BGM 的路径/名称/音量写入 `project.creative_plan.final_bgm_*`；不再逐镜头混入背景音乐。
+- `ProductionStore.build_final()` 在最终画面拼接前读取实际镜头时长并分析统一 BGM。`music_sync.plan_beat_aligned_durations()` 只接受置信度不低于 0.45、边界移动不超过 0.25 秒、镜头时长不低于 0.8 秒、每镜头时长变化不超过 0.25 秒且变速在 0.85–1.15 倍内的计划。
+- 计划若改变时长，`retime_clip()` 同时使用视频 `setpts` 和原音轨 `atempo`；生成临时镜头，不覆盖原素材。随后按原转场策略拼接，最后用 `mix_global_bgm()` 在整条成片上混入一条连续音乐，再执行既有 1080P 归一化。
+- 低置信度/异常输入保留原切点；BGM 文件丢失则明确失败，不静默交付无声版本。清理拼接、配乐、归一化和临时变速文件。
+- 节拍检测为本地能量峰值启发式，不是音乐语义理解；真实音乐、口播冲突、字幕观感、Windows 媒体兼容性仍需后续真实验收。
+
+### A109 旧项目音轨兼容边界
+A109 兼容边界：旧项目中已把 BGM 烧录进镜头音轨的成片，无法仅凭现有文件可靠分离旧音乐。重新使用全局 BGM 前，应从未混入 BGM 的镜头源重新执行字幕处理；否则可能叠加旧音乐。
+
+### A109 转场安全补充
+A109 转场安全补充：当前切点变速遇到显式“交叉溶解”时保守回退原镜头时长，仍保留既有交叉溶解与全局连续 BGM；待单独建模转场重叠时长后再开放这类边界的卡点调整。
+
+
+## A110：音乐节拍与商业信息保护执行链
+ProductionStore.build_final() 在实际镜头时长读取后，按创意方案与运行时镜头合并台词、屏幕文字、商品资产需求、CTA 与 editing_intent，调用 derive_content_minimum_durations() 计算逐镜头保护下限，再将 minimum_durations 传入 plan_beat_aligned_durations()。若原时长或拟议卡点时长低于任一保护下限，规划器保留整组原始切点，避免对部分镜头变速造成新的时间轴不一致。审计结果保存在 creative_plan.last_music_sync_audit.content_protection。
+
+限制：保护估算来自文本/结构化元数据，并非真实视觉理解或语音识别；不自动延长原本不足的镜头。
+
+## A111：逐边界局部音乐卡点规划
+`plan_beat_aligned_durations()` 为每个候选切点生成局部位移；新镜头时长按相邻边界位移差计算，保持总时长不漂移。规划器逐镜头检查有效最低时长、内容保护下限、最大时长变化和 0.85–1.15 变速约束；发现冲突时只撤销相邻的相关边界位移并重新检查，最终仍有冲突则整组安全回退。对原本已经低于保护下限的镜头，只要求不进一步压短，不假称修复了原始不足。审计记录 `adjusted_boundaries`、`reverted_boundaries`。
+
+交叉溶解、低置信度仍沿用既有保守回退；内容保护来源仍是分镜文本/结构化元数据。
+
+### A111 测试夹具修正
+专项测试使用非等幅的相邻边界候选位移，明确制造局部镜头时长冲突；断言安全的远端边界仍能调整、冲突边界回退且总时长不漂移。此修正仅校准测试场景，不改变生产规划逻辑。
+
+
+### A111 CI 修复记录
+首轮 CI 暴露三处旧断言仍要求“任一内容保护冲突即整组不变”，与 A111 的局部回退目标冲突。现已把相关断言改为验证：受保护镜头不被进一步压短、冲突边界被记录回退、其他安全边界仍可调整；同时让审计原因明确包含“局部卡点”。需以本修复提交的四项 CI/doc-sync 结果作为最终依据。
+
+
+## A112 下一步：SRT cue 时间窗与卡点保护
+路线图下一项为检查 A108 的 SRT cue 时间戳能否进入 A110/A111 保护规划。必须沿现有字幕生成、存储、烧录链追踪真实字段；若可读取，则验证 cue 时间窗与镜头时长匹配并接入保护；若不可读取，不得从字符数推导并宣称为精确时间，先明确缺口与最小接通方案。
+\n\n## A112｜SRT cue 时间窗进入最终音乐同步规划\n- 字幕烧录成功后，在 creative_plan.subtitle_timing_by_shot 按稳定 shot id 记录 SRT 路径、字幕输出视频路径、源版本及源时长。\n- 最终拼接时仅当记录的 source_video_path 与当前镜头路径一致、源时长与 ffprobe 时长误差不超过 0.15 秒、SRT cue 有效且时间轴匹配时，才使用 cue 实际起止时间。\n- 最短 cue 以 0.65 秒作为显示时长保护阈值，反推允许的最短镜头总时长，并与台词/商品/CTA 等保护下限取最大值后交给 A111 局部卡点规划器。\n- 无记录、SRT 缺失/损坏、时间窗越界、结束时间不匹配或镜头版本变化均保守回退，记录每镜头 status/reason。该逻辑只保护时间窗，不声称完成 ASR、语义口播对齐或视觉可读性验收。\n\nA112 实施跟进：修正 SRT 时间戳正则和 CRLF/LF 解析的转义；最终验收仍取决于最新 SHA 的 CI 与 docs-sync，不得沿用前一 SHA 结果。
+
+## A112 自动化验收结果｜2026-10-14
+代码基线 e8deb1ec4ef9edf7d999c79539762ea2627affab 的 CI Push 38570453607、CI PR 38570460103、docs-sync Push 38570453565、docs-sync PR 38570460195 均 success。当前只确认 SRT 时间窗解析、绑定与规划器保护的自动化行为；真实画面可读性和口播语义对齐仍未验收。
+
+## AI 计划控制与进度事实源
+
+- 战略顺序唯一来源：`docs/AD_STUDIO_PRODUCT_ROADMAP.md`。
+- AI 执行范围与任务单规则：`docs/AD_STUDIO_EXECUTION_CONTROL.md`。
+- 当前状态、证据和下一项任务：`docs/AD_STUDIO_PROGRESS_DASHBOARD.md`。
+- 验收步骤以 `docs/AD_STUDIO_ACCEPTANCE_PLAN.md` 和 `docs/AD_STUDIO_ACCEPTANCE_SOP.md` 为准。
+- AI 不得从旧聊天/历史 handoff 自行推导下一项；必须核验当前 SHA、PR 与四项 CI/doc-sync。任务外非阻断问题只登记，不得顺手实现。全量盘点和权重审计未完成前不发布整体完成率。
+
+
+## AI 计划体系与范围控制（2026-10-14）
+
+统一执行规则见 `docs/AD_STUDIO_EXECUTION_CONTROL.md`，总进度入口见 `docs/AD_STUDIO_PROGRESS_DASHBOARD.md`。收到“推进/继续”时，必须先检查当前 HEAD、PR 和四项 CI/doc-sync，再从正式台账选择唯一下一项任务。每项任务必须写明目标、范围、排除项、依赖、实际生产链、测试矩阵、验收证据与停止条件；非阻断的额外想法只登记，不得顺手扩展。全量任务去重和权重审计完成前，禁止发布未经证据支持的总体完成百分比。PR #32 不合并；Windows 真机、真实 Provider/扣费、剪映现场、真实素材与投放验证继续暂缓。
+
+## 统一任务登记表
+
+`docs/AD_STUDIO_TASK_REGISTER.json` 是 A0–A112 初次盘点索引；它目前只提供编号与来源索引，除 A109–A112 已有的自动化证据外，其他任务均需按代码/测试/当前 SHA 重新核验。任务登记表中的权重保持为空，直到去重、路线图映射和证据审计完成。缺少正式标题的编号须先查明原因，禁止补造任务。整体进度和唯一下一项以 `docs/AD_STUDIO_PROGRESS_DASHBOARD.md` 为准。
+
+## A3 创建项目设置区布局约束
+`App.ui()` 的商品/广告设置表单由 `fields` 容器承载，操作入口统一置于独立 `actions` 容器。表单控件行约定：任务类型第 2 行、视频形式第 3 行、创意方案数第 4 行、素材来源/文件夹第 5 行；自动视频形式提示与视频形式同一行。不得把操作按钮重新放回表单的字段网格。
+
+A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/方案数/素材来源控件放入独立 fields 容器，统一使用 row 0–6；把全部操作按钮移入独立 actions 容器的 6 列网格，避免操作按钮与输入控件共享同一 grid 单元格。新增 AST 回归测试检查 task_type=(2,1)、form=(3,1)、variant_count=(4,1)、footage_mode=(5,1)、footage_folder=(5,2)、文件夹按钮=(5,3) 与自动形式提示=(3,2)。该提交只证明源代码布局合同和静态 AST 断言；尚待最新 SHA 的完整 CI/doc-sync，且不替代 Windows 真机可用性验收。
+
+
+## 2026-10-15：预算授权合同与实现差距（PLAN-003 审计项）
+
+- 规范目标：费用与数据目的地说明必须早于任何可能收费或外发数据的云端调用；包括文本/视觉 LLM 分析、创意规划、资产生成和视频生成。
+- 当前实现证据：`App.create()` 先调用 `create_plan/create_plans`，后展示项目预算确认。路由可能使用云端模型；静态检查不证明本轮发生实际扣费，但调用顺序与目标合同冲突。
+- 用户取消目前能阻止后续项目保存/素材生成流程，但没有足够的编排级测试证明确认弹窗前零请求，因此不能声称“取消后零外部调用”。
+- 必须覆盖正常同意、取消、超时/异常、显式模型不可用、路由回退拒绝和费用未知场景；每种取消/拒绝分支都要断言文本模型、视觉模型、资产 Provider、视频 Provider 外部调用计数为 0，且项目状态/版本/账本没有意外变化。
+- API Key 当前通过完整模型配置 JSON 保存；UI 掩码不等于静态存储加密。未完成安全设计与证据前，不得声称密钥已安全保存。
+- 此段是当前实现差距记录，不代表功能修复或验收通过。唯一规划主线与状态以 `docs/AD_STUDIO_PROGRESS_DASHBOARD.md` 为准。
+
+
+## 2026-10-15：路由回退、外发数据和未知费用补充审计
+
+- `ModelRouter.resolve_route()` 已改为 fail-closed：显式选择的模型不可用时抛出明确错误，不自动切换到另一云端/本地模型。`CapabilityRouter` 的资产/视频决策仍存在独立的本地/云端回退路径，尚未证明拒绝回退后零调用。
+- 自定义 Base URL 会成为请求目的地；文本请求发送提示词，视觉请求还可发送 data URI 图片，视频/资产 Provider 会向配置端点提交请求。端点/数据去向的 UI 告知与 URL/重定向/私网边界尚未获得完整证据。
+- 模型成本根据返回 usage 与已配置单价估算。缺失 usage 或单价为 0 时的账面零值不能视为免费；真实供应商账单仍需单独核对。
+- 文本模型通道以 OpenAI-compatible Chat Completions 为主；通用视频/资产 REST 适配器不等于任意专有 API 即插即用。
+- 上述为 PLAN-003 静态审计发现，不代表风险已修复或正式验收通过。统一状态、证据边界和下一步见 docs/AD_STUDIO_PROGRESS_DASHBOARD.md。
+
+
+## 2026-10-15：异常文本持久化证据边界（PLAN-003）
+
+- `ModelRouter.complete_json()` 将请求异常文本写入本地 usage ledger；转写 HTTP 错误会带入截断后的响应正文，`App.create()` 可将转写异常保存在项目 creative plan 中；成本恢复路径也可能持久化异常文本。
+- 目前没有证据证明错误正文包含真实 API Key；只能确认异常文本可能持久化，不能写成“密钥已经泄露”或“密钥不会泄露”。
+- `App.create()` 的创意规划调用、实拍视觉分析及可选转写发生在预算确认弹窗之前；取消弹窗不能撤销此前的模型调用。这是与既有授权合同的实现顺序冲突，需在后续专项测试/修复计划中处理，但当前 PLAN-003 语义去重完成前不直接开发。
+- 当前证据是静态源码映射，未运行相关测试；正式状态、任务编号和下一项以 `docs/AD_STUDIO_PROGRESS_DASHBOARD.md` 为准。
+
+
+## 2026-10-16｜A63/A65 成本账本证据纠正与补强
+
+- A63 的现有回归测试已在新费用账本写入失败后执行 `store.save(project)` 与 `store.load(project.id)`，并核对项目总成本和镜头成本保留。因此 DEDUP-010 中“缺少保存重载断言”的描述已更正；模拟故障仍不等于真实 Provider 账单核验。
+- A65 新增原子替换失败后临时文件清理断言；2001 条记录场景中调用 `recent(10)` 后，再次核对完整记录数与项目成本汇总不变。最新 SHA CI 通过前，不把新增断言标记为自动化通过。
+
+
+## 2026-10-16｜A64 素材成本故障生产入口测试
+
+- `test_a64_resolve_assets_keeps_generated_asset_when_cost_record_fails` 对自动解析/生成入口注入成本记账失败，检查生成资产文件、库记录、镜头 actor_id 与重载状态。
+- `test_a64_generate_missing_asset_keeps_asset_when_cost_record_fails` 对缺失素材生成入口注入成本记账失败，检查资产文件、库记录、镜头引用、生成请求提示与重载状态。
+- 这些测试覆盖本地模拟故障，不等于真实 Provider 账单核验；最新 SHA CI 通过前不得声称新增测试已通过。
+
+
+## 2026-10-16｜PLAN-003 DEDUP-013 成本恢复重载回归
+
+本轮仅补充自动化测试：A57 无账本旧项目恢复后重新加载仍保留项目/镜头成本；A60 failed-only 账本恢复后重新加载仍保留项目/镜头成本与成本分类汇总。A99 的成功账本清除未计费兄弟镜头陈旧成本仍为独立行为。新增断言须以最新 SHA 的 CI 通过为准；本地模拟测试不证明真实 Provider 账单。A57/A60/A99 仍未正式验收。
+
+## 2026-10-16｜UXS-2 本地转写与资产配置路径修复
+
+- `ModelRouter.transcribe_footage_audio()` 仅对 `provider == "local_openai"` 传递 `allow_missing_api_key=True`；转写 helper 默认仍拒绝缺失凭据，且只有在 key 非空时才加入 Authorization 头。测试同时验证本地模拟端点收到请求、请求没有 Authorization 头，以及远程无 Key 在请求前失败。
+- `ProductionStore.resolve_assets()` 的 `AssetGenerator` 配置路径改为 `self.root.parent / "asset-generation.json"`，与应用以 `ROOT/projects` 作为项目目录、以 `ROOT/asset-generation.json` 保存 UI 配置的布局一致；`library_root` 继续只决定资产库文件位置。用户自定义资产库目录不应改变 Provider 配置来源。
+- 新增离线 mock 回归：本地转写无 Key、远程无 Key 零请求、自定义资产库路径下配置读取根目录不变。测试通过后仍不等于真实服务兼容性验收。
+- **P0 尚未修复：**`App.create()` 在预算确认弹窗前调用 `create_plan/create_plans`，可能提前调用云端模型。下一步必须优先重构授权时序，并用编排级调用计数测试证明首次同意前、用户取消后没有任何外部请求。真实 Provider、真实扣费和 Windows 真机继续暂缓。
+
+## 2026-10-16｜创建前两阶段授权实现
+
+- `build_creation_preflight_detail()` 只读取本地路由配置并构建告知，不发请求；endpoint 展示会去掉 URL userinfo、query 和 fragment，避免把嵌在 URL 中的凭据显示出来。
+- `run_after_explicit_authorization(confirm, operation)` 在拒绝时返回 `(False, None)`，不会执行商品解析回调；`App.create()` 仅在授权通过后才调用 `parse_product_url()`，之后才会进入创意规划模型调用。
+- 最终费用确认保留为第二道闸门；取消该阶段不会撤销已授权的规划调用，但会阻止未确认的新项目保存/后续素材视频生成。
+- 证据范围：离线 helper 测试、UI 源码顺序测试和 CI。后续需增加直接的编排/调用计数测试，覆盖文本、视觉、转写、资产、视频入口，以及显式模型不可用/回退拒绝；真实 Provider、账单与 Windows 真机继续暂缓。
+
+## 2026-10-16｜显式模型路由失败关闭
+
+- `ModelRouter.resolve_route(function)` 仅返回用户显式选择且当前可用的模型；若该模型停用或远程模型缺少 API Key，抛出说明性 RuntimeError，不再按硬件模式自动切换到其他云端/本地模型。
+- 新增离线测试覆盖云→云、云→本地与无可用替代模型三种情况。测试只证明路由层不会返回其他模型，不代表真实 endpoint 可达或供应商服务可用。
+- 资产/视频仍由 `CapabilityRouter.decide_asset/decide_video` 负责独立路由；本次没有改变其回退行为。下一步应把这些 Provider 的用户授权和拒绝后零调用作为独立合同。
+
+## 2026-10-16｜逐镜头视频 Provider 目的地授权
+
+- App.generate_shot() 在更改镜头状态或保存“生成中”之前，先计算 CapabilityRouter.decide_video() 决策并显示目的地、脱敏 endpoint、路由原因、预估费用和数据边界。
+- 用户取消时立即返回；此分支不修改镜头版本/状态、不调用 Provider。用户确认后把同一 ExecutionDecision 快照传给 ProductionStore.render_shot(..., decision=decision)，生产层不重新探测并改选另一目的地。
+- 此合同仅覆盖单镜头视频生成按钮。资产生成、最终成片批量路径、短剧商品镜头重生成等路径仍需独立审查，特别是资产解析可能在 AssetGenerator.generate() 中直接调用云端。
+- 测试覆盖脱敏目的地/费用说明、取消确认顺序及路由快照传递；不代表真实 Provider/账单/Windows 真机已验收。
+
+## 2026-10-16｜资产 Provider 云端调用必须显式授权
+
+- AssetGenerator.generate(..., authorize_cloud=None)：只有能力决策为 cloud 且 authorize_cloud 是可调用并返回 True 的回调时，才进入云端生成；缺失/拒绝回调时在 _cloud_generate 前抛出错误。
+- ProductionStore.resolve_assets(..., authorize_cloud=None) 将授权回调传入 AssetGenerator；ProductionStore.generate_missing_asset(..., authorize_cloud=None) 在创建资产输出目录、修改镜头状态或加载云端 Provider 前拒绝未授权云端路由。
+- 这两条路径当前没有正式 UI 授权回调接入，所以云端自动资产生成暂时 fail-closed；不能绕过闸门默认授权。下一步接入逐次 UI 确认，并用 mock 验证取消后无请求、无文件、无资产 ID/镜头状态变更。
+
+## 2026-10-16｜单镜头生成的资产授权编排
+
+App.generate_shot() 先确认视频目标/费用，再调用 ProductionStore.resolve_assets(..., authorize_cloud=...)；云端资产生成通过 _confirm_asset_cloud_generation() 逐次披露端点、数据和费用。若拒绝，resolve_assets 立即停止，UI 在将镜头状态写为“生成中”前返回；ProductionStore._render_with_provider() 也在修改镜头状态和视频请求前解析资产，并阻止未授权资产错误继续进入视频 Provider。单镜头路径已接线；批量成片、AI补镜头、短剧商品镜头重生成仍需独立授权。
+
+## 2026-10-16｜视频/资产授权流程跨入口复用
+
+- App._authorize_shot_generation() 统一完成视频路由与费用确认，再调用 resolve_assets 并逐个授权云端资产；只有全部必要授权通过后，调用方才能把镜头状态改为“生成中”。
+- 单镜头生成、AI补镜头和批量创意方案生成都传递确认时的 ExecutionDecision 快照，并提供 authorize_cloud 回调；拒绝分支不调用本次视频 Provider，镜头状态/版本保持不变。
+- 短剧商品镜头重生成只准备修正内容，真正生成仍由单镜头生成入口执行授权；不能把“准备重生成”视为已调用 Provider。
+- 剩余审计：未知价格/usage 的账本语义、实际 endpoint 与项目重载后的可追溯性，以及真实 Provider/账单（暂缓）。
+
+## 2026-10-16｜成本可信状态与 Provider endpoint provenance
+
+- UsageLedger 记录 cost_status、usage_status 和经过 sanitize_endpoint() 处理的 endpoint；脱敏会移除 URL 用户信息、query 和 fragment，避免 API Key/签名参数进入历史。
+- 文本模型调用只有在响应提供 usage 且所选模型配置中明确存在输入/输出单价时，才按配置价格计算估算金额；否则金额字段为 0 仅作数值兼容，cost_status 必须指出缺失项，不能解释为免费。
+- 视频与资产生成账本记录脱敏 endpoint，并标记本地无 Provider 费用、按配置价格估算或价格缺失。失败请求费用可能未知，因此汇总单独统计未知费用记录。
+- 项目重载沿用本地 usage-ledger.json；历史旧行缺少新字段时不伪造 endpoint，UI 标示旧记录/未知。
+- 本合同不覆盖供应商账单核验，也不宣称转写、视觉、所有 Provider 路径已完全接入。
+
+### 授权弹窗的未知报价处理｜2026-10-16
+
+- build_provider_execution_consent() 接受 None 表示未知报价，并显示“暂无法可靠估算（未知）”；只有显式已配置的视频/资产价格才显示数值。
+- 云端资产读取 kind 专属配置或 asset_generation 通用配置；没有 price_rmb 时保持未知，不能默认为 ¥0。
+- 视频 Provider 的 cost_price_configured 标志用于区分配置缺价与明确写入价格；默认字段值不是用户确认过的报价。
+
+### 口播转写的调用记录与项目上下文｜2026-10-16
+
+- ModelRouter 初始化 current_project_id 为空值，并通过 set_project_context(project_id) 绑定活动项目；新建和打开项目均应设置上下文，避免第一次模型调用记录失败。
+- transcribe_footage_audio 对成功/失败请求记录 category=transcription、model/provider、脱敏 endpoint、耗时与 usage/cost 状态。由于当前转写响应没有 token usage 与计费数据，成功记录标记 usage_missing，不能当成免费。
+- 转写 API Key 不写入账本；endpoint 由 UsageLedger 统一脱敏。
+
+## 2026-10-17｜云端渲染入口必须透传资产授权
+
+- ProductionStore.render_shot(..., authorize_cloud=...) 的云端分支必须将 authorize_cloud 原样传给 _render_with_provider。
+- ProductionStore.render_cloud_shot(..., authorize_cloud=None) 也支持并透传显式授权回调，保持调用入口合同一致。
+- 对云端分支和 render_cloud_shot 的测试使用 mock provider/dispatch，断言回调对象原样传递，不触发真实网络。
+- 本项修复的是云端路由回调丢失，不等于真实 Provider、费用和 Windows 运行环境已验收。
+
+## 2026-10-17｜短剧商品镜头重生成费用状态
+
+- App.regen_shot() 先调用 CapabilityRouter.decide_video()，按实际当前目标准备费用信息；local 路由的 estimated_cost_rmb=0.0 / estimated_cost_status=local_no_provider_charge；cloud 缺少显式价格时 estimated_cost_rmb=null / estimated_cost_status=price_missing。
+- prepare_product_drama_shot_regeneration() 接受可空费用，保存 estimated_cost_status，并拒绝将 unknown/price_missing 与数值金额混用。
+- 此步骤只准备新版本，不调用 Provider。之后实际生成仍通过 generate_shot() 进行独立的实际端点/费用确认，防止把准备阶段当作生成授权。
+
+## 2026-10-17｜实拍素材重新分析授权顺序
+
+- reanalyze_footage() 在 scan_footage、build_visual_manifest、analyze_footage、extract_audio/transcribe_footage_audio 及 archive_analyzed_waste 之前调用 build_footage_reanalysis_consent_detail 并取得明确确认。
+- 确认说明包含素材剪辑导演实际路由/脱敏 endpoint、关键帧/元数据外发类别、口播转写路由/音频类别和费用未知说明；拒绝后立即返回，不扫描/归档素材、不发起模型/Provider 请求。
+- 资产 Provider 配置文件固定为 app config root 下的 asset-generation.json；自定义 library_root 只改变素材库物理目录。
+
+
+
+## 2026-10-17｜创建授权拒绝的调用计数与持久化边界
+
+- `App.create()` 的首次确认通过 `run_after_explicit_authorization` 门控商品解析；拒绝分支在商品解析、实拍扫描、视觉分析、转写、创意规划之前返回。
+- 第二次预算确认也通过同一门控包住项目保存、商品资料保存、商品库保存和 UI 刷新。拒绝时将当前项目清空并返回；不保存项目或商品资料。
+- 自动化测试通过 mock 调用计数验证拒绝门控的操作回调为零次，并通过源码顺序断言绑定 `App.create()` 中首次授权、规划、预算门与持久化的相对顺序。这是离线自动化证据，不等于真实 Provider 账单或 Windows 真机验收。
+
+
+## 云端视频 Provider 后端授权合同（2026-10-17）
+
+`ProductionStore.render_shot()` 与 `render_cloud_shot()` 的云端路径必须接收用户确认时的 `authorized_endpoint`，否则在 Provider 加载/分发之前 fail-closed。Provider 加载后，实际配置 endpoint 必须与 `authorized_endpoint` 精确一致；若确认后配置改变，必须拒绝本次请求并要求重新确认，不得把旧授权用于新端点。UI 只从用户确认的 `ExecutionDecision` 快照传递 endpoint；不得在生产层重新路由到另一个端点。资产云端生成授权是独立的第二道门，拒绝后不能继续视频 Provider 调用。测试必须断言未授权时 Provider loader/dispatch 调用数为 0、端点不一致时 dispatch 为 0，以及镜头状态与版本不变。
+
+## 未知视频单价的账本合同（2026-10-17）
+
+当 `cost_price_configured=False` 时，`cost_per_shot_rmb` 的默认占位数值不能当作已知费用写入成功账本。生产层应将本次 `estimated_cost_rmb` 记为 0，并设置 `cost_status="price_missing"`；这只表示“目前没有可计入的已知金额”，不表示供应商免费。未知费用计数必须保留，真实账单对账仍是独立的外部验收。项目创建/批量生成等预估界面中是否仍把占位价显示成确定报价，需继续单独审计。

@@ -9,6 +9,7 @@
 from __future__ import annotations
 
 import json
+import math
 import time
 from pathlib import Path
 from typing import Any
@@ -36,6 +37,16 @@ def _video_config(root: Path) -> dict[str, Any]:
 
 def _video_provider(root: Path) -> GenericVideoProvider:
     cfg = _video_config(root)
+    raw_price = cfg.get("cost_per_shot_rmb")
+    price_configured = "cost_per_shot_rmb" in cfg and raw_price is not None and str(raw_price).strip() != ""
+    try:
+        price = float(raw_price) if price_configured else 0.72
+        if not math.isfinite(price) or price < 0:
+            price_configured = False
+            price = 0.72
+    except (TypeError, ValueError):
+        price_configured = False
+        price = 0.72
     return GenericVideoProvider(
         endpoint=str(cfg.get("endpoint") or ""),
         api_key=str(cfg.get("api_key") or ""),
@@ -46,7 +57,8 @@ def _video_provider(root: Path) -> GenericVideoProvider:
         poll_interval=float(cfg.get("poll_interval", 3.0) or 3.0),
         task_id_field=str(cfg.get("task_id_field") or "id"),
         status_field=str(cfg.get("status_field") or "status"),
-        cost_per_shot_rmb=float(cfg.get("cost_per_shot_rmb", 0.72) or 0.72),
+        cost_per_shot_rmb=price,
+        cost_price_configured=price_configured,
         provider_name=str(cfg.get("name") or cfg.get("provider") or "视频生成 Provider"),
         require_key=bool(cfg.get("require_key", True)),
         embed_reference_assets=bool(cfg.get("embed_reference_assets", False)),
@@ -109,7 +121,11 @@ def execute_configured_video_gap_generation(
 
     if decision.target == "local":
         provider.require_key = False
-    rate = max(0.0, float(provider.cost_per_shot_rmb or 0.0))
+        rate = 0.0
+        price_known = True
+    else:
+        price_known = bool(getattr(provider, "cost_price_configured", False))
+        rate = max(0.0, float(provider.cost_per_shot_rmb)) if price_known else None
     ledger = ledger or UsageLedger(root / "usage-ledger.json")
 
     def generate(task: dict[str, Any]) -> Path:
@@ -136,6 +152,7 @@ def execute_configured_video_gap_generation(
                 cost_rmb=rate,
                 status="failed",
                 error=str(exc),
+                cost_status="configured_estimate" if price_known else "price_missing",
             )
             raise
         ledger.record_video(
@@ -144,6 +161,7 @@ def execute_configured_video_gap_generation(
             provider=provider.provider_name,
             cost_rmb=rate,
             status="success",
+            cost_status="configured_estimate" if price_known else "price_missing",
         )
         task["provider"] = provider.provider_name
         task["provider_target"] = decision.target

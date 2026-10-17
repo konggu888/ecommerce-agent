@@ -165,6 +165,8 @@ class ShortDramaTests(unittest.TestCase):
         self.assertIn("relationship_change", prompt)
         self.assertIn("state_continuity", prompt)
         self.assertIn("required_follow_through", prompt)
+        self.assertIn("knowledge_origin", prompt)
+        self.assertIn("knowledge_source_storyboard_indices", prompt)
         self.assertIn("前置线索", prompt)
 
     def test_audit_warns_when_action_basis_names_character_not_in_shot(self):
@@ -181,6 +183,57 @@ class ShortDramaTests(unittest.TestCase):
         report = audit_short_drama(plan)
         self.assertIn("CHARACTER_ACTION_BASIS_NOT_IN_SHOT", {item["code"] for item in report["issues"]})
         self.assertIn("CHARACTER_ACTION_BASIS_UNKNOWN_CHARACTER", {item["code"] for item in report["issues"]})
+
+    def test_audit_warns_when_character_uses_information_revealed_later(self):
+        plan = sample_plan()
+        plan["storyboard"][0]["action"] = "主角发现钥匙不在固定位置"
+        second = dict(plan["storyboard"][0])
+        second["action"] = "小林依据尚未发生的信息作出决定"
+        second["character_action_basis"] = [{
+            "character_name": "小林", "goal_or_motivation": "准时出门",
+            "known_information": "钥匙不在固定位置",
+            "knowledge_source": "主角发现钥匙不在固定位置",
+            "knowledge_origin": "storyboard", "knowledge_source_storyboard_indices": [3],
+            "decision_pressure": "时间紧迫", "choice_rationale": "依据线索行动"
+        }]
+        third = dict(plan["storyboard"][0])
+        third["action"] = "主角发现钥匙不在固定位置"
+        plan["storyboard"].extend([second, third])
+        report = audit_short_drama(plan)
+        self.assertIn("CHARACTER_KNOWLEDGE_REVEALED_LATER", {item["code"] for item in report["issues"]})
+
+    def test_audit_accepts_knowledge_revealed_in_an_earlier_shot(self):
+        plan = sample_plan()
+        plan["storyboard"][0]["action"] = "主角发现钥匙不在固定位置"
+        second = dict(plan["storyboard"][0])
+        second["action"] = "小林按已发现的线索检查收纳处"
+        second["character_action_basis"] = [{
+            "character_name": "小林", "goal_or_motivation": "准时出门",
+            "known_information": "钥匙不在固定位置",
+            "knowledge_source": "主角发现钥匙不在固定位置",
+            "knowledge_origin": "storyboard", "knowledge_source_storyboard_indices": [1],
+            "decision_pressure": "时间紧迫", "choice_rationale": "依据线索行动"
+        }]
+        plan["storyboard"].append(second)
+        report = audit_short_drama(plan)
+        codes = {item["code"] for item in report["issues"]}
+        self.assertNotIn("CHARACTER_KNOWLEDGE_REVEALED_LATER", codes)
+        self.assertNotIn("CHARACTER_KNOWLEDGE_SOURCE_SHOTS_MISSING", codes)
+        self.assertNotIn("CHARACTER_KNOWLEDGE_SOURCE_NOT_IN_SOURCE_SHOT", codes)
+
+    def test_audit_accepts_preexisting_knowledge_without_storyboard_source(self):
+        plan = sample_plan()
+        plan["storyboard"][0]["character_action_basis"] = [{
+            "character_name": "小林", "goal_or_motivation": "准时出门",
+            "known_information": "熟悉自家玄关布局",
+            "knowledge_source": "主角发现钥匙不在固定位置",
+            "knowledge_origin": "preexisting", "knowledge_source_storyboard_indices": [],
+            "decision_pressure": "时间紧迫", "choice_rationale": "先检查熟悉的位置"
+        }]
+        report = audit_short_drama(plan)
+        codes = {item["code"] for item in report["issues"]}
+        self.assertNotIn("CHARACTER_KNOWLEDGE_TIMELINE_UNSPECIFIED", codes)
+        self.assertNotIn("CHARACTER_KNOWLEDGE_PREEXISTING_HAS_SHOTS", codes)
 
     def test_audit_warns_when_action_basis_omits_character_from_character_list(self):
         plan = sample_plan()
@@ -223,6 +276,305 @@ class ShortDramaTests(unittest.TestCase):
         plan["storyboard"][0]["character_action_basis"] = [{"character_name": "小林", "goal_or_motivation": "准时出门"}]
         report = audit_short_drama(plan)
         self.assertIn("CHARACTER_ACTION_BASIS_INCOMPLETE", {item["code"] for item in report["issues"]})
+
+    def test_a83_accepts_commitment_with_visible_later_fulfillment(self):
+        plan = sample_plan()
+        plan["storyboard"][0]["action"] = "小林当面答应小王：我会在今晚归还钥匙。"
+        plan["storyboard"][0]["dialogue"] = "我会在今晚归还钥匙。"
+        later = dict(plan["storyboard"][0])
+        later["action"] = "小林把钥匙交还给小王，并说：我答应过今晚归还。"
+        later["dialogue"] = "我答应过今晚归还。"
+        plan["storyboard"].append(later)
+        plan["narrative_obligations"] = [{
+            "kind": "commitment", "character_name": "小林",
+            "obligation": "小林承诺今晚归还钥匙",
+            "origin_storyboard_index": 1, "origin_evidence": "我会在今晚归还钥匙",
+            "expected_follow_through": "小林把钥匙交还给小王",
+            "follow_through_storyboard_indices": [2], "status": "resolved",
+            "resolution_rationale": "第2镜展示了归还动作"
+        }]
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertNotIn("NARRATIVE_OBLIGATION_ORIGIN_NOT_SHOWN", codes)
+        self.assertNotIn("NARRATIVE_OBLIGATION_FOLLOW_THROUGH_NOT_SHOWN", codes)
+        self.assertNotIn("NARRATIVE_OBLIGATION_FOLLOW_SHOTS_NOT_LATER", codes)
+
+    def test_a83_warns_when_promise_is_not_followed_through(self):
+        plan = sample_plan()
+        plan["storyboard"][0]["action"] = "小林当面答应小王：我会在今晚归还钥匙。"
+        later = dict(plan["storyboard"][0])
+        later["action"] = "小林匆忙走进电梯，没有提到钥匙。"
+        plan["storyboard"].append(later)
+        plan["narrative_obligations"] = [{
+            "kind": "commitment", "character_name": "小林",
+            "obligation": "小林承诺今晚归还钥匙",
+            "origin_storyboard_index": 1, "origin_evidence": "我会在今晚归还钥匙",
+            "expected_follow_through": "小林把钥匙交还给小王",
+            "follow_through_storyboard_indices": [2], "status": "resolved"
+        }]
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("NARRATIVE_OBLIGATION_FOLLOW_THROUGH_NOT_SHOWN", codes)
+
+    def test_a83_warns_on_invalid_or_nonchronological_obligation_references(self):
+        plan = sample_plan()
+        plan["storyboard"][0]["action"] = "小林误以为小王拿走钥匙，并开始质问小王。"
+        plan["narrative_obligations"] = [
+            {
+                "kind": "misunderstanding", "character_name": "小林",
+                "obligation": "小林误以为小王拿走钥匙",
+                "origin_storyboard_index": 99, "origin_evidence": "误以为小王拿走钥匙",
+                "expected_follow_through": "小林发现钥匙其实在自己的包里",
+                "follow_through_storyboard_indices": [1], "status": "open"
+            },
+            {
+                "kind": "misunderstanding", "character_name": "小林",
+                "obligation": "同镜引用作为后续镜头",
+                "origin_storyboard_index": 1, "origin_evidence": "主角翻找物品",
+                "expected_follow_through": "小林发现钥匙其实在自己的包里",
+                "follow_through_storyboard_indices": [1], "status": "open"
+            }
+        ]
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("NARRATIVE_OBLIGATION_ORIGIN_INVALID", codes)
+        self.assertIn("NARRATIVE_OBLIGATION_FOLLOW_SHOTS_NOT_LATER", codes)
+
+    def test_a83_warns_when_obligation_references_unknown_character(self):
+        plan = sample_plan()
+        plan["narrative_obligations"] = [{
+            "kind": "action_consequence", "character_name": "不存在的人物",
+            "obligation": "行动造成钥匙遗失", "origin_storyboard_index": 1,
+            "origin_evidence": "主角翻找物品", "expected_follow_through": "主角继续寻找钥匙",
+            "follow_through_storyboard_indices": [1], "status": "open"
+        }]
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("NARRATIVE_OBLIGATION_UNKNOWN_CHARACTER", codes)
+        self.assertIn("NARRATIVE_OBLIGATION_FOLLOW_SHOTS_NOT_LATER", codes)
+
+    def _a84_multiepisode_plan(self):
+        plan = sample_plan()
+        first = dict(plan["storyboard"][0])
+        first["episode_number"] = 1
+        first["action"] = "小林答应继续追查匿名便条来源。"
+        second = dict(plan["storyboard"][0])
+        second["episode_number"] = 2
+        second["action"] = "小林继续追查匿名便条来源，并打开旧档案。"
+        state1 = {
+            "opening_state": "小林收到匿名便条",
+            "character_state_changes": ["小林决定追查"],
+            "unresolved_threads": ["小林答应继续追查匿名便条来源"],
+            "ending_state": "小林答应继续追查匿名便条来源",
+            "next_episode_requirements": ["小林答应继续追查匿名便条来源"],
+        }
+        state2 = {
+            "opening_state": "小林答应继续追查匿名便条来源",
+            "character_state_changes": ["小林打开旧档案"],
+            "unresolved_threads": ["便条来源仍未查明"],
+            "ending_state": "小林打开旧档案",
+            "next_episode_requirements": [],
+        }
+        plan.update({
+            "format_mode": "continuous_series", "episode_count": 2,
+            "episodes": [
+                {"episode_number": 1, "title": "便条", "full_script": "小林收到便条并答应追查。",
+                 "plot_beats": ["收到便条"], "ending_hook": "决定追查", "continuity_state": state1,
+                 "storyboard": [dict(first)]},
+                {"episode_number": 2, "title": "旧档案", "full_script": "小林继续追查并打开旧档案。",
+                 "plot_beats": ["追查"], "ending_hook": "打开旧档案", "continuity_state": state2,
+                 "storyboard": [dict(second)]},
+            ],
+            "storyboard": [first, second],
+            "narrative_obligations": [{
+                "kind": "commitment", "character_name": "小林",
+                "obligation": "小林答应继续追查匿名便条来源",
+                "origin_storyboard_index": 1, "origin_evidence": "答应继续追查匿名便条来源",
+                "expected_follow_through": "小林继续追查匿名便条来源",
+                "follow_through_storyboard_indices": [2], "status": "open",
+                "cross_episode_required": True,
+            }],
+        })
+        return plan
+
+    def test_a84_accepts_open_obligation_carried_across_episode_boundary(self):
+        plan = self._a84_multiepisode_plan()
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertNotIn("NARRATIVE_OBLIGATION_CROSS_EPISODE_TARGET_MISSING", codes)
+        self.assertNotIn("NARRATIVE_OBLIGATION_CROSS_EPISODE_FOLLOW_THROUGH_MISSING", codes)
+        self.assertNotIn("NARRATIVE_OBLIGATION_NOT_IN_EPISODE_HANDOFF", codes)
+        self.assertNotIn("NARRATIVE_OBLIGATION_NOT_CARRIED_FORWARD", codes)
+
+    def test_a84_warns_when_open_obligation_is_not_carried_to_next_episode(self):
+        plan = self._a84_multiepisode_plan()
+        plan["episodes"][0]["continuity_state"]["unresolved_threads"] = []
+        plan["episodes"][0]["continuity_state"]["next_episode_requirements"] = []
+        plan["episodes"][0]["continuity_state"]["ending_state"] = "小林回家休息"
+        plan["episodes"][1]["continuity_state"]["opening_state"] = "小林开始新的一天"
+        plan["episodes"][1]["continuity_state"]["unresolved_threads"] = []
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("NARRATIVE_OBLIGATION_NOT_IN_EPISODE_HANDOFF", codes)
+        self.assertIn("NARRATIVE_OBLIGATION_NOT_CARRIED_FORWARD", codes)
+
+    def test_a84_warns_when_cross_episode_flag_is_not_boolean(self):
+        plan = self._a84_multiepisode_plan()
+        plan["narrative_obligations"][0]["cross_episode_required"] = "true"
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("NARRATIVE_OBLIGATION_CROSS_EPISODE_FLAG_INVALID", codes)
+
+    def test_a84_requires_later_episode_shot_for_cross_episode_obligation(self):
+        plan = self._a84_multiepisode_plan()
+        plan["narrative_obligations"][0]["follow_through_storyboard_indices"] = [1]
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("NARRATIVE_OBLIGATION_CROSS_EPISODE_FOLLOW_THROUGH_MISSING", codes)
+
+    def _a85_multiepisode_state_plan(self):
+        plan = self._a84_multiepisode_plan()
+        plan["episodes"][0]["full_script"] = "小林收到便条并答应追查。小林决定信任小王，并把秘密告诉小王。"
+        plan["episodes"][1]["full_script"] = "小林继续追查并打开旧档案。小林仍信任小王，并记得便条上的秘密。"
+        plan["episodes"][0]["continuity_state"]["character_state_ledger"] = [{
+            "character_name": "小林", "dimension": "relationship:小林-小王信任",
+            "state_description": "小林信任小王", "status": "established", "must_persist": True,
+            "evidence": "小林决定信任小王", "storyboard_indices": [1],
+        }]
+        plan["episodes"][1]["continuity_state"]["character_state_ledger"] = [{
+            "character_name": "小林", "dimension": "relationship:小林-小王信任",
+            "state_description": "小林信任小王", "status": "persisting", "must_persist": True,
+            "evidence": "小林仍信任小王", "storyboard_indices": [1],
+        }]
+        return plan
+
+    def test_a85_accepts_persisting_character_relationship_state(self):
+        plan = self._a85_multiepisode_state_plan()
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertNotIn("CHARACTER_STATE_NOT_CARRIED_FORWARD", codes)
+        self.assertNotIn("CHARACTER_STATE_CHANGED_WITHOUT_DECLARATION", codes)
+        self.assertNotIn("CHARACTER_STATE_CHANGE_UNJUSTIFIED", codes)
+
+    def test_a85_warns_when_persistent_state_disappears_in_next_episode(self):
+        plan = self._a85_multiepisode_state_plan()
+        plan["episodes"][1]["continuity_state"]["character_state_ledger"] = []
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("CHARACTER_STATE_NOT_CARRIED_FORWARD", codes)
+
+    def test_a85_warns_when_relationship_resets_without_declared_change(self):
+        plan = self._a85_multiepisode_state_plan()
+        record = plan["episodes"][1]["continuity_state"]["character_state_ledger"][0]
+        record["state_description"] = "小林不再信任小王"
+        record["status"] = "persisting"
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("CHARACTER_STATE_CHANGED_WITHOUT_DECLARATION", codes)
+
+    def test_a85_requires_transition_evidence_for_declared_state_change(self):
+        plan = self._a85_multiepisode_state_plan()
+        record = plan["episodes"][1]["continuity_state"]["character_state_ledger"][0]
+        record["state_description"] = "小林不再信任小王"
+        record["status"] = "changed"
+        record.pop("transition_evidence", None)
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("CHARACTER_STATE_CHANGE_UNJUSTIFIED", codes)
+
+    def test_a85_rejects_non_boolean_persistence_flag_and_untraceable_evidence(self):
+        plan = self._a85_multiepisode_state_plan()
+        record = plan["episodes"][0]["continuity_state"]["character_state_ledger"][0]
+        record["must_persist"] = "yes"
+        record["evidence"] = "这一句在剧本中不存在"
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("CHARACTER_STATE_PERSIST_FLAG_INVALID", codes)
+        self.assertIn("CHARACTER_STATE_EVIDENCE_UNTRACEABLE", codes)
+
+    def _a86_changed_state_plan(self):
+        plan = self._a85_multiepisode_state_plan()
+        episode = plan["episodes"][1]
+        episode["full_script"] = "小林看到小王藏起关键证据，因此不再信任小王。小林当面质问小王。此后小林拒绝与小王分享调查资料。"
+        shots = episode["storyboard"]
+        shots[0]["action"] = "小林看到小王藏起关键证据。"
+        change_shot = dict(shots[0])
+        change_shot["action"] = "小林意识到小王隐瞒事实，不再信任小王。"
+        reaction_shot = dict(shots[0])
+        reaction_shot["action"] = "小林当面质问小王为什么藏起关键证据。"
+        consequence_shot = dict(shots[0])
+        consequence_shot["action"] = "小林拒绝与小王分享调查资料。"
+        episode["storyboard"] = [shots[0], change_shot, reaction_shot, consequence_shot]
+        record = episode["continuity_state"]["character_state_ledger"][0]
+        record.update({
+            "state_description": "小林不再信任小王", "status": "changed",
+            "transition_evidence": "小林看到小王藏起关键证据，因此不再信任小王",
+            "trigger_event": "小林看到小王藏起关键证据", "trigger_storyboard_indices": [1],
+            "change_storyboard_indices": [2],
+            "reaction_evidence": "小林当面质问小王为什么藏起关键证据", "reaction_storyboard_indices": [3],
+            "downstream_consequence_evidence": "小林拒绝与小王分享调查资料", "downstream_storyboard_indices": [4],
+            "evidence": "小林意识到小王隐瞒事实，不再信任小王", "storyboard_indices": [2],
+        })
+        return plan
+
+    def test_a86_accepts_ordered_character_state_causal_chain(self):
+        codes = {item["code"] for item in audit_short_drama(self._a86_changed_state_plan())["issues"]}
+        for code in ("CHARACTER_STATE_TRIGGER_MISSING", "CHARACTER_STATE_TRIGGER_NOT_BEFORE_CHANGE",
+                     "CHARACTER_STATE_REACTION_MISSING", "CHARACTER_STATE_REACTION_NOT_LATER",
+                     "CHARACTER_STATE_CONSEQUENCE_MISSING", "CHARACTER_STATE_CONSEQUENCE_NOT_LATER"):
+            self.assertNotIn(code, codes)
+
+    def test_a86_warns_when_changed_state_has_no_trigger(self):
+        plan = self._a86_changed_state_plan()
+        record = plan["episodes"][1]["continuity_state"]["character_state_ledger"][0]
+        record.pop("trigger_event")
+        record["trigger_storyboard_indices"] = []
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("CHARACTER_STATE_TRIGGER_MISSING", codes)
+
+    def test_a86_warns_when_trigger_follows_state_change(self):
+        plan = self._a86_changed_state_plan()
+        record = plan["episodes"][1]["continuity_state"]["character_state_ledger"][0]
+        record["trigger_storyboard_indices"] = [3]
+        record["change_storyboard_indices"] = [2]
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("CHARACTER_STATE_TRIGGER_NOT_BEFORE_CHANGE", codes)
+
+    def test_a86_warns_when_reaction_or_consequence_is_missing_or_out_of_order(self):
+        plan = self._a86_changed_state_plan()
+        record = plan["episodes"][1]["continuity_state"]["character_state_ledger"][0]
+        record["reaction_evidence"] = "这句反应在剧本和分镜里不存在"
+        record["reaction_storyboard_indices"] = [2]
+        record["downstream_storyboard_indices"] = [2]
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("CHARACTER_STATE_REACTION_MISSING", codes)
+        self.assertIn("CHARACTER_STATE_CONSEQUENCE_NOT_LATER", codes)
+
+    def test_a87_accepts_observable_performance_for_changed_state(self):
+        plan = self._a86_changed_state_plan()
+        record = plan["episodes"][1]["continuity_state"]["character_state_ledger"][0]
+        plan["episodes"][1]["storyboard"][2]["action"] = "小林皱眉后退一步，抬手挡住小王，问他为什么藏起证据。"
+        record["observable_manifestation"] = "小林皱眉后退一步，抬手挡住小王，问他为什么藏起证据"
+        record["observable_storyboard_indices"] = [3]
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertNotIn("CHARACTER_STATE_MANIFESTATION_MISSING", codes)
+        self.assertNotIn("CHARACTER_STATE_MANIFESTATION_NOT_SHOWN", codes)
+        self.assertNotIn("CHARACTER_STATE_MANIFESTATION_TOO_ABSTRACT", codes)
+
+    def test_a87_warns_when_state_change_has_only_abstract_emotion_label(self):
+        plan = self._a86_changed_state_plan()
+        record = plan["episodes"][1]["continuity_state"]["character_state_ledger"][0]
+        record["observable_manifestation"] = "小林感到怀疑，态度改变"
+        record["observable_storyboard_indices"] = [2]
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("CHARACTER_STATE_MANIFESTATION_TOO_ABSTRACT", codes)
+
+    def test_a87_warns_when_observable_manifestation_is_not_in_referenced_shot(self):
+        plan = self._a86_changed_state_plan()
+        record = plan["episodes"][1]["continuity_state"]["character_state_ledger"][0]
+        record["observable_manifestation"] = "小林转身离开并锁上门"
+        record["observable_storyboard_indices"] = [3]
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("CHARACTER_STATE_MANIFESTATION_NOT_SHOWN", codes)
+
+    def test_a86_prompt_requires_causal_closure_for_changed_states(self):
+        prompt = build_short_drama_prompt({}, {"drama_business_mode": "general"})
+        for field in ("trigger_event", "trigger_storyboard_indices", "change_storyboard_indices",
+                      "reaction_evidence", "downstream_consequence_evidence"):
+            self.assertIn(field, prompt)
+
+    def test_a83_prompt_requires_tracking_commitments_misunderstandings_and_consequences(self):
+        prompt = build_short_drama_prompt({}, {"drama_business_mode": "general"})
+        self.assertIn("narrative_obligations", prompt)
+        self.assertIn("承诺、误解和行动后果", prompt)
+        self.assertIn("follow_through_storyboard_indices", prompt)
 
     def test_validates_story_first_plan(self):
         plan = validate_short_drama(sample_plan())
@@ -751,6 +1103,12 @@ class ShortDramaTests(unittest.TestCase):
             report = audit_short_drama(plan, {"name": "商品"})
             self.assertNotIn("PRODUCT_VISUAL_NOT_VERIFIED", {issue["code"] for issue in report["issues"]})
 
+            # Evidence can become stale after a prior pass; re-audit must revoke
+            # current trust rather than relying on the historical passed flag.
+            evidence.unlink()
+            report_after_delete = audit_short_drama(plan, {"name": "商品"})
+            self.assertIn("PRODUCT_VISUAL_NOT_VERIFIED", {issue["code"] for issue in report_after_delete["issues"]})
+
     def test_manual_product_visual_review_persists_real_evidence(self):
         import tempfile
         from pathlib import Path
@@ -915,6 +1273,55 @@ class ShortDramaTests(unittest.TestCase):
             with self.assertRaisesRegex(ShortDramaPlanError, "仅支持常见图片格式"):
                 compare_product_visual_shot(FakeRouter(), plan, 1, [str(valid_ref)], str(unsupported_generated))
 
+    def test_a58_invalid_visual_evidence_never_calls_vision_router_or_mutates_plan(self):
+        import tempfile
+        from pathlib import Path
+
+        class CountingRouter:
+            def __init__(self):
+                self.calls = 0
+            def resolve_route(self, function):
+                self.calls += 1
+                raise AssertionError(f"vision route must not be called for invalid evidence: {function}")
+            def complete_json(self, *args, **kwargs):
+                self.calls += 1
+                raise AssertionError("vision completion must not be called for invalid evidence")
+
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            valid_ref = root / "reference.png"
+            valid_ref.write_bytes(b"reference-bytes")
+            valid_generated = root / "generated.png"
+            valid_generated.write_bytes(b"generated-bytes")
+            empty_ref = root / "empty-reference.png"
+            empty_ref.write_bytes(b"")
+            unsupported_ref = root / "reference.pdf"
+            unsupported_ref.write_bytes(b"pdf-bytes")
+            empty_generated = root / "empty-generated.png"
+            empty_generated.write_bytes(b"")
+            unsupported_generated = root / "generated.bin"
+            unsupported_generated.write_bytes(b"unknown-bytes")
+            missing_ref = root / "missing-reference.png"
+            missing_generated = root / "missing-generated.png"
+
+            invalid_cases = [
+                ([str(missing_ref)], str(valid_generated)),
+                ([str(empty_ref)], str(valid_generated)),
+                ([str(unsupported_ref)], str(valid_generated)),
+                ([str(valid_ref)], str(missing_generated)),
+                ([str(valid_ref)], str(empty_generated)),
+                ([str(valid_ref)], str(unsupported_generated)),
+            ]
+            for refs, target in invalid_cases:
+                plan = sample_plan()
+                plan["drama_business_mode"] = "product_short_drama_ad"
+                before = json.dumps(plan, ensure_ascii=False, sort_keys=True)
+                router = CountingRouter()
+                with self.assertRaises(ShortDramaPlanError):
+                    compare_product_visual_shot(router, plan, 1, refs, target)
+                self.assertEqual(router.calls, 0)
+                self.assertEqual(json.dumps(plan, ensure_ascii=False, sort_keys=True), before)
+
     def test_product_drama_regeneration_changes_only_selected_shot_and_preserves_history(self):
         from ad_studio.short_drama import prepare_product_drama_shot_regeneration
         plan = sample_plan()
@@ -1013,6 +1420,119 @@ class ShortDramaTests(unittest.TestCase):
         with self.assertRaisesRegex(ShortDramaPlanError, "无法唯一定位|标题在短剧分镜中重复"):
             resolve_product_drama_shot_number(plan, legacy_shot)
 
+
+
+
+    def test_a90_series_asset_ids_are_bound_to_production_rows(self):
+        plan = sample_plan()
+        plan["series_asset_locks"] = [
+            {"asset_type": "actor", "asset_key": "lead", "target": "小林", "canonical_description": "固定演员", "asset_id": "actor-fixed"},
+            {"asset_type": "scene", "asset_key": "home", "target": "公寓玄关", "canonical_description": "固定布景", "asset_id": "scene-fixed"},
+        ]
+        rows = short_drama_production_rows(plan, "测试商品")
+        self.assertEqual(rows[0]["asset_resolution"]["actor_asset_id"], "actor-fixed")
+        self.assertEqual(rows[0]["asset_resolution"]["scene_asset_id"], "scene-fixed")
+        self.assertTrue(rows[0]["asset_resolution"]["generation_if_missing"])  # unlocked product/other assets may still generate
+
+    def test_a90_legacy_series_asset_locks_keep_tag_matching(self):
+        plan = sample_plan()
+        plan["series_asset_locks"] = [{"asset_type": "actor", "asset_key": "lead", "target": "小林", "canonical_description": "固定演员"}]
+        rows = short_drama_production_rows(plan, "测试商品")
+        self.assertIsNone(rows[0]["asset_resolution"]["actor_asset_id"])
+        self.assertTrue(rows[0]["asset_resolution"]["generation_if_missing"])
+
+    def test_a89_series_asset_locks_flow_into_production_requirements(self):
+        plan = sample_plan()
+        plan["series_asset_locks"] = [
+            {"asset_type": "actor", "asset_key": "lead-01", "target": "小林",
+             "canonical_description": "同一张脸、短黑发、深蓝通勤外套"},
+            {"asset_type": "scene", "asset_key": "home-entry", "target": "现代公寓",
+             "canonical_description": "同一玄关布局、浅木色鞋柜与左侧挂钩"},
+        ]
+        validated = validate_short_drama(plan)
+        shot = validated["storyboard"][0]
+        self.assertTrue(any("lead-01" in item and "短黑发" in item for item in shot["actor_requirements"]))
+        self.assertTrue(any("home-entry" in item and "浅木色鞋柜" in item for item in shot["scene_requirements"]))
+        rows = short_drama_production_rows(plan, "测试商品")
+        self.assertTrue(any("lead-01" in item for item in rows[0]["asset_resolution"]["actor_tags"]))
+        self.assertTrue(any("home-entry" in item for item in rows[0]["asset_resolution"]["scene_tags"]))
+
+    def test_a89_asset_locks_can_be_episode_scoped_and_bad_schema_is_rejected(self):
+        plan = sample_plan()
+        plan["series_asset_locks"] = [{"asset_type": "actor", "asset_key": "lead-01", "target": "小林",
+            "canonical_description": "固定身份外观", "episode_numbers": [2]}]
+        validated = validate_short_drama(plan)
+        self.assertFalse(any("lead-01" in item for item in validated["storyboard"][0]["actor_requirements"]))
+        plan["series_asset_locks"][0]["episode_numbers"] = [True]
+        with self.assertRaises(ShortDramaPlanError):
+            validate_short_drama(plan)
+
+    def test_a89_warns_when_asset_lock_target_does_not_match_any_shot(self):
+        plan = sample_plan()
+        plan["series_asset_locks"] = [{"asset_type": "actor", "asset_key": "missing", "target": "不存在的人物",
+            "canonical_description": "固定外观"}]
+        codes = {item["code"] for item in audit_short_drama(plan)["issues"]}
+        self.assertIn("SERIES_ASSET_LOCK_TARGET_NOT_FOUND", codes)
+
+    def test_a88_checks_cross_character_consistency_but_allows_different_beliefs(self):
+        plan = sample_plan()
+        plan["characters"].append({"name": "小王", "role": "同事", "goal": "帮忙", "motivation": "合作",
+            "fear_or_secret": "无", "relationship": "同事", "relationship_dynamics": "合作",
+            "decision_pressure": "时间紧", "arc": "积极行动"})
+        def run(rule, claim_b):
+            episode = {"episode_number": 1, "full_script": "小林认为钥匙在玄关，小王谈到钥匙位置。",
+                "storyboard": [{"index": 1, "action": "小林认为钥匙在玄关，小王谈到钥匙位置。", "dialogue": ""}],
+                "continuity_state": {"opening_state": "人物处于初始状态", "character_state_changes": [], "unresolved_threads": [], "ending_state": "本集状态已记录", "next_episode_requirements": [], "cross_character_dependencies": [{
+                    "character_a": "小林", "character_b": "小王", "dependency_key": "key_location",
+                    "dependency_type": "knowledge_alignment", "consistency_rule": rule,
+                    "character_a_claim": "知道钥匙在玄关", "character_b_claim": claim_b,
+                    "evidence": "小林认为钥匙在玄关，小王谈到钥匙位置", "storyboard_indices": [1]}]}}
+            return {i["code"] for i in audit_short_drama({"format_mode": "continuous_series", "episode_count": 1, "episodes": [episode], **plan})["issues"]}
+        self.assertIn("CROSS_CHARACTER_DEPENDENCY_CONTRADICTION", run("same_understanding", "认为钥匙在办公室"))
+        self.assertNotIn("CROSS_CHARACTER_DEPENDENCY_CONTRADICTION", run("different_beliefs_allowed", "认为钥匙在办公室"))
+        self.assertIn("CROSS_CHARACTER_ASYMMETRY_UNEXPLAINED", run("asymmetric_knowledge", "不知道钥匙位置"))
+
+    def test_a88_warns_for_unknown_character_and_invalid_reference(self):
+        plan = sample_plan()
+        episode = {"episode_number": 1, "full_script": "小林没有告诉小王钥匙的位置。",
+            "storyboard": [{"index": 1, "action": "小林没有告诉小王钥匙的位置。", "dialogue": ""}],
+            "continuity_state": {"opening_state": "人物处于初始状态", "character_state_changes": [], "unresolved_threads": [], "ending_state": "本集状态已记录", "next_episode_requirements": [], "cross_character_dependencies": [{
+                "character_a": "小林", "character_b": "不存在的人物", "dependency_key": "x",
+                "dependency_type": "knowledge_alignment", "consistency_rule": "asymmetric_knowledge",
+                "character_a_claim": "知道位置", "character_b_claim": "不知道位置",
+                "evidence": "小林没有告诉小王钥匙的位置", "storyboard_indices": [9]}]}}
+        codes = {i["code"] for i in audit_short_drama({"format_mode": "continuous_series", "episode_count": 1, "episodes": [episode], **plan})["issues"]}
+        self.assertIn("CROSS_CHARACTER_DEPENDENCY_CHARACTERS_INVALID", codes)
+        self.assertIn("CROSS_CHARACTER_DEPENDENCY_SHOTS_INVALID", codes)
+
+
+    def test_product_drama_regeneration_preserves_unknown_cost_instead_of_zero(self):
+        from ad_studio.short_drama import prepare_product_drama_shot_regeneration
+
+        plan = {
+            "drama_business_mode": "product_short_drama_ad",
+            "storyboard": [{
+                "generation_prompt": "keep product unchanged",
+                "visual_verification": "failed",
+            }],
+        }
+        updated = prepare_product_drama_shot_regeneration(
+            plan, 1, "保留商品外观和结构",
+            previous_version=2,
+            estimated_cost_rmb=None,
+            estimated_cost_status="price_missing",
+        )
+        history = updated["storyboard"][0]["regeneration_history"][0]
+        self.assertIsNone(history["estimated_cost_rmb"])
+        self.assertEqual(history["estimated_cost_status"], "price_missing")
+
+        with self.assertRaisesRegex(Exception, "未知/未配置价格不能用数字金额伪装"):
+            prepare_product_drama_shot_regeneration(
+                plan, 1, "保留商品外观和结构",
+                previous_version=2,
+                estimated_cost_rmb=0.0,
+                estimated_cost_status="price_missing",
+            )
 
 if __name__ == "__main__":
     unittest.main()

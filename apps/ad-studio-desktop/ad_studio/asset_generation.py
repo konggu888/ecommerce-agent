@@ -13,6 +13,8 @@ class AssetGenerationResult:
     cost_rmb: float
     provider: str
     source: str = "cloud"   # 'local' / 'cloud'
+    endpoint: str = ""
+    cost_status: str = "unknown"
 
 
 class LocalAssetBackend:
@@ -92,7 +94,7 @@ class AssetGenerator:
         except Exception:
             return 0.0
 
-    def generate(self, kind, name, prompt, tags=None, request_id=""):
+    def generate(self, kind, name, prompt, tags=None, request_id="", authorize_cloud=None):
         cfg = self._cfg(kind)
         if not cfg.get("endpoint"):
             raise RuntimeError(f"未配置{kind}自动生成服务（本地或云端）")
@@ -100,6 +102,8 @@ class AssetGenerator:
         if decision.target == "local":
             return self._local_generate(kind, name, prompt, tags or [], cfg)
         if decision.target == "cloud":
+            if not callable(authorize_cloud) or not bool(authorize_cloud(decision, kind)):
+                raise RuntimeError(f"{kind} 生成需要调用云端 Provider，但本次没有获得明确授权；未发送请求。请在展示 endpoint、数据类别和费用后由用户确认，再显式传入授权回调。")
             return self._cloud_generate(kind, name, prompt, tags or [], cfg)
         raise RuntimeError(f"{kind}自动生成服务不可用：{decision.reason}")
 
@@ -114,7 +118,7 @@ class AssetGenerator:
         out = self._asset_path(kind, aid + ".png")
         LocalAssetBackend(endpoint).generate_asset(prompt, out)
         asset = Asset(aid, name, kind, "ai_generated", str(out), tags)
-        return AssetGenerationResult(asset=asset, cost_rmb=0.0, provider="本地图像服务", source="local")
+        return AssetGenerationResult(asset=asset, cost_rmb=0.0, provider="本地图像服务", source="local", endpoint=endpoint, cost_status="local_no_provider_charge")
 
     def _cloud_generate(self, kind, name, prompt, tags, cfg):
         endpoint = (cfg.get("endpoint") or "").strip()
@@ -131,4 +135,4 @@ class AssetGenerator:
         )
         provider.generate_asset(GenerationRequest(prompt=prompt, output=out, reference_assets=[]))
         asset = Asset(aid, name, kind, "ai_generated", str(out), tags)
-        return AssetGenerationResult(asset=asset, cost_rmb=self.price(kind), provider=provider.provider_name, source="cloud")
+        return AssetGenerationResult(asset=asset, cost_rmb=self.price(kind), provider=provider.provider_name, source="cloud", endpoint=endpoint, cost_status="estimated_from_configured_price" if "price_rmb" in cfg else "price_missing")

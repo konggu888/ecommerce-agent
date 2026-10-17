@@ -71,19 +71,21 @@ def estimate_asset_generation(library, root, creative_shots):
         '已配置':any(generator.configured(k) for k in ('演员','场景','商品素材'))
     }
 def estimate_cost(shots, rates=None):
-    """Return a preflight estimate with an auditable line-item breakdown.
-
-    The default rate table is a placeholder provider price table, not a claim
-    about any particular vendor. Passing rates lets the real provider adapter
-    supply current prices later.
-    """
+    """Return an auditable preflight estimate; None video rate means unknown, not free."""
     r=dict(DEFAULT_RATES)
     if rates:
         r.update(rates)
     count=max(1,int(shots))
+    video_rate=r.get('cloud_video_per_shot')
+    price_unknown=video_rate is None
+    if price_unknown:
+        video_item={'项目':'云端视频生成','数量':count,'单价':None,'小计':None,'计费方式':'单价未配置，费用未知'}
+    else:
+        video_rate=float(video_rate)
+        video_item={'项目':'云端视频生成','数量':count,'单价':round(video_rate,4),
+                    '小计':round(count*video_rate,2),'计费方式':'按计划镜头'}
     items=[
-        {'项目':'云端视频生成','数量':count,'单价':round(float(r['cloud_video_per_shot']),4),
-         '小计':round(count*float(r['cloud_video_per_shot']),2),'计费方式':'按计划镜头'},
+        video_item,
         {'项目':'云端图片/资产生成','数量':0,'单价':round(float(r['cloud_image_per_asset']),4),
          '小计':0.0,'计费方式':'按新增资产'},
         {'项目':'云端配音','数量':0,'单价':round(float(r['cloud_voice_per_shot']),4),
@@ -93,10 +95,15 @@ def estimate_cost(shots, rates=None):
         {'项目':'本地处理/FFmpeg','数量':1,'单价':round(float(r['local_processing']),4),
          '小计':round(float(r['local_processing']),2),'计费方式':'本地'},
     ]
-    cloud=round(sum(x['小计'] for x in items if x['项目']!='本地4050处理/FFmpeg'),2)
-    local=round(next(x['小计'] for x in items if x['项目']=='本地处理/FFmpeg'),2)
-    total=round(local+cloud,2)
+    cloud_known=round(sum(float(x['小计']) for x in items if x['小计'] is not None and x['项目']!='本地处理/FFmpeg'),2)
+    local=round(next(float(x['小计']) for x in items if x['项目']=='本地处理/FFmpeg'),2)
+    known_subtotal=round(local+cloud_known,2)
+    total=None if price_unknown else known_subtotal
     return {
-        '本地':local,'云端':cloud,'总计':total,'预算':3.0,'超预算':total>3,
-        '明细':items,'计价说明':'云端价格来自当前配置；默认 ¥0.72/计划视频镜头仅为占位价，不代表固定供应商报价。'
+        '本地':local,'云端':cloud_known,'总计':total,'已知小计':known_subtotal,
+        '费用未知':price_unknown,'预算':3.0,
+        '超预算':None if price_unknown else total>3,
+        '明细':items,
+        '计价说明':('视频 Provider 单价未配置，无法可靠估算总费用；已知小计不包含未知视频费用。' if price_unknown else
+                   '云端价格来自当前配置；默认 ¥0.72/计划视频镜头仅为占位价，不代表固定供应商报价。')
     }

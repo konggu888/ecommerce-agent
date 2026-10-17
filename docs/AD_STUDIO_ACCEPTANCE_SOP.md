@@ -1,3 +1,5 @@
+> **强制补充｜2026-10-14：** 每次验收先按 `docs/AD_STUDIO_EXECUTION_CONTROL.md` 固定任务范围，并在 `docs/AD_STUDIO_PROGRESS_DASHBOARD.md` 记录状态和证据。禁止因任务外联想扩大验收；非阻断发现登记待办。验收结论必须区分开发完成、自动化通过、模块/模拟端到端通过、待真实环境验收与正式验收通过。CI 证据绑定本次 SHA，暂缓项不得视为通过。
+
 # AI 商品广告工厂｜标准验收操作规程
 
 > 本文件是项目的**长期验收 SOP**。以后任何 AI、Codex 或开发代理收到“验收”“重新验收”“独立验收”“从头验收”等指令时，必须按本规程执行。
@@ -463,6 +465,9 @@
 - [ ] 字幕
 - [ ] 音频
 - [ ] 画幅
+- [ ] 最终成片尺寸达到所选画幅的最低 1080P 级配置（竖屏 1080×1920、横屏 1920×1080、方形 1080×1080）
+- [ ] 对低分辨率输入验证最终归一化转码，并用 ffprobe 复核输出实际尺寸
+- [ ] 分辨率放大不得误报为 AI 超分/细节恢复
 - [ ] 时长
 - [ ] 成片输出
 
@@ -949,6 +954,8 @@ AI 必须执行：
 ### A61 handoff 文案断言修复
 若 `test_handoff_mentions_a61_legacy_cost_migration` 失败，必须在根级 AI 接手文档明确写出“历史成本迁移”及其防止旧成本丢失/重复迁移的机制；保留测试，不删除断言。随后重新运行完整 CI 与 docs-sync。
 
+**当前证据边界：** 现测试断言根级接手文档包含 `A61` 和准确术语“历史实际成本迁移”。A62 是文案/测试一致性修复记录，不是独立产品功能；源码/测试审计快照 `59cc175b40d8040c6e67fccba1b07186e625921e` 的四项 CI/doc-sync 均成功，最终文档 HEAD 仍须以进度台账中的最新结果为准。
+
 
 ## A63｜迁移后新费用失败验收
 1. 准备旧项目历史成本与失败-only 账本。
@@ -956,6 +963,8 @@ AI 必须执行：
 3. 确认项目和镜头内存成本、cost_estimate.actual_cost_rmb 仍等于历史金额，且迁移 ledger 行保留。
 4. 保存并重载项目，确认旧成本没有回退或清零。
 5. 运行完整 CI 与 docs-sync。
+
+**当前证据边界：** `test_a63_migrated_legacy_cost_survives_when_new_charge_record_fails` 当前直接断言内存中的项目成本、镜头成本、`cost_estimate` 与迁移账本行；没有在该专项测试中直接保存并重载项目。正式确认前须补上保存/重载断言，或明确将该项保留为未完成边界。
 
 
 ## A64｜素材成本账本故障验收
@@ -965,6 +974,8 @@ AI 必须执行：
 4. 确认 resolve_assets 与 generate_missing_asset 两条入口都走同一安全处理。
 5. 运行完整 CI 与 docs-sync；真实供应商扣款仍另行对账。
 
+**当前证据边界：** 新增两个行为级故障注入测试，分别覆盖 `resolve_assets` 与 `generate_missing_asset`，检查生成文件/资产库记录、asset ID、镜头引用、保存重载后的成本待核对状态。新增测试须等待最新 SHA CI 成功；模拟 Provider/账本故障仍不替代真实账单核对。
+
 
 ## A65｜用量账本持久化故障验收
 1. 先写入一条成功成本记录并保存原始账本内容。
@@ -972,6 +983,8 @@ AI 必须执行：
 3. 批量写入至少 2001 条成功记录，确认持久化行数和 project_summary 成本总额完整，不发生固定上限截断。
 4. 确认 recent(limit) 只限制展示结果，不影响底层历史与成本汇总。
 5. 运行完整 CI 与 docs-sync；该自动化验收不代替真实 Provider 账单对账。
+
+**当前证据边界：** 新增了替换失败后临时文件清理断言，以及调用 `recent(10)` 前后账本行数与项目成本汇总保持一致的回归断言。该提交的自动化证据需等待最新 SHA CI 成功；真实 Provider 账单仍需单独核对。
 
 
 ## A66｜人工商品画面核验证据文件验收
@@ -991,6 +1004,49 @@ AI 必须执行：
 5. 该步骤只验收证据文件有效性，不替代人工对照商品外观、结构、功能和正确用法；真实素材及 Windows 真机验收仍单独执行。
 
 
+## A68｜AI 短剧后续剧情影响分析验收
+1. 准备至少三集短剧方案和连续性台账，指定第 1 集进行影响分析。
+2. 确认报告只列出真实存在且晚于源集的后续集，包含风险等级、具体依据与建议，并保存到方案。
+3. 确认分析不会自动改写任一集；测试不存在的集、源集本身和非后续集编号均被拒绝。
+4. 运行 test_short_drama.py 对应连续性影响测试、完整 CI 与 docs-sync。
+5. 人工评审真实模型分析质量；不把结构检查说成穷尽语义矛盾。
+
+## A69｜故事引擎与留存设计验收
+1. 对新生成方案分别删除 story_engine、减少冲突升级步骤、删除 hook_design 或留存装置，确认生成流程拒绝保存。
+2. 确认旧方案读取仍兼容，审核报告能指出缺项。
+3. 运行 test_generation_rejects_short_drama_without_causal_story_engine、test_generation_prompt_requires_causal_conflict_hook_and_payoff 与 test_audit_flags_missing_story_engine_and_hook_design。
+4. 检查完整 CI/doc-sync；真实模型写作质量仍需人工评审。
+
+## A70｜故事结构审查验收
+1. 分别构造缺少人物目标/阻力/代价/转折/伏笔兑现/情绪回报、冲突升级不足和 hook 不完整的旧方案。
+2. 确认 audit_short_drama 返回对应 warning，不把旧方案读取直接阻断。
+3. 运行短剧专项测试、完整 CI 与 docs-sync；记录最新 SHA。
+4. 人工确认 warning 不被误写成“剧情必然失败”的结论。
+
+## A71｜备选故事方向差异化验收
+1. 删除一个备选方向必填字段，确认新生成方案被拒绝。
+2. 让两个方向的核心叙事机制签名完全相同，确认拒绝；再使用不同机制的完整方向确认通过。
+3. 运行 test_generation_rejects_duplicate_story_direction_mechanisms 与 test_generation_requires_distinct_story_direction_fields、完整 CI/doc-sync。
+4. 记录语义相似内容仍可能漏检，需要人工评审。
+
+## A72｜人物动机与关系动力验收
+1. 删除人物 motivation 或 relationship_dynamics 等关键字段，确认新生成流程拒绝保存。
+2. 对旧方案运行审查，确认缺失字段只产生 warning 并保持兼容。
+3. 运行 test_generation_rejects_character_without_motivation_and_relationship_dynamics、test_audit_warns_when_character_motivation_is_missing、完整 CI/doc-sync。
+4. 不把字段检查等同于心理真实性或人物弧光质量。
+
+## A73｜剧情事件因果链验收
+1. 对新方案删除 causal_chain、删掉 consequence 或打乱 step 顺序，确认生成校验拒绝。
+2. 对旧方案缺少 causal_chain 的情况运行审查，确认只产生 warning。
+3. 运行 test_generation_rejects_missing_causal_chain、test_generation_rejects_causal_step_without_consequence、test_audit_warns_when_causal_chain_is_missing 与完整 CI/doc-sync。
+4. 结构测试不替代整段剧情因果评审。
+
+## A74｜因果链剧本/分镜证据对齐验收
+1. 将 script_evidence 改为 full_script 中不存在的文本，确认新生成校验拒绝。
+2. 将 storyboard_indices 指向 0、越界索引或不存在的分镜，确认拒绝。
+3. 对旧方案运行审查，确认输出 CAUSAL_SCRIPT_MISMATCH、CAUSAL_STORYBOARD_MISSING 或 CAUSAL_STORYBOARD_MISMATCH 中相应警告。
+4. 运行 test_generation_rejects_causal_evidence_not_in_script、test_generation_rejects_causal_chain_with_invalid_storyboard_reference、test_audit_flags_causal_script_and_storyboard_mismatch 与完整 CI/doc-sync。
+5. 文本证据对齐不代表真实画面已演出事件；真实素材/Windows 验收仍按用户要求暂缓。
 ## A75：商品事实锁与剧情内容交叉审查
 1. 用未在商品资料中出现的已确认事实运行审查，确认产生 `PRODUCT_CONFIRMED_FACT_UNSUPPORTED`。
 2. 将未核实参数作为肯定宣传语写入剧本，确认产生 `PRODUCT_UNKNOWN_FACT_USED`。
@@ -1047,3 +1103,602 @@ AI 必须执行：
 5. 使用无效/越序镜头位置，确认产生对应 warning。
 6. 运行短剧专项测试、完整 CI 和 docs-sync，并记录最新 SHA。
 7. 该规则只检查结构与文本覆盖，不等于人物状态/剧情语义真实性验收。
+
+
+### A82 专项：人物信息来源是否符合剧情时间线
+1. 在第2镜引用第3镜作为信息来源，确认出现 `CHARACTER_KNOWLEDGE_REVEALED_LATER`。
+2. 在第2镜引用第1镜且来源原文出现在第1镜动作/台词/生成提示中，确认不出现时间倒置和来源文本不匹配警告。
+3. 将来源类型设为 `preexisting` 且来源镜头列表为空，确认不会因来源镜头缺失而警告。
+4. 检查缺失/无效字段、无效镜头位置和来源原文不在被引用镜头的情况。
+5. 运行短剧专项测试、完整 CI 和 docs-sync；所有状态必须对应同一最新 SHA。
+6. 本规则只能筛查时间顺序与文本引用，不能完全判断人物是否真的知道、理解或相信相关信息。
+
+
+### A83 专项：人物承诺、误解与行动结果是否得到后续承接
+1. 对承诺案例，构造来源镜头明确作出承诺、后续镜头明确兑现的方案，确认不出现来源/后续文本未展示警告。
+2. 删除兑现动作或让后续镜头与预期结果无关，确认产生 `NARRATIVE_OBLIGATION_FOLLOW_THROUGH_NOT_SHOWN`。
+3. 对误解案例，检查误解的来源镜头有效、后续镜头位置晚于来源，且后续镜头明确体现误解持续或被澄清。
+4. 对行动后果案例，检查人物引用存在、来源证据能在来源镜头文本定位、后续结果能在引用镜头文本定位。
+5. 注入未知人物、无效来源索引、无效后续索引、同镜/倒序引用、缺失类型/状态/后续结果，确认产生对应 warning。
+6. 移除旧方案的 `narrative_obligations`，确认只产生兼容性 warning，不阻止读取。
+7. 运行短剧专项测试、完整 CI、docs-sync，并记录同一最新 SHA。
+8. 这些规则只做结构、顺序和文本覆盖检查，不证明承诺可信、误解合理或行动后果具备真实语义因果。
+
+
+### A84 专项：跨集承诺、误解和行动后果连续性
+1. 建立至少两集的 continuous_series 方案，根级 storyboard 中每镜都有正确的 `episode_number`。
+2. 在第1集来源镜头创建一项 `cross_episode_required=true`、状态为 `open` 的事项，并让来源集 `continuity_state` 与第2集开场状态显式承接它；确认不出现 A84 warning。
+3. 删除第1集的 `unresolved_threads`、`next_episode_requirements` 和相关 `ending_state` 文本，确认出现 `NARRATIVE_OBLIGATION_NOT_IN_EPISODE_HANDOFF`。
+4. 删除第2集开场状态/未解线索中的对应内容，确认出现 `NARRATIVE_OBLIGATION_NOT_CARRIED_FORWARD`。
+5. 把后续镜头引用改成第1集镜头，确认出现 `NARRATIVE_OBLIGATION_CROSS_EPISODE_FOLLOW_THROUGH_MISSING`。
+6. 移除 `cross_episode_required` 或设置为 false，确认不对旧方案强制跨集承接。
+7. 运行短剧专项测试、完整 CI、docs-sync，并记录最终 SHA 与各工作流结果。Windows 真机、真实 Provider、实际扣款仍按用户既定安排暂缓。
+8. A84 的文本命中不证明人物真实记得/理解事项，仍需人工或语义复核。
+
+
+### A84 本轮结果记录（2026-10-13）
+SHA `00ad0d00a9747ca9ef666981b4e592bef6bde543` 的完整 CI 与 docs-sync 在 push/PR 触发下均通过（CI：`38308777852`、`38308783208`；docs-sync：`38308777939`、`38308783195`）。
+
+
+### A85 专项：人物状态与关系跨集台账
+1. 为连续剧至少两集分别添加 `continuity_state.character_state_ledger`，用 `character_name + dimension` 唯一标识状态，写明状态描述、证据、本集镜头引用和 `must_persist`。
+2. 第一集状态标记必须延续，下一集保持相同状态描述；运行审查，确认没有 A85 跨集警告。
+3. 删除下一集对应状态项，确认 `CHARACTER_STATE_NOT_CARRIED_FORWARD`。
+4. 修改下一集状态描述但状态仍标记为 persisting，确认 `CHARACTER_STATE_CHANGED_WITHOUT_DECLARATION`。
+5. 把状态改为 changed，但移除 transition_evidence 或使其无法在本集剧本/分镜中定位，确认 `CHARACTER_STATE_CHANGE_UNJUSTIFIED`。
+6. 将 must_persist 改为字符串，或使用未定义人物/无效分镜引用，确认相应字段/证据警告。
+7. 移除整个可选台账，确认旧方案仍可读且不强制产生 A85 警告。
+8. 运行短剧专项测试、完整 CI 与 docs-sync，记录最新 SHA 和结果。Windows 真机、真实 Provider、真实扣款仍按用户既定安排暂缓。
+9. 人物关系、心理变化与秘密揭露的深层语义仍需人工或语义模型复核；文本命中不是充分证明。
+
+
+### A85 本轮结果记录
+代码/测试 SHA `6128fabc3c530c6072dfe72e05a956fe7733065f` 的完整 CI push/PR 和 docs-sync push/PR 均通过：CI `38309397555`、`38309402963`；docs-sync `38309397567`、`38309403129`。最终文档提交后需重新确认最新 SHA 的工作流。
+
+
+### A86 专项：人物状态变化因果闭环
+1. 选取一个 `status=changed` 的人物状态，设置触发事件、触发镜头、状态改变镜头、反应证据/镜头、后续影响证据/镜头。
+2. 运行审查，确认触发早于变化，反应与后果晚于变化且证据可定位。
+3. 分别删除触发证据、将触发镜头放到变化之后、删除反应证据、将后续影响放到变化之前，确认对应警告。
+4. 检查无可选人物状态台账的旧方案仍兼容。
+5. 执行短剧专项测试、完整 CI 与 docs-sync；记录最新 SHA 和结果。不得将字符串/顺序检查当作真正的心理因果理解。
+
+
+### A87 专项验收：人物状态是否落实到分镜表演
+1. 给 changed 状态补充可观察表现和镜头引用，确认有效案例通过。
+2. 改成仅有抽象情绪标签，确认 `CHARACTER_STATE_MANIFESTATION_TOO_ABSTRACT`。
+3. 将描述替换为引用镜头中不存在的动作，确认 `CHARACTER_STATE_MANIFESTATION_NOT_SHOWN`。
+4. 删除表现字段或镜头引用，确认 `CHARACTER_STATE_MANIFESTATION_MISSING`。
+5. 检查旧方案兼容，运行短剧专项测试、完整 CI 与 docs-sync，并记录最终 SHA。真实视频表演仍需独立视觉/人工核验。
+\n\n### A88 专项验收：多人物状态依赖一致性
+1. 测试双方理解一致的记录与 `same_understanding` 下直接冲突的记录。
+2. 测试 `different_beliefs_allowed` 不误报不同信念。
+3. 测试知识不对称缺少原因、未知人物、无效镜头、缺少双方状态及不可定位证据。
+4. 验证旧方案没有该可选字段时兼容，运行短剧专项测试、完整 CI 和 docs-sync。文本检查不等于自动理解叙事语义。
+
+### A89 专项验收：跨集演员/场景资产锁定
+1. 为角色与场景分别定义锁定项，检查规范描述进入匹配镜头的 actor_requirements/scene_requirements。
+2. 检查 `short_drama_production_rows()` 的 actor_tags/scene_tags 包含锁定描述。
+3. 指定集号范围，确认范围外镜头不应用锁定。
+4. 测试非法类型、非正整数/布尔集号及不存在目标；目标缺失应出现 `SERIES_ASSET_LOCK_TARGET_NOT_FOUND`。
+5. 检查续写下一集上下文仍带 series_asset_locks。
+6. 运行专项测试、完整 CI 与 docs-sync；文本锁定不能冒充物理素材复用或画面验收。
+
+
+### A89 自动化验收结果（2026-10-14）
+最终 SHA `9bcb19ac950f0addcc5a0bfab599dd060c11ec1e` 的 CI push/PR 与 docs-sync push/PR 全部通过；Desktop Core 299 项测试通过。文本需求层锁定已自动化验收，物理资产 ID 复用和生成画面身份一致性仍未验收。
+
+
+## A90：跨集物理素材 ID 绑定（待最新 SHA 自动化验收）
+跨集演员/场景锁定可选指定本地素材库 asset_id，并将精确 ID 传入制作行。生产解析按 ID 验证资产存在、启用、可复用且类型匹配；无效时明确返回 SERIES_LOCKED_ASSET_INVALID，禁止静默替换或自动生成。未提供 ID 的 A89 旧方案保持标签匹配兼容。此约束只保证素材调度选择，不保证生成画面像素级一致。最新 SHA 的完整 CI/docs-sync 必须重新核验；PR #32 保持 open/unmerged，Windows 真机与真实 Provider 验收继续暂缓。
+
+
+## A91｜跨集锁定失效保护验收步骤
+1. 为演员/场景绑定精确 asset_id。
+2. 分别删除素材、停用、关闭可复用标记、改变素材类型或使索引不可读取；均应返回明确锁定错误。
+3. 重新打开项目并恢复任务，确认原 ID 保留、失效原因进入恢复记录。
+4. 尝试生成/重生成受影响镜头，确认 Provider 调用前被拦截；不替换素材、不重生成整部短剧。
+5. 修复原素材或由用户明确修改 ID 后再重试。
+6. 记录同一最终 SHA 的 Desktop Core、Python compile、完整 CI 与 docs-sync 结果。
+7. 额外确认：锁定失效时不应先生成同镜头其他缺失素材，再报告锁定错误。
+
+### A92 专项：跨集物理素材绑定落地
+1. 建立至少两集镜头，给演员/场景指定相同的精确 asset_id。
+2. 在素材库额外放入标签相似但 ID 不同的演员/场景。
+3. 分别解析各集镜头，确认每集 `actor_id` / `scene_id` 都严格等于锁定 ID，不能落到相似素材。
+4. 保存并重新打开项目，确认所有镜头绑定不变。
+5. 将锁定素材停用或删除，确认 A91 拦截而不是换素材或自动生成。
+6. 运行专项测试、完整 CI 和 docs-sync；记录同一最新 SHA。实际视频画面身份仍需视觉验收。
+
+### A92 CI 失败修正（待重新验收）
+首次 CI 显示 A92 保存/重载断言失败，原因是测试在 `resolve_assets()` 后未先保存项目。已修正测试步骤；待修复 SHA 的完整 CI/docs-sync 全部通过后才可将 A92 标记为完成。
+
+
+### A92 CI 根因修正（待重新验收）
+失败源于测试对默认镜头列表位置的错误假设，而非生产代码的 ID 持久化已被证明失效。现明确构造两个镜头，并按稳定 ID 验证每个镜头的演员/场景绑定；新 SHA 的完整 CI/docs-sync 通过后才能勾选完成。
+
+
+### A93 专项：Provider 调用边界与单镜头隔离
+1. 在本地素材库中创建一个已停用的跨集锁定演员/场景资产，并让目标镜头的创意计划继续引用原 asset_id。
+2. 使用计数型测试 Provider 调用单镜头渲染入口，而不只单测素材解析函数。
+3. 断言返回 SERIES_LOCKED_ASSET_INVALID，Provider 的 generate() 调用次数为 0。
+4. 断言原锁定 ID 保留、未绑定相似素材，且同镜头其他缺失素材未启动生成。
+5. 断言其他镜头的状态与已有输出路径未变化。
+6. 运行 Desktop Core、完整 CI push/PR、docs-sync push/PR；所有结果必须对应最终 SHA。
+7. 不得把此测试描述为真实 Provider、Windows 真机或生成画面的视觉验收。
+
+
+### A92/A93 自动化验收结果（2026-10-14；以本节为准）
+- 最终代码与测试 SHA：`db8c2a4e80bdbd6a5d308848e84905c1c2a348d0`。
+- CI push run `38470175403`、CI PR run `38470184669`、docs-sync push run `38470175408`、docs-sync PR run `38470184505` 均 success。
+- A92 跨集锁定 actor/scene 精确 ID 已验证解析绑定、相似标签不覆盖、保存/重开后绑定持久化。
+- A93 从 `_render_with_provider()` 入口验证失效锁定素材在 Provider 调用前拦截，Provider 调用次数为 0；保留原锁定 ID，不绑定替代演员，不影响其他镜头已有状态/路径。
+- PR #32 保持 open/unmerged。以上仅为自动化测试；Windows 真机、真实 Provider、真实账单/扣款、剪映现场及生成画面视觉一致性继续暂缓。
+
+
+### A94 专项：恢复原锁定素材后的安全重试
+1. 建立停用的原锁定演员和标签相同但 ID 不同的启用演员。
+2. 首次解析必须返回 SERIES_LOCKED_ASSET_INVALID，且不生成/不绑定替代项。
+3. 将原素材记录恢复为 active、reusable 且 kind 正确，再次解析。
+4. 断言成功绑定原 ID、source 为跨集锁定素材复用、generation_if_missing 为 false。
+5. 运行 Desktop Core、完整 CI push/PR 和 docs-sync push/PR，按最终 SHA 记录。
+
+
+### A94 自动化验收结果（2026-10-14；以本节为准）
+- 代码与测试 SHA：`289cc0954cb93ce1a218436d2a6137317a7c6130`。
+- CI push run `38470748908`、CI PR run `38470757428`、docs-sync push run `38470748944`、docs-sync PR run `38470757442` 均 success。
+- 失效阶段确认锁定素材错误并关闭生成；恢复同一 asset_id 后可重试并精确绑定原 ID，即使存在同标签相似资产也不替换；锁定 ID 仍禁止 fallback/自动生成。
+- PR #32 保持 open/unmerged；真实 Provider、Windows 真机、账单/扣款、剪映现场与画面视觉一致性仍暂缓。
+
+
+### A95 专项：素材索引损坏时 fail-closed
+1. 先创建有效锁定演员，然后将本地 `library.json` 写成截断/无效 JSON。
+2. 校验应返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`，不能将索引故障降级成“素材不存在”。
+3. 检查素材解析立即停止，不处理商品素材或触发自动生成。
+4. 从 `_render_with_provider()` 入口调用计数型 fake Provider，断言调用次数为 0。
+5. 检查原锁定 ID 和其他镜头状态/已有输出未改变。
+6. 修复索引后再单独验证恢复重试；全部 CI 与文档同步必须对应最新 SHA。
+
+
+### A95 自动化验收结果（2026-10-14；测试代码 SHA `6b225e09adac63265d53b27eae3ed6a54a51f49e`）
+- CI push run `38471501401`、CI PR run `38471510428`、docs-sync push run `38471501250`、docs-sync PR run `38471510506` 全部 success。
+- 无效/截断 `library.json` 返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`；素材解析提前停止，不继续处理其他素材；Provider 调用次数为 0。
+- 原锁定 ID 保留，非目标镜头状态及已有输出路径保持不变。
+- PR #32 保持 open/unmerged。真实 Provider、Windows 真机、实际账单/扣款、剪映现场和生成画面视觉一致性继续暂缓。
+
+
+### A96 专项：修复素材索引后的安全重试
+1. 将 `library.json` 写成截断 JSON，验证 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE` 和 fail-closed。
+2. 将索引修复为合法 JSON，恢复原锁定 ID，同时保留同标签相似资产。
+3. 对受影响镜头重试素材解析，断言绑定原 ID、来源为跨集锁定素材复用、禁止自动生成。
+4. 验证不会因先前的恢复记录而永久阻断；所有 CI/docs-sync 结果须对应最新 SHA。
+
+
+### A96 自动化验收结果（2026-10-14；测试代码 SHA `fc01ace4eeb90ccb2f2df10b44a57f8b3c69f134`）
+- CI push run `38471876626`、CI PR run `38471884325`、docs-sync push run `38471876601`、docs-sync PR run `38471884345` 全部 success。
+- 索引损坏时返回 `SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE` 并禁止 fallback；索引恢复后，重新解析精确绑定原锁定资产 ID，标签相似资产不能替换，且不触发自动生成。
+- PR #32 继续保持 open/unmerged。真实 Provider、Windows 真机、账单/扣款、剪映现场与生成画面视觉一致性继续暂缓。
+
+
+### A97 项目恢复单镜头隔离
+1. 建立缺失输出的目标镜头，并建立具有非空输出文件的正常兄弟镜头。
+2. 保存项目后执行 `recover_project()`。
+3. 检查只有目标镜头进入 `missing_media`；正常镜头的输出路径、状态、版本和费用不变。
+4. 重新加载项目，以稳定镜头 ID 复核上述字段。
+5. 核对最新提交 SHA 的 CI push、CI PR、docs-sync push、docs-sync PR 均通过。此自动化项不等于真机或真实供应商验收。
+
+
+### A98 重复恢复的缺失镜头摘要
+1. 建立一个输出文件丢失的镜头和一个有效输出的兄弟镜头。
+2. 第一次恢复后确认目标镜头进入“待重新生成/重新选择素材”。
+3. 不重新生成，第二次调用恢复；确认目标镜头仍在 `missing_media`，而不是因 `video_path=None` 消失。
+4. 确认普通“待生成”镜头不会被误判为恢复异常；有效兄弟镜头的输出、状态和版本保持不变。
+5. 保存/重载复核，并确认最新 SHA 四项 CI/docs-sync 检查全绿。
+
+
+## 商业剪辑能力专项验收补充（2026-10-14）
+当任务涉及“剪辑能力是否达到商业使用水平”时，不能仅确认视频能导出、FFmpeg 命令成功或 CI 通过。必须依次验证：
+1. 决策字段确实进入持久化/镜头模型；
+2. 字段确实影响执行命令（例如焦点坐标影响 crop x/y）；
+3. 参数无效时有安全、可预测的回退；
+4. 自动化测试断言真实命令和边界行为；
+5. 输出视频的实际视觉效果仍需成片验证，不能由命令字符串测试代替；
+6. 将“实现”“自动化验证”“真实成片验证”分别报告。
+本轮已处理焦点坐标不生效这一具体问题；其余商业节奏、音画卡点、镜头衔接、字幕密度和剪后反馈仍须单独实现/验收。
+
+
+## 商业剪辑焦点定位验收补充（2026-10-14）
+1. 明确区分“主体焦点坐标”和“裁切窗口偏移量”：`focus_x/focus_y` 是源画面中的归一化主体位置。
+2. 检查缩放后 crop 起点是否按“焦点位置减去目标画幅半宽/半高”计算，并夹紧在 `0..iw-ow` / `0..ih-oh`。
+3. 验证 `process_shot()` 实际传给 FFmpeg 的 `-vf` 参数，而不是只测试内部 helper 的返回值。
+4. 覆盖中心焦点、偏离中心焦点、越界值、NaN/Infinity、不可转换输入及无裁切余量的情况。
+5. 单元测试通过后，只能判定参数执行逻辑通过；不能据此宣称真实商品画面已被正确重构图或商业剪辑整体通过。
+
+## 文档同步 CI 覆盖范围验收（2026-10-14）
+1. 确认桌面代码/测试变更时，`tools/check_ad_studio_docs.py` 要求八个规则/文档文件同时出现在差异中。
+2. 检查脚本输出能逐条列出缺失文件，并在缺失时以非零退出码失败。
+3. 检查 `test_ai_handoff.py` 中的契约测试覆盖全部必需路径，防止 REQUIRED 清单被无意缩小。
+4. 分别检查最新 SHA 的完整 CI 与 docs-sync push/PR；不得把 docs-sync 通过等同于完整 CI 通过。
+5. 该机制只保证文件同步范围，不自动保证文档内容质量。
+
+
+## A100｜淡出滤镜专项验收
+1. 检查 `process_shot()` 是否在 `setpts` 后计算变速后的输出时长。
+2. 以 4 秒输入、2 倍速为例，检查淡出滤镜窗口是从 1.750 秒开始、持续 0.250 秒，而不是从 0 秒开始。
+3. 以 0.1 秒输入为例，检查淡出窗口起点为 0、时长为 0.1 秒。
+4. 检查当前提交 SHA 的完整 CI push/PR 与 docs-sync push/PR；任一项未结束或失败都不能写“自动化验收通过”。
+5. 真实 Windows/FFmpeg 画面与听感检查继续暂缓；此项不等于镜头衔接、音乐卡点或商业级剪辑整体验收。
+
+
+## A101｜变速音画同步专项验收
+1. 检查非 1.0 倍速命令同时包含 `setpts` 和 `atempo`，两者使用相同播放速度。
+2. 检查 1.0 倍速不会添加额外 `atempo` 滤镜。
+3. 检查本次提交 SHA 的完整 CI 与 docs-sync 的 push/PR 四个结果；任一未结束或失败都不能标记自动化验收通过。
+4. 真机使用含人声的素材试听音画同步与音质；该步骤目前按用户要求暂缓，不可用参数测试替代。
+
+
+## A102 验收补充：最终导出最低 1080P 级分辨率
+1. 检查 `build_final()` 是否对拼接后的最终输出执行归一化转码，而非只依赖单镜头后处理。
+2. 验证三种画幅目标分别为 1080×1920、1920×1080、1080×1080。
+3. 用 ffprobe 实际输出宽高进行交付闸门检查；尺寸不足必须拒绝交付。
+4. 自动化测试通过不能替代 Windows 实机画面检查；本项也不能声称实现 AI 超分/真实细节恢复。
+
+A102 回归夹具检查：如果测试使用 mock 替代 FFmpeg，必须让 mock 在目标路径实际创建临时输出文件；同时保留真实生产代码的归一化转码路径。
+
+
+## A103 验收：淡入/淡出音画同步
+1. 检查 `process_shot()` 在选择淡入/淡出时同时生成视频 `fade` 与音频 `afade`。
+2. 对变速淡出验证滤镜先应用 `atempo`，再按输出时间执行 `afade`。
+3. 使用小于 250ms 的测试时长，确认淡化时间不会超过镜头时长。
+4. 自动化参数测试不代替真实音频听感验收；Windows 实机验收仍按用户要求暂缓。
+
+
+## A104 验收：相邻镜头真实交叉溶解
+1. 检查 creative_engine.py 允许“交叉溶解”，且非法转场值回退为“硬切”。
+2. 检查 build_final() 仅在非首镜头明确选择交叉溶解时调用新拼接器；普通项目仍调用既有 concat。
+3. 检查 FFmpeg filter graph 含 xfade 与 acrossfade，按各镜头时长计算偏移，并为无音轨镜头生成等长静音。
+4. 检查输入视频画幅/FPS/timebase/像素格式统一，且短镜头不会使用超出 40% 镜头时长的溶解。
+5. 完整 CI 和 docs-sync push/PR 全部通过后才确认自动化验收；Windows 真机画面与听感检查继续按用户要求暂缓。
+
+
+## A105 验收：分镜 pacing 到播放速度执行
+1. 检查 `validate_plan()` 将慢/标准/快/极快分别转成 0.85/1.0/1.15/1.3 倍速默认值。
+2. 检查 schema 允许省略 `speed`；模型明确提供时覆盖默认映射，且仍按既有范围夹紧。
+3. 检查未知 pacing 标签回退“标准”及 1.0 倍速。
+4. 检查单测通过，且 `postprocess_shot()` 将有效 speed 传入 `process_shot()`，视频 `setpts` 与音频 `atempo` 保持同步。
+5. 最新 SHA 的 CI Push/PR 和 docs-sync Push/PR 全部通过后才确认自动化验收。此项不等于画面语义节奏分析、音乐卡点或商业剪辑整体完成。
+
+
+## A106 验收：商业镜头角色默认剪辑决策
+1. 检查 `resolve_editing_intent()` 只读取已声明的分镜文本，返回角色、时长、节奏、速度、转场、理由和依据边界。
+2. 分别验证开场钩子、商品细节、功能演示、证据对比和 CTA 默认值；末镜头 CTA 的默认淡出必须进入既有 transition 执行路径。
+3. 验证显式时长/速度/转场优先；显式 pacing 但省略 speed 时仍使用 A105 pacing 映射。
+4. 验证 `CreativeShot.editing_intent` 持久化角色、理由、依据、最终生效参数与参数来源；未知 pacing 标签必须回退标准；不得把关键词分类描述为真实画面语义理解。
+5. 检查新增回归测试及当前 SHA 的 CI Push/PR、docs-sync Push/PR；未全部成功前不得确认自动化验收。真实素材/Windows 画面与听感仍须另行验收。
+
+## A107 验收：商业角色时长进入运行时生成请求
+1. 从 `validate_plan()` 创建缺少 `duration_seconds` 的商品细节镜头，确认推断默认时长为 4 秒。
+2. 检查 `runtime_shot_editing_fields()` 将时长、pacing、speed、transition 一并映射到运行时 Shot，且 `app._activate_plan()` 使用该映射。
+3. 检查 `ProductionStore.generate_shot()` 的 `GenerationRequest.duration` 来源是运行时 Shot.duration_seconds；不得只在 editing_intent 报告中记录时长。
+4. 验证显式时长优先，新增回归测试通过，并检查当前 SHA 的 CI Push/PR、docs-sync Push/PR 四项全部成功。外部 Provider 实际遵守请求时长需要真实素材验收，不可由单测代替。
+
+
+## A108 验收：字幕信息密度与时间轴自适应（当前 SHA 需重新核验）
+1. 检查 `plan_subtitle_timing()` 使用实际时长，SRT 最后一段结束时间应覆盖整段镜头时长，而非固定 3 秒。
+2. 使用含标点的长文案验证优先分段；短镜头验证字幕切换数受限、密度风险明确返回，且原始文字未被删改。
+3. 检查字幕加工 UI 读取 `probe_duration()`，将 `analyze_subtitle_density()` 与 `write_srt()` 接入实际烧录流程；用户确认警告后仍可继续处理。
+4. 运行字幕测试并核验当前 SHA 的 CI Push/PR、docs-sync Push/PR 四项；实际阅读舒适度仍需真实素材/Windows 另行验收。
+
+
+## 17. 产品路线图与阶段门槛（2026-10-14，强制）
+
+正式产品路线图：`docs/AD_STUDIO_PRODUCT_ROADMAP.md`。任何 AI 在新增功能、修复后继续或选择下一任务前，必须先确认当前路线图阶段和下一项任务。
+
+1. 先写清任务对应的阶段目标、当前瓶颈、代码执行链与可验证结果。
+2. 专项测试必须覆盖正常、异常、边界/回退和对旧流程的回归；涉及媒体链路时验证实际 FFmpeg/时间轴行为，而不只断言字段存在。
+3. 分别报告自动化证据、CI/doc-sync 证据和真实环境未验证项。不能将 CI 绿灯等同于商业质量完成。
+4. 阶段退出条件未满足时，记录差距并留在当前阶段；不得因为存在其他想法而跳阶段，也不得因路线图提及某功能就把它当成已实现。
+5. 当前执行优先级以 `docs/AD_STUDIO_PROGRESS_DASHBOARD.md` 与路线图顶部 PLAN-003 状态为准：先做全量任务盘点、去重和当前代码/测试证据审计；旧记录中的商业剪辑/A109 下一步不得覆盖 PLAN-003。Windows 真机、真实素材、真实 Provider/扣费、剪映现场和真实投放验证继续暂缓。
+6. PR #32 必须保持 open/unmerged，除非用户明确另行授权。
+
+### A109 音乐卡点验收
+1. 检查所选 BGM 路径被持久化为项目级统一音轨。
+2. 用可控合成节拍验证检测、置信度与目标镜头时长计划。
+3. 检查最终渲染确实消费调整后的临时镜头，而非只保存审计报告。
+4. 检查低置信度、短镜头、超限变速和无效文件回退/报错行为。
+5. 检查全局 BGM 在最终拼接后只混入一次，原音轨与画面同速变速，最终输出仍经 1080P 归一化。
+6. 记录自动化与真实素材验收边界；不得把 CI 通过描述成商业卡点质量已经验收。
+
+### A109 旧项目音轨兼容边界
+A109 兼容边界：旧项目中已把 BGM 烧录进镜头音轨的成片，无法仅凭现有文件可靠分离旧音乐。重新使用全局 BGM 前，应从未混入 BGM 的镜头源重新执行字幕处理；否则可能叠加旧音乐。
+
+### A109 转场安全补充
+A109 转场安全补充：当前切点变速遇到显式“交叉溶解”时保守回退原镜头时长，仍保留既有交叉溶解与全局连续 BGM；待单独建模转场重叠时长后再开放这类边界的卡点调整。
+
+
+## 商业剪辑 A110：内容保护验收
+1. 确认音乐节拍计划读取的是最终镜头的实际时长，而不是只读取创意时长字段。
+2. 检查台词/脚本、屏幕文字、商品展示/演示/证据与 CTA 的保护下限是否传入规划器。
+3. 验证卡点若会压缩任何保护下限，必须整组回退原切点；不得只回退一个镜头却保留其他边界变速。
+4. 检查 last_music_sync_audit.content_protection 是否保存逐镜头下限和依据。
+5. 单元测试通过仅证明规则执行；真实语速、可读性、商品在画面中的可见性和商业效果不在自动化验收结论内。
+
+
+## 商业剪辑 A111：逐边界局部卡点验收
+1. 检查规划器以边界位移计算镜头时长，确认首尾边界固定、总时长不漂移。
+2. 用一个内容保护下限高于现有时长的镜头制造局部冲突，确认其相邻不安全边界回退，但远端安全边界仍可调整。
+3. 使用多个相邻受保护镜头，确认迭代回退不会留下任何越界镜头；仍无法满足约束时必须全组安全回退。
+4. 验证所有接受的镜头时长符合最短时长、最大时长变化、内容保护及 0.85–1.15 变速限制。
+5. 检查审计记录 `adjusted_boundaries` / `reverted_boundaries`；低置信度与交叉溶解保持保守回退。
+6. 仅将自动化结果视为规划规则证据，不代表真实画面理解、真实口播/字幕可读性或商业成片质量通过。
+
+
+### A111 测试夹具修正
+专项测试使用非等幅的相邻边界候选位移，明确制造局部镜头时长冲突；断言安全的远端边界仍能调整、冲突边界回退且总时长不漂移。此修正仅校准测试场景，不改变生产规划逻辑。
+
+
+### A111 CI 修复记录
+首轮 CI 暴露三处旧断言仍要求“任一内容保护冲突即整组不变”，与 A111 的局部回退目标冲突。现已把相关断言改为验证：受保护镜头不被进一步压短、冲突边界被记录回退、其他安全边界仍可调整；同时让审计原因明确包含“局部卡点”。需以本修复提交的四项 CI/doc-sync 结果作为最终依据。
+
+
+## 商业剪辑 A112：SRT 实际时间窗与卡点保护
+1. 追踪 A108 生成的 SRT 从创建、存储到烧录的完整路径，确认 cue 时间是否与单镜头时间轴一致。
+2. 只消费能可靠解析且落在镜头有效时长内的 cue；缺失/损坏/越界时记录回退原因，不得猜测时间戳。
+3. 检查 cue 时间窗能限制相关切点，且局部回退不破坏其他安全边界。
+4. 覆盖无字幕、单条、多条、短镜头、越界和格式错误 SRT。
+5. 仅报告自动化时间轴协调证据；ASR、口播语义对齐、真实画面可读性与 Windows 验收继续独立暂缓。
+\n\n## A112 验收步骤｜字幕真实 cue 时间窗保护\n1. 检查字幕加工是否为当前镜头版本保存 SRT 路径、输出视频路径和源时长。\n2. 运行字幕解析专项测试：单/多 cue、毫秒分隔格式、缺失/空/损坏文件、超界 cue 与时间轴不匹配。\n3. 检查最终生产链仅消费与当前视频路径/时长一致的 SRT；版本变化或证据缺失时必须回退并记录原因。\n4. 检查最短 cue 显示时长下限与台词/商品/CTA 下限取最大值，并进入 A111 局部卡点规划，而非只生成审计字段。\n5. 查询最新 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR 四项；CI 通过仅代表自动化层通过，不代表真实字幕可读性/口播同步通过。\n\nA112 实施跟进：已修正 SRT 时间戳正则和换行解析转义；重新检查必须基于最新 SHA 的完整 CI 与 docs-sync，自动化通过仍不代表真实字幕可读性/口播同步验收。
+
+## A112 自动化验收结果｜2026-10-14
+代码基线 e8deb1ec4ef9edf7d999c79539762ea2627affab 的 CI Push 38570453607、CI PR 38570460103、docs-sync Push 38570453565、docs-sync PR 38570460195 均 success。以后修改后仍必须检查最新 SHA；这些结果不代表 Windows/真实素材/真实听感验收。
+
+## AI 计划体系与范围控制（2026-10-14）
+
+统一执行规则见 `docs/AD_STUDIO_EXECUTION_CONTROL.md`，总进度入口见 `docs/AD_STUDIO_PROGRESS_DASHBOARD.md`。收到“推进/继续”时，必须先检查当前 HEAD、PR 和四项 CI/doc-sync，再从正式台账选择唯一下一项任务。每项任务必须写明目标、范围、排除项、依赖、实际生产链、测试矩阵、验收证据与停止条件；非阻断的额外想法只登记，不得顺手扩展。全量任务去重和权重审计完成前，禁止发布未经证据支持的总体完成百分比。PR #32 不合并；Windows 真机、真实 Provider/扣费、剪映现场、真实素材与投放验证继续暂缓。
+
+## A3 设置区控件布局专项步骤（2026-10-15）
+1. 检查 `App.ui()` 中字段控件是否位于 `fields` 容器，操作入口是否位于独立 `actions` 容器。
+2. 运行 `test_setup_form_grid_rows_do_not_overlap`，确认任务类型=(2,1)、视频形式=(3,1)、方案数=(4,1)、素材来源=(5,1)、文件夹输入=(5,2)、文件夹按钮=(5,3)、自动形式提示=(3,2)。
+3. 核验最新提交的完整 CI 与 docs-sync；仅 docs-sync 通过不算完整通过。
+4. 在未进行 Windows 真机测试前，结论只能是“自动化布局合同通过”，不能宣称真实界面验收完成。
+
+A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/方案数/素材来源控件放入独立 fields 容器，统一使用 row 0–6；把全部操作按钮移入独立 actions 容器的 6 列网格，避免操作按钮与输入控件共享同一 grid 单元格。新增 AST 回归测试检查 task_type=(2,1)、form=(3,1)、variant_count=(4,1)、footage_mode=(5,1)、footage_folder=(5,2)、文件夹按钮=(5,3) 与自动形式提示=(3,2)。该提交只证明源代码布局合同和静态 AST 断言；尚待最新 SHA 的完整 CI/doc-sync，且不替代 Windows 真机可用性验收。
+
+
+## 补充规程：用户体验与产品安全完整性审查（2026-10-15）
+
+当任务涉及产品整体规划完整性、普通用户是否能完成完整工作流、操作/费用/数据/素材风险、跨功能状态冲突或交付质量时，必须先阅读 `docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md`。按用户旅程逐段记录入口、输入、输出、状态、副作用、正常/异常路径、恢复方式、代码与专项测试证据、UI反馈和文档位置。必须把运行正确、流程正确、商品表达正确和商业成片质量分开报告。先映射 A0–A112，不得未经核实新增/删除/合并 ID；真实环境暂缓项不得用 CI 或模拟结果替代。
+
+
+## 补充验收门槛：云端授权、回退和费用未知状态（2026-10-15）
+
+在 A0–A112 语义去重与证据审计中，凡流程可能触发云端模型、视觉分析、资产生成或视频生成，必须逐项验证：
+
+1. 费用与数据目的地告知先于任何外部请求，包括商品分析和创意规划 LLM；取消/拒绝分支用调用计数器证明文本模型、视觉模型、资产 Provider、视频 Provider 请求数均为 0。
+2. 用户显式选定的模型/Provider 不可用时，验证系统是否会静默回退至另一个模型或云端目的地；拒绝回退后外部请求数必须为 0，不能以日志提示代替断言。
+3. 单价缺失、usage 缺失、代理报价规则未知时，界面必须将费用标为“未知/未配置”，不得将估算零值表达为免费或实际支出为零。
+4. 请求前检查数据接收方、发送内容类别和自定义 endpoint；视觉图像、视频参考素材等必须纳入数据范围说明。端点重定向、私网地址和凭据传递边界需有专项测试证据。
+5. API Key 输入掩码不作为安全存储证据；须追踪配置写入、日志、导出、备份与迁移路径，并提供系统凭据库/加密存储证据，方可声称安全保存。
+6. 静态代码、模拟 Provider 与 CI 通过不能代替真实 Provider 兼容性和实际账单核对；本轮真实环境仍按项目当前暂停要求处理。
+
+这些门槛只映射到既有 A0–A112 合同，不新增编号。当前证据不足时，状态应保持“待审计/待验收”，不得推断通过。
+
+
+## PLAN-003 A66–A69 证据映射补充（非正式验收结论）
+- 当前源码/测试审计快照：`fe298b3ae6005b118d8b7b1adf775a261d228ffe`；源码/测试文件 blob 分别为 `2506410d9621840ec34464fce1fa2746c7d798f4` 与 `2995b5764f7a86ee8c274b6359ff2f09cdf7a288`。该 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR 均成功；文档更新后的 SHA 仍须重查。
+- A66：确认有效路径保存绝对路径，缺失/零字节/不支持格式拒绝；不得把文件校验说成内容或商品真实性认证。
+- A67：除旧路径失效外，仍须补足“先 passed、后删除/清空证据、再次审查”时序；旧 passed 状态不得覆盖失效证据。
+- A68：逐项核对只接受真实后续集、报告保留依据/风险/建议、报告持久化且分析不改写原集，以及不存在/源集本身/非后续集和模型非法返回编号的拒绝路径。
+- A69：分别检查故事引擎必填字段、至少三步冲突升级、hook 开场疑问与结尾兑现、至少两个留存装置、因果链证据、旧项目读取兼容与调用方拒绝保存。测试名不代替断言审阅。
+- A66–A69 均保持 `not_audited`；真实模型剧情质量、真实素材、Windows 真机及商业效果须分层验收。
+
+
+## PLAN-003 A70–A74 部分证据映射补充（2026-10-15）
+- 审计快照：`5c689a16530f30c38785435f2f0a10a9fc796d2c`；`short_drama.py` / `test_short_drama.py` blob 分别为 `2506410d9621840ec34464fce1fa2746c7d798f4` / `2995b5764f7a86ee8c274b6359ff2f09cdf7a288`。该 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR 均 success；本轮文档提交后必须重新核验最终 HEAD。
+- A70：检查新生成 story_engine 的每个必填字段、三步升级、hook 与留存装置；核对旧方案缺项只 warning。当前有结构缺失/薄弱测试，但未逐字段覆盖。
+- A71：核对至少两个方向、必填字段、核心机制重复拒绝；不要把精确签名相异当作语义差异证明。补查少于两个方向和旧方案审查的直接测试。
+- A72：逐字段核对人物目标、动机、恐惧/秘密、关系、关系动态、决策压力、人物弧光；现有负向测试主要删除 motivation，不能代替其他字段缺失测试。旧方案 warning 也须独立确认。
+- A73：核对至少三步、字段完整、连续编号、剧本证据与镜头引用；现有测试覆盖缺链、缺 consequence、旧方案 warning，但未直接覆盖乱序和所有字段逐项缺失。
+- A74：核对 script_evidence 必须是 full_script 子串、镜头索引必须是有效整数范围，以及新生成拒绝/旧方案 warning。当前夹具把多个因果步骤都映射到同一镜，故不证明语义上的事件-镜头对应。
+- A70–A74 均为部分证据映射，不代表正式验收；真实模型剧情质量、真实素材、Windows 真机和商业效果分别验收。
+
+
+## PLAN-003 A75–A79 部分证据映射补充（2026-10-15）
+- 源码/测试快照 `3138a34ecd0d7779eb6809b85a1c3449daf3c24a` 的四项 CI/docs-sync 均 success；源码/测试 blob 分别为 `2506410d9621840ec34464fce1fa2746c7d798f4` 和 `2995b5764f7a86ee8c274b6359ff2f09cdf7a288`。文档提交后重查最终 HEAD。
+- A75：检查 confirmed_facts 是否有商品资料文本依据，以及 unknown/unverified 信息是否被当作肯定主张；人工确认商品资料真实性和语义改写，不能以字符串匹配代替事实审查。
+- A76：核对 selling point 是否出现在动作、商品融入、台词或生成提示中；目前有负向测试，仍需确认正向测试和文本规范化边界。真实画面是否展示卖点必须另验。
+- A77：检查因果事件、人物选择、转折和伏笔兑现的镜头文本覆盖；文本匹配不等于画面演出或语义兑现。
+- A78：核对 knowledge_source 是否为 full_script 原文、剧情内来源镜头是否早于当前镜头、preexisting 是否不引用剧情内来源。现有测试覆盖较早来源、后续来源和 preexisting 基本路径，但语义真实性需人工评审。
+- A79：核对行动依据人物必须同时属于当前镜头人物与角色表；当前镜头每个人物必须有完整 goal/motivation、known_information、knowledge_source、decision_pressure、choice_rationale。结构绑定不证明动机合理或画面真实。
+- A75–A79 仅部分证据映射，正式验收状态不得擅自改为通过。真实素材、Windows UI、Provider/扣费、剪映和商业效果仍独立验收。
+
+
+## PLAN-003 A80–A84 部分证据映射补充（2026-10-15）
+- 源码/测试快照 `4063ba5a452c0c883ff39c8ea1ce33499a80eaf4` 的四项 CI/docs-sync 均 success；源码/测试 blob 分别为 `2506410d9621840ec34464fce1fa2746c7d798f4` 和 `2995b5764f7a86ee8c274b6359ff2f09cdf7a288`。文档提交后重查最终 HEAD。
+- A80：核对 relationship_change 是否明确，以及声明的变化是否出现在所引用镜头的动作/台词/生成提示/叙事功能/事件引用文本中。负向测试存在；正向路径与关系语义质量仍需确认。
+- A81：核对 state_continuity、受影响人物、后续承接说明、后续镜头索引有效性和时序、承接文本匹配；明确声明“无后续影响”时不得引用承接镜头。需补查真实后续承接正向路径及保存重载。
+- A82：核对 knowledge_origin 仅为 storyboard/preexisting；剧情内来源镜头必须早于当前镜头且来源原文在该镜头中；preexisting 不应引用剧情内来源镜头。结构规则不证明语义真实。
+- A83：核对承诺/误解/行动后果的 kind、角色、来源证据、时间顺序、兑现镜头和状态。当前已映射测试以承诺为主；须确认其他 kind 与 resolved/intentionally_abandoned 的独立行为。
+- A84：核对跨集标志布尔值、真实后续集、后续镜头、源集 handoff 与下一集 opening/unresolved thread。补查最终集、非连续集号、resolved/abandoned 及保存重载。
+- A80–A84 仅部分证据映射；文本匹配不等于语义一致、表演质量或真实视频画面证明。
+
+
+### PLAN-003 本轮结果记录｜A85–A89｜A85–A89｜2026-10-15
+
+- 本轮源码/测试快照：`4063ba5a452c0c883ff39c8ea1ce33499a80eaf4`；`short_drama.py` blob `2506410d9621840ec34464fce1fa2746c7d798f4`，`test_short_drama.py` blob `2995b5764f7a86ee8c274b6359ff2f09cdf7a288`。CI Push `38727772398`、CI PR `38727780540`、docs-sync Push `38727772643`、docs-sync PR `38727780536` 均 success。此结论绑定源码/测试快照，不代表之后的文档提交 SHA 自动通过。
+- A85：已定位跨集人物状态台账、延续状态、未声明重置、changed 证据和 must_persist 类型测试。仍需直接确认未知人物/维度重复/无效镜头引用/旧方案兼容及保存重载；心理连续性不能由字符串检查证明。
+- A86：已定位状态变化的触发→变化→反应→后果有序闭环及正反向测试。部分负向条件合并在同一测试，仍需独立核实非法引用、反应时序和旧方案兼容；文本顺序不等于心理因果成立。
+- A87：已定位可观察表演正向、抽象心理标签、引用镜头中未出现所述行为的测试。未确认缺字段/引用与旧方案兼容的独立测试；不证明真实生成画面完成表演。
+- A88：已定位双方理解冲突、允许不同信念、知识不对称原因、未知人物和无效镜头引用检查。仍需独立确认非法枚举、重复依赖键、缺失双方陈述/证据和旧方案兼容测试；不代表语义理解。
+- A89：已定位 actor/scene 锁定描述注入、制作行标签、集号范围、非法布尔集号与目标未命中测试。续写上下文携带锁定列表尚缺独立直接回归证据；不等于物理素材 ID 复用（A90）或成片人物/场景视觉一致。
+- 五项均只做部分证据映射，`development_status=partial_evidence_mapping`、`acceptance_status=not_audited`；未正式验收、未合并编号。台账指针任务数更新为 90，任意证据任务数更新为 102，源码/测试快照绑定任务数更新为 32；精确绑定最终文档 HEAD 为 0，完整代码/测试审计为 0，完整审计为 0，语义去重未完成，权重与总体完成率关闭。
+- 下一批：A90–A94。先核验本轮文档提交后最新 HEAD 的 CI Push、CI PR、docs-sync Push、docs-sync PR 四项结果，再继续。PR #32 保持 Open/unmerged；Windows 真机、真实素材、Provider/扣费、剪映现场与真实商业效果仍暂缓。
+
+
+### PLAN-003 本轮证据记录｜A90–A94｜2026-10-15
+
+- 本轮源码/测试审计基线：PR #32 HEAD `a6e052fa7edefa7e2fb794166684547436ff90f6`。源码 blob：`ad_studio/production.py` `e53968f47a6b8fd23df773dbd3a4ad553753e1e0`、`ad_studio/short_drama.py` `2506410d9621840ec34464fce1fa2746c7d798f4`；测试 blob：`test_desktop.py` `357c54dad99f61b99891bcc365dd2f9efc1a1009`、`test_short_drama.py` `2995b5764f7a86ee8c274b6359ff2f09cdf7a288`。
+- 此 SHA 的 CI PR run [38728582030](https://github.com/konggu888/ecommerce-agent/actions/runs/38728582030) 与 docs-sync PR run [38728581662](https://github.com/konggu888/ecommerce-agent/actions/runs/38728581662) 均 success；PR #32 head 仍为该 SHA、Open/unmerged。当前工具查询仅返回 PR 触发的工作流，故本轮不声称已独立核实同 SHA 的 CI Push 与 docs-sync Push。文档提交后必须重新核验最新 SHA。
+- **A90｜跨集物理素材 ID 绑定**：源码将根级锁定 ID 传入制作行的 actor/scene asset_id；专项测试覆盖精确 ID 传递与未指定 ID 的旧标签匹配兼容。证据边界：行级传递不单独证明素材库解析正确，需结合 A91/A92；不证明真实成片像素一致。
+- **A91｜锁定素材失效检测**：测试覆盖停用、类型不匹配、不可复用、重载后素材消失仍保留原 ID并记录需处理状态，以及锁定失败时在补素材/fallback 前拦截。损坏索引分支另由 A95 审计；真实 Windows 重启/并发变更未验证。
+- **A92｜跨集物理素材绑定落地**：两集镜头使用同一 actor/scene 精确 ID，排除相似标签素材，保存/重开后检查两集 Shot.actor_id/scene_id 保留。仅证明确定性本地夹具和持久化，不证明真实视频视觉连续性。
+- **A93｜Provider 前拦截与镜头隔离**：生产入口级计数 Provider 测试确认失效锁定时调用数为 0、保留原 ID、不静默换演员，其他镜头状态/路径不变。真实 Provider 与账单仍暂缓。
+- **A94｜恢复原锁定资产后安全重试**：原素材停用时失败并关闭 fallback；恢复同一 asset_id 后精确重绑定，标签相似素材不覆盖。仅验证本地调度恢复。
+- A90–A94 统一标记为 `partial_evidence_mapping` / `not_audited`，没有将历史验收计划勾选直接继承为本轮正式通过。当前台账：需求文本复核 113；source/test/CI/workflow 指针任务 95；任意 evidence 任务 107；路线图映射 113/113；源码/测试快照绑定任务 37；最终文档 HEAD 精确绑定 0；完整代码/测试审计 0；完整审计 0；语义去重未完成；权重和总体完成率关闭。
+- 下一批按既有编号进入 **A95–A99**，先核验本轮文档提交后最新 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR 四项。PR #32 不合并；真实 Windows、素材、Provider/扣费、剪映现场和商业效果验收继续暂缓。
+
+
+### PLAN-003 本轮证据记录｜A95–A99｜2026-10-15
+
+- **源码/测试审计基线**：`c77704d86d6131d13501448af76ce24afc56ad7b`。源码 blob：`apps/ad-studio-desktop/ad_studio/production.py` `e53968f47a6b8fd23df773dbd3a4ad553753e1e0`；测试 blob：`apps/ad-studio-desktop/test_desktop.py` `357c54dad99f61b99891bcc365dd2f9efc1a1009`。本轮未改产品代码。
+- 基线 CI PR [38729017063](https://github.com/konggu888/ecommerce-agent/actions/runs/38729017063) 与 docs-sync PR [38729017091](https://github.com/konggu888/ecommerce-agent/actions/runs/38729017091) 均 success；PR #32 Open/unmerged。当前工作流查询未独立返回 Push 工作流，故不宣称 CI Push/docs-sync Push 已核实。文档提交后须重查最新 SHA。
+- **A95｜本地素材索引损坏时阻断生产**：测试覆盖截断 JSON、`SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE`、关闭自动生成、不继续解析同镜头其他素材、Provider 调用数为 0、保留锁定 ID 和兄弟镜头输出。未覆盖所有目录/权限/损坏形态及 Windows 文件系统。
+- **A96｜修复素材索引后的安全重试**：索引损坏时 fail-closed；修复后精确绑定原 `asset_id`，相似标签资产不能替换且不触发自动生成。当前直接测试内存项目的重新解析，修复后保存/重载和并发素材库修改未独立测试。
+- **A97｜项目恢复仅重置损坏镜头**：测试验证缺失镜头转为待重新生成，且有效兄弟镜头的输出路径、状态、版本、费用保持不变；保存/加载后继续保留。真实视频及全部中断分支未验证。
+- **A98｜重复恢复仍列出待处理缺失镜头**：重复调用恢复时，缺失镜头持续出现在 `last_recovery.missing_media`，有效兄弟镜头不变并检查重载。普通从未生成的待生成镜头是否被误报，尚未找到独立断言；UI 恢复摘要未做真机验证。
+- **A99｜恢复时逐镜头费用对账**：成功账本下的陈旧兄弟镜头成本清零有 A99 专项测试；无账本与 failed-only 两个互补分支已有 A57/A60 测试。本轮补充两分支恢复后的保存/重载断言，需等待最新 SHA CI。A99 与 A57/A60 相关但不合并；真实 Provider/账单仍不在自动化证据范围。
+
+### PLAN-003 增量审计记录｜DEDUP-013｜2026-10-16
+
+A57 的无账本旧项目、A60 的 failed-only 账本均已有恢复行为测试；本轮补充恢复后重新加载项目的持久化断言。A99 的成功账本清除陈旧兄弟镜头金额为独立合同。最新 SHA CI 通过前不把新断言记为通过，真实 Provider/账单仍需另行核对。
+
+- A95–A99 全部保持 `partial_evidence_mapping` / `not_audited`，不得因旧计划中的历史 `[x]` 或历史 CI 直接继承正式通过。更新后的映射指标：需求文本复核 113；source/test/CI/workflow 指针任务 100；任意 evidence 任务 112；路线图映射 113/113；源码/测试快照绑定任务 42；最终文档 HEAD 精确绑定 0；完整代码/测试审计 0；完整审计 0；语义去重未完成；权重与总体完成率关闭。
+- 下一批按原编号进入 **A100–A104**。文档提交后先核验最新 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR；若工具无法列出 Push 触发运行，须明确记录而不能猜测。PR #32 不合并；Windows 真机、真实素材、Provider/扣费、剪映现场和商业效果验收继续暂缓。
+
+
+### PLAN-003 本轮证据记录｜A100–A104｜2026-10-15
+
+- **源码/测试审计基线**：`c77704d86d6131d13501448af76ce24afc56ad7b`。源码 blobs：`postprocess.py` `36ce0e4a17d635e3ed381c3b0bada1428e0290c4`、`production.py` `e53968f47a6b8fd23df773dbd3a4ad553753e1e0`、`ffmpeg.py` `d13870a12eae682133995bac7305900e0a4ff767`；专项测试 blobs：`test_postprocess.py` `29141bb61ee3ec6ae5960395e81c7dc64ef79feb`、`test_ffmpeg.py` `e409cbded7db0c01a1962f722d54c615429f5e37`、`test_desktop.py` `357c54dad99f61b99891bcc365dd2f9efc1a1009`。本轮只审计现有代码/测试，不改产品代码。
+- 基线 CI PR [38729441932](https://github.com/konggu888/ecommerce-agent/actions/runs/38729441932) 与 docs-sync PR [38729441851](https://github.com/konggu888/ecommerce-agent/actions/runs/38729441851) 均 success；PR #32 Open/unmerged。工作流查询未独立返回 Push 触发项，CI Push/docs-sync Push 状态未核实，不能宣称四项全绿。
+- **A100 淡出时间窗**：按 `probe_duration / speed` 算输出时长，淡出时长不超过输出时长；测试检查变速后末尾淡出与 0.1 秒短镜头。证据是 mocked FFmpeg 参数，不是实际渲染。
+- **A101 变速音画同步**：非 1.0 倍速同时设置视频 `setpts` 和音频 `atempo`；常速且无淡化时不添加多余音频滤镜。没有实际音画波形同步或音质验收。
+- **A102 最低 1080P 级导出**：竖屏 1080×1920、横屏 1920×1080、方屏 1080×1080 归一化；成片质检拒绝低于最低尺寸。测试明确模拟归一化输出，尺寸不等于细节增强，也不代表 AI 超分。
+- **A103 淡入/淡出音画同步**：视频 `fade` 与音频 `afade` 使用相同窗口，按变速后的输出时长计算并限制短片段时长；目前只验证命令构造。
+- **A104 相邻镜头交叉溶解**：显式请求时生产路径调用 `concat_with_transitions`，生成 `xfade`/`acrossfade`，统一画幅、30fps、时间基准、像素格式，并为无音轨输入补静音；默认项目仍使用 `concat`。实际 FFmpeg filter graph 未执行，混合转场中的硬切以 1ms overlap 表示，需真实成片复核。
+- A100–A104 均更新为 `partial_evidence_mapping` / `not_audited`，不能把历史计划勾选直接当成本轮正式验收。Windows 真机、真实素材、实际 FFmpeg 渲染与视听质量仍暂缓。
+- 映射覆盖指标：需求复核 113；source/test/CI/workflow 指针任务 105；任意 evidence 任务 112；路线图映射 113/113；源码/测试快照绑定任务 47；最终文档 HEAD 精确绑定 0；完整代码/测试审计 0；完整审计 0；语义去重未完成；权重和总体完成率关闭。
+- 下一批按原编号进入 **A105–A109**。文档提交后先核验最新 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR；无法独立查到 Push 运行时必须明确标记未核实。PR #32 不合并，不新增 A113+，不删除/合并/重编号 A0–A112。
+
+
+### PLAN-003 本轮证据记录｜A100–A104｜2026-10-15
+
+- **源码/测试审计基线**：`c77704d86d6131d13501448af76ce24afc56ad7b`。源码/测试 blobs：`postprocess.py` `36ce0e4a17d635e3ed381c3b0bada1428e0290c4`、`test_postprocess.py` `29141bb61ee3ec6ae5960395e81c7dc64ef79feb`、`ffmpeg.py` `d13870a12eae682133995bac7305900e0a4ff767`、`test_ffmpeg.py` `e409cbded7db0c01a1962f722d54c615429f5e37`、`production.py` `e53968f47a6b8fd23df773dbd3a4ad553753e1e0`、`test_desktop.py` `357c54dad99f61b99891bcc365dd2f9efc1a1009`、`app.py` `7e88102f01a41c70c8a67e925daa24f4d71b90a7`。
+- 基线 CI PR [38729441932](https://github.com/konggu888/ecommerce-agent/actions/runs/38729441932) 与 docs-sync PR [38729441851](https://github.com/konggu888/ecommerce-agent/actions/runs/38729441851) 均 success；PR #32 Open/unmerged。当前 workflow 查询只暴露 PR 触发项，CI Push/docs-sync Push 未独立核实。文档提交后需重新检查最新 SHA。
+- **A100｜商业剪辑淡出时间窗**：源码按输入时长/速度计算输出时长，淡出长度限制为 0.25 秒或输出时长的较小值；测试检查 2 倍速与 0.1 秒短镜头的实际 `-vf` 参数。仅证明命令构造，不证明真实画面听感。历史计划里的旧 SHA 自动化勾选不作为本轮正式验收。
+- **A101｜变速时音画同步**：非 1 倍速同时设置视频 `setpts` 与音频 `atempo`；常速不额外添加音频变速滤镜。测试检查命令参数；真实编码后音画同步、音质与 Windows 编码器兼容性未验证。
+- **A102｜最终导出最低 1080P 级分辨率**：归一化目标为竖屏 1080×1920、横屏 1920×1080、方形 1080×1080；成片检查会拒绝 720×1280 等低于目标的输出。测试通过 mock 检查滤镜与 ffprobe 元数据，未真实执行最终导出。尺寸放大不等于恢复真实细节或完成 AI 超分。
+- **A103｜镜头淡入/淡出音画同步**：淡入/淡出视频滤镜与原音轨 `afade` 同步；淡出时间按变速后输出时长计算，短镜头时长受限。测试覆盖短淡入、常速淡出和 2 倍速淡出；尚未对真实 FFmpeg 成片进行画面/听感验证。
+- **A104｜相邻镜头真实交叉溶解**：最终拼接在非首镜头显式选择交叉溶解时调用 `xfade` / `acrossfade`，无音轨时补静音，统一画幅、30fps、时间基准和像素格式，并按相邻短镜头时长缩短重叠。测试检查滤镜图和生产入口触发条件。边界：混合转场模式下硬切用 0.001 秒 xfade，真实成片需确认；静态检查未找到清晰的用户可编辑转场选择器，仅看到镜头详情显示/读取字段，须后续核对 UI。
+- A100–A104 全部统一记为 `partial_evidence_mapping` / `not_audited`。本轮没有更改产品代码。当前任务台账直接统计：113 个编号任务中 109 个有 evidence 指针；104 个含 source/test evidence；其中 47 个任务已纳入当前源码/测试快照审计计数；完整代码/测试审计 0、完整审计 0、全量语义去重未完成，权重和总体完成率关闭。
+- 下一批按既有编号进入 **A105–A109**。文档提交后先检查最新 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR；Push 工作流若无法独立查询，必须明确记录而非猜测。PR #32 不合并；Windows 真机、真实素材、真实 Provider/扣费、剪映现场和商业效果验收继续暂缓。
+
+
+### PLAN-003 本轮证据记录｜A105–A109｜2026-10-15
+
+- **源码/测试审计基线**：`c77704d86d6131d13501448af76ce24afc56ad7b`；文档更新前最近检查的分支 HEAD 为 `57ed689911025f2e31241ddf487e70143ffedbe0`。该 HEAD 的 CI PR [38730155209](https://github.com/konggu888/ecommerce-agent/actions/runs/38730155209) 与 docs-sync PR [38730155147](https://github.com/konggu888/ecommerce-agent/actions/runs/38730155147) 均 success；Push 触发工作流未被当前查询接口独立返回，不能宣称四项均已核实。PR #32 Open/unmerged。
+- **A105｜分镜节奏映射**：慢/标准/快/极快默认速度、显式速度优先、未知标签回退有单测；后处理命令同步 setpts/atempo。真实渲染和完整 UI 到成片链未集成测试。
+- **A106｜商业角色默认剪辑**：源码按分镜文本关键词推断角色、时长/节奏/速度/转场，并记录 rationale/basis/参数来源；测试覆盖 hook、商品细节、演示、证据和末镜 CTA，以及显式参数优先。pain_point/reaction/story_beat 等角色与歧义关键词未全面测试；不是视觉语义识别。UI 仅发现展示转场值，未找到明确的可编辑转场选择器。
+- **A107｜推断时长进入生成请求**：CreativeShot → runtime Shot 的字段映射存在，生产入口将 runtime `duration_seconds` 传入 GenerationRequest；目前测试止于 runtime mapping，没有直接断言 Provider 请求最终收到推断时长。真实 Provider 仍不调用。
+- **A108｜字幕自适应**：按 FFprobe 实际时长生成 SRT，拆分长文案、限制短镜头字幕切换并显示密度警告；桌面路径可见 probe → analyze → write_srt → burn_subtitles。单测覆盖规划器/SRT，但没有 app 级整链集成测试；真实阅读舒适度和 Windows 烧录效果未验证。
+- **A109｜音乐节拍与实际切点**：生产源码把节拍分析、切点规划、内容/字幕保护、镜头变速、拼接后一次性混入全局 BGM 接入最终导出链；专项测试覆盖合成节拍、静音/低置信度回退、时长变化、内容保护、变速命令和 BGM 混音命令。但没有直接测试最终 build_final 的完整调度链，实际 FFmpeg 渲染/视听仍未验证。台账中历史 `automation_passed` 已降为 `partial_evidence_mapping` / `not_audited`，因为验收计划四项 workflow gate 尚未完整核实，且生产集成证据仍有缺口。
+- A105–A109 均为 `partial_evidence_mapping` / `not_audited`。映射覆盖：113 个编号任务；source/test evidence 任务 109；任意 evidence 任务 113；路线图映射 113/113；源码/测试快照绑定任务 52；最终文档 HEAD 精确绑定 0；完整代码/测试审计 0；完整审计 0；语义去重未完成；权重与总体完成率关闭。
+- 本轮不改产品代码。Windows 真机、真实素材、Provider/扣费、剪映现场与商业效果继续暂缓。PR #32 不合并；不新增 A113+，不删除/合并/重编号 A0–A112。
+- 下一批按既有编号进入 **A110–A112**。文档提交后先核验最新 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR；Push 若无法独立查询须明确记录未核实。
+
+
+### PLAN-003 本轮证据记录｜A110–A112｜2026-10-15
+
+- **源码/测试审计基线**：`c77704d86d6131d13501448af76ce24afc56ad7b`；A110–A112 文档更新前最后一次明确核验成功的工作流 HEAD `47479d41725cf726e1543524bda012fee8bdf890` 的 CI PR [38730727069](https://github.com/konggu888/ecommerce-agent/actions/runs/38730727069) 与 docs-sync PR [38730727058](https://github.com/konggu888/ecommerce-agent/actions/runs/38730727058) 均 success；本轮文档更新后的 HEAD `143d01f87c3161deee04cd2d3c821b1e915084d1` 的 CI PR [38731016045](https://github.com/konggu888/ecommerce-agent/actions/runs/38731016045) 与 docs-sync PR [38731016172](https://github.com/konggu888/ecommerce-agent/actions/runs/38731016172) 也均 success。Push 触发工作流未独立核实，PR #32 Open/unmerged。
+- **A110｜商业剪辑内容保护**：源码把口播/屏幕文字/商品角色/CTA 停留时间作为音乐卡点下限，低置信度和不安全计划回退；测试覆盖对话、屏幕文字、商品停留与安全回退。CTA 专门下限尚无独立断言，生产链整合测试缺失。
+- **A111｜逐边界局部音乐卡点规划**：算法逐镜头验证最短时长、最大变化、变速约束，仅回退冲突边界并记录 adjusted/reverted 边界；专项测试覆盖单/多相邻保护、无关安全边界仍可调整、总时长保持、低置信度和交叉溶解回退。尚无 build_final 整链测试或实际 FFmpeg 渲染。
+- **A112｜字幕实际时间窗参与内容保护**：SRT 解析校验 cue 顺序/范围/结束时间，最短 cue 时长进入卡点保护；生产代码检查字幕记录是否绑定当前源视频路径和时长，异常时回退。单测覆盖解析和 helper 边界，但没有生产级 applied/fallback 整链回归。
+- A110–A112 历史 `automation_passed` 不直接继承；本轮全部改为 `partial_evidence_mapping` / `not_audited`，因为本轮源码/测试复核发现专项集成证据缺口，且当前查询未独立核实 Push 工作流。真实素材、Windows 真机、真实音画/字幕可读性与商业成片质量仍暂缓。
+- 映射覆盖：编号任务 113；任意 evidence 任务 113；source/test evidence 任务 112；源码/测试快照绑定任务 55；完整代码/测试审计 0；完整审计 0；语义去重未完成；权重与总体完成率关闭。
+- 本轮未改产品代码。PR #32 不合并；不新增 A113+，不删除/合并/重编号 A0–A112。下一步不再有新的编号任务；应回到 PLAN-003 对 A0–A112 做语义去重、证据冲突与未审计范围的统一核对，不得凭空扩展编号。
+
+
+## PLAN-003 跨来源去重与状态核对｜A57｜2026-10-15
+
+- 最新检查的文档 HEAD（本轮写入前）为 `143d01f87c3161deee04cd2d3c821b1e915084d1`；CI PR [38731016045](https://github.com/konggu888/ecommerce-agent/actions/runs/38731016045) 与 docs-sync PR [38731016172](https://github.com/konggu888/ecommerce-agent/actions/runs/38731016172) 均 success。Push 工作流未被当前查询接口独立返回；PR #32 Open/unmerged。
+- **A57 的同编号双标题冲突已解决为“一个编号槽位、两个独立验收条款”**，不合并条款、不拆出新编号、不重编号：
+  1. 成片已成功但账本记账失败时，界面保留成功视频状态，显示“项目实际成本待核对”，且不显示正常项目实际累计金额。
+  2. 打开已有项目时先执行恢复并展示恢复摘要；从成功账本重建项目/镜头成本，同时在无账本记录的旧项目中保留旧成本字段。
+- 源码/测试证据绑定基线 `c77704d86d6131d13501448af76ce24afc56ad7b`：`app.py` blob `7e88102f01a41c70c8a67e925daa24f4d71b90a7`、`production.py` blob `e53968f47a6b8fd23df773dbd3a4ad553753e1e0`、`test_desktop.py` blob `357c54dad99f61b99891bcc365dd2f9efc1a1009`。四个专项测试分别覆盖待核对 UI、成功账本重建、无账本旧成本兼容和打开项目先恢复。CI PR [38729017063](https://github.com/konggu888/ecommerce-agent/actions/runs/38729017063) 与 docs-sync PR [38729017091](https://github.com/konggu888/ecommerce-agent/actions/runs/38729017091) 在该源码/测试基线上 success。
+- **结论仅为语义身份冲突已厘清及部分证据映射，不是 A57 正式验收通过。** 真实账单/扣费与 Windows 真机流程继续暂缓。A57 保持 `partial_evidence_mapping` / `not_audited`；其余 A0–A112 的语义去重和当前 HEAD 证据冲突核对仍未完成。
+- 本轮同步后的台账指标：113 个任务有 evidence 指针；112 个含 source/test evidence；56 个绑定当前源码/测试快照；0 个绑定最终文档 HEAD；完整代码/测试审计 0；完整验收 0；全量语义去重未完成；权重和总体完成率关闭。
+
+
+### PLAN-003 增量审计记录｜DEDUP-013｜2026-10-16
+
+A57 的无账本旧项目、A60 的 failed-only 账本均已有恢复行为测试；本轮补充恢复后重新加载项目的持久化断言。A99 的成功账本清除陈旧兄弟镜头金额为独立合同。最新 SHA CI 通过前不把新断言记为通过，真实 Provider/账单仍需另行核对。
+
+### PLAN-003 / UXS-2：逐次 Provider 授权专项（2026-10-16）
+
+本专项映射既有 A13（能力路由/预算授权）、A29（数据边界）与 A51–A65（费用估算/账本），不新增验收编号。
+
+1. 单镜头视频：验证确认弹窗显示本次真实路由、脱敏 endpoint、原因、估算费用和数据类别；拒绝必须发生在镜头状态/版本保存前，Provider 调用数为 0；同意后生产层必须使用确认时的路由快照。
+2. 资产生成：对 AssetGenerator.generate() 和 ProductionStore.generate_missing_asset() 分别注入云端决策。授权回调缺失/返回 False 时断言云端 Provider 调用数为 0、没有新生成文件/库记录/镜头资产 ID/状态变更；返回 True 才允许进入云端 Provider。
+3. 对本地服务可达、云端回退、本地与云端均不可用分别覆盖；不可用不得伪装成免费或自动换目的地。
+4. 后续必须覆盖最终成片批量视频、短剧商品镜头重生成、视觉/转写与其他 Provider 入口。mock 仅证明控制流，不证明真实端点、费用或账单。
+5. 最新源代码/测试 SHA 的 CI 与 docs-sync 必须通过；不得把历史 SHA 的绿灯挪用到新 SHA。A0–A112 正式验收状态不因该专项自动改变。
+
+### 资产 Provider 授权回调专项补充｜2026-10-16
+
+- 无授权回调与拒绝回调均须在云端请求前终止；断言 Provider 调用为 0、输出文件不存在、素材库无新增记录、镜头 asset ID/status 未改变。
+- 明确允许回调时仅用 mock Provider 验证调用被放行；不得在自动化测试中发真实请求。
+- UI 必须展示实际端点（隐藏 URL 凭据/query/fragment）、数据类别、配置费用与未知费用提示，并把用户决定传递为显式回调；不允许默认 True。
+- 当前 guard 已实现但 UI 尚未接线，所以该合同处于部分证据状态，不得宣称正式验收通过。
+
+### 单镜头资产授权 UI 接线验收补充｜2026-10-16
+
+- 在“生成本镜头”操作中，先确认视频 Provider 目的地/费用，再对每个云端资产生成请求展示目的地、脱敏 endpoint、数据类别和价格。
+- 拒绝资产授权必须在镜头状态变更前停止；断言视频 Provider 调用数为 0、镜头版本/状态不变、本次未授权素材无新文件或资产绑定。
+- 该测试仅覆盖单镜头入口；批量方案、AI补镜头和短剧商品镜头重生成需分别补同类正反例，不能由单入口证据替代。
+
+### 多入口 Provider 授权验收补充｜2026-10-16
+
+- 对单镜头、AI补镜头、批量创意方案生成分别验证：视频目的地/费用确认先于状态变更；拒绝后该镜头视频 Provider 调用计数为 0；云端资产拒绝后不继续视频请求。
+- 验证确认时的 ExecutionDecision 快照传入生产层，不在确认后重新路由。
+- 短剧商品镜头重生成准备阶段必须零 Provider 调用；实际生成应经过单镜头授权。
+- 下一步重点是未知费用与历史 endpoint provenance；任何缺失价格/usage 不得当作免费，历史记录不保存 API Key。
+
+### UXS-2：成本可信度与 endpoint provenance 专项（2026-10-16）
+
+1. 对 usage 存在/缺失、单价存在/缺失的组合分别注入 mock；只有 usage 与显式配置单价均存在，才允许标记按配置价格估算。
+2. 验证 usage 缺失、价格缺失、两者同时缺失、请求失败的账本行均不被解释为“供应商免费”；汇总要单独显示未知费用记录数。
+3. endpoint 写入前删除 URL userinfo、query、fragment；断言 API Key、密码、token/signature 参数不进入账本文件。
+4. 重载 UsageLedger/项目后核对 endpoint 和 cost_status 仍可追溯；旧行缺字段必须显示旧记录/未知，不得猜测历史 endpoint。
+5. 以上只证明离线控制流与本地账本，不证明供应商实际扣费；不得因此正式标记 A13/A29/A51–A65 通过。
+
+### 未配置报价的 UI 验收补充｜2026-10-16
+
+- 视频 Provider 未配置价格、资产 Provider 未配置 price_rmb 时，确认弹窗必须显示“暂无法可靠估算（未知）”。
+- 显式 ¥0 仍展示配置价，但必须同时提示这不是供应商免费承诺；不能把默认值当作用户明确配置的价格。
+
+### 口播转写账本验收补充｜2026-10-16
+
+- mock 成功/失败转写均须生成账本行，记录模型、Provider、脱敏 endpoint、耗时、project_id 和费用可信状态。
+- 当前接口无 usage 时状态应为 usage_missing/unknown，不能当作免费；账本不能含 API Key 或 endpoint query 参数。
+- 新建项目与打开项目后都要核对 ModelRouter 的项目上下文绑定。
+
+### 云端渲染授权回调透传回归｜2026-10-17
+
+1. 使用 mock Provider 测试 render_shot(... decision.target='cloud', authorize_cloud=callback)，断言 _render_with_provider() 收到同一个 callback。
+2. 使用 mock Provider 测试 render_cloud_shot(..., authorize_cloud=callback)，断言 callback 原样透传。
+3. 测试不得访问真实 Provider/网络；拒绝路径另需断言 Provider 调用数为 0、镜头状态/版本未变化。
+4. 只有最终 HEAD 的 CI 与 docs-sync 通过才可记作自动化测试通过；这仍不是 A13/A29/A51–A65 的正式验收结论。
+
+### 短剧商品镜头重生成费用确定性回归｜2026-10-17
+
+1. 当前路由为本地时，准备步骤显示本地目的地并将 Provider 费用标记为 local_no_provider_charge；不把电费/硬件成本计入 Provider 费。
+2. 当前路由为云端且明确配置价格时保存配置估算；未配置价格时保存金额 null 与 price_missing，不显示伪造的零金额。
+3. 对 prepare_product_drama_shot_regeneration 测试 None + price_missing 的持久化；测试 price_missing + 0.0 必须失败。
+4. 确认该按钮只准备新版本、不调用 Provider；真实生成必须由单镜头生成入口再次披露目的地/费用。仅 mock/CI 证据不等于真实账单验收。
+
+### 实拍素材重新分析数据去向授权回归｜2026-10-17
+
+1. 使用自定义视觉模型端点与 local_openai 转写端点，确认弹窗展示脱敏 endpoint、网络/本机提示、关键帧与音频数据类别、费用未知说明。
+2. 在确认前断言不调用 scan_footage、build_visual_manifest、analyze_footage、transcribe_footage_audio，不归档/移动素材；用户拒绝后调用计数为 0。
+3. 确认后才进入扫描和后续分析；只使用 mock，不访问真实 Provider。
+4. 资产配置路径回归应断言 UI 配置与 AssetGenerator 使用同一 app config root 文件，自定义 library_root 不应改变 Provider 配置位置。
+
