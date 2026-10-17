@@ -1,3 +1,12 @@
+## 【实时状态更新｜2026-10-17｜端点绑定授权已验证】
+
+- 已验证代码/测试基线：`fff8f59916cac0864d6bd69ce02a75028993c5f1`；PR CI run `39013621163` 与 docs-sync PR run `39013621460` 均 success。Push 触发的 CI/docs-sync 未由当前连接器独立核实。
+- 在默认拒绝授权闸门上进一步收紧：授权不再只是布尔值，而是传入用户确认时的 `authorized_endpoint`；生产层加载 Provider 后必须与该端点精确匹配。若配置在确认后变化，拒绝分发并要求重新确认。
+- 新增端点变化回归测试；本轮一次中间 CI 失败是测试 mock 将 `UnconfiguredProvider` 哨兵替代为已配置 Provider，已修正 fixture，最终基线通过。失败历史保留。
+- 当前 PR #32 仍 Open/unmerged。文档更新后必须重查最新 SHA 的 CI/docs-sync；下一步继续既有 A13/A29/A51–A65 合同与 Provider 入口/未知费用/endpoint provenance 审计。不新增 A113+，不改变 A0–A112 正式状态。
+
+---
+
 ## 【实时状态更新｜2026-10-17｜云端视频授权闸门已验证】
 
 - 当前已验证代码/测试基线：`ecce52c904044db4b2618a1faefa5692fa727a40`。该 SHA 的 PR CI run `39013274826` 与 docs-sync PR run `39013274821` 均 completed/success；CI `typecheck-and-test` job success。Push 触发的 CI/docs-sync 未由当前连接器独立核实。
