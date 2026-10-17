@@ -2625,7 +2625,12 @@ class DesktopCoreTests(unittest.TestCase):
         # Before any model planning call, the first preflight must make every
         # production-cost category and all not-yet-knowable quantities explicit.
         from ad_studio.app import build_creation_preflight_detail
-        detail = build_creation_preflight_detail("https://item.jd.com/123.html", 5.0, 2, Mock())
+        class NoopRouter:
+            def route(self, _function):
+                raise RuntimeError("not configured")
+            def profiles(self):
+                return []
+        detail = build_creation_preflight_detail("https://item.jd.com/123.html", 5.0, 2, NoopRouter())
         for label in ("视频生成", "演员生成", "场景生成", "商品素材生成", "项目总费用"):
             self.assertIn(label, detail)
         self.assertIn("镜头数尚未生成", detail)
