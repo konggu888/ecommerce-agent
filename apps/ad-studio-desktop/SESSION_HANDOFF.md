@@ -1,3 +1,12 @@
+## 【最新接手状态｜2026-10-17｜18 项路线阶段映射已复核】
+
+- 已核对原先 18 项 provisional 映射：A90–A98 归入阶段4 AI短剧能力；A100–A108 归入阶段2 商业级剪辑决策层。复核依据为 `docs/AD_STUDIO_PRODUCT_ROADMAP.md`、`docs/AD_STUDIO_ACCEPTANCE_PLAN.md`、`docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md`。
+- 台账记录了复核结论和边界；原始 `roadmap_phase` 与历史 provisional 记录保留，正式验收状态未修改。该复核只确认路线归属，不代表代码完成或正式验收。
+- 6 个标准化阶段的槽位数：阶段0=7、阶段1=52、阶段2=14、阶段3=3、阶段4=32、阶段5=5，总计 113。阶段标签归一化 6/6=100%；18 项先前待核验映射复核 18/18=100%。阶段完成率与总体产品完成率仍不发布。
+- 下一步：跨来源语义去重、历史状态冲突裁决、证据复核/当前 HEAD 绑定；总体完成率仍关闭。禁止新增 A113+、修改 A0–A112 正式验收状态或合并 PR #32。每次提交后核查最新 HEAD CI/docs-sync。
+
+---
+
 ## 【最新接手状态｜2026-10-17｜路线阶段标签归一化 v1】
 
 - 最新进度台账新增标准化字段：`normalized_roadmap_phase`、`phase_normalization_original`、`phase_mapping_confidence`。原始映射字段保留；18 项 provisional 映射仍需核验，没有被自动判定为已确认。
