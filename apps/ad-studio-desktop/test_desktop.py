@@ -2862,6 +2862,34 @@ class DesktopCoreTests(unittest.TestCase):
 
 
 
+    def test_cloud_video_entrypoints_fail_closed_without_explicit_authorization(self):
+        from types import SimpleNamespace
+        from unittest.mock import Mock, patch
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            original_status = shot.status
+            original_version = shot.version
+            dispatch = Mock(return_value="must-not-run")
+            store._render_with_provider = dispatch
+            decision = SimpleNamespace(
+                target="cloud", endpoint="https://video.example/generate",
+                reason="本地服务不可用，转云端",
+            )
+            with patch("ad_studio.production.load_video_provider") as load_provider:
+                with self.assertRaisesRegex(RuntimeError, "端点与费用授权"):
+                    store.render_shot(project, shot, config_root=root, decision=decision)
+                with self.assertRaisesRegex(RuntimeError, "端点与费用授权"):
+                    store.render_cloud_shot(project, shot, root / "video-provider.json")
+                load_provider.assert_not_called()
+
+            dispatch.assert_not_called()
+            self.assertEqual(shot.status, original_status)
+            self.assertEqual(shot.version, original_version)
+
     def test_cloud_render_routes_forward_asset_consent_callback(self):
         from types import SimpleNamespace
         from unittest.mock import Mock, patch
