@@ -2890,6 +2890,38 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(shot.status, original_status)
             self.assertEqual(shot.version, original_version)
 
+    def test_cloud_video_entrypoints_reject_endpoint_changed_after_consent(self):
+        from types import SimpleNamespace
+        from unittest.mock import Mock, patch
+        from ad_studio.providers import GenericVideoProvider
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            dispatch = Mock(return_value="must-not-run")
+            store._render_with_provider = dispatch
+            decision = SimpleNamespace(
+                target="cloud", endpoint="https://confirmed.example/generate",
+                reason="用户已确认的端点",
+            )
+            changed_provider = GenericVideoProvider(
+                endpoint="https://changed.example/generate", api_key="test-key"
+            )
+            with patch("ad_studio.production.load_video_provider", return_value=changed_provider):
+                with self.assertRaisesRegex(RuntimeError, "端点与用户确认时不一致"):
+                    store.render_shot(
+                        project, shot, config_root=root, decision=decision,
+                        authorized_endpoint=decision.endpoint,
+                    )
+                with self.assertRaisesRegex(RuntimeError, "端点与用户确认时不一致"):
+                    store.render_cloud_shot(
+                        project, shot, root / "video-provider.json",
+                        authorized_endpoint=decision.endpoint,
+                    )
+            dispatch.assert_not_called()
+
     def test_cloud_render_routes_forward_asset_consent_callback(self):
         from types import SimpleNamespace
         from unittest.mock import Mock, patch
@@ -2914,7 +2946,7 @@ class DesktopCoreTests(unittest.TestCase):
                        side_effect=[provider, UnconfiguredProvider()]):
                 result = store.render_shot(
                     project, shot, config_root=root, decision=decision,
-                    authorize_cloud=callback, video_authorized=True,
+                    authorize_cloud=callback, authorized_endpoint=decision.endpoint,
                 )
             self.assertEqual(result, "mock-render")
             dispatch.assert_called_once_with(
@@ -2925,7 +2957,7 @@ class DesktopCoreTests(unittest.TestCase):
             with patch("ad_studio.production.load_video_provider", return_value=provider):
                 result = store.render_cloud_shot(
                     project, shot, root / "video-provider.json",
-                    authorize_cloud=callback, video_authorized=True,
+                    authorize_cloud=callback, authorized_endpoint=decision.endpoint,
                 )
             self.assertEqual(result, "mock-render")
             dispatch.assert_called_once_with(
