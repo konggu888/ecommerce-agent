@@ -2041,6 +2041,12 @@ class DesktopCoreTests(unittest.TestCase):
             restored = store.load(project.id)
             self.assertAlmostEqual(restored.actual_cost_rmb, 2.5)
             self.assertAlmostEqual(restored.shots[0].actual_cost_rmb, 1.2)
+            self.assertAlmostEqual(restored.cost_estimate["actual_cost_rmb"], 2.5)
+            migrated_after_reload = [
+                row for row in store.ledger.recent(20)
+                if row.get("project_id") == project.id and row.get("function") == "历史实际成本迁移"
+            ]
+            self.assertEqual(len(migrated_after_reload), 2)
 
 
     def test_a64_asset_cost_record_failure_keeps_generated_asset_and_marks_reconciliation(self):
