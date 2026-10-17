@@ -1,10 +1,10 @@
 ## 【实时接手状态｜2026-10-17｜以此段优先】
 
 - 仓库 konggu888/ecommerce-agent；分支 feat/product-drama-visual-review；PR #32 保持 Open/unmerged。
-- 最近一次四项 CI/docs-sync 全绿基线：5a69853b069079c315b44565598475e1d9785ea4。随后新增实拍素材重新分析的数据去向确认及测试，最终 HEAD CI 必须重新核验。
-- 已完成：云端渲染入口透传资产授权回调；短剧重生成准备阶段按实际路由显示费用确定性，缺价保存 null + price_missing；资产生成配置路径审计确认 UI 与 ProductionStore 都使用 ROOT（项目目录的 parent）下的 asset-generation.json，自定义资产库目录只影响素材文件，不改变 Provider 配置文件位置。
-- 新增实拍素材重新分析前置确认：显示素材剪辑导演 endpoint、关键帧数据类型、口播转写 endpoint/音频数据和费用未知提示；取消时在扫描/归档/模型调用前返回。新增离线测试覆盖脱敏和确认顺序。
-- 下一步：核验最终 HEAD 四项 CI/docs-sync；通过后继续审计剩余 Provider 入口和创建实拍项目时的端到端授权/预算顺序。A0–A112 不变，不新增 A113+，PR #32 不合并；真实 Provider/扣费/Windows 真机暂缓。
+- 最近一次四项 CI/docs-sync 全绿基线：5ccd137a1232565d59b17a4dfcd591770d62f67e。随后本次审计文档提交需重新核验最终 HEAD。
+- 本轮已完成：云端渲染入口透传资产授权回调；短剧重生成准备阶段按当前路由记录本地零 Provider 费用/云端未知价格；资产配置文件路径核实为 UI 与 ProductionStore 共用 ROOT/asset-generation.json；实拍素材重新分析在扫描/归档/分析/转写前披露端点与数据类型。
+- 对 create() 实拍模式的静态复核：首个授权弹窗发生在商品解析、素材扫描与模型规划前；展示已选模型路由/端点、关键帧和音频数据类别及费用未知提示。后续项目预算弹窗发生在创意/视觉分析后，并明确说明规划模型调用可能已经产生费用。因此未发现“首个授权前调用模型”的源码顺序问题，但预算金额不包含已发生的规划调用成本，用户可能需要更清晰的累计费用呈现。
+- 下一步：核验最终 HEAD 四项 CI/docs-sync；通过后补充用户拍摄素材创建流程的 mock 调用计数测试，覆盖首次拒绝后 parse/scan/vision/transcription/planning 调用均为 0，以及第二次预算拒绝后项目不落盘。A0–A112 不变，不新增 A113+，PR #32 不合并；真实 Provider/扣费/Windows 真机暂缓。
 
 
 

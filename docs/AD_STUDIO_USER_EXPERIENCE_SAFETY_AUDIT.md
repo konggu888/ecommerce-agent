@@ -485,3 +485,10 @@
 - 配置路径专项核对：UI 使用 ROOT/asset-generation.json；ProductionStore 的 root 为 PROJECTS，root.parent 为 ROOT，AssetGenerator 使用同一配置文件；自定义 library_root 只影响素材库，不改变 provider 配置路径。现有测试明确断言此合同。
 - 新代码/测试 SHA 48fe3e2f568371fd2b2be94b4bd0459bca22a005、c902fb98c4eb22ad8040067792d129e81f8f9ce5 的最终 HEAD CI/docs-sync 尚待核验。实拍项目创建初始阶段是否所有费用授权与实际请求严格对齐仍需继续审计。
 
+### Q. 用户拍摄素材项目创建的授权时序静态复核｜2026-10-17
+
+- create() 首个授权通过 build_creation_preflight_detail 展示各功能当前选择的模型/端点、配置单价或未知费用提示，并说明用户拍摄素材模式可能发送关键帧图片和音频；确认在 parse_product_url、scan_footage、create_plan/create_plans、analyze_footage、transcription 与 plan_footage 之前。
+- 第二个 AI 创意与项目预算确认发生在规划与实拍分析之后；文案明确说明此前已授权的创意规划模型调用可能产生费用。取消后不会保存项目/启动后续视频或资产生成，但不能撤销已完成的模型调用。
+- 本轮静态源码顺序未发现首个授权前的模型/Provider 调用。风险边界：制作预算不包含已经发生的规划调用费用；当前主要缺口是用户拍摄素材模式下首个拒绝的生产级 mock 调用计数，以及第二次预算拒绝后的项目落盘/调用计数专项测试。
+- 不据此标记 A13/A29/A51–A65 正式验收通过；后续按既有合同补专项测试，不新增 A113+。
+

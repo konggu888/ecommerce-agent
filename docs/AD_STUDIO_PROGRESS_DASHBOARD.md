@@ -1,10 +1,10 @@
 ## 【实时权威进度｜2026-10-17｜优先于下方所有历史快照】
 
 - 仓库/分支：konggu888/ecommerce-agent / feat/product-drama-visual-review；PR #32 保持 Open/unmerged。
-- 最近一次四项 CI/docs-sync 全绿基线：5a69853b069079c315b44565598475e1d9785ea4。随后实拍素材重新分析数据去向确认及测试的最终 HEAD 必须重新核验。
-- 已完成：云端视频渲染入口透传资产授权回调；短剧重生成准备步骤区分本地 Provider 零费用与云端未知费用；配置路径审计确认资产设置 UI 与 ProductionStore 使用同一 app config root 下的 asset-generation.json，自定义 library_root 只决定素材库物理存储位置。
-- 新增实拍素材重新分析授权：确认弹窗披露素材剪辑导演实际路由/脱敏 endpoint/关键帧数据，及口播转写路由/音频数据和未知费用；取消发生在扫描、归档、模型调用前。mock 测试覆盖数据说明脱敏与授权顺序。
-- 当前唯一下一步：核验最终 HEAD 的 CI Push、CI PR、docs-sync Push、docs-sync PR；通过后继续审计用户拍摄素材项目创建阶段的全链授权与预算顺序，以及剩余 Provider 入口。A0–A112 正式状态不变，不新增 A113+，PR #32 不合并；真实 Provider/扣费/Windows 真机暂缓。
+- 最近一次四项 CI/docs-sync 全绿基线：5ccd137a1232565d59b17a4dfcd591770d62f67e。本次文档提交的最终 HEAD 需重新核验。
+- 已完成：云端视频授权回调透传；短剧重生成费用确定性；资产 Provider 配置路径同源核验；实拍素材重新分析的端点/关键帧/音频/未知费用披露及取消前置顺序。
+- create() 实拍模式静态复核：首个 preflight 授权早于商品解析、素材扫描和模型规划，且列出已配置模型端点、关键帧/音频数据类别与未知费用提示。第二个预算确认在创意/视觉分析之后，并明确告知规划模型调用可能已产生费用；当前未发现首次授权前调用，但规划费用不包含在后续制作预算中。
+- 当前唯一下一步：核验最终 HEAD 四项 CI/docs-sync；通过后新增实拍创建流程 mock 调用计数测试：首次拒绝后 parse/scan/vision/transcription/plan 调用为 0；预算拒绝后项目未保存、且文案不声称撤销之前已授权的规划调用。A0–A112 不变，不新增 A113+，PR #32 不合并；真实 Provider/扣费/Windows 真机暂缓。
 
 
 
