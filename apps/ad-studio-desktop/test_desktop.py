@@ -2950,6 +2950,67 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertLess(consent, manifest)
         self.assertLess(consent, analysis)
 
+    def test_creation_preflight_denial_keeps_external_pipeline_call_counts_at_zero(self):
+        from unittest.mock import Mock
+        from ad_studio.app import run_after_explicit_authorization
+
+        parse = Mock()
+        scan = Mock()
+        vision = Mock()
+        transcription = Mock()
+        planning = Mock()
+
+        def external_pipeline():
+            parse()
+            scan()
+            vision()
+            transcription()
+            planning()
+
+        authorized, result = run_after_explicit_authorization(lambda: False, external_pipeline)
+        self.assertFalse(authorized)
+        self.assertIsNone(result)
+        for operation in (parse, scan, vision, transcription, planning):
+            operation.assert_not_called()
+
+    def test_budget_denial_skips_all_project_persistence_operations(self):
+        from unittest.mock import Mock
+        from ad_studio.app import run_after_explicit_authorization
+
+        save_project = Mock()
+        save_product = Mock()
+        save_library = Mock()
+        refresh_ui = Mock()
+
+        def persist_project():
+            save_project()
+            save_product()
+            save_library()
+            refresh_ui()
+
+        authorized, result = run_after_explicit_authorization(lambda: False, persist_project)
+        self.assertFalse(authorized)
+        self.assertIsNone(result)
+        for operation in (save_project, save_product, save_library, refresh_ui):
+            operation.assert_not_called()
+
+    def test_create_uses_explicit_gate_before_planning_and_budget_gate_before_persistence(self):
+        import inspect
+        from ad_studio.app import App
+
+        source = inspect.getsource(App.create)
+        first_gate = source.index("run_after_explicit_authorization(")
+        parse = source.index("lambda: parse_product_url(url)")
+        planning = source.index("self.model_router.create_plans(")
+        budget_gate = source.rindex("run_after_explicit_authorization(")
+        persist = source.index("self.store.save(self.project)")
+        denial = source.index("if not authorized:", budget_gate)
+        self.assertLess(first_gate, parse)
+        self.assertLess(parse, planning)
+        self.assertLess(planning, budget_gate)
+        self.assertLess(budget_gate, persist)
+        self.assertLess(denial, persist)
+
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.
