@@ -170,6 +170,53 @@ def build_creation_preflight_detail(url, budget, variant_count, model_router):
     return "\n".join(lines)
 
 
+def build_footage_reanalysis_consent_detail(model_router, folder):
+    """Disclose analysis/transcription destinations before rescanning footage."""
+    lines = [
+        "本操作会重新分析用户拍摄素材。确认前不会扫描文件、移动/归档素材或调用模型/Provider。",
+        f"素材文件夹：{Path(folder).name or '所选文件夹'}（不显示完整本地路径）",
+        "",
+        "当前素材剪辑导演路由：",
+    ]
+    try:
+        profile = model_router.resolve_route("素材剪辑导演")
+        endpoint = _safe_endpoint_display(profile.base_url)
+        host = (urlsplit(str(profile.base_url or "")).hostname or "").lower()
+        local = host in {"localhost", "127.0.0.1", "::1"}
+        destination = "本机/回环端点" if local else "网络端点（请确认其实际部署位置）"
+        if profile.provider == "local_openai" and not local:
+            destination = "local_openai 配置但非本机回环地址；请核实实际部署位置"
+        lines.append(f"- {profile.name}（{profile.provider}）→ {endpoint}；{destination}")
+        lines.append("- 将发送：商品资料、创意方案、素材文件名/时长/尺寸等元数据，以及从视频抽取的关键帧图片。")
+        if profile.input_price_rmb_per_1k or profile.output_price_rmb_per_1k:
+            lines.append(f"- 配置单价：输入 ¥{profile.input_price_rmb_per_1k:.6f}/1K，输出 ¥{profile.output_price_rmb_per_1k:.6f}/1K；实际视觉 token/usage 可能无法准确预估。")
+        else:
+            lines.append("- 模型价格为 0/未配置；不代表免费，实际费用可能未知。")
+    except Exception as exc:
+        lines.append(f"- 素材剪辑导演路由不可用：{exc}；请先检查模型设置。")
+    lines.extend(["", "当前口播转写路由："])
+    try:
+        profile = model_router.route("口播转写")
+        endpoint = _safe_endpoint_display(str(profile.base_url).rstrip("/") + "/audio/transcriptions")
+        if not profile.enabled or not profile.transcription_enabled:
+            lines.append(f"- {profile.name}：口播转写未启用，本次不会调用转写服务。")
+        else:
+            host = (urlsplit(str(profile.base_url or "")).hostname or "").lower()
+            local = host in {"localhost", "127.0.0.1", "::1"}
+            destination = "本机/回环端点" if local else "网络端点（请确认其实际部署位置）"
+            lines.append(f"- {profile.name}（{profile.provider}）→ {endpoint}；{destination}")
+            lines.append("- 将发送：从可用视频中提取的音频文件，用于口播转写。")
+            lines.append("- 转写 usage/费用按未知处理；本地 Provider 不收取 Provider 费用，但不含本机电费/硬件成本。")
+    except Exception as exc:
+        lines.append(f"- 口播转写路由不可用或未配置：{exc}。")
+    lines.extend([
+        "",
+        "确认后才会扫描素材并执行上述分析。取消后不会扫描、归档或移动素材，也不会调用模型/Provider。",
+        "是否继续并授权本次实拍素材分析及列出的数据去向？",
+    ])
+    return "\n".join(lines)
+
+
 class App(tk.Tk):
     def __init__(self):
         super().__init__(); self.title('AI 商品广告工厂 · 本地版'); self.geometry('1180x760'); self.minsize(980,650)
@@ -853,8 +900,9 @@ class App(tk.Tk):
         folder=Path(self.project.footage_folder or self.footage_folder.get().strip()).expanduser()
         if not folder.exists() or not folder.is_dir():
             return messagebox.showerror('素材文件夹无效','当前项目的实拍素材文件夹不存在，请重新选择。')
-        if not messagebox.askyesno('重新分析实拍素材',
-            '将重新扫描当前文件夹中的视频，并重新执行视觉分析、废片归档、口播转写（如已配置）、素材排名、卖点覆盖审计和剪辑方案复核。是否继续？'):
+        consent_detail = build_footage_reanalysis_consent_detail(self.model_router, folder)
+        if not messagebox.askyesno('重新分析实拍素材与数据去向授权', consent_detail, parent=self):
+            self.detail.set('已取消实拍素材重新分析；未扫描/归档素材，也未调用模型或 Provider。')
             return
         try:
             from .footage import scan_footage, FootageError, validate_footage_plan, audit_footage_coverage, audit_final_footage_plan, audit_footage_gap_completion, merge_gap_task_acceptance, audit_footage_plan_change
