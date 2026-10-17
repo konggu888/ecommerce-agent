@@ -1,3 +1,15 @@
+## 【C3-COST-PREFLIGHT-ORDER-001｜规划成本前置授权｜2026-10-17】
+
+- `estimate_creation_planning_cost(model_router, variant_count)` 只估算每个创意方案的 9 个规划阶段调用，不猜测最终镜头数或生产费用。
+- 估算优先使用同一功能/同一模型最近最多 20 条成功、usage 完整且成本按配置单价计算的历史记录；远程模型价格或可比 usage 不足时返回未知并显示已知小计，不把未知视为免费。
+- `build_creation_preflight_detail()` 在商品链接解析、创意规划模型调用之前展示规划调用数、历史参考估算/未知项、模型目的地和数据边界；用户拒绝则不执行被授权操作。
+- 规划完成后仍保留第二阶段的最终视频/演员/场景/商品素材费用确认。第二阶段拒绝阻止新项目保存和后续生产生成，但无法撤销第一阶段已授权并发生的规划模型费用。
+- 此估算是历史参考，不是供应商报价或费用上限；如果模型价格/usage 不可用，必须显式提示未知，不能编造精确总价。
+
+**状态：** 实现与回归测试已写入分支，等待最新 HEAD CI/docs-sync。只有两项检查通过且预授权顺序/拒绝无调用测试通过后，才可关闭 `C3-COST-PREFLIGHT-ORDER-001`。
+
+---
+
 ## 【C3-UNKNOWN-PRICE-001｜未知视频单价 fail-closed 规则｜2026-10-17】
 
 1. `configured_video_price(provider)` 只接受显式 `cost_price_configured=True` 且单价有限、非负的 Provider；缺少标志、缺少单价或校验失败一律返回 `None`。Provider 数据类的占位单价默认不代表已配置报价。
