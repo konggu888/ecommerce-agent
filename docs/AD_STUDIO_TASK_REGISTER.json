@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 38/113. C2 direct source/test audit coverage 10/113; A5-A9 audited with partial gaps recorded; formal acceptance states unchanged.",
+  "audit_status": "C1 cross-source decisions cover 43/113 unique formal IDs (38.1%). Latest closed batch C1-FOUNDATION-005 (A20-A24). C2 direct source/test audit coverage is 10/113 (A0-A9); all audited slots have explicit gaps and no formal acceptance status was changed. Overall task closure coverage remains 0/113; C3 blocker denominator remains unclassified.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -2856,7 +2856,31 @@
       "audit_notes": "PLAN-003 incremental review 2026-10-15: static source/test pointers mapped from current branch snapshot. Evidence SHA intentionally left null until exact source/test commit provenance is independently established; this is not formal acceptance.",
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-005",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json"
+        ],
+        "contract_role": "对创意文案中的卖点依据、禁用词、绝对化表达、资料缺失和事实编造进行文本/规则检查。",
+        "distinction": "不等于 A21 的分镜逐镜头映射，也不等于 A22 的真实画面核验或法律意见；A23/A24 负责风险动作控制与最终阻断。",
+        "related_ids": [
+          "A6",
+          "A7",
+          "A11",
+          "A21",
+          "A23",
+          "A24"
+        ],
+        "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A21",
@@ -2914,7 +2938,30 @@
       "audit_notes": "PLAN-003 incremental review 2026-10-15: static source/test pointers mapped from current branch snapshot. Evidence SHA intentionally left null until exact source/test commit provenance is independently established; this is not formal acceptance.",
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-005",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json"
+        ],
+        "contract_role": "核对分镜中的商品资料、外观/功能描述和字幕对应关系，并明确文本检查不等于视觉检查。",
+        "distinction": "依赖 A20 的创意事实基础，向 A22 的画面核验提供可追溯目标；文本字段一致不能证明画面真实展示商品。",
+        "related_ids": [
+          "A6",
+          "A11",
+          "A20",
+          "A22",
+          "A24"
+        ],
+        "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A22",
@@ -2972,7 +3019,31 @@
       "audit_notes": "PLAN-003 incremental review 2026-10-15: static source/test pointers mapped from current branch snapshot. Evidence SHA intentionally left null until exact source/test commit provenance is independently established; this is not formal acceptance.",
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-005",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json"
+        ],
+        "contract_role": "对实际画面检查遮挡、模糊、抖动、素材映射和风险追踪；未分析画面不能标记确认。",
+        "distinction": "A5 是素材级视觉分析；A22 是商品事实/风险的视觉核验；A25 是媒体技术质量；A24 汇总安全阻断，四者不能合并。",
+        "related_ids": [
+          "A5",
+          "A16",
+          "A20",
+          "A21",
+          "A24",
+          "A25"
+        ],
+        "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A23",
@@ -3034,7 +3105,30 @@
       "audit_notes": "PLAN-003 incremental review 2026-10-15: static source/test pointers mapped from current branch snapshot. Evidence SHA intentionally left null until exact source/test commit provenance is independently established; this is not formal acceptance.",
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-005",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json"
+        ],
+        "contract_role": "风险动作拦截、权限等级、人工批准、Dry-run、Audit Log 和禁止未授权真实写操作。",
+        "distinction": "A23 负责动作/权限控制，不等于 A20/A21/A22 的内容与视觉判断；A24 负责把多类风险汇总成最终阻断。真实平台写操作不在本轮触发。",
+        "related_ids": [
+          "A20",
+          "A21",
+          "A22",
+          "A24",
+          "A29"
+        ],
+        "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A24",
@@ -3091,7 +3185,31 @@
       "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers mapped against branch snapshot 168bd507430af347de805c96735793c200a9802c. Per-file evidence SHA not independently pinned; not formal acceptance.",
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-005",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json"
+        ],
+        "contract_role": "最终安全闸门，汇总商品事实错误、禁用词/高风险表达、视觉风险、待复核 AI 镜头及其他风险，并阻止不安全成片写出。",
+        "distinction": "A24 是跨风险源最终汇总/阻断，不替代各源检测器 A20-A23；必须验证多风险同时存在时不相互覆盖。",
+        "related_ids": [
+          "A20",
+          "A21",
+          "A22",
+          "A23",
+          "A25",
+          "A27"
+        ],
+        "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A25",
@@ -13752,6 +13870,23 @@
         "remaining_decisions": [],
         "formal_acceptance_states_changed": false,
         "next_batch": "C1-FOUNDATION-005: reconcile A20-A24 across creative/storyboard/visual fact checks and risk/final safety gates, keeping textual fact checks distinct from visual truth and action authorization."
+      },
+      {
+        "batch_id": "C1-FOUNDATION-005",
+        "slots": [
+          "A20",
+          "A21",
+          "A22",
+          "A23",
+          "A24"
+        ],
+        "slots_reconciled": 5,
+        "slots_total": 5,
+        "status": "resolved_as_distinct_related_contracts",
+        "decision": "Compared plan/SOP and register/roadmap context. A20 textual creative checks, A21 storyboard-to-fact traceability, A22 visual fact verification, A23 authorization/action controls, and A24 final risk aggregation are sequential but separate contracts. Final gate must block output and preserve multiple concurrent risk causes; lower-level checks do not prove the final gate. No IDs/statuses changed.",
+        "remaining_decisions": [],
+        "formal_acceptance_states_changed": false,
+        "next_batch": "C1-FOUNDATION-006: reconcile A25-A29 across media technical quality, output history/delivery, local persistence and data-boundary provenance. Preserve distinction between file metadata, real perceptual quality, data provenance and delivery UI."
       }
     ]
   },
@@ -13943,8 +14078,8 @@
         "name": "跨来源身份与状态裁决",
         "status": "in_progress",
         "exit": "all 113 slots reconciled against plan, SOP, roadmap, register; unresolved decisions 0",
-        "last_completed_batch": "C1-FOUNDATION-004",
-        "slots_with_final_documented_cross_source_decision": 38,
+        "last_completed_batch": "C1-FOUNDATION-005",
+        "slots_with_final_documented_cross_source_decision": 43,
         "slots_counting_rule": "Unique task IDs across all closed batches; repeated IDs never increase the numerator."
       },
       {
@@ -13983,9 +14118,9 @@
         "definition": "Slots with current code/test audit and explicit terminal disposition divided by 113. Audit-only slots with open gaps do not count as closed."
       },
       "c1_cross_source_reconciliation": {
-        "numerator": 38,
+        "numerator": 43,
         "denominator": 113,
-        "percent": 33.6,
+        "percent": 38.1,
         "definition": "Unique formal task IDs with documented cross-source identity/status decisions; repeated IDs count once. This is not code/test audit or formal acceptance."
       },
       "c2_current_code_test_audit": {
