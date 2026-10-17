@@ -12275,7 +12275,7 @@
       "numerator": 0,
       "denominator": 113,
       "percent": 0,
-      "meaning": "No roadmap phase mapping remains provisional after a title/section-level review of the 18 prior provisional labels; this measures mapping confidence only, not feature completion."
+      "meaning": "No mapping remains provisionally categorized; the 18 prior provisional labels were reviewed against roadmap and acceptance documents. This does not measure feature completion."
     },
     "phase_distribution": [
       {
@@ -12325,7 +12325,7 @@
   "phase_normalization": {
     "version": "phase-normalization-v1",
     "completed_on": "2026-10-17",
-    "method": "Normalize whitespace variants and remove provisional wording only in normalized_roadmap_phase; preserve roadmap_phase and phase_normalization_original unchanged; retain phase_mapping_confidence=provisional for uncertain mappings.",
+    "method": "Normalize whitespace and provisional wording only in normalized_roadmap_phase; preserve raw roadmap_phase and phase_normalization_original. Preserve prior provisional state in phase_mapping_original_confidence and record the reviewed conclusion in phase_mapping_review; phase_mapping_confidence becomes reviewed_confirmed only for the 18 mappings reviewed against authoritative roadmap/acceptance documents.",
     "canonical_phase_counts": {
       "阶段0｜路线与证据基线": 7,
       "阶段1｜可靠的生产底座": 52,
@@ -12338,7 +12338,7 @@
       "mapped": 95,
       "reviewed_confirmed": 18
     },
-    "note": "This is label normalization only. It is not semantic deduplication, status reconciliation, phase completion, or formal acceptance.",
+    "note": "Label normalization and category review only. It is not semantic deduplication, implementation verification, status reconciliation, phase completion, or formal acceptance.",
     "reviewed_provisional_mapping_ids": [
       "A90",
       "A91",
