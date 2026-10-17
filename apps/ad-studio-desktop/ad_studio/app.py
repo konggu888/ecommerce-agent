@@ -1067,7 +1067,7 @@ class App(tk.Tk):
                 out=self.store.render_shot(
                     self.project, shot, config_root=ROOT, decision=decision,
                     authorize_cloud=lambda asset_decision, kind: self._confirm_asset_cloud_generation(asset_decision, kind, shot),
-                    video_authorized=(decision.target == 'cloud'),
+                    authorized_endpoint=(decision.endpoint if decision.target == 'cloud' else None),
                 )
                 task['generated_path']=str(out)
                 task['status']='AI补镜头已生成'
