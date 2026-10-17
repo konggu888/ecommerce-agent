@@ -1,4 +1,16 @@
-# 【交接一致性修复｜权威状态与连续性规则｜2026-10-16】
+## 【实时接手状态｜2026-10-17｜以此段优先】
+
+- 仓库 konggu888/ecommerce-agent；分支 feat/product-drama-visual-review；PR #32 保持 Open/unmerged。
+- 最近一次已确认四项全绿的基线：91de09e10fbac7ccf5d82c791cb2ab60ab6ac0a6。该 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR 均 success。
+- 随后新增云端授权回调透传修复 7bdcb6cc043e20d3374b344a3b384d7fc115c81d、测试 84e92d191d85e06bef50f3913a8b589bc3a23131 和本次文档同步；最终 HEAD CI 必须重新核验。
+- 本轮发现并修复 render_shot() 云端分支丢失 authorize_cloud，以及 render_cloud_shot() 不支持透传回调的问题。新增 mock 测试不触发真实网络。
+- 下一步：先核验最终 HEAD 四项 CI/docs-sync；通过后继续审计短剧商品镜头重新生成、批量视频入口和 A13/A29/A51–A65 合同边界，验证取消后 Provider 调用计数为 0、状态/版本不变。然后检查自定义资产库路径下 UI 费用配置与实际生成配置是否同源。不新增 A113+；不改 A0–A112；PR #32 不合并。
+- 真实 Provider、实际扣费、Windows 真机、真实素材/剪映/投放仍暂缓。
+
+
+---
+
+# 【历史快照｜交接一致性修复规则｜2026-10-16】
 
 > **这是接手协议和最近核实的历史基线，不是替代实时 GitHub 查询的静态快照。** 每次新会话必须先查询分支 HEAD、PR #32 和该 HEAD 的四项工作流；无论本段 SHA 是什么，都不得直接假定它仍是 HEAD。若 HEAD 不同，先识别新增提交及状态，更新交接记录后再继续任务。严禁从历史快照推断当前状态。
 

@@ -1,4 +1,16 @@
-# 【交接一致性修复｜权威状态与连续性规则｜2026-10-16】
+## 【实时权威进度｜2026-10-17｜优先于下方所有历史快照】
+
+- 仓库/分支：konggu888/ecommerce-agent / feat/product-drama-visual-review；PR #32 必须保持 Open/unmerged。
+- 最近一次已确认四项全绿的基线：91de09e10fbac7ccf5d82c791cb2ab60ab6ac0a6。该 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR 均 success。
+- 随后本轮修复：7bdcb6cc043e20d3374b344a3b384d7fc115c81d（云端 render_shot / render_cloud_shot 透传资产授权回调），84e92d191d85e06bef50f3913a8b589bc3a23131（mock 回归测试）；本次文档同步会产生新 HEAD。后续 SHA 的最终 CI 状态须实时核验。
+- 当前审计结果：单镜头 UI 有目的地/费用确认；资产云端生成有显式授权回调，UI 已逐项确认；费用未知状态与 endpoint 脱敏/账本重载有测试。新发现的云端回调丢失问题已修复并加 mock 测试，等待最终 HEAD CI 验证。
+- 当前唯一下一步：先核验最终 HEAD 的 CI Push、CI PR、docs-sync Push、docs-sync PR；全部通过后，继续对照 A13/A29/A51–A65 审计短剧商品镜头重新生成和所有剩余 Provider 入口，验证取消后调用计数为 0、无不必要状态/版本变更。然后检查用户自定义资产库路径下 UI 读取的资产费用配置与实际生成配置是否同源。不新增 A113+；不改 A0–A112 正式状态；PR #32 不合并。
+- 不做真实 Provider/扣费/Windows 真机测试；总体完成率关闭。
+
+
+---
+
+# 【历史快照｜交接一致性修复规则｜2026-10-16】
 
 > **这是接手协议和最近核实的历史基线，不是替代实时 GitHub 查询的静态快照。** 每次新会话必须先查询分支 HEAD、PR #32 和该 HEAD 的四项工作流；无论本段 SHA 是什么，都不得直接假定它仍是 HEAD。若 HEAD 不同，先识别新增提交及状态，更新交接记录后再继续任务。严禁从历史快照推断当前状态。
 

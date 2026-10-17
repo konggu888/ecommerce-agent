@@ -461,3 +461,12 @@
 - 视频 Provider 设置将含 `api_key` 的 payload 直接写入 `video-provider.json`；资产 Provider 设置将每类配置（含 API Key）直接写入 `asset-generation.json`。Entry 的 `show='*'` 仅遮挡屏幕输入，不保护磁盘文件。
 - 这是本地明文存储风险，不是 API Key 已泄漏或被外部访问的证据；目前未发现任何密钥被发送到调用账本的路径，账本 endpoint 已做 query/userinfo/fragment 脱敏。
 - 下一步应设计并实现 Windows DPAPI（当前登录用户保护）或系统凭据库；先覆盖模型/视频/资产三类配置，支持旧明文配置迁移、项目重载、无明文回写与日志脱敏。Windows 真机验证仍按既定要求暂缓。
+
+### N. 云端渲染入口丢失资产授权回调｜2026-10-17
+
+- 最新 CI 通过的前一 HEAD 91de09e10fbac7ccf5d82c791cb2ab60ab6ac0a6 已覆盖单镜头 UI 确认、资产授权回调与费用不确定性测试。
+- 静态审计发现 ProductionStore.render_shot() 的 local 分支传入 authorize_cloud，但 cloud 分支遗漏该参数；render_cloud_shot() 也没有参数可透传。UI 会提前 resolve_assets，因此常规 UI 路径可能先行处理素材，但生产层 API 的云端入口合同不一致。
+- 已修复两条云端渲染入口，均透传 authorize_cloud；新增 mock 测试验证回调传递，不发真实请求。
+- 修复提交 7bdcb6cc043e20d3374b344a3b384d7fc115c81d 与测试提交 84e92d191d85e06bef50f3913a8b589bc3a23131 尚需以最终文档 HEAD 的 CI/docs-sync 结果为准。此项不等于 A13/A29 或任何 A 编号正式验收通过。
+- 下一步：核验最新 SHA 四项工作流；若通过，继续审计短剧商品镜头重新生成、批量视频入口和 A13/A29/A51–A65 合同边界。A0–A112 不变，PR #32 保持 Open/unmerged。
+

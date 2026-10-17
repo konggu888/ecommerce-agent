@@ -909,3 +909,8 @@ ModelRouter 现有项目上下文默认值与 set_project_context()，新建项�
 最新代码基线 `cd2c034fc4feb26a10de1c07e7107c06907109be` 的 CI 与 docs-sync 已通过。静态审计发现模型配置保存、视频 Provider JSON 与资产 Provider JSON 可能明文存储 API Key；密码框遮挡不是磁盘保护。没有证据表明密钥已泄漏。
 
 下一步优先设计 Windows DPAPI/系统凭据库方案，覆盖三类配置的保存/读取、旧明文配置迁移、迁移后无明文回写、重载可用性和错误日志脱敏。只做离线 mock 测试，不做真实 Provider/扣费或 Windows 真机测试。PR #32 不合并；A0–A112 不改编号/正式状态，不新增 A113+。
+
+## 实时接手状态｜2026-10-17
+
+以 apps/ad-studio-desktop/SESSION_HANDOFF.md 顶部实时状态与 docs/AD_STUDIO_PROGRESS_DASHBOARD.md 顶部为权威。最近已确认全绿的基线是 91de09e10fbac7ccf5d82c791cb2ab60ab6ac0a6；随后云端授权回调修复、测试和文档提交的最终 HEAD CI 尚待核验。下一项先核验四项 CI/docs-sync，再审计短剧商品镜头重新生成和剩余 Provider 入口。
+
