@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "C1 cross-source decisions cover 52/113 unique formal IDs (46%). Latest batch C1-FOUNDATION-007 reviewed A30-A34; A30 was already counted by C1-RECOVERY-004 and does not increase the unique count. C2 source/test audit coverage is 10/113 (A0-A9). Task closure coverage remains 0/113; C3 blocker denominator remains unclassified.",
+  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 52/113. C2 direct source/test audit coverage 15/113; A10-A14 reviewed, with confirmed P0 unknown-price blocker linked to A12/A13/A51. Formal acceptance states unchanged.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -1761,12 +1761,12 @@
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
       "last_verified_date": "2026-10-15",
       "current_head_evidence_reconciliation": {
-        "head": "5138685b3489fd249be5469fe86821b6374edde0",
-        "checked_on": "2026-10-15",
+        "head": "10860fe555b85147d2a4be8643e09a8db00119e7",
+        "checked_on": "2026-10-17",
         "source_test_paths_rechecked": true,
-        "ci_docs_sync_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": false,
         "acceptance_status_preserved": "not_audited",
-        "note": "Partial source/test mapping only; distributed tests do not equal full task acceptance."
+        "note": "C2 direct source/test audit recorded; latest-head CI/docs-sync must be rechecked after documentation update. Partial findings are not formal acceptance."
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
@@ -1792,6 +1792,38 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "batch_id": "C2-FOUNDATION-003",
+        "audited_at": "2026-10-17",
+        "audit_head": "10860fe555b85147d2a4be8643e09a8db00119e7",
+        "status": "partial_audit_gaps_found",
+        "source_test_file_shas": {
+          "sources": [
+            [
+              "apps/ad-studio-desktop/ad_studio/audio.py",
+              "f960bd3ed523e06814e7e5114a71ee85966913d1"
+            ],
+            [
+              "apps/ad-studio-desktop/ad_studio/music_sync.py",
+              "9e1c8286515adaf455cabd54836bf6eae3cbaec0"
+            ]
+          ],
+          "tests": [
+            [
+              "apps/ad-studio-desktop/test_desktop.py",
+              "9bc36587e24f17047333443a69452aaf69f9212a"
+            ],
+            [
+              "apps/ad-studio-desktop/test_music_sync.py",
+              "9e1c8286515adaf455cabd54836bf6eae3cbaec0"
+            ]
+          ]
+        },
+        "finding": "Audio mixing and music retiming code exists. Tests verify voice/BGM mix parameters, continuous BGM, beat detection/retiming, and audio-video synchronization. They do not prove real listening quality, noise-reduction efficacy, music-license provenance, or complete audio-error UI/recovery.",
+        "next_action": "Map audio error UI/recovery and user music-library flow; keep real listening and licensing validation separate.",
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_pass_claim": false
       }
     },
     {
@@ -1877,12 +1909,12 @@
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
       "last_verified_date": "2026-10-15",
       "current_head_evidence_reconciliation": {
-        "head": "5138685b3489fd249be5469fe86821b6374edde0",
-        "checked_on": "2026-10-15",
+        "head": "10860fe555b85147d2a4be8643e09a8db00119e7",
+        "checked_on": "2026-10-17",
         "source_test_paths_rechecked": true,
-        "ci_docs_sync_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": false,
         "acceptance_status_preserved": "not_audited",
-        "note": "Partial source/test mapping only; distributed tests do not equal full task acceptance."
+        "note": "C2 direct source/test audit recorded; latest-head CI/docs-sync must be rechecked after documentation update. Partial findings are not formal acceptance."
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
@@ -1909,6 +1941,42 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "batch_id": "C2-FOUNDATION-003",
+        "audited_at": "2026-10-17",
+        "audit_head": "10860fe555b85147d2a4be8643e09a8db00119e7",
+        "status": "partial_audit_gaps_found",
+        "source_test_file_shas": {
+          "sources": [
+            [
+              "apps/ad-studio-desktop/ad_studio/subtitles.py",
+              "aed4dd171cbbec2e3b626fbe30b4344aed889614"
+            ],
+            [
+              "apps/ad-studio-desktop/ad_studio/production.py",
+              "b0fa10cd0000f8710051003ceea42721eca2223d"
+            ]
+          ],
+          "tests": [
+            [
+              "apps/ad-studio-desktop/test_subtitles.py",
+              "04a4e441cab8e693c8fbb2f8a4f8a246668dbe40"
+            ],
+            [
+              "apps/ad-studio-desktop/test_music_sync.py",
+              "9e1c8286515adaf455cabd54836bf6eae3cbaec0"
+            ],
+            [
+              "apps/ad-studio-desktop/test_desktop.py",
+              "9bc36587e24f17047333443a69452aaf69f9212a"
+            ]
+          ]
+        },
+        "finding": "Subtitle segmentation, SRT generation/parsing, density handling, invalid/out-of-range window rejection, and real-SRT timing protection have focused tests. Tests do not prove semantic alignment with actual speech, product-fact consistency end-to-end, or commercial-font licensing/source traceability.",
+        "next_action": "Add/map end-to-end product fact and transcript alignment checks; separately establish a traceable free-commercial-font whitelist.",
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_pass_claim": false
       }
     },
     {
@@ -1996,12 +2064,12 @@
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
       "last_verified_date": "2026-10-15",
       "current_head_evidence_reconciliation": {
-        "head": "5138685b3489fd249be5469fe86821b6374edde0",
-        "checked_on": "2026-10-15",
+        "head": "10860fe555b85147d2a4be8643e09a8db00119e7",
+        "checked_on": "2026-10-17",
         "source_test_paths_rechecked": true,
-        "ci_docs_sync_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": false,
         "acceptance_status_preserved": "not_audited",
-        "note": "Partial source/test mapping only; distributed tests do not equal full task acceptance."
+        "note": "C2 direct source/test audit recorded; latest-head CI/docs-sync must be rechecked after documentation update. Partial findings are not formal acceptance."
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
@@ -2026,6 +2094,38 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "batch_id": "C2-FOUNDATION-003",
+        "audited_at": "2026-10-17",
+        "audit_head": "10860fe555b85147d2a4be8643e09a8db00119e7",
+        "status": "partial_audit_confirmed_blocker",
+        "source_test_file_shas": {
+          "sources": [
+            [
+              "apps/ad-studio-desktop/ad_studio/footage.py",
+              "b94ae2ddfe779e5cf951bc541ab07a29012f7083"
+            ],
+            [
+              "apps/ad-studio-desktop/ad_studio/hybrid_router.py",
+              "72af46f4f5aa45b3ca91ba457e49e46e8aff444f"
+            ]
+          ],
+          "tests": [
+            [
+              "apps/ad-studio-desktop/test_footage.py",
+              "8ff007acfd3f174ce6c181c53a2dc96e68fa0337"
+            ],
+            [
+              "apps/ad-studio-desktop/test_hybrid_router.py",
+              "e71281d7b13b3a7955af89a31f7dc1360c65c569"
+            ]
+          ]
+        },
+        "finding": "Gap classification and routing tests cover product-evidence reshoot preference, human-speech support visuals, provider-unavailable and budget-insufficient fallback, and actionable tasks. Direct source inspection found a blocking unknown-price bug: route_footage_gap_tasks coerces missing/None rate to 0.0 and treats rate <= 0 as sufficient budget, allowing AI generation to be marked allowed without a configured price. This can misrepresent unknown cost as zero.",
+        "next_action": "Fix unknown-price handling so None/missing is distinct from explicitly configured zero; show price unknown and require explicit user confirmation before generation. Add regression tests for both human-support and generic gaps.",
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_pass_claim": false
       }
     },
     {
@@ -2118,12 +2218,12 @@
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
       "last_verified_date": "2026-10-15",
       "current_head_evidence_reconciliation": {
-        "head": "5138685b3489fd249be5469fe86821b6374edde0",
-        "checked_on": "2026-10-15",
+        "head": "10860fe555b85147d2a4be8643e09a8db00119e7",
+        "checked_on": "2026-10-17",
         "source_test_paths_rechecked": true,
-        "ci_docs_sync_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": false,
         "acceptance_status_preserved": "not_audited",
-        "note": "Partial source/test mapping only; distributed tests do not equal full task acceptance."
+        "note": "C2 direct source/test audit recorded; latest-head CI/docs-sync must be rechecked after documentation update. Partial findings are not formal acceptance."
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
@@ -2150,6 +2250,42 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "batch_id": "C2-FOUNDATION-003",
+        "audited_at": "2026-10-17",
+        "audit_head": "10860fe555b85147d2a4be8643e09a8db00119e7",
+        "status": "partial_audit_confirmed_blocker",
+        "source_test_file_shas": {
+          "sources": [
+            [
+              "apps/ad-studio-desktop/ad_studio/hybrid_router.py",
+              "72af46f4f5aa45b3ca91ba457e49e46e8aff444f"
+            ],
+            [
+              "apps/ad-studio-desktop/ad_studio/production.py",
+              "b0fa10cd0000f8710051003ceea42721eca2223d"
+            ]
+          ],
+          "tests": [
+            [
+              "apps/ad-studio-desktop/test_hybrid_router.py",
+              "e71281d7b13b3a7955af89a31f7dc1360c65c569"
+            ],
+            [
+              "apps/ad-studio-desktop/test_hybrid_generation.py",
+              "a4fb0a63ada293c8c5bb8c70255978753713e84d"
+            ],
+            [
+              "apps/ad-studio-desktop/test_desktop.py",
+              "9bc36587e24f17047333443a69452aaf69f9212a"
+            ]
+          ]
+        },
+        "finding": "AI gap generation rechecks budget, blocks product-evidence generation, preserves failure state and tests unconfigured provider/product-evidence guards. The execution layer also coerces unknown price to zero and only blocks when rate > 0 and remaining < rate, so an unknown rate can pass the execution budget gate. This is the same confirmed cross-cutting unknown-price blocker as A12.",
+        "next_action": "Fix the shared unknown-price budget gate together with A12; add execution-time tests proving no generator call occurs until unknown pricing is explicitly confirmed.",
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_pass_claim": false
       }
     },
     {
@@ -2242,12 +2378,12 @@
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
       "last_verified_date": "2026-10-15",
       "current_head_evidence_reconciliation": {
-        "head": "5138685b3489fd249be5469fe86821b6374edde0",
-        "checked_on": "2026-10-15",
+        "head": "10860fe555b85147d2a4be8643e09a8db00119e7",
+        "checked_on": "2026-10-17",
         "source_test_paths_rechecked": true,
-        "ci_docs_sync_rechecked": true,
+        "current_ci_and_docs_sync_rechecked": false,
         "acceptance_status_preserved": "not_audited",
-        "note": "Partial source/test mapping only; distributed tests do not equal full task acceptance."
+        "note": "C2 direct source/test audit recorded; latest-head CI/docs-sync must be rechecked after documentation update. Partial findings are not formal acceptance."
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
@@ -2274,6 +2410,46 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "batch_id": "C2-FOUNDATION-003",
+        "audited_at": "2026-10-17",
+        "audit_head": "10860fe555b85147d2a4be8643e09a8db00119e7",
+        "status": "partial_audit_gaps_found",
+        "source_test_file_shas": {
+          "sources": [
+            [
+              "apps/ad-studio-desktop/ad_studio/footage.py",
+              "b94ae2ddfe779e5cf951bc541ab07a29012f7083"
+            ],
+            [
+              "apps/ad-studio-desktop/ad_studio/hybrid_router.py",
+              "72af46f4f5aa45b3ca91ba457e49e46e8aff444f"
+            ],
+            [
+              "apps/ad-studio-desktop/ad_studio/production.py",
+              "b0fa10cd0000f8710051003ceea42721eca2223d"
+            ]
+          ],
+          "tests": [
+            [
+              "apps/ad-studio-desktop/test_hybrid_router.py",
+              "e71281d7b13b3a7955af89a31f7dc1360c65c569"
+            ],
+            [
+              "apps/ad-studio-desktop/test_hybrid_generation.py",
+              "a4fb0a63ada293c8c5bb8c70255978753713e84d"
+            ],
+            [
+              "apps/ad-studio-desktop/test_desktop.py",
+              "9bc36587e24f17047333443a69452aaf69f9212a"
+            ]
+          ]
+        },
+        "finding": "Hybrid source paths, review state and storyboard acceptance are persisted; tests cover explicit acceptance, pending-shot exclusion from final render, stable insertion anchors and generation failure. Full source/review provenance through every edit/export/recovery path is not established, and current generated media fidelity is not proven.",
+        "next_action": "Map source/review metadata through all relevant edit/export/recovery branches; real product fidelity and media review remain separate.",
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_pass_claim": false
       }
     },
     {
@@ -13744,6 +13920,67 @@
         "Formal acceptance states unchanged; Windows and real media evaluation remain deferred."
       ],
       "next_step": "Continue C2 audit with A10-A14 or implement the identified deterministic tests under the existing A5-A9 IDs; do not invent new acceptance IDs."
+    },
+    {
+      "batch_id": "C2-FOUNDATION-003",
+      "range": "A10-A14",
+      "status": "partial_current_source_test_audit_with_confirmed_unknown_price_blocker",
+      "audited_at": "2026-10-17",
+      "audit_head": "10860fe555b85147d2a4be8643e09a8db00119e7",
+      "reviewed_sources": [
+        "apps/ad-studio-desktop/ad_studio/audio.py",
+        "apps/ad-studio-desktop/ad_studio/music_sync.py",
+        "apps/ad-studio-desktop/ad_studio/subtitles.py",
+        "apps/ad-studio-desktop/ad_studio/footage.py",
+        "apps/ad-studio-desktop/ad_studio/hybrid_router.py",
+        "apps/ad-studio-desktop/ad_studio/production.py"
+      ],
+      "reviewed_tests": [
+        "apps/ad-studio-desktop/test_desktop.py",
+        "apps/ad-studio-desktop/test_music_sync.py",
+        "apps/ad-studio-desktop/test_subtitles.py",
+        "apps/ad-studio-desktop/test_footage.py",
+        "apps/ad-studio-desktop/test_hybrid_router.py",
+        "apps/ad-studio-desktop/test_hybrid_generation.py"
+      ],
+      "tasks": [
+        {
+          "id": "A10",
+          "status": "partial_audit_gaps_found",
+          "finding": "Audio mixing and music retiming code exists. Tests verify voice/BGM mix parameters, continuous BGM, beat detection/retiming, and audio-video synchronization. They do not prove real listening quality, noise-reduction efficacy, music-license provenance, or complete audio-error UI/recovery.",
+          "next_action": "Map audio error UI/recovery and user music-library flow; keep real listening and licensing validation separate."
+        },
+        {
+          "id": "A11",
+          "status": "partial_audit_gaps_found",
+          "finding": "Subtitle segmentation, SRT generation/parsing, density handling, invalid/out-of-range window rejection, and real-SRT timing protection have focused tests. Tests do not prove semantic alignment with actual speech, product-fact consistency end-to-end, or commercial-font licensing/source traceability.",
+          "next_action": "Add/map end-to-end product fact and transcript alignment checks; separately establish a traceable free-commercial-font whitelist."
+        },
+        {
+          "id": "A12",
+          "status": "partial_audit_confirmed_blocker",
+          "finding": "Gap classification and routing tests cover product-evidence reshoot preference, human-speech support visuals, provider-unavailable and budget-insufficient fallback, and actionable tasks. Direct source inspection found a blocking unknown-price bug: route_footage_gap_tasks coerces missing/None rate to 0.0 and treats rate <= 0 as sufficient budget, allowing AI generation to be marked allowed without a configured price. This can misrepresent unknown cost as zero.",
+          "next_action": "Fix unknown-price handling so None/missing is distinct from explicitly configured zero; show price unknown and require explicit user confirmation before generation. Add regression tests for both human-support and generic gaps."
+        },
+        {
+          "id": "A13",
+          "status": "partial_audit_confirmed_blocker",
+          "finding": "AI gap generation rechecks budget, blocks product-evidence generation, preserves failure state and tests unconfigured provider/product-evidence guards. The execution layer also coerces unknown price to zero and only blocks when rate > 0 and remaining < rate, so an unknown rate can pass the execution budget gate. This is the same confirmed cross-cutting unknown-price blocker as A12.",
+          "next_action": "Fix the shared unknown-price budget gate together with A12; add execution-time tests proving no generator call occurs until unknown pricing is explicitly confirmed."
+        },
+        {
+          "id": "A14",
+          "status": "partial_audit_gaps_found",
+          "finding": "Hybrid source paths, review state and storyboard acceptance are persisted; tests cover explicit acceptance, pending-shot exclusion from final render, stable insertion anchors and generation failure. Full source/review provenance through every edit/export/recovery path is not established, and current generated media fidelity is not proven.",
+          "next_action": "Map source/review metadata through all relevant edit/export/recovery branches; real product fidelity and media review remain separate."
+        }
+      ],
+      "limitations": [
+        "Direct source/test inspection only; no local test execution via connector.",
+        "Unknown video price is coerced to zero in hybrid routing and execution gates; generation may be marked allowed without reliable price. Treat as a confirmed blocking defect until fixed and covered by current-head regression tests.",
+        "Audio quality, font licensing, product fidelity and real-provider billing are not established by CI."
+      ],
+      "next_step": "C3-UNKNOWN-PRICE-001: fix the unknown-price semantics and confirmation gates for A12/A13 plus all affected cost-confirmation entry points; add tests and sync docs before continuing routine audits."
     }
   ],
   "last_reconciled_against_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
@@ -14360,10 +14597,10 @@
         "id": "C2",
         "name": "当前代码与专项测试审计",
         "status": "in_progress",
-        "completed_slots": 10,
+        "completed_slots": 15,
         "total_slots": 113,
         "exit": "all 113 slots have current source/test evidence and explicit audit result",
-        "last_completed_batch": "C2-FOUNDATION-002"
+        "last_completed_batch": "C2-FOUNDATION-003"
       },
       {
         "id": "C3",
@@ -14398,17 +14635,17 @@
         "definition": "Unique formal task IDs with documented cross-source identity/status decisions; repeated IDs count once. This is not code/test audit or formal acceptance."
       },
       "c2_current_code_test_audit": {
-        "numerator": 10,
+        "numerator": 15,
         "denominator": 113,
-        "percent": 8.8,
+        "percent": 13.3,
         "definition": "Slots with direct current source/test inspection and a written audit result; partial findings count as audit coverage, not acceptance pass."
       },
       "c3_blocking_defects": {
-        "total": null,
-        "closed": null,
-        "remaining": null,
-        "percent": null,
-        "definition": "No formally fixed C3 blocker denominator yet. C2-FOUNDATION-001 has identified evidence gaps; triage them into a fixed remediation batch before counting. Null means not yet classified, not zero defects."
+        "total": 1,
+        "closed": 0,
+        "remaining": 1,
+        "percent": 0,
+        "definition": "Confirmed blocking defect records; one cross-cutting defect family is counted once and linked to all affected existing acceptance IDs."
       },
       "c4_release_gate": {
         "status": "pending"
@@ -14419,5 +14656,35 @@
     },
     "stop_rule": "Do not repeat completed inventory/phase normalization. Each batch must close a bounded set and record checked, resolved, unresolved, and next batch. New non-blocking improvements go to post-release candidates. Only defects preventing an existing A0-A112 requirement from passing may enter current remediation.",
     "last_updated_on": "2026-10-17"
-  }
+  },
+  "blocking_defect_register": [
+    {
+      "id": "C3-UNKNOWN-PRICE-001",
+      "priority": "P0",
+      "status": "confirmed_open",
+      "linked_existing_ids": [
+        "A12",
+        "A13",
+        "A51"
+      ],
+      "summary": "Missing/unknown video generation unit price can be coerced to 0.0 and interpreted as affordable, allowing hybrid AI generation without reliable cost estimate.",
+      "evidence": {
+        "source_path": "apps/ad-studio-desktop/ad_studio/hybrid_router.py",
+        "source_sha": "72af46f4f5aa45b3ca91ba457e49e46e8aff444f",
+        "confirmed_at": "2026-10-17",
+        "affected_functions": [
+          "route_footage_gap_tasks",
+          "execute_ai_gap_generation"
+        ]
+      },
+      "required_close_evidence": [
+        "Unknown rate represented distinctly from explicitly configured zero price",
+        "UI warns that total cannot be reliably estimated and asks user to confirm continuation",
+        "No generator/provider call occurs before confirmation when price is unknown",
+        "Regression tests for both route and execution gates pass on latest HEAD CI",
+        "HELP.md, PROJECT_LOGIC.md, SESSION_HANDOFF.md and progress dashboard synchronized"
+      ],
+      "formal_acceptance_status_changed": false
+    }
+  ]
 }
