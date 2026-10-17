@@ -25,6 +25,23 @@ from .ui_contract import verify_ui_action_contract, UIContractError, ui_action
 from .models import Shot, uid
 
 
+def configured_video_price(provider):
+    """Return an explicitly configured finite non-negative video unit price, else None."""
+    raw = getattr(provider, 'cost_per_shot_rmb', None)
+    if not bool(getattr(provider, 'cost_price_configured', False)) or raw is None:
+        return None
+    try:
+        return normalize_cost_estimate_rmb(raw)
+    except (TypeError, ValueError):
+        return None
+
+
+def _format_cost_item(item):
+    if item.get('单价') is None or item.get('小计') is None:
+        return f"{item.get('项目', '云端任务')}：{item.get('数量', 0)} × 单价未知 = 小计未知"
+    return f"{item['项目']}：{item['数量']} × ¥{item['单价']:.2f} = ¥{item['小计']:.2f}"
+
+
 def _restore_variant_shot_cache(base_shots, saved_shots):
     """恢复某个广告方案的完整镜头列表，保留人工纳入的额外镜头。
 
@@ -965,10 +982,10 @@ class App(tk.Tk):
             try:
                 video_provider=load_video_provider(ROOT/'video-provider.json')
                 generation_connected=bool(video_provider.configured())
-                generation_rate=float(getattr(video_provider,'cost_per_shot_rmb',0.0) or 0.0)
+                generation_rate=configured_video_price(video_provider)
             except Exception:
                 generation_connected=False
-                generation_rate=0.0
+                generation_rate=None
             budget_total=float((self.project.cost_estimate or {}).get('预算',0) or 0)
             actual_cost=float(getattr(self.project,'actual_cost_rmb',0.0) or 0.0)
             budget_remaining=max(0.0,budget_total-actual_cost) if budget_total > 0 else 0.0
@@ -1026,23 +1043,32 @@ class App(tk.Tk):
         if not self.project:
             return messagebox.showinfo('提示','请先创建或打开一个项目。')
         tasks=(self.project.creative_plan.get('footage_gap_tasks') or {}).get('tasks') or []
-        approved=[x for x in tasks if isinstance(x,dict) and x.get('recommended_resolution')=='AI补镜头' and x.get('generation_allowed')]
+        approved=[x for x in tasks if isinstance(x,dict) and x.get('recommended_resolution')=='AI补镜头' and (x.get('generation_allowed') or x.get('needs_cost_confirmation'))]
         if not approved:
             return messagebox.showinfo('没有可执行任务','当前没有经过路由器批准的“AI补镜头”任务。商品/真人证据缺口仍需补拍。')
         try:
             provider=load_video_provider(ROOT/'video-provider.json')
             if not provider.configured():
                 raise RuntimeError('视频生成 Provider 尚未真实配置，不能执行 AI 补镜头。')
-            rate=float(getattr(provider,'cost_per_shot_rmb',0.0) or 0.0)
+            rate=configured_video_price(provider)
         except Exception as exc:
             return messagebox.showerror('AI补镜头不可用',str(exc))
         budget=float((self.project.cost_estimate or {}).get('预算',0) or 0)
         actual=float(getattr(self.project,'actual_cost_rmb',0.0) or 0.0)
         remaining=max(0.0,budget-actual) if budget>0 else 0.0
         pending=[x for x in approved if not x.get('generated_path') or not Path(str(x.get('generated_path'))).exists()]
-        estimate=round(len(pending)*rate,4)
-        if budget>0 and estimate>remaining:
-            return messagebox.showwarning('预算闸门',f'本次 AI 补镜头预计还需 ¥{estimate:.2f}，当前剩余预算 ¥{remaining:.2f}。系统不会自动突破预算。')
+        if rate is None and pending:
+            if not messagebox.askyesno('视频单价未知',f'本次有 {len(pending)} 个 AI 补镜头待生成，但 Provider 单镜头价格未配置，无法可靠估算总费用，实际费用可能超过当前预算 ¥{budget:.2f}。是否仍继续？'):
+                return
+            for task in pending:
+                task['generation_allowed'] = True
+                task['cost_price_confirmed'] = True
+                task['cost_status'] = 'price_missing_confirmed'
+                task['estimated_cost_rmb'] = None
+        estimate=None if rate is None else round(len(pending)*rate,4)
+        if rate is not None and budget>0 and estimate>remaining:
+            if not messagebox.askyesno('预算超出确认',f'本次 AI 补镜头预计还需 ¥{estimate:.2f}，当前剩余预算 ¥{remaining:.2f}。继续可能超过预算；系统不会自动降质或切换模型。是否仍继续？'):
+                return
         Shot=__import__('ad_studio.models',fromlist=['Shot']).Shot
         results=[]; failures=[]
         for n,task in enumerate(pending,1):
@@ -1402,13 +1428,16 @@ class App(tk.Tk):
         g=detect_gpu(); self.gpu_text.set(('🟢 '+g.get('name','NVIDIA')+' · '+g.get('mode','CPU')) if g.get('available') else '⚪ 未检测到 NVIDIA GPU · CPU模式')
 
     def _show_cost_breakdown(self,c):
-        lines=[f"项目预估：¥{c['总计']:.2f}",f"本地处理/FFmpeg：¥{c['本地']:.2f}",f"云端任务：¥{c['云端']:.2f}"]
+        unknown = bool(c.get('费用未知')) or c.get('总计') is None
+        total_text = '无法可靠估算（视频单价未知）' if unknown else f"¥{float(c['总计']):.2f}"
+        cloud_label = '已知云端费用小计' if unknown else '云端任务'
+        lines=[f"项目预估：{total_text}",f"本地处理/FFmpeg：¥{float(c.get('本地',0) or 0):.2f}",f"{cloud_label}：¥{float(c.get('云端',0) or 0):.2f}"]
         for item in c.get('明细',[]):
-            if item['数量']: lines.append(f"  {item['项目']}：{item['数量']} × ¥{item['单价']:.2f} = ¥{item['小计']:.2f}")
+            if item.get('数量'):
+                lines.append('  '+_format_cost_item(item))
         actual=round(sum(float(getattr(s,'actual_cost_rmb',0) or 0) for s in (self.project.shots if self.project else [])),4)
-        estimate=float(c.get('总计',0) or 0)
-        pending=max(0.0,estimate-actual)
-        lines += [f'已实际发生：¥{actual:.2f}',f'按当前计划尚未发生：¥{pending:.2f}']
+        lines.append(f'已实际发生：¥{actual:.2f}')
+        lines.append('按当前计划尚未发生：无法可靠估算（视频单价未知）' if unknown else f"按当前计划尚未发生：¥{max(0.0,float(c['总计'])-actual):.2f}")
         self.cost.set(' | '.join(lines))
 
     def _creative_constraints(self):
@@ -1719,22 +1748,23 @@ class App(tk.Tk):
             ])
         else:
             vp=load_video_provider(ROOT/'video-provider.json')
-            rate=float(getattr(vp,'cost_per_shot_rmb',0.72)) if hasattr(vp,'cost_per_shot_rmb') else 0.72
+            rate=configured_video_price(vp)
             c=estimate_cost(len(plan.shots), {'cloud_video_per_shot': rate})
             asset_est=estimate_asset_generation(self.lib,ROOT,[x.__dict__ for x in plan.shots])
             c['资产生成']=asset_est
             asset_total=float(asset_est.get('总计',0.0))
             if asset_total:
                 c['云端']=round(float(c.get('云端',0.0))+asset_total,2)
-                c['总计']=round(float(c.get('本地',0.0))+float(c['云端']),2)
+                if c.get('总计') is not None:
+                    c['总计']=round(float(c.get('本地',0.0))+float(c['云端']),2)
                 c['明细'].append({'项目':'演员/场景/商品素材自动生成','数量':asset_est.get('数量',0),'单价':0.0,'小计':asset_total,'计费方式':'按缺失资产配置价格'})
-            c['预算']=budget; c['超预算']=c['总计']>budget; c['创意方案数']=variant_count; self.project.cost_estimate=c; self._show_cost_breakdown(c)
+            c['预算']=budget; c['超预算']=None if c.get('总计') is None else c['总计']>budget; c['创意方案数']=variant_count; self.project.cost_estimate=c; self._show_cost_breakdown(c)
             detail='\n'.join([
                 f"任务类型：{task_type}",f"商品：{info.name}",f"本次生成创意方案：{variant_count} 个（当前先展示方案1）",f"AI判断广告强度：{plan.ad_level}",
                 f"AI选择视频形式：{plan.video_form}",f"预计时长：{plan.duration_seconds}秒",f"AI策略：{plan.strategy}",f"AI钩子：{plan.hook}",'',
-                f"当前方案开始前预计成本：¥{c['总计']:.2f}",f"本地处理/FFmpeg：¥{c['本地']:.2f}",f"视频生成费用：¥{rate*len(plan.shots):.2f}",f"演员生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='演员'):.2f}",f"场景生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='场景'):.2f}",f"商品素材生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='商品素材'):.2f}",f"云端任务：¥{c['云端']:.2f}",
-                *[f"{x['项目']}：{x['数量']} × ¥{x['单价']:.2f} = ¥{x['小计']:.2f}" for x in c['明细'] if x['数量']],
-                '',f"本次预算：¥{c['预算']:.2f}",('⚠ 预计超过本次预算。' if c['超预算'] else '✓ 预计不超过本次预算。'),c['计价说明'],
+                f"当前方案开始前预计成本：{'无法可靠估算（视频单价未知）' if c.get('总计') is None else f'¥{c["总计"]:.2f}'}",f"本地处理/FFmpeg：¥{c['本地']:.2f}",f"视频生成费用：{'未知（单镜头价格未配置）' if rate is None else f'¥{rate*len(plan.shots):.2f}'}",f"演员生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='演员'):.2f}",f"场景生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='场景'):.2f}",f"商品素材生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='商品素材'):.2f}",f"云端已知费用小计：¥{c['云端']:.2f}",
+                *[_format_cost_item(x) for x in c['明细'] if x['数量']],
+                '',f"本次预算：¥{c['预算']:.2f}",('⚠ 视频单价未知，无法可靠估算总费用；确认后仍可能超过预算。' if c.get('总计') is None else ('⚠ 预计超过本次预算。' if c['超预算'] else '✓ 预计不超过本次预算。')),c['计价说明'],
                 '说明：多个创意方案是同一商品的不同广告打法；云端视频/素材费用按当前选中的方案单独计算。','',
                 '本次确认仅授权后续项目保存/素材视频生成；此前创意规划模型调用已在单独授权后执行，可能产生模型费用。\n' '超过预算不会自动降质、换模型或减少镜头。是否现在开始？'
             ])
@@ -1788,7 +1818,7 @@ class App(tk.Tk):
         if decision.target == 'unavailable':
             raise RuntimeError(f'镜头生成不可用：{decision.reason}')
         provider = load_video_provider(ROOT/'video-provider.json') if decision.target == 'cloud' else None
-        rate = (float(getattr(provider, 'cost_per_shot_rmb', 0.72)) if getattr(provider, 'cost_price_configured', True) else None) if provider else 0.0
+        rate = configured_video_price(provider) if provider else 0.0
         detail = build_provider_execution_consent(
             decision, action_label, rate,
             f'镜头标题：{shot.title}\\n当前版本：v{shot.version}。旧版本会保留。',
@@ -2152,10 +2182,10 @@ class App(tk.Tk):
         try:
             from .providers import load_video_provider
             vp=load_video_provider(ROOT/'video-provider.json')
-            rate=float(getattr(vp,'cost_per_shot_rmb',0.72))
+            rate=configured_video_price(vp)
         except Exception:
-            rate=0.72
-        missing_counts=[]; estimated=0.0
+            rate=None
+        missing_counts=[]; estimated=0.0; unknown_price=False
         for pos,raw0 in enumerate(variants,1):
             raw=dict(raw0); raw['_variant_index']=int(raw.get('_variant_index',pos)); raw['_variant_label']=raw.get('_variant_label',f'方案{raw["_variant_index"]}')
             # 用当前项目规则恢复方案，仅用于确定镜头数量；不调用 AI。
@@ -2163,10 +2193,16 @@ class App(tk.Tk):
             self._activate_plan(raw,info)
             missing=sum(1 for s in self.project.shots if not s.video_path or not Path(s.video_path).exists())
             missing_counts.append(missing)
-            if footage_mode!='用户拍摄素材': estimated += missing*rate
+            if footage_mode!='用户拍摄素材' and missing:
+                if rate is None: unknown_price=True
+                else: estimated += missing*rate
             self._cache_active_variant()
-        if budget>0 and estimated>budget:
-            return messagebox.showwarning('预算闸门',f'本次一键生成预计还需约 ¥{estimated:.2f}，已超过项目预算 ¥{budget:.2f}。\n\n系统不会自动突破预算；请提高预算或减少待生成镜头后再执行。')
+        if unknown_price:
+            if not messagebox.askyesno('视频单价未知',f'本次一键生成包含待生成镜头，但 Provider 单镜头价格未配置，无法可靠估算总费用，实际费用可能超过预算 ¥{budget:.2f}。是否仍继续？'):
+                return
+        elif budget>0 and estimated>budget:
+            if not messagebox.askyesno('预算超出确认',f'本次一键生成预计还需约 ¥{estimated:.2f}，已超过项目预算 ¥{budget:.2f}。继续可能超过预算。是否仍继续？'):
+                return
         original=original_index; info=__import__('ad_studio.product_parser',fromlist=['ProductInfo']).ProductInfo(**self.project.product_info)
         done=[]; failed=[]; outputs=[]
         try:
@@ -2751,21 +2787,22 @@ class App(tk.Tk):
             if not rows:
                 return messagebox.showerror('短剧分镜为空', '短剧方案没有可用于生产的分镜。')
             provider = load_video_provider(ROOT / 'video-provider.json')
-            rate = float(getattr(provider, 'cost_per_shot_rmb', 0.72))
+            rate = configured_video_price(provider)
             estimate = estimate_cost(len(rows), {'cloud_video_per_shot': rate})
             asset_est = estimate_asset_generation(self.lib, ROOT, rows)
             estimate['资产生成'] = asset_est
             asset_total = float(asset_est.get('总计', 0.0))
             if asset_total:
                 estimate['云端'] = round(float(estimate.get('云端', 0.0)) + asset_total, 2)
-                estimate['总计'] = round(float(estimate.get('本地', 0.0)) + float(estimate['云端']), 2)
+                if estimate.get('总计') is not None:
+                    estimate['总计'] = round(float(estimate.get('本地', 0.0)) + float(estimate['云端']), 2)
                 estimate['明细'].append({
                     '项目': '短剧演员/场景/商品素材自动生成',
                     '数量': asset_est.get('数量', 0), '单价': 0.0,
                     '小计': asset_total, '计费方式': '按缺失资产配置价格'
                 })
             estimate['预算'] = budget
-            estimate['超预算'] = float(estimate['总计']) > budget
+            estimate['超预算'] = None if estimate.get('总计') is None else float(estimate['总计']) > budget
             audit = audit_short_drama(plan, dict(self.project.product_info or {}))
             estimate['短剧质量复核'] = audit
             audit_lines = [f"质量/事实复核：{audit['status']}（{audit['issue_count']}项提示）"]
@@ -2776,12 +2813,12 @@ class App(tk.Tk):
                 f"商品：{self.project.product_name}",
                 f"短剧题材：{plan.get('genre', '待确认')}",
                 f"计划镜头：{len(rows)}",
-                f"视频生成费用：¥{rate * len(rows):.2f}",
+                f"视频生成费用：{'未知（单镜头价格未配置）' if rate is None else f'¥{rate * len(rows):.2f}'}",
                 f"演员/场景/商品素材生成费用：¥{asset_total:.2f}",
                 f"本地处理/FFmpeg：¥{estimate.get('本地', 0.0):.2f}",
-                f"预计总费用：¥{estimate.get('总计', 0.0):.2f}",
+                f"预计总费用：{'无法可靠估算（视频单价未知）' if estimate.get('总计') is None else f'¥{estimate["总计"]:.2f}'}",
                 f"本次预算：¥{budget:.2f}",
-                ('⚠ 预计超过本次预算。' if estimate['超预算'] else '✓ 预计不超过本次预算。'),
+                ('⚠ 视频单价未知，无法可靠估算总费用；确认后仍可能超过预算。' if estimate.get('总计') is None else ('⚠ 预计超过本次预算。' if estimate['超预算'] else '✓ 预计不超过本次预算。')),
                 estimate.get('计价说明', ''),
                 '',
                 *audit_lines,
