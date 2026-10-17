@@ -2579,7 +2579,7 @@ class DesktopCoreTests(unittest.TestCase):
             detail = build_creation_preflight_detail(
                 "https://item.example/product/1", 5.0, 2, router
             )
-            self.assertIn("本确认仅授权读取商品链接", detail)
+            self.assertIn("本确认授权读取商品链接", detail)
             self.assertIn("https://proxy.example/v1", detail)
             self.assertIn("商品理解", detail)
             self.assertIn("不代表服务免费", detail)
