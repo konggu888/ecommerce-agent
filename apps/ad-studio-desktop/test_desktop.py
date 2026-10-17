@@ -3102,3 +3102,32 @@ class DesktopCoreTests(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.
+
+
+class UnknownVideoPriceEstimateTests(unittest.TestCase):
+    def test_unknown_video_price_is_not_rendered_as_zero_or_placeholder_total(self):
+        estimate = estimate_cost(3, {"cloud_video_per_shot": None})
+        self.assertTrue(estimate["费用未知"])
+        self.assertIsNone(estimate["总计"])
+        self.assertIsNone(estimate["超预算"])
+        video = next(x for x in estimate["明细"] if x["项目"] == "云端视频生成")
+        self.assertIsNone(video["单价"])
+        self.assertIsNone(video["小计"])
+        self.assertIn("无法可靠估算", estimate["计价说明"])
+
+    def test_explicit_zero_video_price_remains_a_known_value(self):
+        estimate = estimate_cost(3, {"cloud_video_per_shot": 0.0})
+        self.assertFalse(estimate["费用未知"])
+        self.assertEqual(estimate["总计"], 0.0)
+        video = next(x for x in estimate["明细"] if x["项目"] == "云端视频生成")
+        self.assertEqual(video["单价"], 0.0)
+        self.assertEqual(video["小计"], 0.0)
+
+    def test_unknown_price_ui_entrypoints_have_explicit_confirmation_language(self):
+        source = Path(__file__).with_name("ad_studio").joinpath("app.py").read_text(encoding="utf-8")
+        self.assertIn("def configured_video_price(provider):", source)
+        self.assertIn("无法可靠估算（视频单价未知）", source)
+        self.assertIn("if rate is None and pending:", source)
+        self.assertIn("if unknown_price:", source)
+        self.assertIn("def create_short_drama_production_project", source)
+        self.assertIn("是否仍继续？", source)
