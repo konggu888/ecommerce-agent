@@ -277,3 +277,12 @@ AssetGenerator.generate、ProductionStore.resolve_assets、ProductionStore.gener
 - ModelRouter 必须初始化 current_project_id，并提供 set_project_context()；新建/打开项目时更新上下文，不能因账本字段缺失而在真实模型调用后抛出 AttributeError。
 - 口播转写必须写入本地调用账本，记录模型、Provider、脱敏 endpoint、耗时与未知费用状态；不得因接口未返回 usage 而把费用当作免费。
 - 以上仅为本地账本与 mock 证据，不代表转写 Provider 账单已核实。
+
+## UXS-2 云端渲染授权回调传递修复｜2026-10-17
+
+- 最新 CI 已验证的前一基线：91de09e10fbac7ccf5d82c791cb2ab60ab6ac0a6（CI 与 docs-sync Push/PR 检查均 success）。
+- ProductionStore.render_shot 的云端分支和 render_cloud_shot 现在将 authorize_cloud 回调继续传给 _render_with_provider，避免云端分支丢失资产授权回调。
+- 新增 mock 测试覆盖两条云端渲染入口的回调传递，不发真实 Provider 请求。
+- 修复提交 7bdcb6cc043e20d3374b344a3b384d7fc115c81d、测试提交 84e92d191d85e06bef50f3913a8b589bc3a23131 与后续文档提交的 CI/docs-sync 必须单独核验。
+- A0–A112 状态不变，PR #32 不合并。
+

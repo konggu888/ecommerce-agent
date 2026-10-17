@@ -1680,3 +1680,11 @@ A57 的无账本旧项目、A60 的 failed-only 账本均已有恢复行为测�
 - mock 成功/失败转写均须生成账本行，记录模型、Provider、脱敏 endpoint、耗时、project_id 和费用可信状态。
 - 当前接口无 usage 时状态应为 usage_missing/unknown，不能当作免费；账本不能含 API Key 或 endpoint query 参数。
 - 新建项目与打开项目后都要核对 ModelRouter 的项目上下文绑定。
+
+### 云端渲染授权回调透传回归｜2026-10-17
+
+1. 使用 mock Provider 测试 render_shot(... decision.target='cloud', authorize_cloud=callback)，断言 _render_with_provider() 收到同一个 callback。
+2. 使用 mock Provider 测试 render_cloud_shot(..., authorize_cloud=callback)，断言 callback 原样透传。
+3. 测试不得访问真实 Provider/网络；拒绝路径另需断言 Provider 调用数为 0、镜头状态/版本未变化。
+4. 只有最终 HEAD 的 CI 与 docs-sync 通过才可记作自动化测试通过；这仍不是 A13/A29/A51–A65 的正式验收结论。
+

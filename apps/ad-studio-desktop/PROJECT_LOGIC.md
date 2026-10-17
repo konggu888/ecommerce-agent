@@ -1636,3 +1636,11 @@ App.generate_shot() 先确认视频目标/费用，再调用 ProductionStore.res
 - ModelRouter 初始化 current_project_id 为空值，并通过 set_project_context(project_id) 绑定活动项目；新建和打开项目均应设置上下文，避免第一次模型调用记录失败。
 - transcribe_footage_audio 对成功/失败请求记录 category=transcription、model/provider、脱敏 endpoint、耗时与 usage/cost 状态。由于当前转写响应没有 token usage 与计费数据，成功记录标记 usage_missing，不能当成免费。
 - 转写 API Key 不写入账本；endpoint 由 UsageLedger 统一脱敏。
+
+## 2026-10-17｜云端渲染入口必须透传资产授权
+
+- ProductionStore.render_shot(..., authorize_cloud=...) 的云端分支必须将 authorize_cloud 原样传给 _render_with_provider。
+- ProductionStore.render_cloud_shot(..., authorize_cloud=None) 也支持并透传显式授权回调，保持调用入口合同一致。
+- 对云端分支和 render_cloud_shot 的测试使用 mock provider/dispatch，断言回调对象原样传递，不触发真实网络。
+- 本项修复的是云端路由回调丢失，不等于真实 Provider、费用和 Windows 运行环境已验收。
+
