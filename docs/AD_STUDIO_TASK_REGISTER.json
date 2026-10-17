@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Finite closure contract active. C1 closed batches cover 28/113 unique formal slots. No IDs merged and no formal acceptance states changed. C2 full current code/test audit remains 0/113.",
+  "audit_status": "C1 cross-source decisions documented for 23/113 unique slots (20.4%). C2-FOUNDATION-001 completed direct current-source/test audits for A0-A4 (5/113=4.4% audit coverage); all five have documented evidence gaps and remain not accepted. Overall task closure coverage 0/113. C3 blocker denominator not yet fixed.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -141,6 +141,53 @@
         "merge_decision": "Keep the existing formal ID and status. No merge, split, or renumbering.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-001",
+        "audited_head": "9cb1ac30448f7ce1c10f86cdceb5181c35e201cc",
+        "audited_on": "2026-10-17",
+        "audit_kind": "current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "docs_sync": "success",
+          "source": "PR-triggered workflow runs 39016264092 and 39016264161; push-triggered runs not independently visible"
+        },
+        "formal_acceptance_status_preserved": true,
+        "acceptance_status_changed": false,
+        "result": "partial_implementation_evidence_test_gap",
+        "severity": "P1 automation gap; P2 real UI acceptance deferred",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/run.py",
+            "blob_sha": "17038e5d439d4dec44a5d8b346b7606f454ce9a7",
+            "claim": "Entrypoint imports App and invokes mainloop only under __main__."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/app.py",
+            "blob_sha": "799976408ea15fbdea58729ffce81d1c82c5710f",
+            "claim": "App initializes Tk title/geometry/minsize, local library/store/router, UI and refresh."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "9bc36587e24f17047333443a69452aaf69f9212a",
+            "claim": "AST layout test checks selected setup controls; it does not instantiate/launch App or exercise mainloop/startup failure."
+          },
+          {
+            "path": "apps/ad-studio-desktop/test_footage.py",
+            "blob_sha": "8ff007acfd3f174ce6c181c53a2dc96e68fa0337",
+            "claim": "UI action contract checks registered action binding but not rendered desktop navigation/Chinese display/close behavior."
+          }
+        ],
+        "confirmed_gaps": [
+          "No deterministic test for run.py import/entrypoint and App startup success/failure boundaries.",
+          "No rendered Tk/UI interaction proof for navigation, close/back, visible error feedback or Chinese UI; Windows real-machine verification remains deferred."
+        ],
+        "disposition": "Needs remediation/test mapping before A0 acceptance; do not claim desktop UI acceptance.",
+        "source_test_audit_complete_for_batch": true,
+        "formal_acceptance_pass": false
       }
     },
     {
@@ -275,6 +322,43 @@
         "merge_decision": "Keep the existing formal ID and status. No merge, split, or renumbering.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-001",
+        "audited_head": "9cb1ac30448f7ce1c10f86cdceb5181c35e201cc",
+        "audited_on": "2026-10-17",
+        "audit_kind": "current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "docs_sync": "success",
+          "source": "PR-triggered workflow runs 39016264092 and 39016264161; push-triggered runs not independently visible"
+        },
+        "formal_acceptance_status_preserved": true,
+        "acceptance_status_changed": false,
+        "result": "automation_workflow_present_but_stability_matrix_incomplete",
+        "severity": "P2 test/CI contract gap",
+        "source_evidence": [
+          {
+            "path": ".github/workflows/ci.yml",
+            "blob_sha": "4974d2050ac564cf33cb016e6c386aaaf194dbc6",
+            "claim": "Workflow runs frontend syntax checks, Python compileall, desktop unittest discovery, npm typecheck, engine and risk-controller tests."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "9bc36587e24f17047333443a69452aaf69f9212a",
+            "claim": "Broad deterministic core tests exist; they do not form a dedicated stability matrix for missing dependencies, malformed local config, filesystem permissions, startup/import failures or interrupted persistence."
+          }
+        ],
+        "confirmed_gaps": [
+          "Formal A1 checklist includes unrelated/abnormal-content scanning and key-module independent loading; the inspected CI workflow has no explicit standalone step for those requirements.",
+          "No task-specific deterministic stability matrix mapped for import errors, missing dependency, bad local config and filesystem failure."
+        ],
+        "disposition": "CI gate itself passes at audited HEAD, but A1 contract is only partially evidenced; do not change acceptance status.",
+        "source_test_audit_complete_for_batch": true,
+        "formal_acceptance_pass": false
       }
     },
     {
@@ -421,6 +505,48 @@
         "merge_decision": "Keep the existing formal ID and status. No merge, split, or renumbering.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-001",
+        "audited_head": "9cb1ac30448f7ce1c10f86cdceb5181c35e201cc",
+        "audited_on": "2026-10-17",
+        "audit_kind": "current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "docs_sync": "success",
+          "source": "PR-triggered workflow runs 39016264092 and 39016264161; push-triggered runs not independently visible"
+        },
+        "formal_acceptance_status_preserved": true,
+        "acceptance_status_changed": false,
+        "result": "core_project_store_tests_exist_ui_orchestration_gap",
+        "severity": "P1 acceptance evidence gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/app.py",
+            "blob_sha": "799976408ea15fbdea58729ffce81d1c82c5710f",
+            "claim": "App.create validates input, gets explicit authorization before parse_product_url, builds Project and runs planning; load_project opens the local project chooser."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/engine.py",
+            "blob_sha": "94350f71949162d4214f7b95ce8ba7f3231eb8c7",
+            "claim": "new_project constructs a Project with initial shots."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "9bc36587e24f17047333443a69452aaf69f9212a",
+            "claim": "test_project_lifecycle_isolated_between_projects and test_project_save_load cover store save/load and isolation; test_task_type_is_persisted_and_not_replaced_by_platform covers persistence."
+          }
+        ],
+        "confirmed_gaps": [
+          "No direct App.create UI orchestration test with mocked widgets/model router was mapped.",
+          "The mapped tests do not cover failed directory/save creation, malformed saved project, and open/recovery UI error paths as one A2 matrix."
+        ],
+        "disposition": "Partial code and storage tests exist; acceptance requires deterministic UI-orchestration and failure-path evidence.",
+        "source_test_audit_complete_for_batch": true,
+        "formal_acceptance_pass": false
       }
     },
     {
@@ -561,6 +687,48 @@
         "merge_decision": "Keep the existing formal ID and status. No merge, split, or renumbering.",
         "acceptance_status_preserved": "partial_automation_layout_contract_passed_other_acceptance_pending",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-001",
+        "audited_head": "9cb1ac30448f7ce1c10f86cdceb5181c35e201cc",
+        "audited_on": "2026-10-17",
+        "audit_kind": "current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "docs_sync": "success",
+          "source": "PR-triggered workflow runs 39016264092 and 39016264161; push-triggered runs not independently visible"
+        },
+        "formal_acceptance_status_preserved": true,
+        "acceptance_status_changed": false,
+        "result": "task_policy_and_layout_regressions_exist_full_task_flow_gap",
+        "severity": "P1 acceptance evidence gap; rendered UI deferred",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/app.py",
+            "blob_sha": "799976408ea15fbdea58729ffce81d1c82c5710f",
+            "claim": "UI exposes one readonly task-type selector and create() persists task_type into creative_plan."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/creative_engine.py",
+            "blob_sha": "060e51968e4b3be12b5b6e737a7197bf8a1ec8d3",
+            "claim": "Task-type policy implementation is present (source inspected via module listing; dedicated test imports policy helpers)."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "9bc36587e24f17047333443a69452aaf69f9212a",
+            "claim": "test_three_task_types_have_distinct_deterministic_policies checks policy sequence/duration; test_task_type_is_persisted_not_replaced_by_platform checks saved task type; AST layout test checks selected widget positions."
+          }
+        ],
+        "confirmed_gaps": [
+          "No integrated UI create-flow test proving each of three task types passes the correct policy through create/plan/save/reopen.",
+          "AST grid checks do not prove rendered Tk layout, usability or complete per-task outputs; Windows real-machine interaction remains deferred."
+        ],
+        "disposition": "Partial automation/layout contract only; retain partial status.",
+        "source_test_audit_complete_for_batch": true,
+        "formal_acceptance_pass": false
       }
     },
     {
@@ -713,6 +881,48 @@
         "merge_decision": "Keep the existing formal ID and status. No merge, split, or renumbering.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-001",
+        "audited_head": "9cb1ac30448f7ce1c10f86cdceb5181c35e201cc",
+        "audited_on": "2026-10-17",
+        "audit_kind": "current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "docs_sync": "success",
+          "source": "PR-triggered workflow runs 39016264092 and 39016264161; push-triggered runs not independently visible"
+        },
+        "formal_acceptance_status_preserved": true,
+        "acceptance_status_changed": false,
+        "result": "footage_scan_and_archive_tests_exist_checklist_matrix_incomplete",
+        "severity": "P1 source-preservation boundary; P2 checklist mapping",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/app.py",
+            "blob_sha": "799976408ea15fbdea58729ffce81d1c82c5710f",
+            "claim": "create() scans selected user footage, rejects invalid folders and empty usable-video set, builds visual manifest and archives analyzed waste."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/footage.py",
+            "claim": "Source path identified in repository module listing; dedicated scan/analysis/archive helpers are used by app.py."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_footage.py",
+            "blob_sha": "8ff007acfd3f174ce6c181c53a2dc96e68fa0337",
+            "claim": "Tests cover missing ffprobe, ffprobe failure, missing folder, sorted video scan, unparseable file notes, duplicate ranking, waste archiving while retaining good clips, and protecting currently referenced sources."
+          }
+        ],
+        "confirmed_gaps": [
+          "A4 checklist includes image/audio and generic raw-material handling; inspected scan tests focus on video footage and do not establish full coverage for all asset types.",
+          "No complete matrix mapped for duplicate source files, permission/read errors, archive move failure/rollback and preservation of all original files across failures.",
+          "Real-world media variety and Windows filesystem behavior remain deferred."
+        ],
+        "disposition": "Meaningful video-scan/archive regression coverage exists; full A4 acceptance remains open.",
+        "source_test_audit_complete_for_batch": true,
+        "formal_acceptance_pass": false
       }
     },
     {
@@ -13254,14 +13464,15 @@
         "id": "C2",
         "name": "当前代码与专项测试审计",
         "status": "not_started_as_full_audit",
-        "completed_slots": 0,
+        "completed_slots": 5,
         "total_slots": 113,
-        "exit": "all 113 slots have current source/test evidence and explicit audit result"
+        "exit": "all 113 slots have current source/test evidence and explicit audit result",
+        "last_completed_batch": "C2-FOUNDATION-001"
       },
       {
         "id": "C3",
         "name": "阻断缺口修复与回归",
-        "status": "awaiting_C1_C2_evidence",
+        "status": "awaiting_triage_of_C2_FOUNDATION_001",
         "exit": "all confirmed blocking defects linked to existing A0-A112 IDs and closed by regression tests"
       },
       {
@@ -13282,7 +13493,7 @@
         "numerator": 0,
         "denominator": 113,
         "percent": 0,
-        "definition": "Slots with current code/test audit and explicit terminal disposition divided by 113; inventory mapping or evidence pointers alone do not count."
+        "definition": "Slots with current code/test audit and explicit terminal disposition divided by 113. Audit-only slots with open gaps do not count as closed."
       },
       "c1_cross_source_reconciliation": {
         "numerator": 28,
@@ -13291,16 +13502,17 @@
         "definition": "Unique formal task IDs with documented cross-source identity/status decisions; repeated IDs across batches count once. This is not code/test audit or formal acceptance."
       },
       "c2_current_code_test_audit": {
-        "numerator": 0,
+        "numerator": 5,
         "denominator": 113,
-        "percent": 0
+        "percent": 4.4,
+        "definition": "Slots for which current source and mapped tests were directly inspected and a written audit result recorded; audit completion does not imply acceptance passed."
       },
       "c3_blocking_defects": {
-        "total": null,
-        "closed": null,
-        "remaining": null,
+        "total": 0,
+        "closed": 0,
+        "remaining": 0,
         "percent": null,
-        "definition": "Do not invent counts; establish a fixed batch denominator when each audit batch confirms blockers."
+        "definition": "No formally fixed C3 blocker denominator yet; C2-FOUNDATION-001 identified acceptance gaps, but their priority/scope must be triaged in C3 before counting blockers. Do not interpret zero as no defects."
       },
       "c4_release_gate": {
         "status": "pending"
