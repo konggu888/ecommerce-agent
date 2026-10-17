@@ -3158,5 +3158,67 @@ class UnknownVideoPriceEstimateTests(unittest.TestCase):
         self.assertIn("def create_short_drama_production_project", source)
         self.assertIn("是否仍继续？", source)
 
+
+class PlanningCostPreflightEstimateTests(unittest.TestCase):
+    def test_preflight_cost_is_unknown_when_no_comparable_usage_exists(self):
+        from types import SimpleNamespace
+        from ad_studio.app import estimate_creation_planning_cost
+        from ad_studio.model_router import FUNCTIONS
+
+        class FakeRouter:
+            def route(self, function):
+                return SimpleNamespace(
+                    id=function, name=function, provider="openai_compatible",
+                    base_url="https://api.example/v1",
+                    input_price_rmb_per_1k=0.01, output_price_rmb_per_1k=0.02,
+                )
+            def recent_usage(self, limit=100):
+                return []
+
+        estimate = estimate_creation_planning_cost(FakeRouter(), 2)
+        self.assertEqual(estimate["planned_calls"], 18)
+        self.assertIsNone(estimate["total_rmb"])
+        self.assertGreater(len(estimate["unknown_functions"]), 0)
+        self.assertIn("商品理解", estimate["unknown_functions"])
+
+    def test_preflight_cost_uses_same_function_model_usage_and_variant_count(self):
+        from types import SimpleNamespace
+        from ad_studio.app import estimate_creation_planning_cost
+        from ad_studio.model_router import ModelRouter
+
+        class FakeRouter:
+            def route(self, function):
+                return SimpleNamespace(
+                    id=function, name=function, provider="openai_compatible",
+                    base_url="https://api.example/v1",
+                    input_price_rmb_per_1k=0.01, output_price_rmb_per_1k=0.02,
+                )
+            def recent_usage(self, limit=100):
+                return [
+                    {"function": function, "model_id": function, "status": "success",
+                     "usage_status": "reported", "cost_status": "estimated_from_configured_prices",
+                     "prompt_tokens": 1000, "completion_tokens": 500, "estimated_cost_rmb": 0.02}
+                    for function in ("商品理解", "卖点提炼", "人群与痛点", "广告策略",
+                                     "广告强度判断", "视频形式判断", "剧本", "分镜", "素材选择")
+                ]
+
+        estimate = estimate_creation_planning_cost(FakeRouter(), 2)
+        self.assertEqual(estimate["planned_calls"], 18)
+        self.assertEqual(estimate["unknown_functions"], [])
+        self.assertAlmostEqual(estimate["total_rmb"], 0.36, places=6)
+        self.assertEqual(estimate["known_subtotal_rmb"], 0.36)
+
+    def test_creation_preflight_discloses_planning_estimate_before_model_calls(self):
+        from ad_studio.app import build_creation_preflight_detail
+        from ad_studio.model_router import ModelRouter
+
+        with tempfile.TemporaryDirectory() as td:
+            router = ModelRouter(Path(td) / "model-config.json")
+            detail = build_creation_preflight_detail("https://item.example/1", 5.0, 2, router)
+        self.assertIn("规划阶段费用估算", detail)
+        self.assertIn("规划阶段计划调用：18 次", detail)
+        self.assertIn("无法可靠估算", detail)
+
+
 if __name__ == "__main__":
     unittest.main()
