@@ -1737,9 +1737,19 @@ class App(tk.Tk):
                 '说明：多个创意方案是同一商品的不同广告打法；云端视频/素材费用按当前选中的方案单独计算。','',
                 '本次确认仅授权后续项目保存/素材视频生成；此前创意规划模型调用已在单独授权后执行，可能产生模型费用。\n' '超过预算不会自动降质、换模型或减少镜头。是否现在开始？'
             ])
-        if not messagebox.askyesno('AI创意与项目预算确认',detail):
-            self.project=None; self.detail.set('已取消后续项目保存/素材视频生成；此前已授权的创意规划模型调用可能产生费用。'); return
-        self.store.save(self.project); save_product(info,ROOT,self.project.id); save_product_library(info,ROOT); self.refresh_shots()
+        authorized, _ = run_after_explicit_authorization(
+            lambda: messagebox.askyesno('AI创意与项目预算确认', detail),
+            lambda: (
+                self.store.save(self.project),
+                save_product(info, ROOT, self.project.id),
+                save_product_library(info, ROOT),
+                self.refresh_shots(),
+            ),
+        )
+        if not authorized:
+            self.project = None
+            self.detail.set('已取消后续项目保存/素材视频生成；此前已授权的创意规划模型调用可能产生费用。')
+            return
         if footage_mode=='用户拍摄素材':
             self.detail.set(f"素材剪辑方案已确认：{info.name} → {len(plan.shots)}镜头。素材文件夹：{folder}。可逐个「生成本镜头」裁剪，或直接「生成最终成片」。")
         else:
