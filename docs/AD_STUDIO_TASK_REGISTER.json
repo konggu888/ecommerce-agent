@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Finite closure contract active. C1 cross-source decisions cover 38/113 unique formal IDs (33.6%); last closed batch C1-FOUNDATION-004 (A15-A19). C2 direct current-source/test audits cover A0-A4 (5/113=4.4%) with documented evidence gaps; no task is formally accepted by this audit batch. Overall task closure coverage remains 0/113. C3 blocker denominator has not been fixed; identified gaps must be triaged into a bounded remediation batch, and zero must not be interpreted as no defects.",
+  "audit_status": "Finite closure contract active. C1 cross-source decisions cover 38/113 unique formal IDs (33.6%); last closed batch C1-FOUNDATION-004 (A15-A19). C2 direct current-source/test audits cover A0-A4 (5/113=4.4%) with documented evidence gaps; no task is formally accepted by this audit batch. Overall task closure coverage remains 0/113. C3 blocker denominator has not been fixed; identified gaps must be triaged into a bounded remediation batch, and zero must not be interpreted as no defects. Duplicate historical batch entries were deduplicated by batch_id; formal task IDs/statuses unchanged.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -13491,23 +13491,6 @@
         "remaining_decisions": [],
         "formal_acceptance_states_changed": false,
         "next_batch": "C1-FOUNDATION-003: reconcile A10-A14 across audio/subtitle generation, AI generation and hybrid real-footage workflows; keep speech recognition, audio mixing, subtitle timing and generation routing as separate contracts."
-      },
-      {
-        "batch_id": "C1-FOUNDATION-003",
-        "slots": [
-          "A10",
-          "A11",
-          "A12",
-          "A13",
-          "A14"
-        ],
-        "slots_reconciled": 5,
-        "slots_total": 5,
-        "status": "resolved_as_distinct_related_contracts",
-        "decision": "Compared the acceptance plan, SOP, roadmap context, and task register. Audio mixing, subtitle generation/timing/licensing, gap diagnosis, AI generation authorization/quality gates, and mixed footage source/review traceability are adjacent workflow steps but separate contracts. No IDs merged; formal statuses preserved.",
-        "remaining_decisions": [],
-        "formal_acceptance_states_changed": false,
-        "next_batch": "C1-FOUNDATION-004: reconcile A15-A19 across the three distinct task types, multi-version output and creative experiment design; do not treat shared rendering paths or historical CI as proof of full acceptance."
       },
       {
         "batch_id": "C1-FOUNDATION-003",
