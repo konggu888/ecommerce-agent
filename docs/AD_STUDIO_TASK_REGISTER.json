@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "C1 cross-source decisions cover 48/113 unique formal IDs (42.5%). Latest closed batch C1-FOUNDATION-006 (A25-A29). C2 direct source/test audit coverage is 10/113 (A0-A9), with gaps recorded and no formal acceptance states changed. Overall task closure coverage remains 0/113; C3 blocker denominator remains unclassified.",
+  "audit_status": "C1 cross-source decisions cover 52/113 unique formal IDs (46%). Latest batch C1-FOUNDATION-007 reviewed A30-A34; A30 was already counted by C1-RECOVERY-004 and does not increase the unique count. C2 source/test audit coverage is 10/113 (A0-A9). Task closure coverage remains 0/113; C3 blocker denominator remains unclassified.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -3722,7 +3722,36 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
-      }
+      },
+      "cross_source_reconciliation_addenda": [
+        {
+          "batch_id": "C1-FOUNDATION-007",
+          "status": "resolved_as_distinct_related_contract",
+          "reviewed_on": "2026-10-17",
+          "sources": [
+            "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+            "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+            "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+            "docs/AD_STUDIO_TASK_REGISTER.json"
+          ],
+          "contract_role": "跨素材/AI调用/生成/预算/输出失败、重开和中断的通用恢复合同。",
+          "distinction": "本批与 A30-C1-RECOVERY-004 的恢复关系复核为交叉关系追加，不重复计入唯一 ID。A30 是广义恢复场景；A43/A53/A54/A97/A98 是具体失败模式，保持独立。",
+          "related_ids": [
+            "A24",
+            "A25",
+            "A26",
+            "A28",
+            "A43",
+            "A53",
+            "A54",
+            "A97",
+            "A98"
+          ],
+          "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
+          "acceptance_status_preserved": "not_audited",
+          "implementation_or_acceptance_claim": false
+        }
+      ]
     },
     {
       "task_id": "A31",
@@ -3800,7 +3829,28 @@
       "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers and proof limits mapped against branch snapshot 57d02abd2e1d67ed88bc3e12035d7dbee9cdeaef. Per-file evidence SHA not independently pinned; not formal acceptance.",
       "normalized_roadmap_phase": "阶段0｜路线与证据基线",
       "phase_normalization_original": "阶段0｜路线与证据基线",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-007",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json"
+        ],
+        "contract_role": "要求功能变更同步 HELP、PROJECT_LOGIC 和关键设计文档，交接不依赖聊天上下文。",
+        "distinction": "文档存在/同步检查是 A31 的一部分；A32 检查新 AI 是否能正确接手，A1 的 docs-sync 只检查自动化约束，不证明文档语义完整。",
+        "related_ids": [
+          "A1",
+          "A32",
+          "A38"
+        ],
+        "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A32",
@@ -3872,7 +3922,29 @@
       "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers and proof limits mapped against branch snapshot 57d02abd2e1d67ed88bc3e12035d7dbee9cdeaef. Per-file evidence SHA not independently pinned; not formal acceptance.",
       "normalized_roadmap_phase": "阶段0｜路线与证据基线",
       "phase_normalization_original": "阶段0｜路线与证据基线",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-007",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json"
+        ],
+        "contract_role": "让无项目历史的新 AI 能找到目标、架构、当前进度、验收、测试、安全边界和下一步，并可独立执行。",
+        "distinction": "A32 是跨窗口接手可执行性；A31 是文档同步，A38 是跨会话状态完整性，静态关键词测试不能替代当前 HEAD/CI 实时核验。",
+        "related_ids": [
+          "A31",
+          "A38",
+          "A39",
+          "A40"
+        ],
+        "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A33",
@@ -4004,7 +4076,36 @@
       "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers and proof limits mapped against branch snapshot 57d02abd2e1d67ed88bc3e12035d7dbee9cdeaef. Per-file evidence SHA not independently pinned; not formal acceptance.",
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-007",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json"
+        ],
+        "contract_role": "三类任务端到端用户流程：从输入/授权到资产、编辑、安全检查、交付及修复重检的完整状态转换。",
+        "distinction": "A33 的端到端流程不等于单模块单元测试或 A15-A17 单任务生产功能；Windows 真机和真实 provider/账单/商业输出另行暂缓。",
+        "related_ids": [
+          "A0",
+          "A2",
+          "A3",
+          "A15",
+          "A16",
+          "A17",
+          "A24",
+          "A27",
+          "A30",
+          "A31",
+          "A32"
+        ],
+        "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A34",
@@ -4104,7 +4205,31 @@
       "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers mapped against branch snapshot 6a930adc83348dec3776fb40dc2d505f1d826841. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance.",
       "normalized_roadmap_phase": "阶段5｜资产与制作效率深化",
       "phase_normalization_original": "阶段5｜资产与制作效率深化",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-007",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json"
+        ],
+        "contract_role": "AI 辅助比较商品参考图与生成画面/视频，要求独立视觉路由、证据路径持久化、费用确认、失败/待复核状态和临时帧清理。",
+        "distinction": "A34 是单镜头视觉对比工具合同；A22 是常规视觉事实核验，A35/A36 是把问题定位成可编辑修复草稿，不能把对比结果当自动通过。",
+        "related_ids": [
+          "A20",
+          "A21",
+          "A22",
+          "A35",
+          "A36",
+          "A37"
+        ],
+        "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A35",
@@ -14018,6 +14143,24 @@
         "remaining_decisions": [],
         "formal_acceptance_states_changed": false,
         "next_batch": "C1-FOUNDATION-007: reconcile A30-A34 across failure recovery, user guidance, AI handoff, full user flow and AI-assisted product-image comparison; account for existing recovery batch C1-RECOVERY-004 without double-counting IDs."
+      },
+      {
+        "batch_id": "C1-FOUNDATION-007",
+        "slots": [
+          "A30",
+          "A31",
+          "A32",
+          "A33",
+          "A34"
+        ],
+        "slots_reconciled": 5,
+        "unique_new_ids": 4,
+        "slots_total": 5,
+        "status": "resolved_related_contracts_with_recovery_overlap",
+        "decision": "A30 was already counted in C1-RECOVERY-004, so this batch adds a relationship addendum but does not increase unique-ID count for A30. A31 docs synchronization, A32 executable AI handoff, A33 full user-flow integration, and A34 visual comparison are distinct contracts. Historical checklist ticks/CI do not imply current acceptance. No formal statuses changed.",
+        "remaining_decisions": [],
+        "formal_acceptance_states_changed": false,
+        "next_batch": "C1-FOUNDATION-008: reconcile A35-A39 across shot repair drafts, UI formatting, cross-session handoff integrity and branch CI coverage; count only unique IDs and preserve independent failure/interaction contracts."
       }
     ]
   },
@@ -14209,8 +14352,8 @@
         "name": "跨来源身份与状态裁决",
         "status": "in_progress",
         "exit": "all 113 slots reconciled against plan, SOP, roadmap, register; unresolved decisions 0",
-        "last_completed_batch": "C1-FOUNDATION-006",
-        "slots_with_final_documented_cross_source_decision": 48,
+        "last_completed_batch": "C1-FOUNDATION-007",
+        "slots_with_final_documented_cross_source_decision": 52,
         "slots_counting_rule": "Unique task IDs across all closed batches; repeated IDs never increase the numerator."
       },
       {
@@ -14249,9 +14392,9 @@
         "definition": "Slots with current code/test audit and explicit terminal disposition divided by 113. Audit-only slots with open gaps do not count as closed."
       },
       "c1_cross_source_reconciliation": {
-        "numerator": 48,
+        "numerator": 52,
         "denominator": 113,
-        "percent": 42.5,
+        "percent": 46,
         "definition": "Unique formal task IDs with documented cross-source identity/status decisions; repeated IDs count once. This is not code/test audit or formal acceptance."
       },
       "c2_current_code_test_audit": {
