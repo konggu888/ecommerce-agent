@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_from_head": "c8797e4b8d65580a7c124903d4a9c8f6e188f41a",
-  "audit_status": "DEDUP-013 remediation SHA c8797e4b8d65580a7c124903d4a9c8f6e188f41a passed CI Push, CI PR, docs-sync Push and docs-sync PR. New status-doc commit requires its own workflow check.",
+  "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
+  "audit_status": "Stage progress metrics v1 recorded against branch HEAD 08af9d8d5c46fc6b1c03df76046a3a2170e39b12; metrics are inventory/evidence coverage only, not overall product completion. Full audit, semantic dedup and weighting remain incomplete.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -15,8 +15,10 @@
     "semantic_dedup_reviewed_task_ids": 113,
     "code_test_evidence_reviewed_ids": 113,
     "roadmap_phase_mapped_ids": 113,
-    "current_head_evidence_task_ids": 11,
-    "source_test_evidence_snapshot_task_ids": 56
+    "current_head_evidence_task_ids": 0,
+    "source_test_evidence_snapshot_task_ids": 56,
+    "full_audit_completed_ids": 0,
+    "formal_acceptance_passed_ids": 0
   },
   "known_id_gaps": [],
   "tasks": [
@@ -11408,8 +11410,8 @@
       ]
     }
   ],
-  "last_reconciled_against_head": "143d01f87c3161deee04cd2d3c821b1e915084d1",
-  "reconciliation_status": "cross_source_reconciliation_in_progress_A0_A112; A57 same-ID heading conflict resolved as one numbered slot with two independently testable clauses; remaining historical status and current-head evidence reconciliation pending",
+  "last_reconciled_against_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
+  "reconciliation_status": "stage_progress_v1_published; cross_source_reconciliation_in_progress_A0_A112; semantic dedup, historical status reconciliation and current-head evidence reconciliation remain pending",
   "cross_source_reconciliation": {
     "task_register_code_test_evidence_reviewed_ids": 113,
     "task_records_with_any_evidence": 113,
@@ -11420,7 +11422,7 @@
     "code_test_evidence_audit_completed_ids": 0,
     "fully_audited": 0,
     "weighting_completed": false,
-    "note": "Current reconciliation as of 2026-10-15. Four workflows on docs baseline e73d4064141a86058c86ef9c12a3ebe9cca0749c are now all success (CI Push 38732176115, CI PR 38732181502, docs-sync Push 38732175972, docs-sync PR 38732181453). This does not change acceptance states. A57 identity conflict remains resolved as one slot with two clauses. DEDUP-009 records status/history reconciliation: A50/A56 and A61/A62 are capability/remediation pairs; A100-A112 remain distinct pipeline contracts; stale A112 'next item' memo heading was identified and is being relabeled. Semantic dedup and full code/test audit remain incomplete.",
+    "note": "Stage metrics are not overall product completion. Historical source/test snapshot c77704d86d6131d13501448af76ce24afc56ad7b has 56 task bindings; no task evidence SHA is currently bound to branch HEAD 08af9d8d5c46fc6b1c03df76046a3a2170e39b12. Reconcile exact evidence and CI again after this documentation commit.",
     "roadmap_phase_mapped_ids": [
       "A0",
       "A1",
@@ -11537,10 +11539,154 @@
       "A112"
     ],
     "source_test_evidence_baseline_sha": "c77704d86d6131d13501448af76ce24afc56ad7b",
-    "current_branch_head": "143d01f87c3161deee04cd2d3c821b1e915084d1",
+    "current_branch_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
     "current_head_note": "Source/test evidence baseline is c77704d86d6131d13501448af76ce24afc56ad7b; documentation HEAD checked before this update is 143d01f87c3161deee04cd2d3c821b1e915084d1. Evidence is not bound to the exact final documentation HEAD, so current_head_evidence_task_ids remains 0. Recheck the resulting HEAD after this docs-only commit.",
     "dashboard_claimed_requirement_level_reviewed_ids": 113,
     "task_records_with_evidence_sha_matching_source_test_snapshot": 56,
-    "final_documentation_head_at_reconciliation": "143d01f87c3161deee04cd2d3c821b1e915084d1"
+    "final_documentation_head_at_reconciliation": "143d01f87c3161deee04cd2d3c821b1e915084d1",
+    "task_records_with_direct_source_or_test_evidence": 112,
+    "task_records_with_source_test_evidence_snapshot_binding": 56,
+    "formal_acceptance_passed_ids": 0,
+    "stage_progress_metrics": {
+      "denominator": 113,
+      "as_of_branch_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
+      "definitions_version": "stage-progress-v1",
+      "inventory_review": {
+        "numerator": 113,
+        "denominator": 113,
+        "percent": 100,
+        "meaning": "A0–A112 编号槽位盘点；不代表独立功能数量或验收完成。"
+      },
+      "requirement_text_review": {
+        "numerator": 113,
+        "denominator": 113,
+        "percent": 100,
+        "meaning": "需求文本级复核覆盖；不代表跨来源语义去重完成。"
+      },
+      "roadmap_phase_mapping": {
+        "numerator": 113,
+        "denominator": 113,
+        "percent": 100,
+        "meaning": "所有编号槽位均有路线阶段映射；阶段名称尚有重复变体，阶段完成率暂不发布。"
+      },
+      "any_evidence_pointer": {
+        "numerator": 113,
+        "denominator": 113,
+        "percent": 100,
+        "meaning": "每条台账至少有证据指针；不代表证据已充分或当前有效。"
+      },
+      "source_test_ci_workflow_pointer": {
+        "numerator": 113,
+        "denominator": 113,
+        "percent": 100,
+        "meaning": "台账记录有源码/测试/CI/workflow 任一证据指针；不代表已审计通过。"
+      },
+      "direct_source_or_test_pointer": {
+        "numerator": 112,
+        "denominator": 113,
+        "percent": 99.1,
+        "meaning": "至少有直接源码或测试证据指针；不代表证据已绑定当前 HEAD。"
+      },
+      "source_test_snapshot_bound": {
+        "numerator": 56,
+        "denominator": 113,
+        "percent": 49.6,
+        "meaning": "已绑定历史源码/测试审计快照；快照为 c77704d86d6131d13501448af76ce24afc56ad7b，不代表当前 HEAD。"
+      },
+      "evidence_bound_to_current_head": {
+        "numerator": 0,
+        "denominator": 113,
+        "percent": 0,
+        "meaning": "目前没有任务记录的证据 SHA 与当前分支 HEAD 精确匹配。"
+      },
+      "full_code_test_audit": {
+        "numerator": 0,
+        "denominator": 113,
+        "percent": 0,
+        "meaning": "完整代码/测试审计完成任务数；不能把部分证据映射当成完成。"
+      },
+      "formal_acceptance": {
+        "numerator": 0,
+        "denominator": 113,
+        "percent": 0,
+        "meaning": "正式验收通过任务数；当前 113 项均未标记正式通过。"
+      },
+      "semantic_dedup_completed": false,
+      "weighting_completed": false,
+      "overall_completion_percentage": null,
+      "overall_completion_percentage_enabled": false,
+      "caveat": "这些是台账/证据阶段指标，不是产品总体完成率。总体完成率须在跨来源语义去重、状态冲突裁决、权重审定和证据边界复核完成后计算。"
+    }
+  },
+  "stage_progress_percentages_enabled": true,
+  "stage_progress_metrics": {
+    "denominator": 113,
+    "as_of_branch_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
+    "definitions_version": "stage-progress-v1",
+    "inventory_review": {
+      "numerator": 113,
+      "denominator": 113,
+      "percent": 100,
+      "meaning": "A0–A112 编号槽位盘点；不代表独立功能数量或验收完成。"
+    },
+    "requirement_text_review": {
+      "numerator": 113,
+      "denominator": 113,
+      "percent": 100,
+      "meaning": "需求文本级复核覆盖；不代表跨来源语义去重完成。"
+    },
+    "roadmap_phase_mapping": {
+      "numerator": 113,
+      "denominator": 113,
+      "percent": 100,
+      "meaning": "所有编号槽位均有路线阶段映射；阶段名称尚有重复变体，阶段完成率暂不发布。"
+    },
+    "any_evidence_pointer": {
+      "numerator": 113,
+      "denominator": 113,
+      "percent": 100,
+      "meaning": "每条台账至少有证据指针；不代表证据已充分或当前有效。"
+    },
+    "source_test_ci_workflow_pointer": {
+      "numerator": 113,
+      "denominator": 113,
+      "percent": 100,
+      "meaning": "台账记录有源码/测试/CI/workflow 任一证据指针；不代表已审计通过。"
+    },
+    "direct_source_or_test_pointer": {
+      "numerator": 112,
+      "denominator": 113,
+      "percent": 99.1,
+      "meaning": "至少有直接源码或测试证据指针；不代表证据已绑定当前 HEAD。"
+    },
+    "source_test_snapshot_bound": {
+      "numerator": 56,
+      "denominator": 113,
+      "percent": 49.6,
+      "meaning": "已绑定历史源码/测试审计快照；快照为 c77704d86d6131d13501448af76ce24afc56ad7b，不代表当前 HEAD。"
+    },
+    "evidence_bound_to_current_head": {
+      "numerator": 0,
+      "denominator": 113,
+      "percent": 0,
+      "meaning": "目前没有任务记录的证据 SHA 与当前分支 HEAD 精确匹配。"
+    },
+    "full_code_test_audit": {
+      "numerator": 0,
+      "denominator": 113,
+      "percent": 0,
+      "meaning": "完整代码/测试审计完成任务数；不能把部分证据映射当成完成。"
+    },
+    "formal_acceptance": {
+      "numerator": 0,
+      "denominator": 113,
+      "percent": 0,
+      "meaning": "正式验收通过任务数；当前 113 项均未标记正式通过。"
+    },
+    "semantic_dedup_completed": false,
+    "weighting_completed": false,
+    "overall_completion_percentage": null,
+    "overall_completion_percentage_enabled": false,
+    "caveat": "这些是台账/证据阶段指标，不是产品总体完成率。总体完成率须在跨来源语义去重、状态冲突裁决、权重审定和证据边界复核完成后计算。"
   }
 }
