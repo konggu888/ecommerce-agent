@@ -1103,6 +1103,12 @@ class ShortDramaTests(unittest.TestCase):
             report = audit_short_drama(plan, {"name": "商品"})
             self.assertNotIn("PRODUCT_VISUAL_NOT_VERIFIED", {issue["code"] for issue in report["issues"]})
 
+            # Evidence can become stale after a prior pass; re-audit must revoke
+            # current trust rather than relying on the historical passed flag.
+            evidence.unlink()
+            report_after_delete = audit_short_drama(plan, {"name": "商品"})
+            self.assertIn("PRODUCT_VISUAL_NOT_VERIFIED", {issue["code"] for issue in report_after_delete["issues"]})
+
     def test_manual_product_visual_review_persists_real_evidence(self):
         import tempfile
         from pathlib import Path
@@ -1266,6 +1272,55 @@ class ShortDramaTests(unittest.TestCase):
             unsupported_generated.write_bytes(b"unknown-format")
             with self.assertRaisesRegex(ShortDramaPlanError, "仅支持常见图片格式"):
                 compare_product_visual_shot(FakeRouter(), plan, 1, [str(valid_ref)], str(unsupported_generated))
+
+    def test_a58_invalid_visual_evidence_never_calls_vision_router_or_mutates_plan(self):
+        import tempfile
+        from pathlib import Path
+
+        class CountingRouter:
+            def __init__(self):
+                self.calls = 0
+            def resolve_route(self, function):
+                self.calls += 1
+                raise AssertionError(f"vision route must not be called for invalid evidence: {function}")
+            def complete_json(self, *args, **kwargs):
+                self.calls += 1
+                raise AssertionError("vision completion must not be called for invalid evidence")
+
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            valid_ref = root / "reference.png"
+            valid_ref.write_bytes(b"reference-bytes")
+            valid_generated = root / "generated.png"
+            valid_generated.write_bytes(b"generated-bytes")
+            empty_ref = root / "empty-reference.png"
+            empty_ref.write_bytes(b"")
+            unsupported_ref = root / "reference.pdf"
+            unsupported_ref.write_bytes(b"pdf-bytes")
+            empty_generated = root / "empty-generated.png"
+            empty_generated.write_bytes(b"")
+            unsupported_generated = root / "generated.bin"
+            unsupported_generated.write_bytes(b"unknown-bytes")
+            missing_ref = root / "missing-reference.png"
+            missing_generated = root / "missing-generated.png"
+
+            invalid_cases = [
+                ([str(missing_ref)], str(valid_generated)),
+                ([str(empty_ref)], str(valid_generated)),
+                ([str(unsupported_ref)], str(valid_generated)),
+                ([str(valid_ref)], str(missing_generated)),
+                ([str(valid_ref)], str(empty_generated)),
+                ([str(valid_ref)], str(unsupported_generated)),
+            ]
+            for refs, target in invalid_cases:
+                plan = sample_plan()
+                plan["drama_business_mode"] = "product_short_drama_ad"
+                before = json.dumps(plan, ensure_ascii=False, sort_keys=True)
+                router = CountingRouter()
+                with self.assertRaises(ShortDramaPlanError):
+                    compare_product_visual_shot(router, plan, 1, refs, target)
+                self.assertEqual(router.calls, 0)
+                self.assertEqual(json.dumps(plan, ensure_ascii=False, sort_keys=True), before)
 
     def test_product_drama_regeneration_changes_only_selected_shot_and_preserves_history(self):
         from ad_studio.short_drama import prepare_product_drama_shot_regeneration
