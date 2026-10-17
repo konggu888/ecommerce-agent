@@ -1307,6 +1307,7 @@ class DesktopCoreTests(unittest.TestCase):
 
     def test_a34_visual_comparison_cancel_makes_zero_calls_and_keeps_state(self):
         from types import SimpleNamespace
+        from tkinter import simpledialog
         from ad_studio.app import App
         import ad_studio.app as app_module
 
@@ -1325,7 +1326,7 @@ class DesktopCoreTests(unittest.TestCase):
                 model_router=MagicMock(),
                 store=MagicMock(),
             )
-            with patch("tkinter.simpledialog.askinteger", return_value=1), \
+            with patch.object(simpledialog, "askinteger", return_value=1), \
                  patch.object(app_module.filedialog, "askopenfilenames", return_value=[str(reference)]), \
                  patch.object(app_module.filedialog, "askopenfilename", return_value=str(generated)), \
                  patch.object(app_module.messagebox, "askyesno", return_value=False), \
