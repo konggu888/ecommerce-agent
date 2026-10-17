@@ -155,9 +155,10 @@ class UsageLedger:
         shot_id: str = "",
         asset_kind: str,
         provider: str,
-        cost_rmb: float,
+        cost_rmb: float | None,
         status: str = "success",
         error: str = "",
+        cost_status: str | None = None,
     ) -> dict[str, Any]:
         return self.record(
             function=f"{asset_kind}素材生成",
@@ -172,7 +173,7 @@ class UsageLedger:
             shot_id=shot_id,
             asset_kind=asset_kind,
             quantity=1,
-            unit_cost_rmb=cost_rmb,
+            unit_cost_rmb=cost_rmb if cost_rmb is not None else 0.0,
             error=error,
         )
 
@@ -193,7 +194,8 @@ class UsageLedger:
             provider=provider,
             model="",
             status=status,
-            estimated_cost_rmb=cost_rmb,
+            estimated_cost_rmb=cost_rmb if cost_rmb is not None else 0.0,
+            cost_status=cost_status or ("unknown" if cost_rmb is None else "configured_estimate"),
             category="video",
             project_id=project_id,
             shot_id=shot_id,
