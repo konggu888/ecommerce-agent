@@ -1,3 +1,13 @@
+## 【实时状态更新｜2026-10-17｜云端视频入口授权审计】
+
+- 当前分支：`feat/product-drama-visual-review`；PR #32 Open、未合并；本次审计开始时 HEAD `76d6c6e9735c72615a45271ad4163783bd4a43a5`，该 SHA 的 PR CI #39012326559 与 docs-sync PR #39012326577 success。当前连接器只返回 PR 触发工作流，Push 触发项未独立核实。
+- 发现后端入口缺口：`ProductionStore.render_shot()` / `render_cloud_shot()` 可以被直接调用，云端视频路径没有独立验证视频端点/费用授权；UI 的确认顺序不能代替后端 fail-closed。
+- 已增加 `video_authorized` 默认 `False`；云端入口未获授权时在 Provider 加载/分发前拒绝。三个 UI 调用点仅在确认后的路由快照上标记授权。新增 mock 测试断言两种后端入口无授权时 Provider loader/dispatch 调用为 0，镜头状态和版本不变。
+- 本轮代码提交：生产层 `c055c18e052a3a6d89336c7a948610c0724f2d45`、UI `77badfd012082a1ed3ebd0ff0afcbf07724a2088`、测试 `786f8b5b3aebb82b7b49a88bbb2355b284427ad7`。这些是中间提交；必须以最终文档提交 HEAD 的 CI/docs-sync 结果为准，不能提前宣称新测试通过。
+- 下一步：核查最终 HEAD CI/docs-sync；若通过，继续既有 A13/A29/A51–A65 合同映射及剩余 Provider 入口、未知费用/endpoint provenance 审计。未新增验收编号；A0–A112 正式状态不变；PR #32 不合并；真实 Provider/账单、Windows 真机、剪映现场与真实投放继续暂缓。
+
+---
+
 ## 【实时权威进度｜2026-10-17｜优先于下方所有历史快照】
 
 - 仓库/分支：`konggu888/ecommerce-agent` / `feat/product-drama-visual-review`；PR #32 Open、未合并。
