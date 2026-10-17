@@ -298,3 +298,64 @@ class UnknownVideoPriceGuardTests(unittest.TestCase):
         self.assertTrue(result["tasks"][0]["generation_allowed"])
         self.assertEqual(result["tasks"][0]["estimated_cost_rmb"], 0.0)
         self.assertEqual(result["tasks"][0].get("cost_status"), None)
+
+
+class UnknownVideoPriceRoutingTests(unittest.TestCase):
+    def test_unknown_price_requires_confirmation_in_route(self):
+        result = route_footage_gap_tasks(
+            [{"task_id": "UNKNOWN-1", "need": "通用氛围辅助画面"}],
+            generation_connected=True,
+            budget_remaining_rmb=100,
+            cost_per_ai_shot_rmb=None,
+        )
+        task = result["tasks"][0]
+        self.assertFalse(task["generation_allowed"])
+        self.assertTrue(task["needs_cost_confirmation"])
+        self.assertEqual(task["cost_status"], "price_missing")
+        self.assertIsNone(task["estimated_cost_rmb"])
+        self.assertIsNone(result["estimated_additional_cost_rmb"])
+        self.assertEqual(result["unknown_price_task_count"], 1)
+
+    def test_explicit_zero_price_is_known_not_unknown(self):
+        result = route_footage_gap_tasks(
+            [{"task_id": "ZERO-1", "need": "通用氛围辅助画面"}],
+            generation_connected=True,
+            budget_remaining_rmb=0,
+            cost_per_ai_shot_rmb=0.0,
+        )
+        task = result["tasks"][0]
+        self.assertTrue(task["generation_allowed"])
+        self.assertEqual(task["estimated_cost_rmb"], 0.0)
+        self.assertEqual(result["unknown_price_task_count"], 0)
+        self.assertEqual(result["estimated_additional_cost_rmb"], 0.0)
+
+    def test_execution_unknown_price_without_confirmation_never_calls_generator(self):
+        from ad_studio.hybrid_router import execute_ai_gap_generation
+        calls = []
+        result = execute_ai_gap_generation(
+            [{"task_id": "UNKNOWN-2", "need": "通用氛围辅助画面",
+              "recommended_resolution": "AI补镜头", "generation_allowed": True}],
+            generator=lambda task: calls.append(task["task_id"]) or "/tmp/generated.mp4",
+            budget_remaining_rmb=100,
+            cost_per_ai_shot_rmb=None,
+        )
+        self.assertEqual(calls, [])
+        self.assertEqual(result["blocked"], 1)
+        self.assertIsNone(result["estimated_additional_cost_rmb"])
+        self.assertEqual(result["tasks"][0]["cost_status"], "price_missing")
+
+    def test_execution_unknown_price_runs_only_after_explicit_confirmation(self):
+        from ad_studio.hybrid_router import execute_ai_gap_generation
+        calls = []
+        result = execute_ai_gap_generation(
+            [{"task_id": "UNKNOWN-3", "need": "通用氛围辅助画面",
+              "recommended_resolution": "AI补镜头", "generation_allowed": True,
+              "cost_price_confirmed": True}],
+            generator=lambda task: calls.append(task["task_id"]) or "/tmp/generated.mp4",
+            budget_remaining_rmb=100,
+            cost_per_ai_shot_rmb=None,
+        )
+        self.assertEqual(calls, ["UNKNOWN-3"])
+        self.assertEqual(result["generated"], 1)
+        self.assertIsNone(result["estimated_additional_cost_rmb"])
+        self.assertEqual(result["tasks"][0]["cost_status"], "price_missing_confirmed")
