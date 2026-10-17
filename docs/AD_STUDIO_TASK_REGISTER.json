@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "C1 cross-source decisions documented for 33/113 unique slots (29.2%). C2-FOUNDATION-001 completed direct source/test audits for A0-A4 (5/113=4.4%); those items have evidence gaps and remain unaccepted. Task closure coverage 0/113.",
+  "audit_status": "Finite closure contract active. C1 closed batches cover 33/113 unique formal slots. No IDs merged and no formal acceptance states changed. C2 full current code/test audit remains 0/113.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -1614,17 +1614,18 @@
         "sources": [
           "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
           "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
-          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
           "docs/AD_STUDIO_TASK_REGISTER.json"
         ],
-        "contract_role": "音频处理、降噪、人声保护、背景音乐/自动控音、用户音乐库、可选 AI 配音与错误反馈。",
-        "distinction": "与 A9 语音识别/真人口播和 A11 字幕时序关联，但 A10 专管音轨处理与混音，不证明真实听感或音乐授权。",
+        "contract_role": "音频处理：原始音频、降噪/人声保护、背景音乐、自动控音、用户音乐库、可选 AI 配音与错误处理。",
+        "distinction": "A10 是音频信号/混音与声音质量合同；A9 处理语音识别和口播语义，A11 处理字幕文本/时间轴。自动化混音测试不证明真实听感、降噪质量或音乐授权。",
         "related_ids": [
           "A9",
           "A11",
-          "A25"
+          "A109",
+          "A110",
+          "A111"
         ],
-        "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
+        "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
       }
@@ -1729,19 +1730,19 @@
         "sources": [
           "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
           "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
-          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
           "docs/AD_STUDIO_TASK_REGISTER.json"
         ],
-        "contract_role": "自动字幕、分段、任务/商品适配、与口播/商品事实一致、字体来源及免费商用限制。",
-        "distinction": "与 A9 转写、A10 音频及 A20/A21 文本事实核查有依赖；字幕生成/时序/事实一致性和字体许可是不同义务。",
+        "contract_role": "生成与分段字幕，适配任务/商品，校验口播和商品事实一致性，并只使用可追溯的免费商用字体。",
+        "distinction": "A11 是字幕内容、时间轴与字体授权合同；A9 是 ASR/口播信息提取，A10 是音频处理。字幕时间窗可参与剪辑保护，但不替代字幕语义准确性或字体许可证据。",
         "related_ids": [
           "A9",
           "A10",
           "A20",
-          "A21",
-          "A25"
+          "A76",
+          "A108",
+          "A112"
         ],
-        "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
+        "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
       }
@@ -1848,18 +1849,17 @@
         "sources": [
           "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
           "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
-          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
           "docs/AD_STUDIO_TASK_REGISTER.json"
         ],
-        "contract_role": "识别商品证据、口播辅助画面和普通视觉缺口，按能力/预算选择补拍、AI补镜头或人工处理。",
-        "distinction": "依赖 A5 视觉分析与 A8 剪辑策略；判断缺口不等于实际生成/人工补拍完成，不能与 A13 生成路由合并。",
+        "contract_role": "依据商品证据、口播辅助画面、普通视觉需求和预算/能力判断缺口，并明确区分建议补拍、允许 AI 辅助和人工处理。",
+        "distinction": "A12 是缺口分类/路由决策；A5 提供视觉分析，A8 提供剪辑策略，A13 执行 AI 生成。识别缺口不代表已生成或已解决。",
         "related_ids": [
           "A5",
           "A8",
           "A13",
           "A14"
         ],
-        "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
+        "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
       }
@@ -1971,21 +1971,19 @@
         "sources": [
           "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
           "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
-          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
           "docs/AD_STUDIO_TASK_REGISTER.json"
         ],
-        "contract_role": "AI生成能力路由、预算控制、失败状态、商品事实边界、人工复核闸门。",
-        "distinction": "与 A51 费用预估校验、A23/A24 安全门、A12 缺口判断、A14 混合制作有关联；生成授权/预算与产物来源/审核持久化不可合并。",
+        "contract_role": "执行 AI 补镜头生成：能力路由、预算复核、失败状态、商品事实约束、默认待复核与人工审核后方可使用。",
+        "distinction": "A13 是生成执行和使用前审核闸门；A12 决定是否需要补镜头，A14 负责与实拍资产共同进入生产并保留来源。预算/授权顺序和真实商品保真仍需 C2 审计。",
         "related_ids": [
           "A12",
           "A14",
-          "A23",
-          "A24",
           "A51",
-          "A55",
-          "A64"
+          "A66",
+          "A67",
+          "A75"
         ],
-        "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
+        "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
       }
@@ -2097,20 +2095,19 @@
         "sources": [
           "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
           "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
-          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
           "docs/AD_STUDIO_TASK_REGISTER.json"
         ],
-        "contract_role": "同一生产流程中混合实拍与 AI 镜头，并在编辑、审核和交付中保留来源与审核状态。",
-        "distinction": "与 A12 缺口决策、A13 AI 生成、A25 媒体质量和 A27 交付中心有关联；最终逐镜头溯源/审核状态保留是独立合同。",
+        "contract_role": "把实拍和 AI 生成镜头放入同一故事板，同时保留来源、审核状态，并支持最终镜头来源追溯。",
+        "distinction": "A14 是混合生产的来源/审核状态合同；A12 是缺口判断，A13 是 AI 生成与审核闸门，A22/A66/A67 等处理不同层次的视觉核验。",
         "related_ids": [
           "A12",
           "A13",
-          "A25",
-          "A27",
-          "A30",
-          "A43"
+          "A20",
+          "A22",
+          "A66",
+          "A67"
         ],
-        "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
+        "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
       }
@@ -13397,6 +13394,23 @@
         "remaining_decisions": [],
         "formal_acceptance_states_changed": false,
         "next_batch": "C1-FOUNDATION-004: reconcile A15-A19 across the three distinct task types, multi-version output and creative experiment design; do not treat shared rendering paths or historical CI as proof of full acceptance."
+      },
+      {
+        "batch_id": "C1-FOUNDATION-003",
+        "slots": [
+          "A10",
+          "A11",
+          "A12",
+          "A13",
+          "A14"
+        ],
+        "slots_reconciled": 5,
+        "slots_total": 5,
+        "status": "resolved_as_distinct_related_contracts",
+        "decision": "A10 audio processing, A11 subtitle text/timing/licensing, A12 gap classification, A13 AI generation and review gating, and A14 hybrid source/review provenance are distinct contracts. Their pipeline relationship does not make one item evidence for another. Real audio quality, font licensing, ASR accuracy, actual generated-product fidelity and complete source trace remain evidence gaps for C2/C5.",
+        "remaining_decisions": [],
+        "formal_acceptance_states_changed": false,
+        "next_batch": "C1-FOUNDATION-004: reconcile A15-A19 across the three output task types, multi-version generation and creative experiments; distinguish task-type routing, variant isolation, and experiment-design claims."
       }
     ]
   },
@@ -13631,7 +13645,7 @@
         "numerator": 33,
         "denominator": 113,
         "percent": 29.2,
-        "definition": "Unique formal task IDs with documented cross-source identity/status decisions; repeated IDs count once. This is not code/test audit or formal acceptance."
+        "definition": "Unique formal task IDs with documented cross-source identity/status decisions; repeated IDs across batches count once. This is not code/test audit or formal acceptance."
       },
       "c2_current_code_test_audit": {
         "numerator": 5,
