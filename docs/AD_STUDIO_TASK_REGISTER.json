@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Finite closure contract active. C1 cross-source decisions 69/113; C2 direct current source/test audits 35/113; strict task closure 0/113. Both tracked cross-cutting P0 blocker families have bounded fixes and latest CI/docs-sync success. A20-A24/A25-A34 contain deterministic test gaps being tracked under existing IDs; formal acceptance states unchanged.",
+  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 73/113; C2 direct current source/test audits 35/113; strict task closure 0/113. Both tracked cross-cutting P0 blocker families have bounded fixes and latest CI/docs-sync success. Formal acceptance states unchanged.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -9001,29 +9001,32 @@
       "phase_normalization_original": "阶段1｜可靠的生产底座",
       "phase_mapping_confidence": "mapped",
       "cross_source_reconciliation": {
-        "batch_id": "C1-COST-LEDGER-001",
-        "status": "resolved_as_distinct_related_contract",
+        "batch_id": "C1-FOUNDATION-013",
+        "status": "resolved_related_contracts_with_evidence_lifecycle_distinction",
         "reviewed_on": "2026-10-17",
         "sources": [
           "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
           "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
           "docs/AD_STUDIO_TASK_REGISTER.json",
-          "docs/AD_STUDIO_PRODUCT_ROADMAP.md"
+          "apps/ad-studio-desktop/ad_studio/short_drama.py",
+          "apps/ad-studio-desktop/ad_studio/usage_ledger.py"
         ],
-        "contract_role": "账本写入原子性、失败不破坏旧账本、保留完整历史",
-        "distinction": "底层持久化合同；支撑但不替代上层 A52/A55/A59/A60/A63/A64/A99 业务行为。",
+        "contract_role": "用量账本原子替换、替换失败保护和历史记录完整保留。",
+        "distinction": "底层账本持久化合同；支撑但不替代 A52/A55/A59/A60/A61/A63/A64/A99 的业务计费/恢复合同。",
         "related_ids": [
           "A52",
           "A55",
           "A59",
           "A60",
+          "A61",
           "A63",
           "A64",
           "A99"
         ],
-        "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
+        "merge_decision": "Keep all existing formal IDs; do not merge or change acceptance status.",
         "acceptance_status_preserved": "not_audited",
-        "implementation_or_acceptance_claim": false
+        "implementation_or_acceptance_claim": false,
+        "prior_decision_preserved": true
       },
       "cross_source_reconciliation_addenda": [
         {
@@ -9134,7 +9137,29 @@
       ],
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-013",
+        "status": "resolved_related_contracts_with_evidence_lifecycle_distinction",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json",
+          "apps/ad-studio-desktop/ad_studio/short_drama.py",
+          "apps/ad-studio-desktop/ad_studio/usage_ledger.py"
+        ],
+        "contract_role": "写入人工商品画面核验结果前校验证据文件存在、非空、扩展名受支持，并保存规范化路径。",
+        "distinction": "证据写入前验证；不等同于 A67 对历史通过记录的证据失效重审，也不证明证据内容确实匹配商品。",
+        "related_ids": [
+          "A34",
+          "A67"
+        ],
+        "merge_decision": "Keep all existing formal IDs; do not merge or change acceptance status.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false,
+        "prior_decision_preserved": false
+      }
     },
     {
       "task_id": "A67",
@@ -9225,7 +9250,29 @@
       ],
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-013",
+        "status": "resolved_related_contracts_with_evidence_lifecycle_distinction",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json",
+          "apps/ad-studio-desktop/ad_studio/short_drama.py",
+          "apps/ad-studio-desktop/ad_studio/usage_ledger.py"
+        ],
+        "contract_role": "每次短剧质量审查时重新检查已持久化人工核验证据是否仍有效，防止旧 passed 状态掩盖证据文件缺失。",
+        "distinction": "审查时证据有效性；A66负责写入时校验。SOP 明确要求有效证据通过后删除/清空，再次审查应失效，目前专项测试缺少该时序。",
+        "related_ids": [
+          "A34",
+          "A66"
+        ],
+        "merge_decision": "Keep all existing formal IDs; do not merge or change acceptance status.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false,
+        "prior_decision_preserved": false
+      }
     },
     {
       "task_id": "A68",
@@ -9325,7 +9372,30 @@
       ],
       "normalized_roadmap_phase": "阶段4｜AI短剧能力",
       "phase_normalization_original": "阶段4｜AI 短剧能力",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-013",
+        "status": "resolved_related_contracts_with_evidence_lifecycle_distinction",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json",
+          "apps/ad-studio-desktop/ad_studio/short_drama.py",
+          "apps/ad-studio-desktop/ad_studio/usage_ledger.py"
+        ],
+        "contract_role": "根据指定源集和连续性台账分析真实存在的后续集受影响范围，报告风险依据/建议并保存报告，不自动改写剧情。",
+        "distinction": "后续剧情影响报告与非破坏性建议；不等同于 A82 人物知识时间线审查或 A69 新故事生成结构约束。",
+        "related_ids": [
+          "A69",
+          "A82",
+          "A85"
+        ],
+        "merge_decision": "Keep all existing formal IDs; do not merge or change acceptance status.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false,
+        "prior_decision_preserved": false
+      }
     },
     {
       "task_id": "A69",
@@ -9426,7 +9496,30 @@
       ],
       "normalized_roadmap_phase": "阶段4｜AI短剧能力",
       "phase_normalization_original": "阶段4｜AI 短剧能力",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-013",
+        "status": "resolved_related_contracts_with_evidence_lifecycle_distinction",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json",
+          "apps/ad-studio-desktop/ad_studio/short_drama.py",
+          "apps/ad-studio-desktop/ad_studio/usage_ledger.py"
+        ],
+        "contract_role": "新生成短剧必须有主角目标、阻力、失败代价、因果递进冲突、转折、伏笔兑现、情绪回报和留存设计。",
+        "distinction": "生成结构的确定性要求；结构字段存在不证明真实剧情质量/留存效果，也不替代 A82/A85 连续性和角色状态约束。",
+        "related_ids": [
+          "A68",
+          "A82",
+          "A85"
+        ],
+        "merge_decision": "Keep all existing formal IDs; do not merge or change acceptance status.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false,
+        "prior_decision_preserved": false
+      }
     },
     {
       "task_id": "A70",
@@ -16084,6 +16177,24 @@
         "remaining_decisions": [],
         "formal_acceptance_states_changed": false,
         "next_batch": "C1-FOUNDATION-013: reconcile A60-A64 with the cost-ledger batches and visual-evidence review family; distinguish failed-only compatibility, historical cost migration, post-migration write failure and asset-ledger failure."
+      },
+      {
+        "batch_id": "C1-FOUNDATION-013",
+        "slots": [
+          "A65",
+          "A66",
+          "A67",
+          "A68",
+          "A69"
+        ],
+        "slots_reconciled": 5,
+        "unique_new_ids": 4,
+        "slots_total": 5,
+        "status": "resolved_related_contracts_with_evidence_lifecycle_distinction",
+        "decision": "A65 ledger atomic persistence was already reconciled in C1-COST-LEDGER-001; this batch adds four unique IDs. A66 validates evidence before recording, A67 revalidates persisted evidence during later audits, A68 produces non-mutating downstream episode impact reports, and A69 validates new-story structure/retention fields. These contracts are related but not interchangeable. No formal acceptance states changed.",
+        "remaining_decisions": [],
+        "formal_acceptance_states_changed": false,
+        "next_batch": "C1-FOUNDATION-014: reconcile A70-A74 across short-drama continuity, episode state, knowledge timeline and product fact/visual integrity; preserve the distinction between structure validation and real narrative/product truth."
       }
     ]
   },
@@ -16275,8 +16386,8 @@
         "name": "跨来源身份与状态裁决",
         "status": "in_progress",
         "exit": "all 113 slots reconciled against plan, SOP, roadmap, register; unresolved decisions 0",
-        "last_completed_batch": "C1-FOUNDATION-012",
-        "slots_with_final_documented_cross_source_decision": 69,
+        "last_completed_batch": "C1-FOUNDATION-013",
+        "slots_with_final_documented_cross_source_decision": 73,
         "slots_counting_rule": "Unique task IDs across all closed batches; repeated IDs never increase the numerator."
       },
       {
@@ -16316,9 +16427,9 @@
         "definition": "Slots with current code/test audit and explicit terminal disposition divided by 113. Audit-only slots with open gaps do not count as closed."
       },
       "c1_cross_source_reconciliation": {
-        "numerator": 69,
+        "numerator": 73,
         "denominator": 113,
-        "percent": 61.1,
+        "percent": 64.6,
         "definition": "Unique formal task IDs with documented cross-source identity/status decisions; repeated IDs count once. This is not code/test audit or formal acceptance."
       },
       "c2_current_code_test_audit": {
