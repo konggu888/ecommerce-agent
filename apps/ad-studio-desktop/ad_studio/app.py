@@ -1759,12 +1759,15 @@ class App(tk.Tk):
                     c['总计']=round(float(c.get('本地',0.0))+float(c['云端']),2)
                 c['明细'].append({'项目':'演员/场景/商品素材自动生成','数量':asset_est.get('数量',0),'单价':0.0,'小计':asset_total,'计费方式':'按缺失资产配置价格'})
             c['预算']=budget; c['超预算']=None if c.get('总计') is None else c['总计']>budget; c['创意方案数']=variant_count; self.project.cost_estimate=c; self._show_cost_breakdown(c)
+            cost_total_label = '无法可靠估算（视频单价未知）' if c.get('总计') is None else f"¥{float(c['总计']):.2f}"
+            video_cost_label = '未知（单镜头价格未配置）' if rate is None else f"¥{rate*len(plan.shots):.2f}"
+            budget_status_label = ('⚠ 视频单价未知，无法可靠估算总费用；确认后仍可能超过预算。' if c.get('总计') is None else ('⚠ 预计超过本次预算。' if c['超预算'] else '✓ 预计不超过本次预算。'))
             detail='\n'.join([
                 f"任务类型：{task_type}",f"商品：{info.name}",f"本次生成创意方案：{variant_count} 个（当前先展示方案1）",f"AI判断广告强度：{plan.ad_level}",
                 f"AI选择视频形式：{plan.video_form}",f"预计时长：{plan.duration_seconds}秒",f"AI策略：{plan.strategy}",f"AI钩子：{plan.hook}",'',
-                f"当前方案开始前预计成本：{'无法可靠估算（视频单价未知）' if c.get('总计') is None else f'¥{c["总计"]:.2f}'}",f"本地处理/FFmpeg：¥{c['本地']:.2f}",f"视频生成费用：{'未知（单镜头价格未配置）' if rate is None else f'¥{rate*len(plan.shots):.2f}'}",f"演员生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='演员'):.2f}",f"场景生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='场景'):.2f}",f"商品素材生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='商品素材'):.2f}",f"云端已知费用小计：¥{c['云端']:.2f}",
+                f"当前方案开始前预计成本：{cost_total_label}",f"本地处理/FFmpeg：¥{c['本地']:.2f}",f"视频生成费用：{video_cost_label}",f"演员生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='演员'):.2f}",f"场景生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='场景'):.2f}",f"商品素材生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='商品素材'):.2f}",f"云端已知费用小计：¥{c['云端']:.2f}",
                 *[_format_cost_item(x) for x in c['明细'] if x['数量']],
-                '',f"本次预算：¥{c['预算']:.2f}",('⚠ 视频单价未知，无法可靠估算总费用；确认后仍可能超过预算。' if c.get('总计') is None else ('⚠ 预计超过本次预算。' if c['超预算'] else '✓ 预计不超过本次预算。')),c['计价说明'],
+                '',f"本次预算：¥{c['预算']:.2f}",budget_status_label,c['计价说明'],
                 '说明：多个创意方案是同一商品的不同广告打法；云端视频/素材费用按当前选中的方案单独计算。','',
                 '本次确认仅授权后续项目保存/素材视频生成；此前创意规划模型调用已在单独授权后执行，可能产生模型费用。\n' '超过预算不会自动降质、换模型或减少镜头。是否现在开始？'
             ])
@@ -2809,16 +2812,19 @@ class App(tk.Tk):
             audit_lines.extend(f"- {item['message']}" for item in audit['issues'][:8])
             if len(audit['issues']) > 8:
                 audit_lines.append(f"- 其余 {len(audit['issues']) - 8} 项请在“短剧质量/事实复核”窗口查看。")
+            video_cost_label = '未知（单镜头价格未配置）' if rate is None else f"¥{rate * len(rows):.2f}"
+            total_cost_label = '无法可靠估算（视频单价未知）' if estimate.get('总计') is None else f"¥{float(estimate['总计']):.2f}"
+            budget_status_label = ('⚠ 视频单价未知，无法可靠估算总费用；确认后仍可能超过预算。' if estimate.get('总计') is None else ('⚠ 预计超过本次预算。' if estimate['超预算'] else '✓ 预计不超过本次预算。'))
             detail = '\n'.join([
                 f"商品：{self.project.product_name}",
                 f"短剧题材：{plan.get('genre', '待确认')}",
                 f"计划镜头：{len(rows)}",
-                f"视频生成费用：{'未知（单镜头价格未配置）' if rate is None else f'¥{rate * len(rows):.2f}'}",
+                f"视频生成费用：{video_cost_label}",
                 f"演员/场景/商品素材生成费用：¥{asset_total:.2f}",
                 f"本地处理/FFmpeg：¥{estimate.get('本地', 0.0):.2f}",
-                f"预计总费用：{'无法可靠估算（视频单价未知）' if estimate.get('总计') is None else f'¥{estimate["总计"]:.2f}'}",
+                f"预计总费用：{total_cost_label}",
                 f"本次预算：¥{budget:.2f}",
-                ('⚠ 视频单价未知，无法可靠估算总费用；确认后仍可能超过预算。' if estimate.get('总计') is None else ('⚠ 预计超过本次预算。' if estimate['超预算'] else '✓ 预计不超过本次预算。')),
+                budget_status_label,
                 estimate.get('计价说明', ''),
                 '',
                 *audit_lines,
