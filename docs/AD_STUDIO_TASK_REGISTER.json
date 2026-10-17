@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 73/113; C2 direct current source/test audits 60/113; strict task closure 0/113. Both tracked cross-cutting P0 blocker families have bounded fixes and latest CI/docs-sync success. Formal acceptance states unchanged.",
+  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 73/113; C2 direct current source/test audits 65/113; strict task closure 0/113. Both tracked cross-cutting P0 blocker families have bounded fixes and latest CI/docs-sync success. Formal acceptance states unchanged.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -9415,7 +9415,50 @@
           "formal_acceptance_state_preserved": "not_audited",
           "no_id_merge_or_status_change": true
         }
-      ]
+      ],
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-013",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_failed_only_compatibility_matrix",
+        "severity": "P1 legacy-cost correctness gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/usage_ledger.py",
+            "blob_sha": "ed5b873a41f0b16a1ddeb9dd041dee53e70ed4bc",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "Tests verify a failed-only ledger does not reset legacy project/shot actual cost and failed rows do not count as actual spend. The combined empty-ledger, failed-only, mixed success/failure, save/reload and per-shot reconciliation matrix remains distributed across A57/A59/A63/A99 rather than proven by one focused A60 contract test.",
+        "confirmed_gaps": [
+          "Tests verify a failed-only ledger does not reset legacy project/shot actual cost and failed rows do not count as actual spend. The combined empty-ledger, failed-only, mixed success/failure, save/reload and per-shot reconciliation matrix remains distributed across A57/A59/A63/A99 rather than proven by one focused A60 contract test."
+        ],
+        "next_action": "Map each A60 branch to its specific existing test and add a small table-driven test for failed-only preservation after save/reload; do not merge A60 with A59 or A63.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
+      }
     },
     {
       "task_id": "A61",
@@ -9552,6 +9595,49 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-013",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_legacy_migration_edge_matrix",
+        "severity": "P1 cost migration integrity gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/usage_ledger.py",
+            "blob_sha": "ed5b873a41f0b16a1ddeb9dd041dee53e70ed4bc",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "Tests cover migration of legacy shot cost plus project unallocated difference before first successful charge, no repeated migration, and atomic rejection of an invalid batch. Migration disk-replace failure, complete save/reload classification and all historical categories are not directly covered; external invoices/Windows filesystem remain separate.",
+        "confirmed_gaps": [
+          "Tests cover migration of legacy shot cost plus project unallocated difference before first successful charge, no repeated migration, and atomic rejection of an invalid batch. Migration disk-replace failure, complete save/reload classification and all historical categories are not directly covered; external invoices/Windows filesystem remain separate."
+        ],
+        "next_action": "Add/map save/reload and disk-replace failure assertions for the existing migration transaction, and verify categories remain separate; keep A62 wording regression and A63 post-migration failure distinct.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
       }
     },
     {
@@ -9671,6 +9757,44 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-013",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "historical_test_wording_fix_not_product_capability",
+        "severity": "P2 maintenance record",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/SESSION_HANDOFF.md",
+            "blob_sha": "30c3e4d00dd21cd1e09d8b5935113bbf8528c039",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_ai_handoff.py",
+            "blob_sha": "9a0c0283f11f9ec8024514907cb7a4058815c2bf",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "The item fixes a brittle handoff wording assertion for the historical-cost migration term. Its test proves the expected phrase is present in handoff documentation; it does not test migration behavior. It must remain a traceable regression/documentation record but not count as a standalone product capability.",
+        "confirmed_gaps": [
+          "The item fixes a brittle handoff wording assertion for the historical-cost migration term. Its test proves the expected phrase is present in handoff documentation; it does not test migration behavior. It must remain a traceable regression/documentation record but not count as a standalone product capability."
+        ],
+        "next_action": "Keep A62's history and wording evidence, preserve formal ID, and exclude it from any claim that the migration implementation itself passed; that contract belongs to A61/A63.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
       }
     },
     {
@@ -9808,7 +9932,50 @@
           "formal_acceptance_state_preserved": "not_audited",
           "no_id_merge_or_status_change": true
         }
-      ]
+      ],
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-013",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_migration_then_charge_failure_persistence_gap",
+        "severity": "P1 financial state recovery gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/usage_ledger.py",
+            "blob_sha": "ed5b873a41f0b16a1ddeb9dd041dee53e70ed4bc",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "A dedicated test simulates successful legacy-cost migration followed by a new charge ledger write failure and asserts in-memory project/shot snapshots, cost estimate and migration ledger rows survive. The SOP explicitly requires saving and reloading after the failure, which this focused test does not directly perform.",
+        "confirmed_gaps": [
+          "A dedicated test simulates successful legacy-cost migration followed by a new charge ledger write failure and asserts in-memory project/shot snapshots, cost estimate and migration ledger rows survive. The SOP explicitly requires saving and reloading after the failure, which this focused test does not directly perform."
+        ],
+        "next_action": "Extend test_a63_migrated_legacy_cost_survives_when_new_charge_record_fails with project save/reload and assert project total, shot total, migration rows and cost-pending recovery state remain intact.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
+      }
     },
     {
       "task_id": "A64",
@@ -9954,7 +10121,55 @@
           "formal_acceptance_state_preserved": "not_audited",
           "no_id_merge_or_status_change": true
         }
-      ]
+      ],
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-013",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_asset_ledger_failure_external_billing_deferred",
+        "severity": "P1 asset recovery evidence gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/usage_ledger.py",
+            "blob_sha": "ed5b873a41f0b16a1ddeb9dd041dee53e70ed4bc",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/app.py",
+            "blob_sha": "a5fe9fe67b5e0c2e5183a72091de257a006d4bff",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "Behavior-level fault injection covers both resolve_assets and generate_missing_asset when cost recording fails; tests assert generated file/library entry, asset ID, shot reference and reload state survive as cost-pending. The code does not prove whether a real Provider charged externally, and some recovery/history metadata/duplicate retry edges remain separate.",
+        "confirmed_gaps": [
+          "Behavior-level fault injection covers both resolve_assets and generate_missing_asset when cost recording fails; tests assert generated file/library entry, asset ID, shot reference and reload state survive as cost-pending. The code does not prove whether a real Provider charged externally, and some recovery/history metadata/duplicate retry edges remain separate."
+        ],
+        "next_action": "Map both entry points' recovery-history fields and duplicate-retry behavior; keep actual provider invoice reconciliation deferred and do not treat local zero estimated cost as free.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
+      }
     },
     {
       "task_id": "A65",
@@ -17042,6 +17257,69 @@
         "Formal acceptance states unchanged."
       ],
       "next_step": "C2-FOUNDATION-013: audit A60-A64; then start C3 deterministic remediation, prioritizing A34/A58 zero-call and persistence coverage, A63 save/reload, and A67 evidence invalidation. No new acceptance IDs."
+    },
+    {
+      "batch_id": "C2-FOUNDATION-013",
+      "range": "A60-A64",
+      "status": "partial_current_source_test_audit_gaps_recorded",
+      "audited_at": "2026-10-17",
+      "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+      "latest_ci": {
+        "pr_ci_run_id": 39018653867,
+        "pr_ci_conclusion": "success",
+        "pr_docs_sync_run_id": 39018653864,
+        "pr_docs_sync_conclusion": "success",
+        "push_runs": "not_independently_verified_by_available_workflow_query"
+      },
+      "reviewed_sources": [
+        "apps/ad-studio-desktop/ad_studio/production.py",
+        "apps/ad-studio-desktop/ad_studio/usage_ledger.py",
+        "apps/ad-studio-desktop/ad_studio/app.py",
+        "apps/ad-studio-desktop/SESSION_HANDOFF.md"
+      ],
+      "reviewed_tests": [
+        "apps/ad-studio-desktop/test_desktop.py",
+        "apps/ad-studio-desktop/test_ai_handoff.py"
+      ],
+      "tasks": [
+        {
+          "id": "A60",
+          "status": "partial_failed_only_compatibility_matrix",
+          "finding": "Tests verify a failed-only ledger does not reset legacy project/shot actual cost and failed rows do not count as actual spend. The combined empty-ledger, failed-only, mixed success/failure, save/reload and per-shot reconciliation matrix remains distributed across A57/A59/A63/A99 rather than proven by one focused A60 contract test.",
+          "next_action": "Map each A60 branch to its specific existing test and add a small table-driven test for failed-only preservation after save/reload; do not merge A60 with A59 or A63."
+        },
+        {
+          "id": "A61",
+          "status": "partial_legacy_migration_edge_matrix",
+          "finding": "Tests cover migration of legacy shot cost plus project unallocated difference before first successful charge, no repeated migration, and atomic rejection of an invalid batch. Migration disk-replace failure, complete save/reload classification and all historical categories are not directly covered; external invoices/Windows filesystem remain separate.",
+          "next_action": "Add/map save/reload and disk-replace failure assertions for the existing migration transaction, and verify categories remain separate; keep A62 wording regression and A63 post-migration failure distinct."
+        },
+        {
+          "id": "A62",
+          "status": "historical_test_wording_fix_not_product_capability",
+          "finding": "The item fixes a brittle handoff wording assertion for the historical-cost migration term. Its test proves the expected phrase is present in handoff documentation; it does not test migration behavior. It must remain a traceable regression/documentation record but not count as a standalone product capability.",
+          "next_action": "Keep A62's history and wording evidence, preserve formal ID, and exclude it from any claim that the migration implementation itself passed; that contract belongs to A61/A63."
+        },
+        {
+          "id": "A63",
+          "status": "partial_migration_then_charge_failure_persistence_gap",
+          "finding": "A dedicated test simulates successful legacy-cost migration followed by a new charge ledger write failure and asserts in-memory project/shot snapshots, cost estimate and migration ledger rows survive. The SOP explicitly requires saving and reloading after the failure, which this focused test does not directly perform.",
+          "next_action": "Extend test_a63_migrated_legacy_cost_survives_when_new_charge_record_fails with project save/reload and assert project total, shot total, migration rows and cost-pending recovery state remain intact."
+        },
+        {
+          "id": "A64",
+          "status": "partial_asset_ledger_failure_external_billing_deferred",
+          "finding": "Behavior-level fault injection covers both resolve_assets and generate_missing_asset when cost recording fails; tests assert generated file/library entry, asset ID, shot reference and reload state survive as cost-pending. The code does not prove whether a real Provider charged externally, and some recovery/history metadata/duplicate retry edges remain separate.",
+          "next_action": "Map both entry points' recovery-history fields and duplicate-retry behavior; keep actual provider invoice reconciliation deferred and do not treat local zero estimated cost as free."
+        }
+      ],
+      "limitations": [
+        "External Provider billing/invoice behavior is not proven by local fault-injection tests.",
+        "A63 save/reload after migration then charge-record failure is a direct SOP gap.",
+        "Windows filesystem failure behavior remains deferred.",
+        "Formal acceptance states unchanged."
+      ],
+      "next_step": "C2-FOUNDATION-014: audit A65-A69. Then start C3 deterministic remediation under existing IDs, with first fix A63 save/reload and A67 evidence invalidation; A34/A58 visual comparison call-count/persistence is the next bounded batch."
     }
   ],
   "last_reconciled_against_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
@@ -17766,10 +18044,10 @@
         "id": "C2",
         "name": "当前代码与专项测试审计",
         "status": "in_progress",
-        "completed_slots": 60,
+        "completed_slots": 65,
         "total_slots": 113,
         "exit": "all 113 slots have current source/test evidence and explicit audit result",
-        "last_completed_batch": "C2-FOUNDATION-012"
+        "last_completed_batch": "C2-FOUNDATION-013"
       },
       {
         "id": "C3",
@@ -17805,9 +18083,9 @@
         "definition": "Unique formal task IDs with documented cross-source identity/status decisions; repeated IDs count once. This is not code/test audit or formal acceptance."
       },
       "c2_current_code_test_audit": {
-        "numerator": 60,
+        "numerator": 65,
         "denominator": 113,
-        "percent": 53.1,
+        "percent": 57.5,
         "definition": "Slots with direct current source/test inspection and a written audit result; partial findings count as audit coverage, not acceptance pass."
       },
       "c3_blocking_defects": {
