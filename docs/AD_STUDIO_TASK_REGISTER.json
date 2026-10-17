@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 73/113; C2 direct current source/test audits 75/113; strict task closure 0/113. Both tracked cross-cutting P0 blocker families have bounded fixes and latest CI/docs-sync success. Formal acceptance states unchanged.",
+  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 78/113; C2 direct current source/test audits 75/113; strict task closure 0/113. Both tracked cross-cutting P0 blocker families have bounded fixes and latest CI/docs-sync success. Formal acceptance states unchanged.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -11125,6 +11125,29 @@
         ],
         "next_action": "Add table-driven negative tests for each existing required story_engine/hook field and one caller-level test that invalid generated plans are rejected before save; keep narrative quality as human review.",
         "disposition": "Partial audit only; no formal acceptance state upgraded."
+      },
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-014",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json",
+          "apps/ad-studio-desktop/ad_studio/short_drama.py",
+          "apps/ad-studio-desktop/test_short_drama.py"
+        ],
+        "contract_role": "审查短剧故事引擎、冲突升级、开场疑问、结尾兑现与留存装置是否存在/薄弱。",
+        "distinction": "旧方案审查产生 warning；A69 对新生成结构缺失执行拒绝保存。结构审查不证明真实剧情质量。",
+        "related_ids": [
+          "A69",
+          "A71",
+          "A73"
+        ],
+        "merge_decision": "Keep existing formal IDs; do not merge or change acceptance status.",
+        "acceptance_status_preserved": "partial_evidence_mapping_not_fully_accepted",
+        "implementation_or_acceptance_claim": false,
+        "prior_decision_preserved": false
       }
     },
     {
@@ -11266,6 +11289,28 @@
         ],
         "next_action": "Add a minimum-count test for zero/one direction and a legacy audit-warning test; retain explicit human review for semantic similarity.",
         "disposition": "Partial audit only; no formal acceptance state upgraded."
+      },
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-014",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json",
+          "apps/ad-studio-desktop/ad_studio/short_drama.py",
+          "apps/ad-studio-desktop/test_short_drama.py"
+        ],
+        "contract_role": "新生成方案至少两个备选故事方向，并以冲突来源、人物选择、反转机制签名阻止完全重复方向。",
+        "distinction": "精确字段签名去重，不等同于自然语言语义相似度或故事可拍性评审。",
+        "related_ids": [
+          "A69",
+          "A70"
+        ],
+        "merge_decision": "Keep existing formal IDs; do not merge or change acceptance status.",
+        "acceptance_status_preserved": "partial_evidence_mapping_not_fully_accepted",
+        "implementation_or_acceptance_claim": false,
+        "prior_decision_preserved": false
       }
     },
     {
@@ -11407,6 +11452,29 @@
         ],
         "next_action": "Use a table-driven test removing each declared required character field one at a time and verify generation validation rejects it while legacy audit remains warning-only.",
         "disposition": "Partial audit only; no formal acceptance state upgraded."
+      },
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-014",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json",
+          "apps/ad-studio-desktop/ad_studio/short_drama.py",
+          "apps/ad-studio-desktop/test_short_drama.py"
+        ],
+        "contract_role": "约束人物目标、动机、恐惧/秘密、关系、关系动态、决策压力和人物弧光字段。",
+        "distinction": "新生成方案校验与旧方案 warning 兼容；字段存在不证明心理真实性，且与 A82 人物知识时间线、A85 跨集状态保持不同。",
+        "related_ids": [
+          "A69",
+          "A82",
+          "A85"
+        ],
+        "merge_decision": "Keep existing formal IDs; do not merge or change acceptance status.",
+        "acceptance_status_preserved": "partial_evidence_mapping_not_fully_accepted",
+        "implementation_or_acceptance_claim": false,
+        "prior_decision_preserved": false
       }
     },
     {
@@ -11548,6 +11616,30 @@
         ],
         "next_action": "Add table-driven missing-field tests and an out-of-order/non-contiguous step sequence; separately keep human semantic causality review distinct from deterministic structure.",
         "disposition": "Partial audit only; no formal acceptance state upgraded."
+      },
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-014",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json",
+          "apps/ad-studio-desktop/ad_studio/short_drama.py",
+          "apps/ad-studio-desktop/test_short_drama.py"
+        ],
+        "contract_role": "要求至少三步有序 causal_chain，包含事件、前因、人物选择、后果和可观察状态变化。",
+        "distinction": "确定性结构校验；不等同于 A74 对因果步骤与剧本/分镜证据的引用对齐，也不证明语义因果成立。",
+        "related_ids": [
+          "A69",
+          "A74",
+          "A82",
+          "A86"
+        ],
+        "merge_decision": "Keep existing formal IDs; do not merge or change acceptance status.",
+        "acceptance_status_preserved": "partial_evidence_mapping_not_fully_accepted",
+        "implementation_or_acceptance_claim": false,
+        "prior_decision_preserved": false
       }
     },
     {
@@ -11689,6 +11781,30 @@
         ],
         "next_action": "Add a multi-event fixture with distinct referenced shots and negative tests for repeated/mismatched shot mapping; assert both generation rejection and legacy audit warnings without modifying existing plan state.",
         "disposition": "Partial audit only; no formal acceptance state upgraded."
+      },
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-014",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json",
+          "apps/ad-studio-desktop/ad_studio/short_drama.py",
+          "apps/ad-studio-desktop/test_short_drama.py"
+        ],
+        "contract_role": "要求 causal_chain 的剧本证据是 full_script 原文子串，分镜索引指向真实根级镜头，并审查事件与镜头是否对应。",
+        "distinction": "文本/索引可追溯性，不证明生成画面真实演出该事件；多步事件复用同一镜头的语义对应仍需专项验证。",
+        "related_ids": [
+          "A73",
+          "A77",
+          "A78",
+          "A82"
+        ],
+        "merge_decision": "Keep existing formal IDs; do not merge or change acceptance status.",
+        "acceptance_status_preserved": "partial_evidence_mapping_not_fully_accepted",
+        "implementation_or_acceptance_claim": false,
+        "prior_decision_preserved": false
       }
     },
     {
@@ -18350,6 +18466,24 @@
         "remaining_decisions": [],
         "formal_acceptance_states_changed": false,
         "next_batch": "C1-FOUNDATION-014: reconcile A70-A74 across short-drama continuity, episode state, knowledge timeline and product fact/visual integrity; preserve the distinction between structure validation and real narrative/product truth."
+      },
+      {
+        "batch_id": "C1-FOUNDATION-014",
+        "slots": [
+          "A70",
+          "A71",
+          "A72",
+          "A73",
+          "A74"
+        ],
+        "slots_reconciled": 5,
+        "unique_new_ids": 5,
+        "slots_total": 5,
+        "status": "resolved_as_distinct_related_contracts",
+        "decision": "A70 legacy story-structure audit, A71 alternative-direction differentiation, A72 character motivation schema, A73 causal-chain structure and A74 script/storyboard evidence alignment are separate contracts. They form a dependency chain but no clause substitutes for another; structure and textual traceability do not prove semantic story quality or real footage truth. No formal acceptance states changed.",
+        "remaining_decisions": [],
+        "formal_acceptance_states_changed": false,
+        "next_batch": "C1-FOUNDATION-015: reconcile A75-A79 across shootable causal events, state continuity, character action basis and knowledge chronology; preserve distinctions between story schema and semantic continuity review."
       }
     ]
   },
@@ -18541,8 +18675,8 @@
         "name": "跨来源身份与状态裁决",
         "status": "in_progress",
         "exit": "all 113 slots reconciled against plan, SOP, roadmap, register; unresolved decisions 0",
-        "last_completed_batch": "C1-FOUNDATION-013",
-        "slots_with_final_documented_cross_source_decision": 73,
+        "last_completed_batch": "C1-FOUNDATION-014",
+        "slots_with_final_documented_cross_source_decision": 78,
         "slots_counting_rule": "Unique task IDs across all closed batches; repeated IDs never increase the numerator."
       },
       {
@@ -18582,9 +18716,9 @@
         "definition": "Slots with current code/test audit and explicit terminal disposition divided by 113. Audit-only slots with open gaps do not count as closed."
       },
       "c1_cross_source_reconciliation": {
-        "numerator": 73,
+        "numerator": 78,
         "denominator": 113,
-        "percent": 64.6,
+        "percent": 69,
         "definition": "Unique formal task IDs with documented cross-source identity/status decisions; repeated IDs count once. This is not code/test audit or formal acceptance."
       },
       "c2_current_code_test_audit": {
