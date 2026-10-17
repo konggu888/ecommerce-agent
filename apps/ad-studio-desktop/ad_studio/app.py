@@ -1755,6 +1755,7 @@ class App(tk.Tk):
             asset_total=float(asset_est.get('总计',0.0))
             if asset_total:
                 c['云端']=round(float(c.get('云端',0.0))+asset_total,2)
+                c['已知小计']=round(float(c.get('已知小计',c.get('总计') or 0.0))+asset_total,2)
                 if c.get('总计') is not None:
                     c['总计']=round(float(c.get('本地',0.0))+float(c['云端']),2)
                 c['明细'].append({'项目':'演员/场景/商品素材自动生成','数量':asset_est.get('数量',0),'单价':0.0,'小计':asset_total,'计费方式':'按缺失资产配置价格'})
@@ -2797,6 +2798,7 @@ class App(tk.Tk):
             asset_total = float(asset_est.get('总计', 0.0))
             if asset_total:
                 estimate['云端'] = round(float(estimate.get('云端', 0.0)) + asset_total, 2)
+                estimate['已知小计'] = round(float(estimate.get('已知小计', estimate.get('总计') or 0.0)) + asset_total, 2)
                 if estimate.get('总计') is not None:
                     estimate['总计'] = round(float(estimate.get('本地', 0.0)) + float(estimate['云端']), 2)
                 estimate['明细'].append({
