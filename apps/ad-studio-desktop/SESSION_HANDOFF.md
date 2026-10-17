@@ -1,3 +1,12 @@
+## 【最新接手状态｜2026-10-17｜路线阶段标签归一化 v1】
+
+- 最新进度台账新增标准化字段：`normalized_roadmap_phase`、`phase_normalization_original`、`phase_mapping_confidence`。原始映射字段保留；18 项 provisional 映射仍需核验，没有被自动判定为已确认。
+- 标准化阶段槽位数：阶段0=7、阶段1=52、阶段2=14（其中 9 项待核验）、阶段3=3、阶段4=32（其中 9 项待核验）、阶段5=5，总计 113。标签分类归一化 6/6=100%，不代表阶段完成率。
+- 阶段完成率仍暂不发布；下一步核验 18 项 provisional 映射，再做 A0–A112 跨来源状态/证据 reconciliation。总体产品完成率仍关闭。
+- 不新增 A113+，不改 A0–A112 正式验收状态，不合并 PR #32。代码/文档提交后必须核查最新 HEAD 的 PR CI/docs-sync；Push 触发项如果连接器无法核实，应如实注明。
+
+---
+
 ## 【最新接手状态｜2026-10-17｜阶段百分比统计 v1 已发布】
 
 - 分支 `feat/product-drama-visual-review`；PR #32 保持 Open/unmerged；本段是阶段统计口径，不是验收状态变更。
