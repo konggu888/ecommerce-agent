@@ -1,3 +1,13 @@
+## 【实时接手状态｜2026-10-17｜端点绑定授权已验证】
+
+- 已验证代码/测试基线 `fff8f59916cac0864d6bd69ce02a75028993c5f1`：PR CI `39013621163` success，docs-sync PR `39013621460` success；Push 触发项未独立核实。
+- 云端视频入口已从布尔授权收紧为 `authorized_endpoint`：用户确认时传递 endpoint 快照；生产层将其与实际加载 Provider endpoint 精确比较。未授权或端点变化时拒绝分发，要求重新确认。
+- 新增测试覆盖无授权零加载/零分发、端点变更后零分发和镜头状态/版本不变。中间一次 CI 失败来自测试 mock 未区分 `UnconfiguredProvider` 哨兵，fixture 已修复并在上述 SHA 通过；保留失败历史。
+- 以上是代码/测试基线；本段更新本身会产生新文档 HEAD，必须重新检查新 HEAD 的 CI/docs-sync。
+- **下一步唯一主线：**继续对照 A13、A29、A51–A65 合同审查授权、数据外发和费用记录；审计剩余 Provider 入口、未知费用语义和 endpoint provenance。不得新增 A113+，不得修改 A0–A112 正式验收状态，不合并 PR #32。真实 Provider、实际扣费/账单、Windows 真机、剪映现场和真实投放继续暂缓。
+
+---
+
 ## 【实时接手状态｜2026-10-17｜云端视频授权闸门已验证】
 
 - 仓库 `konggu888/ecommerce-agent`；分支 `feat/product-drama-visual-review`；PR #32 保持 Open、未合并。
