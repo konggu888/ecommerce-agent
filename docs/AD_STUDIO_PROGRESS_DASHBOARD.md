@@ -1,3 +1,12 @@
+## 【实时状态更新｜2026-10-17｜云端视频授权闸门已验证】
+
+- 当前已验证代码/测试基线：`ecce52c904044db4b2618a1faefa5692fa727a40`。该 SHA 的 PR CI run `39013274826` 与 docs-sync PR run `39013274821` 均 completed/success；CI `typecheck-and-test` job success。Push 触发的 CI/docs-sync 未由当前连接器独立核实。
+- CI 曾在中间文档 HEAD `1b5c5aedb4233f65ab4d5b227cb6ef512621123f` 失败：正向路由测试没有传递新增的 `video_authorized=True`。已修正测试夹具，并在 `ecce52c904044db4b2618a1faefa5692fa727a40` 重跑成功；失败历史保留，不抹去。
+- 后端 `render_shot()` / `render_cloud_shot()` 云端路径现默认拒绝未授权调用，在 Provider 加载/分发前 fail-closed；UI 仅在用户确认后传递授权标记与同一决策快照。新增测试覆盖无授权时 provider loader/dispatch 为 0、镜头状态/版本不变。
+- 当前最新分支/PR 状态仍须以文档提交后的实时查询为准；PR #32 Open/unmerged。下一步继续既有 A13/A29/A51–A65 合同映射和剩余 Provider 入口审计；不新增 A113+，不改变 A0–A112 正式验收状态。真实 Provider/账单、Windows 真机、剪映现场和真实投放继续暂缓。
+
+---
+
 ## 【实时状态更新｜2026-10-17｜云端视频入口授权审计】
 
 - 当前分支：`feat/product-drama-visual-review`；PR #32 Open、未合并；本次审计开始时 HEAD `76d6c6e9735c72615a45271ad4163783bd4a43a5`，该 SHA 的 PR CI #39012326559 与 docs-sync PR #39012326577 success。当前连接器只返回 PR 触发工作流，Push 触发项未独立核实。
