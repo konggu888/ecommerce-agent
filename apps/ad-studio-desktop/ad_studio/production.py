@@ -598,12 +598,12 @@ class ProductionStore:
             provider = load_video_provider(provider_path or (config_root or self.root.parent)/'video-provider.json')
             if isinstance(provider, type(load_video_provider(Path('__missing__')))):
                 raise RuntimeError('尚未配置云端视频 Provider，且本地视频服务不可用。')
-            return self._render_with_provider(project, shot, provider)
+            return self._render_with_provider(project, shot, provider, authorize_cloud=authorize_cloud)
         raise RuntimeError(f'镜头生成不可用：{decision.reason}')
 
-    def render_cloud_shot(self, project: Project, shot: Shot, provider_path: Path):
+    def render_cloud_shot(self, project: Project, shot: Shot, provider_path: Path, authorize_cloud=None):
         provider=load_video_provider(provider_path)
-        return self._render_with_provider(project, shot, provider)
+        return self._render_with_provider(project, shot, provider, authorize_cloud=authorize_cloud)
 
     def _render_with_provider(self, project: Project, shot: Shot, provider, authorize_cloud=None):
         out = self.render_path(project, shot)
