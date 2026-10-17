@@ -2861,6 +2861,49 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertTrue(router.ledger.summary()["has_unknown_cost"])
 
 
+
+    def test_cloud_render_routes_forward_asset_consent_callback(self):
+        from types import SimpleNamespace
+        from unittest.mock import Mock, patch
+        from ad_studio.providers import GenericVideoProvider, UnconfiguredProvider
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            provider = GenericVideoProvider(
+                endpoint="https://video.example/generate", api_key="test-key"
+            )
+            callback = lambda decision, kind: False
+            dispatch = Mock(return_value="mock-render")
+            store._render_with_provider = dispatch
+            decision = SimpleNamespace(
+                target="cloud", endpoint="https://video.example/generate",
+                reason="本地服务不可用，转云端",
+            )
+            with patch("ad_studio.production.load_video_provider",
+                       side_effect=[provider, UnconfiguredProvider()]):
+                result = store.render_shot(
+                    project, shot, config_root=root, decision=decision,
+                    authorize_cloud=callback,
+                )
+            self.assertEqual(result, "mock-render")
+            dispatch.assert_called_once_with(
+                project, shot, provider, authorize_cloud=callback
+            )
+
+            dispatch.reset_mock()
+            with patch("ad_studio.production.load_video_provider", return_value=provider):
+                result = store.render_cloud_shot(
+                    project, shot, root / "video-provider.json",
+                    authorize_cloud=callback,
+                )
+            self.assertEqual(result, "mock-render")
+            dispatch.assert_called_once_with(
+                project, shot, provider, authorize_cloud=callback
+            )
+
 if __name__ == "__main__":
     unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.
