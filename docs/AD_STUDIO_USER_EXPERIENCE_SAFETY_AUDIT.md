@@ -492,3 +492,11 @@
 - 本轮静态源码顺序未发现首个授权前的模型/Provider 调用。风险边界：制作预算不包含已经发生的规划调用费用；当前主要缺口是用户拍摄素材模式下首个拒绝的生产级 mock 调用计数，以及第二次预算拒绝后的项目落盘/调用计数专项测试。
 - 不据此标记 A13/A29/A51–A65 正式验收通过；后续按既有合同补专项测试，不新增 A113+。
 
+
+
+## UXS-2 增量审计｜云端视频后端入口授权｜2026-10-17
+
+- **发现**：UI 的 `_authorize_shot_generation()` 会展示视频端点/费用确认，但 `ProductionStore.render_shot()` 和 `render_cloud_shot()` 原先没有要求调用方证明已获得本次视频授权。因此直接调用这些后端入口时，云端路径可绕过 UI 闸门。此发现描述的是后端调用边界缺口，不代表发现了实际未授权的供应商请求或扣费。
+- **修复**：两入口新增 `video_authorized` 参数，默认 `False`；云端路径在加载 Provider/分发前 fail-closed。UI 在确认当前端点/费用后，把同一 `ExecutionDecision` 快照与授权标记传入生产层。资产云端生成仍由独立授权回调控制。
+- **回归证据**：新增 `test_cloud_video_entrypoints_fail_closed_without_explicit_authorization`，断言 `render_shot` 与 `render_cloud_shot` 在无授权时不加载 Provider、不调用 `_render_with_provider`，且镜头状态/版本保持不变。该测试必须以最终 HEAD 的 CI 运行结果确认；不能仅因测试已提交就标为通过。
+- **边界**：本地视频路径不要求云端授权标记；真实 Provider、真实账单、Windows 真机仍暂缓。未新增正式验收编号，A0–A112 状态不变，PR #32 不合并。
