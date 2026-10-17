@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 73/113; C2 direct current source/test audits 65/113; strict task closure 0/113. Both tracked cross-cutting P0 blocker families have bounded fixes and latest CI/docs-sync success. Formal acceptance states unchanged.",
+  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 73/113; C2 direct current source/test audits 70/113; strict task closure 0/113. Both tracked cross-cutting P0 blocker families have bounded fixes and latest CI/docs-sync success. A63/A67/A34/A58 deterministic gaps are queued for bounded C3 remediation. Formal acceptance states unchanged.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -10315,7 +10315,50 @@
           "formal_acceptance_state_preserved": "not_audited",
           "no_id_merge_or_status_change": true
         }
-      ]
+      ],
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-014",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_ledger_atomicity_and_long_history_contract",
+        "severity": "P1 cost ledger durability gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/usage_ledger.py",
+            "blob_sha": "ed5b873a41f0b16a1ddeb9dd041dee53e70ed4bc",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "UsageLedger uses temp-file replacement and retains more than 2000 rows; tests cover failed replacement preserving prior ledger, temp-file cleanup and project_summary remaining complete after recent(limit) reads. These prove deterministic local behavior but not Windows file-lock/permission/disk-full semantics or actual external billing.",
+        "confirmed_gaps": [
+          "UsageLedger uses temp-file replacement and retains more than 2000 rows; tests cover failed replacement preserving prior ledger, temp-file cleanup and project_summary remaining complete after recent(limit) reads. These prove deterministic local behavior but not Windows file-lock/permission/disk-full semantics or actual external billing."
+        ],
+        "next_action": "Keep the current atomicity/long-history tests and map single/batch write errors, temp cleanup and summary independence to the SOP; leave Windows filesystem and provider invoices in C5.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
+      }
     },
     {
       "task_id": "A66",
@@ -10429,6 +10472,44 @@
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false,
         "prior_decision_preserved": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-014",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_evidence_path_validation_content_truth_deferred",
+        "severity": "P1 evidence integrity gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+            "blob_sha": "ea9254063b1370e31106b56405d2c2733ebc7546",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_short_drama.py",
+            "blob_sha": "c5800b533ea0bbc33aaf0b363cf7bd7ef5665027",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "Manual visual-review recording rejects missing, empty and unsupported evidence files and normalizes accepted paths; tests cover valid and invalid path/extension cases. File existence and extension do not inspect image/video contents or establish that the evidence shows the correct product/structure/function.",
+        "confirmed_gaps": [
+          "Manual visual-review recording rejects missing, empty and unsupported evidence files and normalizes accepted paths; tests cover valid and invalid path/extension cases. File existence and extension do not inspect image/video contents or establish that the evidence shows the correct product/structure/function."
+        ],
+        "next_action": "Add/map tests for persisted normalized evidence path and no state mutation on invalid evidence; keep actual product-content comparison as human/real-media review in C5.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
       }
     },
     {
@@ -10542,6 +10623,44 @@
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false,
         "prior_decision_preserved": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-014",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "confirmed_missing_evidence_invalidation_sequence",
+        "severity": "P1 safety/evidence validity gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+            "blob_sha": "ea9254063b1370e31106b56405d2c2733ebc7546",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_short_drama.py",
+            "blob_sha": "c5800b533ea0bbc33aaf0b363cf7bd7ef5665027",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "audit_short_drama rechecks stored evidence paths and flags missing/empty/unsupported evidence despite a persisted passed state. Existing tests cover stale/missing evidence and valid evidence, but do not directly cover the SOP sequence: mark passed with valid evidence, then delete/empty that same evidence, then rerun audit and require the pass to become unverified.",
+        "confirmed_gaps": [
+          "audit_short_drama rechecks stored evidence paths and flags missing/empty/unsupported evidence despite a persisted passed state. Existing tests cover stale/missing evidence and valid evidence, but do not directly cover the SOP sequence: mark passed with valid evidence, then delete/empty that same evidence, then rerun audit and require the pass to become unverified."
+        ],
+        "next_action": "Add the exact valid-pass → delete/empty evidence → audit sequence and assert PRODUCT_VISUAL_NOT_VERIFIED; preserve the old pass only as history, not current truth.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
       }
     },
     {
@@ -10665,6 +10784,44 @@
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false,
         "prior_decision_preserved": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-014",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_downstream_episode_impact_persistence_and_no_mutation_gap",
+        "severity": "P1 narrative continuity integrity gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+            "blob_sha": "ea9254063b1370e31106b56405d2c2733ebc7546",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_short_drama.py",
+            "blob_sha": "c5800b533ea0bbc33aaf0b363cf7bd7ef5665027",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "The impact analyzer checks that referenced episodes exist and are later than the source, and tests cover valid later-episode reporting and invalid episode references. Direct assertions are still needed for report persistence across project save/reload, no mutation of source/other episodes, source-episode/self/nonexistent cases and malformed model-selected episode IDs.",
+        "confirmed_gaps": [
+          "The impact analyzer checks that referenced episodes exist and are later than the source, and tests cover valid later-episode reporting and invalid episode references. Direct assertions are still needed for report persistence across project save/reload, no mutation of source/other episodes, source-episode/self/nonexistent cases and malformed model-selected episode IDs."
+        ],
+        "next_action": "Add a table-driven invalid-reference matrix plus save/reload and deep-equality assertions proving the impact report is stored while original episodes/storyboard remain unchanged.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
       }
     },
     {
@@ -10789,6 +10946,44 @@
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false,
         "prior_decision_preserved": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-014",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_story_engine_required_fields_and_legacy_compatibility_gap",
+        "severity": "P1 narrative structure validation gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+            "blob_sha": "ea9254063b1370e31106b56405d2c2733ebc7546",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_short_drama.py",
+            "blob_sha": "c5800b533ea0bbc33aaf0b363cf7bd7ef5665027",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "New story generation validates story_engine causal escalation and hook/retention fields; tests cover missing story engine/hook, too-short escalation and prompt requirements, while old-plan audit paths report missing fields. The full positive schema, legacy-project load compatibility and caller-level refusal to persist invalid generated output have not all been verified together; structural compliance does not prove story quality.",
+        "confirmed_gaps": [
+          "New story generation validates story_engine causal escalation and hook/retention fields; tests cover missing story engine/hook, too-short escalation and prompt requirements, while old-plan audit paths report missing fields. The full positive schema, legacy-project load compatibility and caller-level refusal to persist invalid generated output have not all been verified together; structural compliance does not prove story quality."
+        ],
+        "next_action": "Add a table-driven required-field matrix and caller-level test proving malformed model output is rejected before project save; retain a legacy-plan load test and keep narrative quality as human review.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
       }
     },
     {
@@ -17320,6 +17515,68 @@
         "Formal acceptance states unchanged."
       ],
       "next_step": "C2-FOUNDATION-014: audit A65-A69. Then start C3 deterministic remediation under existing IDs, with first fix A63 save/reload and A67 evidence invalidation; A34/A58 visual comparison call-count/persistence is the next bounded batch."
+    },
+    {
+      "batch_id": "C2-FOUNDATION-014",
+      "range": "A65-A69",
+      "status": "partial_current_source_test_audit_gaps_recorded",
+      "audited_at": "2026-10-17",
+      "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+      "latest_ci": {
+        "pr_ci_run_id": 39018653867,
+        "pr_ci_conclusion": "success",
+        "pr_docs_sync_run_id": 39018653864,
+        "pr_docs_sync_conclusion": "success",
+        "push_runs": "not_independently_verified_by_available_workflow_query"
+      },
+      "reviewed_sources": [
+        "apps/ad-studio-desktop/ad_studio/usage_ledger.py",
+        "apps/ad-studio-desktop/ad_studio/production.py",
+        "apps/ad-studio-desktop/ad_studio/short_drama.py"
+      ],
+      "reviewed_tests": [
+        "apps/ad-studio-desktop/test_desktop.py",
+        "apps/ad-studio-desktop/test_short_drama.py"
+      ],
+      "tasks": [
+        {
+          "id": "A65",
+          "status": "partial_ledger_atomicity_and_long_history_contract",
+          "finding": "UsageLedger uses temp-file replacement and retains more than 2000 rows; tests cover failed replacement preserving prior ledger, temp-file cleanup and project_summary remaining complete after recent(limit) reads. These prove deterministic local behavior but not Windows file-lock/permission/disk-full semantics or actual external billing.",
+          "next_action": "Keep the current atomicity/long-history tests and map single/batch write errors, temp cleanup and summary independence to the SOP; leave Windows filesystem and provider invoices in C5."
+        },
+        {
+          "id": "A66",
+          "status": "partial_evidence_path_validation_content_truth_deferred",
+          "finding": "Manual visual-review recording rejects missing, empty and unsupported evidence files and normalizes accepted paths; tests cover valid and invalid path/extension cases. File existence and extension do not inspect image/video contents or establish that the evidence shows the correct product/structure/function.",
+          "next_action": "Add/map tests for persisted normalized evidence path and no state mutation on invalid evidence; keep actual product-content comparison as human/real-media review in C5."
+        },
+        {
+          "id": "A67",
+          "status": "confirmed_missing_evidence_invalidation_sequence",
+          "finding": "audit_short_drama rechecks stored evidence paths and flags missing/empty/unsupported evidence despite a persisted passed state. Existing tests cover stale/missing evidence and valid evidence, but do not directly cover the SOP sequence: mark passed with valid evidence, then delete/empty that same evidence, then rerun audit and require the pass to become unverified.",
+          "next_action": "Add the exact valid-pass → delete/empty evidence → audit sequence and assert PRODUCT_VISUAL_NOT_VERIFIED; preserve the old pass only as history, not current truth."
+        },
+        {
+          "id": "A68",
+          "status": "partial_downstream_episode_impact_persistence_and_no_mutation_gap",
+          "finding": "The impact analyzer checks that referenced episodes exist and are later than the source, and tests cover valid later-episode reporting and invalid episode references. Direct assertions are still needed for report persistence across project save/reload, no mutation of source/other episodes, source-episode/self/nonexistent cases and malformed model-selected episode IDs.",
+          "next_action": "Add a table-driven invalid-reference matrix plus save/reload and deep-equality assertions proving the impact report is stored while original episodes/storyboard remain unchanged."
+        },
+        {
+          "id": "A69",
+          "status": "partial_story_engine_required_fields_and_legacy_compatibility_gap",
+          "finding": "New story generation validates story_engine causal escalation and hook/retention fields; tests cover missing story engine/hook, too-short escalation and prompt requirements, while old-plan audit paths report missing fields. The full positive schema, legacy-project load compatibility and caller-level refusal to persist invalid generated output have not all been verified together; structural compliance does not prove story quality.",
+          "next_action": "Add a table-driven required-field matrix and caller-level test proving malformed model output is rejected before project save; retain a legacy-plan load test and keep narrative quality as human review."
+        }
+      ],
+      "limitations": [
+        "Local ledger tests do not prove Windows filesystem semantics or external billing.",
+        "Evidence file validation does not certify product truth.",
+        "Story structure checks do not prove narrative quality or retention.",
+        "Formal acceptance states unchanged."
+      ],
+      "next_step": "C2-FOUNDATION-015: audit A70-A74. C2 has now reached A0-A69; begin C3 remediation in bounded batches on the confirmed A63 save/reload gap, A67 evidence invalidation, and A34/A58 visual-comparison zero-call/persistence gaps."
     }
   ],
   "last_reconciled_against_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
@@ -18044,10 +18301,10 @@
         "id": "C2",
         "name": "当前代码与专项测试审计",
         "status": "in_progress",
-        "completed_slots": 65,
+        "completed_slots": 70,
         "total_slots": 113,
         "exit": "all 113 slots have current source/test evidence and explicit audit result",
-        "last_completed_batch": "C2-FOUNDATION-013"
+        "last_completed_batch": "C2-FOUNDATION-014"
       },
       {
         "id": "C3",
@@ -18083,9 +18340,9 @@
         "definition": "Unique formal task IDs with documented cross-source identity/status decisions; repeated IDs count once. This is not code/test audit or formal acceptance."
       },
       "c2_current_code_test_audit": {
-        "numerator": 65,
+        "numerator": 70,
         "denominator": 113,
-        "percent": 57.5,
+        "percent": 61.9,
         "definition": "Slots with direct current source/test inspection and a written audit result; partial findings count as audit coverage, not acceptance pass."
       },
       "c3_blocking_defects": {
