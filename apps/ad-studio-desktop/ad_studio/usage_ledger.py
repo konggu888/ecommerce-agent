@@ -183,9 +183,10 @@ class UsageLedger:
         project_id: str,
         shot_id: str,
         provider: str,
-        cost_rmb: float,
+        cost_rmb: float | None,
         status: str = "success",
         error: str = "",
+        cost_status: str | None = None,
     ) -> dict[str, Any]:
         return self.record(
             function="视频镜头生成",
@@ -200,7 +201,7 @@ class UsageLedger:
             project_id=project_id,
             shot_id=shot_id,
             quantity=1,
-            unit_cost_rmb=cost_rmb,
+            unit_cost_rmb=cost_rmb if cost_rmb is not None else 0.0,
             error=error,
         )
 
