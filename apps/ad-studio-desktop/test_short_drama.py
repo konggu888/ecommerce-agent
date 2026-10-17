@@ -1450,5 +1450,34 @@ class ShortDramaTests(unittest.TestCase):
         self.assertIn("CROSS_CHARACTER_DEPENDENCY_CHARACTERS_INVALID", codes)
         self.assertIn("CROSS_CHARACTER_DEPENDENCY_SHOTS_INVALID", codes)
 
+
+    def test_product_drama_regeneration_preserves_unknown_cost_instead_of_zero(self):
+        from ad_studio.short_drama import prepare_product_drama_shot_regeneration
+
+        plan = {
+            "drama_business_mode": "product_short_drama_ad",
+            "storyboard": [{
+                "generation_prompt": "keep product unchanged",
+                "visual_verification": "failed",
+            }],
+        }
+        updated = prepare_product_drama_shot_regeneration(
+            plan, 1, "保留商品外观和结构",
+            previous_version=2,
+            estimated_cost_rmb=None,
+            estimated_cost_status="price_missing",
+        )
+        history = updated["storyboard"][0]["regeneration_history"][0]
+        self.assertIsNone(history["estimated_cost_rmb"])
+        self.assertEqual(history["estimated_cost_status"], "price_missing")
+
+        with self.assertRaisesRegex(Exception, "未知/未配置价格不能用数字金额伪装"):
+            prepare_product_drama_shot_regeneration(
+                plan, 1, "保留商品外观和结构",
+                previous_version=2,
+                estimated_cost_rmb=0.0,
+                estimated_cost_status="price_missing",
+            )
+
 if __name__ == "__main__":
     unittest.main()
