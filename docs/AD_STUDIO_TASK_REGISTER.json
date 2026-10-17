@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Finite closure contract active. C1 cross-source decisions 66/113; C2 direct current source/test audits 25/113; strict task closure 0/113. Both cross-cutting P0 defect families have bounded fixes and latest CI/docs-sync success. A23 broad risk-control matrix remains a confirmed acceptance gap to triage under existing A23; formal acceptance states unchanged.",
+  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 67/113; C2 direct current source/test audits 25/113; strict task closure 0/113. Both tracked cross-cutting P0 blocker families have bounded fixes and latest CI/docs-sync success. Formal acceptance states unchanged.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -6642,7 +6642,29 @@
       "audit_notes": "PLAN-003 incremental review 2026-10-15 against source snapshot c14b9bf10ae80379c45e80b42224722aab8c31d7; per-file evidence SHA not independently pinned; not formal acceptance.",
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-011",
+        "status": "resolved_related_contracts_reviewed",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json",
+          "apps/ad-studio-desktop/ad_studio/production.py",
+          "apps/ad-studio-desktop/ad_studio/usage_ledger.py"
+        ],
+        "contract_role": "实际送入视频 Provider 的生成提示词必须用真实换行分隔标题、画面与文案。",
+        "distinction": "这是生产请求 prompt 的格式合同，与 A37 的视觉修正草稿显示换行、以及 A56 其他提示词格式回归相似但不能只按文案相似认定重复；需核对具体调用点。",
+        "related_ids": [
+          "A37",
+          "A56"
+        ],
+        "merge_decision": "Keep each existing formal ID. No merge, split, renumbering, or formal acceptance state change.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false,
+        "prior_decision_preserved": false
+      }
     },
     {
       "task_id": "A51",
@@ -6712,25 +6734,27 @@
       "phase_normalization_original": "阶段1｜可靠的生产底座",
       "phase_mapping_confidence": "mapped",
       "cross_source_reconciliation": {
-        "batch_id": "C1-COST-LEDGER-003",
-        "status": "resolved_as_distinct_related_contract",
+        "batch_id": "C1-FOUNDATION-011",
+        "status": "resolved_related_contracts_reviewed",
         "reviewed_on": "2026-10-17",
         "sources": [
           "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
           "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
           "docs/AD_STUDIO_TASK_REGISTER.json",
-          "docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md"
+          "apps/ad-studio-desktop/ad_studio/production.py",
+          "apps/ad-studio-desktop/ad_studio/usage_ledger.py"
         ],
-        "contract_role": "费用预估/确认前的输入校验：拒绝非法、非有限或负的报价，保证校验失败不调用 Provider、不变更版本。",
-        "distinction": "这是估算输入的有效性与生成前门控，不代表单价已配置、不证明总费用可可靠估算，也不替代实际费用账本/真实账单核对。",
+        "contract_role": "费用确认前规范化并拒绝无效单价输入，防止弹窗前产生 Provider 调用或版本副作用。",
+        "distinction": "报价输入验证，不等同于未知价语义 A12/A13，也不等同于失败尝试账本 A52 和实际账单对账。",
         "related_ids": [
-          "A50",
-          "A52",
-          "A55"
+          "A12",
+          "A13",
+          "A52"
         ],
-        "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
+        "merge_decision": "Keep each existing formal ID. No merge, split, renumbering, or formal acceptance state change.",
         "acceptance_status_preserved": "not_audited",
-        "implementation_or_acceptance_claim": false
+        "implementation_or_acceptance_claim": false,
+        "prior_decision_preserved": true
       }
     },
     {
@@ -6829,30 +6853,33 @@
       "phase_normalization_original": "阶段1｜可靠的生产底座",
       "phase_mapping_confidence": "mapped",
       "cross_source_reconciliation": {
-        "batch_id": "C1-COST-LEDGER-003",
-        "status": "resolved_as_distinct_related_contract",
+        "batch_id": "C1-FOUNDATION-011",
+        "status": "resolved_related_contracts_reviewed",
         "reviewed_on": "2026-10-17",
         "sources": [
           "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
           "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
           "docs/AD_STUDIO_TASK_REGISTER.json",
-          "docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md"
+          "apps/ad-studio-desktop/ad_studio/production.py",
+          "apps/ad-studio-desktop/ad_studio/usage_ledger.py"
         ],
-        "contract_role": "视频 Provider 调用失败尝试的审计记录、失败金额不计实际成本，以及成功重试只计一次。",
-        "distinction": "这是实际调用结果的账本记录和去重策略；与 A51 的报价输入校验、A55 的 Provider 已成功但本地账本写入失败后的产物保留属于不同故障阶段。",
+        "contract_role": "记录 Provider 失败尝试并确保失败费用不计入实际花费、成功重试只计一次。",
+        "distinction": "内部账本策略；真实供应商是否对失败 HTTP 请求扣费必须通过外部账单核对，A55/A57/A60/A61/A63/A64/A99 各自覆盖不同持久化/恢复分支。",
         "related_ids": [
           "A43",
           "A51",
           "A55",
           "A57",
           "A60",
+          "A61",
           "A63",
           "A64",
           "A99"
         ],
-        "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
+        "merge_decision": "Keep each existing formal ID. No merge, split, renumbering, or formal acceptance state change.",
         "acceptance_status_preserved": "not_audited",
-        "implementation_or_acceptance_claim": false
+        "implementation_or_acceptance_claim": false,
+        "prior_decision_preserved": true
       }
     },
     {
@@ -6927,25 +6954,26 @@
       "phase_normalization_original": "阶段1｜可靠的生产底座",
       "phase_mapping_confidence": "mapped",
       "cross_source_reconciliation": {
-        "batch_id": "C1-RECOVERY-004",
-        "status": "resolved_as_distinct_related_contract",
+        "batch_id": "C1-FOUNDATION-011",
+        "status": "resolved_related_contracts_reviewed",
         "reviewed_on": "2026-10-17",
         "sources": [
           "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
           "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
-          "docs/AD_STUDIO_TASK_REGISTER.json"
+          "docs/AD_STUDIO_TASK_REGISTER.json",
+          "apps/ad-studio-desktop/ad_studio/production.py",
+          "apps/ad-studio-desktop/ad_studio/usage_ledger.py"
         ],
-        "contract_role": "项目恢复时拒绝零字节上一版视频，清理无效 previous_video_path 并报告缺失媒体。",
-        "distinction": "A53 检查上一版指针指向的文件；A54 检查当前活动输出是否有效。两条路径不可合并。",
+        "contract_role": "恢复时拒绝零字节 previous_video_path。",
+        "distinction": "上一版本指针无效；与 A54 的活动视频为零字节不同，且不等同于 A43 的 Provider/进程中断恢复机制。",
         "related_ids": [
           "A43",
-          "A54",
-          "A97",
-          "A98"
+          "A54"
         ],
-        "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
+        "merge_decision": "Keep each existing formal ID. No merge, split, renumbering, or formal acceptance state change.",
         "acceptance_status_preserved": "not_audited",
-        "implementation_or_acceptance_claim": false
+        "implementation_or_acceptance_claim": false,
+        "prior_decision_preserved": true
       }
     },
     {
@@ -7015,25 +7043,26 @@
       "phase_normalization_original": "阶段1｜可靠的生产底座",
       "phase_mapping_confidence": "mapped",
       "cross_source_reconciliation": {
-        "batch_id": "C1-RECOVERY-004",
-        "status": "resolved_as_distinct_related_contract",
+        "batch_id": "C1-FOUNDATION-011",
+        "status": "resolved_related_contracts_reviewed",
         "reviewed_on": "2026-10-17",
         "sources": [
           "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
           "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
-          "docs/AD_STUDIO_TASK_REGISTER.json"
+          "docs/AD_STUDIO_TASK_REGISTER.json",
+          "apps/ad-studio-desktop/ad_studio/production.py",
+          "apps/ad-studio-desktop/ad_studio/usage_ledger.py"
         ],
-        "contract_role": "项目恢复时识别无效/零字节活动视频：有有效上一版则回退，否则安全降级并报告缺失媒体。",
-        "distinction": "A54 检查活动输出文件；A53 检查上一版文件。即使共享恢复函数，两者故障输入和预期分支不同。",
+        "contract_role": "恢复时识别零字节活动视频，优先回退到有效非空上一版，否则清除无效路径。",
+        "distinction": "活动输出无效分支，与 A53 的 previous_video_path 无效分支互补；重复恢复幂等性/Windows 文件锁仍是独立证据缺口。",
         "related_ids": [
           "A43",
-          "A53",
-          "A97",
-          "A98"
+          "A53"
         ],
-        "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
+        "merge_decision": "Keep each existing formal ID. No merge, split, renumbering, or formal acceptance state change.",
         "acceptance_status_preserved": "not_audited",
-        "implementation_or_acceptance_claim": false
+        "implementation_or_acceptance_claim": false,
+        "prior_decision_preserved": true
       }
     },
     {
@@ -15397,6 +15426,24 @@
         "remaining_decisions": [],
         "formal_acceptance_states_changed": false,
         "next_batch": "C1-FOUNDATION-011: reconcile A50-A54 across UI/source/validation, cost input validation and invalid/zero-byte previous-video recovery; preserve distinct failure modes and count only unique IDs."
+      },
+      {
+        "batch_id": "C1-FOUNDATION-011",
+        "slots": [
+          "A50",
+          "A51",
+          "A52",
+          "A53",
+          "A54"
+        ],
+        "slots_reconciled": 5,
+        "unique_new_ids": 1,
+        "slots_total": 5,
+        "status": "resolved_related_contracts_and_prior_decision_addenda",
+        "decision": "A50 is newly reconciled as the actual video-provider prompt newline contract. A51/A52/A53/A54 retain their prior decisions and receive explicit relationship addenda: input validation, failed-attempt accounting, invalid previous-version pointer, and invalid active-output recovery are different branches. A50's similarity to A37/A56 requires call-site-level verification, not automatic merge. No formal acceptance states changed.",
+        "remaining_decisions": [],
+        "formal_acceptance_states_changed": false,
+        "next_batch": "C1-FOUNDATION-012: reconcile A55-A59 with cost-ledger and recovery batches, especially distinguish video-success/ledger-write failure from A57 cost-pending UI and A59 project-summary aggregation; count only unique IDs."
       }
     ]
   },
@@ -15588,8 +15635,8 @@
         "name": "跨来源身份与状态裁决",
         "status": "in_progress",
         "exit": "all 113 slots reconciled against plan, SOP, roadmap, register; unresolved decisions 0",
-        "last_completed_batch": "C1-FOUNDATION-010",
-        "slots_with_final_documented_cross_source_decision": 66,
+        "last_completed_batch": "C1-FOUNDATION-011",
+        "slots_with_final_documented_cross_source_decision": 67,
         "slots_counting_rule": "Unique task IDs across all closed batches; repeated IDs never increase the numerator."
       },
       {
@@ -15629,9 +15676,9 @@
         "definition": "Slots with current code/test audit and explicit terminal disposition divided by 113. Audit-only slots with open gaps do not count as closed."
       },
       "c1_cross_source_reconciliation": {
-        "numerator": 66,
+        "numerator": 67,
         "denominator": 113,
-        "percent": 58.4,
+        "percent": 59.3,
         "definition": "Unique formal task IDs with documented cross-source identity/status decisions; repeated IDs count once. This is not code/test audit or formal acceptance."
       },
       "c2_current_code_test_audit": {
