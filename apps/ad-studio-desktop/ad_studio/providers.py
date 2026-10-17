@@ -49,7 +49,7 @@ class GenericVideoProvider:
     provider_name: str = 'Generic REST'
     require_key: bool = True
     embed_reference_assets: bool = False
-    cost_price_configured: bool = True
+    cost_price_configured: bool = False
 
     def configured(self) -> bool:
         if not self.endpoint.strip():
