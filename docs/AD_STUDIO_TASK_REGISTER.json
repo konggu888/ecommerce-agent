@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Finite closure contract recorded. Fixed scope A0-A112/113 slots; C1 cross-source reconciliation in progress; C2 full current code/test audit 0/113; C3 awaits evidence-driven blockers; C4 release gate pending; C5 real-world validation user-deferred. Overall task closure coverage remains 0/113 under strict current-audit definition.",
+  "audit_status": "Finite closure contract active. C1 first bounded cost/ledger cross-source decision batch closed for A52/A55/A59/A60/A63/A64/A65/A99 (8/113 slots); no IDs merged and no formal acceptance states changed. C2 full current code/test audit remains 0/113.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -4606,7 +4606,33 @@
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-COST-LEDGER-001",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md"
+        ],
+        "contract_role": "Provider 失败尝试保留、失败金额不计实际、成功重试仅计一次",
+        "distinction": "记录级计费规则；不覆盖视频安装后记账失败、账本聚合或恢复迁移语义。",
+        "related_ids": [
+          "A55",
+          "A57",
+          "A59",
+          "A60",
+          "A61",
+          "A63",
+          "A64",
+          "A99"
+        ],
+        "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A53",
@@ -4841,7 +4867,29 @@
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-COST-LEDGER-001",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md"
+        ],
+        "contract_role": "视频生成已成功但成本账本写入异常时，保留视频和恢复状态",
+        "distinction": "成功产物的故障恢复合同；不等同于素材账本失败保护 A64，也不等同于账本原子写入 A65。",
+        "related_ids": [
+          "A52",
+          "A57",
+          "A64",
+          "A65"
+        ],
+        "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A56",
@@ -5286,7 +5334,32 @@
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-COST-LEDGER-001",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md"
+        ],
+        "contract_role": "项目实际成本必须以成功 ledger 记录为单一事实源重新汇总",
+        "distinction": "聚合/汇总合同；不等同于 failed-only 恢复 A60、迁移失败保护 A63 或单镜头恢复对账 A99。",
+        "related_ids": [
+          "A52",
+          "A60",
+          "A61",
+          "A63",
+          "A64",
+          "A65",
+          "A99"
+        ],
+        "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A60",
@@ -5404,7 +5477,30 @@
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-COST-LEDGER-001",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md"
+        ],
+        "contract_role": "只有 failed ledger 行时，不得清零旧项目/镜头实际成本",
+        "distinction": "失败-only 历史兼容分支；与无账本 A57、迁移后失败 A63 和成功账本恢复 A99 互补。",
+        "related_ids": [
+          "A57",
+          "A59",
+          "A61",
+          "A63",
+          "A99"
+        ],
+        "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A61",
@@ -5715,7 +5811,29 @@
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-COST-LEDGER-001",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md"
+        ],
+        "contract_role": "旧成本迁移成功后，后续新费用写账失败仍保留迁移基线",
+        "distinction": "迁移与后续失败的组合边界；SOP 还要求保存/重载断言，当前专项测试存在此缺口。",
+        "related_ids": [
+          "A59",
+          "A60",
+          "A61",
+          "A64"
+        ],
+        "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A64",
@@ -5821,7 +5939,29 @@
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-COST-LEDGER-001",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md"
+        ],
+        "contract_role": "素材生成/入库成功后，素材成本记账失败不得丢失素材与引用",
+        "distinction": "资产生成结果的恢复合同；与视频产物 A55 共享模式但对象/调用入口不同，不能合并。",
+        "related_ids": [
+          "A55",
+          "A59",
+          "A63",
+          "A65"
+        ],
+        "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A65",
@@ -5921,7 +6061,32 @@
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-COST-LEDGER-001",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md"
+        ],
+        "contract_role": "账本写入原子性、失败不破坏旧账本、保留完整历史",
+        "distinction": "底层持久化合同；支撑但不替代上层 A52/A55/A59/A60/A63/A64/A99 业务行为。",
+        "related_ids": [
+          "A52",
+          "A55",
+          "A59",
+          "A60",
+          "A63",
+          "A64",
+          "A99"
+        ],
+        "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A66",
@@ -9117,7 +9282,30 @@
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-COST-LEDGER-001",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md"
+        ],
+        "contract_role": "项目恢复时按逐镜头成功账本对账，并清理不应残留的兄弟镜头陈旧成本",
+        "distinction": "成功账本恢复分支；无账本与 failed-only 分支分别由 A57/A60 处理，不合并。",
+        "related_ids": [
+          "A57",
+          "A59",
+          "A60",
+          "A61",
+          "A63"
+        ],
+        "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A100",
@@ -12193,7 +12381,29 @@
       "overall_completion_percentage": null,
       "overall_completion_percentage_enabled": false,
       "caveat": "这些是台账/证据阶段指标，不是产品总体完成率。总体完成率须在跨来源语义去重、状态冲突裁决、权重审定和证据边界复核完成后计算。"
-    }
+    },
+    "batches": [
+      {
+        "batch_id": "C1-COST-LEDGER-001",
+        "slots": [
+          "A52",
+          "A55",
+          "A59",
+          "A60",
+          "A63",
+          "A64",
+          "A65",
+          "A99"
+        ],
+        "slots_reconciled": 8,
+        "slots_total": 8,
+        "status": "resolved_related_but_distinct_contracts",
+        "decision": "A52/A55/A59/A60/A63/A64/A65/A99 share the cost/ledger subsystem but express eight distinct contracts. No task IDs are merged. A63 retains an explicit save/reload evidence gap. Real Provider invoice reconciliation remains deferred.",
+        "remaining_decisions": [],
+        "formal_acceptance_states_changed": false,
+        "next_batch": "C1-COST-LEDGER-002: reconcile A57/A61 and the no-ledger / migration / successful-ledger recovery relationships against A0-A112 history; then continue remaining unresolved cross-source candidates."
+      }
+    ]
   },
   "stage_progress_percentages_enabled": true,
   "stage_progress_metrics": {
@@ -12382,7 +12592,9 @@
         "id": "C1",
         "name": "跨来源身份与状态裁决",
         "status": "in_progress",
-        "exit": "all 113 slots reconciled against plan, SOP, roadmap, register; unresolved decisions 0"
+        "exit": "all 113 slots reconciled against plan, SOP, roadmap, register; unresolved decisions 0",
+        "last_completed_batch": "C1-COST-LEDGER-001",
+        "slots_with_final_documented_cross_source_decision": 8
       },
       {
         "id": "C2",
@@ -12419,10 +12631,10 @@
         "definition": "Slots with current code/test audit and explicit terminal disposition divided by 113; inventory mapping or evidence pointers alone do not count."
       },
       "c1_cross_source_reconciliation": {
-        "numerator": null,
+        "numerator": 8,
         "denominator": 113,
-        "percent": null,
-        "definition": "Publish only after exact task-level reconciliation state is counted; existing requirement-level review is not final cross-source closure."
+        "percent": 7.1,
+        "definition": "Slots with a documented cross-source identity/status decision, including explicit related-but-distinct decisions; does not mean code/test audit or formal acceptance."
       },
       "c2_current_code_test_audit": {
         "numerator": 0,
