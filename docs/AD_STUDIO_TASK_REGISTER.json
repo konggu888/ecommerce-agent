@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 73/113; C2 direct current source/test audits 45/113; strict task closure 0/113. Both tracked cross-cutting P0 blocker families have bounded fixes and latest CI/docs-sync success. Formal acceptance states unchanged.",
+  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 73/113; C2 direct current source/test audits 50/113; strict task closure 0/113. Both tracked cross-cutting P0 blocker families have bounded fixes and latest CI/docs-sync success. Formal acceptance states unchanged.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -6964,6 +6964,49 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-010",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_failure_state_helper_not_real_ui",
+        "severity": "P2 UI state evidence gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/app.py",
+            "blob_sha": "a5fe9fe67b5e0c2e5183a72091de257a006d4bff",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "generation_failure_ui_state() and a dedicated regression cover whether a valid non-empty previous video is shown as recoverable and a missing previous path is not shown as success. The helper-level test does not exercise a rendered Tk widget or verify state/path synchronization through actual UI save/reopen.",
+        "confirmed_gaps": [
+          "generation_failure_ui_state() and a dedicated regression cover whether a valid non-empty previous video is shown as recoverable and a missing previous path is not shown as success. The helper-level test does not exercise a rendered Tk widget or verify state/path synchronization through actual UI save/reopen."
+        ],
+        "next_action": "Map status text and displayed previous path after save/reopen and add deterministic controller coverage for empty/corrupt/stale paths; Windows widget behavior remains C5.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
       }
     },
     {
@@ -7079,6 +7122,49 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-010",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_edit_transition_static_guard",
+        "severity": "P1 selected-shot/version integrity gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/app.py",
+            "blob_sha": "a5fe9fe67b5e0c2e5183a72091de257a006d4bff",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "The edit path routes through mark_regenerate() and a source regression forbids direct video_path clearing or manual version increments. This is primarily a source-transition assertion; it does not prove all edited fields, selected-shot isolation, save/reopen and subsequent failure recovery as one behavior sequence.",
+        "confirmed_gaps": [
+          "The edit path routes through mark_regenerate() and a source regression forbids direct video_path clearing or manual version increments. This is primarily a source-transition assertion; it does not prove all edited fields, selected-shot isolation, save/reopen and subsequent failure recovery as one behavior sequence."
+        ],
+        "next_action": "Add a deterministic test that edits one selected shot, saves/reopens, then simulates failure and verifies old video/version/history are preserved while unrelated shots remain unchanged.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
       }
     },
     {
@@ -7199,6 +7285,49 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-010",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_asset_resolution_failure_evidence",
+        "severity": "P1 failure isolation gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/app.py",
+            "blob_sha": "a5fe9fe67b5e0c2e5183a72091de257a006d4bff",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "A failure-injected asset-resolution test checks preservation of the prior video and failure state; production wraps resolution in the regeneration recovery boundary and delays Provider dispatch until asset consent. The complete test must directly assert no video Provider call, partial-output cleanup, prior file bytes, persisted failure status and reload, rather than infer them from the test name or source order.",
+        "confirmed_gaps": [
+          "A failure-injected asset-resolution test checks preservation of the prior video and failure state; production wraps resolution in the regeneration recovery boundary and delays Provider dispatch until asset consent. The complete test must directly assert no video Provider call, partial-output cleanup, prior file bytes, persisted failure status and reload, rather than infer them from the test name or source order."
+        ],
+        "next_action": "Strengthen the existing A47 fixture to assert Provider call count zero, unchanged old bytes/path, temp cleanup, saved status and post-reload state; do not add a new acceptance ID.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
       }
     },
     {
@@ -7313,6 +7442,49 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-010",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_footage_trim_failure_evidence",
+        "severity": "P1 output atomicity gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/app.py",
+            "blob_sha": "a5fe9fe67b5e0c2e5183a72091de257a006d4bff",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "Local filmed-shot rendering writes to temporary output and restores the previous video when trimming fails; tests simulate a failure and inspect preservation/reload behavior. The broader contract still lacks real-media compatibility, Windows file locking, crash timing and disk-full evidence, and every assertion should be verified for old bytes/path, split-part cleanup and failure status.",
+        "confirmed_gaps": [
+          "Local filmed-shot rendering writes to temporary output and restores the previous video when trimming fails; tests simulate a failure and inspect preservation/reload behavior. The broader contract still lacks real-media compatibility, Windows file locking, crash timing and disk-full evidence, and every assertion should be verified for old bytes/path, split-part cleanup and failure status."
+        ],
+        "next_action": "Verify the existing A48 test's old-file bytes, path, state, temp/split cleanup and reload assertions; add any missing deterministic assertion under A48 only. Windows/real footage failures remain C5.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
       }
     },
     {
@@ -7431,6 +7603,54 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-010",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_interrupted_split_cleanup_idempotence_gap",
+        "severity": "P1 recovery cleanup gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/footage.py",
+            "blob_sha": "b94ae2ddfe779e5cf951bc541ab07a29012f7083",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          },
+          {
+            "path": "apps/ad-studio-desktop/test_footage.py",
+            "blob_sha": "8ff007acfd3f174ce6c181c53a2dc96e68fa0337",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "Recovery and source-missing tests cover cleanup of ordinary/split temporary files and preservation of the old video for the mapped cases. They do not cover every crash point, repeated-recovery idempotence, concurrent writers, permission-denied/disk-full cases or broad protection against deleting original footage/another project's files.",
+        "confirmed_gaps": [
+          "Recovery and source-missing tests cover cleanup of ordinary/split temporary files and preservation of the old video for the mapped cases. They do not cover every crash point, repeated-recovery idempotence, concurrent writers, permission-denied/disk-full cases or broad protection against deleting original footage/another project's files."
+        ],
+        "next_action": "Add deterministic repeated-recovery and cross-project/original-source preservation assertions using existing temp fixtures; leave Windows file-locking and real FFmpeg interruption to C5.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
       }
     },
     {
@@ -16227,6 +16447,67 @@
         "Formal acceptance states unchanged."
       ],
       "next_step": "C2-FOUNDATION-010: audit A45-A49 against direct source/tests; then begin deterministic remediation under existing A20-A24/A25-A29/A34-A36/A43-A44 IDs."
+    },
+    {
+      "batch_id": "C2-FOUNDATION-010",
+      "range": "A45-A49",
+      "status": "partial_current_source_test_audit_gaps_recorded",
+      "audited_at": "2026-10-17",
+      "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+      "latest_ci": {
+        "pr_ci_run_id": 39018653867,
+        "pr_ci_conclusion": "success",
+        "pr_docs_sync_run_id": 39018653864,
+        "pr_docs_sync_conclusion": "success",
+        "push_runs": "not_independently_verified_by_available_workflow_query"
+      },
+      "reviewed_sources": [
+        "apps/ad-studio-desktop/ad_studio/production.py",
+        "apps/ad-studio-desktop/ad_studio/app.py",
+        "apps/ad-studio-desktop/ad_studio/footage.py"
+      ],
+      "reviewed_tests": [
+        "apps/ad-studio-desktop/test_desktop.py",
+        "apps/ad-studio-desktop/test_footage.py"
+      ],
+      "tasks": [
+        {
+          "id": "A45",
+          "status": "partial_failure_state_helper_not_real_ui",
+          "finding": "generation_failure_ui_state() and a dedicated regression cover whether a valid non-empty previous video is shown as recoverable and a missing previous path is not shown as success. The helper-level test does not exercise a rendered Tk widget or verify state/path synchronization through actual UI save/reopen.",
+          "next_action": "Map status text and displayed previous path after save/reopen and add deterministic controller coverage for empty/corrupt/stale paths; Windows widget behavior remains C5."
+        },
+        {
+          "id": "A46",
+          "status": "partial_edit_transition_static_guard",
+          "finding": "The edit path routes through mark_regenerate() and a source regression forbids direct video_path clearing or manual version increments. This is primarily a source-transition assertion; it does not prove all edited fields, selected-shot isolation, save/reopen and subsequent failure recovery as one behavior sequence.",
+          "next_action": "Add a deterministic test that edits one selected shot, saves/reopens, then simulates failure and verifies old video/version/history are preserved while unrelated shots remain unchanged."
+        },
+        {
+          "id": "A47",
+          "status": "partial_asset_resolution_failure_evidence",
+          "finding": "A failure-injected asset-resolution test checks preservation of the prior video and failure state; production wraps resolution in the regeneration recovery boundary and delays Provider dispatch until asset consent. The complete test must directly assert no video Provider call, partial-output cleanup, prior file bytes, persisted failure status and reload, rather than infer them from the test name or source order.",
+          "next_action": "Strengthen the existing A47 fixture to assert Provider call count zero, unchanged old bytes/path, temp cleanup, saved status and post-reload state; do not add a new acceptance ID."
+        },
+        {
+          "id": "A48",
+          "status": "partial_footage_trim_failure_evidence",
+          "finding": "Local filmed-shot rendering writes to temporary output and restores the previous video when trimming fails; tests simulate a failure and inspect preservation/reload behavior. The broader contract still lacks real-media compatibility, Windows file locking, crash timing and disk-full evidence, and every assertion should be verified for old bytes/path, split-part cleanup and failure status.",
+          "next_action": "Verify the existing A48 test's old-file bytes, path, state, temp/split cleanup and reload assertions; add any missing deterministic assertion under A48 only. Windows/real footage failures remain C5."
+        },
+        {
+          "id": "A49",
+          "status": "partial_interrupted_split_cleanup_idempotence_gap",
+          "finding": "Recovery and source-missing tests cover cleanup of ordinary/split temporary files and preservation of the old video for the mapped cases. They do not cover every crash point, repeated-recovery idempotence, concurrent writers, permission-denied/disk-full cases or broad protection against deleting original footage/another project's files.",
+          "next_action": "Add deterministic repeated-recovery and cross-project/original-source preservation assertions using existing temp fixtures; leave Windows file-locking and real FFmpeg interruption to C5."
+        }
+      ],
+      "limitations": [
+        "Source/test inspection only; no local test execution through connector.",
+        "Real Windows filesystem, disk-full/file-locking and FFmpeg/media validation are deferred.",
+        "No formal acceptance state changed."
+      ],
+      "next_step": "C2-FOUNDATION-011: audit A50-A54 against current source/test; then start bounded C3 remediation for the highest-risk deterministic gaps already identified. Do not add acceptance IDs."
     }
   ],
   "last_reconciled_against_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
@@ -16951,10 +17232,10 @@
         "id": "C2",
         "name": "当前代码与专项测试审计",
         "status": "in_progress",
-        "completed_slots": 45,
+        "completed_slots": 50,
         "total_slots": 113,
         "exit": "all 113 slots have current source/test evidence and explicit audit result",
-        "last_completed_batch": "C2-FOUNDATION-009"
+        "last_completed_batch": "C2-FOUNDATION-010"
       },
       {
         "id": "C3",
@@ -16990,9 +17271,9 @@
         "definition": "Unique formal task IDs with documented cross-source identity/status decisions; repeated IDs count once. This is not code/test audit or formal acceptance."
       },
       "c2_current_code_test_audit": {
-        "numerator": 45,
+        "numerator": 50,
         "denominator": 113,
-        "percent": 39.8,
+        "percent": 44.2,
         "definition": "Slots with direct current source/test inspection and a written audit result; partial findings count as audit coverage, not acceptance pass."
       },
       "c3_blocking_defects": {
