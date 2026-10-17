@@ -9,6 +9,7 @@
 from __future__ import annotations
 
 import json
+import math
 import time
 from pathlib import Path
 from typing import Any
@@ -40,6 +41,9 @@ def _video_provider(root: Path) -> GenericVideoProvider:
     price_configured = "cost_per_shot_rmb" in cfg and raw_price is not None and str(raw_price).strip() != ""
     try:
         price = float(raw_price) if price_configured else 0.72
+        if not math.isfinite(price) or price < 0:
+            price_configured = False
+            price = 0.72
     except (TypeError, ValueError):
         price_configured = False
         price = 0.72
