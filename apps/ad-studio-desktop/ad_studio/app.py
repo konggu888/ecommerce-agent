@@ -1067,6 +1067,7 @@ class App(tk.Tk):
                 out=self.store.render_shot(
                     self.project, shot, config_root=ROOT, decision=decision,
                     authorize_cloud=lambda asset_decision, kind: self._confirm_asset_cloud_generation(asset_decision, kind, shot),
+                    video_authorized=(decision.target == 'cloud'),
                 )
                 task['generated_path']=str(out)
                 task['status']='AI补镜头已生成'
@@ -1850,7 +1851,7 @@ class App(tk.Tk):
             else:
                 mode={'local':'本地','cloud':'云端','unavailable':'不可用'}.get(decision.target,decision.target)
                 self.detail.set(f'镜头 {s.index} 正在{mode}生成…')
-                out=self.store.render_shot(self.project,s,config_root=ROOT,decision=decision,authorize_cloud=lambda asset_decision, kind: self._confirm_asset_cloud_generation(asset_decision, kind, s))
+                out=self.store.render_shot(self.project,s,config_root=ROOT,decision=decision,authorize_cloud=lambda asset_decision, kind: self._confirm_asset_cloud_generation(asset_decision, kind, s),video_authorized=(decision.target == 'cloud'))
                 self.refresh_shots()
                 if s.status == "已生成（成本待核对）":
                     self.cost.set(f'项目实际成本待核对 · 预估 ¥{self.project.cost_estimate.get("总计",0):.2f}')
@@ -2188,6 +2189,7 @@ class App(tk.Tk):
                             self.store.render_shot(
                                 self.project, shot, config_root=ROOT, decision=decision,
                                 authorize_cloud=lambda asset_decision, kind: self._confirm_asset_cloud_generation(asset_decision, kind, shot),
+                                video_authorized=(decision.target == 'cloud'),
                             )
                         done.append(f'方案{self.active_variant_index}-镜头{shot.index}')
                     except Exception as exc:
