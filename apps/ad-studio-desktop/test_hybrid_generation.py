@@ -120,5 +120,38 @@ class HybridGenerationBridgeTests(unittest.TestCase):
             self.assertTrue(UsageLedger(root / "usage-ledger.json").summary()["has_unknown_cost"])
 
 
+
+    def test_video_provider_price_configuration_is_fail_safe(self):
+        from ad_studio.hybrid_generation import _video_provider
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            config = {"video_provider": {"endpoint": "https://example.invalid/video", "api_key": "test-key"}}
+            (root / "video-provider.json").write_text(json.dumps(config), encoding="utf-8")
+            provider = _video_provider(root)
+            self.assertFalse(provider.cost_price_configured)
+
+            for invalid_price in (-1, "nan", "inf", "not-a-number"):
+                config["video_provider"]["cost_per_shot_rmb"] = invalid_price
+                (root / "video-provider.json").write_text(json.dumps(config), encoding="utf-8")
+                provider = _video_provider(root)
+                self.assertFalse(provider.cost_price_configured, invalid_price)
+
+    def test_explicit_zero_video_price_remains_configured(self):
+        from ad_studio.hybrid_generation import _video_provider
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            (root / "video-provider.json").write_text(json.dumps({
+                "video_provider": {
+                    "endpoint": "https://example.invalid/video",
+                    "api_key": "test-key",
+                    "cost_per_shot_rmb": 0,
+                }
+            }), encoding="utf-8")
+            provider = _video_provider(root)
+            self.assertTrue(provider.cost_price_configured)
+            self.assertEqual(provider.cost_per_shot_rmb, 0.0)
+
 if __name__ == "__main__":
     unittest.main()
