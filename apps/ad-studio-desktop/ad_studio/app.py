@@ -209,6 +209,7 @@ def estimate_creation_planning_cost(model_router, variant_count):
 
 def build_creation_preflight_detail(url, budget, variant_count, model_router):
     """Disclose external destinations and configured prices before link fetch or model calls."""
+    planning_estimate = estimate_creation_planning_cost(model_router, variant_count)
     # Planning must be authorized before any product fetch/model request. At this point
     # the AI storyboard and asset gaps do not exist yet, so never fabricate a project
     # total; disclose each production-cost component as known-per-unit or explicitly unknown.
@@ -224,7 +225,7 @@ def build_creation_preflight_detail(url, budget, variant_count, model_router):
         f"本次预算上限：¥{float(budget):.2f}；创意方案数：{int(variant_count)}。",
         "",
         "【规划阶段费用估算｜只覆盖每个方案的 9 个创意阶段，不猜测最终镜头数或生产费用】",
-        *[f"- 规划阶段计划调用：{estimate_creation_planning_cost(model_router, variant_count)['planned_calls']} 次；" + (f"基于同功能/同模型历史 usage 估算约 ¥{estimate_creation_planning_cost(model_router, variant_count)['total_rmb']:.4f}（不是报价或费用上限）。" if estimate_creation_planning_cost(model_router, variant_count)['total_rmb'] is not None else f"总额无法可靠估算；历史可估算小计 ¥{estimate_creation_planning_cost(model_router, variant_count)['known_subtotal_rmb']:.4f}，未知功能：{'、'.join(estimate_creation_planning_cost(model_router, variant_count)['unknown_functions']) or '无'}。")],
+        f"- 规划阶段计划调用：{planning_estimate['planned_calls']} 次；" + (f"基于同功能/同模型历史 usage 估算约 ¥{planning_estimate['total_rmb']:.4f}（不是报价或费用上限）。" if planning_estimate['total_rmb'] is not None else f"总额无法可靠估算；历史可估算小计 ¥{planning_estimate['known_subtotal_rmb']:.4f}，未知功能：{'、'.join(planning_estimate['unknown_functions']) or '无'}。"),
         "历史估算只使用最近最多 20 条同功能/同模型、成功且 usage 完整的记录；单价/usage 缺失时必须按未知处理，不得视为免费。",
         "",
         "【规划前费用预告｜此时尚无 AI 分镜，以下不是最终项目报价】",
