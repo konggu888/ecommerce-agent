@@ -241,3 +241,60 @@ class HybridAcceptanceGateTests(unittest.TestCase):
         self.assertTrue(task["accepted_into_storyboard"])
         accept_hybrid_generated_shot(task, shots)
         self.assertEqual([s.id for s in shots], ["shot-01", "hybrid-GAP-ACCEPT-2-v1", "shot-02"])
+
+
+class UnknownVideoPriceGuardTests(unittest.TestCase):
+    def test_unknown_price_never_becomes_zero_cost_auto_approval(self):
+        result = route_footage_gap_tasks(
+            [{"task_id": "UNKNOWN-1", "need": "生活方式辅助场景", "reason": "缺少通用氛围画面"}],
+            generation_connected=True,
+            budget_remaining_rmb=100,
+            cost_per_ai_shot_rmb=None,
+        )
+        task = result["tasks"][0]
+        self.assertEqual(task["recommended_resolution"], "AI补镜头")
+        self.assertFalse(task["generation_allowed"])
+        self.assertTrue(task["needs_cost_confirmation"])
+        self.assertEqual(task["cost_status"], "price_missing")
+        self.assertIsNone(task["estimated_cost_rmb"])
+        self.assertIsNone(result["estimated_additional_cost_rmb"])
+
+    def test_unknown_price_execution_requires_explicit_confirmation(self):
+        from ad_studio.hybrid_router import execute_ai_gap_generation
+        calls = []
+        result = execute_ai_gap_generation(
+            [{"task_id": "UNKNOWN-2", "recommended_resolution": "AI补镜头", "generation_allowed": True}],
+            generator=lambda task: calls.append(task["task_id"]) or "/tmp/unknown.mp4",
+            budget_remaining_rmb=100,
+            cost_per_ai_shot_rmb=None,
+        )
+        self.assertEqual(calls, [])
+        self.assertEqual(result["blocked"], 1)
+        self.assertEqual(result["tasks"][0]["cost_status"], "price_missing")
+        self.assertIsNone(result["tasks"][0]["estimated_cost_rmb"])
+
+    def test_unknown_price_can_continue_only_after_explicit_confirmation(self):
+        from ad_studio.hybrid_router import execute_ai_gap_generation
+        calls = []
+        result = execute_ai_gap_generation(
+            [{"task_id": "UNKNOWN-3", "recommended_resolution": "AI补镜头", "generation_allowed": True, "cost_price_confirmed": True}],
+            generator=lambda task: calls.append(task["task_id"]) or "/tmp/unknown-confirmed.mp4",
+            budget_remaining_rmb=100,
+            cost_per_ai_shot_rmb=None,
+        )
+        self.assertEqual(calls, ["UNKNOWN-3"])
+        self.assertEqual(result["generated"], 1)
+        self.assertIsNone(result["estimated_additional_cost_rmb"])
+        self.assertEqual(result["tasks"][0]["cost_status"], "price_missing_confirmed")
+        self.assertIsNone(result["tasks"][0]["estimated_cost_rmb"])
+
+    def test_explicit_zero_price_is_not_confused_with_unknown_price(self):
+        result = route_footage_gap_tasks(
+            [{"task_id": "ZERO-1", "need": "生活方式辅助场景", "reason": "缺少通用氛围画面"}],
+            generation_connected=True,
+            budget_remaining_rmb=0,
+            cost_per_ai_shot_rmb=0.0,
+        )
+        self.assertTrue(result["tasks"][0]["generation_allowed"])
+        self.assertEqual(result["tasks"][0]["estimated_cost_rmb"], 0.0)
+        self.assertEqual(result["tasks"][0].get("cost_status"), None)
