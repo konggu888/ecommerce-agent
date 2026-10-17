@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 73/113; C2 direct current source/test audits 50/113; strict task closure 0/113. Both tracked cross-cutting P0 blocker families have bounded fixes and latest CI/docs-sync success. Formal acceptance states unchanged.",
+  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 73/113; C2 direct current source/test audits 55/113; strict task closure 0/113. Both tracked cross-cutting P0 blocker families have bounded fixes and latest CI/docs-sync success. Formal acceptance states unchanged.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -7743,6 +7743,44 @@
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false,
         "prior_decision_preserved": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-011",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_prompt_string_contract_real_provider_deferred",
+        "severity": "P2 prompt-format regression boundary",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "The deterministic capture-provider test asserts the production prompt contains actual line breaks between title, visual and copy. It proves the local request string, not how a real provider interprets it or whether resulting creative quality improves.",
+        "confirmed_gaps": [
+          "The deterministic capture-provider test asserts the production prompt contains actual line breaks between title, visual and copy. It proves the local request string, not how a real provider interprets it or whether resulting creative quality improves."
+        ],
+        "next_action": "Keep the capture-provider regression and map the exact production call path; A56 is a later regression-fix record sharing this contract, not a second independent prompt capability.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
       }
     },
     {
@@ -7834,6 +7872,49 @@
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false,
         "prior_decision_preserved": true
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-011",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_cost_input_entrypoint_matrix_gap",
+        "severity": "P1 cost-confirmation safety gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/app.py",
+            "blob_sha": "a5fe9fe67b5e0c2e5183a72091de257a006d4bff",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/providers.py",
+            "blob_sha": "7f814a252b498eec1f007af17036ed9f68185dfe",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "The cost-estimate validator rejects non-finite, negative and invalid values before the focused confirmation path and tests assert no Provider/version side effects in that path. The full A51 contract requires every cost-confirmation entry point to be checked for the same fail-fast behavior; a single helper test does not prove all project/batch/hybrid/short-drama paths.",
+        "confirmed_gaps": [
+          "The cost-estimate validator rejects non-finite, negative and invalid values before the focused confirmation path and tests assert no Provider/version side effects in that path. The full A51 contract requires every cost-confirmation entry point to be checked for the same fail-fast behavior; a single helper test does not prove all project/batch/hybrid/short-drama paths."
+        ],
+        "next_action": "Map each cost confirmation call site to configured-price normalization and add table-driven no-call/no-version-mutation assertions for invalid input; actual provider quotes remain C5.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
       }
     },
     {
@@ -7959,6 +8040,49 @@
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false,
         "prior_decision_preserved": true
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-011",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_internal_ledger_policy_external_billing_deferred",
+        "severity": "P1 ledger reconciliation gap; external invoice deferred",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/usage_ledger.py",
+            "blob_sha": "ed5b873a41f0b16a1ddeb9dd041dee53e70ed4bc",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "The ledger records failed attempts with provider/error/quote context while keeping failed estimated actual cost at zero; successful retry is counted once in internal totals. Tests verify failed and successful records coexist without double-counting. The system cannot establish whether a real provider charged for a failed request, timeout or retry; external invoice reconciliation is explicitly deferred.",
+        "confirmed_gaps": [
+          "The ledger records failed attempts with provider/error/quote context while keeping failed estimated actual cost at zero; successful retry is counted once in internal totals. Tests verify failed and successful records coexist without double-counting. The system cannot establish whether a real provider charged for a failed request, timeout or retry; external invoice reconciliation is explicitly deferred."
+        ],
+        "next_action": "Add deterministic crash-between-provider-success-and-ledger-write and duplicate-retry/reload cases if missing; do not claim real billing accuracy without a user-authorized provider invoice check.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
       }
     },
     {
@@ -8053,6 +8177,44 @@
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false,
         "prior_decision_preserved": true
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-011",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_invalid_previous_video_edge_matrix",
+        "severity": "P1 recovery integrity gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "A53 rejects a zero-byte previous_video_path and tests that it is not restored, with invalid path fields cleared and missing-media state recorded. Permission-denied/unreadable files and repeated recovery idempotence are not proven; a non-empty file is not equivalent to a decodable playable video.",
+        "confirmed_gaps": [
+          "A53 rejects a zero-byte previous_video_path and tests that it is not restored, with invalid path fields cleared and missing-media state recorded. Permission-denied/unreadable files and repeated recovery idempotence are not proven; a non-empty file is not equivalent to a decodable playable video."
+        ],
+        "next_action": "Add deterministic unreadable/stale-path and repeated-recovery assertions where platform-independent; keep Windows file locking and real playable-media validation in C5.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
       }
     },
     {
@@ -8142,6 +8304,44 @@
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false,
         "prior_decision_preserved": true
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-011",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_invalid_active_video_edge_matrix",
+        "severity": "P1 recovery integrity gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "A54 tests zero-byte active output falling back to a valid previous video and clearing an invalid active path when no valid previous version exists. The same suite does not establish real video decoding, permission-denied behavior or Windows file-lock recovery; repeated recovery should be explicitly checked for idempotence.",
+        "confirmed_gaps": [
+          "A54 tests zero-byte active output falling back to a valid previous video and clearing an invalid active path when no valid previous version exists. The same suite does not establish real video decoding, permission-denied behavior or Windows file-lock recovery; repeated recovery should be explicitly checked for idempotence."
+        ],
+        "next_action": "Add a repeated-recovery assertion for both valid-previous and no-previous branches; keep actual media decoding and Windows filesystem faults in C5.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
       }
     },
     {
@@ -16508,6 +16708,68 @@
         "No formal acceptance state changed."
       ],
       "next_step": "C2-FOUNDATION-011: audit A50-A54 against current source/test; then start bounded C3 remediation for the highest-risk deterministic gaps already identified. Do not add acceptance IDs."
+    },
+    {
+      "batch_id": "C2-FOUNDATION-011",
+      "range": "A50-A54",
+      "status": "partial_current_source_test_audit_gaps_recorded",
+      "audited_at": "2026-10-17",
+      "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+      "latest_ci": {
+        "pr_ci_run_id": 39018653867,
+        "pr_ci_conclusion": "success",
+        "pr_docs_sync_run_id": 39018653864,
+        "pr_docs_sync_conclusion": "success",
+        "push_runs": "not_independently_verified_by_available_workflow_query"
+      },
+      "reviewed_sources": [
+        "apps/ad-studio-desktop/ad_studio/production.py",
+        "apps/ad-studio-desktop/ad_studio/usage_ledger.py",
+        "apps/ad-studio-desktop/ad_studio/providers.py",
+        "apps/ad-studio-desktop/ad_studio/app.py"
+      ],
+      "reviewed_tests": [
+        "apps/ad-studio-desktop/test_desktop.py"
+      ],
+      "tasks": [
+        {
+          "id": "A50",
+          "status": "partial_prompt_string_contract_real_provider_deferred",
+          "finding": "The deterministic capture-provider test asserts the production prompt contains actual line breaks between title, visual and copy. It proves the local request string, not how a real provider interprets it or whether resulting creative quality improves.",
+          "next_action": "Keep the capture-provider regression and map the exact production call path; A56 is a later regression-fix record sharing this contract, not a second independent prompt capability."
+        },
+        {
+          "id": "A51",
+          "status": "partial_cost_input_entrypoint_matrix_gap",
+          "finding": "The cost-estimate validator rejects non-finite, negative and invalid values before the focused confirmation path and tests assert no Provider/version side effects in that path. The full A51 contract requires every cost-confirmation entry point to be checked for the same fail-fast behavior; a single helper test does not prove all project/batch/hybrid/short-drama paths.",
+          "next_action": "Map each cost confirmation call site to configured-price normalization and add table-driven no-call/no-version-mutation assertions for invalid input; actual provider quotes remain C5."
+        },
+        {
+          "id": "A52",
+          "status": "partial_internal_ledger_policy_external_billing_deferred",
+          "finding": "The ledger records failed attempts with provider/error/quote context while keeping failed estimated actual cost at zero; successful retry is counted once in internal totals. Tests verify failed and successful records coexist without double-counting. The system cannot establish whether a real provider charged for a failed request, timeout or retry; external invoice reconciliation is explicitly deferred.",
+          "next_action": "Add deterministic crash-between-provider-success-and-ledger-write and duplicate-retry/reload cases if missing; do not claim real billing accuracy without a user-authorized provider invoice check."
+        },
+        {
+          "id": "A53",
+          "status": "partial_invalid_previous_video_edge_matrix",
+          "finding": "A53 rejects a zero-byte previous_video_path and tests that it is not restored, with invalid path fields cleared and missing-media state recorded. Permission-denied/unreadable files and repeated recovery idempotence are not proven; a non-empty file is not equivalent to a decodable playable video.",
+          "next_action": "Add deterministic unreadable/stale-path and repeated-recovery assertions where platform-independent; keep Windows file locking and real playable-media validation in C5."
+        },
+        {
+          "id": "A54",
+          "status": "partial_invalid_active_video_edge_matrix",
+          "finding": "A54 tests zero-byte active output falling back to a valid previous video and clearing an invalid active path when no valid previous version exists. The same suite does not establish real video decoding, permission-denied behavior or Windows file-lock recovery; repeated recovery should be explicitly checked for idempotence.",
+          "next_action": "Add a repeated-recovery assertion for both valid-previous and no-previous branches; keep actual media decoding and Windows filesystem faults in C5."
+        }
+      ],
+      "limitations": [
+        "Local provider/ledger tests do not prove external invoices or actual failed-request charges.",
+        "Non-empty previous media is not proof of playable media.",
+        "Windows filesystem errors remain deferred.",
+        "Formal acceptance states unchanged."
+      ],
+      "next_step": "C2-FOUNDATION-012: audit A55-A59; after the bounded source/test audit reaches A59, begin C3 deterministic remediation on already confirmed gaps, prioritizing A34 evidence call-count/persistence tests and A63 save/reload after migrated-cost write failure."
     }
   ],
   "last_reconciled_against_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
@@ -17232,10 +17494,10 @@
         "id": "C2",
         "name": "当前代码与专项测试审计",
         "status": "in_progress",
-        "completed_slots": 50,
+        "completed_slots": 55,
         "total_slots": 113,
         "exit": "all 113 slots have current source/test evidence and explicit audit result",
-        "last_completed_batch": "C2-FOUNDATION-010"
+        "last_completed_batch": "C2-FOUNDATION-011"
       },
       {
         "id": "C3",
@@ -17271,9 +17533,9 @@
         "definition": "Unique formal task IDs with documented cross-source identity/status decisions; repeated IDs count once. This is not code/test audit or formal acceptance."
       },
       "c2_current_code_test_audit": {
-        "numerator": 50,
+        "numerator": 55,
         "denominator": 113,
-        "percent": 44.2,
+        "percent": 48.7,
         "definition": "Slots with direct current source/test inspection and a written audit result; partial findings count as audit coverage, not acceptance pass."
       },
       "c3_blocking_defects": {
