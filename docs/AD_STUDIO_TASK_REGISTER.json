@@ -18,7 +18,10 @@
     "current_head_evidence_task_ids": 0,
     "source_test_evidence_snapshot_task_ids": 56,
     "full_audit_completed_ids": 0,
-    "formal_acceptance_passed_ids": 0
+    "formal_acceptance_passed_ids": 0,
+    "normalized_roadmap_phase_mapped_ids": 113,
+    "normalized_roadmap_phase_categories": 6,
+    "provisional_roadmap_phase_mapping_ids": 18
   },
   "known_id_gaps": [],
   "tasks": [
@@ -118,7 +121,10 @@
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "note": "Source/test/workflow mappings rechecked; not full acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A1",
@@ -233,7 +239,10 @@
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "note": "Source/test/workflow mappings rechecked; not full acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A2",
@@ -360,7 +369,10 @@
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "note": "Source/test/workflow mappings rechecked; not full acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A3",
@@ -481,7 +493,10 @@
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "partial_automation_layout_contract_passed_other_acceptance_pending",
         "note": "Source/test/workflow mappings rechecked; not full acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A4",
@@ -614,7 +629,10 @@
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "note": "Source/test/workflow mappings rechecked; not full acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A5",
@@ -725,7 +743,10 @@
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "note": "Source/test mappings refreshed against the current branch tree; this is partial evidence, not full task acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A6",
@@ -809,7 +830,10 @@
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "note": "Source/test mappings refreshed against the current branch tree; this is partial evidence, not full task acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A7",
@@ -896,7 +920,10 @@
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "note": "Source/test mappings refreshed against the current branch tree; this is partial evidence, not full task acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段3｜AI广告编导",
+      "phase_normalization_original": "阶段3｜AI广告编导",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A8",
@@ -976,7 +1003,10 @@
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "note": "Source/test mappings refreshed against the current branch tree; this is partial evidence, not full task acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段2｜商业级剪辑决策层",
+      "phase_normalization_original": "阶段2｜商业级剪辑决策层",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A9",
@@ -1067,7 +1097,10 @@
         "ci_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "note": "Partial source/test mapping only; distributed tests do not equal full task acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A10",
@@ -1158,7 +1191,10 @@
         "ci_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "note": "Partial source/test mapping only; distributed tests do not equal full task acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A11",
@@ -1249,7 +1285,10 @@
         "ci_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "note": "Partial source/test mapping only; distributed tests do not equal full task acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A12",
@@ -1342,7 +1381,10 @@
         "ci_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "note": "Partial source/test mapping only; distributed tests do not equal full task acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A13",
@@ -1440,7 +1482,10 @@
         "ci_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "note": "Partial source/test mapping only; distributed tests do not equal full task acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A14",
@@ -1538,7 +1583,10 @@
         "ci_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "note": "Partial source/test mapping only; distributed tests do not equal full task acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A15",
@@ -1633,7 +1681,10 @@
         "ci_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "note": "Partial source/test mapping only; distributed tests do not equal full task acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A16",
@@ -1727,7 +1778,10 @@
         "ci_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "note": "Partial source/test mapping only; distributed tests do not equal full task acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A17",
@@ -1823,7 +1877,10 @@
         "ci_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "note": "Partial source/test mapping only; distributed tests do not equal full task acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A18",
@@ -1877,7 +1934,10 @@
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: static source/test pointers mapped from current branch snapshot. Evidence SHA intentionally left null until exact source/test commit provenance is independently established; this is not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: static source/test pointers mapped from current branch snapshot. Evidence SHA intentionally left null until exact source/test commit provenance is independently established; this is not formal acceptance.",
+      "normalized_roadmap_phase": "阶段3｜AI广告编导",
+      "phase_normalization_original": "阶段3｜AI 广告编导",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A19",
@@ -1933,7 +1993,10 @@
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: static source/test pointers mapped from current branch snapshot. Evidence SHA intentionally left null until exact source/test commit provenance is independently established; this is not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: static source/test pointers mapped from current branch snapshot. Evidence SHA intentionally left null until exact source/test commit provenance is independently established; this is not formal acceptance.",
+      "normalized_roadmap_phase": "阶段3｜AI广告编导",
+      "phase_normalization_original": "阶段3｜AI 广告编导",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A20",
@@ -1988,7 +2051,10 @@
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: static source/test pointers mapped from current branch snapshot. Evidence SHA intentionally left null until exact source/test commit provenance is independently established; this is not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: static source/test pointers mapped from current branch snapshot. Evidence SHA intentionally left null until exact source/test commit provenance is independently established; this is not formal acceptance.",
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A21",
@@ -2043,7 +2109,10 @@
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: static source/test pointers mapped from current branch snapshot. Evidence SHA intentionally left null until exact source/test commit provenance is independently established; this is not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: static source/test pointers mapped from current branch snapshot. Evidence SHA intentionally left null until exact source/test commit provenance is independently established; this is not formal acceptance.",
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A22",
@@ -2098,7 +2167,10 @@
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: static source/test pointers mapped from current branch snapshot. Evidence SHA intentionally left null until exact source/test commit provenance is independently established; this is not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: static source/test pointers mapped from current branch snapshot. Evidence SHA intentionally left null until exact source/test commit provenance is independently established; this is not formal acceptance.",
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A23",
@@ -2157,7 +2229,10 @@
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: static source/test pointers mapped from current branch snapshot. Evidence SHA intentionally left null until exact source/test commit provenance is independently established; this is not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: static source/test pointers mapped from current branch snapshot. Evidence SHA intentionally left null until exact source/test commit provenance is independently established; this is not formal acceptance.",
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A24",
@@ -2211,7 +2286,10 @@
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers mapped against branch snapshot 168bd507430af347de805c96735793c200a9802c. Per-file evidence SHA not independently pinned; not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers mapped against branch snapshot 168bd507430af347de805c96735793c200a9802c. Per-file evidence SHA not independently pinned; not formal acceptance.",
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A25",
@@ -2267,7 +2345,10 @@
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers mapped against branch snapshot 168bd507430af347de805c96735793c200a9802c. Per-file evidence SHA not independently pinned; not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers mapped against branch snapshot 168bd507430af347de805c96735793c200a9802c. Per-file evidence SHA not independently pinned; not formal acceptance.",
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A26",
@@ -2317,7 +2398,10 @@
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers mapped against branch snapshot 168bd507430af347de805c96735793c200a9802c. Per-file evidence SHA not independently pinned; not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers mapped against branch snapshot 168bd507430af347de805c96735793c200a9802c. Per-file evidence SHA not independently pinned; not formal acceptance.",
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A27",
@@ -2374,7 +2458,10 @@
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers mapped against branch snapshot 168bd507430af347de805c96735793c200a9802c. Per-file evidence SHA not independently pinned; not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers mapped against branch snapshot 168bd507430af347de805c96735793c200a9802c. Per-file evidence SHA not independently pinned; not formal acceptance.",
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A28",
@@ -2431,7 +2518,10 @@
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers mapped against branch snapshot 168bd507430af347de805c96735793c200a9802c. Per-file evidence SHA not independently pinned; not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers mapped against branch snapshot 168bd507430af347de805c96735793c200a9802c. Per-file evidence SHA not independently pinned; not formal acceptance.",
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A29",
@@ -2489,7 +2579,10 @@
       "semantic_dedup_review_status": "reviewed_requirement_level",
       "semantic_dedup_batch": "PLAN-003-DEDUP-005",
       "provisional_roadmap_phase": "阶段1｜可靠的生产底座",
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers mapped against branch snapshot 168bd507430af347de805c96735793c200a9802c. Per-file evidence SHA not independently pinned; not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers mapped against branch snapshot 168bd507430af347de805c96735793c200a9802c. Per-file evidence SHA not independently pinned; not formal acceptance.",
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A30",
@@ -2566,7 +2659,10 @@
         ],
         "note": "Related requirements and shared evidence are retained under original IDs. This is a possible overlap map, not a duplicate verdict, merge, or renumbering."
       },
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers and proof limits mapped against branch snapshot 57d02abd2e1d67ed88bc3e12035d7dbee9cdeaef. Per-file evidence SHA not independently pinned; not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers and proof limits mapped against branch snapshot 57d02abd2e1d67ed88bc3e12035d7dbee9cdeaef. Per-file evidence SHA not independently pinned; not formal acceptance.",
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A31",
@@ -2641,7 +2737,10 @@
         ],
         "note": "Related requirements and shared evidence are retained under original IDs. This is a possible overlap map, not a duplicate verdict, merge, or renumbering."
       },
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers and proof limits mapped against branch snapshot 57d02abd2e1d67ed88bc3e12035d7dbee9cdeaef. Per-file evidence SHA not independently pinned; not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers and proof limits mapped against branch snapshot 57d02abd2e1d67ed88bc3e12035d7dbee9cdeaef. Per-file evidence SHA not independently pinned; not formal acceptance.",
+      "normalized_roadmap_phase": "阶段0｜路线与证据基线",
+      "phase_normalization_original": "阶段0｜路线与证据基线",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A32",
@@ -2710,7 +2809,10 @@
         ],
         "note": "Related requirements and shared evidence are retained under original IDs. This is a possible overlap map, not a duplicate verdict, merge, or renumbering."
       },
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers and proof limits mapped against branch snapshot 57d02abd2e1d67ed88bc3e12035d7dbee9cdeaef. Per-file evidence SHA not independently pinned; not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers and proof limits mapped against branch snapshot 57d02abd2e1d67ed88bc3e12035d7dbee9cdeaef. Per-file evidence SHA not independently pinned; not formal acceptance.",
+      "normalized_roadmap_phase": "阶段0｜路线与证据基线",
+      "phase_normalization_original": "阶段0｜路线与证据基线",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A33",
@@ -2839,7 +2941,10 @@
         ],
         "note": "Related requirements and shared evidence are retained under original IDs. This is a possible overlap map, not a duplicate verdict, merge, or renumbering."
       },
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers and proof limits mapped against branch snapshot 57d02abd2e1d67ed88bc3e12035d7dbee9cdeaef. Per-file evidence SHA not independently pinned; not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers and proof limits mapped against branch snapshot 57d02abd2e1d67ed88bc3e12035d7dbee9cdeaef. Per-file evidence SHA not independently pinned; not formal acceptance.",
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A34",
@@ -2936,7 +3041,10 @@
         "知情自由",
         "撤回与纠正自由"
       ],
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers mapped against branch snapshot 6a930adc83348dec3776fb40dc2d505f1d826841. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers mapped against branch snapshot 6a930adc83348dec3776fb40dc2d505f1d826841. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance.",
+      "normalized_roadmap_phase": "阶段5｜资产与制作效率深化",
+      "phase_normalization_original": "阶段5｜资产与制作效率深化",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A35",
@@ -3028,7 +3136,10 @@
         "控制自由",
         "撤回与纠正自由"
       ],
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers mapped against branch snapshot 6a930adc83348dec3776fb40dc2d505f1d826841. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers mapped against branch snapshot 6a930adc83348dec3776fb40dc2d505f1d826841. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance.",
+      "normalized_roadmap_phase": "阶段5｜资产与制作效率深化",
+      "phase_normalization_original": "阶段5｜资产与制作效率深化",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A36",
@@ -3120,7 +3231,10 @@
         "控制自由",
         "撤回与纠正自由"
       ],
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers mapped against branch snapshot 6a930adc83348dec3776fb40dc2d505f1d826841. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers mapped against branch snapshot 6a930adc83348dec3776fb40dc2d505f1d826841. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance.",
+      "normalized_roadmap_phase": "阶段5｜资产与制作效率深化",
+      "phase_normalization_original": "阶段5｜资产与制作效率深化",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A37",
@@ -3197,7 +3311,10 @@
         "note": "层级编号定义见 docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md；自动化夹具证据不能替代 UI/真实商品/成片质量证据。"
       },
       "user_freedom_dimensions": [],
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers mapped against branch snapshot 6a930adc83348dec3776fb40dc2d505f1d826841. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test pointers mapped against branch snapshot 6a930adc83348dec3776fb40dc2d505f1d826841. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance.",
+      "normalized_roadmap_phase": "阶段5｜资产与制作效率深化",
+      "phase_normalization_original": "阶段5｜资产与制作效率深化",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A38",
@@ -3278,7 +3395,10 @@
         "note": "层级定义见 docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md；静态断言/CI 不等于真实用户接手验收。"
       },
       "user_freedom_dimensions": [],
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test/workflow pointers mapped against validated snapshot 1af689ab2dacbaff9ad7a08a26f1b4173cc328c4. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test/workflow pointers mapped against validated snapshot 1af689ab2dacbaff9ad7a08a26f1b4173cc328c4. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance.",
+      "normalized_roadmap_phase": "阶段0｜路线与证据基线",
+      "phase_normalization_original": "阶段0｜路线与证据基线",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A39",
@@ -3352,7 +3472,10 @@
         "note": "层级定义见 docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md；静态断言/CI 不等于真实用户接手验收。"
       },
       "user_freedom_dimensions": [],
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test/workflow pointers mapped against validated snapshot 1af689ab2dacbaff9ad7a08a26f1b4173cc328c4. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test/workflow pointers mapped against validated snapshot 1af689ab2dacbaff9ad7a08a26f1b4173cc328c4. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance.",
+      "normalized_roadmap_phase": "阶段0｜路线与证据基线",
+      "phase_normalization_original": "阶段0｜路线与证据基线",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A40",
@@ -3422,7 +3545,10 @@
         "note": "层级定义见 docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md；静态断言/CI 不等于真实用户接手验收。"
       },
       "user_freedom_dimensions": [],
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test/workflow pointers mapped against validated snapshot 1af689ab2dacbaff9ad7a08a26f1b4173cc328c4. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test/workflow pointers mapped against validated snapshot 1af689ab2dacbaff9ad7a08a26f1b4173cc328c4. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance.",
+      "normalized_roadmap_phase": "阶段0｜路线与证据基线",
+      "phase_normalization_original": "阶段0｜路线与证据基线",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A41",
@@ -3497,7 +3623,10 @@
         "note": "层级定义见 docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md；静态断言/CI 不等于真实用户接手验收。"
       },
       "user_freedom_dimensions": [],
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test/workflow pointers mapped against validated snapshot 1af689ab2dacbaff9ad7a08a26f1b4173cc328c4. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test/workflow pointers mapped against validated snapshot 1af689ab2dacbaff9ad7a08a26f1b4173cc328c4. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance.",
+      "normalized_roadmap_phase": "阶段0｜路线与证据基线",
+      "phase_normalization_original": "阶段0｜路线与证据基线",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A42",
@@ -3579,7 +3708,10 @@
         "note": "层级定义见 docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md；自动化证据不能替代真实 UI/Provider/媒体验证。"
       },
       "user_freedom_dimensions": [],
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test/workflow pointers mapped against validated snapshot 42fa15b305ff1a5a046f15eba84460b7272fa2e7. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test/workflow pointers mapped against validated snapshot 42fa15b305ff1a5a046f15eba84460b7272fa2e7. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance.",
+      "normalized_roadmap_phase": "阶段0｜路线与证据基线",
+      "phase_normalization_original": "阶段0｜路线与证据基线",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A43",
@@ -3681,7 +3813,10 @@
         "note": "层级定义见 docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md；自动化证据不能替代真实 UI/Provider/媒体验证。"
       },
       "user_freedom_dimensions": [],
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test/workflow pointers mapped against validated snapshot 42fa15b305ff1a5a046f15eba84460b7272fa2e7. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test/workflow pointers mapped against validated snapshot 42fa15b305ff1a5a046f15eba84460b7272fa2e7. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance.",
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A44",
@@ -3768,7 +3903,10 @@
         "note": "层级定义见 docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md；自动化证据不能替代真实 UI/Provider/媒体验证。"
       },
       "user_freedom_dimensions": [],
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test/workflow pointers mapped against validated snapshot 42fa15b305ff1a5a046f15eba84460b7272fa2e7. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test/workflow pointers mapped against validated snapshot 42fa15b305ff1a5a046f15eba84460b7272fa2e7. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance.",
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段4｜AI短剧能力",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A45",
@@ -3856,7 +3994,10 @@
         "note": "层级定义见 docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md；自动化证据不能替代真实 UI/Provider/媒体验证。"
       },
       "user_freedom_dimensions": [],
-      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test/workflow pointers mapped against validated snapshot 42fa15b305ff1a5a046f15eba84460b7272fa2e7. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test/workflow pointers mapped against validated snapshot 42fa15b305ff1a5a046f15eba84460b7272fa2e7. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance.",
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A46",
@@ -3945,7 +4086,10 @@
         "note": "层级定义见 docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md；临时文件夹/假 Provider 测试不等于真实素材与 Windows 验收。"
       },
       "user_freedom_dimensions": [],
-      "audit_notes": "PLAN-003 incremental review 2026-10-15 against source snapshot 6fd36a58dcc4d8dec97be57c268b072bf14b3017; per-file evidence SHA not independently pinned; not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15 against source snapshot 6fd36a58dcc4d8dec97be57c268b072bf14b3017; per-file evidence SHA not independently pinned; not formal acceptance.",
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A47",
@@ -4040,7 +4184,10 @@
         "note": "层级定义见 docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md；临时文件夹/假 Provider 测试不等于真实素材与 Windows 验收。"
       },
       "user_freedom_dimensions": [],
-      "audit_notes": "PLAN-003 incremental review 2026-10-15 against source snapshot 6fd36a58dcc4d8dec97be57c268b072bf14b3017; per-file evidence SHA not independently pinned; not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15 against source snapshot 6fd36a58dcc4d8dec97be57c268b072bf14b3017; per-file evidence SHA not independently pinned; not formal acceptance.",
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A48",
@@ -4129,7 +4276,10 @@
         "note": "层级定义见 docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md；临时文件夹/假 Provider 测试不等于真实素材与 Windows 验收。"
       },
       "user_freedom_dimensions": [],
-      "audit_notes": "PLAN-003 incremental review 2026-10-15 against source snapshot 6fd36a58dcc4d8dec97be57c268b072bf14b3017; per-file evidence SHA not independently pinned; not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15 against source snapshot 6fd36a58dcc4d8dec97be57c268b072bf14b3017; per-file evidence SHA not independently pinned; not formal acceptance.",
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A49",
@@ -4218,7 +4368,10 @@
         "note": "层级定义见 docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md；临时文件夹/假 Provider 测试不等于真实素材与 Windows 验收。"
       },
       "user_freedom_dimensions": [],
-      "audit_notes": "PLAN-003 incremental review 2026-10-15 against source snapshot 6fd36a58dcc4d8dec97be57c268b072bf14b3017; per-file evidence SHA not independently pinned; not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15 against source snapshot 6fd36a58dcc4d8dec97be57c268b072bf14b3017; per-file evidence SHA not independently pinned; not formal acceptance.",
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A50",
@@ -4285,7 +4438,10 @@
         ],
         "note": "Related prompt/cost/recovery concerns share evidence but have distinct contracts; this is a candidate overlap map, not a duplicate verdict. Preserve all original IDs."
       },
-      "audit_notes": "PLAN-003 incremental review 2026-10-15 against source snapshot c14b9bf10ae80379c45e80b42224722aab8c31d7; per-file evidence SHA not independently pinned; not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15 against source snapshot c14b9bf10ae80379c45e80b42224722aab8c31d7; per-file evidence SHA not independently pinned; not formal acceptance.",
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A51",
@@ -4350,7 +4506,10 @@
         ],
         "note": "Related prompt/cost/recovery concerns share evidence but have distinct contracts; this is a candidate overlap map, not a duplicate verdict. Preserve all original IDs."
       },
-      "audit_notes": "PLAN-003 incremental review 2026-10-15 against source snapshot c14b9bf10ae80379c45e80b42224722aab8c31d7; per-file evidence SHA not independently pinned; not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15 against source snapshot c14b9bf10ae80379c45e80b42224722aab8c31d7; per-file evidence SHA not independently pinned; not formal acceptance.",
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A52",
@@ -4443,7 +4602,10 @@
           "docs_sync_pr": 38732627612
         },
         "note": "Current branch HEAD was checked directly; source/test paths resolve to the recorded blob SHAs at this SHA. All four workflows on this exact SHA succeeded. This is a bounded code/test evidence mapping and relationship decision, not full acceptance; known edge gaps remain."
-      }
+      },
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A53",
@@ -4512,7 +4674,10 @@
         ],
         "note": "Related prompt/cost/recovery concerns share evidence but have distinct contracts; this is a candidate overlap map, not a duplicate verdict. Preserve all original IDs."
       },
-      "audit_notes": "PLAN-003 incremental review 2026-10-15 against source snapshot c14b9bf10ae80379c45e80b42224722aab8c31d7; per-file evidence SHA not independently pinned; not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15 against source snapshot c14b9bf10ae80379c45e80b42224722aab8c31d7; per-file evidence SHA not independently pinned; not formal acceptance.",
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A54",
@@ -4576,7 +4741,10 @@
         ],
         "note": "Shared cost/recovery/prompt concerns are overlap candidates only; preserve original IDs. A57 has an unresolved duplicate-heading collision across the acceptance plan and SOP."
       },
-      "audit_notes": "PLAN-003 incremental review 2026-10-15; code/test snapshot 4628fd7219f9d757be6458df2348c76853c167ff; per-file evidence SHA not independently pinned; not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15; code/test snapshot 4628fd7219f9d757be6458df2348c76853c167ff; per-file evidence SHA not independently pinned; not formal acceptance.",
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A55",
@@ -4669,7 +4837,10 @@
           "docs_sync_pr": 38732627612
         },
         "note": "Current branch HEAD was checked directly; source/test paths resolve to the recorded blob SHAs at this SHA. All four workflows on this exact SHA succeeded. This is a bounded code/test evidence mapping and relationship decision, not full acceptance; known edge gaps remain."
-      }
+      },
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A56",
@@ -4743,7 +4914,10 @@
         ],
         "note": "Shared cost/recovery/prompt concerns are overlap candidates only; preserve original IDs. A57 has an unresolved duplicate-heading collision across the acceptance plan and SOP."
       },
-      "audit_notes": "PLAN-003 incremental review 2026-10-15; code/test snapshot 4628fd7219f9d757be6458df2348c76853c167ff; per-file evidence SHA not independently pinned; not formal acceptance."
+      "audit_notes": "PLAN-003 incremental review 2026-10-15; code/test snapshot 4628fd7219f9d757be6458df2348c76853c167ff; per-file evidence SHA not independently pinned; not formal acceptance.",
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A57",
@@ -4899,7 +5073,10 @@
           "docs_sync_push": 38787891485,
           "docs_sync_pr": 38787902562
         }
-      }
+      },
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A58",
@@ -4989,7 +5166,10 @@
           "A67"
         ],
         "note": "登记关联/重叠候选，不合并、不删除、不重编号；全量跨来源语义去重仍待完成。"
-      }
+      },
+      "normalized_roadmap_phase": "阶段5｜资产与制作效率深化",
+      "phase_normalization_original": "阶段5｜资产与制作效率深化",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A59",
@@ -5102,7 +5282,10 @@
           "A99"
         ],
         "note": "PLAN-003-DEDUP-010 checked current source/test blobs at 2f2bec716073716699a0d8916aa7b8457e862c8c. Distinct contract: A59 makes successful ledger rows the authority for project-level actual-cost totals when successful rows exist; it addresses stale project snapshots, not failed-only compatibility. Preserve original ID; this is not formal acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A60",
@@ -5217,7 +5400,10 @@
           "A99"
         ],
         "note": "PLAN-003-DEDUP-010 checked current source/test blobs at 2f2bec716073716699a0d8916aa7b8457e862c8c. Distinct contract: A60 preserves legacy totals when there are no successful ledger rows (including failed-only history). It is the complementary no-success branch to A59, not a duplicate. Preserve original ID; this is not formal acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A61",
@@ -5328,7 +5514,10 @@
           "A65"
         ],
         "note": "登记关联/重叠候选，不合并、不删除、不重编号；全量跨来源语义去重仍待完成。"
-      }
+      },
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A62",
@@ -5425,7 +5614,10 @@
           "A61"
         ],
         "note": "登记关联/重叠候选，不合并、不删除、不重编号；全量跨来源语义去重仍待完成。"
-      }
+      },
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A63",
@@ -5519,7 +5711,10 @@
           "A65"
         ],
         "note": "PLAN-003-DEDUP-010 checked current source/test blobs at 2f2bec716073716699a0d8916aa7b8457e862c8c. Distinct contract: A63 protects a successfully migrated legacy baseline if the next new-charge ledger write fails; its remaining gap is save-and-reload persistence after the failure. Preserve original ID; this is not formal acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A64",
@@ -5622,7 +5817,10 @@
           "A63"
         ],
         "note": "PLAN-003-DEDUP-010 checked current source/test blobs at 2f2bec716073716699a0d8916aa7b8457e862c8c. Distinct contract: A64 applies the successful-output/cost-write-failure boundary to generated assets and asset-library/recovery state, while A55 applies it to generated video output; current caller coverage includes source-text assertions rather than full behavioral flow. Preserve original ID; this is not formal acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A65",
@@ -5719,7 +5917,10 @@
           "A64"
         ],
         "note": "PLAN-003-DEDUP-010 checked current source/test blobs at 2f2bec716073716699a0d8916aa7b8457e862c8c. Distinct contract: A65 covers atomic ledger replacement and long-history retention, which supports the other contracts but is not equivalent to their project/video/asset state transitions. Preserve original ID; this is not formal acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A66",
@@ -5808,7 +6009,10 @@
         "控制",
         "知情",
         "撤回纠正"
-      ]
+      ],
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A67",
@@ -5896,7 +6100,10 @@
         "控制",
         "知情",
         "撤回纠正"
-      ]
+      ],
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A68",
@@ -5993,7 +6200,10 @@
         "控制",
         "知情",
         "撤回纠正"
-      ]
+      ],
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段4｜AI 短剧能力",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A69",
@@ -6091,7 +6301,10 @@
         "控制",
         "知情",
         "撤回纠正"
-      ]
+      ],
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段4｜AI 短剧能力",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A70",
@@ -6191,7 +6404,10 @@
         "控制",
         "知情",
         "撤回纠正"
-      ]
+      ],
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段4｜AI 短剧能力",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A71",
@@ -6291,7 +6507,10 @@
         "控制",
         "知情",
         "撤回纠正"
-      ]
+      ],
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段4｜AI 短剧能力",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A72",
@@ -6391,7 +6610,10 @@
         "控制",
         "知情",
         "撤回纠正"
-      ]
+      ],
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段4｜AI 短剧能力",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A73",
@@ -6491,7 +6713,10 @@
         "控制",
         "知情",
         "撤回纠正"
-      ]
+      ],
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段4｜AI 短剧能力",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A74",
@@ -6591,7 +6816,10 @@
         "控制",
         "知情",
         "撤回纠正"
-      ]
+      ],
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段4｜AI 短剧能力",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A75",
@@ -6680,7 +6908,10 @@
         "控制",
         "知情",
         "撤回纠正"
-      ]
+      ],
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段4｜AI 短剧能力",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A76",
@@ -6769,7 +7000,10 @@
         "控制",
         "知情",
         "撤回纠正"
-      ]
+      ],
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段4｜AI 短剧能力",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A77",
@@ -6858,7 +7092,10 @@
         "控制",
         "知情",
         "撤回纠正"
-      ]
+      ],
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段4｜AI 短剧能力",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A78",
@@ -6947,7 +7184,10 @@
         "控制",
         "知情",
         "撤回纠正"
-      ]
+      ],
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段4｜AI 短剧能力",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A79",
@@ -7036,7 +7276,10 @@
         "控制",
         "知情",
         "撤回纠正"
-      ]
+      ],
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段4｜AI 短剧能力",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A80",
@@ -7127,7 +7370,10 @@
         "控制",
         "知情",
         "撤回纠正"
-      ]
+      ],
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段4｜AI 短剧能力",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A81",
@@ -7216,7 +7462,10 @@
         "控制",
         "知情",
         "撤回纠正"
-      ]
+      ],
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段4｜AI 短剧能力",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A82",
@@ -7301,7 +7550,10 @@
         "控制",
         "知情",
         "撤回纠正"
-      ]
+      ],
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段4｜AI 短剧能力",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A83",
@@ -7386,7 +7638,10 @@
         "控制",
         "知情",
         "撤回纠正"
-      ]
+      ],
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段4｜AI 短剧能力",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A84",
@@ -7479,7 +7734,10 @@
         "控制",
         "知情",
         "撤回纠正"
-      ]
+      ],
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段4｜AI 短剧能力",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A85",
@@ -7556,7 +7814,10 @@
       },
       "source_inventory_status": "partial_current_head_source_test_and_workflow_mapping_semantic_dedup_and_full_acceptance_pending",
       "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
-      "semantic_dedup_batch": "PLAN-003-DEDUP-001"
+      "semantic_dedup_batch": "PLAN-003-DEDUP-001",
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段4｜AI 短剧能力",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A86",
@@ -7630,7 +7891,10 @@
       },
       "source_inventory_status": "partial_current_head_source_test_and_workflow_mapping_semantic_dedup_and_full_acceptance_pending",
       "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
-      "semantic_dedup_batch": "PLAN-003-DEDUP-001"
+      "semantic_dedup_batch": "PLAN-003-DEDUP-001",
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段4｜AI 短剧能力",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A87",
@@ -7704,7 +7968,10 @@
       },
       "source_inventory_status": "partial_current_head_source_test_and_workflow_mapping_semantic_dedup_and_full_acceptance_pending",
       "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
-      "semantic_dedup_batch": "PLAN-003-DEDUP-001"
+      "semantic_dedup_batch": "PLAN-003-DEDUP-001",
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段4｜AI 短剧能力",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A88",
@@ -7779,7 +8046,10 @@
       },
       "source_inventory_status": "partial_current_head_source_test_and_workflow_mapping_semantic_dedup_and_full_acceptance_pending",
       "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
-      "semantic_dedup_batch": "PLAN-003-DEDUP-001"
+      "semantic_dedup_batch": "PLAN-003-DEDUP-001",
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段4｜AI 短剧能力",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A89",
@@ -7856,7 +8126,10 @@
       },
       "source_inventory_status": "partial_current_head_source_test_and_workflow_mapping_semantic_dedup_and_full_acceptance_pending",
       "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
-      "semantic_dedup_batch": "PLAN-003-DEDUP-001"
+      "semantic_dedup_batch": "PLAN-003-DEDUP-001",
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段4｜AI 短剧能力",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A90",
@@ -7933,7 +8206,10 @@
       },
       "source_inventory_status": "source_test_and_pr_workflow_evidence_mapped_to_HEAD_a6e052fa7edefa7e2fb794166684547436ff90f6; push_workflow_pair_not_independently_verified_by_available_run_query; full_acceptance_pending",
       "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
-      "semantic_dedup_batch": "PLAN-003-DEDUP-003"
+      "semantic_dedup_batch": "PLAN-003-DEDUP-003",
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段 4｜AI 短剧能力（初步映射，待核验）",
+      "phase_mapping_confidence": "provisional"
     },
     {
       "task_id": "A91",
@@ -8009,7 +8285,10 @@
       },
       "source_inventory_status": "source_test_and_pr_workflow_evidence_mapped_to_HEAD_a6e052fa7edefa7e2fb794166684547436ff90f6; push_workflow_pair_not_independently_verified_by_available_run_query; full_acceptance_pending",
       "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
-      "semantic_dedup_batch": "PLAN-003-DEDUP-003"
+      "semantic_dedup_batch": "PLAN-003-DEDUP-003",
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段 4｜AI 短剧能力（初步映射，待核验）",
+      "phase_mapping_confidence": "provisional"
     },
     {
       "task_id": "A92",
@@ -8094,7 +8373,10 @@
       },
       "source_inventory_status": "source_test_and_pr_workflow_evidence_mapped_to_HEAD_a6e052fa7edefa7e2fb794166684547436ff90f6; push_workflow_pair_not_independently_verified_by_available_run_query; full_acceptance_pending",
       "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
-      "semantic_dedup_batch": "PLAN-003-DEDUP-003"
+      "semantic_dedup_batch": "PLAN-003-DEDUP-003",
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段 4｜AI 短剧能力（初步映射，待核验）",
+      "phase_mapping_confidence": "provisional"
     },
     {
       "task_id": "A93",
@@ -8173,7 +8455,10 @@
       },
       "source_inventory_status": "source_test_and_pr_workflow_evidence_mapped_to_HEAD_a6e052fa7edefa7e2fb794166684547436ff90f6; push_workflow_pair_not_independently_verified_by_available_run_query; full_acceptance_pending",
       "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
-      "semantic_dedup_batch": "PLAN-003-DEDUP-003"
+      "semantic_dedup_batch": "PLAN-003-DEDUP-003",
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段 4｜AI 短剧能力（初步映射，待核验）",
+      "phase_mapping_confidence": "provisional"
     },
     {
       "task_id": "A94",
@@ -8252,7 +8537,10 @@
       },
       "source_inventory_status": "source_test_and_pr_workflow_evidence_mapped_to_HEAD_a6e052fa7edefa7e2fb794166684547436ff90f6; push_workflow_pair_not_independently_verified_by_available_run_query; full_acceptance_pending",
       "semantic_dedup_review_status": "reviewed_no_cross_id_merge_yet",
-      "semantic_dedup_batch": "PLAN-003-DEDUP-003"
+      "semantic_dedup_batch": "PLAN-003-DEDUP-003",
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段 4｜AI 短剧能力（初步映射，待核验）",
+      "phase_mapping_confidence": "provisional"
     },
     {
       "task_id": "A95",
@@ -8339,7 +8627,10 @@
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "note": "Source/test/workflow mappings rechecked on audit baseline. CI PR and docs-sync PR success; Push workflow pair not independently verified. This is not full acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段 4｜AI 短剧能力（初步映射，待核验）",
+      "phase_mapping_confidence": "provisional"
     },
     {
       "task_id": "A96",
@@ -8426,7 +8717,10 @@
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "note": "Source/test/workflow mappings rechecked on audit baseline. CI PR and docs-sync PR success; Push workflow pair not independently verified. This is not full acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段 4｜AI 短剧能力（初步映射，待核验）",
+      "phase_mapping_confidence": "provisional"
     },
     {
       "task_id": "A97",
@@ -8509,7 +8803,10 @@
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "note": "Source/test/workflow mappings rechecked on audit baseline. CI PR and docs-sync PR success; Push workflow pair not independently verified. This is not full acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段 4｜AI 短剧能力（初步映射，待核验）",
+      "phase_mapping_confidence": "provisional"
     },
     {
       "task_id": "A98",
@@ -8592,7 +8889,10 @@
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "note": "Source/test/workflow mappings rechecked on audit baseline. CI PR and docs-sync PR success; Push workflow pair not independently verified. This is not full acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段4｜AI短剧能力",
+      "phase_normalization_original": "阶段 4｜AI 短剧能力（初步映射，待核验）",
+      "phase_mapping_confidence": "provisional"
     },
     {
       "task_id": "A99",
@@ -8696,7 +8996,10 @@
           "A60"
         ],
         "note": "A99's unique contract is successful-ledger authority clearing stale per-shot snapshots. A57 covers legacy totals when no ledger rows exist; A60 covers failed-only ledger history. These are complementary branches, not duplicate A99 requirements. DEDUP-013 adds reload assertions to the A57/A60 branches; preserve all IDs and keep A99 not_audited."
-      }
+      },
+      "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
+      "phase_normalization_original": "阶段1｜可靠的生产底座",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A100",
@@ -8773,7 +9076,10 @@
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "note": "Static source/test evidence mapped to audit baseline; CI PR and docs-sync PR succeeded. Push workflow pair not independently verified. Not full acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段2｜商业级剪辑决策层",
+      "phase_normalization_original": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
+      "phase_mapping_confidence": "provisional"
     },
     {
       "task_id": "A101",
@@ -8850,7 +9156,10 @@
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "note": "Static source/test evidence mapped to audit baseline; CI PR and docs-sync PR succeeded. Push workflow pair not independently verified. Not full acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段2｜商业级剪辑决策层",
+      "phase_normalization_original": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
+      "phase_mapping_confidence": "provisional"
     },
     {
       "task_id": "A102",
@@ -8941,7 +9250,10 @@
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "note": "Static source/test evidence mapped to audit baseline; CI PR and docs-sync PR succeeded. Push workflow pair not independently verified. Not full acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段2｜商业级剪辑决策层",
+      "phase_normalization_original": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
+      "phase_mapping_confidence": "provisional"
     },
     {
       "task_id": "A103",
@@ -9018,7 +9330,10 @@
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "note": "Static source/test evidence mapped to audit baseline; CI PR and docs-sync PR succeeded. Push workflow pair not independently verified. Not full acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段2｜商业级剪辑决策层",
+      "phase_normalization_original": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
+      "phase_mapping_confidence": "provisional"
     },
     {
       "task_id": "A104",
@@ -9110,7 +9425,10 @@
         "current_ci_and_docs_sync_rechecked": true,
         "acceptance_status_preserved": "not_audited",
         "note": "Static source/test evidence mapped to audit baseline; CI PR and docs-sync PR succeeded. Push workflow pair not independently verified. Not full acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段2｜商业级剪辑决策层",
+      "phase_normalization_original": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
+      "phase_mapping_confidence": "provisional"
     },
     {
       "task_id": "A105",
@@ -9197,7 +9515,10 @@
         "docs_sync_pr_run_id": "38730552190",
         "acceptance_status_preserved": "not_audited",
         "note": "Source/test blobs remain bound to source/test audit baseline c77704d86d6131d13501448af76ce24afc56ad7b; latest docs-only HEAD has CI PR and docs-sync PR success. Push pair not independently verified; not full acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段2｜商业级剪辑决策层",
+      "phase_normalization_original": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
+      "phase_mapping_confidence": "provisional"
     },
     {
       "task_id": "A106",
@@ -9276,7 +9597,10 @@
         "docs_sync_pr_run_id": "38730552190",
         "acceptance_status_preserved": "not_audited",
         "note": "Source/test blobs remain bound to source/test audit baseline c77704d86d6131d13501448af76ce24afc56ad7b; latest docs-only HEAD has CI PR and docs-sync PR success. Push pair not independently verified; not full acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段2｜商业级剪辑决策层",
+      "phase_normalization_original": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
+      "phase_mapping_confidence": "provisional"
     },
     {
       "task_id": "A107",
@@ -9370,7 +9694,10 @@
         "docs_sync_pr_run_id": "38730552190",
         "acceptance_status_preserved": "not_audited",
         "note": "Source/test blobs remain bound to source/test audit baseline c77704d86d6131d13501448af76ce24afc56ad7b; latest docs-only HEAD has CI PR and docs-sync PR success. Push pair not independently verified; not full acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段2｜商业级剪辑决策层",
+      "phase_normalization_original": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
+      "phase_mapping_confidence": "provisional"
     },
     {
       "task_id": "A108",
@@ -9456,7 +9783,10 @@
         "docs_sync_pr_run_id": "38730552190",
         "acceptance_status_preserved": "not_audited",
         "note": "Source/test blobs remain bound to source/test audit baseline c77704d86d6131d13501448af76ce24afc56ad7b; latest docs-only HEAD has CI PR and docs-sync PR success. Push pair not independently verified; not full acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段2｜商业级剪辑决策层",
+      "phase_normalization_original": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
+      "phase_mapping_confidence": "provisional"
     },
     {
       "task_id": "A109",
@@ -9560,7 +9890,10 @@
         "docs_sync_pr_run_id": "38730552190",
         "acceptance_status_preserved": "not_audited",
         "note": "Source/test blobs remain bound to source/test audit baseline c77704d86d6131d13501448af76ce24afc56ad7b; latest docs-only HEAD has CI PR and docs-sync PR success. Push pair not independently verified; not full acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段2｜商业级剪辑决策层",
+      "phase_normalization_original": "阶段 2｜商业级剪辑决策层",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A110",
@@ -9651,7 +9984,10 @@
         "docs_sync_pr_run_id": "38731016172",
         "acceptance_status_preserved": "not_audited",
         "note": "Source/test blobs remain bound to audit baseline c77704d86d6131d13501448af76ce24afc56ad7b; latest checked docs HEAD 143d01f87c3161deee04cd2d3c821b1e915084d1 has CI PR and docs-sync PR success. Push pair not independently verified. Not full acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段2｜商业级剪辑决策层",
+      "phase_normalization_original": "阶段 2｜商业级剪辑决策层",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A111",
@@ -9750,7 +10086,10 @@
         "docs_sync_pr_run_id": "38731016172",
         "acceptance_status_preserved": "not_audited",
         "note": "Source/test blobs remain bound to audit baseline c77704d86d6131d13501448af76ce24afc56ad7b; latest checked docs HEAD 143d01f87c3161deee04cd2d3c821b1e915084d1 has CI PR and docs-sync PR success. Push pair not independently verified. Not full acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段2｜商业级剪辑决策层",
+      "phase_normalization_original": "阶段 2｜商业级剪辑决策层",
+      "phase_mapping_confidence": "mapped"
     },
     {
       "task_id": "A112",
@@ -9869,7 +10208,10 @@
         "docs_sync_pr_run_id": "38731016172",
         "acceptance_status_preserved": "not_audited",
         "note": "Source/test blobs remain bound to audit baseline c77704d86d6131d13501448af76ce24afc56ad7b; latest checked docs HEAD 143d01f87c3161deee04cd2d3c821b1e915084d1 has CI PR and docs-sync PR success. Push pair not independently verified. Not full acceptance."
-      }
+      },
+      "normalized_roadmap_phase": "阶段2｜商业级剪辑决策层",
+      "phase_normalization_original": "阶段 2｜商业级剪辑决策层",
+      "phase_mapping_confidence": "mapped"
     }
   ],
   "source_inventory": {
@@ -11688,5 +12030,23 @@
     "overall_completion_percentage": null,
     "overall_completion_percentage_enabled": false,
     "caveat": "这些是台账/证据阶段指标，不是产品总体完成率。总体完成率须在跨来源语义去重、状态冲突裁决、权重审定和证据边界复核完成后计算。"
+  },
+  "phase_normalization": {
+    "version": "phase-normalization-v1",
+    "completed_on": "2026-10-17",
+    "method": "Normalize whitespace variants and remove provisional wording only in normalized_roadmap_phase; preserve roadmap_phase and phase_normalization_original unchanged; retain phase_mapping_confidence=provisional for uncertain mappings.",
+    "canonical_phase_counts": {
+      "阶段1｜可靠的生产底座": 52,
+      "阶段3｜AI广告编导": 3,
+      "阶段2｜商业级剪辑决策层": 14,
+      "阶段0｜路线与证据基线": 7,
+      "阶段5｜资产与制作效率深化": 5,
+      "阶段4｜AI短剧能力": 32
+    },
+    "confidence_counts": {
+      "mapped": 95,
+      "provisional": 18
+    },
+    "note": "This is label normalization only. It is not semantic deduplication, status reconciliation, phase completion, or formal acceptance."
   }
 }
