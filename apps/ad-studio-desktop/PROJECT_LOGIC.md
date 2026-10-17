@@ -1668,3 +1668,7 @@ App.generate_shot() 先确认视频目标/费用，再调用 ProductionStore.res
 ## 云端视频 Provider 后端授权合同（2026-10-17）
 
 `ProductionStore.render_shot()` 与 `render_cloud_shot()` 的云端路径必须接收用户确认时的 `authorized_endpoint`，否则在 Provider 加载/分发之前 fail-closed。Provider 加载后，实际配置 endpoint 必须与 `authorized_endpoint` 精确一致；若确认后配置改变，必须拒绝本次请求并要求重新确认，不得把旧授权用于新端点。UI 只从用户确认的 `ExecutionDecision` 快照传递 endpoint；不得在生产层重新路由到另一个端点。资产云端生成授权是独立的第二道门，拒绝后不能继续视频 Provider 调用。测试必须断言未授权时 Provider loader/dispatch 调用数为 0、端点不一致时 dispatch 为 0，以及镜头状态与版本不变。
+
+## 未知视频单价的账本合同（2026-10-17）
+
+当 `cost_price_configured=False` 时，`cost_per_shot_rmb` 的默认占位数值不能当作已知费用写入成功账本。生产层应将本次 `estimated_cost_rmb` 记为 0，并设置 `cost_status="price_missing"`；这只表示“目前没有可计入的已知金额”，不表示供应商免费。未知费用计数必须保留，真实账单对账仍是独立的外部验收。项目创建/批量生成等预估界面中是否仍把占位价显示成确定报价，需继续单独审计。
