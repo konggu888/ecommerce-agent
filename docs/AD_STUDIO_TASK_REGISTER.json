@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Finite closure contract active. C1 two cost/ledger cross-source batches closed for 10/113 slots; no IDs merged and no formal acceptance states changed. C2 full current code/test audit remains 0/113.",
+  "audit_status": "Finite closure contract active. C1 three bounded cross-source batches closed for 13/113 slots; no IDs merged and no formal acceptance states changed. C2 full current code/test audit remains 0/113.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -4510,7 +4510,28 @@
       "audit_notes": "PLAN-003 incremental review 2026-10-15 against source snapshot c14b9bf10ae80379c45e80b42224722aab8c31d7; per-file evidence SHA not independently pinned; not formal acceptance.",
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-COST-LEDGER-003",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json",
+          "docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md"
+        ],
+        "contract_role": "费用预估/确认前的输入校验：拒绝非法、非有限或负的报价，保证校验失败不调用 Provider、不变更版本。",
+        "distinction": "这是估算输入的有效性与生成前门控，不代表单价已配置、不证明总费用可可靠估算，也不替代实际费用账本/真实账单核对。",
+        "related_ids": [
+          "A50",
+          "A52",
+          "A55"
+        ],
+        "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A52",
@@ -4608,23 +4629,23 @@
       "phase_normalization_original": "阶段1｜可靠的生产底座",
       "phase_mapping_confidence": "mapped",
       "cross_source_reconciliation": {
-        "batch_id": "C1-COST-LEDGER-001",
+        "batch_id": "C1-COST-LEDGER-003",
         "status": "resolved_as_distinct_related_contract",
         "reviewed_on": "2026-10-17",
         "sources": [
           "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
           "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
           "docs/AD_STUDIO_TASK_REGISTER.json",
-          "docs/AD_STUDIO_PRODUCT_ROADMAP.md"
+          "docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md"
         ],
-        "contract_role": "Provider 失败尝试保留、失败金额不计实际、成功重试仅计一次",
-        "distinction": "记录级计费规则；不覆盖视频安装后记账失败、账本聚合或恢复迁移语义。",
+        "contract_role": "视频 Provider 调用失败尝试的审计记录、失败金额不计实际成本，以及成功重试只计一次。",
+        "distinction": "这是实际调用结果的账本记录和去重策略；与 A51 的报价输入校验、A55 的 Provider 已成功但本地账本写入失败后的产物保留属于不同故障阶段。",
         "related_ids": [
+          "A43",
+          "A51",
           "A55",
           "A57",
-          "A59",
           "A60",
-          "A61",
           "A63",
           "A64",
           "A99"
@@ -5761,7 +5782,26 @@
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-COST-LEDGER-003",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json",
+          "docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md"
+        ],
+        "contract_role": "修复历史成本迁移相关的 handoff 文案测试断言，是回归/文档修复记录，不是独立产品能力。",
+        "distinction": "A62 的存在用于追踪一次具体文案断言修复；A61 才是历史成本迁移行为合同。保留 A62 正式编号用于历史追溯，但不能将其单独计为产品功能完成。",
+        "related_ids": [
+          "A61"
+        ],
+        "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A63",
@@ -12463,6 +12503,21 @@
         "remaining_decisions": [],
         "formal_acceptance_states_changed": false,
         "next_batch": "Continue final cross-source reconciliation on the remaining related-contract/status candidates in A0-A112. Then start C2 current-source/test audit in fixed 5–10 slot batches; do not repeat inventory or phase normalization."
+      },
+      {
+        "batch_id": "C1-COST-LEDGER-003",
+        "slots": [
+          "A51",
+          "A52",
+          "A62"
+        ],
+        "slots_reconciled": 3,
+        "slots_total": 3,
+        "status": "resolved_related_but_distinct_contracts",
+        "decision": "A51 validates quote inputs before generation; A52 records provider attempt outcomes and deduplicates successful charges; A62 tracks a specific documentation assertion repair and is not a standalone product feature. They are related but distinct; A62 remains linked to A61 for historical migration wording.",
+        "remaining_decisions": [],
+        "formal_acceptance_states_changed": false,
+        "next_batch": "C1-COST-LEDGER-004: reconcile A55/A59/A60/A63/A64/A65/A99 against the broader recovery, cost-unknown and usage-ledger requirements, recording only actual overlap/conflicts; then continue remaining unresolved candidates."
       }
     ]
   },
@@ -12654,8 +12709,8 @@
         "name": "跨来源身份与状态裁决",
         "status": "in_progress",
         "exit": "all 113 slots reconciled against plan, SOP, roadmap, register; unresolved decisions 0",
-        "last_completed_batch": "C1-COST-LEDGER-002",
-        "slots_with_final_documented_cross_source_decision": 10
+        "last_completed_batch": "C1-COST-LEDGER-003",
+        "slots_with_final_documented_cross_source_decision": 13
       },
       {
         "id": "C2",
@@ -12692,9 +12747,9 @@
         "definition": "Slots with current code/test audit and explicit terminal disposition divided by 113; inventory mapping or evidence pointers alone do not count."
       },
       "c1_cross_source_reconciliation": {
-        "numerator": 10,
+        "numerator": 13,
         "denominator": 113,
-        "percent": 8.8,
+        "percent": 11.5,
         "definition": "Slots with a documented cross-source identity/status decision, including explicit related-but-distinct decisions; does not mean code/test audit or formal acceptance."
       },
       "c2_current_code_test_audit": {
