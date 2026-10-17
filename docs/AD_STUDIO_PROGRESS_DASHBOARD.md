@@ -1,11 +1,11 @@
 ## 【实时权威进度｜2026-10-17｜优先于下方所有历史快照】
 
-- 仓库/分支：konggu888/ecommerce-agent / feat/product-drama-visual-review；PR #32 必须保持 Open/unmerged。
-- 最近一次已确认四项全绿的基线：91de09e10fbac7ccf5d82c791cb2ab60ab6ac0a6。该 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR 均 success。
-- 随后本轮修复：7bdcb6cc043e20d3374b344a3b384d7fc115c81d（云端 render_shot / render_cloud_shot 透传资产授权回调），84e92d191d85e06bef50f3913a8b589bc3a23131（mock 回归测试）；本次文档同步会产生新 HEAD。后续 SHA 的最终 CI 状态须实时核验。
-- 当前审计结果：单镜头 UI 有目的地/费用确认；资产云端生成有显式授权回调，UI 已逐项确认；费用未知状态与 endpoint 脱敏/账本重载有测试。新发现的云端回调丢失问题已修复并加 mock 测试，等待最终 HEAD CI 验证。
-- 当前唯一下一步：先核验最终 HEAD 的 CI Push、CI PR、docs-sync Push、docs-sync PR；全部通过后，继续对照 A13/A29/A51–A65 审计短剧商品镜头重新生成和所有剩余 Provider 入口，验证取消后调用计数为 0、无不必要状态/版本变更。然后检查用户自定义资产库路径下 UI 读取的资产费用配置与实际生成配置是否同源。不新增 A113+；不改 A0–A112 正式状态；PR #32 不合并。
-- 不做真实 Provider/扣费/Windows 真机测试；总体完成率关闭。
+- 仓库/分支：konggu888/ecommerce-agent / feat/product-drama-visual-review；PR #32 保持 Open/unmerged。
+- 最近一次四项 CI/docs-sync 全绿基线：735f8ac663574055995788df4106758f0e355f09。随后短剧重生成费用语义修复、测试及本次文档提交的最终 HEAD 必须重新核验。
+- 已完成：云端视频渲染入口透传资产授权回调；短剧商品镜头重生成准备步骤按 CapabilityRouter 当前目标显示目的地与费用确定性；本地路由记录本地无 Provider 费用，云端价格缺失时保存 None + price_missing，不再把未知费用记成数字 0。mock 测试覆盖未知费用保存及非法伪装为零的拒绝。
+- 说明：短剧“重新生成”按钮只是准备新版本，不发送 Provider 请求；真正生成时由“生成本镜头”再次确认实际端点/费用。该确认不是 A 编号正式验收结论。
+- 当前唯一下一步：核验最终 HEAD 四项 CI/docs-sync；通过后审计剩余 Provider 入口，重点检查自定义资产库路径下 UI 读取的资产费用配置与实际生成配置是否同源，并继续对照 A13/A29/A51–A65。A0–A112 不变，不新增 A113+，PR #32 不合并；真实 Provider/扣费/Windows 真机暂缓。
+
 
 
 ---

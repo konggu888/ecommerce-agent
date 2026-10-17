@@ -1,11 +1,11 @@
 ## 【实时接手状态｜2026-10-17｜以此段优先】
 
 - 仓库 konggu888/ecommerce-agent；分支 feat/product-drama-visual-review；PR #32 保持 Open/unmerged。
-- 最近一次已确认四项全绿的基线：91de09e10fbac7ccf5d82c791cb2ab60ab6ac0a6。该 SHA 的 CI Push、CI PR、docs-sync Push、docs-sync PR 均 success。
-- 随后新增云端授权回调透传修复 7bdcb6cc043e20d3374b344a3b384d7fc115c81d、测试 84e92d191d85e06bef50f3913a8b589bc3a23131 和本次文档同步；最终 HEAD CI 必须重新核验。
-- 本轮发现并修复 render_shot() 云端分支丢失 authorize_cloud，以及 render_cloud_shot() 不支持透传回调的问题。新增 mock 测试不触发真实网络。
-- 下一步：先核验最终 HEAD 四项 CI/docs-sync；通过后继续审计短剧商品镜头重新生成、批量视频入口和 A13/A29/A51–A65 合同边界，验证取消后 Provider 调用计数为 0、状态/版本不变。然后检查自定义资产库路径下 UI 费用配置与实际生成配置是否同源。不新增 A113+；不改 A0–A112；PR #32 不合并。
-- 真实 Provider、实际扣费、Windows 真机、真实素材/剪映/投放仍暂缓。
+- 最近一次已确认四项全绿的基线：735f8ac663574055995788df4106758f0e355f09。随后新增短剧重生成费用语义修复、测试与本次文档同步，最终 HEAD CI 必须重新核验。
+- 已修复云端 render_shot / render_cloud_shot 透传 authorize_cloud；新增 mock 测试。短剧商品镜头重生成准备步骤现在根据当前路由区分本地零 Provider 费用、已配置云端价格和未知价格；历史记录可保存 None + price_missing，不再把未知费用伪装成 ¥0。
+- 该按钮仅准备新版本，不发送 Provider 请求；真正生成时仍需通过单镜头目的地/费用确认。
+- 下一步：核验最终 HEAD 四项 CI/docs-sync；通过后继续审计剩余 Provider 入口与自定义资产库路径下 UI 费用配置/实际生成配置同源性。A0–A112 不变，PR #32 不合并；真实 Provider/扣费/Windows 真机仍暂缓。
+
 
 
 ---

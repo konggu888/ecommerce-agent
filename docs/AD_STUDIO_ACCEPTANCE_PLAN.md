@@ -1789,3 +1789,10 @@ A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/
 - 新增离线 mock 测试验证回调身份/参数传递；不证明真实端点、真实费用或 Windows 真机行为。
 - 最新修复和测试提交后的 CI/docs-sync 必须按最终 HEAD 核验。A0–A112 正式验收状态保持原样。
 
+## PLAN-003 / UXS-2 短剧重生成费用确定性｜2026-10-17
+
+- 合同映射：A13（路由/授权）、A29（数据边界）、A51–A65（费用/账本）；不新增编号，不改正式验收状态。
+- 短剧商品镜头重生成按钮只准备新版本。现按 CapabilityRouter 当前目标展示本地/云端目的地；本地费用记为 local_no_provider_charge，云端未配置价格时保存 estimated_cost_rmb=null 与 estimated_cost_status=price_missing。
+- helper 拒绝将 unknown/price_missing 状态与数字金额混用；新增离线测试覆盖未知费用保留和误记为零的拒绝。
+- 真正生成时仍需单镜头 UI 重新确认当时实际端点与费用；不代表真实 Provider 或账单验收。
+

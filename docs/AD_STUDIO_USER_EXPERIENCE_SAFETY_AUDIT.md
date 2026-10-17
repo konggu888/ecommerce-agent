@@ -470,3 +470,10 @@
 - 修复提交 7bdcb6cc043e20d3374b344a3b384d7fc115c81d 与测试提交 84e92d191d85e06bef50f3913a8b589bc3a23131 尚需以最终文档 HEAD 的 CI/docs-sync 结果为准。此项不等于 A13/A29 或任何 A 编号正式验收通过。
 - 下一步：核验最新 SHA 四项工作流；若通过，继续审计短剧商品镜头重新生成、批量视频入口和 A13/A29/A51–A65 合同边界。A0–A112 不变，PR #32 保持 Open/unmerged。
 
+### O. 短剧商品镜头重生成准备阶段的费用确定性｜2026-10-17
+
+- 原实现无条件读取云端 video-provider.json 的单镜头价格，即使 CapabilityRouter 当前选择本地服务也展示云端费用；价格未配置时还可能用默认数值呈现，费用信息与实际执行路由不一致。
+- 已改为先读取当前路由：本地路径显示 ¥0 Provider 费用（明确不含本机电费/硬件成本）；云端只有存在明确配置价格时显示金额；否则显示未知并将历史 estimated_cost_rmb 保存为 null、estimated_cost_status 保存为 price_missing。
+- prepare_product_drama_shot_regeneration 保留未知/缺价语义，拒绝把 unknown/price_missing 与数字金额混用；新增离线测试覆盖 None 持久化和伪装为 0 的拒绝。
+- 此按钮只准备新版本，不触发 Provider；实际生成仍由单镜头生成入口确认真实端点/费用。最新修复/测试 SHA bb2809f5711902b9696551b40b08d7218586cf2f、74d53859cf0f1716c77ebf6b95880bc62c03f2aa、593cac61538690027f837502928914f02c99c328、e300c1ca6d6b44327ee3314abb075ee22ecb7ce7 的 CI 尚需最终 HEAD 核验。
+

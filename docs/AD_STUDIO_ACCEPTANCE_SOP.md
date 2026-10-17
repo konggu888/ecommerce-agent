@@ -1688,3 +1688,10 @@ A57 的无账本旧项目、A60 的 failed-only 账本均已有恢复行为测�
 3. 测试不得访问真实 Provider/网络；拒绝路径另需断言 Provider 调用数为 0、镜头状态/版本未变化。
 4. 只有最终 HEAD 的 CI 与 docs-sync 通过才可记作自动化测试通过；这仍不是 A13/A29/A51–A65 的正式验收结论。
 
+### 短剧商品镜头重生成费用确定性回归｜2026-10-17
+
+1. 当前路由为本地时，准备步骤显示本地目的地并将 Provider 费用标记为 local_no_provider_charge；不把电费/硬件成本计入 Provider 费。
+2. 当前路由为云端且明确配置价格时保存配置估算；未配置价格时保存金额 null 与 price_missing，不显示伪造的零金额。
+3. 对 prepare_product_drama_shot_regeneration 测试 None + price_missing 的持久化；测试 price_missing + 0.0 必须失败。
+4. 确认该按钮只准备新版本、不调用 Provider；真实生成必须由单镜头生成入口再次披露目的地/费用。仅 mock/CI 证据不等于真实账单验收。
+
