@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 73/113; C2 direct current source/test audits 55/113; strict task closure 0/113. Both tracked cross-cutting P0 blocker families have bounded fixes and latest CI/docs-sync success. Formal acceptance states unchanged.",
+  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 73/113; C2 direct current source/test audits 60/113; strict task closure 0/113. Both tracked cross-cutting P0 blocker families have bounded fixes and latest CI/docs-sync success. Formal acceptance states unchanged.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -8483,7 +8483,50 @@
           "formal_acceptance_state_preserved": "not_audited",
           "no_id_merge_or_status_change": true
         }
-      ]
+      ],
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-012",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_successful_video_cost_recovery_gap",
+        "severity": "P1 financial state recovery gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/usage_ledger.py",
+            "blob_sha": "ed5b873a41f0b16a1ddeb9dd041dee53e70ed4bc",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "A failure-injected ledger test verifies a successfully installed video is not downgraded to Provider failure and the project records cost-pending recovery state. It does not prove a real Provider charge, and the broader contract should explicitly assert reopened project state, no automatic duplicate ledger write, and a user-visible reconciliation next step.",
+        "confirmed_gaps": [
+          "A failure-injected ledger test verifies a successfully installed video is not downgraded to Provider failure and the project records cost-pending recovery state. It does not prove a real Provider charge, and the broader contract should explicitly assert reopened project state, no automatic duplicate ledger write, and a user-visible reconciliation next step."
+        ],
+        "next_action": "Extend or map the save/reload assertion for new video path/status/recovery history and verify reopening does not silently retry or double-book the charge; external invoice remains C5.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
+      }
     },
     {
       "task_id": "A56",
@@ -8583,6 +8626,44 @@
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false,
         "prior_decision_preserved": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-012",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "historical_regression_record_shared_A50_test",
+        "severity": "P2 historical regression evidence boundary",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "A56 documents a CI-detected prompt escaping regression after A55 refactoring and its fix. The same A50 test now protects the exact production prompt call path; no separate A56 behavior test exists, so A56 is a regression-history/repair record rather than an independent product capability.",
+        "confirmed_gaps": [
+          "A56 documents a CI-detected prompt escaping regression after A55 refactoring and its fix. The same A50 test now protects the exact production prompt call path; no separate A56 behavior test exists, so A56 is a regression-history/repair record rather than an independent product capability."
+        ],
+        "next_action": "Keep A56 linked to A50's regression test and historical CI fix; do not double-count it as a separate prompt feature or merge away its historical trace.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
       }
     },
     {
@@ -8767,6 +8848,49 @@
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false,
         "prior_decision_preserved": true
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-012",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_compound_recovery_ui_and_cost_reconciliation",
+        "severity": "P1 recovery and financial UI evidence gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/app.py",
+            "blob_sha": "a5fe9fe67b5e0c2e5183a72091de257a006d4bff",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "Tests cover ledger-based cost reconciliation on project reopen, preserving legacy costs when no ledger rows exist, and the cost-pending UI not displaying a normal actual-cost total. A57 contains two obligations: open-project recovery summary and successful-video/cost-ledger-pending UI; these are tested separately but not as one end-to-end reopened UI flow. Real billing and Windows UI remain deferred.",
+        "confirmed_gaps": [
+          "Tests cover ledger-based cost reconciliation on project reopen, preserving legacy costs when no ledger rows exist, and the cost-pending UI not displaying a normal actual-cost total. A57 contains two obligations: open-project recovery summary and successful-video/cost-ledger-pending UI; these are tested separately but not as one end-to-end reopened UI flow. Real billing and Windows UI remain deferred."
+        ],
+        "next_action": "Map both A57 sub-obligations to their individual tests and add a state-level integration assertion that cost-pending status survives reopen and still suppresses the normal actual total.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
       }
     },
     {
@@ -8883,6 +9007,49 @@
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false,
         "prior_decision_preserved": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-012",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_visual_evidence_validation_zero_model_call_gap",
+        "severity": "P1 evidence integrity gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+            "blob_sha": "ea9254063b1370e31106b56405d2c2733ebc7546",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/app.py",
+            "blob_sha": "a5fe9fe67b5e0c2e5183a72091de257a006d4bff",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_short_drama.py",
+            "blob_sha": "c5800b533ea0bbc33aaf0b363cf7bd7ef5665027",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "Short-drama visual comparison rejects missing/empty/unsupported reference or target evidence and invalid modes; tests cover several invalid files. Existing audit mapping found no direct model-call counter assertion for every invalid input branch and no complete video frame extraction/FFmpeg cleanup path test. Invalid input must not mutate verification state or invoke a visual model.",
+        "confirmed_gaps": [
+          "Short-drama visual comparison rejects missing/empty/unsupported reference or target evidence and invalid modes; tests cover several invalid files. Existing audit mapping found no direct model-call counter assertion for every invalid input branch and no complete video frame extraction/FFmpeg cleanup path test. Invalid input must not mutate verification state or invoke a visual model."
+        ],
+        "next_action": "Add a fake visual router call counter and compare verification state before/after each invalid reference/target/mode case; add FFmpeg/FFprobe missing/extraction-failure cleanup coverage under A58/A34 without creating new IDs.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
       }
     },
     {
@@ -9046,7 +9213,50 @@
           "formal_acceptance_state_preserved": "not_audited",
           "no_id_merge_or_status_change": true
         }
-      ]
+      ],
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-012",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_ledger_single_source_aggregation_entrypoint_matrix_gap",
+        "severity": "P1 cost correctness evidence gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/usage_ledger.py",
+            "blob_sha": "ed5b873a41f0b16a1ddeb9dd041dee53e70ed4bc",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "UsageLedger project_summary and successful-ledger reconciliation are tested for stale project snapshots and failed rows not contributing actual cost; cost_estimate.actual fields are synchronized. The audit has not enumerated every fee-writing path to prove each uses the same single source of truth after save/reload and migration/failure branches.",
+        "confirmed_gaps": [
+          "UsageLedger project_summary and successful-ledger reconciliation are tested for stale project snapshots and failed rows not contributing actual cost; cost_estimate.actual fields are synchronized. The audit has not enumerated every fee-writing path to prove each uses the same single source of truth after save/reload and migration/failure branches."
+        ],
+        "next_action": "Enumerate all _record_actual_cost/write_ledger call sites and add a table-driven post-write summary assertion for video, actor, scene, product asset and migrated legacy entries; keep actual invoice reconciliation separate.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
+      }
     },
     {
       "task_id": "A60",
@@ -16770,6 +16980,68 @@
         "Formal acceptance states unchanged."
       ],
       "next_step": "C2-FOUNDATION-012: audit A55-A59; after the bounded source/test audit reaches A59, begin C3 deterministic remediation on already confirmed gaps, prioritizing A34 evidence call-count/persistence tests and A63 save/reload after migrated-cost write failure."
+    },
+    {
+      "batch_id": "C2-FOUNDATION-012",
+      "range": "A55-A59",
+      "status": "partial_current_source_test_audit_gaps_recorded",
+      "audited_at": "2026-10-17",
+      "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+      "latest_ci": {
+        "pr_ci_run_id": 39018653867,
+        "pr_ci_conclusion": "success",
+        "pr_docs_sync_run_id": 39018653864,
+        "pr_docs_sync_conclusion": "success",
+        "push_runs": "not_independently_verified_by_available_workflow_query"
+      },
+      "reviewed_sources": [
+        "apps/ad-studio-desktop/ad_studio/production.py",
+        "apps/ad-studio-desktop/ad_studio/usage_ledger.py",
+        "apps/ad-studio-desktop/ad_studio/short_drama.py",
+        "apps/ad-studio-desktop/ad_studio/app.py"
+      ],
+      "reviewed_tests": [
+        "apps/ad-studio-desktop/test_desktop.py",
+        "apps/ad-studio-desktop/test_short_drama.py"
+      ],
+      "tasks": [
+        {
+          "id": "A55",
+          "status": "partial_successful_video_cost_recovery_gap",
+          "finding": "A failure-injected ledger test verifies a successfully installed video is not downgraded to Provider failure and the project records cost-pending recovery state. It does not prove a real Provider charge, and the broader contract should explicitly assert reopened project state, no automatic duplicate ledger write, and a user-visible reconciliation next step.",
+          "next_action": "Extend or map the save/reload assertion for new video path/status/recovery history and verify reopening does not silently retry or double-book the charge; external invoice remains C5."
+        },
+        {
+          "id": "A56",
+          "status": "historical_regression_record_shared_A50_test",
+          "finding": "A56 documents a CI-detected prompt escaping regression after A55 refactoring and its fix. The same A50 test now protects the exact production prompt call path; no separate A56 behavior test exists, so A56 is a regression-history/repair record rather than an independent product capability.",
+          "next_action": "Keep A56 linked to A50's regression test and historical CI fix; do not double-count it as a separate prompt feature or merge away its historical trace."
+        },
+        {
+          "id": "A57",
+          "status": "partial_compound_recovery_ui_and_cost_reconciliation",
+          "finding": "Tests cover ledger-based cost reconciliation on project reopen, preserving legacy costs when no ledger rows exist, and the cost-pending UI not displaying a normal actual-cost total. A57 contains two obligations: open-project recovery summary and successful-video/cost-ledger-pending UI; these are tested separately but not as one end-to-end reopened UI flow. Real billing and Windows UI remain deferred.",
+          "next_action": "Map both A57 sub-obligations to their individual tests and add a state-level integration assertion that cost-pending status survives reopen and still suppresses the normal actual total."
+        },
+        {
+          "id": "A58",
+          "status": "partial_visual_evidence_validation_zero_model_call_gap",
+          "finding": "Short-drama visual comparison rejects missing/empty/unsupported reference or target evidence and invalid modes; tests cover several invalid files. Existing audit mapping found no direct model-call counter assertion for every invalid input branch and no complete video frame extraction/FFmpeg cleanup path test. Invalid input must not mutate verification state or invoke a visual model.",
+          "next_action": "Add a fake visual router call counter and compare verification state before/after each invalid reference/target/mode case; add FFmpeg/FFprobe missing/extraction-failure cleanup coverage under A58/A34 without creating new IDs."
+        },
+        {
+          "id": "A59",
+          "status": "partial_ledger_single_source_aggregation_entrypoint_matrix_gap",
+          "finding": "UsageLedger project_summary and successful-ledger reconciliation are tested for stale project snapshots and failed rows not contributing actual cost; cost_estimate.actual fields are synchronized. The audit has not enumerated every fee-writing path to prove each uses the same single source of truth after save/reload and migration/failure branches.",
+          "next_action": "Enumerate all _record_actual_cost/write_ledger call sites and add a table-driven post-write summary assertion for video, actor, scene, product asset and migrated legacy entries; keep actual invoice reconciliation separate."
+        }
+      ],
+      "limitations": [
+        "Fake provider and ledger fault injection do not prove real external billing.",
+        "Visual evidence file validation does not prove evidence content or real visual correctness.",
+        "Formal acceptance states unchanged."
+      ],
+      "next_step": "C2-FOUNDATION-013: audit A60-A64; then start C3 deterministic remediation, prioritizing A34/A58 zero-call and persistence coverage, A63 save/reload, and A67 evidence invalidation. No new acceptance IDs."
     }
   ],
   "last_reconciled_against_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
@@ -17494,10 +17766,10 @@
         "id": "C2",
         "name": "当前代码与专项测试审计",
         "status": "in_progress",
-        "completed_slots": 55,
+        "completed_slots": 60,
         "total_slots": 113,
         "exit": "all 113 slots have current source/test evidence and explicit audit result",
-        "last_completed_batch": "C2-FOUNDATION-011"
+        "last_completed_batch": "C2-FOUNDATION-012"
       },
       {
         "id": "C3",
@@ -17533,9 +17805,9 @@
         "definition": "Unique formal task IDs with documented cross-source identity/status decisions; repeated IDs count once. This is not code/test audit or formal acceptance."
       },
       "c2_current_code_test_audit": {
-        "numerator": 55,
+        "numerator": 60,
         "denominator": 113,
-        "percent": 48.7,
+        "percent": 53.1,
         "definition": "Slots with direct current source/test inspection and a written audit result; partial findings count as audit coverage, not acceptance pass."
       },
       "c3_blocking_defects": {
