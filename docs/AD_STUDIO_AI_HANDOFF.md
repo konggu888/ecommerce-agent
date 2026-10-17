@@ -918,3 +918,7 @@ ModelRouter 现有项目上下文默认值与 set_project_context()，新建项�
 
 短剧商品镜头重生成准备步骤现在按 CapabilityRouter 目标显示本地/云端目的地；本地费用标记 local_no_provider_charge，云端缺价保存 null + price_missing，不再用默认 ¥0 或默认价格误导用户。此按钮只准备新版本，实际 Provider 请求仍由单镜头生成确认。最新权威状态和下一步见 SESSION_HANDOFF.md 与 AD_STUDIO_PROGRESS_DASHBOARD.md 顶部；最终 HEAD CI 必须实时查询。
 
+## 2026-10-17｜实拍素材重新分析授权更新
+
+重新分析实拍素材现会在扫描前披露素材剪辑导演/口播转写实际端点、关键帧/音频数据类别和费用未知信息；取消后不扫描、不归档、不调用模型/Provider。资产 Provider 配置路径已确认与 UI 同源。下一步为核验最终 HEAD 四项 CI/docs-sync，并继续审计用户拍摄素材项目创建时的端到端预算与外发授权顺序。
+

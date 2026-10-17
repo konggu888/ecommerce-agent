@@ -293,3 +293,10 @@ AssetGenerator.generate、ProductionStore.resolve_assets、ProductionStore.gener
 - 该按钮只准备新版本，不调用 Provider；真正生成由单镜头生成入口再次确认实际目的地和费用。
 - 继续同步 HELP、PROJECT_LOGIC、验收计划/SOP、审计、dashboard、handoff 和 roadmap；不新增 A113+，不更改 A0–A112 正式状态。
 
+## UXS-2 实拍素材重新分析授权规则｜2026-10-17
+
+- reanalyze_footage() 必须在扫描素材、抽取关键帧、视觉模型请求、音频转写和废片归档之前展示实际路由、脱敏 endpoint、关键帧/音频数据类别及费用未知说明。
+- 用户取消时不得扫描/移动/归档素材，也不得调用模型/Provider；必须有 mock 调用计数和状态副作用测试。
+- UI 与 AssetGenerator 的 asset-generation.json 配置必须同源于 app config root；自定义 library_root 只影响素材文件位置。
+- 继续同步 HELP、PROJECT_LOGIC、验收计划/SOP、审计、dashboard、handoff 和 roadmap；不新增 A113+，不更改 A0–A112 正式状态。
+

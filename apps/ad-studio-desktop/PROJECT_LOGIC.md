@@ -1650,3 +1650,9 @@ App.generate_shot() 先确认视频目标/费用，再调用 ProductionStore.res
 - prepare_product_drama_shot_regeneration() 接受可空费用，保存 estimated_cost_status，并拒绝将 unknown/price_missing 与数值金额混用。
 - 此步骤只准备新版本，不调用 Provider。之后实际生成仍通过 generate_shot() 进行独立的实际端点/费用确认，防止把准备阶段当作生成授权。
 
+## 2026-10-17｜实拍素材重新分析授权顺序
+
+- reanalyze_footage() 在 scan_footage、build_visual_manifest、analyze_footage、extract_audio/transcribe_footage_audio 及 archive_analyzed_waste 之前调用 build_footage_reanalysis_consent_detail 并取得明确确认。
+- 确认说明包含素材剪辑导演实际路由/脱敏 endpoint、关键帧/元数据外发类别、口播转写路由/音频类别和费用未知说明；拒绝后立即返回，不扫描/归档素材、不发起模型/Provider 请求。
+- 资产 Provider 配置文件固定为 app config root 下的 asset-generation.json；自定义 library_root 只改变素材库物理目录。
+
