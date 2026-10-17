@@ -2636,6 +2636,10 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertIn("镜头数尚未生成", detail)
         self.assertIn("规划完成后", detail)
         self.assertIn("取消后不会读取商品页面或调用模型/Provider", detail)
+        self.assertIn("关键帧视觉分析", detail)
+        self.assertIn("口播转写", detail)
+        self.assertIn("可能发生在最终视频/资产报价前并可能产生费用", detail)
+        self.assertIn("后续视频/资产生成不在本确认授权内", detail)
 
 
     def test_per_shot_provider_consent_discloses_destination_and_redacts_secrets(self):
