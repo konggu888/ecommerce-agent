@@ -2893,7 +2893,7 @@ class DesktopCoreTests(unittest.TestCase):
     def test_cloud_video_entrypoints_reject_endpoint_changed_after_consent(self):
         from types import SimpleNamespace
         from unittest.mock import Mock, patch
-        from ad_studio.providers import GenericVideoProvider
+        from ad_studio.providers import GenericVideoProvider, UnconfiguredProvider
 
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
@@ -2909,7 +2909,7 @@ class DesktopCoreTests(unittest.TestCase):
             changed_provider = GenericVideoProvider(
                 endpoint="https://changed.example/generate", api_key="test-key"
             )
-            with patch("ad_studio.production.load_video_provider", return_value=changed_provider):
+            with patch("ad_studio.production.load_video_provider", side_effect=[changed_provider, UnconfiguredProvider(), changed_provider]):
                 with self.assertRaisesRegex(RuntimeError, "端点与用户确认时不一致"):
                     store.render_shot(
                         project, shot, config_root=root, decision=decision,
