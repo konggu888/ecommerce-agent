@@ -3099,12 +3099,24 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertLess(budget_gate, persist)
         self.assertLess(persist, denial)
 
-if __name__ == "__main__":
-    unittest.main()
 # A30 recovery regression: re-run CI after persisted-manifest recovery fix.
 
 
 class UnknownVideoPriceEstimateTests(unittest.TestCase):
+    def test_provider_placeholder_rate_is_unknown_until_explicitly_configured(self):
+        from ad_studio.app import configured_video_price
+        from ad_studio.providers import GenericVideoProvider
+
+        placeholder = GenericVideoProvider(endpoint="https://video.example/generate", api_key="test")
+        self.assertIsNone(configured_video_price(placeholder))
+        explicit_zero = GenericVideoProvider(
+            endpoint="https://video.example/generate",
+            api_key="test",
+            cost_per_shot_rmb=0.0,
+            cost_price_configured=True,
+        )
+        self.assertEqual(configured_video_price(explicit_zero), 0.0)
+
     def test_unknown_video_price_is_not_rendered_as_zero_or_placeholder_total(self):
         estimate = estimate_cost(3, {"cloud_video_per_shot": None})
         self.assertTrue(estimate["费用未知"])
@@ -3131,3 +3143,6 @@ class UnknownVideoPriceEstimateTests(unittest.TestCase):
         self.assertIn("if unknown_price:", source)
         self.assertIn("def create_short_drama_production_project", source)
         self.assertIn("是否仍继续？", source)
+
+if __name__ == "__main__":
+    unittest.main()
