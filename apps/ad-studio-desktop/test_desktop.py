@@ -2914,7 +2914,7 @@ class DesktopCoreTests(unittest.TestCase):
                        side_effect=[provider, UnconfiguredProvider()]):
                 result = store.render_shot(
                     project, shot, config_root=root, decision=decision,
-                    authorize_cloud=callback,
+                    authorize_cloud=callback, video_authorized=True,
                 )
             self.assertEqual(result, "mock-render")
             dispatch.assert_called_once_with(
@@ -2925,7 +2925,7 @@ class DesktopCoreTests(unittest.TestCase):
             with patch("ad_studio.production.load_video_provider", return_value=provider):
                 result = store.render_cloud_shot(
                     project, shot, root / "video-provider.json",
-                    authorize_cloud=callback,
+                    authorize_cloud=callback, video_authorized=True,
                 )
             self.assertEqual(result, "mock-render")
             dispatch.assert_called_once_with(
