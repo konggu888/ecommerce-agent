@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 66/113; C2 direct current source/test audits 20/113; strict task closure 0/113. Both tracked cross-cutting P0 blocker families have bounded fixes and latest CI/docs-sync success. Formal acceptance states unchanged.",
+  "audit_status": "Finite closure contract active. C1 cross-source decisions 66/113; C2 direct current source/test audits 25/113; strict task closure 0/113. Both cross-cutting P0 defect families have bounded fixes and latest CI/docs-sync success. A23 broad risk-control matrix remains a confirmed acceptance gap to triage under existing A23; formal acceptance states unchanged.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -3320,6 +3320,54 @@
         "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-005",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_creative_fact_audit_with_missing_info_ui_gap",
+        "severity": "P1 acceptance evidence gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/model_router.py",
+            "blob_sha": "6c69b0b7087f47ea9b2ae09ac7965fa3c1d7625e",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/app.py",
+            "blob_sha": "a5fe9fe67b5e0c2e5183a72091de257a006d4bff",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_model_router.py",
+            "blob_sha": "2a4d19aacb970637d11b19688ce72ce95a801d35",
+            "claim": "Relevant deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          },
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Relevant deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "audit_creative_factual_consistency flags unsupported selling points, forbidden terms, high-risk absolute wording and missing product data; tests cover these positive/negative cases and prompt-level no-invention boundaries. The full A20 contract also requires user-visible missing-data feedback and consistent use of the configured forbidden-term source across creation, edits and final recheck; those end-to-end UI paths are not fully proven.",
+        "confirmed_gaps": [
+          "audit_creative_factual_consistency flags unsupported selling points, forbidden terms, high-risk absolute wording and missing product data; tests cover these positive/negative cases and prompt-level no-invention boundaries. The full A20 contract also requires user-visible missing-data feedback and consistent use of the configured forbidden-term source across creation, edits and final recheck; those end-to-end UI paths are not fully proven."
+        ],
+        "next_action": "Map the forbidden-term source and missing-product-data UI paths to deterministic assertions, including post-edit recheck; preserve unknown facts as unknown and never upgrade an AI suggestion to a verified fact.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded. Real visual accuracy/Windows interaction remain separate."
       }
     },
     {
@@ -3401,6 +3449,54 @@
         "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-005",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_storyboard_fact_traceability_gap",
+        "severity": "P1 acceptance evidence gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/model_router.py",
+            "blob_sha": "6c69b0b7087f47ea9b2ae09ac7965fa3c1d7625e",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/app.py",
+            "blob_sha": "a5fe9fe67b5e0c2e5183a72091de257a006d4bff",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_model_router.py",
+            "blob_sha": "2a4d19aacb970637d11b19688ce72ce95a801d35",
+            "claim": "Relevant deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          },
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Relevant deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "audit_storyboard_fact_consistency maps shot descriptions/subtitles to supplied selling points and explicitly leaves appearance/function/obscuration fields as '待视觉复核'; tests assert supported-fact matching and that text checks do not claim visual verification. Missing are full function/appearance/source traceability and an end-to-end recheck after manual edits across all variants.",
+        "confirmed_gaps": [
+          "audit_storyboard_fact_consistency maps shot descriptions/subtitles to supplied selling points and explicitly leaves appearance/function/obscuration fields as '待视觉复核'; tests assert supported-fact matching and that text checks do not claim visual verification. Missing are full function/appearance/source traceability and an end-to-end recheck after manual edits across all variants."
+        ],
+        "next_action": "Add/map clause-level assertions for product facts through shot fields, subtitles/voiceover and manual-edit recheck; retain explicit visual-review state unless supported by actual visual evidence.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded. Real visual accuracy/Windows interaction remain separate."
       }
     },
     {
@@ -3483,6 +3579,59 @@
         "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-005",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_visual_risk_mapping_gap",
+        "severity": "P1 acceptance evidence gap; real visual accuracy deferred",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/model_router.py",
+            "blob_sha": "6c69b0b7087f47ea9b2ae09ac7965fa3c1d7625e",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/footage.py",
+            "blob_sha": "b94ae2ddfe779e5cf951bc541ab07a29012f7083",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/app.py",
+            "blob_sha": "a5fe9fe67b5e0c2e5183a72091de257a006d4bff",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_model_router.py",
+            "blob_sha": "2a4d19aacb970637d11b19688ce72ce95a801d35",
+            "claim": "Relevant deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          },
+          {
+            "path": "apps/ad-studio-desktop/test_footage.py",
+            "blob_sha": "8ff007acfd3f174ce6c181c53a2dc96e68fa0337",
+            "claim": "Relevant deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "audit_visual_fact_consistency maps observed footage tags such as blocked/blur/shake and unusable clips to variant-shot risks; a test verifies blocked-product risk and selling-point mapping. The helper depends on upstream visual-analysis output and does not prove extraction/provider analysis success, unknown or unanalyzed frames being treated as unconfirmed in every path, or real visual classifier accuracy.",
+        "confirmed_gaps": [
+          "audit_visual_fact_consistency maps observed footage tags such as blocked/blur/shake and unusable clips to variant-shot risks; a test verifies blocked-product risk and selling-point mapping. The helper depends on upstream visual-analysis output and does not prove extraction/provider analysis success, unknown or unanalyzed frames being treated as unconfirmed in every path, or real visual classifier accuracy."
+        ],
+        "next_action": "Map no-analysis/empty-analysis and blur/shake/unusable-source cases to deterministic tests; verify every selected footage item maps to a source and risk disposition. Real visual accuracy remains C5.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded. Real visual accuracy/Windows interaction remain separate."
       }
     },
     {
@@ -3568,6 +3717,49 @@
         "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-005",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_risk_control_and_authorization_evidence_gap",
+        "severity": "P1 security/authorization acceptance evidence gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/app.py",
+            "blob_sha": "a5fe9fe67b5e0c2e5183a72091de257a006d4bff",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Relevant deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "Current source/test evidence proves explicit per-action destination/fee authorization and a final-delivery gate that blocks recorded fact/visual risks and AI shots awaiting human review. No dedicated risk-controller module/test suite was found at the inspected desktop paths to prove the full A23 matrix of permission levels, human approval, Dry-run behavior, persistent Audit Log and prohibition of every unauthorized real write operation. A final-render gate is not a substitute for a general action-permission system.",
+        "confirmed_gaps": [
+          "Current source/test evidence proves explicit per-action destination/fee authorization and a final-delivery gate that blocks recorded fact/visual risks and AI shots awaiting human review. No dedicated risk-controller module/test suite was found at the inspected desktop paths to prove the full A23 matrix of permission levels, human approval, Dry-run behavior, persistent Audit Log and prohibition of every unauthorized real write operation. A final-render gate is not a substitute for a general action-permission system."
+        ],
+        "next_action": "Map every existing A23 risk action to a real code path and deterministic positive/negative test; where a requirement has no implementation, record it as a blocker linked to A23 before adding code. Do not invoke real external write actions.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded. Real visual accuracy/Windows interaction remain separate."
       }
     },
     {
@@ -3649,6 +3841,49 @@
         "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-005",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_final_gate_positive_cases_exist_combination_matrix_gap",
+        "severity": "P1 safety acceptance evidence gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/app.py",
+            "blob_sha": "a5fe9fe67b5e0c2e5183a72091de257a006d4bff",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Relevant deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "ProductionStore.final_render_gate blocks unsupported selling points, forbidden terms, high-risk claims, recorded visual risks and AI-generated shots awaiting review; tests verify multiple explicit risk classes and that build_final refuses output when the gate blocks. Full combination coverage, malformed/missing audit objects and whether all risk sources are included before every final-output path are not completely established.",
+        "confirmed_gaps": [
+          "ProductionStore.final_render_gate blocks unsupported selling points, forbidden terms, high-risk claims, recorded visual risks and AI-generated shots awaiting review; tests verify multiple explicit risk classes and that build_final refuses output when the gate blocks. Full combination coverage, malformed/missing audit objects and whether all risk sources are included before every final-output path are not completely established."
+        ],
+        "next_action": "Add table-driven combinations for each required risk source, malformed/missing audits and all final-output entry paths; assert no final file/manifest is written on denial and no silent bypass exists.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded. Real visual accuracy/Windows interaction remain separate."
       }
     },
     {
@@ -14627,6 +14862,70 @@
         "No formal acceptance state changed; current CI success is not a substitute for per-item completion."
       ],
       "next_step": "C2-FOUNDATION-005: audit A20-A24 against direct source/tests after confirming their dependency and C1 cross-source state; C3 remediation should then prioritize the earliest confirmed blocking acceptance gaps, not add new scope."
+    },
+    {
+      "batch_id": "C2-FOUNDATION-005",
+      "range": "A20-A24",
+      "status": "partial_current_source_test_audit_gaps_recorded",
+      "audited_at": "2026-10-17",
+      "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+      "latest_ci": {
+        "pr_ci_run_id": 39018653867,
+        "pr_ci_conclusion": "success",
+        "pr_docs_sync_run_id": 39018653864,
+        "pr_docs_sync_conclusion": "success",
+        "push_runs": "not_independently_verified_by_available_workflow_query"
+      },
+      "reviewed_sources": [
+        "apps/ad-studio-desktop/ad_studio/model_router.py",
+        "apps/ad-studio-desktop/ad_studio/app.py",
+        "apps/ad-studio-desktop/ad_studio/footage.py",
+        "apps/ad-studio-desktop/ad_studio/production.py"
+      ],
+      "reviewed_tests": [
+        "apps/ad-studio-desktop/test_model_router.py",
+        "apps/ad-studio-desktop/test_desktop.py",
+        "apps/ad-studio-desktop/test_footage.py"
+      ],
+      "tasks": [
+        {
+          "id": "A20",
+          "status": "partial_creative_fact_audit_with_missing_info_ui_gap",
+          "finding": "audit_creative_factual_consistency flags unsupported selling points, forbidden terms, high-risk absolute wording and missing product data; tests cover these positive/negative cases and prompt-level no-invention boundaries. The full A20 contract also requires user-visible missing-data feedback and consistent use of the configured forbidden-term source across creation, edits and final recheck; those end-to-end UI paths are not fully proven.",
+          "next_action": "Map the forbidden-term source and missing-product-data UI paths to deterministic assertions, including post-edit recheck; preserve unknown facts as unknown and never upgrade an AI suggestion to a verified fact."
+        },
+        {
+          "id": "A21",
+          "status": "partial_storyboard_fact_traceability_gap",
+          "finding": "audit_storyboard_fact_consistency maps shot descriptions/subtitles to supplied selling points and explicitly leaves appearance/function/obscuration fields as '待视觉复核'; tests assert supported-fact matching and that text checks do not claim visual verification. Missing are full function/appearance/source traceability and an end-to-end recheck after manual edits across all variants.",
+          "next_action": "Add/map clause-level assertions for product facts through shot fields, subtitles/voiceover and manual-edit recheck; retain explicit visual-review state unless supported by actual visual evidence."
+        },
+        {
+          "id": "A22",
+          "status": "partial_visual_risk_mapping_gap",
+          "finding": "audit_visual_fact_consistency maps observed footage tags such as blocked/blur/shake and unusable clips to variant-shot risks; a test verifies blocked-product risk and selling-point mapping. The helper depends on upstream visual-analysis output and does not prove extraction/provider analysis success, unknown or unanalyzed frames being treated as unconfirmed in every path, or real visual classifier accuracy.",
+          "next_action": "Map no-analysis/empty-analysis and blur/shake/unusable-source cases to deterministic tests; verify every selected footage item maps to a source and risk disposition. Real visual accuracy remains C5."
+        },
+        {
+          "id": "A23",
+          "status": "partial_risk_control_and_authorization_evidence_gap",
+          "finding": "Current source/test evidence proves explicit per-action destination/fee authorization and a final-delivery gate that blocks recorded fact/visual risks and AI shots awaiting human review. No dedicated risk-controller module/test suite was found at the inspected desktop paths to prove the full A23 matrix of permission levels, human approval, Dry-run behavior, persistent Audit Log and prohibition of every unauthorized real write operation. A final-render gate is not a substitute for a general action-permission system.",
+          "next_action": "Map every existing A23 risk action to a real code path and deterministic positive/negative test; where a requirement has no implementation, record it as a blocker linked to A23 before adding code. Do not invoke real external write actions."
+        },
+        {
+          "id": "A24",
+          "status": "partial_final_gate_positive_cases_exist_combination_matrix_gap",
+          "finding": "ProductionStore.final_render_gate blocks unsupported selling points, forbidden terms, high-risk claims, recorded visual risks and AI-generated shots awaiting review; tests verify multiple explicit risk classes and that build_final refuses output when the gate blocks. Full combination coverage, malformed/missing audit objects and whether all risk sources are included before every final-output path are not completely established.",
+          "next_action": "Add table-driven combinations for each required risk source, malformed/missing audits and all final-output entry paths; assert no final file/manifest is written on denial and no silent bypass exists."
+        }
+      ],
+      "limitations": [
+        "Source/test inspection only; no local test execution through the connector.",
+        "Actual visual accuracy and Windows UI interaction are not proven by CI.",
+        "A23's broad permission-level/Dry-run/Audit Log matrix lacks direct evidence; no real external write action was executed.",
+        "Formal acceptance states remain unchanged."
+      ],
+      "next_step": "C2-FOUNDATION-006: audit A25-A29 against direct media QC, output history, local persistence and provenance tests; separately triage the confirmed A23/A20-A24 gaps into bounded C3 remediation batches linked to existing IDs."
     }
   ],
   "last_reconciled_against_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
@@ -15297,10 +15596,10 @@
         "id": "C2",
         "name": "当前代码与专项测试审计",
         "status": "in_progress",
-        "completed_slots": 20,
+        "completed_slots": 25,
         "total_slots": 113,
         "exit": "all 113 slots have current source/test evidence and explicit audit result",
-        "last_completed_batch": "C2-FOUNDATION-004"
+        "last_completed_batch": "C2-FOUNDATION-005"
       },
       {
         "id": "C3",
@@ -15336,9 +15635,9 @@
         "definition": "Unique formal task IDs with documented cross-source identity/status decisions; repeated IDs count once. This is not code/test audit or formal acceptance."
       },
       "c2_current_code_test_audit": {
-        "numerator": 20,
+        "numerator": 25,
         "denominator": 113,
-        "percent": 17.7,
+        "percent": 22.1,
         "definition": "Slots with direct current source/test inspection and a written audit result; partial findings count as audit coverage, not acceptance pass."
       },
       "c3_blocking_defects": {
