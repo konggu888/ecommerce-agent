@@ -1663,3 +1663,8 @@ App.generate_shot() 先确认视频目标/费用，再调用 ProductionStore.res
 - `App.create()` 的首次确认通过 `run_after_explicit_authorization` 门控商品解析；拒绝分支在商品解析、实拍扫描、视觉分析、转写、创意规划之前返回。
 - 第二次预算确认也通过同一门控包住项目保存、商品资料保存、商品库保存和 UI 刷新。拒绝时将当前项目清空并返回；不保存项目或商品资料。
 - 自动化测试通过 mock 调用计数验证拒绝门控的操作回调为零次，并通过源码顺序断言绑定 `App.create()` 中首次授权、规划、预算门与持久化的相对顺序。这是离线自动化证据，不等于真实 Provider 账单或 Windows 真机验收。
+
+
+## 云端视频 Provider 后端授权合同（2026-10-17）
+
+`ProductionStore.render_shot()` 与 `render_cloud_shot()` 的云端路径必须接收 `video_authorized=True`，否则在 Provider 加载/分发之前 fail-closed 并抛出明确错误。UI 仅在用户确认本次端点/费用后，才从已确认的 `ExecutionDecision` 快照传递授权标记；不得在生产层重新路由到另一个端点。资产云端生成授权是独立的第二道门，拒绝后不能继续视频 Provider 调用。测试必须断言未授权时 Provider loader/dispatch 调用数为 0，镜头状态与版本不变。
