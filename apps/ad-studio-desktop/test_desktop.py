@@ -3163,7 +3163,6 @@ class PlanningCostPreflightEstimateTests(unittest.TestCase):
     def test_preflight_cost_is_unknown_when_no_comparable_usage_exists(self):
         from types import SimpleNamespace
         from ad_studio.app import estimate_creation_planning_cost
-        from ad_studio.model_router import FUNCTIONS
 
         class FakeRouter:
             def route(self, function):
@@ -3184,7 +3183,6 @@ class PlanningCostPreflightEstimateTests(unittest.TestCase):
     def test_preflight_cost_uses_same_function_model_usage_and_variant_count(self):
         from types import SimpleNamespace
         from ad_studio.app import estimate_creation_planning_cost
-        from ad_studio.model_router import ModelRouter
 
         class FakeRouter:
             def route(self, function):
