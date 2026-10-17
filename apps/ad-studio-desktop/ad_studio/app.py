@@ -5,6 +5,7 @@ from tkinter import ttk, filedialog, messagebox
 import shutil
 import subprocess
 import json
+import math
 from .library import LocalLibrary
 from .engine import FORMS, new_project, mark_regenerate, estimate_cost, estimate_asset_generation
 from .gpu import detect_gpu
@@ -139,6 +140,73 @@ def build_provider_execution_consent(decision, task_label, estimated_cost_rmb, d
     return "\n".join(lines)
 
 
+_CREATIVE_PLAN_FUNCTIONS = (
+    "商品理解", "卖点提炼", "人群与痛点", "广告策略", "广告强度判断",
+    "视频形式判断", "剧本", "分镜", "素材选择",
+)
+
+
+def estimate_creation_planning_cost(model_router, variant_count):
+    """Estimate only planning calls from same-function/model successful usage history."""
+    variants = max(1, min(3, int(variant_count)))
+    try:
+        history = model_router.recent_usage(500)
+    except Exception:
+        history = []
+    known_subtotal = 0.0
+    unknown_functions = []
+    details = []
+    for function in _CREATIVE_PLAN_FUNCTIONS:
+        try:
+            profile = model_router.route(function)
+        except Exception:
+            unknown_functions.append(function)
+            details.append({"function": function, "status": "route_unknown", "estimate_rmb": None})
+            continue
+        host = (urlsplit(str(getattr(profile, "base_url", "") or "")).hostname or "").lower()
+        if host in {"localhost", "127.0.0.1", "::1"}:
+            details.append({"function": function, "status": "local_no_provider_charge", "estimate_rmb": 0.0})
+            continue
+        try:
+            input_price = float(profile.input_price_rmb_per_1k)
+            output_price = float(profile.output_price_rmb_per_1k)
+            valid_prices = math.isfinite(input_price) and math.isfinite(output_price) and input_price > 0 and output_price > 0
+        except (TypeError, ValueError, AttributeError):
+            valid_prices = False
+        if not valid_prices:
+            unknown_functions.append(function)
+            details.append({"function": function, "status": "price_missing_or_ambiguous", "estimate_rmb": None})
+            continue
+        samples = [
+            row for row in history
+            if isinstance(row, dict)
+            and row.get("function") == function
+            and row.get("model_id") == profile.id
+            and row.get("status") == "success"
+            and row.get("usage_status") == "reported"
+            and row.get("cost_status") == "estimated_from_configured_prices"
+            and int(row.get("prompt_tokens", 0) or 0) + int(row.get("completion_tokens", 0) or 0) > 0
+        ][:20]
+        if not samples:
+            unknown_functions.append(function)
+            details.append({"function": function, "status": "no_comparable_usage_history", "estimate_rmb": None})
+            continue
+        average = sum(float(row.get("estimated_cost_rmb", 0) or 0) for row in samples) / len(samples)
+        estimate = round(average * variants, 6)
+        known_subtotal += estimate
+        details.append({"function": function, "status": "historical_average", "samples": len(samples), "estimate_rmb": estimate})
+    known_subtotal = round(known_subtotal, 6)
+    return {
+        "planned_calls": len(_CREATIVE_PLAN_FUNCTIONS) * variants,
+        "variant_count": variants,
+        "known_subtotal_rmb": known_subtotal,
+        "total_rmb": None if unknown_functions else known_subtotal,
+        "unknown_functions": sorted(set(unknown_functions)),
+        "details": details,
+        "method": "same-function/model recent successful usage average × requested variants; reference estimate only, not a quote or cost ceiling",
+    }
+
+
 def build_creation_preflight_detail(url, budget, variant_count, model_router):
     """Disclose external destinations and configured prices before link fetch or model calls."""
     # Planning must be authorized before any product fetch/model request. At this point
@@ -155,12 +223,16 @@ def build_creation_preflight_detail(url, budget, variant_count, model_router):
         f"商品链接：{url}",
         f"本次预算上限：¥{float(budget):.2f}；创意方案数：{int(variant_count)}。",
         "",
+        "【规划阶段费用估算｜只覆盖每个方案的 9 个创意阶段，不猜测最终镜头数或生产费用】",
+        *[f"- 规划阶段计划调用：{estimate_creation_planning_cost(model_router, variant_count)['planned_calls']} 次；" + (f"基于同功能/同模型历史 usage 估算约 ¥{estimate_creation_planning_cost(model_router, variant_count)['total_rmb']:.4f}（不是报价或费用上限）。" if estimate_creation_planning_cost(model_router, variant_count)['total_rmb'] is not None else f"总额无法可靠估算；历史可估算小计 ¥{estimate_creation_planning_cost(model_router, variant_count)['known_subtotal_rmb']:.4f}，未知功能：{'、'.join(estimate_creation_planning_cost(model_router, variant_count)['unknown_functions']) or '无'}。")],
+        "历史估算只使用最近最多 20 条同功能/同模型、成功且 usage 完整的记录；单价/usage 缺失时必须按未知处理，不得视为免费。",
+        "",
         "【规划前费用预告｜此时尚无 AI 分镜，以下不是最终项目报价】",
         f"- 视频生成：{video_unit_label}；镜头数尚未生成，视频总额暂未知。",
         "- 演员生成：需先得到分镜并检查本地演员库；当前数量/费用未知。",
         "- 场景生成：需先得到分镜并检查本地场景库；当前数量/费用未知。",
         "- 商品素材生成：需先得到分镜并检查本地商品素材库；当前数量/费用未知。",
-        "- 本阶段费用结论：规划模型实际费用也可能因 usage/供应商计费信息缺失而未知；目前无法可靠给出项目总费用。",
+        "- 本阶段费用结论：规划阶段历史参考估算见上；若模型价格或可比 usage 缺失，规划费用仍为未知。项目总费用还取决于最终分镜和本地资产库缺口，当前不能伪造最终总价。",
         "如果不接受以上未知项，请取消；取消后不会读取商品页面或调用模型/Provider。",
         "规划完成后，系统会再次展示视频、演员、场景、商品素材的分项费用、已知小计、总费用/未知项和预算判断；你拒绝第二次确认时，不保存项目，也不启动视频/素材生成。",
         "",
