@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Finite closure contract active. C1 closed batches cover 33/113 unique formal slots. No IDs merged and no formal acceptance states changed. C2 full current code/test audit remains 0/113.",
+  "audit_status": "C1 cross-source decisions documented for 38/113 unique slots (33.6%). C2-FOUNDATION-001 directly audited A0-A4 (5/113=4.4%) and recorded acceptance gaps; no formal acceptance states changed. Overall task closure coverage 0/113.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -2208,7 +2208,31 @@
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-004",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json"
+        ],
+        "contract_role": "电商短视频完整生产合同：选片、排序、卖点、口播、字幕、音频、画幅、时长、成片输出；SOP 明确最低 1080P 输出规格与 ffprobe 复核。",
+        "distinction": "A3 只负责任务类型选择/路由；A15 验收电商短视频生产结果。媒体规格 A25 是独立质量闸门，不可用 1080P 文件尺寸替代完整生产验收。",
+        "related_ids": [
+          "A3",
+          "A9",
+          "A10",
+          "A11",
+          "A25",
+          "A27"
+        ],
+        "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A16",
@@ -2305,7 +2329,29 @@
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-004",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json"
+        ],
+        "contract_role": "商品主图视频生产：商品主体清晰、遮挡控制、展示顺序、细节镜头和商品资料一致。",
+        "distinction": "与 A21/A22 商品事实/视觉核验及 A25 媒体质量相关，但商品视觉表现不是普通分辨率/媒体元数据测试可以证明的。",
+        "related_ids": [
+          "A3",
+          "A21",
+          "A22",
+          "A25"
+        ],
+        "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A17",
@@ -2404,7 +2450,31 @@
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-004",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json"
+        ],
+        "contract_role": "广告投放视频素材生产：Hook、卖点组合、证明方式、CTA、多创意差异和投放前分析。",
+        "distinction": "明确不等于真实投放；A19 创意实验设计/数据边界、A23 风险闸门和 A26/A27 成片交付是相邻但独立合同。",
+        "related_ids": [
+          "A3",
+          "A18",
+          "A19",
+          "A23",
+          "A26",
+          "A27"
+        ],
+        "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A18",
@@ -2461,7 +2531,29 @@
       "audit_notes": "PLAN-003 incremental review 2026-10-15: static source/test pointers mapped from current branch snapshot. Evidence SHA intentionally left null until exact source/test commit provenance is independently established; this is not formal acceptance.",
       "normalized_roadmap_phase": "阶段3｜AI广告编导",
       "phase_normalization_original": "阶段3｜AI 广告编导",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-004",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json"
+        ],
+        "contract_role": "多版本生成与状态/镜头缓存隔离、切换不丢数据、原始版本追踪和独立输出。",
+        "distinction": "多版本是版本生命周期和输出隔离；A19 评估版本差异与实验目的，A17 生产广告素材。共享版本数据结构不意味着合同重复。",
+        "related_ids": [
+          "A17",
+          "A19",
+          "A26",
+          "A27"
+        ],
+        "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A19",
@@ -2520,7 +2612,29 @@
       "audit_notes": "PLAN-003 incremental review 2026-10-15: static source/test pointers mapped from current branch snapshot. Evidence SHA intentionally left null until exact source/test commit provenance is independently established; this is not formal acceptance.",
       "normalized_roadmap_phase": "阶段3｜AI广告编导",
       "phase_normalization_original": "阶段3｜AI 广告编导",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-004",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json"
+        ],
+        "contract_role": "创意实验差异分类、测试目的、观察指标和下一轮建议，并禁止虚构 CTR/CVR/CPC/CPA/ROAS 或将模拟数据冒充真实投放。",
+        "distinction": "A19 只定义实验设计与数据边界；真实平台投放/归因/商业效果按用户要求暂缓，不是 A17 素材生产的验收替代。",
+        "related_ids": [
+          "A17",
+          "A18",
+          "A23",
+          "A29"
+        ],
+        "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A20",
@@ -13411,6 +13525,23 @@
         "remaining_decisions": [],
         "formal_acceptance_states_changed": false,
         "next_batch": "C1-FOUNDATION-004: reconcile A15-A19 across the three output task types, multi-version generation and creative experiments; distinguish task-type routing, variant isolation, and experiment-design claims."
+      },
+      {
+        "batch_id": "C1-FOUNDATION-004",
+        "slots": [
+          "A15",
+          "A16",
+          "A17",
+          "A18",
+          "A19"
+        ],
+        "slots_reconciled": 5,
+        "slots_total": 5,
+        "status": "resolved_as_distinct_related_contracts",
+        "decision": "Cross-checked the formal plan/SOP and roadmap/register context. The three production task types are separate; A18 handles version isolation/output lifecycle; A19 handles experiment design and truthful data boundaries. SOP-specific 1080P output verification remains part of A15, while A25 is a separate media-quality gate. Real ad delivery and business outcomes remain deferred. No formal status changed.",
+        "remaining_decisions": [],
+        "formal_acceptance_states_changed": false,
+        "next_batch": "C1-FOUNDATION-005: reconcile A20-A24 across creative/storyboard/visual fact checks and risk/final safety gates, keeping textual fact checks distinct from visual truth and action authorization."
       }
     ]
   },
@@ -13602,8 +13733,8 @@
         "name": "跨来源身份与状态裁决",
         "status": "in_progress",
         "exit": "all 113 slots reconciled against plan, SOP, roadmap, register; unresolved decisions 0",
-        "last_completed_batch": "C1-FOUNDATION-003",
-        "slots_with_final_documented_cross_source_decision": 33,
+        "last_completed_batch": "C1-FOUNDATION-004",
+        "slots_with_final_documented_cross_source_decision": 38,
         "slots_counting_rule": "Unique task IDs across all closed batches; repeated IDs never increase the numerator."
       },
       {
@@ -13642,10 +13773,10 @@
         "definition": "Slots with current code/test audit and explicit terminal disposition divided by 113. Audit-only slots with open gaps do not count as closed."
       },
       "c1_cross_source_reconciliation": {
-        "numerator": 33,
+        "numerator": 38,
         "denominator": 113,
-        "percent": 29.2,
-        "definition": "Unique formal task IDs with documented cross-source identity/status decisions; repeated IDs across batches count once. This is not code/test audit or formal acceptance."
+        "percent": 33.6,
+        "definition": "Unique formal task IDs with documented cross-source identity/status decisions; repeated IDs count once. This is not code/test audit or formal acceptance."
       },
       "c2_current_code_test_audit": {
         "numerator": 5,
