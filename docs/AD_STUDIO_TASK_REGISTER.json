@@ -15091,10 +15091,10 @@
           "A49"
         ],
         "slots_reconciled": 5,
-        "unique_new_ids": 4,
+        "unique_new_ids": 5,
         "slots_total": 5,
         "status": "resolved_related_contracts_with_recovery_overlap",
-        "decision": "A45 recovered-state UI; A46 edit-to-regenerate transition; A47 asset-resolution failure; A48 local footage trim/replace failure; A49 interrupted multi-part cleanup are distinct by layer and failure point. A43 is a previously counted shared recovery contract, so this batch adds four unique IDs. No formal acceptance states changed.",
+        "decision": "A45 recovered-state UI; A46 edit-to-regenerate transition; A47 asset-resolution failure; A48 local footage trim/replace failure; A49 interrupted multi-part cleanup are distinct by layer and failure point. They are related to A43/A30/A53/A54/A97/A98 but are not duplicates; all five are new unique IDs in this batch. No formal acceptance states changed.",
         "remaining_decisions": [],
         "formal_acceptance_states_changed": false,
         "next_batch": "C1-FOUNDATION-011: reconcile A50-A54 across UI/source/validation, cost input validation and invalid/zero-byte previous-video recovery; preserve distinct failure modes and count only unique IDs."
