@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Finite closure contract active. C1 completed C1-FOUNDATION-008; 57/113 unique IDs have documented cross-source identity/status decisions. C2 current source/test audit is tracked separately; no formal acceptance status changed.",
+  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 57/113. C2 direct current source/test audits 20/113 (A15-A19 added this batch), with partial gaps; strict task closure 0/113. Both cross-cutting P0 blocker families have bounded fixes and latest PR CI/docs-sync success; linked formal acceptance statuses remain unchanged.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -2576,6 +2576,64 @@
         "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-004",
+        "audited_head": "3d1fb4f61d7cf282c7e6e42043062358f9da16ce",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018200669,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018200614,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_production_contract_gaps",
+        "severity": "P1 acceptance evidence gap; P2 real media quality deferred",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/creative_engine.py",
+            "blob_sha": "060e51968e4b3be12b5b6e737a7197bf8a1ec8d3",
+            "claim": "Source directly inspected for the A15-A19 contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/footage.py",
+            "blob_sha": "b94ae2ddfe779e5cf951bc541ab07a29012f7083",
+            "claim": "Source directly inspected for the A15-A19 contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Source directly inspected for the A15-A19 contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_footage.py",
+            "blob_sha": "8ff007acfd3f174ce6c181c53a2dc96e68fa0337",
+            "claim": "Existing deterministic test evidence directly inspected; CI result is scoped to the recorded HEAD."
+          },
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic test evidence directly inspected; CI result is scoped to the recorded HEAD."
+          },
+          {
+            "path": "apps/ad-studio-desktop/test_creative_engine.py",
+            "blob_sha": "0ea0456bd2f840d1cd57bce57c9a4578db142f7a",
+            "claim": "Existing deterministic test evidence directly inspected; CI result is scoped to the recorded HEAD."
+          }
+        ],
+        "finding": "Deterministic task-type policies and footage-plan validators exist; tests cover supplied-asset restrictions, task-specific structure, filler/timing rules and final-output media QC. No single end-to-end test maps automatic selection, ordering, selling-point retention, voice, subtitles, audio, aspect, duration and delivery together. CI/media metadata do not prove the final ad communicates the selling point or has good real-world audio/visual quality.",
+        "confirmed_gaps": [
+          "Deterministic task-type policies and footage-plan validators exist; tests cover supplied-asset restrictions, task-specific structure, filler/timing rules and final-output media QC. No single end-to-end test maps automatic selection, ordering, selling-point retention, voice, subtitles, audio, aspect, duration and delivery together. CI/media metadata do not prove the final ad communicates the selling point or has good real-world audio/visual quality."
+        ],
+        "next_action": "Build a bounded A15 acceptance matrix mapping each existing checklist clause to current test/source; add missing deterministic orchestration assertions under A15, keeping real listening/media quality and Windows interaction in C5.",
+        "disposition": "Partial audit only. No formal acceptance status upgraded; real-world validation remains separate."
       }
     },
     {
@@ -2695,6 +2753,59 @@
         "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-004",
+        "audited_head": "3d1fb4f61d7cf282c7e6e42043062358f9da16ce",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018200669,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018200614,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_product_visual_acceptance_gap",
+        "severity": "P1 product-display acceptance gap; real visual truth deferred",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/creative_engine.py",
+            "blob_sha": "060e51968e4b3be12b5b6e737a7197bf8a1ec8d3",
+            "claim": "Source directly inspected for the A15-A19 contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/model_router.py",
+            "blob_sha": "6c69b0b7087f47ea9b2ae09ac7965fa3c1d7625e",
+            "claim": "Source directly inspected for the A15-A19 contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Source directly inspected for the A15-A19 contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_footage.py",
+            "blob_sha": "8ff007acfd3f174ce6c181c53a2dc96e68fa0337",
+            "claim": "Existing deterministic test evidence directly inspected; CI result is scoped to the recorded HEAD."
+          },
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic test evidence directly inspected; CI result is scoped to the recorded HEAD."
+          }
+        ],
+        "finding": "Product-main-image policy caps the plan at eight shots and validates product/detail/function/usage-oriented text; final-output inspection checks technical properties and existing visual-fact helpers can flag risks. No current deterministic test proves the actual generated product stays clear, unobscured, ordered sensibly and visually faithful to the real product; text structure and resolution checks cannot establish these properties.",
+        "confirmed_gaps": [
+          "Product-main-image policy caps the plan at eight shots and validates product/detail/function/usage-oriented text; final-output inspection checks technical properties and existing visual-fact helpers can flag risks. No current deterministic test proves the actual generated product stays clear, unobscured, ordered sensibly and visually faithful to the real product; text structure and resolution checks cannot establish these properties."
+        ],
+        "next_action": "Map existing product-detail/visual-fact clauses to explicit assertions for storyboard ordering, subtitle/overlay obstruction metadata and risk gate routing; preserve actual generated-image/product fidelity as C5 real-media verification.",
+        "disposition": "Partial audit only. No formal acceptance status upgraded; real-world validation remains separate."
       }
     },
     {
@@ -2818,6 +2929,59 @@
         "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-004",
+        "audited_head": "3d1fb4f61d7cf282c7e6e42043062358f9da16ce",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018200669,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018200614,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_ad_creative_contract_gaps",
+        "severity": "P1 pre-delivery creative coverage gap; real ad campaign deferred",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/creative_engine.py",
+            "blob_sha": "060e51968e4b3be12b5b6e737a7197bf8a1ec8d3",
+            "claim": "Source directly inspected for the A15-A19 contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/model_router.py",
+            "blob_sha": "6c69b0b7087f47ea9b2ae09ac7965fa3c1d7625e",
+            "claim": "Source directly inspected for the A15-A19 contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Source directly inspected for the A15-A19 contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic test evidence directly inspected; CI result is scoped to the recorded HEAD."
+          },
+          {
+            "path": "apps/ad-studio-desktop/test_footage.py",
+            "blob_sha": "8ff007acfd3f174ce6c181c53a2dc96e68fa0337",
+            "claim": "Existing deterministic test evidence directly inspected; CI result is scoped to the recorded HEAD."
+          }
+        ],
+        "finding": "Ad task validation requires CTA/conversion structure; audit_ad_variant_set distinguishes mechanism differences from surface-only script changes; build_creative_test_plan records test purpose, observation targets and next-round advice without fabricating platform metrics. Tests cover CTA/task policies, mechanism-vs-surface examples and media output checks. No end-to-end test proves every Hook/selling-point/proof/CTA requirement survives the complete pipeline, and no real ad delivery/CTR/CVR/CPA/ROAS evidence exists by design.",
+        "confirmed_gaps": [
+          "Ad task validation requires CTA/conversion structure; audit_ad_variant_set distinguishes mechanism differences from surface-only script changes; build_creative_test_plan records test purpose, observation targets and next-round advice without fabricating platform metrics. Tests cover CTA/task policies, mechanism-vs-surface examples and media output checks. No end-to-end test proves every Hook/selling-point/proof/CTA requirement survives the complete pipeline, and no real ad delivery/CTR/CVR/CPA/ROAS evidence exists by design."
+        ],
+        "next_action": "Map all A17 checklist fields through plan validation and final-delivery audit with positive/negative deterministic examples. Keep real campaign performance and attribution deferred; never infer them from manual metric entry.",
+        "disposition": "Partial audit only. No formal acceptance status upgraded; real-world validation remains separate."
       }
     },
     {
@@ -2897,6 +3061,54 @@
         "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-004",
+        "audited_head": "3d1fb4f61d7cf282c7e6e42043062358f9da16ce",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018200669,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018200614,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_variant_isolation_and_delivery_evidence",
+        "severity": "P1 variant state/output correctness gap; real UI deferred",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/app.py",
+            "blob_sha": "a5fe9fe67b5e0c2e5183a72091de257a006d4bff",
+            "claim": "Source directly inspected for the A15-A19 contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Source directly inspected for the A15-A19 contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic test evidence directly inspected; CI result is scoped to the recorded HEAD."
+          },
+          {
+            "path": "apps/ad-studio-desktop/test_footage.py",
+            "blob_sha": "8ff007acfd3f174ce6c181c53a2dc96e68fa0337",
+            "claim": "Existing deterministic test evidence directly inspected; CI result is scoped to the recorded HEAD."
+          }
+        ],
+        "finding": "Code stores per-variant shot caches, runtime gap/review state, isolated render paths and variant/aspect output history. Tests cover independent variant state, plan-switch restoration, hybrid task isolation, physical path separation, final output history and locking/restoring the original variant around batch preflight. No single end-to-end test proves all five A18 clauses across create, save/reopen, switch, regenerate, and independently deliver every variant; rendered Windows UI remains untested.",
+        "confirmed_gaps": [
+          "Code stores per-variant shot caches, runtime gap/review state, isolated render paths and variant/aspect output history. Tests cover independent variant state, plan-switch restoration, hybrid task isolation, physical path separation, final output history and locking/restoring the original variant around batch preflight. No single end-to-end test proves all five A18 clauses across create, save/reopen, switch, regenerate, and independently deliver every variant; rendered Windows UI remains untested."
+        ],
+        "next_action": "Map stable variant ID, old/original version traceability, save/reopen, switch-without-loss and independent output clauses to direct assertions; add only missing A18 regression coverage.",
+        "disposition": "Partial audit only. No formal acceptance status upgraded; real-world validation remains separate."
       }
     },
     {
@@ -2978,6 +3190,54 @@
         "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-004",
+        "audited_head": "3d1fb4f61d7cf282c7e6e42043062358f9da16ce",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018200669,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018200614,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_creative_experiment_contract_evidence",
+        "severity": "P1 experiment-design assertion gap; real outcome data deferred",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/model_router.py",
+            "blob_sha": "6c69b0b7087f47ea9b2ae09ac7965fa3c1d7625e",
+            "claim": "Source directly inspected for the A15-A19 contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/app.py",
+            "blob_sha": "a5fe9fe67b5e0c2e5183a72091de257a006d4bff",
+            "claim": "Source directly inspected for the A15-A19 contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic test evidence directly inspected; CI result is scoped to the recorded HEAD."
+          },
+          {
+            "path": "apps/ad-studio-desktop/test_footage.py",
+            "blob_sha": "8ff007acfd3f174ce6c181c53a2dc96e68fa0337",
+            "claim": "Existing deterministic test evidence directly inspected; CI result is scoped to the recorded HEAD."
+          }
+        ],
+        "finding": "The deterministic audit classifies single-mechanism, multi-mechanism, surface-only and no-difference pairs; the test-plan builder emits purpose, axis, observation targets, next-round recommendations and a pending-real-data status. Tests cover mechanism vs surface differences, no fabricated platform assumptions, metric calculations and persistence. Direct tests do not yet enumerate every required category including no-difference/next-round branches, and real outcome/attribution remains deferred.",
+        "confirmed_gaps": [
+          "The deterministic audit classifies single-mechanism, multi-mechanism, surface-only and no-difference pairs; the test-plan builder emits purpose, axis, observation targets, next-round recommendations and a pending-real-data status. Tests cover mechanism vs surface differences, no fabricated platform assumptions, metric calculations and persistence. Direct tests do not yet enumerate every required category including no-difference/next-round branches, and real outcome/attribution remains deferred."
+        ],
+        "next_action": "Add a compact table-driven test for all four pair classifications and next-round recommendations plus a persistence round trip for the plan; keep real ad results explicitly pending until user supplies verified data.",
+        "disposition": "Partial audit only. No formal acceptance status upgraded; real-world validation remains separate."
       }
     },
     {
@@ -14091,6 +14351,70 @@
         "Audio quality, font licensing, product fidelity and real-provider billing are not established by CI."
       ],
       "next_step": "C3-UNKNOWN-PRICE-001: fix the unknown-price semantics and confirmation gates for A12/A13 plus all affected cost-confirmation entry points; add tests and sync docs before continuing routine audits."
+    },
+    {
+      "batch_id": "C2-FOUNDATION-004",
+      "range": "A15-A19",
+      "status": "partial_current_source_test_audit_gaps_recorded",
+      "audited_at": "2026-10-17",
+      "audited_head": "3d1fb4f61d7cf282c7e6e42043062358f9da16ce",
+      "latest_ci": {
+        "pr_ci_run_id": 39018200669,
+        "pr_ci_conclusion": "success",
+        "pr_docs_sync_run_id": 39018200614,
+        "pr_docs_sync_conclusion": "success",
+        "push_runs": "not_independently_verified_by_available_workflow_query"
+      },
+      "reviewed_sources": [
+        "apps/ad-studio-desktop/ad_studio/creative_engine.py",
+        "apps/ad-studio-desktop/ad_studio/model_router.py",
+        "apps/ad-studio-desktop/ad_studio/footage.py",
+        "apps/ad-studio-desktop/ad_studio/production.py",
+        "apps/ad-studio-desktop/ad_studio/app.py"
+      ],
+      "reviewed_tests": [
+        "apps/ad-studio-desktop/test_desktop.py",
+        "apps/ad-studio-desktop/test_footage.py",
+        "apps/ad-studio-desktop/test_creative_engine.py"
+      ],
+      "tasks": [
+        {
+          "id": "A15",
+          "status": "partial_production_contract_gaps",
+          "finding": "Deterministic task-type policies and footage-plan validators exist; tests cover supplied-asset restrictions, task-specific structure, filler/timing rules and final-output media QC. No single end-to-end test maps automatic selection, ordering, selling-point retention, voice, subtitles, audio, aspect, duration and delivery together. CI/media metadata do not prove the final ad communicates the selling point or has good real-world audio/visual quality.",
+          "next_action": "Build a bounded A15 acceptance matrix mapping each existing checklist clause to current test/source; add missing deterministic orchestration assertions under A15, keeping real listening/media quality and Windows interaction in C5."
+        },
+        {
+          "id": "A16",
+          "status": "partial_product_visual_acceptance_gap",
+          "finding": "Product-main-image policy caps the plan at eight shots and validates product/detail/function/usage-oriented text; final-output inspection checks technical properties and existing visual-fact helpers can flag risks. No current deterministic test proves the actual generated product stays clear, unobscured, ordered sensibly and visually faithful to the real product; text structure and resolution checks cannot establish these properties.",
+          "next_action": "Map existing product-detail/visual-fact clauses to explicit assertions for storyboard ordering, subtitle/overlay obstruction metadata and risk gate routing; preserve actual generated-image/product fidelity as C5 real-media verification."
+        },
+        {
+          "id": "A17",
+          "status": "partial_ad_creative_contract_gaps",
+          "finding": "Ad task validation requires CTA/conversion structure; audit_ad_variant_set distinguishes mechanism differences from surface-only script changes; build_creative_test_plan records test purpose, observation targets and next-round advice without fabricating platform metrics. Tests cover CTA/task policies, mechanism-vs-surface examples and media output checks. No end-to-end test proves every Hook/selling-point/proof/CTA requirement survives the complete pipeline, and no real ad delivery/CTR/CVR/CPA/ROAS evidence exists by design.",
+          "next_action": "Map all A17 checklist fields through plan validation and final-delivery audit with positive/negative deterministic examples. Keep real campaign performance and attribution deferred; never infer them from manual metric entry."
+        },
+        {
+          "id": "A18",
+          "status": "partial_variant_isolation_and_delivery_evidence",
+          "finding": "Code stores per-variant shot caches, runtime gap/review state, isolated render paths and variant/aspect output history. Tests cover independent variant state, plan-switch restoration, hybrid task isolation, physical path separation, final output history and locking/restoring the original variant around batch preflight. No single end-to-end test proves all five A18 clauses across create, save/reopen, switch, regenerate, and independently deliver every variant; rendered Windows UI remains untested.",
+          "next_action": "Map stable variant ID, old/original version traceability, save/reopen, switch-without-loss and independent output clauses to direct assertions; add only missing A18 regression coverage."
+        },
+        {
+          "id": "A19",
+          "status": "partial_creative_experiment_contract_evidence",
+          "finding": "The deterministic audit classifies single-mechanism, multi-mechanism, surface-only and no-difference pairs; the test-plan builder emits purpose, axis, observation targets, next-round recommendations and a pending-real-data status. Tests cover mechanism vs surface differences, no fabricated platform assumptions, metric calculations and persistence. Direct tests do not yet enumerate every required category including no-difference/next-round branches, and real outcome/attribution remains deferred.",
+          "next_action": "Add a compact table-driven test for all four pair classifications and next-round recommendations plus a persistence round trip for the plan; keep real ad results explicitly pending until user supplies verified data."
+        }
+      ],
+      "limitations": [
+        "Source/test audit only; no local test execution through the connector.",
+        "No real generated-media visual truth/listening evaluation, Windows rendered UI acceptance, or real ad campaign data.",
+        "No formal acceptance state changed; current CI success is not a substitute for per-item completion."
+      ],
+      "next_step": "C2-FOUNDATION-005: audit A20-A24 against direct source/tests after confirming their dependency and C1 cross-source state; C3 remediation should then prioritize the earliest confirmed blocking acceptance gaps, not add new scope."
     }
   ],
   "last_reconciled_against_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
@@ -14725,17 +15049,17 @@
         "id": "C2",
         "name": "当前代码与专项测试审计",
         "status": "in_progress",
-        "completed_slots": 15,
+        "completed_slots": 20,
         "total_slots": 113,
         "exit": "all 113 slots have current source/test evidence and explicit audit result",
-        "last_completed_batch": "C2-FOUNDATION-003"
+        "last_completed_batch": "C2-FOUNDATION-004"
       },
       {
         "id": "C3",
         "name": "阻断缺口修复与回归",
         "status": "in_progress",
         "exit": "all confirmed blocking defects linked to existing A0-A112 IDs and closed by regression tests",
-        "note": "C3-UNKNOWN-PRICE-001 closed by regression tests and latest PR CI/docs-sync. C3-COST-PREFLIGHT-ORDER-001 remains open."
+        "note": "Both tracked cross-cutting P0 defect families have bounded fixes, disclosure, regression tests and latest PR CI/docs-sync success. Linked acceptance items remain not_audited until their full contract audits are complete."
       },
       {
         "id": "C4",
@@ -14764,17 +15088,17 @@
         "definition": "Unique formal task IDs with documented cross-source identity/status decisions; repeated IDs count once. This is not code/test audit or formal acceptance."
       },
       "c2_current_code_test_audit": {
-        "numerator": 15,
+        "numerator": 20,
         "denominator": 113,
-        "percent": 13.3,
+        "percent": 17.7,
         "definition": "Slots with direct current source/test inspection and a written audit result; partial findings count as audit coverage, not acceptance pass."
       },
       "c3_blocking_defects": {
         "total": 2,
-        "closed": 1,
-        "remaining": 1,
-        "percent": 50,
-        "definition": "Confirmed cross-cutting blocking defect records, each counted once and linked to existing A0-A112 acceptance IDs; closure requires latest relevant CI/docs-sync and required regression evidence."
+        "closed": 2,
+        "remaining": 0,
+        "percent": 100,
+        "definition": "Confirmed cross-cutting blocker records; closure means each tracked blocker has an implemented bounded mitigation, regression coverage and latest PR CI/docs-sync success. It does not mean all linked A2/A12/A13/A51 acceptance clauses passed."
       },
       "c4_release_gate": {
         "status": "pending"
@@ -14864,7 +15188,7 @@
     {
       "id": "C3-COST-PREFLIGHT-ORDER-001",
       "priority": "P0",
-      "status": "confirmed_open",
+      "status": "confirmed_closed",
       "linked_existing_ids": [
         "A2",
         "A13",
@@ -14873,12 +15197,11 @@
       "summary": "App.create() invokes create_plan/create_plans before showing the detailed project cost estimate/budget confirmation. The earlier data-use authorization is not a cost quote; later budget rejection cannot undo any planning-model request or charge already made.",
       "evidence": {
         "source_path": "apps/ad-studio-desktop/ad_studio/app.py",
-        "source_sha": "58da27ffbca48b8630aac8d2df5853aa3a814446",
-        "confirmed_at": "2026-10-17",
-        "documented_in": [
-          "apps/ad-studio-desktop/HELP.md",
-          "apps/ad-studio-desktop/PROJECT_LOGIC.md"
-        ]
+        "source_sha": "a5fe9fe67b5e0c2e5183a72091de257a006d4bff",
+        "test_path": "apps/ad-studio-desktop/test_desktop.py",
+        "test_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+        "closed_head": "3d1fb4f61d7cf282c7e6e42043062358f9da16ce",
+        "confirmed_at": "2026-10-17"
       },
       "required_close_evidence": [
         "Define a bounded preflight estimate before any planning/provider call without inventing final shot count/cost",
@@ -14887,7 +15210,33 @@
         "Cancellation before first authorization causes zero model/provider calls; cancellation at later delta gate causes no further calls/persistence",
         "Orchestration-level call-count tests and latest HEAD CI/docs-sync pass"
       ],
-      "formal_acceptance_status_changed": false
+      "formal_acceptance_status_changed": false,
+      "closed_on": "2026-10-17",
+      "fix_summary": "Closed with a two-stage preflight rather than fabricating final costs before an AI storyboard exists. Before any product fetch/planning call, the UI estimates planned planning calls and uses same-function/model successful usage history where available; unknown functions remain explicitly unknown, and the consent discloses endpoints/data categories including footage keyframe analysis/transcription where enabled. After the plan, the detailed video/actor/scene/product-asset estimate and budget decision appear before project persistence and video/asset generation. A later decline cannot undo first-stage planning/analysis calls; that limitation is now explicitly disclosed in the first consent.",
+      "closure_evidence": {
+        "latest_head": "3d1fb4f61d7cf282c7e6e42043062358f9da16ce",
+        "ci_pr_run_id": 39018200669,
+        "ci_pr_conclusion": "success",
+        "docs_sync_pr_run_id": 39018200614,
+        "docs_sync_pr_conclusion": "success",
+        "tests": [
+          "test_creation_preflight_is_before_product_parse_and_model_planning",
+          "test_creation_preflight_discloses_planning_estimate_before_model_calls",
+          "test_preflight_cost_uses_same_function_model_usage_and_variant_count",
+          "test_creation_preflight_denial_keeps_external_pipeline_call_counts_at_zero",
+          "test_budget_denial_skips_all_project_persistence_operations"
+        ],
+        "checks": [
+          "Planning-call count estimate uses same-function/model successful usage history and variant count; missing price/usage remains unknown.",
+          "The first confirmation precedes product parse and model planning and lists configured model endpoints and data categories.",
+          "Video, actor, scene and product-asset total cannot be fabricated before a storyboard/library-gap calculation exists; unknown is explicit.",
+          "After plan, detailed production cost/budget confirmation precedes project persistence and video/asset generation.",
+          "Declining first confirmation makes no external calls through the authorization helper; declining the later confirmation prevents persistence and production generation, but cannot undo planning/analysis already authorized in stage one."
+        ],
+        "residual_risk": "Planning/analysis calls can incur cost before the detailed production estimate exists; the first-stage consent explicitly discloses this and presents history-based planning estimates where possible. It is not a hard upper cost bound.",
+        "push_runs": "not_independently_verified_by_available_workflow_query",
+        "formal_acceptance_status_changed": false
+      }
     }
   ]
 }
