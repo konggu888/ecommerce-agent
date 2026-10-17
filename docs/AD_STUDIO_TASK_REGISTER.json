@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 73/113; C2 direct current source/test audits 35/113; strict task closure 0/113. Both tracked cross-cutting P0 blocker families have bounded fixes and latest CI/docs-sync success. Formal acceptance states unchanged.",
+  "audit_status": "Finite closure contract active. C1 cross-source decisions 73/113; C2 direct current source/test audits 40/113; strict task closure 0/113. Both tracked cross-cutting P0 blocker families have bounded fixes and latest CI/docs-sync success. Deterministic test gaps remain under existing A20-A24/A25-A36 IDs; formal acceptance states unchanged.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -5455,6 +5455,54 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-008",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_single_shot_repair_orchestration_gap",
+        "severity": "P1 repair workflow correctness gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+            "blob_sha": "ea9254063b1370e31106b56405d2c2733ebc7546",
+            "claim": "Current source/workflow inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/app.py",
+            "blob_sha": "a5fe9fe67b5e0c2e5183a72091de257a006d4bff",
+            "claim": "Current source/workflow inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_short_drama.py",
+            "blob_sha": "c5800b533ea0bbc33aaf0b363cf7bd7ef5665027",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          },
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "prepare_product_drama_shot_regeneration validates product-short-drama mode, non-empty correction, version/cost and resets new-version visual status while preserving regeneration history; tests cover wrong mode, empty correction, invalid cost/version and stable source-shot mapping. No UI-level orchestration test proves cancellation/refusal leaves project version/path/history unchanged, only selected shot mutates, and Provider call count stays zero before explicit generation.",
+        "confirmed_gaps": [
+          "prepare_product_drama_shot_regeneration validates product-short-drama mode, non-empty correction, version/cost and resets new-version visual status while preserving regeneration history; tests cover wrong mode, empty correction, invalid cost/version and stable source-shot mapping. No UI-level orchestration test proves cancellation/refusal leaves project version/path/history unchanged, only selected shot mutates, and Provider call count stays zero before explicit generation."
+        ],
+        "next_action": "Add a controller-level regression for prepare → cancel/decline fee → compare persisted project and other shots byte-for-byte; separately prove confirmed preparation does not call a Provider until the existing single-shot generate action.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded. Windows rendered UI and real provider validation remain separate."
       }
     },
     {
@@ -5572,6 +5620,54 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-008",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_visual_guided_draft_ui_gap",
+        "severity": "P1 single-shot repair usability gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+            "blob_sha": "ea9254063b1370e31106b56405d2c2733ebc7546",
+            "claim": "Current source/workflow inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/app.py",
+            "blob_sha": "a5fe9fe67b5e0c2e5183a72091de257a006d4bff",
+            "claim": "Current source/workflow inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_short_drama.py",
+            "blob_sha": "c5800b533ea0bbc33aaf0b363cf7bd7ef5665027",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          },
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "product_visual_correction_suggestion composes an editable text draft from the last visual-comparison summary/issues and tests verify summary, multiple issue formats and invalid mode/index handling. No UI-level test proves the draft is actually editable, empty/malformed/long issue data remains usable, cancel preserves project/history, or fee rejection prevents Provider dispatch.",
+        "confirmed_gaps": [
+          "product_visual_correction_suggestion composes an editable text draft from the last visual-comparison summary/issues and tests verify summary, multiple issue formats and invalid mode/index handling. No UI-level test proves the draft is actually editable, empty/malformed/long issue data remains usable, cancel preserves project/history, or fee rejection prevents Provider dispatch."
+        ],
+        "next_action": "Add deterministic UI-controller/state tests for draft prefill/editability contract, malformed/empty/long issue lists, cancel and fee-decline zero-call behavior; keep AI findings explicitly as suggestions rather than facts.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded. Windows rendered UI and real provider validation remain separate."
       }
     },
     {
@@ -5672,6 +5768,44 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-008",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_helper_format_pass_rendered_ui_deferred",
+        "severity": "P2 UI rendering evidence gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+            "blob_sha": "ea9254063b1370e31106b56405d2c2733ebc7546",
+            "claim": "Current source/workflow inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_short_drama.py",
+            "blob_sha": "c5800b533ea0bbc33aaf0b363cf7bd7ef5665027",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "The correction-draft helper test asserts a real newline before a listed issue, so the string-format regression is covered at helper level. It does not inspect the final Tk widget rendering/wrapping on Windows or verify long multi-issue text readability.",
+        "confirmed_gaps": [
+          "The correction-draft helper test asserts a real newline before a listed issue, so the string-format regression is covered at helper level. It does not inspect the final Tk widget rendering/wrapping on Windows or verify long multi-issue text readability."
+        ],
+        "next_action": "Retain the helper newline regression; add a lightweight widget/controller assertion only if it can run deterministically in CI. Actual Tk rendering/readability stays in C5.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded. Windows rendered UI and real provider validation remain separate."
       }
     },
     {
@@ -5778,6 +5912,44 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-008",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_live_handoff_state_gap",
+        "severity": "P1 operational continuity gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/SESSION_HANDOFF.md",
+            "blob_sha": "30c3e4d00dd21cd1e09d8b5935113bbf8528c039",
+            "claim": "Current source/workflow inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_ai_handoff.py",
+            "blob_sha": "9a0c0283f11f9ec8024514907cb7a4058815c2bf",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "test_ai_handoff verifies required project map/progress/safety sections and guards against treating docs-sync as full CI. The handoff file still contains historical baseline SHAs and long snapshots; static tests cannot guarantee the latest HEAD/PR/check conclusions and next batch are refreshed correctly after every commit.",
+        "confirmed_gaps": [
+          "test_ai_handoff verifies required project map/progress/safety sections and guards against treating docs-sync as full CI. The handoff file still contains historical baseline SHAs and long snapshots; static tests cannot guarantee the latest HEAD/PR/check conclusions and next batch are refreshed correctly after every commit."
+        ],
+        "next_action": "Keep one authoritative dashboard snapshot at the top of the handoff and verify live PR/CI state after each update; perform a history-blind read-through against live GitHub rather than trusting historical SHA paragraphs.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded. Windows rendered UI and real provider validation remain separate."
       }
     },
     {
@@ -5875,6 +6047,49 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-008",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_push_pr_workflow_evidence_gap",
+        "severity": "P1 workflow evidence gap",
+        "source_evidence": [
+          {
+            "path": ".github/workflows/ci.yml",
+            "blob_sha": "4974d2050ac564cf33cb016e6c386aaaf194dbc6",
+            "claim": "Current source/workflow inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": ".github/workflows/ad-studio-doc-sync.yml",
+            "blob_sha": "11e3ef06351683ac27f2569e3a47218f23e2be7e",
+            "claim": "Current source/workflow inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_ai_handoff.py",
+            "blob_sha": "9a0c0283f11f9ec8024514907cb7a4058815c2bf",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "The workflow YAML explicitly triggers CI on push to all branches and PRs targeting main, and the configured typecheck-and-test job includes desktop syntax/tests and further checks. The current verified SHA has PR CI/docs-sync success, but the connector does not independently expose a push-triggered run for this SHA; configuration plus PR success does not prove push event execution.",
+        "confirmed_gaps": [
+          "The workflow YAML explicitly triggers CI on push to all branches and PRs targeting main, and the configured typecheck-and-test job includes desktop syntax/tests and further checks. The current verified SHA has PR CI/docs-sync success, but the connector does not independently expose a push-triggered run for this SHA; configuration plus PR success does not prove push event execution."
+        ],
+        "next_action": "After the next documentation commit, inspect the exact HEAD's PR CI and docs-sync; independently verify push-triggered CI/docs-sync if the workflow API exposes them, otherwise mark push evidence unavailable and do not claim A39 fully accepted.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded. Windows rendered UI and real provider validation remain separate."
       }
     },
     {
@@ -15670,6 +15885,73 @@
         "Formal acceptance states unchanged."
       ],
       "next_step": "C2-FOUNDATION-008: audit A35-A39 against direct source/tests, then begin bounded C3 remediation for deterministic gaps under existing IDs A20-A24, A25-A29 and A34. Do not create new formal acceptance IDs."
+    },
+    {
+      "batch_id": "C2-FOUNDATION-008",
+      "range": "A35-A39",
+      "status": "partial_current_source_test_audit_gaps_recorded",
+      "audited_at": "2026-10-17",
+      "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+      "latest_ci": {
+        "pr_ci_run_id": 39018653867,
+        "pr_ci_conclusion": "success",
+        "pr_docs_sync_run_id": 39018653864,
+        "pr_docs_sync_conclusion": "success",
+        "push_runs": "not_independently_verified_by_available_workflow_query"
+      },
+      "reviewed_sources": [
+        "apps/ad-studio-desktop/ad_studio/short_drama.py",
+        "apps/ad-studio-desktop/ad_studio/app.py",
+        "apps/ad-studio-desktop/SESSION_HANDOFF.md",
+        ".github/workflows/ci.yml",
+        ".github/workflows/ad-studio-doc-sync.yml"
+      ],
+      "reviewed_tests": [
+        "apps/ad-studio-desktop/test_short_drama.py",
+        "apps/ad-studio-desktop/test_desktop.py",
+        "apps/ad-studio-desktop/test_ai_handoff.py"
+      ],
+      "tasks": [
+        {
+          "id": "A35",
+          "status": "partial_single_shot_repair_orchestration_gap",
+          "finding": "prepare_product_drama_shot_regeneration validates product-short-drama mode, non-empty correction, version/cost and resets new-version visual status while preserving regeneration history; tests cover wrong mode, empty correction, invalid cost/version and stable source-shot mapping. No UI-level orchestration test proves cancellation/refusal leaves project version/path/history unchanged, only selected shot mutates, and Provider call count stays zero before explicit generation.",
+          "next_action": "Add a controller-level regression for prepare → cancel/decline fee → compare persisted project and other shots byte-for-byte; separately prove confirmed preparation does not call a Provider until the existing single-shot generate action."
+        },
+        {
+          "id": "A36",
+          "status": "partial_visual_guided_draft_ui_gap",
+          "finding": "product_visual_correction_suggestion composes an editable text draft from the last visual-comparison summary/issues and tests verify summary, multiple issue formats and invalid mode/index handling. No UI-level test proves the draft is actually editable, empty/malformed/long issue data remains usable, cancel preserves project/history, or fee rejection prevents Provider dispatch.",
+          "next_action": "Add deterministic UI-controller/state tests for draft prefill/editability contract, malformed/empty/long issue lists, cancel and fee-decline zero-call behavior; keep AI findings explicitly as suggestions rather than facts."
+        },
+        {
+          "id": "A37",
+          "status": "partial_helper_format_pass_rendered_ui_deferred",
+          "finding": "The correction-draft helper test asserts a real newline before a listed issue, so the string-format regression is covered at helper level. It does not inspect the final Tk widget rendering/wrapping on Windows or verify long multi-issue text readability.",
+          "next_action": "Retain the helper newline regression; add a lightweight widget/controller assertion only if it can run deterministically in CI. Actual Tk rendering/readability stays in C5."
+        },
+        {
+          "id": "A38",
+          "status": "partial_live_handoff_state_gap",
+          "finding": "test_ai_handoff verifies required project map/progress/safety sections and guards against treating docs-sync as full CI. The handoff file still contains historical baseline SHAs and long snapshots; static tests cannot guarantee the latest HEAD/PR/check conclusions and next batch are refreshed correctly after every commit.",
+          "next_action": "Keep one authoritative dashboard snapshot at the top of the handoff and verify live PR/CI state after each update; perform a history-blind read-through against live GitHub rather than trusting historical SHA paragraphs."
+        },
+        {
+          "id": "A39",
+          "status": "partial_push_pr_workflow_evidence_gap",
+          "finding": "The workflow YAML explicitly triggers CI on push to all branches and PRs targeting main, and the configured typecheck-and-test job includes desktop syntax/tests and further checks. The current verified SHA has PR CI/docs-sync success, but the connector does not independently expose a push-triggered run for this SHA; configuration plus PR success does not prove push event execution.",
+          "next_action": "After the next documentation commit, inspect the exact HEAD's PR CI and docs-sync; independently verify push-triggered CI/docs-sync if the workflow API exposes them, otherwise mark push evidence unavailable and do not claim A39 fully accepted."
+        }
+      ],
+      "limitations": [
+        "Source/test inspection only; no local test execution through connector.",
+        "A35/A36 cancellation and fee-decline need controller-level call-count and state-immutability proof.",
+        "A37 real Windows widget rendering remains deferred.",
+        "A38 static anchors cannot ensure live state freshness.",
+        "A39 push-triggered run evidence not independently visible for the audited SHA.",
+        "Formal acceptance states unchanged."
+      ],
+      "next_step": "C2-FOUNDATION-009: audit A40-A44 against direct source/tests, then implement the highest-priority deterministic gaps under existing A20-A24/A25-A29/A34-A36 IDs. Do not create new acceptance IDs."
     }
   ],
   "last_reconciled_against_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
@@ -16394,10 +16676,10 @@
         "id": "C2",
         "name": "当前代码与专项测试审计",
         "status": "in_progress",
-        "completed_slots": 35,
+        "completed_slots": 40,
         "total_slots": 113,
         "exit": "all 113 slots have current source/test evidence and explicit audit result",
-        "last_completed_batch": "C2-FOUNDATION-007"
+        "last_completed_batch": "C2-FOUNDATION-008"
       },
       {
         "id": "C3",
@@ -16433,9 +16715,9 @@
         "definition": "Unique formal task IDs with documented cross-source identity/status decisions; repeated IDs count once. This is not code/test audit or formal acceptance."
       },
       "c2_current_code_test_audit": {
-        "numerator": 35,
+        "numerator": 40,
         "denominator": 113,
-        "percent": 31,
+        "percent": 35.4,
         "definition": "Slots with direct current source/test inspection and a written audit result; partial findings count as audit coverage, not acceptance pass."
       },
       "c3_blocking_defects": {
