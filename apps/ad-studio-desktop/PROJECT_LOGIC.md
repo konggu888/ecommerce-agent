@@ -1,3 +1,16 @@
+## 【C3-UNKNOWN-PRICE-001｜未知视频单价 fail-closed 规则｜2026-10-17】
+
+1. `configured_video_price(provider)` 只接受显式 `cost_price_configured=True` 且单价有限、非负的 Provider；缺少标志、缺少单价或校验失败一律返回 `None`。Provider 数据类的占位单价默认不代表已配置报价。
+2. `estimate_cost(..., {'cloud_video_per_shot': None})` 返回 `费用未知=True`、`总计=None`、`超预算=None`；视频明细的单价/小计为 `None`，`已知小计` 不含未知视频费用。UI 必须显示“无法可靠估算（视频单价未知）”，不得对 `None` 做金额格式化。
+3. `route_footage_gap_tasks()` 收到未知价格时将 AI 缺口标为 `price_missing`、`needs_cost_confirmation=True`、`generation_allowed=False`、`estimated_cost_rmb=None`。已明确配置的 `0.0` 是已知零价，不等于未知。
+4. `execute_ai_gap_generation()` 的默认单价是未知；未知价格且没有 `cost_price_confirmed=True` 时，不得调用生成器。明确确认后可以继续，但实际预估仍保持未知，不能将未知费用累计为已确认的零成本。
+5. 项目创建、短剧制作项目创建、一键批量生成、实拍缺口补镜头和单镜头授权入口必须显示未知费用警告并请求用户确认。预算超出时请求用户确认是否继续，不得自动阻断或静默改策略。
+6. 新增回归覆盖：未知价路由不自动批准、执行层未知价无确认不调用生成器、用户确认后可继续但费用仍标未知、显式零价仍作为已知价、成本估算不伪造总价，以及 Provider 默认占位价不视为配置价。
+
+**当前状态：** 代码与回归测试已写入分支，等待最新 HEAD 的完整 CI 和 docs-sync 确认后，才可关闭 C3-UNKNOWN-PRICE-001。这个修复不代表真实供应商账单已核对。另一个既有 P0——`App.create()` 的创意规划模型调用发生在详细项目成本确认之前——仍是独立问题，不能与未知价格修复混为一谈。
+
+---
+
 # AI 商品广告工厂：代码逻辑与系统地图
 
 本文不是用户手册，而是给接手项目的 AI/开发者看的系统级逻辑说明。修改代码后必须同步维护。
