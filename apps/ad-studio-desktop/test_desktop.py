@@ -1305,6 +1305,39 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertIn("不产生平台转化指标", plan["data_boundary"])
 
 
+    def test_a34_visual_comparison_cancel_makes_zero_calls_and_keeps_state(self):
+        from types import SimpleNamespace
+        from ad_studio.app import App
+        import ad_studio.app as app_module
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            reference = root / "reference.png"
+            generated = root / "generated.png"
+            reference.write_bytes(b"reference-bytes")
+            generated.write_bytes(b"generated-bytes")
+            plan = {"drama_business_mode": "product_short_drama_ad", "storyboard": [{"description": "商品镜头"}]}
+            before = json.dumps(plan, ensure_ascii=False, sort_keys=True)
+            fake_app = SimpleNamespace(
+                _ui_execution_gate=lambda: True,
+                project=SimpleNamespace(creative_plan={"short_drama": plan}, product_info={}),
+                detail=MagicMock(),
+                model_router=MagicMock(),
+                store=MagicMock(),
+            )
+            with patch("tkinter.simpledialog.askinteger", return_value=1), \
+                 patch.object(app_module.filedialog, "askopenfilenames", return_value=[str(reference)]), \
+                 patch.object(app_module.filedialog, "askopenfilename", return_value=str(generated)), \
+                 patch.object(app_module.messagebox, "askyesno", return_value=False), \
+                 patch.object(app_module, "compare_product_visual_shot") as compare:
+                App.compare_short_drama_product_visual(fake_app, plan)
+
+            compare.assert_not_called()
+            fake_app.model_router.resolve_route.assert_not_called()
+            fake_app.store.save.assert_not_called()
+            self.assertEqual(json.dumps(plan, ensure_ascii=False, sort_keys=True), before)
+            self.assertEqual(fake_app.project.creative_plan["short_drama"], plan)
+
     def test_a30_recovery_records_failures_without_losing_project_state(self):
         with tempfile.TemporaryDirectory() as td:
             store = ProductionStore(Path(td))
