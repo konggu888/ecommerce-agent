@@ -1,3 +1,14 @@
+## 【实时接手状态｜2026-10-17｜云端视频授权闸门已验证】
+
+- 仓库 `konggu888/ecommerce-agent`；分支 `feat/product-drama-visual-review`；PR #32 保持 Open、未合并。
+- 已验证代码/测试基线 `ecce52c904044db4b2618a1faefa5692fa727a40`：PR CI `39013274826` success，docs-sync PR `39013274821` success；Push 触发项未由当前连接器独立核实。
+- 中间 HEAD `1b5c5aedb4233f65ab4d5b227cb6ef512621123f` 的 CI 曾因正向路由测试未传 `video_authorized=True` 失败；测试夹具已修正，最终基线 CI 重跑成功。保留该失败记录。
+- 已修复后端视频入口：`render_shot()` / `render_cloud_shot()` 的云端路径默认拒绝无授权请求；UI 只在用户确认本次端点/费用后传入授权标记及同一 `ExecutionDecision` 快照。新增测试证明无授权时 Provider loader/dispatch 调用为 0，镜头状态/版本不变。
+- 文档已更新 HELP、PROJECT_LOGIC、进度看板和 UXS-2 审计；本次 handoff 更新提交后还要重新核查最终 HEAD 的 CI/docs-sync，不能把基线绿灯沿用到新文档 SHA。
+- **下一步唯一主线：**继续对照 A13、A29、A51–A65 合同审查授权、数据外发与费用记录；审计剩余 Provider 入口、未知费用语义和 endpoint provenance。只依据证据修复/补测，不新增 A113+，不改 A0–A112 正式状态，不合并 PR #32。真实 Provider、实际扣费/账单、Windows 真机、剪映现场和真实投放继续暂缓。
+
+---
+
 ## 【实时接手状态｜2026-10-17｜云端视频入口授权闸门】
 
 - 仓库 `konggu888/ecommerce-agent`；分支 `feat/product-drama-visual-review`；PR #32 Open/unmerged。
