@@ -7,13 +7,6 @@ import json
 import uuid
 from urllib.parse import urlsplit, urlunsplit
 
-_UNKNOWN_COST_STATUSES = frozenset({"unknown", "usage_missing", "price_missing", "price_and_usage_missing", "unavailable"})
-
-
-def _cost_is_known(row: dict[str, Any]) -> bool:
-    status = row.get("cost_status", "legacy_known" if "estimated_cost_rmb" in row else "unknown")
-    return status not in _UNKNOWN_COST_STATUSES
-
 
 def sanitize_endpoint(value: Any) -> str:
     """Persist endpoint provenance without URL credentials, query parameters, or fragments."""
@@ -215,18 +208,21 @@ class UsageLedger:
     def project_summary(self, project_id: str) -> dict[str, Any]:
         rows = [x for x in self._load() if x.get("project_id") == project_id]
         success = [x for x in rows if x.get("status") == "success"]
-        unknown_cost_rows = [x for x in rows if not _cost_is_known(x)]
-        known_success = [x for x in success if _cost_is_known(x)]
+        unknown_cost_rows = [
+            x for x in rows
+            if x.get("cost_status", "legacy_known" if "estimated_cost_rmb" in x else "unknown")
+            in {"unknown", "usage_missing", "price_missing", "price_and_usage_missing", "unavailable"}
+        ]
         return {
             "project_id": project_id,
             "entries": len(rows),
             "success": len(success),
             "failed": len(rows) - len(success),
             "tokens": sum(int(x.get("total_tokens", 0) or 0) for x in rows),
-            "actual_cost_rmb": round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in known_success), 6),
+            "actual_cost_rmb": round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in success), 6),
             "unknown_cost_entries": len(unknown_cost_rows),
             "has_unknown_cost": bool(unknown_cost_rows),
-            "by_category": {category: round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in known_success if x.get("category") == category), 6) for category in sorted({x.get("category", "model") for x in known_success})},
+            "by_category": {category: round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in success if x.get("category") == category), 6) for category in sorted({x.get("category", "model") for x in success})},
         }
 
     def shot_actual_cost(self, project_id: str, shot_id: str) -> float | None:
@@ -237,16 +233,23 @@ class UsageLedger:
             and row.get("shot_id") == shot_id
             and row.get("status") == "success"
         ]
-        known_rows = [row for row in rows if _cost_is_known(row)]
-        if not known_rows:
+        if not rows:
             return None
-        return round(sum(float(row.get("estimated_cost_rmb", 0) or 0) for row in known_rows), 6)
+        return round(sum(float(row.get("estimated_cost_rmb", 0) or 0) for row in rows), 6)
 
     def summary(self) -> dict[str, Any]:
         rows = self._load()
         success = [x for x in rows if x.get("status") == "success"]
-        unknown_cost_rows = [x for x in rows if not _cost_is_known(x)]
-        known_cost_rows = [x for x in rows if _cost_is_known(x)]
+        unknown_cost_rows = [
+            x for x in rows
+            if x.get("cost_status", "legacy_known" if "estimated_cost_rmb" in x else "unknown")
+            in {"unknown", "usage_missing", "price_missing", "price_and_usage_missing", "unavailable"}
+        ]
+        known_cost_rows = [
+            x for x in rows
+            if x.get("cost_status", "legacy_known" if "estimated_cost_rmb" in x else "unknown")
+            not in {"unknown", "usage_missing", "price_missing", "price_and_usage_missing", "unavailable"}
+        ]
         return {
             "calls": len(rows),
             "success": len(success),
