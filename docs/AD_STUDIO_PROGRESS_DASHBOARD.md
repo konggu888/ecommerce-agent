@@ -1,10 +1,11 @@
 ## 【实时权威进度｜2026-10-17｜优先于下方所有历史快照】
 
-- 仓库/分支：`konggu888/ecommerce-agent` / `feat/product-drama-visual-review`；PR #32 保持 Open/unmerged。
-- 本轮开始时 PR HEAD `3f8c78c6199b79ed2413e53efc34efb8653c8388` 的 PR CI 与 docs-sync PR 均成功；Push 触发的两项由当前连接器未能独立核实。
-- 本轮范围：创建流程授权拒绝回归；第二道预算门现将项目、商品资料、商品库持久化和 UI 刷新包在确认回调内。新增 mock 调用计数与源码顺序测试。
-- 验证边界：只有最终提交 SHA 的 CI/doc-sync 完成后，才能确认新增测试通过；真实 Provider、账单、Windows 真机、剪映和真实投放验收仍暂缓。
-- 下一步唯一动作：核验本轮最终 HEAD 的检查结果并按失败项修复；不新增 A113+，不合并 PR #32。
+- 仓库/分支：`konggu888/ecommerce-agent` / `feat/product-drama-visual-review`；PR #32 Open、未合并。
+- 上一窗口基线 `3f8c78c6199b79ed2413e53efc34efb8653c8388` 当时由用户报告四项 CI/docs-sync（Push、PR）全部成功；本窗口新增提交后的当前 HEAD 为 `2138a24af70ea41ec0eb40451f1f6c409de314df`。
+- 当前 HEAD 的 CI PR #39012203130 与 docs-sync PR #39012203128 均已成功；CI 内 Python 语法、桌面核心测试、TypeScript、Engine、Risk Controller 全通过。Push 两项尚未由当前连接器独立核实。
+- 本窗口已补强创建流程第二道预算确认门，增加授权拒绝调用计数/持久化计数/源码顺序测试，并同步 HELP、PROJECT_LOGIC、SESSION_HANDOFF 与本看板。
+- **下一步唯一任务：**先逐项对照 A13、A29、A51–A65 合同，核对授权、外发数据与费用记录边界；随后审计剩余 Provider 入口，特别是 `CapabilityRouter.decide_asset/decide_video` 的本地/云端回退、拒绝后的零调用、费用确认时序、未知价格语义和 endpoint 历史追溯。
+- 后续每次提交后都必须重新检查最新 SHA 的 CI/docs-sync；Push 检查无法独立获取时明确标注未核实。不新增 A113+，不改变 A0–A112 正式验收状态，不合并 PR #32；真实 Provider、账单、Windows 真机、剪映现场和真实投放继续暂缓。
 
 ---
 
