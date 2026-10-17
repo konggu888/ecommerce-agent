@@ -914,3 +914,7 @@ ModelRouter 现有项目上下文默认值与 set_project_context()，新建项�
 
 以 apps/ad-studio-desktop/SESSION_HANDOFF.md 顶部实时状态与 docs/AD_STUDIO_PROGRESS_DASHBOARD.md 顶部为权威。最近已确认全绿的基线是 91de09e10fbac7ccf5d82c791cb2ab60ab6ac0a6；随后云端授权回调修复、测试和文档提交的最终 HEAD CI 尚待核验。下一项先核验四项 CI/docs-sync，再审计短剧商品镜头重新生成和剩余 Provider 入口。
 
+## 2026-10-17｜短剧重生成费用确定性更新
+
+短剧商品镜头重生成准备步骤现在按 CapabilityRouter 目标显示本地/云端目的地；本地费用标记 local_no_provider_charge，云端缺价保存 null + price_missing，不再用默认 ¥0 或默认价格误导用户。此按钮只准备新版本，实际 Provider 请求仍由单镜头生成确认。最新权威状态和下一步见 SESSION_HANDOFF.md 与 AD_STUDIO_PROGRESS_DASHBOARD.md 顶部；最终 HEAD CI 必须实时查询。
+

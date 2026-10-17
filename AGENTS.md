@@ -286,3 +286,10 @@ AssetGenerator.generate、ProductionStore.resolve_assets、ProductionStore.gener
 - 修复提交 7bdcb6cc043e20d3374b344a3b384d7fc115c81d、测试提交 84e92d191d85e06bef50f3913a8b589bc3a23131 与后续文档提交的 CI/docs-sync 必须单独核验。
 - A0–A112 状态不变，PR #32 不合并。
 
+## UXS-2 短剧重生成费用规则｜2026-10-17
+
+- 短剧商品镜头重生成准备步骤必须按 CapabilityRouter 当前目标显示目的地；本地费用只标记 local_no_provider_charge，云端缺价时必须保存金额 null + price_missing，不可默认成 ¥0。
+- prepare_product_drama_shot_regeneration 必须拒绝 unknown/price_missing 与数字金额互相伪装。
+- 该按钮只准备新版本，不调用 Provider；真正生成由单镜头生成入口再次确认实际目的地和费用。
+- 继续同步 HELP、PROJECT_LOGIC、验收计划/SOP、审计、dashboard、handoff 和 roadmap；不新增 A113+，不更改 A0–A112 正式状态。
+

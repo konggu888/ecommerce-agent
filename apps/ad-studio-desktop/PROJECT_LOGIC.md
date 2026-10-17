@@ -1644,3 +1644,9 @@ App.generate_shot() 先确认视频目标/费用，再调用 ProductionStore.res
 - 对云端分支和 render_cloud_shot 的测试使用 mock provider/dispatch，断言回调对象原样传递，不触发真实网络。
 - 本项修复的是云端路由回调丢失，不等于真实 Provider、费用和 Windows 运行环境已验收。
 
+## 2026-10-17｜短剧商品镜头重生成费用状态
+
+- App.regen_shot() 先调用 CapabilityRouter.decide_video()，按实际当前目标准备费用信息；local 路由的 estimated_cost_rmb=0.0 / estimated_cost_status=local_no_provider_charge；cloud 缺少显式价格时 estimated_cost_rmb=null / estimated_cost_status=price_missing。
+- prepare_product_drama_shot_regeneration() 接受可空费用，保存 estimated_cost_status，并拒绝将 unknown/price_missing 与数值金额混用。
+- 此步骤只准备新版本，不调用 Provider。之后实际生成仍通过 generate_shot() 进行独立的实际端点/费用确认，防止把准备阶段当作生成授权。
+
