@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 61/113; C2 direct current source/test audits 20/113; strict task closure 0/113. Both tracked cross-cutting P0 blocker families have bounded fixes pending/confirmed against latest CI as recorded in blocker register. Formal acceptance states remain unchanged.",
+  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 66/113; C2 direct current source/test audits 20/113; strict task closure 0/113. Both tracked cross-cutting P0 blocker families have bounded fixes and latest CI/docs-sync success. Formal acceptance states unchanged.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -5847,7 +5847,30 @@
       "audit_notes": "PLAN-003 incremental review 2026-10-15: source/test/workflow pointers mapped against validated snapshot 42fa15b305ff1a5a046f15eba84460b7272fa2e7. Per-file evidence SHA not independently pinned; partial mapping only, not formal acceptance.",
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-010",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json",
+          "apps/ad-studio-desktop/ad_studio/production.py",
+          "apps/ad-studio-desktop/test_desktop.py"
+        ],
+        "contract_role": "把后端“生成失败但保留旧版”的恢复状态正确呈现在 UI，并验证旧文件存在性。",
+        "distinction": "UI 状态/路径一致性，不等同于 A43 的底层恢复机制，也不等同于 A53/A54 对零字节/损坏旧文件的处理。",
+        "related_ids": [
+          "A30",
+          "A43",
+          "A53",
+          "A54"
+        ],
+        "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A46",
@@ -5939,7 +5962,30 @@
       "audit_notes": "PLAN-003 incremental review 2026-10-15 against source snapshot 6fd36a58dcc4d8dec97be57c268b072bf14b3017; per-file evidence SHA not independently pinned; not formal acceptance.",
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-010",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json",
+          "apps/ad-studio-desktop/ad_studio/production.py",
+          "apps/ad-studio-desktop/test_desktop.py"
+        ],
+        "contract_role": "编辑镜头时保留当前有效视频，并通过统一 mark_regenerate 过渡到待重生成状态。",
+        "distinction": "编辑 UI 的安全状态迁移；A43 负责后续生成失败恢复，A35/A36 负责用户修正与 AI 草稿流程，不能互相替代。",
+        "related_ids": [
+          "A35",
+          "A36",
+          "A43",
+          "A51"
+        ],
+        "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A47",
@@ -6037,7 +6083,29 @@
       "audit_notes": "PLAN-003 incremental review 2026-10-15 against source snapshot 6fd36a58dcc4d8dec97be57c268b072bf14b3017; per-file evidence SHA not independently pinned; not formal acceptance.",
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-010",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json",
+          "apps/ad-studio-desktop/ad_studio/production.py",
+          "apps/ad-studio-desktop/test_desktop.py"
+        ],
+        "contract_role": "素材解析失败时不调用视频 Provider、保留旧视频并清理临时输出。",
+        "distinction": "资产解析阶段失败，不等同于 Provider 生成失败 A43，也不等同于本地裁剪失败 A48。",
+        "related_ids": [
+          "A43",
+          "A46",
+          "A48"
+        ],
+        "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A48",
@@ -6129,7 +6197,29 @@
       "audit_notes": "PLAN-003 incremental review 2026-10-15 against source snapshot 6fd36a58dcc4d8dec97be57c268b072bf14b3017; per-file evidence SHA not independently pinned; not formal acceptance.",
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-010",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json",
+          "apps/ad-studio-desktop/ad_studio/production.py",
+          "apps/ad-studio-desktop/test_desktop.py"
+        ],
+        "contract_role": "本地实拍裁剪/拼接失败时原子保留旧成片、清理临时输出与分段。",
+        "distinction": "FFmpeg/文件替换阶段失败；与素材解析失败 A47、进程中断分段清理 A49 的故障时点不同。",
+        "related_ids": [
+          "A43",
+          "A47",
+          "A49"
+        ],
+        "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A49",
@@ -6221,7 +6311,33 @@
       "audit_notes": "PLAN-003 incremental review 2026-10-15 against source snapshot 6fd36a58dcc4d8dec97be57c268b072bf14b3017; per-file evidence SHA not independently pinned; not formal acceptance.",
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-010",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json",
+          "apps/ad-studio-desktop/ad_studio/production.py",
+          "apps/ad-studio-desktop/test_desktop.py"
+        ],
+        "contract_role": "项目恢复时清理普通临时输出和多段实拍分段文件，同时保护旧视频与原始素材。",
+        "distinction": "进程中断后的幂等清理与来源文件保护；与运行时裁剪失败 A48 互补，A30/A97/A98 的项目恢复队列语义保持独立。",
+        "related_ids": [
+          "A30",
+          "A43",
+          "A48",
+          "A53",
+          "A54",
+          "A97",
+          "A98"
+        ],
+        "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A50",
@@ -14964,6 +15080,24 @@
         "remaining_decisions": [],
         "formal_acceptance_states_changed": false,
         "next_batch": "C1-FOUNDATION-010: reconcile A45-A49 against A43/A30/A53/A54/A97/A98, distinguishing UI error states, asset resolution failures, source-file safety and partial-render cleanup; count only unique IDs."
+      },
+      {
+        "batch_id": "C1-FOUNDATION-010",
+        "slots": [
+          "A45",
+          "A46",
+          "A47",
+          "A48",
+          "A49"
+        ],
+        "slots_reconciled": 5,
+        "unique_new_ids": 4,
+        "slots_total": 5,
+        "status": "resolved_related_contracts_with_recovery_overlap",
+        "decision": "A45 recovered-state UI; A46 edit-to-regenerate transition; A47 asset-resolution failure; A48 local footage trim/replace failure; A49 interrupted multi-part cleanup are distinct by layer and failure point. A43 is a previously counted shared recovery contract, so this batch adds four unique IDs. No formal acceptance states changed.",
+        "remaining_decisions": [],
+        "formal_acceptance_states_changed": false,
+        "next_batch": "C1-FOUNDATION-011: reconcile A50-A54 across UI/source/validation, cost input validation and invalid/zero-byte previous-video recovery; preserve distinct failure modes and count only unique IDs."
       }
     ]
   },
@@ -15155,8 +15289,8 @@
         "name": "跨来源身份与状态裁决",
         "status": "in_progress",
         "exit": "all 113 slots reconciled against plan, SOP, roadmap, register; unresolved decisions 0",
-        "last_completed_batch": "C1-FOUNDATION-009",
-        "slots_with_final_documented_cross_source_decision": 61,
+        "last_completed_batch": "C1-FOUNDATION-010",
+        "slots_with_final_documented_cross_source_decision": 66,
         "slots_counting_rule": "Unique task IDs across all closed batches; repeated IDs never increase the numerator."
       },
       {
@@ -15196,9 +15330,9 @@
         "definition": "Slots with current code/test audit and explicit terminal disposition divided by 113. Audit-only slots with open gaps do not count as closed."
       },
       "c1_cross_source_reconciliation": {
-        "numerator": 61,
+        "numerator": 66,
         "denominator": 113,
-        "percent": 54,
+        "percent": 58.4,
         "definition": "Unique formal task IDs with documented cross-source identity/status decisions; repeated IDs count once. This is not code/test audit or formal acceptance."
       },
       "c2_current_code_test_audit": {
