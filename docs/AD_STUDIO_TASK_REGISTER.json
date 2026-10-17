@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "C1 cross-source decisions documented for 38/113 unique slots (33.6%). C2-FOUNDATION-001 directly audited A0-A4 (5/113=4.4%) and recorded acceptance gaps; no formal acceptance states changed. Overall task closure coverage 0/113.",
+  "audit_status": "Finite closure contract active. C1 cross-source decisions cover 38/113 unique formal IDs (33.6%); last closed batch C1-FOUNDATION-004 (A15-A19). C2 direct current-source/test audits cover A0-A4 (5/113=4.4%) with documented evidence gaps; no task is formally accepted by this audit batch. Overall task closure coverage remains 0/113. C3 blocker denominator has not been fixed; identified gaps must be triaged into a bounded remediation batch, and zero must not be interpreted as no defects.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -13740,7 +13740,7 @@
       {
         "id": "C2",
         "name": "当前代码与专项测试审计",
-        "status": "not_started_as_full_audit",
+        "status": "in_progress",
         "completed_slots": 5,
         "total_slots": 113,
         "exit": "all 113 slots have current source/test evidence and explicit audit result",
@@ -13749,7 +13749,7 @@
       {
         "id": "C3",
         "name": "阻断缺口修复与回归",
-        "status": "awaiting_triage_of_C2_FOUNDATION_001",
+        "status": "awaiting_bounded_triage_from_C2_FOUNDATION_001",
         "exit": "all confirmed blocking defects linked to existing A0-A112 IDs and closed by regression tests"
       },
       {
@@ -13785,11 +13785,11 @@
         "definition": "Slots for which current source and mapped tests were directly inspected and a written audit result recorded; audit completion does not imply acceptance passed."
       },
       "c3_blocking_defects": {
-        "total": 0,
-        "closed": 0,
-        "remaining": 0,
+        "total": null,
+        "closed": null,
+        "remaining": null,
         "percent": null,
-        "definition": "No formally fixed C3 blocker denominator yet; C2-FOUNDATION-001 identified acceptance gaps, but their priority/scope must be triaged in C3 before counting blockers. Do not interpret zero as no defects."
+        "definition": "No formally fixed C3 blocker denominator yet. C2-FOUNDATION-001 has identified evidence gaps; triage them into a fixed remediation batch before counting. Null means not yet classified, not zero defects."
       },
       "c4_release_gate": {
         "status": "pending"
