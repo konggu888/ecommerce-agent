@@ -572,7 +572,7 @@ class ProductionStore:
         self.save(project)
         return item
 
-    def render_shot(self, project: Project, shot: Shot, provider_path: Path | None = None, config_root: Path | None = None, decision=None, authorize_cloud=None, video_authorized: bool = False):
+    def render_shot(self, project: Project, shot: Shot, provider_path: Path | None = None, config_root: Path | None = None, decision=None, authorize_cloud=None, authorized_endpoint: str | None = None):
         """本地/云端视频生成统一入口。
 
         clip_source == 'filmed' 时走用户拍摄素材剪辑（本地 FFmpeg 裁剪），
@@ -584,7 +584,7 @@ class ProductionStore:
         if shot.clip_source == 'filmed':
             return self.render_footage_shot(project, shot)
         # UI may pass the exact route snapshot the user approved; do not silently re-resolve to a different endpoint after consent.\n        decision = decision or CapabilityRouter(config_root or self.root.parent).decide_video()
-        if decision.target == 'cloud' and not video_authorized:
+        if decision.target == 'cloud' and not authorized_endpoint:
             raise RuntimeError('云端视频 Provider 调用需要先完成本次端点与费用授权；未发送请求。')
         if decision.target == 'local':
             from .providers import GenericVideoProvider
@@ -600,13 +600,17 @@ class ProductionStore:
             provider = load_video_provider(provider_path or (config_root or self.root.parent)/'video-provider.json')
             if isinstance(provider, type(load_video_provider(Path('__missing__')))):
                 raise RuntimeError('尚未配置云端视频 Provider，且本地视频服务不可用。')
+            if str(getattr(provider, 'endpoint', '') or '').strip() != str(authorized_endpoint or '').strip():
+                raise RuntimeError('云端视频 Provider 端点与用户确认时不一致；未发送请求，请重新确认当前端点与费用。')
             return self._render_with_provider(project, shot, provider, authorize_cloud=authorize_cloud)
         raise RuntimeError(f'镜头生成不可用：{decision.reason}')
 
-    def render_cloud_shot(self, project: Project, shot: Shot, provider_path: Path, authorize_cloud=None, video_authorized: bool = False):
-        if not video_authorized:
+    def render_cloud_shot(self, project: Project, shot: Shot, provider_path: Path, authorize_cloud=None, authorized_endpoint: str | None = None):
+        if not authorized_endpoint:
             raise RuntimeError('云端视频 Provider 调用需要先完成本次端点与费用授权；未发送请求。')
         provider=load_video_provider(provider_path)
+        if str(getattr(provider, 'endpoint', '') or '').strip() != str(authorized_endpoint).strip():
+            raise RuntimeError('云端视频 Provider 端点与用户确认时不一致；未发送请求，请重新确认当前端点与费用。')
         return self._render_with_provider(project, shot, provider, authorize_cloud=authorize_cloud)
 
     def _render_with_provider(self, project: Project, shot: Shot, provider, authorize_cloud=None):
