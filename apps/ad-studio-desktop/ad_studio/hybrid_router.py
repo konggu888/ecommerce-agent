@@ -140,7 +140,7 @@ def execute_ai_gap_generation(
     *,
     generator,
     budget_remaining_rmb: float = 0.0,
-    cost_per_ai_shot_rmb: float | None = 0.0,
+    cost_per_ai_shot_rmb: float | None = None,
 ) -> dict:
     """在混合路由结果之后执行获准的 AI 补镜头，并再次做预算闸门。
 
