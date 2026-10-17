@@ -1695,3 +1695,10 @@ A57 的无账本旧项目、A60 的 failed-only 账本均已有恢复行为测�
 3. 对 prepare_product_drama_shot_regeneration 测试 None + price_missing 的持久化；测试 price_missing + 0.0 必须失败。
 4. 确认该按钮只准备新版本、不调用 Provider；真实生成必须由单镜头生成入口再次披露目的地/费用。仅 mock/CI 证据不等于真实账单验收。
 
+### 实拍素材重新分析数据去向授权回归｜2026-10-17
+
+1. 使用自定义视觉模型端点与 local_openai 转写端点，确认弹窗展示脱敏 endpoint、网络/本机提示、关键帧与音频数据类别、费用未知说明。
+2. 在确认前断言不调用 scan_footage、build_visual_manifest、analyze_footage、transcribe_footage_audio，不归档/移动素材；用户拒绝后调用计数为 0。
+3. 确认后才进入扫描和后续分析；只使用 mock，不访问真实 Provider。
+4. 资产配置路径回归应断言 UI 配置与 AssetGenerator 使用同一 app config root 文件，自定义 library_root 不应改变 Provider 配置位置。
+

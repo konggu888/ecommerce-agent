@@ -477,3 +477,11 @@
 - prepare_product_drama_shot_regeneration 保留未知/缺价语义，拒绝把 unknown/price_missing 与数字金额混用；新增离线测试覆盖 None 持久化和伪装为 0 的拒绝。
 - 此按钮只准备新版本，不触发 Provider；实际生成仍由单镜头生成入口确认真实端点/费用。最新修复/测试 SHA bb2809f5711902b9696551b40b08d7218586cf2f、74d53859cf0f1716c77ebf6b95880bc62c03f2aa、593cac61538690027f837502928914f02c99c328、e300c1ca6d6b44327ee3314abb075ee22ecb7ce7 的 CI 尚需最终 HEAD 核验。
 
+### P. 实拍素材重新分析的数据去向确认｜2026-10-17
+
+- 原 reanalyze_footage() 仅显示通用“重新扫描/视觉分析/归档/转写”确认，没有在同一确认中列出当前素材剪辑导演的实际 endpoint、关键帧外发类别、转写 endpoint/音频数据或费用不确定性。
+- 已新增 build_footage_reanalysis_consent_detail()，列出当前路由、脱敏 endpoint、网络/本机提示、关键帧和音频数据类别、配置价格/未知费用；不展示 URL query/key，也不展示完整本地素材目录。
+- UI 在 scan_footage、build_visual_manifest、analyze_footage 和音频转写之前弹出确认；拒绝后返回，不扫描/归档素材、不调用模型/Provider。新增离线测试覆盖说明脱敏与确认顺序。
+- 配置路径专项核对：UI 使用 ROOT/asset-generation.json；ProductionStore 的 root 为 PROJECTS，root.parent 为 ROOT，AssetGenerator 使用同一配置文件；自定义 library_root 只影响素材库，不改变 provider 配置路径。现有测试明确断言此合同。
+- 新代码/测试 SHA 48fe3e2f568371fd2b2be94b4bd0459bca22a005、c902fb98c4eb22ad8040067792d129e81f8f9ce5 的最终 HEAD CI/docs-sync 尚待核验。实拍项目创建初始阶段是否所有费用授权与实际请求严格对齐仍需继续审计。
+

@@ -1,10 +1,10 @@
 ## 【实时接手状态｜2026-10-17｜以此段优先】
 
 - 仓库 konggu888/ecommerce-agent；分支 feat/product-drama-visual-review；PR #32 保持 Open/unmerged。
-- 最近一次已确认四项全绿的基线：735f8ac663574055995788df4106758f0e355f09。随后新增短剧重生成费用语义修复、测试与本次文档同步，最终 HEAD CI 必须重新核验。
-- 已修复云端 render_shot / render_cloud_shot 透传 authorize_cloud；新增 mock 测试。短剧商品镜头重生成准备步骤现在根据当前路由区分本地零 Provider 费用、已配置云端价格和未知价格；历史记录可保存 None + price_missing，不再把未知费用伪装成 ¥0。
-- 该按钮仅准备新版本，不发送 Provider 请求；真正生成时仍需通过单镜头目的地/费用确认。
-- 下一步：核验最终 HEAD 四项 CI/docs-sync；通过后继续审计剩余 Provider 入口与自定义资产库路径下 UI 费用配置/实际生成配置同源性。A0–A112 不变，PR #32 不合并；真实 Provider/扣费/Windows 真机仍暂缓。
+- 最近一次四项 CI/docs-sync 全绿基线：5a69853b069079c315b44565598475e1d9785ea4。随后新增实拍素材重新分析的数据去向确认及测试，最终 HEAD CI 必须重新核验。
+- 已完成：云端渲染入口透传资产授权回调；短剧重生成准备阶段按实际路由显示费用确定性，缺价保存 null + price_missing；资产生成配置路径审计确认 UI 与 ProductionStore 都使用 ROOT（项目目录的 parent）下的 asset-generation.json，自定义资产库目录只影响素材文件，不改变 Provider 配置文件位置。
+- 新增实拍素材重新分析前置确认：显示素材剪辑导演 endpoint、关键帧数据类型、口播转写 endpoint/音频数据和费用未知提示；取消时在扫描/归档/模型调用前返回。新增离线测试覆盖脱敏和确认顺序。
+- 下一步：核验最终 HEAD 四项 CI/docs-sync；通过后继续审计剩余 Provider 入口和创建实拍项目时的端到端授权/预算顺序。A0–A112 不变，不新增 A113+，PR #32 不合并；真实 Provider/扣费/Windows 真机暂缓。
 
 
 

@@ -1,10 +1,10 @@
 ## 【实时权威进度｜2026-10-17｜优先于下方所有历史快照】
 
 - 仓库/分支：konggu888/ecommerce-agent / feat/product-drama-visual-review；PR #32 保持 Open/unmerged。
-- 最近一次四项 CI/docs-sync 全绿基线：735f8ac663574055995788df4106758f0e355f09。随后短剧重生成费用语义修复、测试及本次文档提交的最终 HEAD 必须重新核验。
-- 已完成：云端视频渲染入口透传资产授权回调；短剧商品镜头重生成准备步骤按 CapabilityRouter 当前目标显示目的地与费用确定性；本地路由记录本地无 Provider 费用，云端价格缺失时保存 None + price_missing，不再把未知费用记成数字 0。mock 测试覆盖未知费用保存及非法伪装为零的拒绝。
-- 说明：短剧“重新生成”按钮只是准备新版本，不发送 Provider 请求；真正生成时由“生成本镜头”再次确认实际端点/费用。该确认不是 A 编号正式验收结论。
-- 当前唯一下一步：核验最终 HEAD 四项 CI/docs-sync；通过后审计剩余 Provider 入口，重点检查自定义资产库路径下 UI 读取的资产费用配置与实际生成配置是否同源，并继续对照 A13/A29/A51–A65。A0–A112 不变，不新增 A113+，PR #32 不合并；真实 Provider/扣费/Windows 真机暂缓。
+- 最近一次四项 CI/docs-sync 全绿基线：5a69853b069079c315b44565598475e1d9785ea4。随后实拍素材重新分析数据去向确认及测试的最终 HEAD 必须重新核验。
+- 已完成：云端视频渲染入口透传资产授权回调；短剧重生成准备步骤区分本地 Provider 零费用与云端未知费用；配置路径审计确认资产设置 UI 与 ProductionStore 使用同一 app config root 下的 asset-generation.json，自定义 library_root 只决定素材库物理存储位置。
+- 新增实拍素材重新分析授权：确认弹窗披露素材剪辑导演实际路由/脱敏 endpoint/关键帧数据，及口播转写路由/音频数据和未知费用；取消发生在扫描、归档、模型调用前。mock 测试覆盖数据说明脱敏与授权顺序。
+- 当前唯一下一步：核验最终 HEAD 的 CI Push、CI PR、docs-sync Push、docs-sync PR；通过后继续审计用户拍摄素材项目创建阶段的全链授权与预算顺序，以及剩余 Provider 入口。A0–A112 正式状态不变，不新增 A113+，PR #32 不合并；真实 Provider/扣费/Windows 真机暂缓。
 
 
 
