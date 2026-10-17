@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 52/113. C2 source/test audit coverage 15/113. C3 has 2 confirmed blocking defect families; unknown-price remediation is in progress and awaits latest CI; preflight ordering remains open. Formal acceptance states unchanged.",
+  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 52/113. C2 source/test audit coverage 15/113. C3 confirmed blocker families 1/2 closed; unknown-price blocker closed on latest PR CI/docs-sync, cost-preflight ordering remains open. Formal acceptance states unchanged.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -2126,8 +2126,8 @@
         "next_action": "Fix unknown-price handling so None/missing is distinct from explicitly configured zero; show price unknown and require explicit user confirmation before generation. Add regression tests for both human-support and generic gaps.",
         "formal_acceptance_status_preserved": "not_audited",
         "acceptance_pass_claim": false,
-        "remediation_status": "in_progress_waiting_latest_ci",
-        "remediation_note": "Unknown-price handling has been changed in the current branch; do not treat the original audit finding as closed until current-head CI/docs-sync pass and UI tests are verified."
+        "remediation_status": "code_and_regression_tests_pass_latest_pr_ci",
+        "remediation_note": "C3-UNKNOWN-PRICE-001 fix passed latest HEAD PR CI and docs-sync on 2026-10-17; the task remains not_audited until all remaining task-specific acceptance clauses are reviewed."
       }
     },
     {
@@ -2288,8 +2288,8 @@
         "next_action": "Fix the shared unknown-price budget gate together with A12; add execution-time tests proving no generator call occurs until unknown pricing is explicitly confirmed.",
         "formal_acceptance_status_preserved": "not_audited",
         "acceptance_pass_claim": false,
-        "remediation_status": "in_progress_waiting_latest_ci",
-        "remediation_note": "Unknown-price handling has been changed in the current branch; do not treat the original audit finding as closed until current-head CI/docs-sync pass and UI tests are verified."
+        "remediation_status": "code_and_regression_tests_pass_latest_pr_ci",
+        "remediation_note": "C3-UNKNOWN-PRICE-001 fix passed latest HEAD PR CI and docs-sync on 2026-10-17; the task remains not_audited until all remaining task-specific acceptance clauses are reviewed."
       }
     },
     {
@@ -14611,7 +14611,7 @@
         "name": "阻断缺口修复与回归",
         "status": "in_progress",
         "exit": "all confirmed blocking defects linked to existing A0-A112 IDs and closed by regression tests",
-        "note": "Two confirmed P0 defect families are tracked; unknown-price fix implemented but pending latest CI, and cost-preflight ordering remains open."
+        "note": "C3-UNKNOWN-PRICE-001 closed by regression tests and latest PR CI/docs-sync. C3-COST-PREFLIGHT-ORDER-001 remains open."
       },
       {
         "id": "C4",
@@ -14647,10 +14647,10 @@
       },
       "c3_blocking_defects": {
         "total": 2,
-        "closed": 0,
-        "remaining": 2,
-        "percent": 0,
-        "definition": "Confirmed cross-cutting blocking defect records, each counted once and linked to existing A0-A112 acceptance IDs. An in-progress fix remains open until latest CI and required regression evidence pass."
+        "closed": 1,
+        "remaining": 1,
+        "percent": 50,
+        "definition": "Confirmed cross-cutting blocking defect records, each counted once and linked to existing A0-A112 acceptance IDs; closure requires latest relevant CI/docs-sync and required regression evidence."
       },
       "c4_release_gate": {
         "status": "pending"
@@ -14666,7 +14666,7 @@
     {
       "id": "C3-UNKNOWN-PRICE-001",
       "priority": "P0",
-      "status": "confirmed_in_progress",
+      "status": "confirmed_closed",
       "linked_existing_ids": [
         "A12",
         "A13",
@@ -14703,7 +14703,39 @@
         "HELP.md, PROJECT_LOGIC.md, SESSION_HANDOFF.md and progress dashboard synchronized"
       ],
       "formal_acceptance_status_changed": false,
-      "fix_summary": "Implemented fail-closed unknown-price semantics in routing/execution, estimate_cost(None), provider price-config default, UI warnings/confirmation for project creation, hybrid gaps, batch generation and short-drama project creation; added route/execution/estimate/provider regression coverage. Awaiting latest HEAD CI/docs-sync before closure."
+      "fix_summary": "Implemented fail-closed unknown-price semantics in routing/execution, estimate_cost(None), provider price-config default, UI warnings/confirmation for project creation, hybrid gaps, batch generation and short-drama project creation; added route/execution/estimate/provider regression coverage. Awaiting latest HEAD CI/docs-sync before closure.",
+      "closed_on": "2026-10-17",
+      "closure_evidence": {
+        "latest_head": "a307090714a583fdce28aec0f959183a501c95dc",
+        "ci_pr_run_id": 39017702523,
+        "ci_pr_conclusion": "success",
+        "docs_sync_pr_run_id": 39017702532,
+        "docs_sync_pr_conclusion": "success",
+        "regression_tests": [
+          "UnknownVideoPriceGuardTests",
+          "UnknownVideoPriceEstimateTests",
+          "test_provider_placeholder_rate_is_unknown_until_explicitly_configured"
+        ],
+        "source_test_file_shas": {
+          "app": "58da27ffbca48b8630aac8d2df5853aa3a814446",
+          "hybrid_router": "efc9d5683a8e523cfce12c4534785ce5c9bc84bb",
+          "engine": "17f94bc822c3fe1ec72c4dacaa58dee41cfa79b6",
+          "providers": "7f814a252b498eec1f007af17036ed9f68185dfe",
+          "hybrid_tests": "4096f9736bab65423eaeb4199a2fc64d0979687b",
+          "desktop_tests": "df9164cfe6c74360d64c7bbb6bfe3083943e0086"
+        },
+        "checks": [
+          "Unknown price remains None and is not rendered as zero/placeholder total",
+          "Explicit zero price remains a known zero value",
+          "Route fails closed until user confirmation",
+          "Execution fails closed without confirmation",
+          "Unknown-price confirmation paths are present in project/batch/hybrid/short-drama UI",
+          "Over-budget batch path asks user whether to continue"
+        ],
+        "push_runs": "not_independently_verified_by_available_workflow_query",
+        "real_provider_billing": "deferred_by_user",
+        "formal_acceptance_status_changed": false
+      }
     },
     {
       "id": "C3-COST-PREFLIGHT-ORDER-001",
