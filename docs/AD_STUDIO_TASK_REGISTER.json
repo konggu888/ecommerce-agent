@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Stage progress v1, phase normalization v1, and review of all 18 prior provisional phase mappings recorded. Overall completion remains disabled; semantic deduplication, historical status reconciliation, full code/test audit, and weighting remain incomplete.",
+  "audit_status": "Finite closure contract recorded. Fixed scope A0-A112/113 slots; C1 cross-source reconciliation in progress; C2 full current code/test audit 0/113; C3 awaits evidence-driven blockers; C4 release gate pending; C5 real-world validation user-deferred. Overall task closure coverage remains 0/113 under strict current-audit definition.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -12360,5 +12360,90 @@
       "A108"
     ],
     "review_note": "Reviewed the 18 formerly provisional mappings against the authoritative product roadmap, acceptance plan sections, and future feature memo. A90-A98 are confirmed as Phase 4 AI short-drama scope; A100-A108 are confirmed as Phase 2 commercial editing scope. This confirms categorization only, not feature completion or acceptance."
+  },
+  "completion_contract": {
+    "version": "finite-closure-v1",
+    "document": "docs/AD_STUDIO_COMPLETION_PLAN.md",
+    "fixed_formal_scope": {
+      "first_id": "A0",
+      "last_id": "A112",
+      "numbered_slots": 113,
+      "add_new_acceptance_ids": false,
+      "renumber_or_merge_ids": false
+    },
+    "stages": [
+      {
+        "id": "C0",
+        "name": "范围冻结与台账标准化",
+        "status": "initial_pass_complete",
+        "exit": "113 slots indexed and six roadmap phase labels normalized"
+      },
+      {
+        "id": "C1",
+        "name": "跨来源身份与状态裁决",
+        "status": "in_progress",
+        "exit": "all 113 slots reconciled against plan, SOP, roadmap, register; unresolved decisions 0"
+      },
+      {
+        "id": "C2",
+        "name": "当前代码与专项测试审计",
+        "status": "not_started_as_full_audit",
+        "completed_slots": 0,
+        "total_slots": 113,
+        "exit": "all 113 slots have current source/test evidence and explicit audit result"
+      },
+      {
+        "id": "C3",
+        "name": "阻断缺口修复与回归",
+        "status": "awaiting_C1_C2_evidence",
+        "exit": "all confirmed blocking defects linked to existing A0-A112 IDs and closed by regression tests"
+      },
+      {
+        "id": "C4",
+        "name": "发布候选/文档/CI/终态",
+        "status": "pending",
+        "exit": "latest relevant CI/docs-sync green and all 113 slots have an auditable terminal disposition"
+      },
+      {
+        "id": "C5",
+        "name": "真实环境验证",
+        "status": "deferred_by_user",
+        "exit": "real environment tests passed or individually recorded as user-deferred with explicit risk and activation condition"
+      }
+    ],
+    "metrics": {
+      "task_closure_coverage": {
+        "numerator": 0,
+        "denominator": 113,
+        "percent": 0,
+        "definition": "Slots with current code/test audit and explicit terminal disposition divided by 113; inventory mapping or evidence pointers alone do not count."
+      },
+      "c1_cross_source_reconciliation": {
+        "numerator": null,
+        "denominator": 113,
+        "percent": null,
+        "definition": "Publish only after exact task-level reconciliation state is counted; existing requirement-level review is not final cross-source closure."
+      },
+      "c2_current_code_test_audit": {
+        "numerator": 0,
+        "denominator": 113,
+        "percent": 0
+      },
+      "c3_blocking_defects": {
+        "total": null,
+        "closed": null,
+        "remaining": null,
+        "percent": null,
+        "definition": "Do not invent counts; establish a fixed batch denominator when each audit batch confirms blockers."
+      },
+      "c4_release_gate": {
+        "status": "pending"
+      },
+      "c5_real_world_validation": {
+        "status": "user_deferred"
+      }
+    },
+    "stop_rule": "Do not repeat completed inventory/phase normalization. Each batch must close a bounded set and record checked, resolved, unresolved, and next batch. New non-blocking improvements go to post-release candidates. Only defects preventing an existing A0-A112 requirement from passing may enter current remediation.",
+    "last_updated_on": "2026-10-17"
   }
 }
