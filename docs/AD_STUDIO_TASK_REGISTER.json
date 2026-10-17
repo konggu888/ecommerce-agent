@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 52/113. C2 direct source/test audit coverage 15/113; A10-A14 reviewed, with confirmed P0 unknown-price blocker linked to A12/A13/A51. Formal acceptance states unchanged.",
+  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 52/113. C2 source/test audit coverage 15/113. C3 has 2 confirmed blocking defect families; unknown-price remediation is in progress and awaits latest CI; preflight ordering remains open. Formal acceptance states unchanged.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -2125,7 +2125,9 @@
         "finding": "Gap classification and routing tests cover product-evidence reshoot preference, human-speech support visuals, provider-unavailable and budget-insufficient fallback, and actionable tasks. Direct source inspection found a blocking unknown-price bug: route_footage_gap_tasks coerces missing/None rate to 0.0 and treats rate <= 0 as sufficient budget, allowing AI generation to be marked allowed without a configured price. This can misrepresent unknown cost as zero.",
         "next_action": "Fix unknown-price handling so None/missing is distinct from explicitly configured zero; show price unknown and require explicit user confirmation before generation. Add regression tests for both human-support and generic gaps.",
         "formal_acceptance_status_preserved": "not_audited",
-        "acceptance_pass_claim": false
+        "acceptance_pass_claim": false,
+        "remediation_status": "in_progress_waiting_latest_ci",
+        "remediation_note": "Unknown-price handling has been changed in the current branch; do not treat the original audit finding as closed until current-head CI/docs-sync pass and UI tests are verified."
       }
     },
     {
@@ -2285,7 +2287,9 @@
         "finding": "AI gap generation rechecks budget, blocks product-evidence generation, preserves failure state and tests unconfigured provider/product-evidence guards. The execution layer also coerces unknown price to zero and only blocks when rate > 0 and remaining < rate, so an unknown rate can pass the execution budget gate. This is the same confirmed cross-cutting unknown-price blocker as A12.",
         "next_action": "Fix the shared unknown-price budget gate together with A12; add execution-time tests proving no generator call occurs until unknown pricing is explicitly confirmed.",
         "formal_acceptance_status_preserved": "not_audited",
-        "acceptance_pass_claim": false
+        "acceptance_pass_claim": false,
+        "remediation_status": "in_progress_waiting_latest_ci",
+        "remediation_note": "Unknown-price handling has been changed in the current branch; do not treat the original audit finding as closed until current-head CI/docs-sync pass and UI tests are verified."
       }
     },
     {
@@ -14605,8 +14609,9 @@
       {
         "id": "C3",
         "name": "阻断缺口修复与回归",
-        "status": "awaiting_bounded_triage_from_C2_FOUNDATION_001",
-        "exit": "all confirmed blocking defects linked to existing A0-A112 IDs and closed by regression tests"
+        "status": "in_progress",
+        "exit": "all confirmed blocking defects linked to existing A0-A112 IDs and closed by regression tests",
+        "note": "Two confirmed P0 defect families are tracked; unknown-price fix implemented but pending latest CI, and cost-preflight ordering remains open."
       },
       {
         "id": "C4",
@@ -14641,11 +14646,11 @@
         "definition": "Slots with direct current source/test inspection and a written audit result; partial findings count as audit coverage, not acceptance pass."
       },
       "c3_blocking_defects": {
-        "total": 1,
+        "total": 2,
         "closed": 0,
-        "remaining": 1,
+        "remaining": 2,
         "percent": 0,
-        "definition": "Confirmed blocking defect records; one cross-cutting defect family is counted once and linked to all affected existing acceptance IDs."
+        "definition": "Confirmed cross-cutting blocking defect records, each counted once and linked to existing A0-A112 acceptance IDs. An in-progress fix remains open until latest CI and required regression evidence pass."
       },
       "c4_release_gate": {
         "status": "pending"
@@ -14661,7 +14666,7 @@
     {
       "id": "C3-UNKNOWN-PRICE-001",
       "priority": "P0",
-      "status": "confirmed_open",
+      "status": "confirmed_in_progress",
       "linked_existing_ids": [
         "A12",
         "A13",
@@ -14670,12 +14675,25 @@
       "summary": "Missing/unknown video generation unit price can be coerced to 0.0 and interpreted as affordable, allowing hybrid AI generation without reliable cost estimate.",
       "evidence": {
         "source_path": "apps/ad-studio-desktop/ad_studio/hybrid_router.py",
-        "source_sha": "72af46f4f5aa45b3ca91ba457e49e46e8aff444f",
+        "source_sha": "efc9d5683a8e523cfce12c4534785ce5c9bc84bb",
         "confirmed_at": "2026-10-17",
         "affected_functions": [
           "route_footage_gap_tasks",
-          "execute_ai_gap_generation"
-        ]
+          "execute_ai_gap_generation",
+          "configured_video_price",
+          "estimate_cost",
+          "App.create",
+          "batch_generate_variants",
+          "generate_hybrid_gap_shots",
+          "create_short_drama_production_project",
+          "_authorize_shot_generation"
+        ],
+        "app_source_sha": "58da27ffbca48b8630aac8d2df5853aa3a814446",
+        "engine_source_sha": "17f94bc822c3fe1ec72c4dacaa58dee41cfa79b6",
+        "provider_source_sha": "7f814a252b498eec1f007af17036ed9f68185dfe",
+        "hybrid_test_sha": "4096f9736bab65423eaeb4199a2fc64d0979687b",
+        "desktop_test_sha": "df9164cfe6c74360d64c7bbb6bfe3083943e0086",
+        "fix_commit": "pending_latest_ci"
       },
       "required_close_evidence": [
         "Unknown rate represented distinctly from explicitly configured zero price",
@@ -14683,6 +14701,35 @@
         "No generator/provider call occurs before confirmation when price is unknown",
         "Regression tests for both route and execution gates pass on latest HEAD CI",
         "HELP.md, PROJECT_LOGIC.md, SESSION_HANDOFF.md and progress dashboard synchronized"
+      ],
+      "formal_acceptance_status_changed": false,
+      "fix_summary": "Implemented fail-closed unknown-price semantics in routing/execution, estimate_cost(None), provider price-config default, UI warnings/confirmation for project creation, hybrid gaps, batch generation and short-drama project creation; added route/execution/estimate/provider regression coverage. Awaiting latest HEAD CI/docs-sync before closure."
+    },
+    {
+      "id": "C3-COST-PREFLIGHT-ORDER-001",
+      "priority": "P0",
+      "status": "confirmed_open",
+      "linked_existing_ids": [
+        "A2",
+        "A13",
+        "A51"
+      ],
+      "summary": "App.create() invokes create_plan/create_plans before showing the detailed project cost estimate/budget confirmation. The earlier data-use authorization is not a cost quote; later budget rejection cannot undo any planning-model request or charge already made.",
+      "evidence": {
+        "source_path": "apps/ad-studio-desktop/ad_studio/app.py",
+        "source_sha": "58da27ffbca48b8630aac8d2df5853aa3a814446",
+        "confirmed_at": "2026-10-17",
+        "documented_in": [
+          "apps/ad-studio-desktop/HELP.md",
+          "apps/ad-studio-desktop/PROJECT_LOGIC.md"
+        ]
+      },
+      "required_close_evidence": [
+        "Define a bounded preflight estimate before any planning/provider call without inventing final shot count/cost",
+        "First explicit confirmation covers expected planning/data costs and provider destination",
+        "After plan is produced, if final shot/asset estimate changes, ask for delta confirmation before additional cost-bearing generation",
+        "Cancellation before first authorization causes zero model/provider calls; cancellation at later delta gate causes no further calls/persistence",
+        "Orchestration-level call-count tests and latest HEAD CI/docs-sync pass"
       ],
       "formal_acceptance_status_changed": false
     }
