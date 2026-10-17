@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 78/113; C2 direct current source/test audits 75/113; strict task closure 0/113. Both tracked cross-cutting P0 blocker families have bounded fixes and latest CI/docs-sync success. Formal acceptance states unchanged.",
+  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 78/113; C2 direct current source/test audits 80/113; strict task closure 0/113. Both tracked cross-cutting P0 blocker families have bounded fixes and latest CI/docs-sync success. C3-EVIDENCE-001 is now the next bounded remediation batch under existing IDs A63/A67/A34/A58. Formal acceptance states unchanged.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -11897,7 +11897,45 @@
       ],
       "normalized_roadmap_phase": "阶段4｜AI短剧能力",
       "phase_normalization_original": "阶段4｜AI 短剧能力",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-016",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_product_fact_lock_context_semantics_gap",
+        "severity": "P1 product-claim integrity gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+            "blob_sha": "ea9254063b1370e31106b56405d2c2733ebc7546",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_short_drama.py",
+            "blob_sha": "c5800b533ea0bbc33aaf0b363cf7bd7ef5665027",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "audit_short_drama checks confirmed facts against product source text and warns when unknown/unverified facts are used as positive claims; tests cover unsupported confirmed facts and unknown facts explicitly marked unverified. Text containment can miss paraphrases/context and cannot establish that the source itself is true or that the rendered product supports the claim.",
+        "confirmed_gaps": [
+          "audit_short_drama checks confirmed facts against product source text and warns when unknown/unverified facts are used as positive claims; tests cover unsupported confirmed facts and unknown facts explicitly marked unverified. Text containment can miss paraphrases/context and cannot establish that the source itself is true or that the rendered product supports the claim."
+        ],
+        "next_action": "Add a small table-driven context matrix for unknown facts used as positive claims vs explicitly labeled unverified; keep the output as a warning and require manual product-fact review.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
+      }
     },
     {
       "task_id": "A76",
@@ -11989,7 +12027,45 @@
       ],
       "normalized_roadmap_phase": "阶段4｜AI短剧能力",
       "phase_normalization_original": "阶段4｜AI 短剧能力",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-016",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "negative_only_selling_point_coverage",
+        "severity": "P1 storyboard coverage evidence gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+            "blob_sha": "ea9254063b1370e31106b56405d2c2733ebc7546",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_short_drama.py",
+            "blob_sha": "c5800b533ea0bbc33aaf0b363cf7bd7ef5665027",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "The audit scans action, product integration, dialogue and generation-prompt text and warns when a confirmed selling point is absent; the identified direct test is negative-only. Positive coverage and normalization/paraphrase behavior are not established, and textual mention does not prove the rendered shot visibly demonstrates the selling point.",
+        "confirmed_gaps": [
+          "The audit scans action, product integration, dialogue and generation-prompt text and warns when a confirmed selling point is absent; the identified direct test is negative-only. Positive coverage and normalization/paraphrase behavior are not established, and textual mention does not prove the rendered shot visibly demonstrates the selling point."
+        ],
+        "next_action": "Add positive tests for each supported text field and a negative normalization/word-boundary case; keep the result labeled text coverage rather than visual proof.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
+      }
     },
     {
       "task_id": "A77",
@@ -12081,7 +12157,45 @@
       ],
       "normalized_roadmap_phase": "阶段4｜AI短剧能力",
       "phase_normalization_original": "阶段4｜AI 短剧能力",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-016",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_causal_event_to_shot_semantic_link",
+        "severity": "P1 narrative traceability gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+            "blob_sha": "ea9254063b1370e31106b56405d2c2733ebc7546",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_short_drama.py",
+            "blob_sha": "c5800b533ea0bbc33aaf0b363cf7bd7ef5665027",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "The auditor checks whether causal/event text is represented in referenced shot fields and tests warn when a causal event is not shown in its referenced shot; prompts require story-event references and shootable turning points. Positive multi-event-to-distinct-shot coverage and semantic paraphrase handling are not proven; substring overlap cannot establish that a real shot performs the event.",
+        "confirmed_gaps": [
+          "The auditor checks whether causal/event text is represented in referenced shot fields and tests warn when a causal event is not shown in its referenced shot; prompts require story-event references and shootable turning points. Positive multi-event-to-distinct-shot coverage and semantic paraphrase handling are not proven; substring overlap cannot establish that a real shot performs the event."
+        ],
+        "next_action": "Add a positive multi-event fixture mapping separate causal steps to distinct shots and negative cases for missing/wrong references; keep actual visual performance as human/real-media review.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
+      }
     },
     {
       "task_id": "A78",
@@ -12173,7 +12287,45 @@
       ],
       "normalized_roadmap_phase": "阶段4｜AI短剧能力",
       "phase_normalization_original": "阶段4｜AI 短剧能力",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-016",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_character_knowledge_timeline_malformed_case_gap",
+        "severity": "P1 continuity integrity gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+            "blob_sha": "ea9254063b1370e31106b56405d2c2733ebc7546",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_short_drama.py",
+            "blob_sha": "c5800b533ea0bbc33aaf0b363cf7bd7ef5665027",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "Tests cover knowledge revealed in earlier shots, preexisting knowledge, future-revealed information and sources that are not script evidence. They do not cover every malformed source/timeline combination or prove the semantic correctness of all quoted source claims; model-generated knowledge histories still need human continuity review.",
+        "confirmed_gaps": [
+          "Tests cover knowledge revealed in earlier shots, preexisting knowledge, future-revealed information and sources that are not script evidence. They do not cover every malformed source/timeline combination or prove the semantic correctness of all quoted source claims; model-generated knowledge histories still need human continuity review."
+        ],
+        "next_action": "Add table-driven malformed/missing/out-of-order knowledge-source cases and ensure warning/stop behavior is deterministic; do not treat the presence of a source index as proof the dialogue actually conveys that knowledge.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
+      }
     },
     {
       "task_id": "A79",
@@ -12265,7 +12417,45 @@
       ],
       "normalized_roadmap_phase": "阶段4｜AI短剧能力",
       "phase_normalization_original": "阶段4｜AI 短剧能力",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-016",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_character_action_basis_field_and_duplicate_name_gap",
+        "severity": "P1 continuity integrity gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+            "blob_sha": "ea9254063b1370e31106b56405d2c2733ebc7546",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_short_drama.py",
+            "blob_sha": "c5800b533ea0bbc33aaf0b363cf7bd7ef5665027",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "The auditor requires action-basis records to bind to characters in the exact shot and warns on incomplete basis records or character choices not represented in the referenced shot. A direct positive-path matrix for all required fields and behavior for duplicate action-basis records with the same character name are not established; structural binding does not prove believable motivation or rendered action.",
+        "confirmed_gaps": [
+          "The auditor requires action-basis records to bind to characters in the exact shot and warns on incomplete basis records or character choices not represented in the referenced shot. A direct positive-path matrix for all required fields and behavior for duplicate action-basis records with the same character name are not established; structural binding does not prove believable motivation or rendered action."
+        ],
+        "next_action": "Add table-driven required-field tests and duplicate-name behavior tests, including exact shot-character membership; keep semantic motivation and real performance review separate.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded."
+      }
     },
     {
       "task_id": "A80",
@@ -17941,6 +18131,64 @@
         "Formal acceptance states unchanged."
       ],
       "next_step": "C2-FOUNDATION-016: audit A75-A79. C2 has reached A0-A74; after A75-A79, start C3 remediation with A63 save/reload and A67 evidence invalidation, then A34/A58 visual-comparison call-count/persistence gaps. Do not add new acceptance IDs."
+    },
+    {
+      "batch_id": "C2-FOUNDATION-016",
+      "range": "A75-A79",
+      "status": "partial_current_source_test_audit_gaps_recorded",
+      "audited_at": "2026-10-17",
+      "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+      "latest_ci": {
+        "pr_ci_run_id": 39018653867,
+        "pr_ci_conclusion": "success",
+        "pr_docs_sync_run_id": 39018653864,
+        "pr_docs_sync_conclusion": "success",
+        "push_runs": "not_independently_verified_by_available_workflow_query"
+      },
+      "reviewed_sources": [
+        "apps/ad-studio-desktop/ad_studio/short_drama.py"
+      ],
+      "reviewed_tests": [
+        "apps/ad-studio-desktop/test_short_drama.py"
+      ],
+      "tasks": [
+        {
+          "id": "A75",
+          "status": "partial_product_fact_lock_context_semantics_gap",
+          "finding": "audit_short_drama checks confirmed facts against product source text and warns when unknown/unverified facts are used as positive claims; tests cover unsupported confirmed facts and unknown facts explicitly marked unverified. Text containment can miss paraphrases/context and cannot establish that the source itself is true or that the rendered product supports the claim.",
+          "next_action": "Add a small table-driven context matrix for unknown facts used as positive claims vs explicitly labeled unverified; keep the output as a warning and require manual product-fact review."
+        },
+        {
+          "id": "A76",
+          "status": "negative_only_selling_point_coverage",
+          "finding": "The audit scans action, product integration, dialogue and generation-prompt text and warns when a confirmed selling point is absent; the identified direct test is negative-only. Positive coverage and normalization/paraphrase behavior are not established, and textual mention does not prove the rendered shot visibly demonstrates the selling point.",
+          "next_action": "Add positive tests for each supported text field and a negative normalization/word-boundary case; keep the result labeled text coverage rather than visual proof."
+        },
+        {
+          "id": "A77",
+          "status": "partial_causal_event_to_shot_semantic_link",
+          "finding": "The auditor checks whether causal/event text is represented in referenced shot fields and tests warn when a causal event is not shown in its referenced shot; prompts require story-event references and shootable turning points. Positive multi-event-to-distinct-shot coverage and semantic paraphrase handling are not proven; substring overlap cannot establish that a real shot performs the event.",
+          "next_action": "Add a positive multi-event fixture mapping separate causal steps to distinct shots and negative cases for missing/wrong references; keep actual visual performance as human/real-media review."
+        },
+        {
+          "id": "A78",
+          "status": "partial_character_knowledge_timeline_malformed_case_gap",
+          "finding": "Tests cover knowledge revealed in earlier shots, preexisting knowledge, future-revealed information and sources that are not script evidence. They do not cover every malformed source/timeline combination or prove the semantic correctness of all quoted source claims; model-generated knowledge histories still need human continuity review.",
+          "next_action": "Add table-driven malformed/missing/out-of-order knowledge-source cases and ensure warning/stop behavior is deterministic; do not treat the presence of a source index as proof the dialogue actually conveys that knowledge."
+        },
+        {
+          "id": "A79",
+          "status": "partial_character_action_basis_field_and_duplicate_name_gap",
+          "finding": "The auditor requires action-basis records to bind to characters in the exact shot and warns on incomplete basis records or character choices not represented in the referenced shot. A direct positive-path matrix for all required fields and behavior for duplicate action-basis records with the same character name are not established; structural binding does not prove believable motivation or rendered action.",
+          "next_action": "Add table-driven required-field tests and duplicate-name behavior tests, including exact shot-character membership; keep semantic motivation and real performance review separate."
+        }
+      ],
+      "limitations": [
+        "Text/source matching does not prove product truth, story quality or rendered visual performance.",
+        "No local test execution through connector.",
+        "Formal acceptance states unchanged."
+      ],
+      "next_step": "C2-FOUNDATION-017: audit A80-A84. C2 has reached A0-A79; start C3-EVIDENCE-001 now for the already-confirmed deterministic A63/A67/A34/A58 gaps, then resume C2 sequentially."
     }
   ],
   "last_reconciled_against_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
@@ -18683,10 +18931,10 @@
         "id": "C2",
         "name": "当前代码与专项测试审计",
         "status": "in_progress",
-        "completed_slots": 75,
+        "completed_slots": 80,
         "total_slots": 113,
         "exit": "all 113 slots have current source/test evidence and explicit audit result",
-        "last_completed_batch": "C2-FOUNDATION-015"
+        "last_completed_batch": "C2-FOUNDATION-016"
       },
       {
         "id": "C3",
@@ -18722,9 +18970,9 @@
         "definition": "Unique formal task IDs with documented cross-source identity/status decisions; repeated IDs count once. This is not code/test audit or formal acceptance."
       },
       "c2_current_code_test_audit": {
-        "numerator": 75,
+        "numerator": 80,
         "denominator": 113,
-        "percent": 66.4,
+        "percent": 70.8,
         "definition": "Slots with direct current source/test inspection and a written audit result; partial findings count as audit coverage, not acceptance pass."
       },
       "c3_blocking_defects": {
