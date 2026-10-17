@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Finite closure contract active. C1 unique cross-source decisions 69/113; C2 direct current source/test audits 30/113; strict task closure 0/113. Both tracked cross-cutting P0 blocker families have bounded fixes and latest CI/docs-sync success. Formal acceptance states unchanged.",
+  "audit_status": "Finite closure contract active. C1 cross-source decisions 69/113; C2 direct current source/test audits 35/113; strict task closure 0/113. Both tracked cross-cutting P0 blocker families have bounded fixes and latest CI/docs-sync success. A20-A24/A25-A34 contain deterministic test gaps being tracked under existing IDs; formal acceptance states unchanged.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -4646,7 +4646,50 @@
           "acceptance_status_preserved": "not_audited",
           "implementation_or_acceptance_claim": false
         }
-      ]
+      ],
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-007",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_recovery_matrix_gaps",
+        "severity": "P1 recovery correctness gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/app.py",
+            "blob_sha": "a5fe9fe67b5e0c2e5183a72091de257a006d4bff",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "Recovery code and tests cover failure records, corrupted/missing output, interrupted temporary assets, budget/non-retryable failures and selected previous-version restoration paths. The original A30 matrix also includes damaged source, AI call/provider failure, insufficient budget, output corruption, reopen and interruption; no single scenario matrix proves idempotence, permission-denied/disk-full/partial-save handling and that retries never duplicate assets or charges.",
+        "confirmed_gaps": [
+          "Recovery code and tests cover failure records, corrupted/missing output, interrupted temporary assets, budget/non-retryable failures and selected previous-version restoration paths. The original A30 matrix also includes damaged source, AI call/provider failure, insufficient budget, output corruption, reopen and interruption; no single scenario matrix proves idempotence, permission-denied/disk-full/partial-save handling and that retries never duplicate assets or charges."
+        ],
+        "next_action": "Build a table mapping every A30 scenario to the actual production path/test, then add deterministic idempotence and failed-write/reopen cases under A30; keep Windows file locking and real provider billing in C5.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded. Real Windows/provider/media validation remains separate."
+      }
     },
     {
       "task_id": "A31",
@@ -4745,6 +4788,54 @@
         "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-007",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_semantic_documentation_sync_gap",
+        "severity": "P1 handoff/documentation integrity gap",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/HELP.md",
+            "blob_sha": "6d00c45de03623b13d5f747168a95f8519e1382d",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/PROJECT_LOGIC.md",
+            "blob_sha": "fc544b95f0b5f125cb43f434aaec529f5c08bb4f",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          },
+          {
+            "path": "apps/ad-studio-desktop/test_ai_handoff.py",
+            "blob_sha": "9a0c0283f11f9ec8024514907cb7a4058815c2bf",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "HELP/PROJECT_LOGIC/SESSION_HANDOFF and other handoff docs exist; CI docs-sync is green and static tests check required project-map/progress/safety anchors. These checks do not prove every current user-visible behavior, limitation, cost consent and deferred boundary is semantically synchronized across all required documents after every commit.",
+        "confirmed_gaps": [
+          "HELP/PROJECT_LOGIC/SESSION_HANDOFF and other handoff docs exist; CI docs-sync is green and static tests check required project-map/progress/safety anchors. These checks do not prove every current user-visible behavior, limitation, cost consent and deferred boundary is semantically synchronized across all required documents after every commit."
+        ],
+        "next_action": "Use a fixed requirement-to-document matrix for changed behavior and validate current handoff state/links; retain the distinction between docs-sync success and semantic completeness. Do not duplicate snapshots as a substitute for one authoritative live dashboard.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded. Real Windows/provider/media validation remains separate."
       }
     },
     {
@@ -4839,6 +4930,38 @@
         "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-007",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_history_blind_handoff_validation_gap",
+        "severity": "P1 operational continuity gap",
+        "source_evidence": [],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_ai_handoff.py",
+            "blob_sha": "9a0c0283f11f9ec8024514907cb7a4058815c2bf",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "A dedicated history-blind handoff test checks that project goal, architecture, progress, acceptance/test instructions and safety boundaries can be recovered from files, and the session handoff warns against treating docs-sync as full CI. This is mostly static presence/phrase evidence; no genuinely independent fresh AI execution was observed to reconstruct the latest HEAD/checks, identify stale historical SHAs and correctly choose the next bounded batch.",
+        "confirmed_gaps": [
+          "A dedicated history-blind handoff test checks that project goal, architecture, progress, acceptance/test instructions and safety boundaries can be recovered from files, and the session handoff warns against treating docs-sync as full CI. This is mostly static presence/phrase evidence; no genuinely independent fresh AI execution was observed to reconstruct the latest HEAD/checks, identify stale historical SHAs and correctly choose the next bounded batch."
+        ],
+        "next_action": "Perform a controlled history-blind handoff exercise using only current repository files and live PR/CI data; compare its inferred state/next action to the authoritative dashboard without using prior chat context.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded. Real Windows/provider/media validation remains separate."
       }
     },
     {
@@ -5000,6 +5123,49 @@
         "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-007",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_mocked_user_flow_no_real_ui_e2e",
+        "severity": "P1 end-to-end acceptance gap; Windows UI deferred",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/app.py",
+            "blob_sha": "a5fe9fe67b5e0c2e5183a72091de257a006d4bff",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/production.py",
+            "blob_sha": "b0fa10cd0000f8710051003ceea42721eca2223d",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "Existing integration tests exercise deterministic ProductionStore/media paths, incomplete output, safety-blocked delivery and recheck/repair behavior. They do not drive the actual Tk UI through product URL entry, initial consent, planning, detailed budget consent, asset/video generation, editing and final delivery for all three task types. Real provider, Windows rendering and actual FFmpeg media quality are separate deferred layers.",
+        "confirmed_gaps": [
+          "Existing integration tests exercise deterministic ProductionStore/media paths, incomplete output, safety-blocked delivery and recheck/repair behavior. They do not drive the actual Tk UI through product URL entry, initial consent, planning, detailed budget consent, asset/video generation, editing and final delivery for all three task types. Real provider, Windows rendering and actual FFmpeg media quality are separate deferred layers."
+        ],
+        "next_action": "Map the three required user workflows step-by-step to existing tests and add missing orchestration-level state/call-count tests where feasible without external calls; keep actual Windows UI and real-provider flow in C5.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded. Real Windows/provider/media validation remains separate."
       }
     },
     {
@@ -5124,6 +5290,54 @@
         "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
+      },
+      "current_code_test_audit": {
+        "audit_batch": "C2-FOUNDATION-007",
+        "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+        "audited_on": "2026-10-17",
+        "audit_kind": "direct_current_source_and_test_contract_audit",
+        "evidence_reviewed": true,
+        "latest_ci_at_audit_head": {
+          "ci": "success",
+          "ci_pr_run_id": 39018653867,
+          "docs_sync": "success",
+          "docs_sync_pr_run_id": 39018653864,
+          "push_triggered_runs": "not_independently_verified_by_available_workflow_query"
+        },
+        "formal_acceptance_status_preserved": "not_audited",
+        "acceptance_status_changed": false,
+        "result": "partial_visual_compare_guard_and_persistence_gaps",
+        "severity": "P1 evidence integrity gap; real vision/Windows deferred",
+        "source_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/short_drama.py",
+            "blob_sha": "ea9254063b1370e31106b56405d2c2733ebc7546",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          },
+          {
+            "path": "apps/ad-studio-desktop/ad_studio/app.py",
+            "blob_sha": "a5fe9fe67b5e0c2e5183a72091de257a006d4bff",
+            "claim": "Current source inspected for this existing acceptance contract; presence is not full acceptance."
+          }
+        ],
+        "test_evidence": [
+          {
+            "path": "apps/ad-studio-desktop/test_short_drama.py",
+            "blob_sha": "c5800b533ea0bbc33aaf0b363cf7bd7ef5665027",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          },
+          {
+            "path": "apps/ad-studio-desktop/test_desktop.py",
+            "blob_sha": "b1b0137cbc747dfbca486ebdf1b02bbd9a64956b",
+            "claim": "Existing deterministic tests inspected; latest PR CI scoped to recorded HEAD."
+          }
+        ],
+        "finding": "The short-drama visual comparison path validates reference/target file existence, non-empty data and supported formats; tests cover mismatches, no auto-pass, missing/wrong-mode and invalid files. Gaps remain for FFmpeg/FFprobe missing, video frame extraction failure/temporary-frame cleanup, disabled/unavailable independent visual route, cancellation with zero model calls and unchanged project state, and full save/reopen persistence of model/evidence/result status.",
+        "confirmed_gaps": [
+          "The short-drama visual comparison path validates reference/target file existence, non-empty data and supported formats; tests cover mismatches, no auto-pass, missing/wrong-mode and invalid files. Gaps remain for FFmpeg/FFprobe missing, video frame extraction failure/temporary-frame cleanup, disabled/unavailable independent visual route, cancellation with zero model calls and unchanged project state, and full save/reopen persistence of model/evidence/result status."
+        ],
+        "next_action": "Add deterministic tests for FFmpeg/FFprobe unavailable, extraction exception and temp cleanup; assert visual capability disabled and cancellation lead to zero model calls and no state mutation; add save/reopen round trip for model ID, evidence paths, comparison result and needs_review/failed state. Real model accuracy remains C5.",
+        "disposition": "Partial audit only; no formal acceptance state upgraded. Real Windows/provider/media validation remains separate."
       }
     },
     {
@@ -15294,6 +15508,75 @@
         "Formal acceptance states unchanged."
       ],
       "next_step": "C2-FOUNDATION-007: audit A30-A34 across recovery, asset/library integrity, handoff automation and visual comparison. After C2-FOUNDATION-007, start C3 remediation for confirmed deterministic test gaps under existing A20-A24/A25-A29 IDs."
+    },
+    {
+      "batch_id": "C2-FOUNDATION-007",
+      "range": "A30-A34",
+      "status": "partial_current_source_test_audit_gaps_recorded",
+      "audited_at": "2026-10-17",
+      "audited_head": "47e781dc913305eb4dfedcd6421dbec9636f20fd",
+      "latest_ci": {
+        "pr_ci_run_id": 39018653867,
+        "pr_ci_conclusion": "success",
+        "pr_docs_sync_run_id": 39018653864,
+        "pr_docs_sync_conclusion": "success",
+        "push_runs": "not_independently_verified_by_available_workflow_query"
+      },
+      "reviewed_sources": [
+        "apps/ad-studio-desktop/ad_studio/production.py",
+        "apps/ad-studio-desktop/ad_studio/app.py",
+        "apps/ad-studio-desktop/ad_studio/short_drama.py",
+        "apps/ad-studio-desktop/HELP.md",
+        "apps/ad-studio-desktop/PROJECT_LOGIC.md",
+        "apps/ad-studio-desktop/SESSION_HANDOFF.md",
+        "docs/AD_STUDIO_PROGRESS_DASHBOARD.md",
+        "docs/AD_STUDIO_COMPLETION_PLAN.md"
+      ],
+      "reviewed_tests": [
+        "apps/ad-studio-desktop/test_desktop.py",
+        "apps/ad-studio-desktop/test_ai_handoff.py",
+        "apps/ad-studio-desktop/test_short_drama.py"
+      ],
+      "tasks": [
+        {
+          "id": "A30",
+          "status": "partial_recovery_matrix_gaps",
+          "finding": "Recovery code and tests cover failure records, corrupted/missing output, interrupted temporary assets, budget/non-retryable failures and selected previous-version restoration paths. The original A30 matrix also includes damaged source, AI call/provider failure, insufficient budget, output corruption, reopen and interruption; no single scenario matrix proves idempotence, permission-denied/disk-full/partial-save handling and that retries never duplicate assets or charges.",
+          "next_action": "Build a table mapping every A30 scenario to the actual production path/test, then add deterministic idempotence and failed-write/reopen cases under A30; keep Windows file locking and real provider billing in C5."
+        },
+        {
+          "id": "A31",
+          "status": "partial_semantic_documentation_sync_gap",
+          "finding": "HELP/PROJECT_LOGIC/SESSION_HANDOFF and other handoff docs exist; CI docs-sync is green and static tests check required project-map/progress/safety anchors. These checks do not prove every current user-visible behavior, limitation, cost consent and deferred boundary is semantically synchronized across all required documents after every commit.",
+          "next_action": "Use a fixed requirement-to-document matrix for changed behavior and validate current handoff state/links; retain the distinction between docs-sync success and semantic completeness. Do not duplicate snapshots as a substitute for one authoritative live dashboard."
+        },
+        {
+          "id": "A32",
+          "status": "partial_history_blind_handoff_validation_gap",
+          "finding": "A dedicated history-blind handoff test checks that project goal, architecture, progress, acceptance/test instructions and safety boundaries can be recovered from files, and the session handoff warns against treating docs-sync as full CI. This is mostly static presence/phrase evidence; no genuinely independent fresh AI execution was observed to reconstruct the latest HEAD/checks, identify stale historical SHAs and correctly choose the next bounded batch.",
+          "next_action": "Perform a controlled history-blind handoff exercise using only current repository files and live PR/CI data; compare its inferred state/next action to the authoritative dashboard without using prior chat context."
+        },
+        {
+          "id": "A33",
+          "status": "partial_mocked_user_flow_no_real_ui_e2e",
+          "finding": "Existing integration tests exercise deterministic ProductionStore/media paths, incomplete output, safety-blocked delivery and recheck/repair behavior. They do not drive the actual Tk UI through product URL entry, initial consent, planning, detailed budget consent, asset/video generation, editing and final delivery for all three task types. Real provider, Windows rendering and actual FFmpeg media quality are separate deferred layers.",
+          "next_action": "Map the three required user workflows step-by-step to existing tests and add missing orchestration-level state/call-count tests where feasible without external calls; keep actual Windows UI and real-provider flow in C5."
+        },
+        {
+          "id": "A34",
+          "status": "partial_visual_compare_guard_and_persistence_gaps",
+          "finding": "The short-drama visual comparison path validates reference/target file existence, non-empty data and supported formats; tests cover mismatches, no auto-pass, missing/wrong-mode and invalid files. Gaps remain for FFmpeg/FFprobe missing, video frame extraction failure/temporary-frame cleanup, disabled/unavailable independent visual route, cancellation with zero model calls and unchanged project state, and full save/reopen persistence of model/evidence/result status.",
+          "next_action": "Add deterministic tests for FFmpeg/FFprobe unavailable, extraction exception and temp cleanup; assert visual capability disabled and cancellation lead to zero model calls and no state mutation; add save/reopen round trip for model ID, evidence paths, comparison result and needs_review/failed state. Real model accuracy remains C5."
+        }
+      ],
+      "limitations": [
+        "Direct source/test inspection only; no local test execution through the connector.",
+        "A31/A32 static checks do not replace semantic document review or an independent history-blind AI exercise.",
+        "A33 does not constitute a real Tk UI end-to-end run.",
+        "A34 real visual-model accuracy and Windows frame extraction remain deferred.",
+        "Formal acceptance states unchanged."
+      ],
+      "next_step": "C2-FOUNDATION-008: audit A35-A39 against direct source/tests, then begin bounded C3 remediation for deterministic gaps under existing IDs A20-A24, A25-A29 and A34. Do not create new formal acceptance IDs."
     }
   ],
   "last_reconciled_against_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
@@ -16000,10 +16283,10 @@
         "id": "C2",
         "name": "当前代码与专项测试审计",
         "status": "in_progress",
-        "completed_slots": 30,
+        "completed_slots": 35,
         "total_slots": 113,
         "exit": "all 113 slots have current source/test evidence and explicit audit result",
-        "last_completed_batch": "C2-FOUNDATION-006"
+        "last_completed_batch": "C2-FOUNDATION-007"
       },
       {
         "id": "C3",
@@ -16039,9 +16322,9 @@
         "definition": "Unique formal task IDs with documented cross-source identity/status decisions; repeated IDs count once. This is not code/test audit or formal acceptance."
       },
       "c2_current_code_test_audit": {
-        "numerator": 30,
+        "numerator": 35,
         "denominator": 113,
-        "percent": 26.5,
+        "percent": 31,
         "definition": "Slots with direct current source/test inspection and a written audit result; partial findings count as audit coverage, not acceptance pass."
       },
       "c3_blocking_defects": {
