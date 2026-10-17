@@ -2622,6 +2622,15 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertIn("if not authorized:", cancel_branch)
         self.assertIn("return", cancel_branch)
         self.assertIn("未读取商品页面、未调用 AI 模型/Provider", cancel_branch)
+        # Before any model planning call, the first preflight must make every
+        # production-cost category and all not-yet-knowable quantities explicit.
+        from ad_studio.app import build_creation_preflight_detail
+        detail = build_creation_preflight_detail("https://item.jd.com/123.html", 5.0, 2, Mock())
+        for label in ("视频生成", "演员生成", "场景生成", "商品素材生成", "项目总费用"):
+            self.assertIn(label, detail)
+        self.assertIn("镜头数尚未生成", detail)
+        self.assertIn("规划完成后", detail)
+        self.assertIn("取消后不会读取商品页面或调用模型/Provider", detail)
 
 
     def test_per_shot_provider_consent_discloses_destination_and_redacts_secrets(self):
