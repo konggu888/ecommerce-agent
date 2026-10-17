@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "C1 cross-source decisions documented for 23/113 unique slots (20.4%). C2-FOUNDATION-001 completed direct current-source/test audits for A0-A4 (5/113=4.4% audit coverage); all five have documented evidence gaps and remain not accepted. Overall task closure coverage 0/113. C3 blocker denominator not yet fixed.",
+  "audit_status": "C1 cross-source decisions documented for 33/113 unique slots (29.2%). C2-FOUNDATION-001 completed direct source/test audits for A0-A4 (5/113=4.4%); those items have evidence gaps and remain unaccepted. Task closure coverage 0/113.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -1606,7 +1606,28 @@
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-003",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json"
+        ],
+        "contract_role": "音频处理、降噪、人声保护、背景音乐/自动控音、用户音乐库、可选 AI 配音与错误反馈。",
+        "distinction": "与 A9 语音识别/真人口播和 A11 字幕时序关联，但 A10 专管音轨处理与混音，不证明真实听感或音乐授权。",
+        "related_ids": [
+          "A9",
+          "A11",
+          "A25"
+        ],
+        "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A11",
@@ -1700,7 +1721,30 @@
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-003",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json"
+        ],
+        "contract_role": "自动字幕、分段、任务/商品适配、与口播/商品事实一致、字体来源及免费商用限制。",
+        "distinction": "与 A9 转写、A10 音频及 A20/A21 文本事实核查有依赖；字幕生成/时序/事实一致性和字体许可是不同义务。",
+        "related_ids": [
+          "A9",
+          "A10",
+          "A20",
+          "A21",
+          "A25"
+        ],
+        "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A12",
@@ -1796,7 +1840,29 @@
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-003",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json"
+        ],
+        "contract_role": "识别商品证据、口播辅助画面和普通视觉缺口，按能力/预算选择补拍、AI补镜头或人工处理。",
+        "distinction": "依赖 A5 视觉分析与 A8 剪辑策略；判断缺口不等于实际生成/人工补拍完成，不能与 A13 生成路由合并。",
+        "related_ids": [
+          "A5",
+          "A8",
+          "A13",
+          "A14"
+        ],
+        "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A13",
@@ -1897,7 +1963,32 @@
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-003",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json"
+        ],
+        "contract_role": "AI生成能力路由、预算控制、失败状态、商品事实边界、人工复核闸门。",
+        "distinction": "与 A51 费用预估校验、A23/A24 安全门、A12 缺口判断、A14 混合制作有关联；生成授权/预算与产物来源/审核持久化不可合并。",
+        "related_ids": [
+          "A12",
+          "A14",
+          "A23",
+          "A24",
+          "A51",
+          "A55",
+          "A64"
+        ],
+        "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A14",
@@ -1998,7 +2089,31 @@
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-003",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json"
+        ],
+        "contract_role": "同一生产流程中混合实拍与 AI 镜头，并在编辑、审核和交付中保留来源与审核状态。",
+        "distinction": "与 A12 缺口决策、A13 AI 生成、A25 媒体质量和 A27 交付中心有关联；最终逐镜头溯源/审核状态保留是独立合同。",
+        "related_ids": [
+          "A12",
+          "A13",
+          "A25",
+          "A27",
+          "A30",
+          "A43"
+        ],
+        "merge_decision": "Keep formal ID and status. No merge, split, or renumbering.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A15",
@@ -13265,6 +13380,23 @@
         "remaining_decisions": [],
         "formal_acceptance_states_changed": false,
         "next_batch": "C1-FOUNDATION-003: reconcile A10-A14 across audio/subtitle generation, AI generation and hybrid real-footage workflows; keep speech recognition, audio mixing, subtitle timing and generation routing as separate contracts."
+      },
+      {
+        "batch_id": "C1-FOUNDATION-003",
+        "slots": [
+          "A10",
+          "A11",
+          "A12",
+          "A13",
+          "A14"
+        ],
+        "slots_reconciled": 5,
+        "slots_total": 5,
+        "status": "resolved_as_distinct_related_contracts",
+        "decision": "Compared the acceptance plan, SOP, roadmap context, and task register. Audio mixing, subtitle generation/timing/licensing, gap diagnosis, AI generation authorization/quality gates, and mixed footage source/review traceability are adjacent workflow steps but separate contracts. No IDs merged; formal statuses preserved.",
+        "remaining_decisions": [],
+        "formal_acceptance_states_changed": false,
+        "next_batch": "C1-FOUNDATION-004: reconcile A15-A19 across the three distinct task types, multi-version output and creative experiment design; do not treat shared rendering paths or historical CI as proof of full acceptance."
       }
     ]
   },
@@ -13456,8 +13588,8 @@
         "name": "跨来源身份与状态裁决",
         "status": "in_progress",
         "exit": "all 113 slots reconciled against plan, SOP, roadmap, register; unresolved decisions 0",
-        "last_completed_batch": "C1-FOUNDATION-002",
-        "slots_with_final_documented_cross_source_decision": 28,
+        "last_completed_batch": "C1-FOUNDATION-003",
+        "slots_with_final_documented_cross_source_decision": 33,
         "slots_counting_rule": "Unique task IDs across all closed batches; repeated IDs never increase the numerator."
       },
       {
@@ -13496,10 +13628,10 @@
         "definition": "Slots with current code/test audit and explicit terminal disposition divided by 113. Audit-only slots with open gaps do not count as closed."
       },
       "c1_cross_source_reconciliation": {
-        "numerator": 28,
+        "numerator": 33,
         "denominator": 113,
-        "percent": 24.8,
-        "definition": "Unique formal task IDs with documented cross-source identity/status decisions; repeated IDs across batches count once. This is not code/test audit or formal acceptance."
+        "percent": 29.2,
+        "definition": "Unique formal task IDs with documented cross-source identity/status decisions; repeated IDs count once. This is not code/test audit or formal acceptance."
       },
       "c2_current_code_test_audit": {
         "numerator": 5,
