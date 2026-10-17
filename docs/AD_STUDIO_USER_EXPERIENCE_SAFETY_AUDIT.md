@@ -507,3 +507,10 @@
 - 基线 `ecce52c904044db4b2618a1faefa5692fa727a40` 的 PR CI run `39013274826` 与 docs-sync PR run `39013274821` 均 success；Push 触发项未独立核实。
 - 中间提交 `1b5c5aedb4233f65ab4d5b227cb6ef512621123f` 的一次 CI 失败来自正向测试夹具未声明新增的 `video_authorized=True`，不是产品代码运行失败。修正测试调用后重跑通过。
 - 后续更新交接/看板文档会产生新的 HEAD，仍须重新查询新 SHA 的 CI/docs-sync；不能把本基线结果视为未来文档提交的验证。
+
+
+### UXS-2 验证补记｜授权绑定实际 endpoint｜2026-10-17
+
+- 在默认拒绝后端授权基础上发现：仅传布尔值不能证明用户确认的端点与最终加载的 Provider 配置相同。已改为传递 `authorized_endpoint` 快照，并在生产层比对实际 Provider endpoint；配置在确认后变化时 fail-closed。
+- 回归测试覆盖端点变更后拒绝分发。最终代码/测试基线 `fff8f59916cac0864d6bd69ce02a75028993c5f1` 的 PR CI `39013621163` 与 docs-sync PR `39013621460` 均 success；Push 项未独立核实。
+- 中间提交一次测试失败来自 mock 未正确模拟未配置 Provider 的哨兵类型；修正后通过。不得抹去该失败历史。后续文档提交仍须重新检查其自身 SHA。
