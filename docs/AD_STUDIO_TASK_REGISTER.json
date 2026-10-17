@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Finite closure active. C1 batches 001-004 reviewed; 18/113 unique slots have a documented cross-source identity/status decision. Cost/ledger unknown-price semantic boundary remains an audit concern. C2 full audit 0/113.",
+  "audit_status": "Finite closure active. C1 bounded batches have documented decisions for 23/113 unique slots. A0-A4 foundation cross-source contracts resolved as related but distinct. C2 full current-source/test audit remains 0/113.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -125,7 +125,23 @@
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-001",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json"
+        ],
+        "contract_role": "桌面启动、主界面、中文可读性、导航/关闭、错误反馈和帮助入口的用户可用性合同。",
+        "distinction": "A1 的语法/类型检查/CI 是工程级回归保障，不等于真实界面交互；A2 是项目生命周期，A0 关注应用外壳与基础交互。",
+        "merge_decision": "Keep the existing formal ID and status. No merge, split, or renumbering.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A1",
@@ -243,7 +259,23 @@
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-001",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json"
+        ],
+        "contract_role": "Python/前端语法、typecheck、各测试套件、全量 CI、文档同步、异常扫描与关键模块独立加载的工程门禁合同。",
+        "distinction": "与 A0 的启动/错误行为有关联，但 A1 不替代 A0 的 UI/Windows 交互验收；绿色 CI 只证明本次 SHA 所覆盖检查通过。",
+        "merge_decision": "Keep the existing formal ID and status. No merge, split, or renumbering.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A2",
@@ -373,7 +405,23 @@
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-001",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json"
+        ],
+        "contract_role": "项目创建、命名、目录/状态保存、重开/历史恢复和项目间隔离的生命周期合同。",
+        "distinction": "与 A3 的任务类型选择发生在同一用户流程，但 A2 关注项目生命周期与隔离，A3 关注三种任务的差异化策略/流程；与 A28 本地持久化有关联但不合并。",
+        "merge_decision": "Keep the existing formal ID and status. No merge, split, or renumbering.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A3",
@@ -497,7 +545,23 @@
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-001",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json"
+        ],
+        "contract_role": "三类任务选择、一次选一类、各自参数/素材输入/输出及差异化制作策略的任务合同。",
+        "distinction": "UI 布局 AST 测试只是局部布局合同，不是完整三类任务验收；与 A2 项目创建、A15-A17 三种生产任务有流程依赖，但职责不同。",
+        "merge_decision": "Keep the existing formal ID and status. No merge, split, or renumbering.",
+        "acceptance_status_preserved": "partial_automation_layout_contract_passed_other_acceptance_pending",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A4",
@@ -633,7 +697,23 @@
       },
       "normalized_roadmap_phase": "阶段1｜可靠的生产底座",
       "phase_normalization_original": "阶段1｜可靠的生产底座",
-      "phase_mapping_confidence": "mapped"
+      "phase_mapping_confidence": "mapped",
+      "cross_source_reconciliation": {
+        "batch_id": "C1-FOUNDATION-001",
+        "status": "resolved_as_distinct_related_contract",
+        "reviewed_on": "2026-10-17",
+        "sources": [
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_TASK_REGISTER.json"
+        ],
+        "contract_role": "原始素材导入、识别、媒体类型处理、状态/可用性、重复识别、废片归档、原件保护和路径异常提示。",
+        "distinction": "与 A5 视觉分析和 A12 缺口判断是前后游关系：A4 负责原始素材管理，A5 负责视觉分析，不因共用扫描/清单数据而重复。",
+        "merge_decision": "Keep the existing formal ID and status. No merge, split, or renumbering.",
+        "acceptance_status_preserved": "not_audited",
+        "implementation_or_acceptance_claim": false
+      }
     },
     {
       "task_id": "A5",
@@ -12820,6 +12900,23 @@
         "remaining_decisions": [],
         "formal_acceptance_states_changed": false,
         "next_batch": "C1-FOUNDATION-001: cross-check A0-A4 against the formal acceptance plan, SOP, roadmap, and task register for same-ID conflicts or cross-ID overlap; then continue bounded ranges without repeating phase normalization."
+      },
+      {
+        "batch_id": "C1-FOUNDATION-001",
+        "slots": [
+          "A0",
+          "A1",
+          "A2",
+          "A3",
+          "A4"
+        ],
+        "slots_reconciled": 5,
+        "slots_total": 5,
+        "status": "resolved_as_distinct_related_contracts",
+        "decision": "Cross-checked the formal acceptance plan, SOP, roadmap notes, and register. A0/A1 are user-facing desktop shell vs engineering gate; A2/A3 are project lifecycle vs task-type differentiation; A4 is source-material management and must not be collapsed into downstream visual analysis/gap assessment. No cross-ID duplicates requiring merge were found in this batch. A3's partial layout evidence remains partial; all formal acceptance statuses are preserved.",
+        "remaining_decisions": [],
+        "formal_acceptance_states_changed": false,
+        "next_batch": "C1-FOUNDATION-002: reconcile A5-A9 across plan/SOP/roadmap/register, with explicit boundaries between visual analysis, product facts, content understanding, editing strategy and real-person speech; after the bounded C1 sweep, begin C2 current-source/test audit."
       }
     ]
   },
@@ -13011,8 +13108,8 @@
         "name": "跨来源身份与状态裁决",
         "status": "in_progress",
         "exit": "all 113 slots reconciled against plan, SOP, roadmap, register; unresolved decisions 0",
-        "last_completed_batch": "C1-COST-LEDGER-004",
-        "slots_with_final_documented_cross_source_decision": 18,
+        "last_completed_batch": "C1-FOUNDATION-001",
+        "slots_with_final_documented_cross_source_decision": 23,
         "slots_counting_rule": "Unique task IDs across all closed batches; repeated IDs never increase the numerator."
       },
       {
@@ -13050,10 +13147,10 @@
         "definition": "Slots with current code/test audit and explicit terminal disposition divided by 113; inventory mapping or evidence pointers alone do not count."
       },
       "c1_cross_source_reconciliation": {
-        "numerator": 18,
+        "numerator": 23,
         "denominator": 113,
-        "percent": 15.9,
-        "definition": "Slots with documented cross-source identity/status decisions. Repeated review addenda for an already-counted slot do not increase the numerator; this is not code/test audit or formal acceptance."
+        "percent": 20.4,
+        "definition": "Unique slots with documented cross-source identity/status decisions. Repeated review addenda do not increase the numerator; this is not code/test audit or formal acceptance."
       },
       "c2_current_code_test_audit": {
         "numerator": 0,
