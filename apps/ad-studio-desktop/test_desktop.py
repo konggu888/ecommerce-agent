@@ -1338,6 +1338,51 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(json.dumps(plan, ensure_ascii=False, sort_keys=True), before)
             self.assertEqual(fake_app.project.creative_plan["short_drama"], plan)
 
+    def test_a34_visual_comparison_evidence_and_result_survive_project_reload(self):
+        from ad_studio.short_drama import compare_product_visual_shot
+
+        class VisionProfile:
+            id = "vision-persistence-test"
+            name = "视觉核验测试模型"
+            vision_enabled = True
+
+        class FakeRouter:
+            def resolve_route(self, function):
+                self.function = function
+                return VisionProfile()
+            def complete_json(self, profile, prompt, *, function, image_paths):
+                self.image_paths = list(image_paths)
+                return {
+                    "identity_match": True, "appearance_match": None, "structure_match": True,
+                    "function_match": None, "usage_match": True, "mismatch_detected": False,
+                    "confidence": 0.6, "issues": [], "summary": "部分属性无法确认",
+                }
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            reference = root / "reference.png"
+            generated = root / "generated.png"
+            reference.write_bytes(b"reference-bytes")
+            generated.write_bytes(b"generated-bytes")
+            plan = {
+                "drama_business_mode": "product_short_drama_ad",
+                "storyboard": [{"description": "商品镜头", "product_fidelity_constraints": ["不改变结构"]}],
+            }
+            updated = compare_product_visual_shot(FakeRouter(), plan, 1, [str(reference)], str(generated))
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            project.creative_plan["short_drama"] = updated
+            store = ProductionStore(root / "projects")
+            store.save(project)
+            restored = store.load(project.id)
+            shot = restored.creative_plan["short_drama"]["storyboard"][0]
+            self.assertEqual(shot["visual_verification"], "needs_review")
+            self.assertEqual(shot["visual_verification_method"], "ai_vision_assisted")
+            self.assertEqual(shot["visual_verification_evidence"], str(generated))
+            self.assertEqual(shot["visual_verification_reference_images"], [str(reference)])
+            self.assertEqual(shot["visual_comparison_result"]["model_id"], "vision-persistence-test")
+            self.assertTrue(shot["visual_comparison_result"]["requires_human_review"])
+            self.assertEqual(shot["visual_comparison_result"]["result"]["summary"], "部分属性无法确认")
+
     def test_a30_recovery_records_failures_without_losing_project_state(self):
         with tempfile.TemporaryDirectory() as td:
             store = ProductionStore(Path(td))
