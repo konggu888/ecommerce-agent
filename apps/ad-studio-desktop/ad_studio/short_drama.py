@@ -566,11 +566,11 @@ def prepare_product_drama_shot_regeneration(
     if estimated_cost is not None and (not math.isfinite(estimated_cost) or estimated_cost < 0):
         raise ShortDramaPlanError("预计生成费用必须是有限的非负数。")
     cost_status = str(estimated_cost_status or ("unknown" if estimated_cost is None else "estimated"))
-    if cost_status not in {"unknown", "local_no_provider_charge", "configured_estimate", "price_missing"}:
+    if cost_status not in {"unknown", "local_no_provider_charge", "configured_estimate", "price_missing", "estimated"}:
         raise ShortDramaPlanError("预计生成费用状态无效。")
-    if cost_status == "unknown" and estimated_cost is not None:
-        raise ShortDramaPlanError("未知费用不能用数字金额伪装。")
-    if cost_status != "unknown" and estimated_cost is None:
+    if cost_status in {"unknown", "price_missing"} and estimated_cost is not None:
+        raise ShortDramaPlanError("未知/未配置价格不能用数字金额伪装。")
+    if cost_status not in {"unknown", "price_missing"} and estimated_cost is None:
         raise ShortDramaPlanError("已知费用状态必须包含有效金额。")
     if old_version < 1:
         raise ShortDramaPlanError("旧版本号必须是正整数。")
