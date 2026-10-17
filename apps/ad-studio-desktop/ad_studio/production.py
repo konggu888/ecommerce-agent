@@ -370,7 +370,8 @@ class ProductionStore:
     def _record_failed_video_attempt(self, project: Project, shot: Shot, provider: Any, error: str):
         """Log a failed provider attempt without treating its quote as actual spend."""
         try:
-            quoted_rate = float(getattr(provider, "cost_per_shot_rmb", 0.0) or 0.0)
+            price_configured = bool(getattr(provider, "cost_price_configured", True))
+            quoted_rate = float(getattr(provider, "cost_per_shot_rmb", 0.0) or 0.0) if price_configured else 0.0
         except (TypeError, ValueError, OverflowError):
             quoted_rate = 0.0
         if not math.isfinite(quoted_rate) or quoted_rate < 0:
@@ -694,7 +695,9 @@ class ProductionStore:
         shot.previous_video_path = None
         shot.status = "已生成"
         try:
-            video_cost = normalize_cost_estimate_rmb(getattr(provider, "cost_per_shot_rmb", 0.0))
+            local_provider = getattr(provider, "provider_name", "") == "本地视频服务"
+            price_configured = local_provider or bool(getattr(provider, "cost_price_configured", True))
+            video_cost = normalize_cost_estimate_rmb(getattr(provider, "cost_per_shot_rmb", 0.0)) if price_configured else 0.0
             self._record_actual_cost(
                 project,
                 shot=shot,
@@ -705,7 +708,7 @@ class ProductionStore:
                 unit_cost_rmb=video_cost,
                 function="视频镜头生成",
                 endpoint=getattr(provider, "endpoint", ""),
-                cost_status=("local_no_provider_charge" if getattr(provider, "provider_name", "") == "本地视频服务" else ("estimated_from_configured_price" if getattr(provider, "cost_price_configured", True) else "price_missing")),
+                cost_status=("local_no_provider_charge" if local_provider else ("estimated_from_configured_price" if price_configured else "price_missing")),
                 usage_status="not_applicable",
             )
             self.mark_ready(project, shot, out)
@@ -717,7 +720,7 @@ class ProductionStore:
                 "provider": str(getattr(provider, "provider_name", "Generic REST")),
                 "shot_id": shot.id,
                 "output_path": str(out),
-                "quoted_cost_rmb": getattr(provider, "cost_per_shot_rmb", None),
+                "quoted_cost_rmb": (getattr(provider, "cost_per_shot_rmb", None) if (getattr(provider, "provider_name", "") == "本地视频服务" or getattr(provider, "cost_price_configured", True)) else None),
                 "retryable": False,
                 "status": "需处理",
                 "next_action": "先核对 usage-ledger.json 是否已写入成功记录，再人工修复项目成本汇总；禁止直接重试记账以免重复计费。",
