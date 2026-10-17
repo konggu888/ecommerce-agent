@@ -1832,12 +1832,32 @@ class App(tk.Tk):
                 if not str(correction or '').strip():
                     self.detail.set('已取消单镜头修复；没有修改镜头版本或调用生成服务。')
                     return
-                provider = load_video_provider(ROOT / 'video-provider.json')
-                rate = normalize_cost_estimate_rmb(getattr(provider, 'cost_per_shot_rmb', 0.72))
-                if not messagebox.askyesno('确认单镜头重新生成', f'仅重新生成第 {shot_number} 镜（当前 v{s.version} → 新版本）。\n' f'预计视频生成费用：¥{rate:.2f}。\n' '旧版本、核验记录和其他镜头会保留；新版本必须重新核验。\n' '是否继续？', parent=self):
-                    self.detail.set('已取消单镜头重新生成；没有调用云端服务。')
+                route = CapabilityRouter(ROOT).decide_video()
+                if route.target == 'unavailable':
+                    raise RuntimeError(f'当前没有可用的视频生成服务：{route.reason}')
+                if route.target == 'local':
+                    rate = 0.0
+                    cost_status = 'local_no_provider_charge'
+                    route_label = f'本地服务（{_safe_endpoint_display(route.endpoint)}）'
+                    rate_label = '预计 Provider 费用：¥0.00（不含本机电费/硬件成本）'
+                else:
+                    provider = load_video_provider(ROOT / 'video-provider.json')
+                    raw_rate = getattr(provider, 'cost_per_shot_rmb', None)
+                    price_configured = bool(getattr(provider, 'cost_price_configured', False)) and raw_rate is not None
+                    rate = normalize_cost_estimate_rmb(raw_rate) if price_configured else None
+                    cost_status = 'configured_estimate' if rate is not None else 'price_missing'
+                    route_label = f'云端服务（{_safe_endpoint_display(getattr(provider, "endpoint", route.endpoint))}）'
+                    rate_label = f'预计 Provider 费用：¥{rate:.2f}' if rate is not None else '预计 Provider 费用：未知（尚未配置单镜头价格）'
+                if not messagebox.askyesno('确认准备单镜头重新生成', f'仅准备重新生成第 {shot_number} 镜（当前 v{s.version} → 新版本）。\n' f'当前检测目的地：{route_label}。\n' f'{rate_label}。\n' '此步骤只准备新版本，不会调用 Provider；真正生成时还会再次确认实际端点与费用。\n' '旧版本、核验记录和其他镜头会保留；新版本必须重新核验。是否继续？', parent=self):
+                    self.detail.set('已取消单镜头重新生成准备；没有调用生成服务，也未修改镜头版本。')
                     return
-                updated = prepare_product_drama_shot_regeneration(drama, shot_number, correction, previous_version=s.version, previous_video_path=getattr(s, 'video_path', None), estimated_cost_rmb=rate)
+                updated = prepare_product_drama_shot_regeneration(
+                    drama, shot_number, correction,
+                    previous_version=s.version,
+                    previous_video_path=getattr(s, 'video_path', None),
+                    estimated_cost_rmb=rate,
+                    estimated_cost_status=cost_status,
+                )
                 creative['short_drama'] = updated
                 creative.pop('short_drama_audit', None)
                 self.project.creative_plan = creative
