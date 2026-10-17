@@ -141,10 +141,28 @@ def build_provider_execution_consent(decision, task_label, estimated_cost_rmb, d
 
 def build_creation_preflight_detail(url, budget, variant_count, model_router):
     """Disclose external destinations and configured prices before link fetch or model calls."""
+    # Planning must be authorized before any product fetch/model request. At this point
+    # the AI storyboard and asset gaps do not exist yet, so never fabricate a project
+    # total; disclose each production-cost component as known-per-unit or explicitly unknown.
+    try:
+        video_provider = load_video_provider(ROOT / 'video-provider.json')
+        video_rate = configured_video_price(video_provider)
+    except Exception:
+        video_rate = None
+    video_unit_label = f"已配置 ¥{video_rate:.2f}/镜头" if video_rate is not None else "未知（尚未配置有效单镜头价格）"
     lines = [
         "本确认仅授权读取商品链接并执行 AI 商品理解/创意规划，不授权后续视频或素材生成。",
         f"商品链接：{url}",
         f"本次预算上限：¥{float(budget):.2f}；创意方案数：{int(variant_count)}。",
+        "",
+        "【规划前费用预告｜此时尚无 AI 分镜，以下不是最终项目报价】",
+        f"- 视频生成：{video_unit_label}；镜头数尚未生成，视频总额暂未知。",
+        "- 演员生成：需先得到分镜并检查本地演员库；当前数量/费用未知。",
+        "- 场景生成：需先得到分镜并检查本地场景库；当前数量/费用未知。",
+        "- 商品素材生成：需先得到分镜并检查本地商品素材库；当前数量/费用未知。",
+        "- 本阶段费用结论：规划模型实际费用也可能因 usage/供应商计费信息缺失而未知；目前无法可靠给出项目总费用。",
+        "如果不接受以上未知项，请取消；取消后不会读取商品页面或调用模型/Provider。",
+        "规划完成后，系统会再次展示视频、演员、场景、商品素材的分项费用、已知小计、总费用/未知项和预算判断；你拒绝第二次确认时，不保存项目，也不启动视频/素材生成。",
         "",
         "各功能当前选择的模型与请求目标：",
     ]
