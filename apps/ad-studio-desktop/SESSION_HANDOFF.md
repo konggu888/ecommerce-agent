@@ -1,14 +1,14 @@
 ## 【实时接手状态｜2026-10-17｜以此段优先】
 
-- 仓库 konggu888/ecommerce-agent；分支 feat/product-drama-visual-review；PR #32 保持 Open/unmerged。
-- 最近一次四项 CI/docs-sync 全绿基线：5ccd137a1232565d59b17a4dfcd591770d62f67e。随后本次审计文档提交需重新核验最终 HEAD。
-- 本轮已完成：云端渲染入口透传资产授权回调；短剧重生成准备阶段按当前路由记录本地零 Provider 费用/云端未知价格；资产配置文件路径核实为 UI 与 ProductionStore 共用 ROOT/asset-generation.json；实拍素材重新分析在扫描/归档/分析/转写前披露端点与数据类型。
-- 对 create() 实拍模式的静态复核：首个授权弹窗发生在商品解析、素材扫描与模型规划前；展示已选模型路由/端点、关键帧和音频数据类别及费用未知提示。后续项目预算弹窗发生在创意/视觉分析后，并明确说明规划模型调用可能已经产生费用。因此未发现“首个授权前调用模型”的源码顺序问题，但预算金额不包含已发生的规划调用成本，用户可能需要更清晰的累计费用呈现。
-- 下一步：核验最终 HEAD 四项 CI/docs-sync；通过后补充用户拍摄素材创建流程的 mock 调用计数测试，覆盖首次拒绝后 parse/scan/vision/transcription/planning 调用均为 0，以及第二次预算拒绝后项目不落盘。A0–A112 不变，不新增 A113+，PR #32 不合并；真实 Provider/扣费/Windows 真机暂缓。
-
-
+- 仓库 `konggu888/ecommerce-agent`；分支 `feat/product-drama-visual-review`；PR #32 保持 Open/unmerged。
+- 本轮开始时 PR HEAD：`3f8c78c6199b79ed2413e53efc34efb8653c8388`。该 SHA 的 PR 触发 CI（run 39011860648）与 docs-sync（run 39011861064）均 success；连接器只返回 PR 触发的 workflow runs，Push 触发的两项未独立核实。
+- 本轮推进：`App.create()` 的第二道预算确认改用显式授权门，确认拒绝时不执行项目/商品资料/商品库持久化与 UI 刷新；新增 mock 调用计数测试和 create() 源码顺序测试。
+- 本轮提交后必须重新读取最新分支 HEAD，并核验该 SHA 的 CI PR、docs-sync PR；Push 两项如仍无法通过连接器独立获取，明确记录为未核实，不得宣称四项全绿。
+- 下一步：根据最终 SHA 的 CI/doc-sync 结果修复失败项；通过后检查测试证据与文档同步覆盖。A0–A112 不变，不新增 A113+；PR #32 不合并。真实 Provider/实际扣费与账单、Windows 真机、剪映现场和真实投放继续暂缓。
 
 ---
+
+
 
 # 【历史快照｜交接一致性修复规则｜2026-10-16】
 
