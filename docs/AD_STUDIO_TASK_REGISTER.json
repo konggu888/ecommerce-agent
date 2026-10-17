@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Stage progress v1 plus roadmap phase label normalization v1 recorded. Six normalized phase categories; 18 mappings remain provisional. Overall completion remains disabled.",
+  "audit_status": "Stage progress v1, phase normalization v1, and review of all 18 prior provisional phase mappings recorded. Overall completion remains disabled; semantic deduplication, historical status reconciliation, full code/test audit, and weighting remain incomplete.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -21,7 +21,8 @@
     "formal_acceptance_passed_ids": 0,
     "normalized_roadmap_phase_mapped_ids": 113,
     "normalized_roadmap_phase_categories": 6,
-    "provisional_roadmap_phase_mapping_ids": 18
+    "provisional_roadmap_phase_mapping_ids": 0,
+    "roadmap_phase_mapping_reviewed_ids": 113
   },
   "known_id_gaps": [],
   "tasks": [
@@ -8209,7 +8210,20 @@
       "semantic_dedup_batch": "PLAN-003-DEDUP-003",
       "normalized_roadmap_phase": "阶段4｜AI短剧能力",
       "phase_normalization_original": "阶段 4｜AI 短剧能力（初步映射，待核验）",
-      "phase_mapping_confidence": "provisional"
+      "phase_mapping_confidence": "reviewed_confirmed",
+      "phase_mapping_original_confidence": "provisional",
+      "phase_mapping_review": {
+        "reviewed_on": "2026-10-17",
+        "result": "confirmed",
+        "normalized_phase": "阶段4｜AI短剧能力",
+        "basis": "A90-A98 titles and scoped acceptance sections cover cross-episode physical actor/scene asset ID binding, invalid-lock handling, persistence, recovery, and continuity safeguards; these align with the authoritative Phase 4 AI short-drama scope.",
+        "sources": [
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+        ],
+        "limitation": "This confirms category mapping only; it does not confirm implementation, test sufficiency, formal acceptance, or real-world output quality."
+      }
     },
     {
       "task_id": "A91",
@@ -8288,7 +8302,20 @@
       "semantic_dedup_batch": "PLAN-003-DEDUP-003",
       "normalized_roadmap_phase": "阶段4｜AI短剧能力",
       "phase_normalization_original": "阶段 4｜AI 短剧能力（初步映射，待核验）",
-      "phase_mapping_confidence": "provisional"
+      "phase_mapping_confidence": "reviewed_confirmed",
+      "phase_mapping_original_confidence": "provisional",
+      "phase_mapping_review": {
+        "reviewed_on": "2026-10-17",
+        "result": "confirmed",
+        "normalized_phase": "阶段4｜AI短剧能力",
+        "basis": "A90-A98 titles and scoped acceptance sections cover cross-episode physical actor/scene asset ID binding, invalid-lock handling, persistence, recovery, and continuity safeguards; these align with the authoritative Phase 4 AI short-drama scope.",
+        "sources": [
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+        ],
+        "limitation": "This confirms category mapping only; it does not confirm implementation, test sufficiency, formal acceptance, or real-world output quality."
+      }
     },
     {
       "task_id": "A92",
@@ -8376,7 +8403,20 @@
       "semantic_dedup_batch": "PLAN-003-DEDUP-003",
       "normalized_roadmap_phase": "阶段4｜AI短剧能力",
       "phase_normalization_original": "阶段 4｜AI 短剧能力（初步映射，待核验）",
-      "phase_mapping_confidence": "provisional"
+      "phase_mapping_confidence": "reviewed_confirmed",
+      "phase_mapping_original_confidence": "provisional",
+      "phase_mapping_review": {
+        "reviewed_on": "2026-10-17",
+        "result": "confirmed",
+        "normalized_phase": "阶段4｜AI短剧能力",
+        "basis": "A90-A98 titles and scoped acceptance sections cover cross-episode physical actor/scene asset ID binding, invalid-lock handling, persistence, recovery, and continuity safeguards; these align with the authoritative Phase 4 AI short-drama scope.",
+        "sources": [
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+        ],
+        "limitation": "This confirms category mapping only; it does not confirm implementation, test sufficiency, formal acceptance, or real-world output quality."
+      }
     },
     {
       "task_id": "A93",
@@ -8458,7 +8498,20 @@
       "semantic_dedup_batch": "PLAN-003-DEDUP-003",
       "normalized_roadmap_phase": "阶段4｜AI短剧能力",
       "phase_normalization_original": "阶段 4｜AI 短剧能力（初步映射，待核验）",
-      "phase_mapping_confidence": "provisional"
+      "phase_mapping_confidence": "reviewed_confirmed",
+      "phase_mapping_original_confidence": "provisional",
+      "phase_mapping_review": {
+        "reviewed_on": "2026-10-17",
+        "result": "confirmed",
+        "normalized_phase": "阶段4｜AI短剧能力",
+        "basis": "A90-A98 titles and scoped acceptance sections cover cross-episode physical actor/scene asset ID binding, invalid-lock handling, persistence, recovery, and continuity safeguards; these align with the authoritative Phase 4 AI short-drama scope.",
+        "sources": [
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+        ],
+        "limitation": "This confirms category mapping only; it does not confirm implementation, test sufficiency, formal acceptance, or real-world output quality."
+      }
     },
     {
       "task_id": "A94",
@@ -8540,7 +8593,20 @@
       "semantic_dedup_batch": "PLAN-003-DEDUP-003",
       "normalized_roadmap_phase": "阶段4｜AI短剧能力",
       "phase_normalization_original": "阶段 4｜AI 短剧能力（初步映射，待核验）",
-      "phase_mapping_confidence": "provisional"
+      "phase_mapping_confidence": "reviewed_confirmed",
+      "phase_mapping_original_confidence": "provisional",
+      "phase_mapping_review": {
+        "reviewed_on": "2026-10-17",
+        "result": "confirmed",
+        "normalized_phase": "阶段4｜AI短剧能力",
+        "basis": "A90-A98 titles and scoped acceptance sections cover cross-episode physical actor/scene asset ID binding, invalid-lock handling, persistence, recovery, and continuity safeguards; these align with the authoritative Phase 4 AI short-drama scope.",
+        "sources": [
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+        ],
+        "limitation": "This confirms category mapping only; it does not confirm implementation, test sufficiency, formal acceptance, or real-world output quality."
+      }
     },
     {
       "task_id": "A95",
@@ -8630,7 +8696,20 @@
       },
       "normalized_roadmap_phase": "阶段4｜AI短剧能力",
       "phase_normalization_original": "阶段 4｜AI 短剧能力（初步映射，待核验）",
-      "phase_mapping_confidence": "provisional"
+      "phase_mapping_confidence": "reviewed_confirmed",
+      "phase_mapping_original_confidence": "provisional",
+      "phase_mapping_review": {
+        "reviewed_on": "2026-10-17",
+        "result": "confirmed",
+        "normalized_phase": "阶段4｜AI短剧能力",
+        "basis": "A90-A98 titles and scoped acceptance sections cover cross-episode physical actor/scene asset ID binding, invalid-lock handling, persistence, recovery, and continuity safeguards; these align with the authoritative Phase 4 AI short-drama scope.",
+        "sources": [
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+        ],
+        "limitation": "This confirms category mapping only; it does not confirm implementation, test sufficiency, formal acceptance, or real-world output quality."
+      }
     },
     {
       "task_id": "A96",
@@ -8720,7 +8799,20 @@
       },
       "normalized_roadmap_phase": "阶段4｜AI短剧能力",
       "phase_normalization_original": "阶段 4｜AI 短剧能力（初步映射，待核验）",
-      "phase_mapping_confidence": "provisional"
+      "phase_mapping_confidence": "reviewed_confirmed",
+      "phase_mapping_original_confidence": "provisional",
+      "phase_mapping_review": {
+        "reviewed_on": "2026-10-17",
+        "result": "confirmed",
+        "normalized_phase": "阶段4｜AI短剧能力",
+        "basis": "A90-A98 titles and scoped acceptance sections cover cross-episode physical actor/scene asset ID binding, invalid-lock handling, persistence, recovery, and continuity safeguards; these align with the authoritative Phase 4 AI short-drama scope.",
+        "sources": [
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+        ],
+        "limitation": "This confirms category mapping only; it does not confirm implementation, test sufficiency, formal acceptance, or real-world output quality."
+      }
     },
     {
       "task_id": "A97",
@@ -8806,7 +8898,20 @@
       },
       "normalized_roadmap_phase": "阶段4｜AI短剧能力",
       "phase_normalization_original": "阶段 4｜AI 短剧能力（初步映射，待核验）",
-      "phase_mapping_confidence": "provisional"
+      "phase_mapping_confidence": "reviewed_confirmed",
+      "phase_mapping_original_confidence": "provisional",
+      "phase_mapping_review": {
+        "reviewed_on": "2026-10-17",
+        "result": "confirmed",
+        "normalized_phase": "阶段4｜AI短剧能力",
+        "basis": "A90-A98 titles and scoped acceptance sections cover cross-episode physical actor/scene asset ID binding, invalid-lock handling, persistence, recovery, and continuity safeguards; these align with the authoritative Phase 4 AI short-drama scope.",
+        "sources": [
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+        ],
+        "limitation": "This confirms category mapping only; it does not confirm implementation, test sufficiency, formal acceptance, or real-world output quality."
+      }
     },
     {
       "task_id": "A98",
@@ -8892,7 +8997,20 @@
       },
       "normalized_roadmap_phase": "阶段4｜AI短剧能力",
       "phase_normalization_original": "阶段 4｜AI 短剧能力（初步映射，待核验）",
-      "phase_mapping_confidence": "provisional"
+      "phase_mapping_confidence": "reviewed_confirmed",
+      "phase_mapping_original_confidence": "provisional",
+      "phase_mapping_review": {
+        "reviewed_on": "2026-10-17",
+        "result": "confirmed",
+        "normalized_phase": "阶段4｜AI短剧能力",
+        "basis": "A90-A98 titles and scoped acceptance sections cover cross-episode physical actor/scene asset ID binding, invalid-lock handling, persistence, recovery, and continuity safeguards; these align with the authoritative Phase 4 AI short-drama scope.",
+        "sources": [
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+        ],
+        "limitation": "This confirms category mapping only; it does not confirm implementation, test sufficiency, formal acceptance, or real-world output quality."
+      }
     },
     {
       "task_id": "A99",
@@ -9079,7 +9197,20 @@
       },
       "normalized_roadmap_phase": "阶段2｜商业级剪辑决策层",
       "phase_normalization_original": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
-      "phase_mapping_confidence": "provisional"
+      "phase_mapping_confidence": "reviewed_confirmed",
+      "phase_mapping_original_confidence": "provisional",
+      "phase_mapping_review": {
+        "reviewed_on": "2026-10-17",
+        "result": "confirmed",
+        "normalized_phase": "阶段2｜商业级剪辑决策层",
+        "basis": "A100-A108 titles and scoped acceptance sections cover editing fade windows, speed/audio sync, 1080P export, fades, cross-dissolve, pacing, role-based editing decisions, runtime duration, and subtitle timing; these align with the authoritative Phase 2 commercial editing scope.",
+        "sources": [
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+        ],
+        "limitation": "This confirms category mapping only; it does not confirm implementation, test sufficiency, formal acceptance, or real-world output quality."
+      }
     },
     {
       "task_id": "A101",
@@ -9159,7 +9290,20 @@
       },
       "normalized_roadmap_phase": "阶段2｜商业级剪辑决策层",
       "phase_normalization_original": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
-      "phase_mapping_confidence": "provisional"
+      "phase_mapping_confidence": "reviewed_confirmed",
+      "phase_mapping_original_confidence": "provisional",
+      "phase_mapping_review": {
+        "reviewed_on": "2026-10-17",
+        "result": "confirmed",
+        "normalized_phase": "阶段2｜商业级剪辑决策层",
+        "basis": "A100-A108 titles and scoped acceptance sections cover editing fade windows, speed/audio sync, 1080P export, fades, cross-dissolve, pacing, role-based editing decisions, runtime duration, and subtitle timing; these align with the authoritative Phase 2 commercial editing scope.",
+        "sources": [
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+        ],
+        "limitation": "This confirms category mapping only; it does not confirm implementation, test sufficiency, formal acceptance, or real-world output quality."
+      }
     },
     {
       "task_id": "A102",
@@ -9253,7 +9397,20 @@
       },
       "normalized_roadmap_phase": "阶段2｜商业级剪辑决策层",
       "phase_normalization_original": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
-      "phase_mapping_confidence": "provisional"
+      "phase_mapping_confidence": "reviewed_confirmed",
+      "phase_mapping_original_confidence": "provisional",
+      "phase_mapping_review": {
+        "reviewed_on": "2026-10-17",
+        "result": "confirmed",
+        "normalized_phase": "阶段2｜商业级剪辑决策层",
+        "basis": "A100-A108 titles and scoped acceptance sections cover editing fade windows, speed/audio sync, 1080P export, fades, cross-dissolve, pacing, role-based editing decisions, runtime duration, and subtitle timing; these align with the authoritative Phase 2 commercial editing scope.",
+        "sources": [
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+        ],
+        "limitation": "This confirms category mapping only; it does not confirm implementation, test sufficiency, formal acceptance, or real-world output quality."
+      }
     },
     {
       "task_id": "A103",
@@ -9333,7 +9490,20 @@
       },
       "normalized_roadmap_phase": "阶段2｜商业级剪辑决策层",
       "phase_normalization_original": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
-      "phase_mapping_confidence": "provisional"
+      "phase_mapping_confidence": "reviewed_confirmed",
+      "phase_mapping_original_confidence": "provisional",
+      "phase_mapping_review": {
+        "reviewed_on": "2026-10-17",
+        "result": "confirmed",
+        "normalized_phase": "阶段2｜商业级剪辑决策层",
+        "basis": "A100-A108 titles and scoped acceptance sections cover editing fade windows, speed/audio sync, 1080P export, fades, cross-dissolve, pacing, role-based editing decisions, runtime duration, and subtitle timing; these align with the authoritative Phase 2 commercial editing scope.",
+        "sources": [
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+        ],
+        "limitation": "This confirms category mapping only; it does not confirm implementation, test sufficiency, formal acceptance, or real-world output quality."
+      }
     },
     {
       "task_id": "A104",
@@ -9428,7 +9598,20 @@
       },
       "normalized_roadmap_phase": "阶段2｜商业级剪辑决策层",
       "phase_normalization_original": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
-      "phase_mapping_confidence": "provisional"
+      "phase_mapping_confidence": "reviewed_confirmed",
+      "phase_mapping_original_confidence": "provisional",
+      "phase_mapping_review": {
+        "reviewed_on": "2026-10-17",
+        "result": "confirmed",
+        "normalized_phase": "阶段2｜商业级剪辑决策层",
+        "basis": "A100-A108 titles and scoped acceptance sections cover editing fade windows, speed/audio sync, 1080P export, fades, cross-dissolve, pacing, role-based editing decisions, runtime duration, and subtitle timing; these align with the authoritative Phase 2 commercial editing scope.",
+        "sources": [
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+        ],
+        "limitation": "This confirms category mapping only; it does not confirm implementation, test sufficiency, formal acceptance, or real-world output quality."
+      }
     },
     {
       "task_id": "A105",
@@ -9518,7 +9701,20 @@
       },
       "normalized_roadmap_phase": "阶段2｜商业级剪辑决策层",
       "phase_normalization_original": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
-      "phase_mapping_confidence": "provisional"
+      "phase_mapping_confidence": "reviewed_confirmed",
+      "phase_mapping_original_confidence": "provisional",
+      "phase_mapping_review": {
+        "reviewed_on": "2026-10-17",
+        "result": "confirmed",
+        "normalized_phase": "阶段2｜商业级剪辑决策层",
+        "basis": "A100-A108 titles and scoped acceptance sections cover editing fade windows, speed/audio sync, 1080P export, fades, cross-dissolve, pacing, role-based editing decisions, runtime duration, and subtitle timing; these align with the authoritative Phase 2 commercial editing scope.",
+        "sources": [
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+        ],
+        "limitation": "This confirms category mapping only; it does not confirm implementation, test sufficiency, formal acceptance, or real-world output quality."
+      }
     },
     {
       "task_id": "A106",
@@ -9600,7 +9796,20 @@
       },
       "normalized_roadmap_phase": "阶段2｜商业级剪辑决策层",
       "phase_normalization_original": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
-      "phase_mapping_confidence": "provisional"
+      "phase_mapping_confidence": "reviewed_confirmed",
+      "phase_mapping_original_confidence": "provisional",
+      "phase_mapping_review": {
+        "reviewed_on": "2026-10-17",
+        "result": "confirmed",
+        "normalized_phase": "阶段2｜商业级剪辑决策层",
+        "basis": "A100-A108 titles and scoped acceptance sections cover editing fade windows, speed/audio sync, 1080P export, fades, cross-dissolve, pacing, role-based editing decisions, runtime duration, and subtitle timing; these align with the authoritative Phase 2 commercial editing scope.",
+        "sources": [
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+        ],
+        "limitation": "This confirms category mapping only; it does not confirm implementation, test sufficiency, formal acceptance, or real-world output quality."
+      }
     },
     {
       "task_id": "A107",
@@ -9697,7 +9906,20 @@
       },
       "normalized_roadmap_phase": "阶段2｜商业级剪辑决策层",
       "phase_normalization_original": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
-      "phase_mapping_confidence": "provisional"
+      "phase_mapping_confidence": "reviewed_confirmed",
+      "phase_mapping_original_confidence": "provisional",
+      "phase_mapping_review": {
+        "reviewed_on": "2026-10-17",
+        "result": "confirmed",
+        "normalized_phase": "阶段2｜商业级剪辑决策层",
+        "basis": "A100-A108 titles and scoped acceptance sections cover editing fade windows, speed/audio sync, 1080P export, fades, cross-dissolve, pacing, role-based editing decisions, runtime duration, and subtitle timing; these align with the authoritative Phase 2 commercial editing scope.",
+        "sources": [
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+        ],
+        "limitation": "This confirms category mapping only; it does not confirm implementation, test sufficiency, formal acceptance, or real-world output quality."
+      }
     },
     {
       "task_id": "A108",
@@ -9786,7 +10008,20 @@
       },
       "normalized_roadmap_phase": "阶段2｜商业级剪辑决策层",
       "phase_normalization_original": "阶段 2｜商业级剪辑决策层（初步映射，待核验）",
-      "phase_mapping_confidence": "provisional"
+      "phase_mapping_confidence": "reviewed_confirmed",
+      "phase_mapping_original_confidence": "provisional",
+      "phase_mapping_review": {
+        "reviewed_on": "2026-10-17",
+        "result": "confirmed",
+        "normalized_phase": "阶段2｜商业级剪辑决策层",
+        "basis": "A100-A108 titles and scoped acceptance sections cover editing fade windows, speed/audio sync, 1080P export, fades, cross-dissolve, pacing, role-based editing decisions, runtime duration, and subtitle timing; these align with the authoritative Phase 2 commercial editing scope.",
+        "sources": [
+          "docs/AD_STUDIO_PRODUCT_ROADMAP.md",
+          "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+          "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md"
+        ],
+        "limitation": "This confirms category mapping only; it does not confirm implementation, test sufficiency, formal acceptance, or real-world output quality."
+      }
     },
     {
       "task_id": "A109",
@@ -12029,7 +12264,7 @@
     "weighting_completed": false,
     "overall_completion_percentage": null,
     "overall_completion_percentage_enabled": false,
-    "caveat": "These are inventory/evidence coverage metrics, not overall product completion. Phase labels are normalized into six categories, but 18 task mappings remain provisional; phase completion percentages are withheld until status reconciliation and evidence review.",
+    "caveat": "Phase labels are normalized and category-reviewed. These are inventory/evidence coverage metrics, not overall product completion. Semantic deduplication, historical status reconciliation, full code/test audit, and weighting remain incomplete.",
     "normalized_phase_categories": {
       "numerator": 6,
       "denominator": 6,
@@ -12037,10 +12272,10 @@
       "meaning": "阶段标签写法已归一化为 6 类；这是分类标签标准化进度，不是产品阶段完成率。"
     },
     "provisional_phase_mapping": {
-      "numerator": 18,
+      "numerator": 0,
       "denominator": 113,
-      "percent": 15.9,
-      "meaning": "18 项保留初步/待核验映射状态，不能仅因标签归一化而视为已确认。"
+      "percent": 0,
+      "meaning": "No roadmap phase mapping remains provisional after a title/section-level review of the 18 prior provisional labels; this measures mapping confidence only, not feature completion."
     },
     "phase_distribution": [
       {
@@ -12058,7 +12293,7 @@
       {
         "phase": "阶段2｜商业级剪辑决策层",
         "task_slots": 14,
-        "provisional_slots": 9,
+        "provisional_slots": 0,
         "completion_percentage": null
       },
       {
@@ -12070,7 +12305,7 @@
       {
         "phase": "阶段4｜AI短剧能力",
         "task_slots": 32,
-        "provisional_slots": 9,
+        "provisional_slots": 0,
         "completion_percentage": null
       },
       {
@@ -12079,7 +12314,13 @@
         "provisional_slots": 0,
         "completion_percentage": null
       }
-    ]
+    ],
+    "reviewed_phase_mapping": {
+      "numerator": 113,
+      "denominator": 113,
+      "percent": 100,
+      "meaning": "All 113 numbered slots now have a reviewed normalized category. Does not mean 113 tasks are complete or formally accepted."
+    }
   },
   "phase_normalization": {
     "version": "phase-normalization-v1",
@@ -12095,8 +12336,29 @@
     },
     "confidence_counts": {
       "mapped": 95,
-      "provisional": 18
+      "reviewed_confirmed": 18
     },
-    "note": "This is label normalization only. It is not semantic deduplication, status reconciliation, phase completion, or formal acceptance."
+    "note": "This is label normalization only. It is not semantic deduplication, status reconciliation, phase completion, or formal acceptance.",
+    "reviewed_provisional_mapping_ids": [
+      "A90",
+      "A91",
+      "A92",
+      "A93",
+      "A94",
+      "A95",
+      "A96",
+      "A97",
+      "A98",
+      "A100",
+      "A101",
+      "A102",
+      "A103",
+      "A104",
+      "A105",
+      "A106",
+      "A107",
+      "A108"
+    ],
+    "review_note": "Reviewed the 18 formerly provisional mappings against the authoritative product roadmap, acceptance plan sections, and future feature memo. A90-A98 are confirmed as Phase 4 AI short-drama scope; A100-A108 are confirmed as Phase 2 commercial editing scope. This confirms categorization only, not feature completion or acceptance."
   }
 }
