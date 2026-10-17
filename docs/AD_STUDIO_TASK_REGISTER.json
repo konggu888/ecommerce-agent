@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated_from_head": "08af9d8d5c46fc6b1c03df76046a3a2170e39b12",
-  "audit_status": "Finite closure contract active. C1 closed four batches covering 18/113 unique formal slots; repeated A52 review is counted once. No IDs merged and no formal acceptance states changed. C2 full current code/test audit remains 0/113.",
+  "audit_status": "Finite closure active. C1 batches 001-004 reviewed; 18/113 unique slots have a documented cross-source identity/status decision. Cost/ledger unknown-price semantic boundary remains an audit concern. C2 full audit 0/113.",
   "progress_percentages_enabled": false,
   "policy": "Historical headings and historical commits are not proof of current acceptance. Verify code, tests and evidence tied to the exact source/test snapshot and separately verify CI against the latest documentation HEAD. Acceptance source section is not automatically the product roadmap phase. The inventory contains 113 numbered slots; requirement-level semantic review covers 113; 113 tasks have some evidence pointer, 112 have source/test evidence, and 56 task records are bound to the current source/test audit snapshot c77704d86d6131d13501448af76ce24afc56ad7b. Zero tasks are bound to the final documentation HEAD; current-head evidence reconciliation remains pending. Roadmap phase mapping is recorded for 113 slots but must not be confused with acceptance. No task acceptance is promoted; full code/test audit 0, full audit 0, semantic dedup pending, weights null, overall completion percentage disabled. Preserve A0-A112; do not add A113+, merge, split or renumber task IDs without explicit cross-source resolution.",
   "counts": {
@@ -5001,7 +5001,25 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
-      }
+      },
+      "cross_source_reconciliation_addenda": [
+        {
+          "batch_id": "C1-COST-LEDGER-004",
+          "reviewed_on": "2026-10-17",
+          "status": "overlap_and_boundary_resolved",
+          "sources": [
+            "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+            "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+            "docs/AD_STUDIO_TASK_REGISTER.json",
+            "docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md"
+          ],
+          "contract_boundary": "Provider 已成功并安装视频后，成本账本失败时保留产物和待核对状态；是产物恢复，不定义费用价格是否已知。",
+          "overlap_decision": "Related cost/usage-ledger/recovery family; no formal acceptance ID is duplicate of another. Keep distinct per contract object and failure/recovery branch.",
+          "unknown_price_boundary": "These clauses do not by themselves prove the data model distinguishes confirmed zero price, unknown price, missing usage, estimate-only, provider-reported charge, and local-ledger write failure. That semantic boundary remains a separate audit finding under existing task scope; do not mark it resolved from ledger persistence tests.",
+          "formal_acceptance_state_preserved": "not_audited",
+          "no_id_merge_or_status_change": true
+        }
+      ]
     },
     {
       "task_id": "A56",
@@ -5495,7 +5513,25 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
-      }
+      },
+      "cross_source_reconciliation_addenda": [
+        {
+          "batch_id": "C1-COST-LEDGER-004",
+          "reviewed_on": "2026-10-17",
+          "status": "overlap_and_boundary_resolved",
+          "sources": [
+            "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+            "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+            "docs/AD_STUDIO_TASK_REGISTER.json",
+            "docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md"
+          ],
+          "contract_boundary": "项目实际成本以成功 ledger 行重新汇总；是实际金额聚合，不负责未知单价估算或成功产物故障恢复。",
+          "overlap_decision": "Related cost/usage-ledger/recovery family; no formal acceptance ID is duplicate of another. Keep distinct per contract object and failure/recovery branch.",
+          "unknown_price_boundary": "These clauses do not by themselves prove the data model distinguishes confirmed zero price, unknown price, missing usage, estimate-only, provider-reported charge, and local-ledger write failure. That semantic boundary remains a separate audit finding under existing task scope; do not mark it resolved from ledger persistence tests.",
+          "formal_acceptance_state_preserved": "not_audited",
+          "no_id_merge_or_status_change": true
+        }
+      ]
     },
     {
       "task_id": "A60",
@@ -5636,7 +5672,25 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
-      }
+      },
+      "cross_source_reconciliation_addenda": [
+        {
+          "batch_id": "C1-COST-LEDGER-004",
+          "reviewed_on": "2026-10-17",
+          "status": "overlap_and_boundary_resolved",
+          "sources": [
+            "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+            "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+            "docs/AD_STUDIO_TASK_REGISTER.json",
+            "docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md"
+          ],
+          "contract_boundary": "仅有 failed ledger 行时保留历史成本；是恢复兼容分支，不代表账本里所有未知价格/缺失 usage 字段已可区分。",
+          "overlap_decision": "Related cost/usage-ledger/recovery family; no formal acceptance ID is duplicate of another. Keep distinct per contract object and failure/recovery branch.",
+          "unknown_price_boundary": "These clauses do not by themselves prove the data model distinguishes confirmed zero price, unknown price, missing usage, estimate-only, provider-reported charge, and local-ledger write failure. That semantic boundary remains a separate audit finding under existing task scope; do not mark it resolved from ledger persistence tests.",
+          "formal_acceptance_state_preserved": "not_audited",
+          "no_id_merge_or_status_change": true
+        }
+      ]
     },
     {
       "task_id": "A61",
@@ -6011,7 +6065,25 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
-      }
+      },
+      "cross_source_reconciliation_addenda": [
+        {
+          "batch_id": "C1-COST-LEDGER-004",
+          "reviewed_on": "2026-10-17",
+          "status": "overlap_and_boundary_resolved",
+          "sources": [
+            "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+            "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+            "docs/AD_STUDIO_TASK_REGISTER.json",
+            "docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md"
+          ],
+          "contract_boundary": "历史成本迁移成功后，新费用账本写入失败仍保留迁移基线；是迁移后组合故障，不等同于迁移本身或账本底层原子替换。",
+          "overlap_decision": "Related cost/usage-ledger/recovery family; no formal acceptance ID is duplicate of another. Keep distinct per contract object and failure/recovery branch.",
+          "unknown_price_boundary": "These clauses do not by themselves prove the data model distinguishes confirmed zero price, unknown price, missing usage, estimate-only, provider-reported charge, and local-ledger write failure. That semantic boundary remains a separate audit finding under existing task scope; do not mark it resolved from ledger persistence tests.",
+          "formal_acceptance_state_preserved": "not_audited",
+          "no_id_merge_or_status_change": true
+        }
+      ]
     },
     {
       "task_id": "A64",
@@ -6139,7 +6211,25 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
-      }
+      },
+      "cross_source_reconciliation_addenda": [
+        {
+          "batch_id": "C1-COST-LEDGER-004",
+          "reviewed_on": "2026-10-17",
+          "status": "overlap_and_boundary_resolved",
+          "sources": [
+            "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+            "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+            "docs/AD_STUDIO_TASK_REGISTER.json",
+            "docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md"
+          ],
+          "contract_boundary": "资产已生成并入库但资产成本记账失败时保留素材与引用；是资产产物故障，不替代视频产物 A55。",
+          "overlap_decision": "Related cost/usage-ledger/recovery family; no formal acceptance ID is duplicate of another. Keep distinct per contract object and failure/recovery branch.",
+          "unknown_price_boundary": "These clauses do not by themselves prove the data model distinguishes confirmed zero price, unknown price, missing usage, estimate-only, provider-reported charge, and local-ledger write failure. That semantic boundary remains a separate audit finding under existing task scope; do not mark it resolved from ledger persistence tests.",
+          "formal_acceptance_state_preserved": "not_audited",
+          "no_id_merge_or_status_change": true
+        }
+      ]
     },
     {
       "task_id": "A65",
@@ -6264,7 +6354,25 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
-      }
+      },
+      "cross_source_reconciliation_addenda": [
+        {
+          "batch_id": "C1-COST-LEDGER-004",
+          "reviewed_on": "2026-10-17",
+          "status": "overlap_and_boundary_resolved",
+          "sources": [
+            "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+            "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+            "docs/AD_STUDIO_TASK_REGISTER.json",
+            "docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md"
+          ],
+          "contract_boundary": "账本写入原子性和历史完整性；是底层持久化保障，不证明上层未知价语义正确，也不证明外部供应商账单准确。",
+          "overlap_decision": "Related cost/usage-ledger/recovery family; no formal acceptance ID is duplicate of another. Keep distinct per contract object and failure/recovery branch.",
+          "unknown_price_boundary": "These clauses do not by themselves prove the data model distinguishes confirmed zero price, unknown price, missing usage, estimate-only, provider-reported charge, and local-ledger write failure. That semantic boundary remains a separate audit finding under existing task scope; do not mark it resolved from ledger persistence tests.",
+          "formal_acceptance_state_preserved": "not_audited",
+          "no_id_merge_or_status_change": true
+        }
+      ]
     },
     {
       "task_id": "A66",
@@ -9529,7 +9637,25 @@
         "merge_decision": "Do not merge, split, renumber, or change formal acceptance status.",
         "acceptance_status_preserved": "not_audited",
         "implementation_or_acceptance_claim": false
-      }
+      },
+      "cross_source_reconciliation_addenda": [
+        {
+          "batch_id": "C1-COST-LEDGER-004",
+          "reviewed_on": "2026-10-17",
+          "status": "overlap_and_boundary_resolved",
+          "sources": [
+            "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+            "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+            "docs/AD_STUDIO_TASK_REGISTER.json",
+            "docs/AD_STUDIO_USER_EXPERIENCE_SAFETY_AUDIT.md"
+          ],
+          "contract_boundary": "恢复时按成功账本逐镜头对账并清理陈旧兄弟镜头成本；成功、无账本、failed-only 分支分别与 A57/A60 有明确边界。",
+          "overlap_decision": "Related cost/usage-ledger/recovery family; no formal acceptance ID is duplicate of another. Keep distinct per contract object and failure/recovery branch.",
+          "unknown_price_boundary": "These clauses do not by themselves prove the data model distinguishes confirmed zero price, unknown price, missing usage, estimate-only, provider-reported charge, and local-ledger write failure. That semantic boundary remains a separate audit finding under existing task scope; do not mark it resolved from ledger persistence tests.",
+          "formal_acceptance_state_preserved": "not_audited",
+          "no_id_merge_or_status_change": true
+        }
+      ]
     },
     {
       "task_id": "A100",
@@ -12675,6 +12801,25 @@
         "remaining_decisions": [],
         "formal_acceptance_states_changed": false,
         "next_batch": "C1-RECOVERY-005: reconcile A45/A46/A47/A48/A49 with A30/A43 recovery and file-safety contracts, preserving distinct failure modes; then continue unresolved candidates. Do not repeat completed IDs."
+      },
+      {
+        "batch_id": "C1-COST-LEDGER-004",
+        "slots": [
+          "A55",
+          "A59",
+          "A60",
+          "A63",
+          "A64",
+          "A65",
+          "A99"
+        ],
+        "slots_reconciled": 7,
+        "slots_total": 7,
+        "status": "resolved_overlap_and_boundaries",
+        "decision": "Reviewed A55/A59/A60/A63/A64/A65/A99 against A51/A52 and the broader unknown-price/usage-ledger concern. Contracts overlap in subsystem but not in acceptance object: video output recovery, authoritative aggregation, failed-only compatibility, post-migration write failure, asset recovery, atomic persistence/history, and per-shot restoration remain separate. Unknown-price/usage semantics are not proven by these clauses and remain an explicit audit concern. No formal status changed.",
+        "remaining_decisions": [],
+        "formal_acceptance_states_changed": false,
+        "next_batch": "C1-FOUNDATION-001: cross-check A0-A4 against the formal acceptance plan, SOP, roadmap, and task register for same-ID conflicts or cross-ID overlap; then continue bounded ranges without repeating phase normalization."
       }
     ]
   },
@@ -12866,7 +13011,7 @@
         "name": "跨来源身份与状态裁决",
         "status": "in_progress",
         "exit": "all 113 slots reconciled against plan, SOP, roadmap, register; unresolved decisions 0",
-        "last_completed_batch": "C1-RECOVERY-004",
+        "last_completed_batch": "C1-COST-LEDGER-004",
         "slots_with_final_documented_cross_source_decision": 18,
         "slots_counting_rule": "Unique task IDs across all closed batches; repeated IDs never increase the numerator."
       },
@@ -12908,7 +13053,7 @@
         "numerator": 18,
         "denominator": 113,
         "percent": 15.9,
-        "definition": "Unique formal slots with a documented cross-source identity/status decision; re-reviewed IDs across batches count once. Does not mean code/test audit or formal acceptance."
+        "definition": "Slots with documented cross-source identity/status decisions. Repeated review addenda for an already-counted slot do not increase the numerator; this is not code/test audit or formal acceptance."
       },
       "c2_current_code_test_audit": {
         "numerator": 0,
