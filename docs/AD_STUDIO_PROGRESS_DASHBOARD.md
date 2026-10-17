@@ -1,14 +1,14 @@
 ## 【实时权威进度｜2026-10-17｜优先于下方所有历史快照】
 
-- 仓库/分支：konggu888/ecommerce-agent / feat/product-drama-visual-review；PR #32 保持 Open/unmerged。
-- 最近一次四项 CI/docs-sync 全绿基线：5ccd137a1232565d59b17a4dfcd591770d62f67e。本次文档提交的最终 HEAD 需重新核验。
-- 已完成：云端视频授权回调透传；短剧重生成费用确定性；资产 Provider 配置路径同源核验；实拍素材重新分析的端点/关键帧/音频/未知费用披露及取消前置顺序。
-- create() 实拍模式静态复核：首个 preflight 授权早于商品解析、素材扫描和模型规划，且列出已配置模型端点、关键帧/音频数据类别与未知费用提示。第二个预算确认在创意/视觉分析之后，并明确告知规划模型调用可能已产生费用；当前未发现首次授权前调用，但规划费用不包含在后续制作预算中。
-- 当前唯一下一步：核验最终 HEAD 四项 CI/docs-sync；通过后新增实拍创建流程 mock 调用计数测试：首次拒绝后 parse/scan/vision/transcription/plan 调用为 0；预算拒绝后项目未保存、且文案不声称撤销之前已授权的规划调用。A0–A112 不变，不新增 A113+，PR #32 不合并；真实 Provider/扣费/Windows 真机暂缓。
-
-
+- 仓库/分支：`konggu888/ecommerce-agent` / `feat/product-drama-visual-review`；PR #32 保持 Open/unmerged。
+- 本轮开始时 PR HEAD `3f8c78c6199b79ed2413e53efc34efb8653c8388` 的 PR CI 与 docs-sync PR 均成功；Push 触发的两项由当前连接器未能独立核实。
+- 本轮范围：创建流程授权拒绝回归；第二道预算门现将项目、商品资料、商品库持久化和 UI 刷新包在确认回调内。新增 mock 调用计数与源码顺序测试。
+- 验证边界：只有最终提交 SHA 的 CI/doc-sync 完成后，才能确认新增测试通过；真实 Provider、账单、Windows 真机、剪映和真实投放验收仍暂缓。
+- 下一步唯一动作：核验本轮最终 HEAD 的检查结果并按失败项修复；不新增 A113+，不合并 PR #32。
 
 ---
+
+
 
 # 【历史快照｜交接一致性修复规则｜2026-10-16】
 
