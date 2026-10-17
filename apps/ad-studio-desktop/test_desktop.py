@@ -2862,6 +2862,34 @@ class DesktopCoreTests(unittest.TestCase):
 
 
 
+    def test_missing_video_price_does_not_count_default_rate_as_actual_cost(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+
+            class UnknownPriceProvider:
+                provider_name = "Cloud provider"
+                endpoint = "https://video.example/generate"
+                cost_per_shot_rmb = 0.72
+                cost_price_configured = False
+
+                def generate(self, request):
+                    request.output.parent.mkdir(parents=True, exist_ok=True)
+                    request.output.write_bytes(b"generated-video")
+                    return request.output
+
+            store._render_with_provider(project, shot, UnknownPriceProvider())
+            summary = store.ledger.project_summary(project.id)
+            row = store.ledger.recent(1)[0]
+            self.assertEqual(row["cost_status"], "price_missing")
+            self.assertEqual(row["estimated_cost_rmb"], 0.0)
+            self.assertEqual(summary["actual_cost_rmb"], 0.0)
+            self.assertEqual(summary["unknown_cost_entries"], 1)
+            self.assertTrue(summary["has_unknown_cost"])
+            self.assertIsNone(store.ledger.shot_actual_cost(project.id, shot.id))
+
     def test_cloud_video_entrypoints_fail_closed_without_explicit_authorization(self):
         from types import SimpleNamespace
         from unittest.mock import Mock, patch
