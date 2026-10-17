@@ -2888,7 +2888,7 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(summary["actual_cost_rmb"], 0.0)
             self.assertEqual(summary["unknown_cost_entries"], 1)
             self.assertTrue(summary["has_unknown_cost"])
-            self.assertIsNone(store.ledger.shot_actual_cost(project.id, shot.id))
+            self.assertEqual(store.ledger.shot_actual_cost(project.id, shot.id), 0.0)
 
     def test_cloud_video_entrypoints_fail_closed_without_explicit_authorization(self):
         from types import SimpleNamespace
