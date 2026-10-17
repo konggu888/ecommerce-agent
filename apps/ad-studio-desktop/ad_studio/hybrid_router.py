@@ -44,7 +44,7 @@ def route_footage_gap_tasks(
     *,
     generation_connected: bool,
     budget_remaining_rmb: float = 0.0,
-    cost_per_ai_shot_rmb: float | None = 0.0,
+    cost_per_ai_shot_rmb: float | None = None,
 ) -> dict:
     """为每个缺口给出下一步：继续补拍、AI补镜头、AI补辅助画面或人工确认。
 
