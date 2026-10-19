@@ -1,5 +1,10 @@
 """Integration checks for the actual FastAPI app and file-backed SQLite baseline."""
+import sys
+from pathlib import Path
+
 from fastapi.testclient import TestClient
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from backend.app import create_app
 from backend.storage import initialize_database, read_metadata, write_metadata
