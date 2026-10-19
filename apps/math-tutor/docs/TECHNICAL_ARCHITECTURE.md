@@ -97,3 +97,7 @@
 - CI 应构建 backend 与 frontend 两个 Docker target；这只能证明镜像可构建，不等于容器已在用户服务器启动，更不等于生产安全验收。
 - 正式公网发布前必须实现认证/授权、HTTPS、备份恢复、儿童数据保护和安全测试；用户服务器上的部署与恢复演练仍需真实环境证据。
 
+
+
+## 2026-10-20 部署地址审计结论
+仓库内未发现必须通过 Netlify 网站开发或将 Netlify 作为正式生产运行依赖的活动指令。PR 上出现的 Netlify deploy-preview 是仓库外部集成状态；当前预览需要受邀账号登录，因此不构成用户可访问的验收 URL。历史文档中的 Netlify status 仅对应旧 SHA。详见 `DEPLOYMENT_AND_MOBILE_ACCEPTANCE.md`。
