@@ -89,3 +89,11 @@
 - 安全边界：API Key/数据库管理密钥只能在服务端环境变量或 Secret 中；前端不得获得 service-role/管理员密钥。测试与生产配置、数据库和凭据必须分离。
 - 这是一项部署/环境架构决定，不改变 32 项任务分母和权重，不代表已接入 Supabase、已完成迁移或任何任务已验收。下一步先核查已有 Supabase 项目是否适合安全地作为开发/集成测试库，再按 MATH-002/MATH-004 的既定范围推进。
 
+
+## 2026-10-20 自托管运行骨架（当前仅用于烟雾测试）
+
+- 新增 apps/math-tutor/Dockerfile 多阶段构建、docker-compose.yml、deploy/nginx.conf、runtime requirements.txt 与 SELF_HOSTING.md。前端由 Nginx 提供静态文件并将 /api 转发到内部 FastAPI；SQLite 使用持久化命名卷。
+- Compose 默认只将 Web 绑定到宿主机 127.0.0.1:8080，FastAPI 不直接发布端口。这样可由宿主机反向代理接入，但当前应用没有登录/授权，不能直接开放公网。
+- CI 应构建 backend 与 frontend 两个 Docker target；这只能证明镜像可构建，不等于容器已在用户服务器启动，更不等于生产安全验收。
+- 正式公网发布前必须实现认证/授权、HTTPS、备份恢复、儿童数据保护和安全测试；用户服务器上的部署与恢复演练仍需真实环境证据。
+
