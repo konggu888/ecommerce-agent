@@ -219,3 +219,10 @@ PR：#33（Draft，未合并）
 - CI 已加入 backend/frontend Docker image build 步骤，等待最新 SHA 实际结果。
 - 这属于部署准备，不等于真实服务器部署或生产验收；公网发布被认证/授权、HTTPS、备份恢复与安全测试门槛阻止。
 - 固定路线图仍为 32 项；除非任务登记与验收证据同步通过进度守卫，不手动增加完成百分比。
+
+
+## 2026-10-20：部署地址与实体手机验收阻塞
+- 当前没有已确认的、用户无需受邀登录即可访问的测试 URL。Netlify deploy-preview 虽曾返回 success，但用户遇到受邀账号登录墙，因此不可作为交付地址。
+- 已新增 `docs/DEPLOYMENT_AND_MOBILE_ACCEPTANCE.md`，审计旧文档中的 Netlify 记录并定义真实手机验收证据。
+- 当前仓库内未发现要求必须在 Netlify 开发的活动指令；`pages.yml` 面向独立 `apps/web/` 仪表板。旧 SHA 的 Netlify 状态是历史记录。
+- MATH-002 保持 IN_PROGRESS；缺少可访问 URL 与实体手机人工验收证据。不得因 CI 成功提高验收进度。
