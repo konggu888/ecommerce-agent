@@ -71,3 +71,19 @@
 - 本次未找到可确认的试卷图片上传/OCR/教师批改痕迹识别实现；未找到北师大版二年级课程资产。此结论仅限已检查 README、关键前后端文件，不能替代全仓库测试。
 
 运行限制：尝试在执行环境浅克隆候选仓库，失败原因为执行环境无法解析 `github.com`（网络/DNS 不可用），不是候选项目自身运行失败。因此本轮只能完成静态代码审查，未能安装依赖、跑测试或验证实际启动。候选 A 可作为可复用的 UI/部分答题流程参考，但不能直接认定为可运行基座；必须先获得可运行源码副本并执行基线测试，之后再决定复用范围。
+
+## 2026-10-20 — Final bounded comparison and current upstream SHA refresh
+
+MATH-001 scope was limited to three candidates; no further candidate was added.
+
+| Candidate | Current default-branch commit checked 2026-10-20 | License evidence | Decision |
+|---|---|---|---|
+| `Galliard7/OpenMath` | `8b7ebaa86b886df2e7631f5760128507f65571b0` (2026-05-23) | README claims Apache 2.0; `contents/LICENSE` returns 404 and prior checks also found no LICENSE/LICENSE.md/LICENSE.txt/COPYING/NOTICE | Do not copy or adapt source; use only as a design reference |
+| `onemorepereira/math-tutor` | `1e821a4d15ea63687e9f42f2c2200656954d5eca` (2026-08-29) | Root LICENSE returns MIT text; previous license blob SHA `d4b77a37f58d8fe75ff571ff86319652355ece7a` | Reference only; Cognito/AWS Bedrock/DynamoDB/public leaderboard differ from this project's private DeepSeek-oriented scope |
+| `AyushDixit-21/MathTalk` | `559e4a6e57e02980eabb7dbc49b636f5e7e48a3e` (2026-09-08) | Root LICENSE returns MIT text; previous license blob SHA `4775913c2512cacb675c438e88adda8858cdf813` | Reference only; prototype/React-oriented and not a Beishi Grade 2 curriculum platform |
+
+### Selection conclusion
+- The project will continue as a self-developed implementation; no candidate was selected as a code base and no candidate source code was copied.
+- Review evidence is limited to current repository metadata, README, license files and selected source/test files. Upstream startup/tests were not run, so this document does not claim those candidates are runnable or product-ready.
+- The current self-developed project itself has a runnable CI baseline: SHA `9ceee1024d30177482a1a61b5fa573c782e49ca6`, Push CI `39326153402` SUCCESS and PR CI `39326160690` SUCCESS. These results are not upstream-candidate test evidence.
+- MATH-001 is accepted for the bounded research and license-risk-register scope only. Separate dependency, font, image, audio, model and curriculum content license reviews remain required when those assets/dependencies are introduced.
