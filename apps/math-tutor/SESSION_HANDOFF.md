@@ -251,3 +251,11 @@ PR：#33（Draft、未合并；接手时必须重新查询当前状态）
 - 已验证的移动端自动化是 Chromium 模拟 iPhone 13/390px 视口，不是物理手机验收。它只覆盖早期首页布局和交互，不代表数学学习功能已实现。
 - MATH-002 仍剩余：前端到 FastAPI 业务 API 的真实集成、应用数据 SQLite 持久化路径，以及真实设备/人工验收。下一步优先核查这些缺口与 MATH-004 边界，避免重复已通过的 build/helper/mobile smoke tests。
 - PR #33 保持 Open/Draft/未合并；未经用户明确许可不得合并。不得修改 `apps/ad-studio-desktop/`。本轮没有完成面向孩子的学习功能，不能增加软件完成率。
+
+
+# MATH-002 最新技术验证补充（2026-10-19；接手仍须重查最新 SHA）
+- 在已通过的前端/手机 E2E 基线之上，本轮新增实际 FastAPI + 文件 SQLite 验证：`backend/app.py` 提供 `create_app(database_path)` 与 `GET /health`；`backend/storage.py` 初始化文件型 SQLite schema 元数据；`tests/test_backend_api.py` 验证 HTTP 响应和重新初始化后持久化。
+- 以上代码在 SHA `c622e4c67097bcecd5557e8dd3bd068bd788bf14` 的 PR CI run `39225650580` 中通过。该 run 还验证了 Vue/Vite build、前端 helper tests、Playwright mobile Chromium E2E、进度一致性检查和现有仓库测试；Netlify deploy preview 当时为 success。
+- 随后新增了任务证据、STACK_BASELINE、看板和 CHANGELOG 文档提交，当前 HEAD 已变更；因此必须查询最新 HEAD 的 CI，不能把 SHA `c622e4c...` 的成功直接当成当前 HEAD 的结果。
+- 当前软件任务仍为 32 项/100% 权重、已验收 0/32、加权完成率 0%；MATH-002 仍 IN_PROGRESS。进度计算器为 `python apps/math-tutor/scripts/update_progress.py --write`，CI 用 `--check`。
+- 下一步唯一优先项：核查最新 HEAD CI；通过后，补齐前端到 FastAPI 的真实业务请求链路/集成验证。不要重复已经通过的 build、helper tests、移动浏览器首页 smoke test、FastAPI health 和 SQLite 技术基线。物理手机测试单独列为尚未执行。MATH-004 与 MATH-002 的边界需保持清楚，不能借基线测试宣称产品骨架完成。
