@@ -126,3 +126,11 @@ PR：#33（Draft，未合并）
 - 已将 FastAPI/SQLite 基线 smoke test 接入 GitHub Actions：Python 3.13 + requirements-dev.txt + pytest。
 - 最新提交后的 CI 尚待重新查询，不能提前记为通过。
 - Vue/Vite 项目级 build/test 和手机端 E2E 仍未运行；MATH-002 继续 IN_PROGRESS，软件验收仍 0/32、加权完成率 0%。
+
+
+## 2026-10-19 — 自动进度一致性检查接入（状态快照）
+- 最新已核对的代码 SHA `666cc6cf7c63eb60ee67feae209476eea1079e05` 对应 CI run `39223512454` 当时处于 queued；Netlify deploy-preview 为 pending。该状态不代表后续文档提交的 CI 已通过。
+- 新增 `tests/test_progress_integrity.py`，在 CI 中校验固定任务 ID 为 MATH-001–MATH-032、权重合计 100%、仅 ACCEPTED 计入加权完成率、已验收证据非空，以及看板数字与机器登记一致。
+- CI 现在运行 `apps/math-tutor/tests` 全部测试，而非只运行环境 smoke test。若任务分母、权重、验收证据或看板统计漂移，CI 应失败并要求先修复。
+- 当前登记仍为 32 项、权重 100%、已验收 0/32、加权完成率 0%；MATH-002 为 IN_PROGRESS。Vue/Vite 构建与前端测试已纳入 CI 命令，但本轮最新 CI 结果须重新查询。
+- 该机制会自动发现登记表/看板不一致，但不会替代人工验收或自行修改任务状态。
