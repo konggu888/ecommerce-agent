@@ -11,11 +11,11 @@
   "progress_rule": "Only ACCEPTED tasks with verifiable evidence count toward weighted completion. Documentation/commit/CI alone do not establish product acceptance.",
   "last_verified_snapshot": {
     "date": "2026-10-19",
-    "head_sha": "c8519a557bb4dabefad9ab74118c3fb05d929941",
+    "head_sha": "e7e10491fefea44327656ffaac3333fc10c45b69",
     "pr_state": "open",
     "pr_draft": true,
     "ci_state": "SUCCESS",
-    "ci_evidence": "GitHub Actions CI run 39217632873 conclusion success for pre-documentation HEAD; Netlify deploy-preview status success. This snapshot is pre-update and must be re-queried after documentation commits.",
+    "ci_evidence": "GitHub Actions CI run 39218343866 completed/success; Netlify deploy-preview status success for this SHA. Re-query after any subsequent commit.",
     "accepted_count": 0,
     "weighted_completion_percent": 0
   },
@@ -66,7 +66,7 @@
       ],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
-      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified. File-level fallback screening was performed 2026-10-19 for onemorepereira/math-tutor (MIT; closest child math practice scaffold but AWS/Cognito/leaderboard mismatch) and AyushDixit-21/MathTalk (MIT; prototype focused on voice/accessibility and SymPy). Neither was cloned or executed; selection remains unaccepted pending deeper code/test review."
     },
     {
       "id": "MATH-004",
