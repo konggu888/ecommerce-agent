@@ -329,3 +329,21 @@ PR：#33（Draft、未合并；接手时必须重新查询当前状态）
 - 不把本轮基础迁移当成学生学习记录业务 schema 或持久化；课程/题目/知识点数据契约由 MATH-007 管理，答题/测验/学习记录持久化由 MATH-023 管理。
 - 下一步先查最新 HEAD/Push CI/PR CI，因为以下文档更新会产生新提交；然后继续既定任务顺序，不扩任务表、不重复已通过检查。
 - PR #33 仍 Open/Draft/未合并，未经用户明确许可不得合并；不得修改 `apps/ad-studio-desktop/`。
+
+## 2026-10-20 — SQLite migration future-version guard handoff
+
+### 本轮实际代码改动
+- `backend/storage.py`：迁移初始化时计算当前应用支持的迁移版本；若数据库已记录应用不认识的版本，抛出清晰 `RuntimeError` 并停止，避免旧版本程序误操作较新 schema。
+- `tests/test_backend_api.py`：新增 `test_newer_unknown_migration_version_fails_closed`，用迁移版本 99 验证 fail-closed 行为。
+- 代码提交：`1de4ce02bc94b1d3bd25d0445801c69137de00eb`、`b18b5a67e672c7b9ba0862da27dcd84739be07b1`。随后同步 `MATH_TASK_REGISTER.json`、`STACK_BASELINE.md`、`CHANGELOG.md` 和 `PROGRESS_DASHBOARD.md`。
+- 这只是 MATH-002 的基础设施安全加固；没有实现课程/题目数据契约或学生答题业务持久化，避免替代 MATH-007/MATH-023。
+
+### 状态与 CI 证据边界
+- 本轮开始时 PR #33 为 Open/Draft/未合并，HEAD `ee818602a309b65e91875fbedd22c12934795033`；该 SHA 的 Push CI `39325458869` 和 PR CI `39325465780` 均 success。
+- 新增代码与后续文档更新已产生新提交；在本文件更新前最新 HEAD 为 `86cfe49279dd5b0798ddead61f785e7845783bc8`。必须在接手时重新查询 PR HEAD 和最新 Push/PR CI，不能把 `ee818...` 的成功当作新提交成功。本轮新增回归测试在最新 SHA CI 通过前均标为待验证。
+- 进度仍是固定 32 项、权重总计 100%、已验收 0/32、加权完成率 0%；MATH-002 继续 IN_PROGRESS。不能仅因自动化 CI 绿灯就标记 ACCEPTED。
+
+### 下一步唯一行动
+1. 重新查询 PR #33 的最新 HEAD、Push/PR workflow runs 与各 job 状态；确认新增测试在当前 SHA 上通过。
+2. 若 CI 失败，先修复失败；若成功，保留 MATH-002 IN_PROGRESS，因为真实物理手机/人工验收仍未完成。不得重复已通过的浏览器 E2E/基础测试。
+3. 后续按固定 32 项路线图和依赖推进；不增加任务，不改权重，不修改 `apps/ad-studio-desktop/`，不自动合并 PR。
