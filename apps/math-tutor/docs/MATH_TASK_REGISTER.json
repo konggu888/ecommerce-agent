@@ -64,9 +64,13 @@
         {
           "type": "known_gap",
           "detail": "Vite not installed; Vue/Vite project build/test and mobile E2E not run. GitHub clone attempt blocked by DNS resolution failure for github.com in current container."
+        },
+        {
+          "type": "ci_frontend_build_test",
+          "detail": "GitHub Actions PR CI run 39223691429 completed/success for SHA dfc152a725dabb13b531ab4dd949921d170c5ae1 on 2026-10-19. Steps Build math-tutor Vue frontend and Test math-tutor frontend helpers both completed successfully. This proves frontend build/test commands work in CI, not mobile E2E or product acceptance; recheck after later commits."
         }
       ],
-      "note": "Partial environment evidence recorded in docs/STACK_BASELINE.md and tests/test_environment_baseline.py. FastAPI TestClient and SQLite smoke tests pass in the available container; Vue/Vite project build, dependency install, and mobile browser path remain unverified. Do not mark ACCEPTED until the complete baseline is actually verified. 2026-10-19: 新增 apps/math-tutor/requirements-dev.txt 并将 FastAPI/SQLite smoke test 接入 .github/workflows/ci.yml 的 Python 3.13 job；需以此变更后最新 CI 成功作为可复现证据。Vue/Vite 项目级 build/test 和手机端 E2E 仍未验证，因此状态继续 IN_PROGRESS。"
+      "note": "Partial baseline evidence: FastAPI TestClient/SQLite smoke tests passed in CI; Vue 3 + TypeScript + Vite frontend build and frontend helper tests also passed in GitHub Actions run 39223691429 for SHA dfc152a725dabb13b531ab4dd949921d170c5ae1. The task remains IN_PROGRESS because real mobile-browser/E2E path and remaining integration acceptance are not yet verified. Never use the older note that Vite is not installed as current state; it describes a pre-scaffold snapshot."
     },
     {
       "id": "MATH-003",
