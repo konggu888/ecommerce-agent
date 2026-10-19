@@ -153,3 +153,11 @@
 - 真实 FastAPI/Uvicorn + Vite 两个进程启动成功；Playwright 主成功路径使用浏览器真实 `fetch('/api/health')`，经 Vite proxy 收到 FastAPI HTTP 200 与预期服务/SQLite/schema 元数据。
 - Python 基线测试、进度一致性检查、前端 build/helper tests 和仓库既有检查均通过。
 - 这是技术联调证据，不代表学生学习记录业务 schema/持久化或物理手机验收完成；MATH-002 继续 IN_PROGRESS。后续文档提交已产生新 HEAD，需查询最新 HEAD 的 CI。
+
+
+## 2026-10-20 — SQLite 基础 schema 迁移机制
+- 将 `backend/storage.py` 从仅执行幂等建表升级为版本化迁移基线：`schema_migrations` 记录已应用版本，迁移函数按未应用版本执行。
+- 迁移 v1 负责基础 `app_meta` 表；重复初始化不会重置现有元数据。旧版已存在 `app_meta` 但没有迁移历史的数据库可以被接管并记录 v1，不丢失现有键值。
+- 新增测试覆盖迁移历史、重复初始化、现有元数据保留与旧库接管。
+- SHA `99d5405007dfac6eae86ff90be8b17e36931a3d2` 的 Push CI `39325112034` 与 PR CI `39325121132` 均成功，含 Python 测试、真实 FastAPI/Vite E2E、进度检查及仓库既有检查。
+- 这只是技术基础设施迁移，不是课程/题目/学生学习记录业务 schema；这些分别留在 MATH-007/MATH-023 范围内。
