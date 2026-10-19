@@ -190,3 +190,11 @@ PR：#33（Draft，未合并）
 - 已验证 SHA：`178c50a2a23345bf3ae4123fa153bdfe555014f2`；Push CI `39324288870` 和 PR CI `39324295556` 均 completed/success。该 SHA 的真实服务 E2E、Python 基线、进度 `--check`、前端 build/helper tests 与仓库既有检查均通过。
 - 最新验收边界：这证明健康接口链路在 CI 环境真实可用，不代表学习记录业务 API/schema 已实现，也不代表真实物理手机验收通过。
 - 固定计划 32 项/100%；已验收 0/32、加权完成率 0%；MATH-002 仍 IN_PROGRESS。CI 通过不直接增加软件完成百分比。
+
+
+## 2026-10-20 最新实现：SQLite 版本化迁移基线（已由 CI 验证）
+- `backend/storage.py` 已加入 `schema_migrations` 迁移历史表与版本注册表，初始化时应用尚未记录的基础设施迁移。
+- 测试覆盖重复初始化、历史版本记录、现有元数据保留，以及旧版 `app_meta` 数据库在无迁移历史时的兼容接管。
+- SHA `99d5405007dfac6eae86ff90be8b17e36931a3d2` 的 Push CI `39325112034`、PR CI `39325121132` 均 completed/success；真实 FastAPI/Vite E2E、Python tests、前端 build/helper tests、进度 `--check` 和现有仓库检查通过。
+- 此项属于技术迁移底座；没有提前实现或宣称 MATH-007 课程/题目数据契约、MATH-023 学习记录业务持久化。
+- 固定任务 32 项/100%；已验收 0/32、加权完成率 0%；MATH-002 仍 IN_PROGRESS，物理手机/人工验收仍未执行。
