@@ -87,3 +87,10 @@
 - `tests/test_progress_integrity.py` 自动核对任务 ID、32 项固定分母、100% 权重、ACCEPTED 证据门槛，以及任务登记表与看板的任务数/验收数/加权率一致。
 - 若更新任务状态、权重或验收数，必须同步任务登记与看板；否则 CI 会阻止该提交通过。
 - 这是一种防漂移机制，不会把未验收功能自动标为完成，也不会自动改写文件。AI 仍需先检查证据、更新状态与记录，再由 CI 验证一致性。
+
+
+## 2026-10-19 连续性自动计算与 MATH-002 进展
+- 进度更新命令：`python apps/math-tutor/scripts/update_progress.py --write`；CI 复核命令：`python apps/math-tutor/scripts/update_progress.py --check`。
+- 完成率只按有可核查验收证据的 ACCEPTED 任务权重计算；任务总数和权重固定为 32/100%。任何状态变化必须重新计算并同步看板，CI 会拦截快照/看板过期。
+- MATH-002：Vue/Vite build/helper tests 和 FastAPI/SQLite 基线有历史成功 CI 证据；新增 Playwright 手机视口 E2E 尚须在最新 SHA 的 CI 中验证。前后端业务集成、真实手机硬件验收未完成。
+- 换窗口时不要重复做旧 SHA 已通过的 build/helper tests；先查最新 CI，再处理新 E2E 和剩余集成缺口。
