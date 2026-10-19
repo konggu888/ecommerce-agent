@@ -66,7 +66,7 @@
       ],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
-      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified. File-level fallback screening was performed 2026-10-19 for onemorepereira/math-tutor (MIT; closest child math practice scaffold but AWS/Cognito/leaderboard mismatch) and AyushDixit-21/MathTalk (MIT; prototype focused on voice/accessibility and SymPy). Neither was cloned or executed; selection remains unaccepted pending deeper code/test review."
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified. File-level fallback screening was performed 2026-10-19 for onemorepereira/math-tutor (MIT; closest child math practice scaffold but AWS/Cognito/leaderboard mismatch) and AyushDixit-21/MathTalk (MIT; prototype focused on voice/accessibility and SymPy). Neither was cloned or executed; selection remains unaccepted pending deeper code/test review. Additional static review of Number Ninja files found auth-gated Vue game UI, Cognito-bound AWS Bedrock/DynamoDB handlers, one-attempt scoring flow and some unit-test files; no verified worksheet-photo pipeline or Beishi Grade 2 curriculum in inspected files. Clone attempt blocked by this execution environment's DNS failure for github.com; tests not run. Do not count candidate as runnable or accepted."
     },
     {
       "id": "MATH-004",
