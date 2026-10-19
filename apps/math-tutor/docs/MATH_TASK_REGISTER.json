@@ -63,7 +63,7 @@
         },
         {
           "type": "known_gap",
-          "detail": "Vite not installed; Vue/Vite project build/test and mobile E2E not run. GitHub clone attempt blocked by DNS resolution failure for github.com in current container."
+          "detail": "Historical pre-scaffold observation from earlier on 2026-10-19: Vite was not installed and clone was blocked by container DNS. Superseded for frontend build/test by CI run 39223691429 (success); real mobile-browser/E2E and full product integration remain unverified."
         },
         {
           "type": "ci_frontend_build_test",
