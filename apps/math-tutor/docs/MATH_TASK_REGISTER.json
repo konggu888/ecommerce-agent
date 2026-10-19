@@ -11,11 +11,11 @@
   "progress_rule": "Only ACCEPTED tasks with verifiable evidence count toward weighted completion. Documentation/commit/CI alone do not establish product acceptance.",
   "last_verified_snapshot": {
     "date": "2026-10-19",
-    "head_sha": "e7e10491fefea44327656ffaac3333fc10c45b69",
+    "head_sha": "59226c26e1997361a73dad0051308a1703ba1cc2",
     "pr_state": "open",
     "pr_draft": true,
-    "ci_state": "SUCCESS",
-    "ci_evidence": "GitHub Actions CI run 39218343866 completed/success; Netlify deploy-preview status success for this SHA. Re-query after any subsequent commit.",
+    "ci_state": "RUNNING",
+    "ci_evidence": "GitHub Actions CI run 39218680024 was queued for this SHA; combined status had no status items at check time. Snapshot is pre-metadata-update and must be re-queried after new commits.",
     "accepted_count": 0,
     "weighted_completion_percent": 0
   },
