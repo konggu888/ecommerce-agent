@@ -57,3 +57,17 @@
 - 当前最有价值的下一步是对候选 A 做有边界的代码/测试/目录审查，确认它的实际可复用范围与改造成本；候选 B 不再扩展调查，除非候选 A 不可用。
 - OpenMath 的 MATH-001 仍为 BLOCKED：README 虽声明 Apache 2.0，但未找到许可证全文/作者确认；不复制其代码。
 - 本轮只完成候选桌面审查证据整理，未 clone/运行任何候选；不计产品任务完成，不增加软件进度。
+
+
+## 2026-10-19 — 候选 A 源码级静态审查补充
+
+通过 GitHub 文件接口继续检查 `onemorepereira/math-tutor` 的具体源码（没有下载或运行仓库）：
+- `frontend/src/views/GameView.vue`：是以题目进度、积分、提示显示和单题作答为核心的游戏式界面。
+- `frontend/src/router/index.ts`：登录、注册、忘记密码/重置密码、游戏、成绩卡和统计路由；游戏/成绩等页面要求身份认证。
+- `backend/src/functions/createGameSession.ts`：请求包含难度、题量、子类别，调用 Bedrock 生成题目，并经独立答案验证后保存到 DynamoDB；读取用户身份依赖 Cognito claims。
+- `backend/src/functions/submitAnswer.ts`：记录单题答案、提示数和耗时；会拒绝同一问题的第二次提交，当前模式偏向一轮游戏评分，而不是原题重做与长期掌握证据队列。
+- `backend/src/functions/requestHint.ts`：提示接口也依赖 Cognito、DynamoDB 与 Bedrock；尚未证实符合本项目每题每回合最多 3 次主动提示的完整教学协议。
+- 找到 `backend/src/functions/submitAnswer.test.ts` 与 `backend/src/utils/answerMatcher.test.ts`，说明仓库包含部分后端单元测试；本轮未运行。
+- 本次未找到可确认的试卷图片上传/OCR/教师批改痕迹识别实现；未找到北师大版二年级课程资产。此结论仅限已检查 README、关键前后端文件，不能替代全仓库测试。
+
+运行限制：尝试在执行环境浅克隆候选仓库，失败原因为执行环境无法解析 `github.com`（网络/DNS 不可用），不是候选项目自身运行失败。因此本轮只能完成静态代码审查，未能安装依赖、跑测试或验证实际启动。候选 A 可作为可复用的 UI/部分答题流程参考，但不能直接认定为可运行基座；必须先获得可运行源码副本并执行基线测试，之后再决定复用范围。
