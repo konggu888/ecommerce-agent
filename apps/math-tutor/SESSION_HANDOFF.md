@@ -294,3 +294,20 @@ PR：#33（Draft、未合并；接手时必须重新查询当前状态）
 - 真实联调的测试目标是证明 CI 环境中浏览器 → Vite 代理 → 正在运行的 FastAPI → SQLite 元数据的路径。它仍不等于生产部署验证、学习记录业务 schema/持久化或物理手机验收。
 - 预计下一步：检查本轮最新 CI。如果失败，按具体日志修复；如果通过，评估 MATH-002 是否还剩环境/物理设备验收项，并继续下一项实际实现，不扩展任务清单。
 - 固定进度仍为 32 项、总权重 100%、已验收 0/32、加权完成率 0%；MATH-002 仍 IN_PROGRESS。PR #33 Open/Draft/未合并。未经用户许可不合并，不修改 `apps/ad-studio-desktop/`。
+
+
+# 2026-10-20 最终回合交接（真实联调 CI 已通过；下次必须先重查最新 HEAD）
+## 本轮实际推进
+- 将 Playwright 的成功路径改为真实前后端联调：测试配置启动 FastAPI/Uvicorn（127.0.0.1:8000）和 Vite（127.0.0.1:4173）两个真实服务进程。
+- E2E 首页成功路径不再 mock 健康接口，浏览器真实调用 `fetch('/api/health')`，验证经 Vite proxy 到达真实 FastAPI，HTTP 200 且返回预期的 service/storage/schema_version。
+- 添加固定 Uvicorn 测试依赖；CI 调整为先安装 Python 后端依赖，再运行浏览器 E2E；E2E 使用隔离 SQLite 路径 `/tmp/math-tutor-e2e.sqlite3`。
+- API 失败状态与键盘操作用例仍保留独立 route mock，这是为了验证错误/交互分支，不冒充真实服务成功路径。
+## 已验证 CI 证据
+- SHA `178c50a2a23345bf3ae4123fa153bdfe555014f2`：Push CI run `39324288870` success；PR CI run `39324295556` success。
+- 该 SHA 的 `Run math-tutor mobile browser E2E with live FastAPI`、前端 build/helper tests、Python baseline tests、进度 `--check`、仓库既有检查均通过。
+- 随后更新了任务登记、看板、变更日志，因此当前 HEAD 已进一步前移。接手时必须重新查询 PR #33 head SHA、最新 Push/PR CI、job steps 与 deploy status；不能将旧 SHA 的成功直接套到新 SHA。
+## 当前真实进度/未完成项
+- 固定任务 32 项，总权重 100%；已验收 0/32；加权完成率 0%；状态分布 NOT_STARTED 31、IN_PROGRESS 1。
+- MATH-002 继续 IN_PROGRESS。真实健康接口链路已在 CI 验证，但学生学习记录 schema/业务 API/业务持久化未实现，物理手机/人工验收未执行。
+- 下一步优先继续 MATH-002：核查最新 CI 后，进入最小必要的学习数据 schema/持久化技术实现，注意 MATH-004 的应用骨架验收边界，不重复已通过的健康接口联调。不得仅凭 CI 绿灯标记任务 ACCEPTED。
+- PR #33 仍 Open/Draft/未合并，未经用户明确同意不得合并。不得修改 `apps/ad-studio-desktop/`。
