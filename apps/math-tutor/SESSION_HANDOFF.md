@@ -159,3 +159,12 @@ PR：#33（Draft、未合并；接手时必须重新查询当前状态）
 - 本轮更新了产品规格、验收、任务登记、README、路线图/看板相关状态与变更记录；这些文档更新不计软件完成率。
 - 固定计划 32 项、权重 100%、已验收 0/32、加权完成率 0%。
 - 本轮状态核验时 PR #33 HEAD 为 `2269f2e027b7c88eb94f9fb89844be75020415ee`，CI run `39220155670` 为 in_progress，Netlify deploy-preview 为 success。该快照仅对应该 SHA；接手必须查询更新后的 HEAD/CI。
+
+
+## MATH-002 实测进展（2026-10-19，优先于此前状态描述）
+- 已新增 `apps/math-tutor/tests/test_environment_baseline.py` 和 `apps/math-tutor/docs/STACK_BASELINE.md`。
+- 当前容器实际运行同一基线测试：`pytest -q`，结果 `2 passed`；FastAPI TestClient 返回 HTTP 200，SQLite 最小写入/读取通过。
+- 实测环境：Node v22.16.0、npm 10.9.2、TypeScript 5.8.3、Python 3.13.5、FastAPI 0.128.2、Starlette 0.50.0、pytest 9.0.2、SQLite 3.46.1。
+- 未完成：Vite 未安装；Vue 3 + TypeScript + Vite 项目级依赖安装/build/test 未运行；手机浏览器/E2E 未运行。尝试 clone 仓库因当前容器 DNS 无法解析 github.com 失败，这是执行环境限制。
+- MATH-002 状态为 IN_PROGRESS，不能验收；应用软件功能尚未开始，已验收 0/32、加权完成率 0%。
+- 下一步：解决可复现的 Vue/Vite 构建与项目级测试验证，再推进 MATH-003/004；不得把 Python 环境 smoke test 夸大为完整技术栈验收。
