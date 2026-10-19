@@ -50,3 +50,18 @@ PR：#33（Draft，未合并）
 - 无效教学策略的真实切换或前置知识回查。
 - 学习时间、独立作答、迁移、延迟复测与学校成绩分别报告。
 本轮更新的是规格、范围映射和验收门槛，不是应用实现。已验收仍为 0/32，加权完成率仍为 0%。必须由后续代码、自动化测试、手机端端到端步骤和学习数据分别验证。
+
+## AI 连续性与执行控制文件
+- 接手摘要：apps/math-tutor/SESSION_HANDOFF.md
+- 执行协议：docs/AD_MATH_EXECUTION_CONTROL.md
+- 固定路线图：docs/IMPLEMENTATION_PLAN.md
+- 机器可读任务登记：docs/MATH_TASK_REGISTER.json
+- 验收标准：docs/ACCEPTANCE.md
+- 变更历史：docs/CHANGELOG.md
+
+## 连续性文件补齐状态
+- 已新增执行控制协议和机器可读任务登记表。
+- 任务登记表包含 MATH-001–MATH-032 共 32 项，权重总计 100%，当前全部 NOT_STARTED。
+- 当前验收仍为 0/32、加权完成率 0%；新增文档不计入产品进度。
+- 本轮文档提交会改变 HEAD；因此本节不把旧 SHA 冒充最新状态。下一个窗口必须重新查询最新 PR #33 的 head SHA、CI/status、workflow runs 和部署检查。若查询没有状态项，标记 NO_DATA/未确认。
+
