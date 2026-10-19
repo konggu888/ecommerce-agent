@@ -102,3 +102,9 @@ pytest 9.0.2
 - 对早期已存在 `app_meta` 但没有 `schema_migrations` 的数据库，迁移 v1 使用 `CREATE TABLE IF NOT EXISTS` 与幂等插入，可建立迁移历史而不删除原有键值。
 - 相关 Python 测试在 SHA `99d5405007dfac6eae86ff90be8b17e36931a3d2` 的 Push CI `39325112034` 和 PR CI `39325121132` 中通过。
 - 这仍是基础设施 schema；业务课程、题目、答题和学习记录数据模型不在此处定义，避免提前替代 MATH-007/MATH-023。
+
+## 2026-10-20 — SQLite migration version safety guard (CI pending)
+- `backend/storage.py` now fails closed if `schema_migrations` contains a version absent from the running application's `MIGRATIONS` registry. This avoids silently continuing with a database schema created by newer application code.
+- Added `test_newer_unknown_migration_version_fails_closed` in `tests/test_backend_api.py`, using a database marked with migration version 99 and asserting an explicit `RuntimeError`.
+- Implementation commits: `1de4ce02bc94b1d3bd25d0445801c69137de00eb` and `b18b5a67e672c7b9ba0862da27dcd84739be07b1`. CI has not yet been checked for the latest documentation-updated HEAD, so this test is not yet recorded as passing.
+- This remains infrastructure safety work; no course/question schema or student learning-record business persistence was added. MATH-002 remains IN_PROGRESS.
