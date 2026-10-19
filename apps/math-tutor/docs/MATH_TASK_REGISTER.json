@@ -149,7 +149,7 @@
       ],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
-      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified. 新增验收细节：OCR 候选、用户确认后的结构化题目与 AI 诊断分别留痕；低置信度字段不能进入评分/掌握度；语音、OCR、模型失败保留可恢复状态。映射到本轮成熟产品参考覆盖审计。"
     },
     {
       "id": "MATH-011",
@@ -196,7 +196,7 @@
       ],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
-      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified. 正式教学内容/试点题需记录版本、知识点、来源/编写方式和验证状态；AI 生成题未通过发布门禁前只能是 draft。映射到本轮成熟产品参考覆盖审计。"
     },
     {
       "id": "MATH-015",
@@ -207,7 +207,7 @@
       ],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
-      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified. 明确测试题目条件完整性、歧义、年级适配、确定性答案和 OCR 分层留痕；不可验证的题目隔离或请求复核。"
     },
     {
       "id": "MATH-016",
@@ -219,7 +219,7 @@
       ],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
-      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified. 正式练习/测验前必须通过结构、数学答案、条件完整性/歧义、年级适配和提示泄题检查；AI 自检不算独立验证。"
     },
     {
       "id": "MATH-017",
@@ -254,7 +254,7 @@
       ],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
-      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified. 孩子可在当前题目内追问并请求图示/换方法；上下文和已尝试策略必须保留。策略无效时实际换方法或检查前置知识，并记录后续独立表现。"
     },
     {
       "id": "MATH-020",
@@ -280,7 +280,7 @@
       ],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
-      "note": "学生端包含 AI 老师讲解状态、普通话声音/字幕/静音、可暂停的黑板步骤、温和鼓励反馈；有家长配置的积分余额/奖励查看与兑换流程。空白卷和无提示测验时必须屏蔽答案泄露。 手机端必须支持只选单元、多个已学单元组合、全部已学累计复习、当前/旧单元比例，以及自主练习与老师作业分离；未选单元不可静默混入。 Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+      "note": "学生端包含 AI 老师讲解状态、普通话声音/字幕/静音、可暂停的黑板步骤、温和鼓励反馈；有家长配置的积分余额/奖励查看与兑换流程。空白卷和无提示测验时必须屏蔽答案泄露。 手机端必须支持只选单元、多个已学单元组合、全部已学累计复习、当前/旧单元比例，以及自主练习与老师作业分离；未选单元不可静默混入。 Not accepted. Require code/test/manual evidence; keep status unchanged until verified. 学生端需支持当前题目内的低龄友好快捷追问，保持题目/步骤/提示/策略/测验模式上下文；blank/no-hint 模式不得通过回复、声音或板书泄露答案。"
     },
     {
       "id": "MATH-022",
@@ -292,7 +292,7 @@
       ],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
-      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified. 家长报告必须展示证据样本数、测验/题组版本、评分来源、不确定性和下一步可选行动；区分观察事实、AI 假设和系统建议，不夸大成绩因果。"
     },
     {
       "id": "MATH-023",
@@ -316,7 +316,7 @@
       ],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
-      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified. 刷新、断网、音频/识别/API 失败后保留可恢复状态；恢复与重试需幂等，防止重复写入答题/积分/兑换事件。"
     },
     {
       "id": "MATH-025",
@@ -329,7 +329,7 @@
       ],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
-      "note": "自动化测试覆盖声音静音/失败回退、字幕与播放状态、黑板内容一致/测验防泄题、家长自定义任意积分门槛、兑换扣分/流水保留、余额不足/重复提交/刷新恢复；积分不能改变掌握度判定。 自动化回归必须覆盖单元范围约束、跨单元题映射、前置知识不锁定学习路径、AI 题目独立校验、不确定识别可确认/跳过/恢复。 Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+      "note": "自动化测试覆盖声音静音/失败回退、字幕与播放状态、黑板内容一致/测验防泄题、家长自定义任意积分门槛、兑换扣分/流水保留、余额不足/重复提交/刷新恢复；积分不能改变掌握度判定。 自动化回归必须覆盖单元范围约束、跨单元题映射、前置知识不锁定学习路径、AI 题目独立校验、不确定识别可确认/跳过/恢复。 Not accepted. Require code/test/manual evidence; keep status unchanged until verified. 回归测试覆盖当前题目内追问、上下文连续性、测验防泄题、题目质量发布门禁、OCR 分层留痕、报告不确定性和失败恢复幂等性。"
     },
     {
       "id": "MATH-026",
@@ -366,7 +366,7 @@
       ],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
-      "note": "端到端测试至少包含讲解音频+字幕/黑板步骤，以及家长配置奖励→孩子获得积分→兑换确认→余额扣减→历史流水保留的完整链路；手机端真实验证。 Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+      "note": "端到端测试至少包含讲解音频+字幕/黑板步骤，以及家长配置奖励→孩子获得积分→兑换确认→余额扣减→历史流水保留的完整链路；手机端真实验证。 Not accepted. Require code/test/manual evidence; keep status unchanged until verified. 端到端覆盖当前题目追问和上下文保持、题目质量门禁、报告证据可追溯、刷新/失败恢复与重复提交保护。"
     },
     {
       "id": "MATH-029",
@@ -391,7 +391,7 @@
       ],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
-      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified. 报告基线/结束测验的题组版本、样本量、评分来源与可比性；数据不足时不能声称学习效果提升。"
     },
     {
       "id": "MATH-031",
@@ -402,7 +402,7 @@
       ],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
-      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified. 延迟复测/迁移报告需明确样本数、题组版本和不确定性；失败后记录补弱/策略调整与再次测量。"
     },
     {
       "id": "MATH-032",
