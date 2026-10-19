@@ -1,0 +1,393 @@
+{
+  "schema_version": "1.0",
+  "project": "beishi-grade2-math-tutor",
+  "repository": "konggu888/ecommerce-agent",
+  "directory": "apps/math-tutor/",
+  "branch": "feat/beishi-grade2-math-tutor",
+  "pull_request": 33,
+  "plan_version": "2.1",
+  "fixed_task_count": 32,
+  "total_weight_percent": 100,
+  "progress_rule": "Only ACCEPTED tasks with verifiable evidence count toward weighted completion. Documentation/commit/CI alone do not establish product acceptance.",
+  "last_verified_snapshot": {
+    "date": "2026-10-19",
+    "head_sha": "395ea7e09060544cfd1171e5109d65430029de39",
+    "pr_state": "open",
+    "pr_draft": true,
+    "ci_state": "NO_DATA",
+    "accepted_count": 0,
+    "weighted_completion_percent": 0
+  },
+  "tasks": [
+    {
+      "id": "MATH-001",
+      "title": "核实 OpenMath 正式许可证/作者授权",
+      "weight_percent": 4,
+      "dependencies": [],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-002",
+      "title": "检查上游目录、启动/测试、课程 schema、答题校验、提示、持久化、模型调用和手机 UI",
+      "weight_percent": 3,
+      "dependencies": [
+        "MATH-001"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-003",
+      "title": "统一比较 OpenMath 与最多两个回退候选并记录选择证据",
+      "weight_percent": 3,
+      "dependencies": [
+        "MATH-001",
+        "MATH-002"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-004",
+      "title": "实际运行选定候选的基线命令/测试并保存日志",
+      "weight_percent": 2,
+      "dependencies": [
+        "MATH-001",
+        "MATH-002",
+        "MATH-003"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-005",
+      "title": "冻结产品目标、首期范围、学生/家长流程、时间效率与试卷照片目标",
+      "weight_percent": 3,
+      "dependencies": [],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-006",
+      "title": "核对孩子实际教材版次、上下册、目录与进度",
+      "weight_percent": 3,
+      "dependencies": [],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-007",
+      "title": "定义课程/题目/知识点/依赖/测验/证据/试卷照片数据契约",
+      "weight_percent": 3,
+      "dependencies": [],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-008",
+      "title": "冻结诊断、提示、重做、掌握度、时间编排、试卷分流和测量协议",
+      "weight_percent": 3,
+      "dependencies": [],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-009",
+      "title": "实现可配置的 DeepSeek provider adapter",
+      "weight_percent": 4,
+      "dependencies": [
+        "MATH-004",
+        "MATH-007"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-010",
+      "title": "实现结构化输出校验、API 故障状态、图片识别不确定项可恢复处理",
+      "weight_percent": 4,
+      "dependencies": [
+        "MATH-007",
+        "MATH-009"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-011",
+      "title": "验证密钥仅服务端且不泄露到构建产物/浏览器/日志",
+      "weight_percent": 4,
+      "dependencies": [
+        "MATH-009"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-012",
+      "title": "记录服务商用量与状态，故障退避有界且可恢复",
+      "weight_percent": 3,
+      "dependencies": [
+        "MATH-009",
+        "MATH-010"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-013",
+      "title": "实现课程 loader/schema，覆盖教材题与确认后的试卷照片题",
+      "weight_percent": 4,
+      "dependencies": [
+        "MATH-004",
+        "MATH-007"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-014",
+      "title": "完成首个试点单元映射、自编题、独立解法、分层提示和错误证据",
+      "weight_percent": 4,
+      "dependencies": [
+        "MATH-006",
+        "MATH-013"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-015",
+      "title": "实现答案/算术/题意/评分来源/识别置信度/年级适配校验",
+      "weight_percent": 4,
+      "dependencies": [
+        "MATH-013"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-016",
+      "title": "实现 AI 变式题审核；未经校验题不得进入练习/正式测验",
+      "weight_percent": 4,
+      "dependencies": [
+        "MATH-014",
+        "MATH-015"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-017",
+      "title": "实现每题最多三次分层提示、解法标记与原题重做队列",
+      "weight_percent": 4,
+      "dependencies": [
+        "MATH-013",
+        "MATH-015"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-018",
+      "title": "实现有证据的错误诊断、鉴别题和 unknown 状态",
+      "weight_percent": 4,
+      "dependencies": [
+        "MATH-014",
+        "MATH-017"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-019",
+      "title": "实现策略选择、效果验证、失败时换策略/检查前置知识",
+      "weight_percent": 4,
+      "dependencies": [
+        "MATH-018"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-020",
+      "title": "实现掌握证据、独立作答、迁移、间隔复习、延迟复测与掌握后减量",
+      "weight_percent": 4,
+      "dependencies": [
+        "MATH-017",
+        "MATH-018",
+        "MATH-019"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-021",
+      "title": "实现手机端学生流程及多页试卷上传和三种试卷状态分流",
+      "weight_percent": 3,
+      "dependencies": [
+        "MATH-004",
+        "MATH-010",
+        "MATH-013"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-022",
+      "title": "实现家长报告：任务优先级/时间/掌握证据/试卷评分来源/学习效果",
+      "weight_percent": 3,
+      "dependencies": [
+        "MATH-020",
+        "MATH-021"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-023",
+      "title": "持久化答题、测验、复习、策略、试卷图片与确认记录并支持导出/删除",
+      "weight_percent": 3,
+      "dependencies": [
+        "MATH-007",
+        "MATH-021"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-024",
+      "title": "实现刷新/断网/API或图像识别失败恢复与重复提交保护",
+      "weight_percent": 3,
+      "dependencies": [
+        "MATH-010",
+        "MATH-023"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-025",
+      "title": "自动化测试、静态检查、课程验证、状态机与测验逻辑测试通过",
+      "weight_percent": 3,
+      "dependencies": [
+        "MATH-009",
+        "MATH-020",
+        "MATH-021"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-026",
+      "title": "完成部署、环境变量、HTTPS/访问控制、持久化和备份恢复说明",
+      "weight_percent": 3,
+      "dependencies": [
+        "MATH-025"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-027",
+      "title": "验收密钥、儿童隐私、图像数据访问/保留/导出/删除和日志脱敏",
+      "weight_percent": 2,
+      "dependencies": [
+        "MATH-011",
+        "MATH-023"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-028",
+      "title": "跑通端到端：上传/教材学习→诊断→教学→独立验证→复测→家长报告",
+      "weight_percent": 2,
+      "dependencies": [
+        "MATH-021",
+        "MATH-022",
+        "MATH-024",
+        "MATH-025"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-029",
+      "title": "建立版本化基线/平行/延迟/迁移/期中期末测量蓝图",
+      "weight_percent": 2,
+      "dependencies": [
+        "MATH-006",
+        "MATH-014",
+        "MATH-020"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-030",
+      "title": "完成至少一个单元基线与结束平行测验比较",
+      "weight_percent": 2,
+      "dependencies": [
+        "MATH-029",
+        "MATH-028"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-031",
+      "title": "完成延迟复测/迁移分析及无提升时补弱调整再测流程",
+      "weight_percent": 2,
+      "dependencies": [
+        "MATH-030"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-032",
+      "title": "发布首期证据报告并如实说明效果、限制、未运行项和后续措施",
+      "weight_percent": 1,
+      "dependencies": [
+        "MATH-030",
+        "MATH-031"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    }
+  ]
+}
