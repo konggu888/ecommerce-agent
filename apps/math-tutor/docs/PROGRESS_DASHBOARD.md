@@ -20,9 +20,9 @@ PR：#33（Draft，未合并）
 - 任务总数：32。
 - 已验收：0/32。
 - 加权完成率：0%。
-- 应用产品代码：尚未开始；已增加 MATH-002 环境基线测试，不代表产品功能。
+- 应用产品代码：仅有早期 Vue 首页 UI；学习流程、业务 API 和学习记录尚未实现。
 - 自研技术基线：IN_PROGRESS；FastAPI/SQLite smoke test、Vue/Vite build 与前端 helper tests 已在 CI 对 SHA `dfc152a725dabb13b531ab4dd949921d170c5ae1` 验证通过；真实手机浏览器/E2E 与完整前后端集成仍未验证。
-- 应用启动和测试：未运行。
+- 自动化验证：Vue/Vite build、前端 helper tests 与 FastAPI/SQLite smoke tests 曾在 CI 通过；本轮新加入 Playwright 手机视口 E2E，当前 SHA 的结果待 CI。
 - DeepSeek 实际调用：未运行。
 - 手机端实测：未运行。
 - 教材目录映射：未验收，需核对孩子实际教材。
@@ -149,3 +149,10 @@ PR：#33（Draft，未合并）
 - CI 运行 `python apps/math-tutor/scripts/update_progress.py --check`；若 JSON 快照或看板数字过期，检查失败。
 - 该脚本不自动将任务标为 ACCEPTED；只有先核验代码/测试/人工证据并更新任务状态，才会重新计算。进度计算时间与 GitHub CI/HEAD 快照是不同字段，CI 状态仍须按最新提交查询。
 - 当前计算结果：32 项、权重 100%、已验收 0/32、加权完成率 0%；状态分布 NOT_STARTED 31、IN_PROGRESS 1。
+
+
+## 2026-10-19 MATH-002 继续推进
+- 新增确定性进度计算器：`python apps/math-tutor/scripts/update_progress.py --write` 重新计算任务状态、已验收数、权重完成率并同步 JSON 快照与本看板；CI 使用 `--check` 检查是否漂移。
+- 新增计算器单元测试：验证固定任务数/权重、状态变更后的加权计算、无验收证据禁止标记 ACCEPTED，以及快照状态分布。
+- 新增 Playwright mobile Chromium E2E：首页入口、390px 手机视口无水平溢出、键盘触发和“不伪造学习记录”检查。新 CI 结果未完成前，不记录为通过。
+- 当前真实进度仍为 32 项/100%，验收 0/32、加权完成率 0%；MATH-002 IN_PROGRESS。CI/文档提交不会增加软件完成率。
