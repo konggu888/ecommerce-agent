@@ -20,8 +20,8 @@ PR：#33（Draft，未合并）
 - 任务总数：32。
 - 已验收：0/32。
 - 加权完成率：0%。
-- 应用代码：尚未开始。
-- 自研技术基线：待验证；第三方项目仅供参考，不再作为开发门禁。
+- 应用产品代码：尚未开始；已增加 MATH-002 环境基线测试，不代表产品功能。
+- 自研技术基线：IN_PROGRESS；FastAPI/SQLite 最小 smoke test 通过，Vue/Vite 项目构建和手机端路径仍未验证。
 - 应用启动和测试：未运行。
 - DeepSeek 实际调用：未运行。
 - 手机端实测：未运行。
@@ -98,3 +98,10 @@ PR：#33（Draft，未合并）
 - MATH-001–MATH-004 调整为参考调研、技术栈基线、儿童设计系统、自研骨架；仍保持 32 项/100%。
 - 首期所有既定能力保持强制范围，不得因框架限制删除或降级。
 - 软件验收仍为 0/32、加权完成率 0%；本轮仅调整方向与计划，没有新增已验收软件功能。
+
+
+## MATH-002 实测补充（2026-10-19）
+- 新增 `tests/test_environment_baseline.py`，当前执行容器 `pytest -q`：2 passed；覆盖 FastAPI TestClient HTTP 往返和 SQLite 最小读写。
+- 环境版本：Node v22.16.0、npm 10.9.2、TypeScript 5.8.3、Python 3.13.5、FastAPI 0.128.2、Starlette 0.50.0、pytest 9.0.2、SQLite 3.46.1。
+- Vite 未安装，Vue/Vite 项目级 build/test 未运行；GitHub clone 因当前容器 DNS 无法解析 github.com 而受阻；手机端 E2E 未运行。
+- MATH-002 状态为 IN_PROGRESS，不是 ACCEPTED。软件验收仍 0/32、加权完成率 0%。详情见 `docs/STACK_BASELINE.md`。
