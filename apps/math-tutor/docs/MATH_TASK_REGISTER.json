@@ -8,7 +8,7 @@
   "plan_version": "2.2",
   "fixed_task_count": 32,
   "total_weight_percent": 100,
-  "progress_rule": "Only ACCEPTED tasks with verifiable evidence count toward weighted completion. Documentation/commit/CI alone do not establish product acceptance. User-approved v2.2 direction is from-scratch implementation; all previously specified required features remain mandatory. Learner autonomy is mandatory: unit scope, cumulative practice and teacher-assignment boundaries must be implemented and tested, not documentation-only.",
+  "progress_rule": "Only ACCEPTED tasks with verifiable evidence count toward weighted completion. Documentation/commit/CI alone do not establish product acceptance. User-approved v2.2 direction is from-scratch implementation; all previously specified required features remain mandatory. Learner autonomy is mandatory: unit scope, cumulative practice and teacher-assignment boundaries must be implemented and tested, not documentation-only. Voice/AI teacher, stepwise math blackboard, and parent-configurable point rewards with a persistent ledger are mandatory scope; document-only completion does not count.",
   "last_verified_snapshot": {
     "date": "2026-10-19",
     "head_sha": "0fda5c553ebb7dabb027dcfda6e6ae5890cfe000",
@@ -77,7 +77,7 @@
       ],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
-      "note": "Not accepted. This task now covers our own Chinese child-first visual and interaction system. Previous fallback candidate research is background reference only and does not satisfy this task. Require design tokens/components, responsive implementation, usability checks and acceptance evidence."
+      "note": "首期儿童视觉/交互必须包含 AI 数学老师形象及讲解/倾听/思考/鼓励状态、普通话语音与字幕/静音/暂停/重播、真实可操作数学黑板和适度动效；中国二年级适配、安静模式和手机验收均为必要条件。 Not accepted. This task now covers our own Chinese child-first visual and interaction system. Previous fallback candidate research is background reference only and does not satisfy this task. Require design tokens/components, responsive implementation, usability checks and acceptance evidence."
     },
     {
       "id": "MATH-004",
@@ -137,7 +137,7 @@
       ],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
-      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+      "note": "若使用独立 TTS 服务/浏览器语音能力，必须通过可替换的语音 adapter 接入；语音服务失败时文字讲解完整可用，服务商与声音素材许可需核查，不把语音服务密钥暴露到前端。 Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
     },
     {
       "id": "MATH-010",
@@ -280,7 +280,7 @@
       ],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
-      "note": "手机端必须支持只选单元、多个已学单元组合、全部已学累计复习、当前/旧单元比例，以及自主练习与老师作业分离；未选单元不可静默混入。 Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+      "note": "学生端包含 AI 老师讲解状态、普通话声音/字幕/静音、可暂停的黑板步骤、温和鼓励反馈；有家长配置的积分余额/奖励查看与兑换流程。空白卷和无提示测验时必须屏蔽答案泄露。 手机端必须支持只选单元、多个已学单元组合、全部已学累计复习、当前/旧单元比例，以及自主练习与老师作业分离；未选单元不可静默混入。 Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
     },
     {
       "id": "MATH-022",
@@ -304,7 +304,7 @@
       ],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
-      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+      "note": "持久化积分账户、积分流水、家长自定义奖励目录、兑换记录和当前可用余额；兑换扣减余额但不能删除历史，奖励目录改动不得篡改既往兑换快照。 Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
     },
     {
       "id": "MATH-024",
@@ -329,7 +329,7 @@
       ],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
-      "note": "自动化回归必须覆盖单元范围约束、跨单元题映射、前置知识不锁定学习路径、AI 题目独立校验、不确定识别可确认/跳过/恢复。 Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+      "note": "自动化测试覆盖声音静音/失败回退、字幕与播放状态、黑板内容一致/测验防泄题、家长自定义任意积分门槛、兑换扣分/流水保留、余额不足/重复提交/刷新恢复；积分不能改变掌握度判定。 自动化回归必须覆盖单元范围约束、跨单元题映射、前置知识不锁定学习路径、AI 题目独立校验、不确定识别可确认/跳过/恢复。 Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
     },
     {
       "id": "MATH-026",
@@ -366,7 +366,7 @@
       ],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
-      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+      "note": "端到端测试至少包含讲解音频+字幕/黑板步骤，以及家长配置奖励→孩子获得积分→兑换确认→余额扣减→历史流水保留的完整链路；手机端真实验证。 Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
     },
     {
       "id": "MATH-029",
