@@ -32,7 +32,7 @@ PR：#33（Draft、未合并；接手时必须重新查询当前状态）
 - 软件完成率与孩子学习效果必须分开统计。
 
 ## 4. 固定计划与当前状态
-路线图：docs/IMPLEMENTATION_PLAN.md（v2.0）。
+路线图：docs/IMPLEMENTATION_PLAN.md（v2.1）。
 产品需求：docs/PRODUCT_SPEC.md。
 架构：docs/TECHNICAL_ARCHITECTURE.md。
 教学闭环：docs/AI_TUTORING_PROTOCOL.md。
@@ -43,10 +43,16 @@ PR：#33（Draft、未合并；接手时必须重新查询当前状态）
 变更记录：docs/CHANGELOG.md。
 任务 32 项，已验收 0/32，加权完成率 0%。应用代码、DeepSeek 实际调用、手机端和学习效果测量均未运行。文档写完不等于应用功能完成。
 
-## 5. 下一任务（不可跳过）
+## 5. 最新 GitHub 状态（接手时仍须重新查询）
+- 本轮最后确认 HEAD：6876cad56ac0b1ffd5f7845c71a5c998af2ca1b7。
+- PR #33 仍为 Open/Draft/未合并。
+- 该 SHA 的 combined status 未返回状态项，PR workflow runs 未返回记录；CI 当前未确认，不能宣称通过。
+- 计划仍为 32 项、已验收 0/32、加权完成率 0%；v2.1 文档更新不代表功能实现或进度增长。
+
+## 6. 下一任务（不可跳过）
 MATH-001：核实 OpenMath 正式许可证/作者授权，记录可复查来源、检查日期与对应 commit SHA。然后检查实际目录、运行方式、课程 schema、答题验证、提示、持久化、DeepSeek 兼容性、手机 UI 和测试。若 OpenMath 不合格，最多再评估两个候选，总数不超过三个。不得持续无边界搜索或绕过许可门禁。
 
-## 6. 任务验收规则
+## 7. 任务验收规则
 每项记录 ID、目标、范围内/外、依赖、文件、验证步骤、通过条件、结果证据、状态和提交 SHA。没有证据标未运行/阻塞，不算完成。每轮结束更新看板、变更日志和接手文件。CI 成功不等于应用或学习效果验收成功。
 
 ## v2.1 强制实现与验收约束
