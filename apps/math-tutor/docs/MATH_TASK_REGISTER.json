@@ -11,12 +11,12 @@
   "progress_rule": "Only ACCEPTED tasks with verifiable evidence count toward weighted completion. Documentation/commit/CI alone do not establish product acceptance. User-approved v2.2 direction is from-scratch implementation; all previously specified required features remain mandatory. Learner autonomy is mandatory: unit scope, cumulative practice and teacher-assignment boundaries must be implemented and tested, not documentation-only. Voice/AI teacher, stepwise math blackboard, and parent-configurable point rewards with a persistent ledger are mandatory scope; document-only completion does not count.",
   "last_verified_snapshot": {
     "date": "2026-10-19",
-    "head_sha": "dfc152a725dabb13b531ab4dd949921d170c5ae1",
+    "head_sha": "79560df651e35d7148eecc30ff5109a6a2dcc75d",
     "pr_state": "open",
     "pr_draft": true,
     "ci_state": "SUCCESS",
-    "ci_run_id": 39223691429,
-    "ci_evidence": "GitHub Actions PR CI completed successfully for this SHA; job steps included Vue frontend build, frontend tests, all apps/math-tutor Python tests including progress integrity, and existing repository checks. Netlify deploy-preview status was success. This snapshot is historical; recheck after later commits.",
+    "ci_run_id": 39224952190,
+    "ci_evidence": "GitHub Actions PR CI completed successfully for this SHA. Vue build/helper tests, Chromium install, Playwright mobile browser E2E, Python tests, progress calculator --check and existing repository checks succeeded. Netlify deploy preview status was success at last query. This snapshot is historical; recheck after later commits.",
     "accepted_count": 0,
     "weighted_completion_percent": 0,
     "calculated_task_count": 32,
@@ -24,8 +24,7 @@
     "status_counts": {
       "NOT_STARTED": 31,
       "IN_PROGRESS": 1
-    },
-    "progress_calculated_at_utc": "2026-10-19T00:00:00Z"
+    }
   },
   "tasks": [
     {
@@ -69,15 +68,19 @@
           "detail": "apps/math-tutor/tests/test_environment_baseline.py: pytest -q -> 2 passed; validates FastAPI TestClient HTTP 200 and SQLite write/read only, not product behavior."
         },
         {
-          "type": "known_gap",
-          "detail": "Historical pre-scaffold observation from earlier on 2026-10-19: Vite was not installed and clone was blocked by container DNS. Superseded for frontend build/test by CI run 39223691429 (success); real mobile-browser/E2E and full product integration remain unverified."
-        },
-        {
           "type": "ci_frontend_build_test",
           "detail": "GitHub Actions PR CI run 39223691429 completed/success for SHA dfc152a725dabb13b531ab4dd949921d170c5ae1 on 2026-10-19. Steps Build math-tutor Vue frontend and Test math-tutor frontend helpers both completed successfully. This proves frontend build/test commands work in CI, not mobile E2E or product acceptance; recheck after later commits."
+        },
+        {
+          "type": "historical_pre_scaffold_gap",
+          "detail": "Historical observation before the Vue/Vite scaffold existed: Vite was not installed in the execution container and Git clone was blocked by DNS. Superseded by successful frontend build/helper-test CI evidence and the mobile Chromium E2E evidence below."
+        },
+        {
+          "type": "mobile_chromium_e2e",
+          "detail": "GitHub Actions PR CI run 39224952190 completed/success for SHA 79560df651e35d7148eecc30ff5109a6a2dcc75d on 2026-10-19. Chromium installation and Run math-tutor mobile browser E2E completed successfully; the same run's progress snapshot check passed. Tests cover 390px viewport, key home-page entries, horizontal overflow and keyboard interaction. This is browser emulation, not physical-device acceptance or backend integration."
         }
       ],
-      "note": "Partial baseline evidence: FastAPI TestClient/SQLite smoke tests passed in CI; Vue 3 + TypeScript + Vite frontend build and frontend helper tests also passed in GitHub Actions run 39223691429 for SHA dfc152a725dabb13b531ab4dd949921d170c5ae1. The task remains IN_PROGRESS because real mobile-browser/E2E path and remaining integration acceptance are not yet verified. Never use the older note that Vite is not installed as current state; it describes a pre-scaffold snapshot."
+      "note": "Partial baseline evidence: Vue/Vite build, frontend helper tests, FastAPI/SQLite baseline tests, progress calculator checks, and Playwright mobile Chromium smoke tests have passed in GitHub Actions run 39224952190 for SHA 79560df651e35d7148eecc30ff5109a6a2dcc75d. MATH-002 remains IN_PROGRESS because a complete frontend-to-FastAPI business API path, persistent application data path, and physical mobile-device/manual acceptance have not yet been verified. Do not repeat passed checks; recheck latest SHA CI after later commits."
     },
     {
       "id": "MATH-003",
