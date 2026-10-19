@@ -11,12 +11,12 @@
   "progress_rule": "Only ACCEPTED tasks with verifiable evidence count toward weighted completion. Documentation/commit/CI alone do not establish product acceptance. User-approved v2.2 direction is from-scratch implementation; all previously specified required features remain mandatory. Learner autonomy is mandatory: unit scope, cumulative practice and teacher-assignment boundaries must be implemented and tested, not documentation-only. Voice/AI teacher, stepwise math blackboard, and parent-configurable point rewards with a persistent ledger are mandatory scope; document-only completion does not count.",
   "last_verified_snapshot": {
     "date": "2026-10-20",
-    "head_sha": "178c50a2a23345bf3ae4123fa153bdfe555014f2",
+    "head_sha": "99d5405007dfac6eae86ff90be8b17e36931a3d2",
     "pr_state": "open",
     "pr_draft": true,
     "ci_state": "SUCCESS",
-    "ci_run_id": 39324295556,
-    "ci_evidence": "GitHub Actions PR CI run 39324295556 and Push CI run 39324288870 completed successfully for SHA 178c50a2a23345bf3ae4123fa153bdfe555014f2 on 2026-10-20. The workflow installed pinned Uvicorn and Python dependencies before Playwright; the 'Run math-tutor mobile browser E2E with live FastAPI' step passed with both real FastAPI/Uvicorn and Vite processes. Browser fetch('/api/health') returned HTTP 200 and the expected service/SQLite schema metadata through the Vite proxy. Python baseline tests, progress --check, frontend build/helper tests, and existing repository checks also passed. This snapshot is historical after subsequent doc changes; recheck latest HEAD.",
+    "ci_run_id": 39325121132,
+    "ci_evidence": "GitHub Actions PR CI run 39325121132 and Push CI run 39325112034 completed successfully for SHA 99d5405007dfac6eae86ff90be8b17e36931a3d2. Python tests include versioned SQLite migration history, repeated initialization/idempotence, preserving existing metadata, and adoption of an existing metadata database. The same SHA passed live FastAPI/Vite Playwright E2E, frontend build/helper tests, progress --check, and existing repository checks. This snapshot is historical after later documentation commits; recheck latest HEAD.",
     "accepted_count": 0,
     "weighted_completion_percent": 0,
     "calculated_task_count": 32,
@@ -90,9 +90,13 @@
         {
           "type": "live_frontend_backend_e2e_implementation",
           "detail": "2026-10-20 verified implementation: GitHub Actions PR CI run 39324295556 and Push CI run 39324288870 completed successfully for SHA 178c50a2a23345bf3ae4123fa153bdfe555014f2. Playwright starts real FastAPI/Uvicorn on 127.0.0.1:8000 and Vite on 127.0.0.1:4173; main browser E2E does not mock the success path and verifies browser fetch('/api/health') returns HTTP 200 with math-tutor-api/SQLite/schema metadata through the Vite proxy. The CI job passed live FastAPI browser E2E, Python baseline tests, progress snapshot check, frontend build/helper tests and existing repository checks. This is verified technical integration evidence, not learner data schema/business persistence or physical-device acceptance."
+        },
+        {
+          "type": "versioned_sqlite_migration_baseline",
+          "detail": "Added backend/storage.py migration registry and schema_migrations history table for the infrastructure metadata schema. initialize_database applies unrecorded migrations, records version 1, and preserves pre-existing app_meta values. Tests cover repeated initialization, migration history, metadata preservation, and adoption of an existing metadata DB. GitHub Actions Push run 39325112034 and PR run 39325121132 completed success for SHA 99d5405007dfac6eae86ff90be8b17e36931a3d2, including Python baseline tests, live FastAPI/Vite browser E2E, progress --check and existing repo checks. This is infrastructure migration evidence only; learner/course/question business data contracts and student-record persistence remain assigned to MATH-007/MATH-023. MATH-002 stays IN_PROGRESS pending physical mobile acceptance and overall criteria."
         }
       ],
-      "note": "Partial technical baseline: Vue/Vite build, frontend helper tests, Playwright mobile Chromium E2E with real FastAPI/Uvicorn + Vite browser-to-proxy-to-backend request, FastAPI /health, SQLite metadata persistence, Python tests, and progress calculator checks have passed CI for their recorded SHAs. MATH-002 remains IN_PROGRESS because learner-data schema/business persistence are not implemented, and physical mobile-device/manual acceptance remains outstanding. Recheck current HEAD CI after later commits; do not repeat previously passed checks."
+      "note": "Partial technical baseline: Vue/Vite build, frontend helper tests, Playwright mobile Chromium E2E with real FastAPI/Uvicorn + Vite browser-to-proxy-to-backend request, FastAPI /health, SQLite metadata persistence, and a versioned infrastructure-schema migration runner have passed CI for their recorded SHAs. Migration tests verify idempotent initialization and preserve pre-existing metadata. MATH-002 remains IN_PROGRESS because physical mobile/manual acceptance is outstanding; learner/course/question contracts and student learning-record business persistence belong to MATH-007/MATH-023 and are not claimed complete. Recheck current HEAD CI after later commits; do not repeat previously passed checks."
     },
     {
       "id": "MATH-003",
