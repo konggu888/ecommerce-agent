@@ -20,9 +20,9 @@ PR：#33（Draft，未合并）
 - 任务总数：32。
 - 已验收：0/32。
 - 加权完成率：0%。
-- 应用产品代码：仅有早期 Vue 首页 UI；学习流程、业务 API 和学习记录尚未实现。
-- 自研技术基线：IN_PROGRESS；FastAPI/SQLite smoke test、Vue/Vite build 与前端 helper tests 已在 CI 对 SHA `dfc152a725dabb13b531ab4dd949921d170c5ae1` 验证通过；真实手机浏览器/E2E 与完整前后端集成仍未验证。
-- 自动化验证：Vue/Vite build、前端 helper tests 与 FastAPI/SQLite smoke tests 曾在 CI 通过；本轮新加入 Playwright 手机视口 E2E，当前 SHA 的结果待 CI。
+- 应用产品代码：早期 Vue 首页 UI 已通过真实 FastAPI 健康接口连接验证；完整学习流程、学生学习记录业务 API 与学习数据 schema/持久化尚未实现。
+- 自研技术基线：IN_PROGRESS；FastAPI/SQLite smoke test、Vue/Vite build、前端 helper tests，以及浏览器经 Vite 代理访问真实 FastAPI 的集成 E2E 已在 CI 对 SHA `178c50a2a23345bf3ae4123fa153bdfe555014f2` 验证通过；真实物理手机验收和学习记录业务持久化仍未验证。
+- 自动化验证：最新已核验代码 SHA `178c50a2a23345bf3ae4123fa153bdfe555014f2` 的 Push CI run `39324288870` 与 PR CI run `39324295556` 均成功；其中真实 FastAPI + Vite 浏览器联调、前端构建/测试、Python 基线和进度一致性检查通过。文档更新后会产生新 SHA，仍须重查最终 HEAD。
 - DeepSeek 实际调用：未运行。
 - 手机端实测：未运行。
 - 教材目录映射：未验收，需核对孩子实际教材。
@@ -183,3 +183,10 @@ PR：#33（Draft，未合并）
 - Playwright 现会启动真实 FastAPI/Uvicorn 与 Vite 服务；首页测试通过浏览器真实请求 `/api/health` 检查 Vite 代理与 FastAPI 响应契约。
 - CI 已调整为先安装 Python 后端依赖，再运行 mobile Chromium E2E；Uvicorn 为固定测试依赖。
 - 这一变更仍未改变任务状态：MATH-002 IN_PROGRESS，固定 32 项/100%，已验收 0/32、加权完成率 0%。必须等最新 SHA 的 Push/PR CI 成功后，才可将真实联调自动化视为已验证；仍未覆盖学习记录业务 schema/持久化和物理设备验收。
+
+
+## 2026-10-20 最新实测补充
+- 已把真实前后端联调纳入 Playwright：CI 启动 FastAPI/Uvicorn 与 Vite 两个实际服务进程；首页 E2E 不 mock 成功响应，而是浏览器真实执行 `fetch('/api/health')`，通过 Vite proxy 访问 FastAPI 并检查 HTTP 200 和 SQLite/schema 元数据。
+- 已验证 SHA：`178c50a2a23345bf3ae4123fa153bdfe555014f2`；Push CI `39324288870` 和 PR CI `39324295556` 均 completed/success。该 SHA 的真实服务 E2E、Python 基线、进度 `--check`、前端 build/helper tests 与仓库既有检查均通过。
+- 最新验收边界：这证明健康接口链路在 CI 环境真实可用，不代表学习记录业务 API/schema 已实现，也不代表真实物理手机验收通过。
+- 固定计划 32 项/100%；已验收 0/32、加权完成率 0%；MATH-002 仍 IN_PROGRESS。CI 通过不直接增加软件完成百分比。
