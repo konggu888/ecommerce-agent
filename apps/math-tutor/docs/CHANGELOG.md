@@ -108,3 +108,12 @@
 - 在任务登记表和 STACK_BASELINE.md 记录：Vue/Vite build 与前端 helper tests 已由 PR CI run `39223691429`（SHA `dfc152a725dabb13b531ab4dd949921d170c5ae1`）成功验证。
 - 修正接手文件中仍将前端 build/test 写为未运行的旧描述。
 - MATH-002 保持 IN_PROGRESS；真实手机端/E2E 与完整前后端集成仍未验收。
+
+
+## 2026-10-19 — 自动进度计算与手机视口 E2E
+- 新增 `scripts/update_progress.py`，支持 `--write` 自动计算任务验收数、加权完成率、状态分布并同步 JSON 快照/看板；`--check` 供 CI 阻止进度数字漂移。
+- 新增进度计算器测试，覆盖动态重算、固定 32 项/100% 权重和验收证据门槛。
+- 加入 Playwright mobile Chromium E2E：首页渲染、390px 视口无水平溢出、键盘交互和不伪造学习记录。
+- CI 新增 Chromium 安装、移动视口 E2E 与进度快照检查步骤。
+- README、看板、STACK_BASELINE 与接手文件更新为真实状态：只有早期首页 UI，后端业务 API/学习流程仍未实现。
+- 最新 SHA 的新增 E2E/进度检查结果尚待 CI；MATH-002 继续 IN_PROGRESS，软件进度保持 0/32、0%。
