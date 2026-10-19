@@ -88,3 +88,11 @@
 - 更新现有 GitHub Actions CI，使用 Python 3.13 安装数学辅导项目测试依赖并运行 `tests/test_environment_baseline.py`。
 - 目的：让 FastAPI TestClient/SQLite 最小 smoke test 在仓库 CI 中可复现；这不代表 Vue/Vite build、手机端 E2E 或产品功能已经通过。
 - MATH-002 继续 IN_PROGRESS，等待新提交 CI 结果，并继续验证前端项目级构建与手机端路径。
+
+
+## 2026-10-19 — 进度登记与看板一致性自动检查
+- 新增 `tests/test_progress_integrity.py`，自动检查 32 个固定任务 ID、100% 权重、已验收证据、加权完成率计算及看板数字一致性。
+- GitHub Actions 改为运行 `apps/math-tutor/tests` 全部测试，不再只指定环境 smoke test 文件。
+- 更新任务登记快照、进度看板和接手文件；清除执行控制协议中与“从头自研”决定冲突的旧许可证开发门禁。
+- 当前软件进度仍为 0/32、0%；MATH-002 继续 IN_PROGRESS。此提交属于连续性/防漂移机制，不计产品功能完成。
+- 新增检查是否通过，以最新提交对应 CI 结果为准。
