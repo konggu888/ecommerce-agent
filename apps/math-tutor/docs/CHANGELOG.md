@@ -60,3 +60,9 @@
 - 将数学正确性独立验证、题目歧义/不确定处理和“系统错误不能归咎于孩子”写入验收。
 - 修正 README、路线图和看板中仍将 MATH-001 许可证门禁写成下一步的旧文字；按用户批准的自研方向，下一任务回到 MATH-002 技术栈与环境基线。
 - 仅更新需求/验收/执行状态文档；不增加任务数、不改变权重、不计入软件完成率。
+
+## 2026-10-19 — MATH-002 技术环境基线实测（部分）
+- 在当前容器实测 Node/npm/TypeScript 与 Python/FastAPI/SQLite/pytest 版本；新增 `tests/test_environment_baseline.py`，本地 pytest 结果 2 passed。
+- 新增 `docs/STACK_BASELINE.md`，明确测试范围和未验证项。FastAPI/SQLite smoke test 仅证明环境基础能力，不代表产品功能完成。
+- Vite 未安装；Vue/Vite 项目级构建、依赖安装、手机端 E2E 未运行。尝试 clone GitHub 仓库因执行容器 DNS 无法解析 github.com 失败，属于环境限制。
+- MATH-002 更新为 IN_PROGRESS，尚不验收；软件完成率保持 0/32、0%。
