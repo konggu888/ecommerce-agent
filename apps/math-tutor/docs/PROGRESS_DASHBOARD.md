@@ -120,3 +120,9 @@ PR：#33（Draft，未合并）
 - 本轮补齐此前验收表达不足的行为：当前题目内连续追问与上下文保持；测验模式下防止语音/黑板/追问泄题；家长报告展示样本数、题组版本和不确定性；正式题目的质量发布门禁；原图、OCR 候选、用户确认内容、AI 诊断分别留痕；失败恢复的幂等性。
 - 已把细项写入 PRODUCT_SPEC.md、ACCEPTANCE.md、AI_TUTORING_PROTOCOL.md，并映射回现有 MATH-010/014/015/016/019/021/022/024/025/028/030/031。任务总数仍 32，权重总和仍 100%；不新增任务 ID，不把文档审计算作软件完成。
 - 本轮未实现应用功能。MATH-002 仍 IN_PROGRESS：FastAPI/SQLite smoke tests 2 passed；Vue/Vite 项目级 build/test 与手机端 E2E 尚未运行。
+
+
+## 2026-10-19 — MATH-002 基线测试接入 CI
+- 已将 FastAPI/SQLite 基线 smoke test 接入 GitHub Actions：Python 3.13 + requirements-dev.txt + pytest。
+- 最新提交后的 CI 尚待重新查询，不能提前记为通过。
+- Vue/Vite 项目级 build/test 和手机端 E2E 仍未运行；MATH-002 继续 IN_PROGRESS，软件验收仍 0/32、加权完成率 0%。
