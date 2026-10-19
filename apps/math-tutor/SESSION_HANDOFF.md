@@ -240,3 +240,14 @@ PR：#33（Draft、未合并；接手时必须重新查询当前状态）
 - README、STACK_BASELINE、看板和执行记录已修正旧说法：项目并非“完全没有前端”，而是只有早期首页 UI；后端业务 API、学习记录持久化、DeepSeek 实际调用、OCR、完整教学闭环仍未实现。
 - 本轮未实现儿童学习功能，不得把进度计算器、文档或 CI 绿灯计入产品完成率。不得修改 `apps/ad-studio-desktop/`。
 - 下一步唯一优先事项：查询本轮最新 HEAD/CI；若 Playwright 安装或测试失败，修复后重跑。若通过，检查前后端完整集成仍缺什么，并在不重复已通过检查的前提下继续 MATH-002。真实手机硬件验收仍需单独记录。
+
+
+# 最新回合结束状态（2026-10-19；先读本节，再重查 GitHub）
+- 本轮已实际修改代码：确定性进度计算器、进度计算单元测试、Playwright 手机 Chromium E2E、CI 对应步骤；并更新任务登记、看板、技术基线、README、变更记录和交接文件。
+- 已验证的代码 SHA `79560df651e35d7148eecc30ff5109a6a2dcc75d` 的 PR CI run `39224952190` completed/success；Vue/Vite build、前端 helper tests、Chromium 安装、mobile E2E、Python 测试、进度快照 `--check` 和现有检查均通过。Netlify deploy preview 当时为 success。
+- 之后提交了任务证据与文档更新（包括 `1b488951fba71a6ddc708eef693024bab29043c2`、`7bdafee1c29ec8e8ee9bba3497817dc0d7af9cf5`、`8043a5cb3f42433f6ba004be5e2f78d0d4f39fcd`），因此 CI 成功证据不等于当前最新 HEAD 的状态。接手时第一步查询最新 PR head、CI runs、job steps 和 deploy status。
+- 进度计算命令：`python apps/math-tutor/scripts/update_progress.py --write`；CI 校验命令：`python apps/math-tutor/scripts/update_progress.py --check`。改变任务状态/证据后必须运行 `--write` 并提交同步的 JSON/看板；CI 会检查统计漂移。
+- 固定范围 32 项/100%；已验收 0/32、加权完成率 0%；状态为 NOT_STARTED 31、IN_PROGRESS 1；MATH-002 仍 IN_PROGRESS。
+- 已验证的移动端自动化是 Chromium 模拟 iPhone 13/390px 视口，不是物理手机验收。它只覆盖早期首页布局和交互，不代表数学学习功能已实现。
+- MATH-002 仍剩余：前端到 FastAPI 业务 API 的真实集成、应用数据 SQLite 持久化路径，以及真实设备/人工验收。下一步优先核查这些缺口与 MATH-004 边界，避免重复已通过的 build/helper/mobile smoke tests。
+- PR #33 保持 Open/Draft/未合并；未经用户明确许可不得合并。不得修改 `apps/ad-studio-desktop/`。本轮没有完成面向孩子的学习功能，不能增加软件完成率。
