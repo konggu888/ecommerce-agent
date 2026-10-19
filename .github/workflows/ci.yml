@@ -37,7 +37,7 @@ jobs:
         run: python -m pip install -r apps/math-tutor/requirements-dev.txt
 
       - name: Run math-tutor environment baseline tests
-        run: python -m pytest -q apps/math-tutor/tests/test_environment_baseline.py
+        run: python -m pytest -q apps/math-tutor/tests
 
       - name: Frontend syntax check
         run: |
