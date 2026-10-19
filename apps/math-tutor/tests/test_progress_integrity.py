@@ -45,4 +45,4 @@ def test_dashboard_progress_matches_machine_readable_register():
 
     assert re.search(rf"任务总数：{len(tasks)}\b", dashboard)
     assert re.search(rf"已验收：{len(accepted)}/{len(tasks)}\b", dashboard)
-    assert re.search(rf"加权完成率：{accepted_weight}%\b", dashboard)
+    assert re.search(rf"加权完成率：{accepted_weight}%", dashboard)
