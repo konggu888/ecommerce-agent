@@ -77,7 +77,7 @@
       ],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
-      "note": "首期儿童视觉/交互必须包含 AI 数学老师形象及讲解/倾听/思考/鼓励状态、普通话语音与字幕/静音/暂停/重播、真实可操作数学黑板和适度动效；中国二年级适配、安静模式和手机验收均为必要条件。 Not accepted. This task now covers our own Chinese child-first visual and interaction system. Previous fallback candidate research is background reference only and does not satisfy this task. Require design tokens/components, responsive implementation, usability checks and acceptance evidence."
+      "note": "首期视觉/交互系统必须包含原创的高质量 3D/半写实 AI 数学老师形象，参考豆包、学而思、作业帮等产品较逼真、亲和、自然的抽象视觉方向，但不复制具体角色、商标、界面、美术资产或声音；至少比较 2–3 种原创方案并评估中国小学二年级适配、可信度、手机端性能、讲解状态与授权。还包括老师讲解/倾听/思考/鼓励状态、普通话语音与字幕/静音/暂停/重播、真实可操作数学黑板和适度动效。首期儿童视觉/交互必须包含 AI 数学老师形象及讲解/倾听/思考/鼓励状态、普通话语音与字幕/静音/暂停/重播、真实可操作数学黑板和适度动效；中国二年级适配、安静模式和手机验收均为必要条件。 Not accepted. This task now covers our own Chinese child-first visual and interaction system. Previous fallback candidate research is background reference only and does not satisfy this task. Require design tokens/components, responsive implementation, usability checks and acceptance evidence."
     },
     {
       "id": "MATH-004",
