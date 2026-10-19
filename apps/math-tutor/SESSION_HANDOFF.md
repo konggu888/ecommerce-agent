@@ -107,3 +107,21 @@ MATH-001 最新核查：状态 BLOCKED。OpenMath README 声明 Apache 2.0，但
 - 该 SHA 的 GitHub Actions CI run `39218680024` 为 queued/running；combined status 尚无状态项。当前提交的 CI 不能标为成功。
 - 该 SHA 的 JSON 任务登记已重新解析通过：32 项、权重总计 100%、已验收 0 项，MATH-001 仍 BLOCKED。候选评估不计入软件完成率。
 - 这是元数据更新前的复查快照；本次记录本身会产生新 HEAD，接手时仍须重新查询最新 SHA 和 CI。
+
+
+## 2026-10-19 — 候选 A 源码级静态审查补充
+
+通过 GitHub 文件接口继续检查 `onemorepereira/math-tutor` 的具体源码（没有下载或运行仓库）：
+- `frontend/src/views/GameView.vue`：是以题目进度、积分、提示显示和单题作答为核心的游戏式界面。
+- `frontend/src/router/index.ts`：登录、注册、忘记密码/重置密码、游戏、成绩卡和统计路由；游戏/成绩等页面要求身份认证。
+- `backend/src/functions/createGameSession.ts`：请求包含难度、题量、子类别，调用 Bedrock 生成题目，并经独立答案验证后保存到 DynamoDB；读取用户身份依赖 Cognito claims。
+- `backend/src/functions/submitAnswer.ts`：记录单题答案、提示数和耗时；会拒绝同一问题的第二次提交，当前模式偏向一轮游戏评分，而不是原题重做与长期掌握证据队列。
+- `backend/src/functions/requestHint.ts`：提示接口也依赖 Cognito、DynamoDB 与 Bedrock；尚未证实符合本项目每题每回合最多 3 次主动提示的完整教学协议。
+- 找到 `backend/src/functions/submitAnswer.test.ts` 与 `backend/src/utils/answerMatcher.test.ts`，说明仓库包含部分后端单元测试；本轮未运行。
+- 本次未找到可确认的试卷图片上传/OCR/教师批改痕迹识别实现；未找到北师大版二年级课程资产。此结论仅限已检查 README、关键前后端文件，不能替代全仓库测试。
+
+运行限制：尝试在执行环境浅克隆候选仓库，失败原因为执行环境无法解析 `github.com`（网络/DNS 不可用），不是候选项目自身运行失败。因此本轮只能完成静态代码审查，未能安装依赖、跑测试或验证实际启动。候选 A 可作为可复用的 UI/部分答题流程参考，但不能直接认定为可运行基座；必须先获得可运行源码副本并执行基线测试，之后再决定复用范围。
+
+
+## 下一步唯一任务
+对候选 A 完成可运行基线验证：取得源码副本，执行前端安装/build/test、后端安装/build/test，并记录命令、退出码和日志；同时检查全仓库是否存在照片/OCR和完整测试。如果当前执行环境持续无法访问 GitHub，应明确记录为环境阻塞，不得声称测试通过，也不得直接开始大规模改编。暂不增加第三方候选、不修改桌面广告项目、不合并 PR。
