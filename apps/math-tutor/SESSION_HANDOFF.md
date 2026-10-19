@@ -220,3 +220,11 @@ PR：#33（Draft、未合并；接手时必须重新查询当前状态）
 - 新增的进度守卫会在 CI 中验证 32 个固定任务 ID、权重合计 100%、只把 ACCEPTED 计入完成率、验收证据非空，并要求看板数字与 JSON 登记一致。
 - 当前软件验收仍为 0/32、加权完成率 0%；MATH-002 仍 IN_PROGRESS。该 CI 成功不是产品功能验收。
 - 以上状态仅对应 SHA `dfc152a725dabb13b531ab4dd949921d170c5ae1`。接手时必须查询后来文档提交后的最新 HEAD 与 CI。
+
+
+## 2026-10-19 MATH-002 状态更正（优先于旧的下一步描述）
+- Vue 3 + TypeScript + Vite 项目构建与前端 helper 测试已在 GitHub Actions PR CI run `39223691429` 对应 SHA `dfc152a725dabb13b531ab4dd949921d170c5ae1` 成功。
+- FastAPI/SQLite 基线测试与新增进度一致性测试也在该 CI 中通过。
+- 因此，不要再把“Vite 未安装/前端 build-test 未运行”作为当前状态；它是前期历史记录。
+- MATH-002 仍 IN_PROGRESS：真实手机浏览器/E2E、完整前后端集成及其余验收尚未验证。下一步应针对这些缺口给出可复现验证，不要重复做已经通过的 CI build/test。
+- 以上 CI 结果仅对应 SHA `dfc152a725dabb13b531ab4dd949921d170c5ae1`；接手时仍要重新查询最新 HEAD 与 CI。
