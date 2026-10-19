@@ -8,7 +8,7 @@
   "plan_version": "2.2",
   "fixed_task_count": 32,
   "total_weight_percent": 100,
-  "progress_rule": "Only ACCEPTED tasks with verifiable evidence count toward weighted completion. Documentation/commit/CI alone do not establish product acceptance. User-approved v2.2 direction is from-scratch implementation; all previously specified required features remain mandatory.",
+  "progress_rule": "Only ACCEPTED tasks with verifiable evidence count toward weighted completion. Documentation/commit/CI alone do not establish product acceptance. User-approved v2.2 direction is from-scratch implementation; all previously specified required features remain mandatory. Learner autonomy is mandatory: unit scope, cumulative practice and teacher-assignment boundaries must be implemented and tested, not documentation-only.",
   "last_verified_snapshot": {
     "date": "2026-10-19",
     "head_sha": "0fda5c553ebb7dabb027dcfda6e6ae5890cfe000",
@@ -103,7 +103,7 @@
       "dependencies": [],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
-      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+      "note": "验收必须覆盖自主练习范围/单元组合、教材册次/单元/知识点/前置依赖、题目目的和版本；老师作业与自主练习的数据来源须可区分。 Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
     },
     {
       "id": "MATH-008",
@@ -112,7 +112,7 @@
       "dependencies": [],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
-      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+      "note": "验收必须覆盖孩子可暂停/跳过/返回/重学/探索，AI 推荐不构成强制门槛；单元选择不静默扩展范围，前置知识问题通过可选择的补充教学处理。 Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
     },
     {
       "id": "MATH-009",
@@ -267,7 +267,7 @@
       ],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
-      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+      "note": "手机端必须支持只选单元、多个已学单元组合、全部已学累计复习、当前/旧单元比例，以及自主练习与老师作业分离；未选单元不可静默混入。 Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
     },
     {
       "id": "MATH-022",
@@ -316,7 +316,7 @@
       ],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
-      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+      "note": "自动化回归必须覆盖单元范围约束、跨单元题映射、前置知识不锁定学习路径、AI 题目独立校验、不确定识别可确认/跳过/恢复。 Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
     },
     {
       "id": "MATH-026",
