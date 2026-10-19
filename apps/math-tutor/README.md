@@ -50,3 +50,14 @@
 - 拍照题目与教材学习共用知识点档案、诊断、最多 3 次分层提示、错题重做、无提示变式和延迟复测。
 - 如果教学策略无效，系统必须改变策略或检查前置知识；不能只给出“建议调整”的文字。
 - 验收必须包含自动化行为测试、手机端端到端测试和学习测量证据。文档描述、部署成功或 CI 通过均不等于功能实现。
+
+## AI 跨窗口连续性文件（开发前必读）
+- SESSION_HANDOFF.md：快速接手摘要、硬约束和下一任务。
+- docs/AD_MATH_EXECUTION_CONTROL.md：AI 执行控制协议、测试/证据规则和停止条件。
+- docs/IMPLEMENTATION_PLAN.md：固定 32 项路线图与权重。
+- docs/MATH_TASK_REGISTER.json：机器可读的任务状态、权重、依赖和验收证据。
+- docs/PROGRESS_DASHBOARD.md：软件进度、教学闭环、学习效果与 CI 状态。
+- docs/ACCEPTANCE.md：逐项验收门槛。
+- docs/CHANGELOG.md：变更历史。
+
+换模型或新开窗口后，必须重新查询最新 PR/HEAD/CI，不得依赖旧聊天摘要。
