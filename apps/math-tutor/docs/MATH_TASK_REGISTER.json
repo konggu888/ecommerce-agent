@@ -15,7 +15,7 @@
     "pr_state": "open",
     "pr_draft": true,
     "ci_state": "NO_DATA",
-    "ci_evidence": "Before this plan update, latest known HEAD had no returned combined status/workflow data. All new commits require fresh CI lookup; do not infer success.",
+    "ci_evidence": "Historical pre-v2.2 snapshot only; no current status result was available for this SHA. All commits made by the v2.2 documentation update require fresh CI lookup.",
     "accepted_count": 0,
     "weighted_completion_percent": 0
   },
@@ -64,7 +64,7 @@
       ],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
-      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified. File-level fallback screening was performed 2026-10-19 for onemorepereira/math-tutor (MIT; closest child math practice scaffold but AWS/Cognito/leaderboard mismatch) and AyushDixit-21/MathTalk (MIT; prototype focused on voice/accessibility and SymPy). Neither was cloned or executed; selection remains unaccepted pending deeper code/test review. Additional static review of Number Ninja files found auth-gated Vue game UI, Cognito-bound AWS Bedrock/DynamoDB handlers, one-attempt scoring flow and some unit-test files; no verified worksheet-photo pipeline or Beishi Grade 2 curriculum in inspected files. Clone attempt blocked by this execution environment's DNS failure for github.com; tests not run. Do not count candidate as runnable or accepted. Updated plan v2.2: no upstream base required; Chinese child-first visual design and interaction system is mandatory. No feature removals permitted."
+      "note": "Not accepted. This task now covers our own Chinese child-first visual and interaction system. Previous fallback candidate research is background reference only and does not satisfy this task. Require design tokens/components, responsive implementation, usability checks and acceptance evidence."
     },
     {
       "id": "MATH-004",
