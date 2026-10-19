@@ -86,9 +86,13 @@
         {
           "type": "frontend_backend_health_integration",
           "detail": "2026-10-20 implementation on PR branch: src/api.ts sends GET /api/health, validates the JSON contract and rejects non-2xx/malformed payloads; App.vue displays connected/checking/unavailable states and explicitly says no learning records are saved when the API is unavailable. vite.config.ts proxies /api to local FastAPI on 127.0.0.1:8000. Added api.test.ts for success, HTTP failure and malformed payload cases, and expanded Playwright mobile E2E to cover success/failure UI. This is code-level evidence only until latest CI passes; no physical-device acceptance."
+        },
+        {
+          "type": "live_frontend_backend_e2e_implementation",
+          "detail": "2026-10-20 implementation: Playwright webServer now launches the real FastAPI/Uvicorn app on 127.0.0.1:8000 and Vite on 127.0.0.1:4173; E2E uses browser fetch('/api/health') without a route mock in the main success path, asserting HTTP 200 and service/SQLite metadata. CI installs pinned Uvicorn and Python backend dependencies before E2E. This is implementation evidence only; the latest SHA CI run must pass before claiming the live integration test is verified. Does not implement learner data schema/business persistence or physical-device acceptance."
         }
       ],
-      "note": "Partial baseline evidence: Vue/Vite build, frontend helper tests, Playwright mobile Chromium E2E, FastAPI /health endpoint, file-backed SQLite persistence, Python tests, and progress calculator checks passed in historical CI. On 2026-10-20 the frontend was wired to GET /api/health through the Vite proxy with explicit success/error states and tests for malformed/failed responses. This new change must be validated by CI on its own latest SHA. MATH-002 remains IN_PROGRESS because the frontend-to-API request path has not yet been confirmed by a live backend-backed end-to-end run, learner-data schema/business persistence are not implemented, and physical mobile-device/manual acceptance remains outstanding. Do not repeat previously passed checks; recheck latest SHA CI."
+      "note": "Partial baseline evidence: Vue/Vite build, frontend helper tests, Playwright mobile Chromium E2E, FastAPI /health endpoint, file-backed SQLite persistence, Python tests, and progress calculator checks passed in historical CI. Frontend now requests GET /api/health through the Vite proxy. On 2026-10-20 Playwright and CI were changed to launch actual FastAPI/Uvicorn + Vite processes and verify browser fetch('/api/health') without mocking the success path; the latest SHA CI must pass before this is accepted as verified integration evidence. MATH-002 remains IN_PROGRESS because learner-data schema/business persistence are not implemented, and physical mobile-device/manual acceptance remains outstanding. Do not repeat previously passed checks; recheck latest CI."
     },
     {
       "id": "MATH-003",
