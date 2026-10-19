@@ -102,3 +102,9 @@
 - SHA `dfc152a725dabb13b531ab4dd949921d170c5ae1` 对应 PR CI run `39223691429` completed/success，Netlify deploy-preview success。
 - CI 已实际通过 Vue build、前端测试、数学项目全部 Python 测试（含进度一致性检查）及现有其他检查。
 - 该结果只对应该 SHA；后续提交必须重新查询。任务验收保持 0/32、0%，MATH-002 未验收。
+
+
+## 2026-10-19 — MATH-002 前端证据与下一步状态更正
+- 在任务登记表和 STACK_BASELINE.md 记录：Vue/Vite build 与前端 helper tests 已由 PR CI run `39223691429`（SHA `dfc152a725dabb13b531ab4dd949921d170c5ae1`）成功验证。
+- 修正接手文件中仍将前端 build/test 写为未运行的旧描述。
+- MATH-002 保持 IN_PROGRESS；真实手机端/E2E 与完整前后端集成仍未验收。
