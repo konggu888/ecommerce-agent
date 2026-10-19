@@ -85,3 +85,12 @@ pytest 9.0.2
 - Playwright 检查了 390px 手机视口的首页内容、水平溢出、键盘交互及不伪造学习记录。
 - 这证明自动化浏览器路径可运行，不等于真实手机硬件验收，也不验证前后端业务 API/学习数据持久化。MATH-002 继续 IN_PROGRESS。
 - 此结果只对应 SHA `79560df651e35d7148eecc30ff5109a6a2dcc75d`；之后的文档提交会改变 HEAD，接手时必须重新查询最新 CI。
+
+
+## 2026-10-19 验证结果：真实 FastAPI + 文件 SQLite 基线通过
+- 新增 `backend/app.py`：可由 `create_app(database_path)` 创建 FastAPI 应用，`GET /health` 返回服务、SQLite 和 schema 版本信息。
+- 新增 `backend/storage.py`：建立文件型 SQLite 数据库及 schema 元数据；支持重新连接后读取/写入验证。
+- 新增 `tests/test_backend_api.py`：检查实际 FastAPI TestClient 请求与文件数据库跨初始化持久化。
+- SHA `c622e4c67097bcecd5557e8dd3bd068bd788bf14` 的 GitHub Actions PR CI run `39225650580` completed/success；前端 build/helper tests、Playwright mobile Chromium E2E、Python 全部测试、进度快照检查及其他工作流检查均通过，Netlify deploy preview 当时为 success。
+- 这只证明技术基线 API 与文件 SQLite 可运行；尚无学习者业务 schema、前端到后端的真实请求链路、学习记录功能或真实手机硬件验收。MATH-002 继续 IN_PROGRESS。
+- 后续文档提交会产生新 SHA；接手时必须重新查询当前最新 HEAD 的 CI。
