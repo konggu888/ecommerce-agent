@@ -117,3 +117,9 @@
 - CI 新增 Chromium 安装、移动视口 E2E 与进度快照检查步骤。
 - README、看板、STACK_BASELINE 与接手文件更新为真实状态：只有早期首页 UI，后端业务 API/学习流程仍未实现。
 - 最新 SHA 的新增 E2E/进度检查结果尚待 CI；MATH-002 继续 IN_PROGRESS，软件进度保持 0/32、0%。
+
+
+## 2026-10-19 — 本轮收尾与证据边界
+- 已验证 SHA `79560df651e35d7148eecc30ff5109a6a2dcc75d` 的 PR CI run `39224952190` completed/success，包含 Playwright 手机 Chromium E2E 和进度一致性检查。
+- 后续登记/看板/交接文档提交改变了 HEAD，必须重新查询最新 SHA 的 CI；旧成功状态只作为历史证据。
+- MATH-002 保持 IN_PROGRESS；进度 0/32、0%。下一步转向未完成的前后端 API/SQLite 集成验证，不重复已通过的 build/helper/mobile smoke tests。
