@@ -206,8 +206,8 @@ PR：#33（Draft，未合并）
 - Progress remains: fixed 32 tasks, total weight 100%, accepted 0/32, weighted completion 0%; MATH-002 IN_PROGRESS. No task denominator or weight changed.
 
 ## 2026-10-20 最新状态复核与 MATH-001 验收
-- 最新核验 HEAD（文档更新前）：`9ceee1024d30177482a1a61b5fa573c782e49ca6`；PR #33 Open/Draft/未合并。
-- 该 SHA 的 Push CI `39326153402` 与 PR CI `39326160690` 均 completed / success。新增 SQLite 未知未来迁移版本拒绝机制及 version 99 回归测试已包含在该 SHA 的 CI。
+- 最新核验 HEAD（文档更新前）：`3eda480f8061b0547c146c96007b9222ff8bd672`；PR #33 Open/Draft/未合并。
+- 该 SHA 的 Push CI `39326945702` 与 PR CI `39326955062` 均 completed / success。新增 SQLite 未知未来迁移版本拒绝机制及 version 99 回归测试已包含在该 SHA 的 CI。
 - MATH-001「全网参考调研与第三方许可风险登记」已验收：限额比较三个候选并记录当前上游 SHA、许可证状态和差异；OpenMath 缺少 LICENSE 正文，明确排除源码复用；另外两个候选根 LICENSE 为 MIT，但仅作为静态参考，未复制代码。
 - MATH-002 仍 IN_PROGRESS：技术基线、真实 FastAPI/Vite 联调和迁移保护测试已由 CI 验证；真实物理手机/人工验收仍未执行。不得把模拟视口当作实体手机验收。
 - 当前固定任务 32 项、总权重 100%；已验收 1/32；加权完成率 4%；状态分布 ACCEPTED 1、IN_PROGRESS 1、NOT_STARTED 30。
