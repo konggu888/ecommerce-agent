@@ -347,3 +347,22 @@ PR：#33（Draft、未合并；接手时必须重新查询当前状态）
 1. 重新查询 PR #33 的最新 HEAD、Push/PR workflow runs 与各 job 状态；确认新增测试在当前 SHA 上通过。
 2. 若 CI 失败，先修复失败；若成功，保留 MATH-002 IN_PROGRESS，因为真实物理手机/人工验收仍未完成。不得重复已通过的浏览器 E2E/基础测试。
 3. 后续按固定 32 项路线图和依赖推进；不增加任务，不改权重，不修改 `apps/ad-studio-desktop/`，不自动合并 PR。
+
+# 2026-10-20 最新交接：MATH-001 已验收；MATH-002 等待实体手机验收
+
+## 本轮实际推进
+- 重新读取 PR #33、任务登记表、路线图、验收规则、进度看板、当前 CI 和现有上游许可证风险记录。
+- 核查 PR #33 最新代码 SHA `9ceee1024d30177482a1a61b5fa573c782e49ca6`：Push CI run `39326153402` 和 PR CI run `39326160690` 均 completed/success。该 SHA 包含 SQLite 未知迁移版本拒绝逻辑及版本 99 回归测试。
+- 对三个既定候选刷新上游 SHA 并核对许可：OpenMath SHA `8b7ebaa86b886df2e7631f5760128507f65571b0`，README 声明 Apache 2.0 但根 LICENSE 返回 404，因此排除源码复用；`onemorepereira/math-tutor` SHA `1e821a4d15ea63687e9f42f2c2200656954d5eca` 和 `AyushDixit-21/MathTalk` SHA `559e4a6e57e02980eabb7dbc49b636f5e7e48a3e` 的根 LICENSE 均返回 MIT 正文。三个候选只做静态研究，没有声称候选自身测试运行成功，没有复制候选源码。
+- MATH-001「全网参考调研与第三方许可风险登记」标记 ACCEPTED；相关证据同步至 `MATH_TASK_REGISTER.json`、`ACCEPTANCE.md`、`upstream/OPENMATH_REFERENCE.md`、`CHANGELOG.md` 和进度看板。
+
+## 当前进度
+- 固定 32 项、总权重 100%；已验收 1/32；加权完成率 4%。状态：ACCEPTED 1、IN_PROGRESS 1、NOT_STARTED 30。
+- MATH-002 仍 IN_PROGRESS：Vue/Vite、FastAPI、SQLite 迁移机制、真实浏览器→Vite proxy→FastAPI 联调和未知未来迁移版本保护均有自动化 CI 证据；真实物理手机/人工验收仍未执行。不得把 Chromium 模拟视口视为实体设备验收。
+- 本项目代码最新已验证 SHA 是 `9ceee1024d30177482a1a61b5fa573c782e49ca6`；本轮随后提交了文档更新，接手时必须重新查当前 PR head 和对应 Push/PR CI，不可把该 SHA 的绿灯直接套到文档更新后的 SHA。
+- PR #33 仍 Open/Draft/未合并。不得自动合并，不得修改 `apps/ad-studio-desktop/`，不增加任务、不修改 32 项分母或权重。
+
+## 下一步唯一行动
+1. 重新查询最新 HEAD 与 Push/PR CI；确认文档更新提交的进度守卫和所有现有检查通过。
+2. 继续 MATH-002 实体手机/人工验收：用真实手机浏览器打开可访问的当前页面，检查布局、横向溢出、连接状态和故障提示，记录设备/浏览器/步骤/结果。若无法实际使用实体设备，不得虚报，MATH-002 保持 IN_PROGRESS。
+3. 不重复已通过的模拟视口、真实 FastAPI/Vite 联调或 SQLite 迁移测试；也不提前实现 MATH-007 的课程/题目数据契约或 MATH-023 的学生学习记录业务持久化。
