@@ -11,10 +11,11 @@
   "progress_rule": "Only ACCEPTED tasks with verifiable evidence count toward weighted completion. Documentation/commit/CI alone do not establish product acceptance.",
   "last_verified_snapshot": {
     "date": "2026-10-19",
-    "head_sha": "395ea7e09060544cfd1171e5109d65430029de39",
+    "head_sha": "c8519a557bb4dabefad9ab74118c3fb05d929941",
     "pr_state": "open",
     "pr_draft": true,
-    "ci_state": "NO_DATA",
+    "ci_state": "SUCCESS",
+    "ci_evidence": "GitHub Actions CI run 39217632873 conclusion success for pre-documentation HEAD; Netlify deploy-preview status success. This snapshot is pre-update and must be re-queried after documentation commits.",
     "accepted_count": 0,
     "weighted_completion_percent": 0
   },
@@ -24,9 +25,25 @@
       "title": "核实 OpenMath 正式许可证/作者授权",
       "weight_percent": 4,
       "dependencies": [],
-      "status": "NOT_STARTED",
-      "acceptance_evidence": [],
-      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+      "status": "BLOCKED",
+      "acceptance_evidence": [
+        {
+          "type": "upstream_readme_license_claim",
+          "url": "https://github.com/Galliard7/OpenMath/blob/main/README.md",
+          "detail": "README License section states Apache 2.0; README blob SHA 3590673738e755ae071c6ff2260a56387b79d6e6; inspected 2026-10-19."
+        },
+        {
+          "type": "license_file_check",
+          "url": "https://github.com/Galliard7/OpenMath",
+          "detail": "GitHub contents lookup returned NOT_FOUND for LICENSE, LICENSE.md, LICENSE.txt, COPYING and NOTICE on main; no license text or author confirmation found in checked evidence."
+        },
+        {
+          "type": "upstream_commit",
+          "url": "https://github.com/Galliard7/OpenMath/commit/e741351d09f6f7c96b14b7806600f2174836da6d",
+          "detail": "Latest commit returned by repository commit search during this check; re-query before final acceptance."
+        }
+      ],
+      "note": "BLOCKED, not accepted: README claims Apache 2.0, but root LICENSE/LICENSE.md/LICENSE.txt/COPYING/NOTICE are absent in checked main branch. Do not copy or adapt upstream code until license text or explicit author authorization is verified. Next: evaluate at most two fallback candidates."
     },
     {
       "id": "MATH-002",
