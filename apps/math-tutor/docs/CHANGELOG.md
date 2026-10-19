@@ -161,3 +161,9 @@
 - 新增测试覆盖迁移历史、重复初始化、现有元数据保留与旧库接管。
 - SHA `99d5405007dfac6eae86ff90be8b17e36931a3d2` 的 Push CI `39325112034` 与 PR CI `39325121132` 均成功，含 Python 测试、真实 FastAPI/Vite E2E、进度检查及仓库既有检查。
 - 这只是技术基础设施迁移，不是课程/题目/学生学习记录业务 schema；这些分别留在 MATH-007/MATH-023 范围内。
+
+## 2026-10-20 — SQLite migration future-version guard (CI pending)
+- The migration runner now refuses to initialize when `schema_migrations` contains a version not supported by the running code, instead of silently continuing against a newer database schema.
+- Added regression test `test_newer_unknown_migration_version_fails_closed` for unknown version 99.
+- Commits: `1de4ce02bc94b1d3bd25d0445801c69137de00eb`, `b18b5a67e672c7b9ba0862da27dcd84739be07b1`. Current-head CI must be rechecked; no pass is claimed yet.
+- MATH-002 remains IN_PROGRESS; task count/weights unchanged and software acceptance remains 0/32, 0%.
