@@ -397,3 +397,15 @@ PR：#33（Draft、未合并；接手时必须重新查询当前状态）
 - 生产安全限制：当前仍没有登录/授权和完整学习业务 API。**不得直接将当前服务公开到互联网**。公网发布前须完成认证/授权、HTTPS、备份恢复演练、儿童数据保护和安全测试。
 - Docker 配置与文档提交本身不等于服务器部署；没有访问用户服务器执行命令的证据时，部署状态必须标记为未执行。不得改变固定 32 项任务分母/权重，不因部署文档或 CI 绿灯自动增加产品完成率。
 - 继续执行前先读取本文件和固定路线图，查询 PR #33 最新 HEAD/CI；检查 Docker 镜像构建失败日志并修复。CI 通过后，下一步仍需真实服务器烟雾测试（需要用户服务器环境/访问权限）与认证边界设计，不可冒充已完成。
+
+
+# 2026-10-20 补充：Netlify 历史指令审计与测试 URL 阻塞
+
+## 2026-10-20：部署指令与真实手机验收审计
+- 审计结论：当前数学项目分支中未发现要求必须在 Netlify 网站内开发、必须登录 Netlify 才能开发，或将 Netlify 作为正式生产依赖的活动指令。
+- 旧 handoff/dashboard/changelog/stack baseline 中的 Netlify deploy-preview 结果属于历史 SHA 的状态记录，不是当前可访问证明；仓库外部 Netlify 集成仍会在 PR 状态中出现。
+- `.github/workflows/pages.yml` 目标是独立的 `apps/web/` 仪表板，不是数学学习项目部署。
+- Netlify 曾提供的 `https://deploy-preview-33--gilded-pithivier-aee0ab.netlify.app` 对用户实际要求登录受邀账号，因此不视为交付地址或验收地址。
+- 详见 `docs/DEPLOYMENT_AND_MOBILE_ACCEPTANCE.md`。当前没有确认用户可访问的测试 URL，真实手机验收未完成；MATH-002 必须保持 IN_PROGRESS。不得把 390px Playwright/CI 模拟视口或 Netlify status success 当作实体手机验收。
+
+下一步必须先解决可访问测试地址，再用真实手机验收；不要重复已经通过的自动化测试，也不要自动合并 PR。
