@@ -178,3 +178,8 @@ PR：#33（Draft，未合并）
 - 新增 API 客户端测试（成功、HTTP 失败、格式异常）和移动端 E2E 的 API 成功/失败 UI 检查。
 - 此次代码刚提交，当前 SHA 对应的 CI 必须重新查询；新增测试尚不能标为通过。
 - 软件进度保持 32 项、已验收 0/32、加权完成率 0%；MATH-002 仍 IN_PROGRESS。剩余缺口：真实前后端联调（浏览器请求经代理访问实际 FastAPI 服务）、学习数据业务 schema/持久化，以及物理手机/人工验收。
+
+## 2026-10-20 最新联调实现（CI 待验证）
+- Playwright 现会启动真实 FastAPI/Uvicorn 与 Vite 服务；首页测试通过浏览器真实请求 `/api/health` 检查 Vite 代理与 FastAPI 响应契约。
+- CI 已调整为先安装 Python 后端依赖，再运行 mobile Chromium E2E；Uvicorn 为固定测试依赖。
+- 这一变更仍未改变任务状态：MATH-002 IN_PROGRESS，固定 32 项/100%，已验收 0/32、加权完成率 0%。必须等最新 SHA 的 Push/PR CI 成功后，才可将真实联调自动化视为已验证；仍未覆盖学习记录业务 schema/持久化和物理设备验收。
