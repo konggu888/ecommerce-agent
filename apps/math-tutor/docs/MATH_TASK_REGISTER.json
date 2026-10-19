@@ -50,9 +50,22 @@
       "title": "验证自研技术栈与开发环境基线（Vue/TypeScript、FastAPI、SQLite、测试、手机端）",
       "weight_percent": 3,
       "dependencies": [],
-      "status": "NOT_STARTED",
-      "acceptance_evidence": [],
-      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+      "status": "IN_PROGRESS",
+      "acceptance_evidence": [
+        {
+          "type": "environment_version_check",
+          "detail": "2026-10-19 container: Node v22.16.0, npm 10.9.2, TypeScript 5.8.3, Python 3.13.5, FastAPI 0.128.2, Starlette 0.50.0, pytest 9.0.2, SQLite 3.46.1. Recorded in apps/math-tutor/docs/STACK_BASELINE.md."
+        },
+        {
+          "type": "local_smoke_test",
+          "detail": "apps/math-tutor/tests/test_environment_baseline.py: pytest -q -> 2 passed; validates FastAPI TestClient HTTP 200 and SQLite write/read only, not product behavior."
+        },
+        {
+          "type": "known_gap",
+          "detail": "Vite not installed; Vue/Vite project build/test and mobile E2E not run. GitHub clone attempt blocked by DNS resolution failure for github.com in current container."
+        }
+      ],
+      "note": "Partial environment evidence recorded in docs/STACK_BASELINE.md and tests/test_environment_baseline.py. FastAPI TestClient and SQLite smoke tests pass in the available container; Vue/Vite project build, dependency install, and mobile browser path remain unverified. Do not mark ACCEPTED until the complete baseline is actually verified."
     },
     {
       "id": "MATH-003",
