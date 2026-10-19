@@ -7,14 +7,24 @@
 - 初步读取路径：`backend/app/curriculum.py`、`tests/test_curriculum.py`。
 - 当前状态：仅做过初步源码/仓库结构查看；没有在本分支运行上游代码或测试，不能把 README 描述当作验收证据。
 
-## 许可核查阻塞
-上游 README 显示 Apache 2.0 徽章，但此前检查的 main 分支递归 Git tree 未找到 `LICENSE` 文件；仓库元数据也未显示已识别许可证。因此不能仅凭徽章认定可以复制、修改和再分发源代码。
+## 许可证门禁核查记录（2026-10-19）
 
-选型门禁执行时必须重新检查：
-1. 当前默认分支和 commit SHA；
-2. 仓库 LICENSE 文件、GitHub license metadata、源文件头和 README 许可说明；
-3. 如仍不一致，查找作者正式许可或上游明确的授权说明；
-4. 保存 URL/commit/文件路径/检查日期与结论。
+**结论：BLOCKED；目前没有足够清晰、可复查的正式许可证文本或作者授权证据，不得复制/改编/再分发上游代码。MATH-001 未验收。**
+
+已检查的证据：
+1. 上游仓库 `https://github.com/Galliard7/OpenMath` 的 README 在 `License` 章节声明 `Apache 2.0`，并有 Apache 2.0 徽章；这是上游作者的许可证声明，但不是许可证全文。
+2. 通过 GitHub 内容接口检查 `main` 分支根目录的 `LICENSE`、`LICENSE.md`、`LICENSE.txt`、`COPYING`、`NOTICE`，均返回 404 / NOT_FOUND。
+3. 本次上游 README 内容 blob SHA：`3590673738e755ae071c6ff2260a56387b79d6e6`。
+4. 本次查询到的上游最新提交记录为 `e741351d09f6f7c96b14b7806600f2174836da6d`（2026-05-18）；后续接手仍需重新查询当前默认分支与 HEAD。
+5. 上游 README 声明使用 Gemma 4/Ollama、本地推理；本项目计划使用服务端 DeepSeek。此差异属于适配评估，不是许可证结论。
+
+因此，README 的 Apache 2.0 声明应保留为调查线索，但在没有许可证文本或作者明确确认之前，不将其视为本项目许可门禁已通过。下一步应在不复制上游代码的前提下，最多再评估两个候选并记录来源、许可文件、技术匹配度和维护/测试证据；不得无限扩展候选数量。
+
+来源：
+- 上游仓库/README：`https://github.com/Galliard7/OpenMath`
+- 上游 README：`https://github.com/Galliard7/OpenMath/blob/main/README.md`
+- 上游提交：`https://github.com/Galliard7/OpenMath/commit/e741351d09f6f7c96b14b7806600f2174836da6d`
+
 许可不清楚时不复制源代码。可以继续维护本项目自编需求、规范和课程内容。
 
 ## 选型规则
