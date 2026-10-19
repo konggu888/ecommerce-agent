@@ -11,12 +11,12 @@
   "progress_rule": "Only ACCEPTED tasks with verifiable evidence count toward weighted completion. Documentation/commit/CI alone do not establish product acceptance. User-approved v2.2 direction is from-scratch implementation; all previously specified required features remain mandatory. Learner autonomy is mandatory: unit scope, cumulative practice and teacher-assignment boundaries must be implemented and tested, not documentation-only. Voice/AI teacher, stepwise math blackboard, and parent-configurable point rewards with a persistent ledger are mandatory scope; document-only completion does not count.",
   "last_verified_snapshot": {
     "date": "2026-10-19",
-    "head_sha": "666cc6cf7c63eb60ee67feae209476eea1079e05",
+    "head_sha": "dfc152a725dabb13b531ab4dd949921d170c5ae1",
     "pr_state": "open",
     "pr_draft": true,
-    "ci_state": "RUNNING",
-    "ci_run_id": 39223512454,
-    "ci_evidence": "At snapshot time the latest CI run for this SHA was queued; Netlify deploy-preview status was pending. Recheck after any later commit.",
+    "ci_state": "SUCCESS",
+    "ci_run_id": 39223691429,
+    "ci_evidence": "GitHub Actions PR CI completed successfully for this SHA; job steps included Vue frontend build, frontend tests, all apps/math-tutor Python tests including progress integrity, and existing repository checks. Netlify deploy-preview status was success. This snapshot is historical; recheck after later commits.",
     "accepted_count": 0,
     "weighted_completion_percent": 0
   },
