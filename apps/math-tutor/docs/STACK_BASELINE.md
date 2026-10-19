@@ -77,3 +77,11 @@ pytest 9.0.2
 - 新增 `apps/math-tutor/e2e/mobile-home.spec.ts`，检查手机视口首页关键入口可见、页面无水平溢出、欢迎按钮可通过键盘触发，以及页面不伪造学习记录。
 - GitHub Actions 已加入 Chromium 安装与 `test:e2e` 步骤。此为新增验证能力，不能在最新 SHA 的 CI 完成前写成“已通过”。
 - 该 E2E 只验证当前前端基线的手机视口与基本交互，不代表真实手机硬件验收、前后端集成或数学辅导功能验收。MATH-002 继续 IN_PROGRESS。
+
+
+## 2026-10-19 验证结果：手机视口 E2E 已通过
+- GitHub Actions PR CI run `39224952190`，SHA `79560df651e35d7148eecc30ff5109a6a2dcc75d`：completed/success。
+- `Build math-tutor Vue frontend`、`Test math-tutor frontend helpers`、`Install Chromium for math-tutor mobile E2E`、`Run math-tutor mobile browser E2E`、Python 基线测试与 `update_progress.py --check` 均通过。
+- Playwright 检查了 390px 手机视口的首页内容、水平溢出、键盘交互及不伪造学习记录。
+- 这证明自动化浏览器路径可运行，不等于真实手机硬件验收，也不验证前后端业务 API/学习数据持久化。MATH-002 继续 IN_PROGRESS。
+- 此结果只对应 SHA `79560df651e35d7148eecc30ff5109a6a2dcc75d`；之后的文档提交会改变 HEAD，接手时必须重新查询最新 CI。
