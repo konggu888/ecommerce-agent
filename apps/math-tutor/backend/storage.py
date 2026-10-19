@@ -1,32 +1,69 @@
-"""Minimal SQLite baseline storage used to verify file-backed persistence.
+"""Versioned SQLite schema initialization for the Math Tutor API.
 
-This is infrastructure validation, not the learner-progress schema.
+This migration runner currently establishes only the infrastructure metadata
+schema. Learner/course business tables belong to their dedicated roadmap tasks.
 """
 from __future__ import annotations
 
 import sqlite3
 from pathlib import Path
+from typing import Callable
 
 SCHEMA_VERSION = "1"
 
+Migration = tuple[int, Callable[[sqlite3.Connection], None]]
+
+
+def _migration_1(connection: sqlite3.Connection) -> None:
+    """Create the initial app metadata table."""
+    connection.execute(
+        """
+        CREATE TABLE IF NOT EXISTS app_meta (
+            key TEXT PRIMARY KEY,
+            value TEXT NOT NULL
+        )
+        """
+    )
+    connection.execute(
+        "INSERT INTO app_meta(key, value) VALUES ('schema_version', ?) "
+        "ON CONFLICT(key) DO NOTHING",
+        (SCHEMA_VERSION,),
+    )
+
+
+MIGRATIONS: tuple[Migration, ...] = (
+    (1, _migration_1),
+)
+
 
 def initialize_database(database_path: str | Path) -> None:
+    """Create the database and apply every not-yet-recorded migration atomically."""
     path = Path(database_path)
     path.parent.mkdir(parents=True, exist_ok=True)
     with sqlite3.connect(path) as connection:
+        connection.execute("PRAGMA foreign_keys = ON")
         connection.execute(
             """
-            CREATE TABLE IF NOT EXISTS app_meta (
-                key TEXT PRIMARY KEY,
-                value TEXT NOT NULL
+            CREATE TABLE IF NOT EXISTS schema_migrations (
+                version INTEGER PRIMARY KEY,
+                applied_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             )
             """
         )
-        connection.execute(
-            "INSERT INTO app_meta(key, value) VALUES ('schema_version', ?) "
-            "ON CONFLICT(key) DO NOTHING",
-            (SCHEMA_VERSION,),
-        )
+        applied = {
+            row[0]
+            for row in connection.execute(
+                "SELECT version FROM schema_migrations"
+            ).fetchall()
+        }
+        for version, migration in MIGRATIONS:
+            if version in applied:
+                continue
+            migration(connection)
+            connection.execute(
+                "INSERT INTO schema_migrations(version) VALUES (?)",
+                (version,),
+            )
 
 
 def read_metadata(database_path: str | Path, key: str) -> str | None:
