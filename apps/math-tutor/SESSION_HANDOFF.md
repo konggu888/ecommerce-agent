@@ -228,3 +228,15 @@ PR：#33（Draft、未合并；接手时必须重新查询当前状态）
 - 因此，不要再把“Vite 未安装/前端 build-test 未运行”作为当前状态；它是前期历史记录。
 - MATH-002 仍 IN_PROGRESS：真实手机浏览器/E2E、完整前后端集成及其余验收尚未验证。下一步应针对这些缺口给出可复现验证，不要重复做已经通过的 CI build/test。
 - 以上 CI 结果仅对应 SHA `dfc152a725dabb13b531ab4dd949921d170c5ae1`；接手时仍要重新查询最新 HEAD 与 CI。
+
+
+# 2026-10-19 最新权威接手状态（本节优先于文件中所有旧快照）
+- 项目：`konggu888/ecommerce-agent` / `apps/math-tutor/`；分支 `feat/beishi-grade2-math-tutor`；PR #33 保持 Open/Draft/未合并。未经用户明确同意不得合并。
+- 固定路线图：32 项、权重 100%；已验收 0/32、加权完成率 0%。当前 MATH-002 为 IN_PROGRESS。
+- 自动进度机制：`scripts/update_progress.py --write` 根据任务状态和验收证据计算已验收数、加权完成率、状态分布，并同步 `MATH_TASK_REGISTER.json` 与看板；CI 运行 `--check`。更新任务状态后必须运行 `--write`；CI 会检查统计漂移。它不会自动验收任务。
+- 已新增计算器单元测试，覆盖固定任务 ID/权重、状态变化时重新计算、无证据的 ACCEPTED 被拒绝、状态快照同步。
+- MATH-002 已有的历史 CI 证据：SHA `dfc152a725dabb13b531ab4dd949921d170c5ae1` 的 CI run `39223691429` 成功，包含 Vue/Vite build、前端 helper tests 和 Python 基线测试。该 SHA 早于本轮新增 Playwright E2E 与进度计算器，不能用它证明新步骤通过。
+- 本轮新增手机浏览器 E2E：`playwright.config.ts`、`e2e/mobile-home.spec.ts`，测试 390px 手机视口、首页关键入口、水平溢出和键盘操作；CI 安装 Chromium 并运行 `test:e2e`。必须重新查询最新 SHA 的 CI，确认这些步骤实际通过。
+- README、STACK_BASELINE、看板和执行记录已修正旧说法：项目并非“完全没有前端”，而是只有早期首页 UI；后端业务 API、学习记录持久化、DeepSeek 实际调用、OCR、完整教学闭环仍未实现。
+- 本轮未实现儿童学习功能，不得把进度计算器、文档或 CI 绿灯计入产品完成率。不得修改 `apps/ad-studio-desktop/`。
+- 下一步唯一优先事项：查询本轮最新 HEAD/CI；若 Playwright 安装或测试失败，修复后重跑。若通过，检查前后端完整集成仍缺什么，并在不重复已通过检查的前提下继续 MATH-002。真实手机硬件验收仍需单独记录。
