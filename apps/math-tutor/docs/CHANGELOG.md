@@ -186,3 +186,11 @@
 - 明确不允许未经核查复用或覆盖其他业务数据库；不把 Supabase/Netlify 专有托管能力作为生产强制依赖；密钥仅服务端保存。
 - 本次为架构决策记录，不表示已接入 Supabase、已完成服务器部署或任务验收；不改变 32 项分母/权重及当前验收状态。
 
+
+
+## 2026-10-20 — 增加自有服务器 Docker Compose 部署骨架
+- 新增多阶段 Dockerfile、Nginx 静态前端/API 反向代理、FastAPI 运行依赖、Docker Compose 与 SQLite 持久化卷。
+- Web 默认只绑定 127.0.0.1；FastAPI 仅位于内部网络，避免无意中公开后端端口。
+- 新增 SELF_HOSTING.md，记录本机 smoke test 命令和公网发布前的认证、HTTPS、备份恢复与隐私门槛。
+- CI 新增 backend/frontend Docker 镜像构建步骤。需以新提交 SHA 的 CI 结果为准；本轮未在用户的真实服务器部署。
+- 该骨架仍不包含登录鉴权或完整学习业务 API，不能直接公开到互联网；不改变固定 32 项任务分母、权重或当前已验收数。
