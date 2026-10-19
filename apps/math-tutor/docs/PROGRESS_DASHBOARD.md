@@ -1,6 +1,6 @@
 # 数学辅导项目进度看板
 
-最后更新：2026-10-19
+最后更新：2026-10-20
 计划版本：2.2（自研实现、中国儿童体验、既定功能全部保留）
 分支：feat/beishi-grade2-math-tutor
 PR：#33（Draft，未合并）
@@ -18,8 +18,8 @@ PR：#33（Draft，未合并）
 
 ## 真实进度
 - 任务总数：32。
-- 已验收：0/32。
-- 加权完成率：0%。
+- 已验收：1/32。
+- 加权完成率：4%。
 - 应用产品代码：早期 Vue 首页 UI 已通过真实 FastAPI 健康接口连接验证；完整学习流程、学生学习记录业务 API 与学习数据 schema/持久化尚未实现。
 - 自研技术基线：IN_PROGRESS；FastAPI/SQLite smoke test、Vue/Vite build、前端 helper tests，以及浏览器经 Vite 代理访问真实 FastAPI 的集成 E2E 已在 CI 对 SHA `178c50a2a23345bf3ae4123fa153bdfe555014f2` 验证通过；真实物理手机验收和学习记录业务持久化仍未验证。
 - 自动化验证：最新已核验代码 SHA `178c50a2a23345bf3ae4123fa153bdfe555014f2` 的 Push CI run `39324288870` 与 PR CI run `39324295556` 均成功；其中真实 FastAPI + Vite 浏览器联调、前端构建/测试、Python 基线和进度一致性检查通过。文档更新后会产生新 SHA，仍须重查最终 HEAD。
@@ -204,3 +204,11 @@ PR：#33（Draft，未合并）
 - Regression test added for a database carrying unsupported migration version 99.
 - This is MATH-002 technical-baseline hardening only; CI for the latest HEAD must be checked before claiming the test passed.
 - Progress remains: fixed 32 tasks, total weight 100%, accepted 0/32, weighted completion 0%; MATH-002 IN_PROGRESS. No task denominator or weight changed.
+
+## 2026-10-20 最新状态复核与 MATH-001 验收
+- 最新核验 HEAD（文档更新前）：`9ceee1024d30177482a1a61b5fa573c782e49ca6`；PR #33 Open/Draft/未合并。
+- 该 SHA 的 Push CI `39326153402` 与 PR CI `39326160690` 均 completed / success。新增 SQLite 未知未来迁移版本拒绝机制及 version 99 回归测试已包含在该 SHA 的 CI。
+- MATH-001「全网参考调研与第三方许可风险登记」已验收：限额比较三个候选并记录当前上游 SHA、许可证状态和差异；OpenMath 缺少 LICENSE 正文，明确排除源码复用；另外两个候选根 LICENSE 为 MIT，但仅作为静态参考，未复制代码。
+- MATH-002 仍 IN_PROGRESS：技术基线、真实 FastAPI/Vite 联调和迁移保护测试已由 CI 验证；真实物理手机/人工验收仍未执行。不得把模拟视口当作实体手机验收。
+- 当前固定任务 32 项、总权重 100%；已验收 1/32；加权完成率 4%；状态分布 ACCEPTED 1、IN_PROGRESS 1、NOT_STARTED 30。
+- 下一步唯一任务：完成 MATH-002 的实体手机/人工验收。自动化代码检查已通过，不重复已通过的测试；这一步需要真实手机浏览器实际打开当前部署/本地可访问页面并留存结果。若暂时无法接入实体手机，任务保持 IN_PROGRESS，不虚报验收。
