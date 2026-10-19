@@ -5,27 +5,27 @@
   "directory": "apps/math-tutor/",
   "branch": "feat/beishi-grade2-math-tutor",
   "pull_request": 33,
-  "plan_version": "2.1",
+  "plan_version": "2.2",
   "fixed_task_count": 32,
   "total_weight_percent": 100,
-  "progress_rule": "Only ACCEPTED tasks with verifiable evidence count toward weighted completion. Documentation/commit/CI alone do not establish product acceptance.",
+  "progress_rule": "Only ACCEPTED tasks with verifiable evidence count toward weighted completion. Documentation/commit/CI alone do not establish product acceptance. User-approved v2.2 direction is from-scratch implementation; all previously specified required features remain mandatory.",
   "last_verified_snapshot": {
     "date": "2026-10-19",
-    "head_sha": "59226c26e1997361a73dad0051308a1703ba1cc2",
+    "head_sha": "0fda5c553ebb7dabb027dcfda6e6ae5890cfe000",
     "pr_state": "open",
     "pr_draft": true,
-    "ci_state": "RUNNING",
-    "ci_evidence": "GitHub Actions CI run 39218680024 was queued for this SHA; combined status had no status items at check time. Snapshot is pre-metadata-update and must be re-queried after new commits.",
+    "ci_state": "NO_DATA",
+    "ci_evidence": "Before this plan update, latest known HEAD had no returned combined status/workflow data. All new commits require fresh CI lookup; do not infer success.",
     "accepted_count": 0,
     "weighted_completion_percent": 0
   },
   "tasks": [
     {
       "id": "MATH-001",
-      "title": "核实 OpenMath 正式许可证/作者授权",
+      "title": "全网参考调研与第三方许可风险登记（只借鉴设计，不复制候选源码）",
       "weight_percent": 4,
       "dependencies": [],
-      "status": "BLOCKED",
+      "status": "NOT_STARTED",
       "acceptance_evidence": [
         {
           "type": "upstream_readme_license_claim",
@@ -43,22 +43,20 @@
           "detail": "Latest commit returned by repository commit search during this check; re-query before final acceptance."
         }
       ],
-      "note": "BLOCKED, not accepted: README claims Apache 2.0, but root LICENSE/LICENSE.md/LICENSE.txt/COPYING/NOTICE are absent in checked main branch. Do not copy or adapt upstream code until license text or explicit author authorization is verified. Next: evaluate at most two fallback candidates."
+      "note": "OpenMath 缺少可复查许可证全文，因此禁止复制其源码；这不再阻塞自研。调研只记录框架、儿童 UX、OCR/视觉、教学设计和测试方法。第三方依赖/素材分别核查许可。"
     },
     {
       "id": "MATH-002",
-      "title": "检查上游目录、启动/测试、课程 schema、答题校验、提示、持久化、模型调用和手机 UI",
+      "title": "验证自研技术栈与开发环境基线（Vue/TypeScript、FastAPI、SQLite、测试、手机端）",
       "weight_percent": 3,
-      "dependencies": [
-        "MATH-001"
-      ],
+      "dependencies": [],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
       "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
     },
     {
       "id": "MATH-003",
-      "title": "统一比较 OpenMath 与最多两个回退候选并记录选择证据",
+      "title": "冻结自研架构与中国儿童视觉/交互设计系统",
       "weight_percent": 3,
       "dependencies": [
         "MATH-001",
@@ -66,20 +64,19 @@
       ],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
-      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified. File-level fallback screening was performed 2026-10-19 for onemorepereira/math-tutor (MIT; closest child math practice scaffold but AWS/Cognito/leaderboard mismatch) and AyushDixit-21/MathTalk (MIT; prototype focused on voice/accessibility and SymPy). Neither was cloned or executed; selection remains unaccepted pending deeper code/test review. Additional static review of Number Ninja files found auth-gated Vue game UI, Cognito-bound AWS Bedrock/DynamoDB handlers, one-attempt scoring flow and some unit-test files; no verified worksheet-photo pipeline or Beishi Grade 2 curriculum in inspected files. Clone attempt blocked by this execution environment's DNS failure for github.com; tests not run. Do not count candidate as runnable or accepted."
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified. File-level fallback screening was performed 2026-10-19 for onemorepereira/math-tutor (MIT; closest child math practice scaffold but AWS/Cognito/leaderboard mismatch) and AyushDixit-21/MathTalk (MIT; prototype focused on voice/accessibility and SymPy). Neither was cloned or executed; selection remains unaccepted pending deeper code/test review. Additional static review of Number Ninja files found auth-gated Vue game UI, Cognito-bound AWS Bedrock/DynamoDB handlers, one-attempt scoring flow and some unit-test files; no verified worksheet-photo pipeline or Beishi Grade 2 curriculum in inspected files. Clone attempt blocked by this execution environment's DNS failure for github.com; tests not run. Do not count candidate as runnable or accepted. Updated plan v2.2: no upstream base required; Chinese child-first visual design and interaction system is mandatory. No feature removals permitted."
     },
     {
       "id": "MATH-004",
-      "title": "实际运行选定候选的基线命令/测试并保存日志",
+      "title": "创建独立应用骨架并验证前后端构建、测试、API 和持久化",
       "weight_percent": 2,
       "dependencies": [
-        "MATH-001",
         "MATH-002",
         "MATH-003"
       ],
       "status": "NOT_STARTED",
       "acceptance_evidence": [],
-      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified. Updated plan v2.2: this is our own application scaffold, not a fork or upstream baseline."
     },
     {
       "id": "MATH-005",
