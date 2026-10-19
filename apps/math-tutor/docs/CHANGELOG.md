@@ -174,3 +174,8 @@
 - MATH-001 标记 ACCEPTED（仅限调研与许可证风险登记范围），权重 4%。候选上游项目未被声称已运行或测试；本项目自身基线 CI 对 SHA `9ceee1024d30177482a1a61b5fa573c782e49ca6` 的 Push run `39326153402` 和 PR run `39326160690` 均成功。
 - MATH-002 继续 IN_PROGRESS。SQLite 未知迁移版本拒绝机制和 version 99 回归测试在上述最新代码 CI 中通过；真实物理手机/人工验收仍未完成。
 - 当前统计：固定 32 项、权重 100%；已验收 1/32、加权完成率 4%；状态 ACCEPTED 1、IN_PROGRESS 1、NOT_STARTED 30。
+
+## 2026-10-20 — 文档同步 CI 复核
+- 文档同步前的 SHA `3eda480f8061b0547c146c96007b9222ff8bd672` 的 Push CI run `39326945702` 和 PR CI run `39326955062` 均 completed/success。
+- 两项均通过 Vue/Vite build、前端 helper tests、真实 FastAPI/Vite 浏览器 E2E、Python 基线测试、进度快照 `--check` 与仓库既有检查；没有失败步骤。
+- MATH-001 已验收，MATH-002 继续 IN_PROGRESS。后续任务登记/看板/日志/交接文档更新会产生新 HEAD，必须再次查询最新 HEAD 的 CI，不将本 SHA 的结果自动套用到新提交。
