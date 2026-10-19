@@ -1,19 +1,7 @@
 import { expect, test } from "@playwright/test";
 
-test("mobile home page renders in Chinese without horizontal overflow", async ({ page }) => {
+test("mobile home page renders and connects to the live FastAPI service", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.route("**/api/health", async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({
-        ok: true,
-        service: "math-tutor-api",
-        storage: "sqlite",
-        schema_version: "1",
-      }),
-    });
-  });
   await page.goto("/");
 
   await expect(page.getByRole("heading", { name: /你好，小小数学家/ })).toBeVisible();
@@ -21,6 +9,17 @@ test("mobile home page renders in Chinese without horizontal overflow", async ({
   await expect(page.getByRole("heading", { name: "我想练一练" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "看看我的试卷" })).toBeVisible();
   await expect(page.getByTestId("api-status")).toHaveText("学习服务已连接 · sqlite 数据层");
+
+  const apiResponse = await page.request.get("/api/health");
+  expect(apiResponse.ok()).toBeTruthy();
+  await expect(apiResponse).toBeOK();
+  await expect(apiResponse).toBeOK();
+  expect(await apiResponse.json()).toMatchObject({
+    ok: true,
+    service: "math-tutor-api",
+    storage: "sqlite",
+    schema_version: "1",
+  });
 
   const overflow = await page.evaluate(() => ({
     viewportWidth: document.documentElement.clientWidth,
@@ -43,9 +42,16 @@ test("API failure is visible and does not fabricate saved learning records", asy
 test("welcome action is keyboard-operable and shows the next-step state", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.route("**/api/health", async (route) => {
-    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({
-      ok: true, service: "math-tutor-api", storage: "sqlite", schema_version: "1",
-    }) });
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        ok: true,
+        service: "math-tutor-api",
+        storage: "sqlite",
+        schema_version: "1",
+      }),
+    });
   });
   await page.goto("/");
   await page.getByRole("button", { name: /看看今天怎么学/ }).focus();
