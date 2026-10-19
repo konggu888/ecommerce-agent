@@ -48,6 +48,11 @@ jobs:
       - name: Verify math-tutor progress snapshot is current
         run: python apps/math-tutor/scripts/update_progress.py --check
 
+      - name: Build self-hosted math-tutor Docker images
+        run: |
+          docker build -f apps/math-tutor/Dockerfile --target backend -t math-tutor-backend:ci .
+          docker build -f apps/math-tutor/Dockerfile --target frontend -t math-tutor-frontend:ci .
+
       - name: Frontend syntax check
         run: |
           node --check apps/web/game-logic-library.js
