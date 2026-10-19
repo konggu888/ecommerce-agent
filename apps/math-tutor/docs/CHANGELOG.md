@@ -123,3 +123,11 @@
 - 已验证 SHA `79560df651e35d7148eecc30ff5109a6a2dcc75d` 的 PR CI run `39224952190` completed/success，包含 Playwright 手机 Chromium E2E 和进度一致性检查。
 - 后续登记/看板/交接文档提交改变了 HEAD，必须重新查询最新 SHA 的 CI；旧成功状态只作为历史证据。
 - MATH-002 保持 IN_PROGRESS；进度 0/32、0%。下一步转向未完成的前后端 API/SQLite 集成验证，不重复已通过的 build/helper/mobile smoke tests。
+
+
+## 2026-10-19 — MATH-002 FastAPI/SQLite 文件持久化基线
+- 新增 FastAPI `/health` 入口与 `create_app(database_path)` 工厂，支持测试环境指定临时数据库。
+- 新增 SQLite schema 元数据初始化、读写和文件持久化验证。
+- 新增集成测试覆盖 HTTP 200/服务元数据及数据库重初始化后数据仍存在。
+- SHA `c622e4c67097bcecd5557e8dd3bd068bd788bf14` 的 PR CI run `39225650580` 成功，含手机 Chromium E2E、进度检查与现有仓库测试。
+- MATH-002 保持 IN_PROGRESS；前端到业务 API 的集成与真实设备验收仍未完成，软件进度 0/32、0%。
