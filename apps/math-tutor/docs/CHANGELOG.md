@@ -146,3 +146,10 @@
 - 增加固定 Uvicorn 测试依赖，调整 CI 顺序，在运行浏览器 E2E 前先安装 Python 后端依赖。
 - E2E 使用隔离的临时 SQLite 路径；真实联调检查 HTTP 200 与 API 返回契约。API 故障提示测试仍单独 mock 503，以验证前端错误处理。
 - 本次提交后 CI 尚待验证；不得提前标记联调验收通过。
+
+
+## 2026-10-20 — 真实联调 CI 验证结果
+- SHA `178c50a2a23345bf3ae4123fa153bdfe555014f2` 的 Push CI run `39324288870` 和 PR CI run `39324295556` 均 completed/success。
+- 真实 FastAPI/Uvicorn + Vite 两个进程启动成功；Playwright 主成功路径使用浏览器真实 `fetch('/api/health')`，经 Vite proxy 收到 FastAPI HTTP 200 与预期服务/SQLite/schema 元数据。
+- Python 基线测试、进度一致性检查、前端 build/helper tests 和仓库既有检查均通过。
+- 这是技术联调证据，不代表学生学习记录业务 schema/持久化或物理手机验收完成；MATH-002 继续 IN_PROGRESS。后续文档提交已产生新 HEAD，需查询最新 HEAD 的 CI。
