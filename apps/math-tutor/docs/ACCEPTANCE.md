@@ -192,3 +192,11 @@
 - 候选 A `onemorepereira/math-tutor` 当前 main SHA：`1e821a4d15ea63687e9f42f2c2200656954d5eca`；根 LICENSE 返回 MIT 正文。候选 B `AyushDixit-21/MathTalk` 当前 main SHA：`559e4a6e57e02980eabb7dbc49b636f5e7e48a3e`；根 LICENSE 返回 MIT 正文。
 - 评估限制：候选源码为静态检查，未声称安装/启动/运行其测试；选择的是本项目自研路线，当前项目自己的基线和回归测试已在上列 CI 中通过。
 - 本项验收仅代表有边界的参考调研与许可证风险登记完成，不代表产品功能、第三方依赖/素材许可或教育效果验收完成。
+
+
+## I. 部署地址与真实手机验收门禁
+- [ ] 提供用户无需受邀登录即可访问的当前测试 URL，并记录部署 SHA；仅有 Netlify deploy-preview status success 不算。
+- [ ] 使用真实手机浏览器打开该 URL，记录手机型号、系统、浏览器、日期、步骤和结果；桌面 Chromium 模拟视口不替代实体手机验收。
+- [ ] 验证首页布局、可读性、触控、横向溢出、API 连接状态、刷新与后端故障提示。
+- [ ] 确认当前测试页实际功能边界；不得将首页/健康接口 smoke test 误报为完整数学学习产品验收。
+- [ ] 服务器部署、访问控制和公网安全有独立证据。当前详细状态见 `docs/DEPLOYMENT_AND_MOBILE_ACCEPTANCE.md`。
