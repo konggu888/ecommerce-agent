@@ -11,20 +11,22 @@
   "progress_rule": "Only ACCEPTED tasks with verifiable evidence count toward weighted completion. Documentation/commit/CI alone do not establish product acceptance. User-approved v2.2 direction is from-scratch implementation; all previously specified required features remain mandatory. Learner autonomy is mandatory: unit scope, cumulative practice and teacher-assignment boundaries must be implemented and tested, not documentation-only. Voice/AI teacher, stepwise math blackboard, and parent-configurable point rewards with a persistent ledger are mandatory scope; document-only completion does not count.",
   "last_verified_snapshot": {
     "date": "2026-10-20",
-    "head_sha": "99d5405007dfac6eae86ff90be8b17e36931a3d2",
+    "head_sha": "9ceee1024d30177482a1a61b5fa573c782e49ca6",
     "pr_state": "open",
     "pr_draft": true,
     "ci_state": "SUCCESS",
-    "ci_run_id": 39325121132,
-    "ci_evidence": "GitHub Actions PR CI run 39325121132 and Push CI run 39325112034 completed successfully for SHA 99d5405007dfac6eae86ff90be8b17e36931a3d2. Python tests include versioned SQLite migration history, repeated initialization/idempotence, preserving existing metadata, and adoption of an existing metadata database. The same SHA passed live FastAPI/Vite Playwright E2E, frontend build/helper tests, progress --check, and existing repository checks. This snapshot is historical after later documentation commits; recheck latest HEAD.",
-    "accepted_count": 0,
-    "weighted_completion_percent": 0,
+    "ci_run_id": 39326160690,
+    "ci_evidence": "Latest HEAD 9ceee1024d30177482a1a61b5fa573c782e49ca6: PR CI run 39326160690 and Push CI run 39326153402 completed SUCCESS. Includes fail-closed SQLite migration guard regression test, live FastAPI/Vite browser E2E, frontend build/helper tests, Python tests and progress --check. MATH-002 remains IN_PROGRESS pending physical mobile/manual acceptance.",
+    "accepted_count": 1,
+    "weighted_completion_percent": 4,
     "calculated_task_count": 32,
     "calculated_total_weight_percent": 100,
     "status_counts": {
-      "NOT_STARTED": 31,
-      "IN_PROGRESS": 1
-    }
+      "ACCEPTED": 1,
+      "IN_PROGRESS": 1,
+      "NOT_STARTED": 30
+    },
+    "progress_calculated_at_utc": "2026-10-20T00:00:00Z"
   },
   "tasks": [
     {
@@ -32,25 +34,35 @@
       "title": "全网参考调研与第三方许可风险登记（只借鉴设计，不复制候选源码）",
       "weight_percent": 4,
       "dependencies": [],
-      "status": "NOT_STARTED",
+      "status": "ACCEPTED",
       "acceptance_evidence": [
         {
-          "type": "upstream_readme_license_claim",
-          "url": "https://github.com/Galliard7/OpenMath/blob/main/README.md",
-          "detail": "README License section states Apache 2.0; README blob SHA 3590673738e755ae071c6ff2260a56387b79d6e6; inspected 2026-10-19."
+          "type": "bounded_candidate_comparison",
+          "url": "apps/math-tutor/upstream/OPENMATH_REFERENCE.md",
+          "detail": "Compared exactly three candidates (OpenMath, onemorepereira/math-tutor, AyushDixit-21/MathTalk) using curriculum/schema, answer validation, hints, progress persistence, model architecture, mobile UI, test evidence, maintenance, and license clarity. Review is static-source evidence; no candidate code copied or run. Date 2026-10-20."
         },
         {
-          "type": "license_file_check",
+          "type": "openmath_license_risk",
           "url": "https://github.com/Galliard7/OpenMath",
-          "detail": "GitHub contents lookup returned NOT_FOUND for LICENSE, LICENSE.md, LICENSE.txt, COPYING and NOTICE on main; no license text or author confirmation found in checked evidence."
+          "detail": "Current default-branch commit rechecked as 8b7ebaa86b886df2e7631f5760128507f65571b0 (2026-05-23). README claims Apache 2.0, but LICENSE lookup returns 404; excluded from source reuse. README blob previously recorded as 3590673738e755ae071c6ff2260a56387b79d6e6."
         },
         {
-          "type": "upstream_commit",
-          "url": "https://github.com/Galliard7/OpenMath/commit/e741351d09f6f7c96b14b7806600f2174836da6d",
-          "detail": "Latest commit returned by repository commit search during this check; re-query before final acceptance."
+          "type": "mit_license_verified_candidate_a",
+          "url": "https://github.com/onemorepereira/math-tutor",
+          "detail": "Current main commit rechecked as 1e821a4d15ea63687e9f42f2c2200656954d5eca (2026-08-29); root LICENSE returned MIT text (copyright Miguel Pereira 2025-2026; previous LICENSE blob SHA d4b77a37f58d8fe75ff571ff86319652355ece7a). Static audit found Vue 3/TypeScript UI and answer-validation tests, but Cognito/AWS Bedrock/DynamoDB and public leaderboard conflict with this project's simpler DeepSeek/private flow; no source copied."
+        },
+        {
+          "type": "mit_license_verified_candidate_b",
+          "url": "https://github.com/AyushDixit-21/MathTalk",
+          "detail": "Current main commit rechecked as 559e4a6e57e02980eabb7dbc49b636f5e7e48a3e (2026-09-08); root LICENSE returned MIT text (previous LICENSE blob SHA 4775913c2512cacb675c438e88adda8858cdf813). Static audit indicates React/FastAPI/SymPy research prototype, not a Beishi Grade 2 curriculum platform; no source copied."
+        },
+        {
+          "type": "self_developed_project_smoke_and_ci",
+          "url": "https://github.com/konggu888/ecommerce-agent/pull/33",
+          "detail": "Selected direction is self-development; own app baseline was exercised by current branch CI for SHA 9ceee1024d30177482a1a61b5fa573c782e49ca6: Push run 39326153402 SUCCESS and PR run 39326160690 SUCCESS. These verify the project's current build/tests, not candidate upstreams or product learning behavior."
         }
       ],
-      "note": "OpenMath 缺少可复查许可证全文，因此禁止复制其源码；这不再阻塞自研。调研只记录框架、儿童 UX、OCR/视觉、教学设计和测试方法。第三方依赖/素材分别核查许可。"
+      "note": "ACCEPTED for the bounded research/license-risk-register task only. No upstream source code was copied. OpenMath remains excluded because its formal license text was not found; MIT candidates were evaluated only as references. This acceptance does not certify product behavior, third-party dependency/material licenses, or educational effectiveness."
     },
     {
       "id": "MATH-002",
@@ -96,8 +108,8 @@
           "detail": "Added backend/storage.py migration registry and schema_migrations history table for the infrastructure metadata schema. initialize_database applies unrecorded migrations, records version 1, and preserves pre-existing app_meta values. Tests cover repeated initialization, migration history, metadata preservation, and adoption of an existing metadata DB. GitHub Actions Push run 39325112034 and PR run 39325121132 completed success for SHA 99d5405007dfac6eae86ff90be8b17e36931a3d2, including Python baseline tests, live FastAPI/Vite browser E2E, progress --check and existing repo checks. This is infrastructure migration evidence only; learner/course/question business data contracts and student-record persistence remain assigned to MATH-007/MATH-023. MATH-002 stays IN_PROGRESS pending physical mobile acceptance and overall criteria."
         },
         {
-          "type": "unsupported_future_migration_guard_implementation_pending_ci",
-          "detail": "2026-10-20: backend/storage.py now rejects recorded schema_migrations versions not present in the application's migration registry, avoiding silently opening a database created by newer code. tests/test_backend_api.py adds test_newer_unknown_migration_version_fails_closed for version 99. Code commits: 1de4ce02bc94b1d3bd25d0445801c69137de00eb and b18b5a67e672c7b9ba0862da27dcd84739be07b1. CI for these commits has not yet been verified; this is implementation evidence only. MATH-002 remains IN_PROGRESS."
+          "type": "unsupported_future_migration_guard_ci_verified",
+          "detail": "2026-10-20: backend/storage.py rejects recorded schema_migrations versions absent from MIGRATIONS; tests/test_backend_api.py covers version 99. Latest HEAD 9ceee1024d30177482a1a61b5fa573c782e49ca6 has Push CI run 39326153402 and PR CI run 39326160690 completed SUCCESS. This verifies the regression test in CI, not physical-device acceptance. MATH-002 remains IN_PROGRESS."
         }
       ],
       "note": "Partial technical baseline: Vue/Vite build, frontend helper tests, Playwright mobile Chromium E2E with real FastAPI/Uvicorn + Vite browser-to-proxy-to-backend request, FastAPI /health, SQLite metadata persistence, and a versioned infrastructure-schema migration runner have passed CI for their recorded SHAs. Migration tests verify idempotent initialization and preserve pre-existing metadata. MATH-002 remains IN_PROGRESS because physical mobile/manual acceptance is outstanding; learner/course/question contracts and student learning-record business persistence belong to MATH-007/MATH-023 and are not claimed complete. Recheck current HEAD CI after later commits; do not repeat previously passed checks."
