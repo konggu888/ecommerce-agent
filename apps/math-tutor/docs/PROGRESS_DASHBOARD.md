@@ -134,3 +134,10 @@ PR：#33（Draft，未合并）
 - CI 现在运行 `apps/math-tutor/tests` 全部测试，而非只运行环境 smoke test。若任务分母、权重、验收证据或看板统计漂移，CI 应失败并要求先修复。
 - 当前登记仍为 32 项、权重 100%、已验收 0/32、加权完成率 0%；MATH-002 为 IN_PROGRESS。Vue/Vite 构建与前端测试已纳入 CI 命令，但本轮最新 CI 结果须重新查询。
 - 该机制会自动发现登记表/看板不一致，但不会替代人工验收或自行修改任务状态。
+
+
+## 2026-10-19 — 进度守卫 CI 验证结果
+- 对 SHA `dfc152a725dabb13b531ab4dd949921d170c5ae1` 的 GitHub Actions PR CI run `39223691429` 已 completed/success；Netlify deploy-preview status 为 success。
+- 该 CI 实际通过了 Vue 前端 build、前端测试、`apps/math-tutor/tests` 全部 Python 测试（包含新进度一致性守卫）及工作流中的其他检查。
+- 此证据只对应上述 SHA；后续文档提交产生的新 SHA 仍需重新查询 CI。
+- 软件任务仍为 32 项、100% 权重、已验收 0/32、加权完成率 0%；MATH-002 继续 IN_PROGRESS。CI 通过不等于 MATH-002 已验收，也不代表产品功能完成。
