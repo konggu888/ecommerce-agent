@@ -30,3 +30,10 @@
 - 检查 OpenMath README 的 Apache 2.0 声明；GitHub 内容查询对 `LICENSE`、`LICENSE.md`、`LICENSE.txt`、`COPYING`、`NOTICE` 均返回 NOT_FOUND。
 - 由于没有可复查的许可证全文或作者明确确认，MATH-001 状态设为 BLOCKED，不复制/改编上游源码；证据写入 `upstream/OPENMATH_REFERENCE.md` 和 `docs/MATH_TASK_REGISTER.json`。
 - 下一步只按既定上限评估最多两个回退候选；候选总数不超过三个。应用功能未开始，验收仍 0/32、加权完成率 0%。
+
+
+## 2026-10-19 — 回退候选第一轮评估
+- 文件级评估 `onemorepereira/math-tutor` 与 `AyushDixit-21/MathTalk`，候选总数保持不超过三个。
+- 两者均找到 MIT LICENSE 全文；记录了技术栈、可借鉴点与和私人 DeepSeek/北师大二年级/试卷照片闭环之间的差距。
+- 候选 A 暂列为下一步深入审查对象，候选 B 暂不继续扩展；未 clone、启动或运行测试，不能视为基线验证通过。
+- 本轮不改变任务验收状态，仍为 0/32、加权完成率 0%。最新复核 SHA `e7e10491fefea44327656ffaac3333fc10c45b69` 的 CI run `39218343866` completed/success，Netlify deploy-preview success；仅对应该 SHA。
