@@ -259,3 +259,27 @@ PR：#33（Draft、未合并；接手时必须重新查询当前状态）
 - 随后新增了任务证据、STACK_BASELINE、看板和 CHANGELOG 文档提交，当前 HEAD 已变更；因此必须查询最新 HEAD 的 CI，不能把 SHA `c622e4c...` 的成功直接当成当前 HEAD 的结果。
 - 当前软件任务仍为 32 项/100% 权重、已验收 0/32、加权完成率 0%；MATH-002 仍 IN_PROGRESS。进度计算器为 `python apps/math-tutor/scripts/update_progress.py --write`，CI 用 `--check`。
 - 下一步唯一优先项：核查最新 HEAD CI；通过后，补齐前端到 FastAPI 的真实业务请求链路/集成验证。不要重复已经通过的 build、helper tests、移动浏览器首页 smoke test、FastAPI health 和 SQLite 技术基线。物理手机测试单独列为尚未执行。MATH-004 与 MATH-002 的边界需保持清楚，不能借基线测试宣称产品骨架完成。
+
+
+# 2026-10-20 本轮最新接手状态（优先于前面所有旧快照）
+## 本轮唯一任务：MATH-002 前端到 FastAPI 请求链路
+本轮实际代码变更：
+- 新增 `src/api.ts`：封装 `GET /api/health`，校验响应字段；非 2xx 和异常 JSON 结构都会返回错误，不会被当成连接成功。
+- 新增 `src/api.test.ts`：覆盖成功响应、HTTP 503、响应结构错误三类情况。
+- 修改 `vite.config.ts`：开发服务器把 `/api/*` 代理至 `http://127.0.0.1:8000`，并去掉 `/api` 前缀以匹配 FastAPI `/health`。
+- 修改 `src/App.vue`：页面启动时请求 API，显示连接中/连接成功/服务不可用；失败时明确提示当前页面不会保存学习记录，不虚报后端已连接。
+- 扩展 `e2e/mobile-home.spec.ts`：覆盖 API 成功状态和 HTTP 503 时的失败状态。E2E 通过 Playwright route mock 验证前端处理行为，不等于真实 FastAPI 进程已在浏览器端联通。
+- 更新 `docs/MATH_TASK_REGISTER.json`、`docs/PROGRESS_DASHBOARD.md`、`docs/CHANGELOG.md` 记录变更及证据边界。
+
+## 本轮提交与 CI
+- 本轮代码/测试提交：`cdf22e31adc8daeddd149180f9eb5f4676fa9091`、`0bd0a788eeb5956b34fd289a75cfd1fd3d408a47`、`031574acd4a93be5bfd2b4879cb328b93ade86c3`、`ca81ebe3b712cedaa48a566ae184286cfd92010e`、`4a981292297ba3f50adadf7a7e2d2f8945fbbff5`。
+- 任务登记与进度/变更文档提交：`7093661d53d5db1e345d8f4c65f8eec62ae283c6`、`793de86168008a2925bde75f65e740417fd6db3c`、`c22d24b478a271e3cca9cabfe2919141c37a56eb`。
+- 本轮最后一次状态查询时，Push CI run `39323657522`（SHA `c22d24b478a271e3cca9cabfe2919141c37a56eb`）为 queued；PR CI run `39323655532`（SHA `793de86168008a2925bde75f65e740417fd6db3c`）为 queued；前面若干提交的 CI 处于 in_progress。故本轮新增代码和测试尚不能记为 CI 通过。接手必须查询最终 HEAD 和对应 run/job 结果。
+- 由于本轮通过 GitHub 文件接口直接修改源码，没有在本地克隆工作区执行 npm/pytest；只记录 CI 为待验证，不声称本轮测试已通过。
+- 之前已通过的 CI 仅对各自历史 SHA 生效，不可移作本轮新代码的验证证据。
+
+## 当前进度与下一步
+- 固定任务 32 项、总权重 100%；已验收 0/32、加权完成率 0%；状态分布仍为 NOT_STARTED 31、IN_PROGRESS 1。
+- MATH-002 仍 IN_PROGRESS；本轮 API 接线不等于任务验收，也不增加软件完成率。
+- 下一步：先查本轮最新 HEAD 的 Push/PR CI 和具体失败/成功 job。若通过，再做真正运行的前后端联调：启动 FastAPI 服务和 Vite dev server，验证浏览器发出的 `/api/health` 经代理到实际 FastAPI，而不是只靠 E2E mock。随后才处理学习数据 schema/业务持久化和真实设备验收。
+- PR #33 继续 Open/Draft/未合并；未经用户明确许可不得合并。不得修改 `apps/ad-studio-desktop/`。
