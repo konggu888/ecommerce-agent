@@ -156,3 +156,10 @@ PR：#33（Draft，未合并）
 - 新增计算器单元测试：验证固定任务数/权重、状态变更后的加权计算、无验收证据禁止标记 ACCEPTED，以及快照状态分布。
 - 新增 Playwright mobile Chromium E2E：首页入口、390px 手机视口无水平溢出、键盘触发和“不伪造学习记录”检查。新 CI 结果未完成前，不记录为通过。
 - 当前真实进度仍为 32 项/100%，验收 0/32、加权完成率 0%；MATH-002 IN_PROGRESS。CI/文档提交不会增加软件完成率。
+
+
+## 最新已验证工程检查（2026-10-19；非当前 HEAD 保证）
+- SHA `79560df651e35d7148eecc30ff5109a6a2dcc75d` 的 PR CI run `39224952190` 为 completed/success；Netlify deploy preview 查询结果为 success。
+- 已通过：Vue/Vite build、前端 helper tests、Playwright mobile Chromium E2E、FastAPI/SQLite smoke tests、进度计算器一致性检查及工作流其他检查。
+- 该 SHA 之后又提交了验收证据和文档更新，故以上成功状态不代表最新 HEAD 已通过 CI。接手时必须重新查询最新 SHA 对应的 Push/PR CI 与部署状态。
+- 软件验收仍 0/32、加权完成率 0%；MATH-002 仍 IN_PROGRESS，因为业务 API、持久化学习数据和真实设备验收未完成。
