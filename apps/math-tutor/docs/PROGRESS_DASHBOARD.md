@@ -163,3 +163,10 @@ PR：#33（Draft，未合并）
 - 已通过：Vue/Vite build、前端 helper tests、Playwright mobile Chromium E2E、FastAPI/SQLite smoke tests、进度计算器一致性检查及工作流其他检查。
 - 该 SHA 之后又提交了验收证据和文档更新，故以上成功状态不代表最新 HEAD 已通过 CI。接手时必须重新查询最新 SHA 对应的 Push/PR CI 与部署状态。
 - 软件验收仍 0/32、加权完成率 0%；MATH-002 仍 IN_PROGRESS，因为业务 API、持久化学习数据和真实设备验收未完成。
+
+
+## 2026-10-19 MATH-002 实际技术实现补充
+- 已新增 `backend/app.py` 的 FastAPI `/health` 入口，以及 `backend/storage.py` 文件型 SQLite schema 元数据读写。
+- 新增 `tests/test_backend_api.py`，验证真实 FastAPI TestClient HTTP 请求、数据库文件创建和重新初始化后的持久化。
+- SHA `c622e4c67097bcecd5557e8dd3bd068bd788bf14` 的 PR CI run `39225650580` 已 completed/success；Vue/Vite build、前端 helper tests、Playwright mobile E2E、Python 全部测试、进度计算器检查均通过，Netlify preview 当时为 success。
+- 以上仅为技术基线，不代表学习数据 schema、前后端业务 API、DeepSeek、OCR 或教学闭环已实现。最新文档提交后的 SHA 必须重新检查 CI。
