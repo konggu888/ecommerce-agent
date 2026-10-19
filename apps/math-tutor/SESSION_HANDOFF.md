@@ -89,3 +89,14 @@ MATH-001 最新核查：状态 BLOCKED。OpenMath README 声明 Apache 2.0，但
 ## 2026-10-19 许可证门禁复核补充
 
 本轮检查 OpenMath 当前公开 README 的 Apache 2.0 声明，并对 LICENSE、LICENSE.md、LICENSE.txt、COPYING、NOTICE 进行 GitHub 内容查询，均未找到。README 的声明不能在本项目既定门禁下替代可复查许可证全文/作者确认。MATH-001 标记 BLOCKED，不能开始复制/改编上游代码。上轮 CI `39217632873` 成功及 Netlify deploy-preview 成功仅对应文档更新前 SHA `c8519a557bb4dabefad9ab74118c3fb05d929941`；本轮提交后需重新查询最新 SHA 的 CI。
+
+
+## 2026-10-19 回退候选初筛交接
+
+本轮已完成两个替代候选的文件级初筛（不超过既定候选总数 3）：
+1. `onemorepereira/math-tutor` / Number Ninja：根目录 MIT LICENSE 已读取；Vue 3/Vite 前端、AWS Lambda/DynamoDB/Bedrock 后端，README 声称手机适配、答题记录和提示。与私人 DeepSeek 目标不完全匹配，注册/排行榜等需删减；未 clone/运行测试。
+2. `AyushDixit-21/MathTalk`：根目录 MIT LICENSE 已读取；React/Vite + FastAPI/SymPy，README 将其定位为原型且未验证教育效果。课程/试卷照片/二年级教学闭环不匹配；未 clone/运行测试。
+
+初步优先级：下一步深入审查候选 1 的目录、测试、依赖、后端/前端实际完成度与改造成本；如果候选 1 明显不适合，再在既有两个候选中比较，不新增候选。OpenMath 仍因未找到许可证全文/作者确认而 BLOCKED，不复制其代码。选型和应用代码仍未完成；已验收 0/32、加权完成率 0%。
+
+最新状态复核：HEAD `e7e10491fefea44327656ffaac3333fc10c45b69` 的 GitHub Actions CI run `39218343866` 为 completed/success；Netlify deploy-preview combined status 为 success。该状态仅对应此 SHA，任何后续提交均需重新查询。
