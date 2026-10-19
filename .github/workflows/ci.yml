@@ -39,6 +39,9 @@ jobs:
       - name: Run math-tutor environment baseline tests
         run: python -m pytest -q apps/math-tutor/tests
 
+      - name: Verify math-tutor progress snapshot is current
+        run: python apps/math-tutor/scripts/update_progress.py --check
+
       - name: Frontend syntax check
         run: |
           node --check apps/web/game-logic-library.js
