@@ -24,3 +24,9 @@
 - 更新 SESSION_HANDOFF.md、README.md、IMPLEMENTATION_PLAN.md 和 PROGRESS_DASHBOARD.md，要求换模型/窗口后重新查最新 PR/HEAD/CI，避免依赖过期摘要。
 - 当前所有任务仍 NOT_STARTED；已验收 0/32、加权完成率 0%。连续性文件补齐不代表应用功能完成。
 
+
+## 2026-10-19 — MATH-001 许可证门禁复核
+- 重新查询 PR #33 和本轮文档修改前 HEAD `c8519a557bb4dabefad9ab74118c3fb05d929941`；该 SHA 的 GitHub Actions CI run `39217632873` 为 success，Netlify deploy-preview status 为 success。
+- 检查 OpenMath README 的 Apache 2.0 声明；GitHub 内容查询对 `LICENSE`、`LICENSE.md`、`LICENSE.txt`、`COPYING`、`NOTICE` 均返回 NOT_FOUND。
+- 由于没有可复查的许可证全文或作者明确确认，MATH-001 状态设为 BLOCKED，不复制/改编上游源码；证据写入 `upstream/OPENMATH_REFERENCE.md` 和 `docs/MATH_TASK_REGISTER.json`。
+- 下一步只按既定上限评估最多两个回退候选；候选总数不超过三个。应用功能未开始，验收仍 0/32、加权完成率 0%。
