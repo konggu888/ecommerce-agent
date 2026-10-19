@@ -198,3 +198,9 @@ PR：#33（Draft，未合并）
 - SHA `99d5405007dfac6eae86ff90be8b17e36931a3d2` 的 Push CI `39325112034`、PR CI `39325121132` 均 completed/success；真实 FastAPI/Vite E2E、Python tests、前端 build/helper tests、进度 `--check` 和现有仓库检查通过。
 - 此项属于技术迁移底座；没有提前实现或宣称 MATH-007 课程/题目数据契约、MATH-023 学习记录业务持久化。
 - 固定任务 32 项/100%；已验收 0/32、加权完成率 0%；MATH-002 仍 IN_PROGRESS，物理手机/人工验收仍未执行。
+
+## 2026-10-20 — SQLite migration future-version guard (verification pending)
+- Migration runner now rejects unknown recorded migration versions rather than proceeding against a potentially newer schema.
+- Regression test added for a database carrying unsupported migration version 99.
+- This is MATH-002 technical-baseline hardening only; CI for the latest HEAD must be checked before claiming the test passed.
+- Progress remains: fixed 32 tasks, total weight 100%, accepted 0/32, weighted completion 0%; MATH-002 IN_PROGRESS. No task denominator or weight changed.
