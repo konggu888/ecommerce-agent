@@ -18,7 +18,14 @@
     "ci_run_id": 39223691429,
     "ci_evidence": "GitHub Actions PR CI completed successfully for this SHA; job steps included Vue frontend build, frontend tests, all apps/math-tutor Python tests including progress integrity, and existing repository checks. Netlify deploy-preview status was success. This snapshot is historical; recheck after later commits.",
     "accepted_count": 0,
-    "weighted_completion_percent": 0
+    "weighted_completion_percent": 0,
+    "calculated_task_count": 32,
+    "calculated_total_weight_percent": 100,
+    "status_counts": {
+      "NOT_STARTED": 31,
+      "IN_PROGRESS": 1
+    },
+    "progress_calculated_at_utc": "2026-10-19T00:00:00Z"
   },
   "tasks": [
     {
