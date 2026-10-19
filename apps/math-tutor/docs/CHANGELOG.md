@@ -194,3 +194,9 @@
 - 新增 SELF_HOSTING.md，记录本机 smoke test 命令和公网发布前的认证、HTTPS、备份恢复与隐私门槛。
 - CI 新增 backend/frontend Docker 镜像构建步骤。需以新提交 SHA 的 CI 结果为准；本轮未在用户的真实服务器部署。
 - 该骨架仍不包含登录鉴权或完整学习业务 API，不能直接公开到互联网；不改变固定 32 项任务分母、权重或当前已验收数。
+
+
+## 2026-10-20 — 审计部署依赖与手机验收地址
+- 检查数学项目的核心规划/验收文档、接手文件、技术配置、Docker 配置与 CI 工作流；未发现必须通过 Netlify 网站开发或将其作为生产依赖的活动指令。
+- 明确旧文档里的 Netlify deploy-preview 状态只是历史 SHA 记录，当前外部 Netlify 集成的 success 不证明用户可以访问。
+- 新增 `docs/DEPLOYMENT_AND_MOBILE_ACCEPTANCE.md`；记录 Netlify 登录墙导致测试 URL 未交付，实体手机验收未完成。MATH-002 不得标记验收通过。
