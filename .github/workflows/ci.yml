@@ -28,6 +28,12 @@ jobs:
       - name: Test math-tutor frontend helpers
         run: npm run --workspace @math-tutor/frontend test
 
+      - name: Install Chromium for math-tutor mobile E2E
+        run: npm exec --workspace @math-tutor/frontend -- playwright install --with-deps chromium
+
+      - name: Run math-tutor mobile browser E2E
+        run: npm run --workspace @math-tutor/frontend test:e2e
+
       - name: Setup Python for math-tutor baseline
         uses: actions/setup-python@v5
         with:
