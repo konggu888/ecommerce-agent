@@ -193,3 +193,11 @@ PR：#33（Draft、未合并；接手时必须重新查询当前状态）
 - 本轮将当前题目内连续追问、上下文保持、测验防泄题、家长报告证据可信度、正式题目质量门禁、原图/OCR/确认题/AI 诊断分层留痕、故障恢复幂等性写入产品规格、验收和教学协议。
 - 映射现有 MATH-010/014/015/016/019/021/022/024/025/028/030/031，不新增任务或权重。任务总数仍 32、总权重 100%、已验收 0/32、加权完成率 0%。
 - 当前唯一工程任务仍为 MATH-002。不要再继续扩展竞品文档；下一步解决可复现的 Vue 3/TypeScript/Vite 项目级构建与测试验证，之后推进 MATH-003/004。CI 和 HEAD 必须重新查询。
+
+
+## 2026-10-19 — MATH-002 基线测试 CI 化
+- 新增 `apps/math-tutor/requirements-dev.txt`，固定 FastAPI 0.128.2、httpx 0.28.1、pytest 9.0.2。
+- 更新 `.github/workflows/ci.yml`：配置 Python 3.13，安装数学辅导基线依赖，并运行 `python -m pytest -q apps/math-tutor/tests/test_environment_baseline.py`。
+- 该改动刚提交时不能预先宣称 CI 通过；接手时需重新查询最新 HEAD 的 workflow。若 workflow 失败，检查日志并修复。
+- MATH-002 仍 IN_PROGRESS：Vue/Vite 项目级 build/test、真实手机端/E2E 尚未验证。当前不标记任何软件任务验收通过。
+- 竞品方向补漏已映射至现有任务；不要继续扩展竞品调研。下一步继续 MATH-002 的前端项目构建/测试与手机端路径验证。
