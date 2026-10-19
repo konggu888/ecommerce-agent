@@ -11,12 +11,12 @@
   "progress_rule": "Only ACCEPTED tasks with verifiable evidence count toward weighted completion. Documentation/commit/CI alone do not establish product acceptance. User-approved v2.2 direction is from-scratch implementation; all previously specified required features remain mandatory. Learner autonomy is mandatory: unit scope, cumulative practice and teacher-assignment boundaries must be implemented and tested, not documentation-only. Voice/AI teacher, stepwise math blackboard, and parent-configurable point rewards with a persistent ledger are mandatory scope; document-only completion does not count.",
   "last_verified_snapshot": {
     "date": "2026-10-19",
-    "head_sha": "79560df651e35d7148eecc30ff5109a6a2dcc75d",
+    "head_sha": "c622e4c67097bcecd5557e8dd3bd068bd788bf14",
     "pr_state": "open",
     "pr_draft": true,
     "ci_state": "SUCCESS",
-    "ci_run_id": 39224952190,
-    "ci_evidence": "GitHub Actions PR CI completed successfully for this SHA. Vue build/helper tests, Chromium install, Playwright mobile browser E2E, Python tests, progress calculator --check and existing repository checks succeeded. Netlify deploy preview status was success at last query. This snapshot is historical; recheck after later commits.",
+    "ci_run_id": 39225650580,
+    "ci_evidence": "GitHub Actions PR CI completed successfully for this SHA. Vue build/helper tests, Playwright mobile Chromium E2E, FastAPI/SQLite baseline and file-persistence tests, progress calculator --check and existing repository checks succeeded. Netlify deploy preview status was success at last query. This snapshot is historical; recheck after later commits.",
     "accepted_count": 0,
     "weighted_completion_percent": 0,
     "calculated_task_count": 32,
@@ -78,9 +78,13 @@
         {
           "type": "mobile_chromium_e2e",
           "detail": "GitHub Actions PR CI run 39224952190 completed/success for SHA 79560df651e35d7148eecc30ff5109a6a2dcc75d on 2026-10-19. Chromium installation and Run math-tutor mobile browser E2E completed successfully; the same run's progress snapshot check passed. Tests cover 390px viewport, key home-page entries, horizontal overflow and keyboard interaction. This is browser emulation, not physical-device acceptance or backend integration."
+        },
+        {
+          "type": "fastapi_sqlite_file_persistence",
+          "detail": "GitHub Actions PR CI run 39225650580 completed/success for SHA c622e4c67097bcecd5557e8dd3bd068bd788bf14 on 2026-10-19. New backend/app.py FastAPI /health endpoint returned expected service/storage/schema metadata using a file-backed SQLite DB; backend/storage.py initialized schema metadata and tests verified a written value survived database reinitialization. This is a technical baseline, not learner-data schema or frontend-to-backend integration."
         }
       ],
-      "note": "Partial baseline evidence: Vue/Vite build, frontend helper tests, FastAPI/SQLite baseline tests, progress calculator checks, and Playwright mobile Chromium smoke tests have passed in GitHub Actions run 39224952190 for SHA 79560df651e35d7148eecc30ff5109a6a2dcc75d. MATH-002 remains IN_PROGRESS because a complete frontend-to-FastAPI business API path, persistent application data path, and physical mobile-device/manual acceptance have not yet been verified. Do not repeat passed checks; recheck latest SHA CI after later commits."
+      "note": "Partial baseline evidence: Vue/Vite build, frontend helper tests, Playwright mobile Chromium smoke tests, FastAPI /health endpoint, file-backed SQLite persistence, Python tests, and progress calculator checks passed in CI run 39225650580 for SHA c622e4c67097bcecd5557e8dd3bd068bd788bf14. MATH-002 remains IN_PROGRESS because the frontend-to-FastAPI business path, learner-data schema, and physical mobile-device/manual acceptance are not yet verified. Do not repeat passed checks; recheck latest SHA CI after later commits."
     },
     {
       "id": "MATH-003",
