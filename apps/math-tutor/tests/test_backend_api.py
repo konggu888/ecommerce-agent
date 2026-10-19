@@ -83,3 +83,19 @@ def test_existing_metadata_database_is_adopted_without_losing_values(tmp_path):
             "SELECT version FROM schema_migrations ORDER BY version"
         ).fetchall()
     assert versions == [(1,)]
+
+def test_newer_unknown_migration_version_fails_closed(tmp_path):
+    import sqlite3
+    import pytest
+
+    database_path = tmp_path / "future-schema.sqlite3"
+    with sqlite3.connect(database_path) as connection:
+        connection.execute(
+            "CREATE TABLE schema_migrations "
+            "(version INTEGER PRIMARY KEY, applied_at TEXT NOT NULL "
+            "DEFAULT CURRENT_TIMESTAMP)"
+        )
+        connection.execute("INSERT INTO schema_migrations(version) VALUES (99)")
+
+    with pytest.raises(RuntimeError, match="not supported by this application: 99"):
+        initialize_database(database_path)
