@@ -170,3 +170,11 @@ PR：#33（Draft，未合并）
 - 新增 `tests/test_backend_api.py`，验证真实 FastAPI TestClient HTTP 请求、数据库文件创建和重新初始化后的持久化。
 - SHA `c622e4c67097bcecd5557e8dd3bd068bd788bf14` 的 PR CI run `39225650580` 已 completed/success；Vue/Vite build、前端 helper tests、Playwright mobile E2E、Python 全部测试、进度计算器检查均通过，Netlify preview 当时为 success。
 - 以上仅为技术基线，不代表学习数据 schema、前后端业务 API、DeepSeek、OCR 或教学闭环已实现。最新文档提交后的 SHA 必须重新检查 CI。
+
+
+## 2026-10-20 最新工程状态补充（前端 API 链路实现后）
+- 已在 Vue 首页接入真实 `GET /api/health` 请求；开发服务器配置 `/api` → FastAPI `127.0.0.1:8000` 代理。
+- UI 会分别呈现连接中、连接成功和服务不可用；失败时明确说明当前页面不会保存学习记录。
+- 新增 API 客户端测试（成功、HTTP 失败、格式异常）和移动端 E2E 的 API 成功/失败 UI 检查。
+- 此次代码刚提交，当前 SHA 对应的 CI 必须重新查询；新增测试尚不能标为通过。
+- 软件进度保持 32 项、已验收 0/32、加权完成率 0%；MATH-002 仍 IN_PROGRESS。剩余缺口：真实前后端联调（浏览器请求经代理访问实际 FastAPI 服务）、学习数据业务 schema/持久化，以及物理手机/人工验收。
