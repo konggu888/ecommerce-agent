@@ -21,7 +21,7 @@ PR：#33（Draft，未合并）
 - 已验收：0/32。
 - 加权完成率：0%。
 - 应用产品代码：尚未开始；已增加 MATH-002 环境基线测试，不代表产品功能。
-- 自研技术基线：IN_PROGRESS；FastAPI/SQLite 最小 smoke test 通过，Vue/Vite 项目构建和手机端路径仍未验证。
+- 自研技术基线：IN_PROGRESS；FastAPI/SQLite smoke test、Vue/Vite build 与前端 helper tests 已在 CI 对 SHA `dfc152a725dabb13b531ab4dd949921d170c5ae1` 验证通过；真实手机浏览器/E2E 与完整前后端集成仍未验证。
 - 应用启动和测试：未运行。
 - DeepSeek 实际调用：未运行。
 - 手机端实测：未运行。
@@ -141,3 +141,11 @@ PR：#33（Draft，未合并）
 - 该 CI 实际通过了 Vue 前端 build、前端测试、`apps/math-tutor/tests` 全部 Python 测试（包含新进度一致性守卫）及工作流中的其他检查。
 - 此证据只对应上述 SHA；后续文档提交产生的新 SHA 仍需重新查询 CI。
 - 软件任务仍为 32 项、100% 权重、已验收 0/32、加权完成率 0%；MATH-002 继续 IN_PROGRESS。CI 通过不等于 MATH-002 已验收，也不代表产品功能完成。
+
+
+## 进度计算器（2026-10-19）
+- 计算脚本：`apps/math-tutor/scripts/update_progress.py`。
+- 更新任务状态或验收证据后运行 `python apps/math-tutor/scripts/update_progress.py --write`，脚本按固定任务表重新计算验收数、加权完成率和状态分布，并同步本看板及 JSON 快照。
+- CI 运行 `python apps/math-tutor/scripts/update_progress.py --check`；若 JSON 快照或看板数字过期，检查失败。
+- 该脚本不自动将任务标为 ACCEPTED；只有先核验代码/测试/人工证据并更新任务状态，才会重新计算。进度计算时间与 GitHub CI/HEAD 快照是不同字段，CI 状态仍须按最新提交查询。
+- 当前计算结果：32 项、权重 100%、已验收 0/32、加权完成率 0%；状态分布 NOT_STARTED 31、IN_PROGRESS 1。
