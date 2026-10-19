@@ -94,3 +94,11 @@ pytest 9.0.2
 - SHA `c622e4c67097bcecd5557e8dd3bd068bd788bf14` 的 GitHub Actions PR CI run `39225650580` completed/success；前端 build/helper tests、Playwright mobile Chromium E2E、Python 全部测试、进度快照检查及其他工作流检查均通过，Netlify deploy preview 当时为 success。
 - 这只证明技术基线 API 与文件 SQLite 可运行；尚无学习者业务 schema、前端到后端的真实请求链路、学习记录功能或真实手机硬件验收。MATH-002 继续 IN_PROGRESS。
 - 后续文档提交会产生新 SHA；接手时必须重新查询当前最新 HEAD 的 CI。
+
+
+## 2026-10-20 SQLite 迁移基础设施补充
+- 基础设施 schema 已使用 `schema_migrations(version, applied_at)` 记录迁移版本，迁移 v1 建立 `app_meta`。
+- 迁移执行只应用尚未记录的版本；反复初始化会保持已存在的元数据不变。
+- 对早期已存在 `app_meta` 但没有 `schema_migrations` 的数据库，迁移 v1 使用 `CREATE TABLE IF NOT EXISTS` 与幂等插入，可建立迁移历史而不删除原有键值。
+- 相关 Python 测试在 SHA `99d5405007dfac6eae86ff90be8b17e36931a3d2` 的 Push CI `39325112034` 和 PR CI `39325121132` 中通过。
+- 这仍是基础设施 schema；业务课程、题目、答题和学习记录数据模型不在此处定义，避免提前替代 MATH-007/MATH-023。
