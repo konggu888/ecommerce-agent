@@ -201,3 +201,13 @@ PR：#33（Draft、未合并；接手时必须重新查询当前状态）
 - 该改动刚提交时不能预先宣称 CI 通过；接手时需重新查询最新 HEAD 的 workflow。若 workflow 失败，检查日志并修复。
 - MATH-002 仍 IN_PROGRESS：Vue/Vite 项目级 build/test、真实手机端/E2E 尚未验证。当前不标记任何软件任务验收通过。
 - 竞品方向补漏已映射至现有任务；不要继续扩展竞品调研。下一步继续 MATH-002 的前端项目构建/测试与手机端路径验证。
+
+
+## 2026-10-19 最新接手覆盖（优先于本文更早的状态快照）
+- 当前分支：`feat/beishi-grade2-math-tutor`；PR #33 Open/Draft/未合并；最近核对的 HEAD 为 `666cc6cf7c63eb60ee67feae209476eea1079e05`。
+- 该 HEAD 对应 CI run `39223512454` 在查询时为 queued，Netlify deploy-preview 为 pending；这是旧于本节交接提交的状态，接手时必须重查最终最新 HEAD 的 CI。
+- 固定任务 32 项、权重总和 100%、已验收 0/32、加权完成率 0%；MATH-002 仍 IN_PROGRESS。不要因为 Vue/Vite 命令已加入 CI 就提前认定任务验收完成。
+- 已新增 `tests/test_progress_integrity.py` 并将 CI 的 pytest 命令扩展为运行 `apps/math-tutor/tests` 全部测试。该测试校验固定分母/权重、只统计 ACCEPTED、验收证据存在及 dashboard 数字同步。
+- 当前任务登记与看板必须一致；如 CI 因统计不一致失败，先修正数据/文档，不得绕过测试。
+- 从头自研是当前方向。OpenMath 许可证不再是开发门禁；不得复制其源码。不得修改 `apps/ad-studio-desktop/`，不得自动合并 PR。
+- 本轮范围：只补齐进度一致性自动检查和修正文档中遗留的许可证门禁冲突；未实现任何面向孩子的产品功能。下一唯一任务仍是完成 MATH-002 的技术栈基线验证，再按固定路线图推进 MATH-003/MATH-004。
