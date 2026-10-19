@@ -62,3 +62,11 @@ pytest 9.0.2
 - GitHub Actions CI 新增 Python 3.13 环境，安装上述依赖并执行 `python -m pytest -q apps/math-tutor/tests/test_environment_baseline.py`。
 - 此改动让 FastAPI TestClient 和 SQLite smoke test 在仓库 CI 中可复现；提交后必须查看最新 CI 结果。它仍不验证 Vue/Vite 项目构建、完整后端应用、手机端 E2E 或产品功能。
 - MATH-002 保持 IN_PROGRESS，除非前端构建/测试和手机端开发路径也有可复查证据，否则不得验收。
+
+
+## 2026-10-19 后续更新：前端 build/test 已由 CI 验证
+- 当前仓库已建立 `apps/math-tutor/package.json` 的 Vue 3 + TypeScript + Vite workspace。
+- GitHub Actions PR CI run `39223691429`（SHA `dfc152a725dabb13b531ab4dd949921d170c5ae1`）中，`Build math-tutor Vue frontend` 与 `Test math-tutor frontend helpers` 均为 completed/success。
+- 同一 CI 中数学项目 Python 测试（含进度一致性守卫）通过。
+- 尚未完成：真实手机浏览器手工验收/移动端 E2E、完整前后端集成链路和产品功能验收。因此 MATH-002 仍为 IN_PROGRESS，不计入已验收任务。
+- 本节证据只对应上述 SHA；新提交的 CI 状态必须重新查询。
