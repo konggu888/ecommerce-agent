@@ -73,3 +73,10 @@ MATH-001 已核查到阻塞证据：OpenMath README 声明 Apache 2.0，但检�
 - 已按固定上限评估两个替代候选：`onemorepereira/math-tutor` 与 `AyushDixit-21/MathTalk`，合计候选（含 OpenMath）不超过 3。
 - 两个候选均发现根目录 MIT 许可证全文；候选 A 的儿童数学练习界面更接近目标，但 AWS Bedrock/Cognito/排行榜与私人 DeepSeek 使用目标不匹配；候选 B 更适合参考确定性数学验证/教学状态机，但定位和课程不匹配。
 - 尚未 clone、安装、运行或测试候选；这轮只做仓库文件级初筛。选型仍未完成，任务验收仍 0/32、加权完成率 0%。
+
+
+## 2026-10-19 最新提交后复查（元数据更新前快照）
+- 五份候选评估/交接文档已提交后，PR #33 HEAD 为 `59226c26e1997361a73dad0051308a1703ba1cc2`，PR 仍 Open/Draft/未合并。
+- 该 SHA 的 GitHub Actions CI run `39218680024` 为 queued/running；combined status 尚无状态项。当前提交的 CI 不能标为成功。
+- 该 SHA 的 JSON 任务登记已重新解析通过：32 项、权重总计 100%、已验收 0 项，MATH-001 仍 BLOCKED。候选评估不计入软件完成率。
+- 这是元数据更新前的复查快照；本次记录本身会产生新 HEAD，接手时仍须重新查询最新 SHA 和 CI。
