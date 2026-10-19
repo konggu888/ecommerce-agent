@@ -67,3 +67,9 @@ MATH-001 已核查到阻塞证据：OpenMath README 声明 Apache 2.0，但检�
 - 当前验收仍为 0/32、加权完成率 0%；新增文档不计入产品进度。
 - 本轮文档提交会改变 HEAD；因此本节不把旧 SHA 冒充最新状态。下一个窗口必须重新查询最新 PR #33 的 head SHA、CI/status、workflow runs 和部署检查。若查询没有状态项，标记 NO_DATA/未确认。
 
+
+
+## 2026-10-19 候选评估补充
+- 已按固定上限评估两个替代候选：`onemorepereira/math-tutor` 与 `AyushDixit-21/MathTalk`，合计候选（含 OpenMath）不超过 3。
+- 两个候选均发现根目录 MIT 许可证全文；候选 A 的儿童数学练习界面更接近目标，但 AWS Bedrock/Cognito/排行榜与私人 DeepSeek 使用目标不匹配；候选 B 更适合参考确定性数学验证/教学状态机，但定位和课程不匹配。
+- 尚未 clone、安装、运行或测试候选；这轮只做仓库文件级初筛。选型仍未完成，任务验收仍 0/32、加权完成率 0%。
