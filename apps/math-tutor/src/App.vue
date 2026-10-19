@@ -1,8 +1,22 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
+import { fetchApiHealth, type ApiConnectionState } from "./api";
 
 const learnerName = ref("小小数学家");
 const showWelcome = ref(true);
+const apiState = ref<ApiConnectionState>({ status: "checking" });
+
+onMounted(async () => {
+  try {
+    const health = await fetchApiHealth();
+    apiState.value = { status: "connected", health };
+  } catch (error) {
+    apiState.value = {
+      status: "unavailable",
+      message: error instanceof Error ? error.message : "暂时无法连接服务",
+    };
+  }
+});
 </script>
 
 <template>
@@ -35,6 +49,12 @@ const showWelcome = ref(true);
 
     <section v-else class="next-step" aria-live="polite"><span class="step-number">01</span><div><h2>先选一个你想了解的数学单元</h2><p>完整学习功能正在建设中。现在不会记录练习或伪造学习成绩。</p></div></section>
 
-    <footer class="page-footer"><span>认真思考，比答得快更重要。</span><span>当前为开发基线页面 · 学习记录功能尚未启用</span></footer>
+    <footer class="page-footer">
+      <span>认真思考，比答得快更重要。</span>
+      <span v-if="apiState.status === 'checking'" role="status" data-testid="api-status">正在连接学习服务…</span>
+      <span v-else-if="apiState.status === 'connected'" role="status" data-testid="api-status">学习服务已连接 · {{ apiState.health.storage }} 数据层</span>
+      <span v-else role="status" data-testid="api-status" :title="apiState.message">学习服务暂不可用，当前页面不会保存学习记录</span>
+      <span>当前为开发基线页面 · 学习记录功能尚未启用</span>
+    </footer>
   </main>
 </template>
