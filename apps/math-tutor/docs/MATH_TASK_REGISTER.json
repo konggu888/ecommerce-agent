@@ -11,11 +11,12 @@
   "progress_rule": "Only ACCEPTED tasks with verifiable evidence count toward weighted completion. Documentation/commit/CI alone do not establish product acceptance. User-approved v2.2 direction is from-scratch implementation; all previously specified required features remain mandatory. Learner autonomy is mandatory: unit scope, cumulative practice and teacher-assignment boundaries must be implemented and tested, not documentation-only. Voice/AI teacher, stepwise math blackboard, and parent-configurable point rewards with a persistent ledger are mandatory scope; document-only completion does not count.",
   "last_verified_snapshot": {
     "date": "2026-10-19",
-    "head_sha": "0fda5c553ebb7dabb027dcfda6e6ae5890cfe000",
+    "head_sha": "666cc6cf7c63eb60ee67feae209476eea1079e05",
     "pr_state": "open",
     "pr_draft": true,
-    "ci_state": "NO_DATA",
-    "ci_evidence": "Historical pre-v2.2 snapshot only; no current status result was available for this SHA. All commits made by the v2.2 documentation update require fresh CI lookup.",
+    "ci_state": "RUNNING",
+    "ci_run_id": 39223512454,
+    "ci_evidence": "At snapshot time the latest CI run for this SHA was queued; Netlify deploy-preview status was pending. Recheck after any later commit.",
     "accepted_count": 0,
     "weighted_completion_percent": 0
   },
