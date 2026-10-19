@@ -167,3 +167,10 @@
 - Added regression test `test_newer_unknown_migration_version_fails_closed` for unknown version 99.
 - Commits: `1de4ce02bc94b1d3bd25d0445801c69137de00eb`, `b18b5a67e672c7b9ba0862da27dcd84739be07b1`. Current-head CI must be rechecked; no pass is claimed yet.
 - MATH-002 remains IN_PROGRESS; task count/weights unchanged and software acceptance remains 0/32, 0%.
+
+## 2026-10-20 — MATH-001 有边界调研验收与最新 CI 状态更新
+- 将参考项目限制为三个：OpenMath、onemorepereira/math-tutor、AyushDixit-21/MathTalk；刷新其当前上游 SHA，并登记许可证状态、架构匹配差异与静态审查边界。
+- OpenMath README 声明 Apache 2.0 但根 LICENSE 仍为 404，明确排除源码复用；另外两个候选有 MIT 根许可证，但只作为设计参考。本项目没有复制候选源码。
+- MATH-001 标记 ACCEPTED（仅限调研与许可证风险登记范围），权重 4%。候选上游项目未被声称已运行或测试；本项目自身基线 CI 对 SHA `9ceee1024d30177482a1a61b5fa573c782e49ca6` 的 Push run `39326153402` 和 PR run `39326160690` 均成功。
+- MATH-002 继续 IN_PROGRESS。SQLite 未知迁移版本拒绝机制和 version 99 回归测试在上述最新代码 CI 中通过；真实物理手机/人工验收仍未完成。
+- 当前统计：固定 32 项、权重 100%；已验收 1/32、加权完成率 4%；状态 ACCEPTED 1、IN_PROGRESS 1、NOT_STARTED 30。
