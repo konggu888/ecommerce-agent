@@ -70,3 +70,10 @@ pytest 9.0.2
 - 同一 CI 中数学项目 Python 测试（含进度一致性守卫）通过。
 - 尚未完成：真实手机浏览器手工验收/移动端 E2E、完整前后端集成链路和产品功能验收。因此 MATH-002 仍为 IN_PROGRESS，不计入已验收任务。
 - 本节证据只对应上述 SHA；新提交的 CI 状态必须重新查询。
+
+
+## 2026-10-19 后续：手机视口浏览器自动化已加入（等待当前 CI）
+- 新增 `@playwright/test` 与 `apps/math-tutor/playwright.config.ts`，固定使用 Chromium 的 iPhone 13 设备参数。
+- 新增 `apps/math-tutor/e2e/mobile-home.spec.ts`，检查手机视口首页关键入口可见、页面无水平溢出、欢迎按钮可通过键盘触发，以及页面不伪造学习记录。
+- GitHub Actions 已加入 Chromium 安装与 `test:e2e` 步骤。此为新增验证能力，不能在最新 SHA 的 CI 完成前写成“已通过”。
+- 该 E2E 只验证当前前端基线的手机视口与基本交互，不代表真实手机硬件验收、前后端集成或数学辅导功能验收。MATH-002 继续 IN_PROGRESS。
