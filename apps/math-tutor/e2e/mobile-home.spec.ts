@@ -10,11 +10,13 @@ test("mobile home page renders and connects to the live FastAPI service", async 
   await expect(page.getByRole("heading", { name: "看看我的试卷" })).toBeVisible();
   await expect(page.getByTestId("api-status")).toHaveText("学习服务已连接 · sqlite 数据层");
 
-  const apiResponse = await page.request.get("/api/health");
-  expect(apiResponse.ok()).toBeTruthy();
-  await expect(apiResponse).toBeOK();
-  await expect(apiResponse).toBeOK();
-  expect(await apiResponse.json()).toMatchObject({
+  const apiResponse = await page.evaluate(async () => {
+    const response = await fetch("/api/health");
+    return { ok: response.ok, status: response.status, payload: await response.json() };
+  });
+  expect(apiResponse.ok).toBe(true);
+  expect(apiResponse.status).toBe(200);
+  expect(apiResponse.payload).toMatchObject({
     ok: true,
     service: "math-tutor-api",
     storage: "sqlite",
