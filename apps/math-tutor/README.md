@@ -69,3 +69,7 @@
 
 ## 自有服务器部署
 部署骨架、Docker Compose 命令和公网安全门槛见 [SELF_HOSTING.md](./SELF_HOSTING.md)。当前项目没有登录鉴权，不能直接公开到互联网；CI 镜像构建不代表已经部署到用户服务器。
+
+
+## 测试地址与手机验收状态
+当前分支尚无确认可由用户直接访问的测试 URL。Netlify deploy-preview 需要受邀账号登录，不能作为验收地址。请先查看 [部署地址与真实手机验收状态](./docs/DEPLOYMENT_AND_MOBILE_ACCEPTANCE.md)。CI 的手机视口模拟不等于实体手机验收；MATH-002 仍未完成。
