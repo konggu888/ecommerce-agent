@@ -55,3 +55,10 @@ pytest 9.0.2
 - 仍需验证项目级 Vue 3 + TypeScript + Vite 依赖安装、build/test、FastAPI/SQLite 项目配置、手机视口及浏览器路径。
 - 不得因为 Python smoke test 通过就把 MATH-002 标为 ACCEPTED；当前只能标记 IN_PROGRESS。
 - MATH-002 未验收前，软件加权完成率不变；当前 0/32、0%。
+
+
+## CI 可复现性补充（2026-10-19）
+- 新增 `requirements-dev.txt`，固定 FastAPI、httpx 和 pytest 测试依赖版本。
+- GitHub Actions CI 新增 Python 3.13 环境，安装上述依赖并执行 `python -m pytest -q apps/math-tutor/tests/test_environment_baseline.py`。
+- 此改动让 FastAPI TestClient 和 SQLite smoke test 在仓库 CI 中可复现；提交后必须查看最新 CI 结果。它仍不验证 Vue/Vite 项目构建、完整后端应用、手机端 E2E 或产品功能。
+- MATH-002 保持 IN_PROGRESS，除非前端构建/测试和手机端开发路径也有可复查证据，否则不得验收。
