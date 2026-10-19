@@ -22,6 +22,37 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Build math-tutor Vue frontend
+        run: npm run --workspace @math-tutor/frontend build
+
+      - name: Test math-tutor frontend helpers
+        run: npm run --workspace @math-tutor/frontend test
+
+      - name: Setup Python for math-tutor baseline
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install math-tutor baseline dependencies
+        run: python -m pip install -r apps/math-tutor/requirements-dev.txt
+
+      - name: Install Chromium for math-tutor mobile E2E
+        run: npm exec --workspace @math-tutor/frontend -- playwright install --with-deps chromium
+
+      - name: Run math-tutor mobile browser E2E with live FastAPI
+        run: npm run --workspace @math-tutor/frontend test:e2e
+
+      - name: Run math-tutor environment baseline tests
+        run: python -m pytest -q apps/math-tutor/tests
+
+      - name: Verify math-tutor progress snapshot is current
+        run: python apps/math-tutor/scripts/update_progress.py --check
+
+      - name: Build self-hosted math-tutor Docker images
+        run: |
+          docker build -f apps/math-tutor/Dockerfile --target backend -t math-tutor-backend:ci .
+          docker build -f apps/math-tutor/Dockerfile --target frontend -t math-tutor-frontend:ci .
+
       - name: Frontend syntax check
         run: |
           node --check apps/web/game-logic-library.js

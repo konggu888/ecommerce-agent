@@ -1,0 +1,467 @@
+{
+  "schema_version": "1.0",
+  "project": "beishi-grade2-math-tutor",
+  "repository": "konggu888/ecommerce-agent",
+  "directory": "apps/math-tutor/",
+  "branch": "feat/beishi-grade2-math-tutor",
+  "pull_request": 33,
+  "plan_version": "2.2",
+  "fixed_task_count": 32,
+  "total_weight_percent": 100,
+  "progress_rule": "Only ACCEPTED tasks with verifiable evidence count toward weighted completion. Documentation/commit/CI alone do not establish product acceptance. User-approved v2.2 direction is from-scratch implementation; all previously specified required features remain mandatory. Learner autonomy is mandatory: unit scope, cumulative practice and teacher-assignment boundaries must be implemented and tested, not documentation-only. Voice/AI teacher, stepwise math blackboard, and parent-configurable point rewards with a persistent ledger are mandatory scope; document-only completion does not count.",
+  "last_verified_snapshot": {
+    "date": "2026-10-20",
+    "head_sha": "3eda480f8061b0547c146c96007b9222ff8bd672",
+    "pr_state": "open",
+    "pr_draft": true,
+    "ci_state": "SUCCESS",
+    "ci_run_id": 39326955062,
+    "ci_evidence": "SHA 3eda480f8061b0547c146c96007b9222ff8bd672: PR CI run 39326955062 and Push CI run 39326945702 completed SUCCESS. Confirmed Vue frontend build, frontend helper tests, live FastAPI/Vite mobile-browser E2E, Python baseline tests, progress snapshot --check, and existing repository checks. This SHA contains the MATH-001 research acceptance and documentation sync; physical-device acceptance for MATH-002 remains outstanding.",
+    "accepted_count": 1,
+    "weighted_completion_percent": 4,
+    "calculated_task_count": 32,
+    "calculated_total_weight_percent": 100,
+    "status_counts": {
+      "ACCEPTED": 1,
+      "IN_PROGRESS": 1,
+      "NOT_STARTED": 30
+    },
+    "progress_calculated_at_utc": "2026-10-20T00:00:00Z"
+  },
+  "tasks": [
+    {
+      "id": "MATH-001",
+      "title": "全网参考调研与第三方许可风险登记（只借鉴设计，不复制候选源码）",
+      "weight_percent": 4,
+      "dependencies": [],
+      "status": "ACCEPTED",
+      "acceptance_evidence": [
+        {
+          "type": "bounded_candidate_comparison",
+          "url": "apps/math-tutor/upstream/OPENMATH_REFERENCE.md",
+          "detail": "Compared exactly three candidates (OpenMath, onemorepereira/math-tutor, AyushDixit-21/MathTalk) using curriculum/schema, answer validation, hints, progress persistence, model architecture, mobile UI, test evidence, maintenance, and license clarity. Review is static-source evidence; no candidate code copied or run. Date 2026-10-20."
+        },
+        {
+          "type": "openmath_license_risk",
+          "url": "https://github.com/Galliard7/OpenMath",
+          "detail": "Current default-branch commit rechecked as 8b7ebaa86b886df2e7631f5760128507f65571b0 (2026-05-23). README claims Apache 2.0, but LICENSE lookup returns 404; excluded from source reuse. README blob previously recorded as 3590673738e755ae071c6ff2260a56387b79d6e6."
+        },
+        {
+          "type": "mit_license_verified_candidate_a",
+          "url": "https://github.com/onemorepereira/math-tutor",
+          "detail": "Current main commit rechecked as 1e821a4d15ea63687e9f42f2c2200656954d5eca (2026-08-29); root LICENSE returned MIT text (copyright Miguel Pereira 2025-2026; previous LICENSE blob SHA d4b77a37f58d8fe75ff571ff86319652355ece7a). Static audit found Vue 3/TypeScript UI and answer-validation tests, but Cognito/AWS Bedrock/DynamoDB and public leaderboard conflict with this project's simpler DeepSeek/private flow; no source copied."
+        },
+        {
+          "type": "mit_license_verified_candidate_b",
+          "url": "https://github.com/AyushDixit-21/MathTalk",
+          "detail": "Current main commit rechecked as 559e4a6e57e02980eabb7dbc49b636f5e7e48a3e (2026-09-08); root LICENSE returned MIT text (previous LICENSE blob SHA 4775913c2512cacb675c438e88adda8858cdf813). Static audit indicates React/FastAPI/SymPy research prototype, not a Beishi Grade 2 curriculum platform; no source copied."
+        },
+        {
+          "type": "self_developed_project_smoke_and_ci",
+          "url": "https://github.com/konggu888/ecommerce-agent/pull/33",
+          "detail": "Selected direction is self-development; own app baseline was exercised by current branch CI for SHA 9ceee1024d30177482a1a61b5fa573c782e49ca6: Push run 39326153402 SUCCESS and PR run 39326160690 SUCCESS. These verify the project's current build/tests, not candidate upstreams or product learning behavior."
+        }
+      ],
+      "note": "ACCEPTED for the bounded research/license-risk-register task only. No upstream source code was copied. OpenMath remains excluded because its formal license text was not found; MIT candidates were evaluated only as references. This acceptance does not certify product behavior, third-party dependency/material licenses, or educational effectiveness."
+    },
+    {
+      "id": "MATH-002",
+      "title": "验证自研技术栈与开发环境基线（Vue/TypeScript、FastAPI、SQLite、测试、手机端）",
+      "weight_percent": 3,
+      "dependencies": [],
+      "status": "IN_PROGRESS",
+      "acceptance_evidence": [
+        {
+          "type": "environment_version_check",
+          "detail": "2026-10-19 container: Node v22.16.0, npm 10.9.2, TypeScript 5.8.3, Python 3.13.5, FastAPI 0.128.2, Starlette 0.50.0, pytest 9.0.2, SQLite 3.46.1. Recorded in apps/math-tutor/docs/STACK_BASELINE.md."
+        },
+        {
+          "type": "local_smoke_test",
+          "detail": "apps/math-tutor/tests/test_environment_baseline.py: pytest -q -> 2 passed; validates FastAPI TestClient HTTP 200 and SQLite write/read only, not product behavior."
+        },
+        {
+          "type": "ci_frontend_build_test",
+          "detail": "GitHub Actions PR CI run 39223691429 completed/success for SHA dfc152a725dabb13b531ab4dd949921d170c5ae1 on 2026-10-19. Steps Build math-tutor Vue frontend and Test math-tutor frontend helpers both completed successfully. This proves frontend build/test commands work in CI, not mobile E2E or product acceptance; recheck after later commits."
+        },
+        {
+          "type": "historical_pre_scaffold_gap",
+          "detail": "Historical observation before the Vue/Vite scaffold existed: Vite was not installed in the execution container and Git clone was blocked by DNS. Superseded by successful frontend build/helper-test CI evidence and the mobile Chromium E2E evidence below."
+        },
+        {
+          "type": "mobile_chromium_e2e",
+          "detail": "GitHub Actions PR CI run 39224952190 completed/success for SHA 79560df651e35d7148eecc30ff5109a6a2dcc75d on 2026-10-19. Chromium installation and Run math-tutor mobile browser E2E completed successfully; the same run's progress snapshot check passed. Tests cover 390px viewport, key home-page entries, horizontal overflow and keyboard interaction. This is browser emulation, not physical-device acceptance or backend integration."
+        },
+        {
+          "type": "fastapi_sqlite_file_persistence",
+          "detail": "GitHub Actions PR CI run 39225650580 completed/success for SHA c622e4c67097bcecd5557e8dd3bd068bd788bf14 on 2026-10-19. New backend/app.py FastAPI /health endpoint returned expected service/storage/schema metadata using a file-backed SQLite DB; backend/storage.py initialized schema metadata and tests verified a written value survived database reinitialization. This is a technical baseline, not learner-data schema or frontend-to-backend integration."
+        },
+        {
+          "type": "frontend_backend_health_integration",
+          "detail": "2026-10-20 implementation on PR branch: src/api.ts sends GET /api/health, validates the JSON contract and rejects non-2xx/malformed payloads; App.vue displays connected/checking/unavailable states and explicitly says no learning records are saved when the API is unavailable. vite.config.ts proxies /api to local FastAPI on 127.0.0.1:8000. Added api.test.ts for success, HTTP failure and malformed payload cases, and expanded Playwright mobile E2E to cover success/failure UI. This is code-level evidence only until latest CI passes; no physical-device acceptance."
+        },
+        {
+          "type": "live_frontend_backend_e2e_implementation",
+          "detail": "2026-10-20 verified implementation: GitHub Actions PR CI run 39324295556 and Push CI run 39324288870 completed successfully for SHA 178c50a2a23345bf3ae4123fa153bdfe555014f2. Playwright starts real FastAPI/Uvicorn on 127.0.0.1:8000 and Vite on 127.0.0.1:4173; main browser E2E does not mock the success path and verifies browser fetch('/api/health') returns HTTP 200 with math-tutor-api/SQLite/schema metadata through the Vite proxy. The CI job passed live FastAPI browser E2E, Python baseline tests, progress snapshot check, frontend build/helper tests and existing repository checks. This is verified technical integration evidence, not learner data schema/business persistence or physical-device acceptance."
+        },
+        {
+          "type": "versioned_sqlite_migration_baseline",
+          "detail": "Added backend/storage.py migration registry and schema_migrations history table for the infrastructure metadata schema. initialize_database applies unrecorded migrations, records version 1, and preserves pre-existing app_meta values. Tests cover repeated initialization, migration history, metadata preservation, and adoption of an existing metadata DB. GitHub Actions Push run 39325112034 and PR run 39325121132 completed success for SHA 99d5405007dfac6eae86ff90be8b17e36931a3d2, including Python baseline tests, live FastAPI/Vite browser E2E, progress --check and existing repo checks. This is infrastructure migration evidence only; learner/course/question business data contracts and student-record persistence remain assigned to MATH-007/MATH-023. MATH-002 stays IN_PROGRESS pending physical mobile acceptance and overall criteria."
+        },
+        {
+          "type": "unsupported_future_migration_guard_ci_verified",
+          "detail": "2026-10-20: backend/storage.py rejects recorded schema_migrations versions absent from MIGRATIONS; tests/test_backend_api.py covers version 99. Latest HEAD 9ceee1024d30177482a1a61b5fa573c782e49ca6 has Push CI run 39326153402 and PR CI run 39326160690 completed SUCCESS. This verifies the regression test in CI, not physical-device acceptance. MATH-002 remains IN_PROGRESS."
+        }
+      ],
+      "note": "Partial technical baseline: Vue/Vite build, frontend helper tests, Playwright mobile Chromium E2E with real FastAPI/Uvicorn + Vite browser-to-proxy-to-backend request, FastAPI /health, SQLite metadata persistence, and a versioned infrastructure-schema migration runner have passed CI for their recorded SHAs. Migration tests verify idempotent initialization and preserve pre-existing metadata. MATH-002 remains IN_PROGRESS because physical mobile/manual acceptance is outstanding; learner/course/question contracts and student learning-record business persistence belong to MATH-007/MATH-023 and are not claimed complete. Recheck current HEAD CI after later commits; do not repeat previously passed checks."
+    },
+    {
+      "id": "MATH-003",
+      "title": "冻结自研架构与中国儿童视觉/交互设计系统",
+      "weight_percent": 3,
+      "dependencies": [
+        "MATH-001",
+        "MATH-002"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "首期视觉/交互系统必须包含原创的高质量 3D/半写实 AI 数学老师形象，参考豆包、学而思、作业帮等产品较逼真、亲和、自然的抽象视觉方向，但不复制具体角色、商标、界面、美术资产或声音；至少比较 2–3 种原创方案并评估中国小学二年级适配、可信度、手机端性能、讲解状态与授权。还包括老师讲解/倾听/思考/鼓励状态、普通话语音与字幕/静音/暂停/重播、真实可操作数学黑板和适度动效。首期儿童视觉/交互必须包含 AI 数学老师形象及讲解/倾听/思考/鼓励状态、普通话语音与字幕/静音/暂停/重播、真实可操作数学黑板和适度动效；中国二年级适配、安静模式和手机验收均为必要条件。 Not accepted. This task now covers our own Chinese child-first visual and interaction system. Previous fallback candidate research is background reference only and does not satisfy this task. Require design tokens/components, responsive implementation, usability checks and acceptance evidence."
+    },
+    {
+      "id": "MATH-004",
+      "title": "创建独立应用骨架并验证前后端构建、测试、API 和持久化",
+      "weight_percent": 2,
+      "dependencies": [
+        "MATH-002",
+        "MATH-003"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified. Updated plan v2.2: this is our own application scaffold, not a fork or upstream baseline."
+    },
+    {
+      "id": "MATH-005",
+      "title": "冻结产品目标、首期范围、学生/家长流程、时间效率与试卷照片目标",
+      "weight_percent": 3,
+      "dependencies": [],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-006",
+      "title": "核对孩子实际教材版次、上下册、目录与进度",
+      "weight_percent": 3,
+      "dependencies": [],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-007",
+      "title": "定义课程/题目/知识点/依赖/测验/证据/试卷照片数据契约",
+      "weight_percent": 3,
+      "dependencies": [],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "验收必须覆盖自主练习范围/单元组合、教材册次/单元/知识点/前置依赖、题目目的和版本；老师作业与自主练习的数据来源须可区分。 Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-008",
+      "title": "冻结诊断、提示、重做、掌握度、时间编排、试卷分流和测量协议",
+      "weight_percent": 3,
+      "dependencies": [],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "验收必须覆盖孩子可暂停/跳过/返回/重学/探索，AI 推荐不构成强制门槛；单元选择不静默扩展范围，前置知识问题通过可选择的补充教学处理。 Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-009",
+      "title": "实现可配置的 DeepSeek provider adapter",
+      "weight_percent": 4,
+      "dependencies": [
+        "MATH-004",
+        "MATH-007"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "若使用独立 TTS 服务/浏览器语音能力，必须通过可替换的语音 adapter 接入；语音服务失败时文字讲解完整可用，服务商与声音素材许可需核查，不把语音服务密钥暴露到前端。 Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-010",
+      "title": "实现结构化输出校验、API 故障状态、图片识别不确定项可恢复处理",
+      "weight_percent": 4,
+      "dependencies": [
+        "MATH-007",
+        "MATH-009"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified. 新增验收细节：OCR 候选、用户确认后的结构化题目与 AI 诊断分别留痕；低置信度字段不能进入评分/掌握度；语音、OCR、模型失败保留可恢复状态。映射到本轮成熟产品参考覆盖审计。"
+    },
+    {
+      "id": "MATH-011",
+      "title": "验证密钥仅服务端且不泄露到构建产物/浏览器/日志",
+      "weight_percent": 4,
+      "dependencies": [
+        "MATH-009"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-012",
+      "title": "记录服务商用量与状态，故障退避有界且可恢复",
+      "weight_percent": 3,
+      "dependencies": [
+        "MATH-009",
+        "MATH-010"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-013",
+      "title": "实现课程 loader/schema，覆盖教材题与确认后的试卷照片题",
+      "weight_percent": 4,
+      "dependencies": [
+        "MATH-004",
+        "MATH-007"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-014",
+      "title": "完成首个试点单元映射、自编题、独立解法、分层提示和错误证据",
+      "weight_percent": 4,
+      "dependencies": [
+        "MATH-006",
+        "MATH-013"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified. 正式教学内容/试点题需记录版本、知识点、来源/编写方式和验证状态；AI 生成题未通过发布门禁前只能是 draft。映射到本轮成熟产品参考覆盖审计。"
+    },
+    {
+      "id": "MATH-015",
+      "title": "实现答案/算术/题意/评分来源/识别置信度/年级适配校验",
+      "weight_percent": 4,
+      "dependencies": [
+        "MATH-013"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified. 明确测试题目条件完整性、歧义、年级适配、确定性答案和 OCR 分层留痕；不可验证的题目隔离或请求复核。"
+    },
+    {
+      "id": "MATH-016",
+      "title": "实现 AI 变式题审核；未经校验题不得进入练习/正式测验",
+      "weight_percent": 4,
+      "dependencies": [
+        "MATH-014",
+        "MATH-015"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified. 正式练习/测验前必须通过结构、数学答案、条件完整性/歧义、年级适配和提示泄题检查；AI 自检不算独立验证。"
+    },
+    {
+      "id": "MATH-017",
+      "title": "实现每题最多三次分层提示、解法标记与原题重做队列",
+      "weight_percent": 4,
+      "dependencies": [
+        "MATH-013",
+        "MATH-015"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-018",
+      "title": "实现有证据的错误诊断、鉴别题和 unknown 状态",
+      "weight_percent": 4,
+      "dependencies": [
+        "MATH-014",
+        "MATH-017"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-019",
+      "title": "实现策略选择、效果验证、失败时换策略/检查前置知识",
+      "weight_percent": 4,
+      "dependencies": [
+        "MATH-018"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified. 孩子可在当前题目内追问并请求图示/换方法；上下文和已尝试策略必须保留。策略无效时实际换方法或检查前置知识，并记录后续独立表现。"
+    },
+    {
+      "id": "MATH-020",
+      "title": "实现掌握证据、独立作答、迁移、间隔复习、延迟复测与掌握后减量",
+      "weight_percent": 4,
+      "dependencies": [
+        "MATH-017",
+        "MATH-018",
+        "MATH-019"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-021",
+      "title": "实现手机端学生流程及多页试卷上传和三种试卷状态分流",
+      "weight_percent": 3,
+      "dependencies": [
+        "MATH-004",
+        "MATH-010",
+        "MATH-013"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "学生端包含 AI 老师讲解状态、普通话声音/字幕/静音、可暂停的黑板步骤、温和鼓励反馈；有家长配置的积分余额/奖励查看与兑换流程。空白卷和无提示测验时必须屏蔽答案泄露。 手机端必须支持只选单元、多个已学单元组合、全部已学累计复习、当前/旧单元比例，以及自主练习与老师作业分离；未选单元不可静默混入。 Not accepted. Require code/test/manual evidence; keep status unchanged until verified. 学生端需支持当前题目内的低龄友好快捷追问，保持题目/步骤/提示/策略/测验模式上下文；blank/no-hint 模式不得通过回复、声音或板书泄露答案。"
+    },
+    {
+      "id": "MATH-022",
+      "title": "实现家长报告：任务优先级/时间/掌握证据/试卷评分来源/学习效果",
+      "weight_percent": 3,
+      "dependencies": [
+        "MATH-020",
+        "MATH-021"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified. 家长报告必须展示证据样本数、测验/题组版本、评分来源、不确定性和下一步可选行动；区分观察事实、AI 假设和系统建议，不夸大成绩因果。"
+    },
+    {
+      "id": "MATH-023",
+      "title": "持久化答题、测验、复习、策略、试卷图片与确认记录并支持导出/删除",
+      "weight_percent": 3,
+      "dependencies": [
+        "MATH-007",
+        "MATH-021"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "持久化积分账户、积分流水、家长自定义奖励目录、兑换记录和当前可用余额；兑换扣减余额但不能删除历史，奖励目录改动不得篡改既往兑换快照。 Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-024",
+      "title": "实现刷新/断网/API或图像识别失败恢复与重复提交保护",
+      "weight_percent": 3,
+      "dependencies": [
+        "MATH-010",
+        "MATH-023"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified. 刷新、断网、音频/识别/API 失败后保留可恢复状态；恢复与重试需幂等，防止重复写入答题/积分/兑换事件。"
+    },
+    {
+      "id": "MATH-025",
+      "title": "自动化测试、静态检查、课程验证、状态机与测验逻辑测试通过",
+      "weight_percent": 3,
+      "dependencies": [
+        "MATH-009",
+        "MATH-020",
+        "MATH-021"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "自动化测试覆盖声音静音/失败回退、字幕与播放状态、黑板内容一致/测验防泄题、家长自定义任意积分门槛、兑换扣分/流水保留、余额不足/重复提交/刷新恢复；积分不能改变掌握度判定。 自动化回归必须覆盖单元范围约束、跨单元题映射、前置知识不锁定学习路径、AI 题目独立校验、不确定识别可确认/跳过/恢复。 Not accepted. Require code/test/manual evidence; keep status unchanged until verified. 回归测试覆盖当前题目内追问、上下文连续性、测验防泄题、题目质量发布门禁、OCR 分层留痕、报告不确定性和失败恢复幂等性。"
+    },
+    {
+      "id": "MATH-026",
+      "title": "完成部署、环境变量、HTTPS/访问控制、持久化和备份恢复说明",
+      "weight_percent": 3,
+      "dependencies": [
+        "MATH-025"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-027",
+      "title": "验收密钥、儿童隐私、图像数据访问/保留/导出/删除和日志脱敏",
+      "weight_percent": 2,
+      "dependencies": [
+        "MATH-011",
+        "MATH-023"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-028",
+      "title": "跑通端到端：上传/教材学习→诊断→教学→独立验证→复测→家长报告",
+      "weight_percent": 2,
+      "dependencies": [
+        "MATH-021",
+        "MATH-022",
+        "MATH-024",
+        "MATH-025"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "端到端测试至少包含讲解音频+字幕/黑板步骤，以及家长配置奖励→孩子获得积分→兑换确认→余额扣减→历史流水保留的完整链路；手机端真实验证。 Not accepted. Require code/test/manual evidence; keep status unchanged until verified. 端到端覆盖当前题目追问和上下文保持、题目质量门禁、报告证据可追溯、刷新/失败恢复与重复提交保护。"
+    },
+    {
+      "id": "MATH-029",
+      "title": "建立版本化基线/平行/延迟/迁移/期中期末测量蓝图",
+      "weight_percent": 2,
+      "dependencies": [
+        "MATH-006",
+        "MATH-014",
+        "MATH-020"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    },
+    {
+      "id": "MATH-030",
+      "title": "完成至少一个单元基线与结束平行测验比较",
+      "weight_percent": 2,
+      "dependencies": [
+        "MATH-029",
+        "MATH-028"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified. 报告基线/结束测验的题组版本、样本量、评分来源与可比性；数据不足时不能声称学习效果提升。"
+    },
+    {
+      "id": "MATH-031",
+      "title": "完成延迟复测/迁移分析及无提升时补弱调整再测流程",
+      "weight_percent": 2,
+      "dependencies": [
+        "MATH-030"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified. 延迟复测/迁移报告需明确样本数、题组版本和不确定性；失败后记录补弱/策略调整与再次测量。"
+    },
+    {
+      "id": "MATH-032",
+      "title": "发布首期证据报告并如实说明效果、限制、未运行项和后续措施",
+      "weight_percent": 1,
+      "dependencies": [
+        "MATH-030",
+        "MATH-031"
+      ],
+      "status": "NOT_STARTED",
+      "acceptance_evidence": [],
+      "note": "Not accepted. Require code/test/manual evidence; keep status unchanged until verified."
+    }
+  ]
+}

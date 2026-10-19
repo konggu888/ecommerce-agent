@@ -1,0 +1,202 @@
+# 项目变更记录
+
+## 2026-10-19 — 计划基线 2.0：从功能列表升级为学习效果闭环
+- 将产品核心目标明确为：发现真实知识缺口、以证据诊断原因、选择教学策略、验证独立迁移、检查延迟保持，并在策略无效时调整。
+- 明确 AI 诊断只能是可检验假设；必须关联实际作答/鉴别题证据，不确定时标 unknown。
+- 明确记录诊断 → 策略 → 后续独立表现 → 延迟结果 → 是否调整的链路。
+- 明确逐步培养独立性但不机械拒绝合理求助；策略无效时检查前置知识或更换教学方式。
+- 明确掌握状态不能由单题正确率、提示后答对或 AI 自评单独决定。
+- 明确测验题组、蓝图、评分规则和知识点映射需版本化；单元前后测使用不同题目但尽量可比。
+- 明确软件交付进度、学习效果和教学闭环有效性分别统计。
+- 保留原计划 32 项任务和 100% 权重，不增加分母，避免计划无限扩张。
+- 本轮只更新计划/验收文档；尚未开始应用代码，未运行 DeepSeek、手机端或学习效果测验。
+
+## 2026-10-19 — 计划基线 2.1：强制纳入时间效率与试卷拍照
+- 用户明确要求有限时间内真实掌握、无效教学调整和试卷照片辅导必须实际实现，不能停留在产品描述。
+- 将每日可配置时间上限、按证据排序、掌握后减少练习、每题明确目的和任务顺延写入产品/教学/架构要求。
+- 将空白卷、孩子已作答未批改、老师已批改三种试卷状态列为首期核心入口，并规定低置信度确认、分数来源隔离、共享教学闭环、儿童照片隐私与删除。
+- 将强制验收映射到现有 MATH-001–MATH-032，保持 32 项及原权重总计 100%；不把文档更新计入完成率。
+- 本轮只更新计划与验收门槛；应用代码、图片识别、时间编排、真实 API、手机端端到端和学习效果均仍未验收。
+
+## 2026-10-19 — 补齐 AI 跨窗口连续性控制
+- 新增 docs/AD_MATH_EXECUTION_CONTROL.md，定义新窗口接手顺序、范围控制、唯一任务声明、证据门槛、进度计算、停止条件和每轮收尾清单。
+- 新增 docs/MATH_TASK_REGISTER.json，登记 MATH-001–MATH-032 共 32 项，权重总计 100%，并为每项提供依赖、状态和验收证据字段。
+- 更新 SESSION_HANDOFF.md、README.md、IMPLEMENTATION_PLAN.md 和 PROGRESS_DASHBOARD.md，要求换模型/窗口后重新查最新 PR/HEAD/CI，避免依赖过期摘要。
+- 当前所有任务仍 NOT_STARTED；已验收 0/32、加权完成率 0%。连续性文件补齐不代表应用功能完成。
+
+
+## 2026-10-19 — MATH-001 许可证门禁复核
+- 重新查询 PR #33 和本轮文档修改前 HEAD `c8519a557bb4dabefad9ab74118c3fb05d929941`；该 SHA 的 GitHub Actions CI run `39217632873` 为 success，Netlify deploy-preview status 为 success。
+- 检查 OpenMath README 的 Apache 2.0 声明；GitHub 内容查询对 `LICENSE`、`LICENSE.md`、`LICENSE.txt`、`COPYING`、`NOTICE` 均返回 NOT_FOUND。
+- 由于没有可复查的许可证全文或作者明确确认，MATH-001 状态设为 BLOCKED，不复制/改编上游源码；证据写入 `upstream/OPENMATH_REFERENCE.md` 和 `docs/MATH_TASK_REGISTER.json`。
+- 下一步只按既定上限评估最多两个回退候选；候选总数不超过三个。应用功能未开始，验收仍 0/32、加权完成率 0%。
+
+
+## 2026-10-19 — 回退候选第一轮评估
+- 文件级评估 `onemorepereira/math-tutor` 与 `AyushDixit-21/MathTalk`，候选总数保持不超过三个。
+- 两者均找到 MIT LICENSE 全文；记录了技术栈、可借鉴点与和私人 DeepSeek/北师大二年级/试卷照片闭环之间的差距。
+- 候选 A 暂列为下一步深入审查对象，候选 B 暂不继续扩展；未 clone、启动或运行测试，不能视为基线验证通过。
+- 本轮不改变任务验收状态，仍为 0/32、加权完成率 0%。最新复核 SHA `e7e10491fefea44327656ffaac3333fc10c45b69` 的 CI run `39218343866` completed/success，Netlify deploy-preview success；仅对应该 SHA。
+
+
+## 2026-10-19 — 候选 A 源码级静态审查
+- 检查候选 A 的前端路由/答题界面、Bedrock 题目生成、答案提交、提示处理和部分单元测试文件。
+- 发现其默认依赖 Cognito + AWS Bedrock + DynamoDB，按单次游戏答题与积分设计；未在已检查文件中找到试卷照片闭环或北师大版二年级课程证据。
+- 找到后端单元测试文件但未运行。尝试浅克隆时执行环境无法解析 github.com，属于当前环境网络/DNS阻塞；不得把它记作候选自身测试失败或成功。
+- 当前只完成静态审查；下一步进行可运行基线验证，软件完成率仍为 0%。
+
+
+## 2026-10-19 — 产品方向调整：从头自研，不删减既定功能
+- 用户明确决定自研数学辅导网站；全网搜索开源项目仅用于借鉴框架、交互、OCR 技术、儿童视觉设计和测试经验，不再要求先选中并运行某个上游项目才能开发。
+- 不复制候选源码；第三方代码、依赖、字体、图片、音效、课程内容仍需各自许可核查。
+- 明确中国小学二年级儿童体验：简体中文、熟悉的课堂/家庭/生活情境、大字和易触控、温暖清晰且不过度刺激的视觉、可选普通话朗读、低压力趣味性。
+- 保留所有既定强制能力：试卷拍照与三种状态、OCR/手写/图表/批改痕迹及人工确认、DeepSeek、时间上限、证据驱动诊断与策略切换、提示/错题/掌握/迁移/延迟复测、家长报告、隐私和测量闭环。
+- 固定计划仍为 32 项/100%，仅调整 MATH-001–MATH-004 的任务含义与依赖，不增加任务数量、不计文档变更为软件完成。
+
+
+## 2026-10-19 — 自主单元选择与跨单元累计练习
+- 用户确认孩子自主练习时应可选择单个单元、多个单元组合和全部已学单元累计复习；可设置当前单元与旧单元比例。
+- 明确区分自主练习与老师作业，允许暂停、跳过、返回旧单元、重新学习和探索新单元；AI 建议不得静默扩大范围或强制锁定学习路径。
+- 将数学正确性独立验证、题目歧义/不确定处理和“系统错误不能归咎于孩子”写入验收。
+- 修正 README、路线图和看板中仍将 MATH-001 许可证门禁写成下一步的旧文字；按用户批准的自研方向，下一任务回到 MATH-002 技术栈与环境基线。
+- 仅更新需求/验收/执行状态文档；不增加任务数、不改变权重、不计入软件完成率。
+
+## 2026-10-19 — MATH-002 技术环境基线实测（部分）
+- 在当前容器实测 Node/npm/TypeScript 与 Python/FastAPI/SQLite/pytest 版本；新增 `tests/test_environment_baseline.py`，本地 pytest 结果 2 passed。
+- 新增 `docs/STACK_BASELINE.md`，明确测试范围和未验证项。FastAPI/SQLite smoke test 仅证明环境基础能力，不代表产品功能完成。
+- Vite 未安装；Vue/Vite 项目级构建、依赖安装、手机端 E2E 未运行。尝试 clone GitHub 仓库因执行容器 DNS 无法解析 github.com 失败，属于环境限制。
+- MATH-002 更新为 IN_PROGRESS，尚不验收；软件完成率保持 0/32、0%。
+
+
+## 2026-10-19 — AI 老师声音、黑板讲解与灵活积分奖励
+- 将儿童可用的普通话讲解语音、同步字幕、暂停/重播/静音、温和鼓励反馈与语音故障回退纳入首期强制范围。
+- 明确 AI 老师形象需要和讲解状态同步；首期可用轻量动画形象加 TTS，不强制复杂实时口型/视频。
+- 增加真实可操作的数学黑板，支持逐步板书与数轴/图形/数量可视化，且不能在空白卷或无提示测验中泄题。
+- 增加家长自定义奖励目录、积分门槛、持久化余额和完整流水；兑换后扣减可用余额但不删除历史。10/20 分仅为示例，不固定奖励。
+- 需求归入现有 MATH-003/MATH-021/MATH-023/MATH-025/MATH-028，不增加 32 项任务或改变权重；本次文档更新不计软件完成率。
+
+
+## 2026-10-19 — 参考学而思/作业帮后的教学与可靠性验收补漏
+- 依据两家官方公开产品资料中的个性化学习、AI 老师伴学、学情诊断和交互答疑方向，审查现有规格与验收映射；不复制其专有资产，不将宣传内容作为教学效果证据。
+- 补充当前题目内连续追问、讲解上下文保持、空白卷/无提示测验防泄题、家长报告证据样本数与不确定性、正式题目质量门禁、OCR 数据分层留痕和故障恢复幂等性。
+- 将要求映射到现有 MATH-010/014/015/016/019/021/022/024/025/028/030/031，保持 32 项和 100% 权重不变。
+- 本轮只补规格、协议和验收；没有应用功能实现，不计入软件完成率。MATH-002 仍 IN_PROGRESS。
+
+
+## 2026-10-19 — MATH-002 基线测试接入 GitHub CI
+- 新增 `apps/math-tutor/requirements-dev.txt`，固定 FastAPI、httpx、pytest 基线测试依赖。
+- 更新现有 GitHub Actions CI，使用 Python 3.13 安装数学辅导项目测试依赖并运行 `tests/test_environment_baseline.py`。
+- 目的：让 FastAPI TestClient/SQLite 最小 smoke test 在仓库 CI 中可复现；这不代表 Vue/Vite build、手机端 E2E 或产品功能已经通过。
+- MATH-002 继续 IN_PROGRESS，等待新提交 CI 结果，并继续验证前端项目级构建与手机端路径。
+
+
+## 2026-10-19 — 进度登记与看板一致性自动检查
+- 新增 `tests/test_progress_integrity.py`，自动检查 32 个固定任务 ID、100% 权重、已验收证据、加权完成率计算及看板数字一致性。
+- GitHub Actions 改为运行 `apps/math-tutor/tests` 全部测试，不再只指定环境 smoke test 文件。
+- 更新任务登记快照、进度看板和接手文件；清除执行控制协议中与“从头自研”决定冲突的旧许可证开发门禁。
+- 当前软件进度仍为 0/32、0%；MATH-002 继续 IN_PROGRESS。此提交属于连续性/防漂移机制，不计产品功能完成。
+- 新增检查是否通过，以最新提交对应 CI 结果为准。
+
+
+## 2026-10-19 — 进度守卫 CI 验证
+- SHA `dfc152a725dabb13b531ab4dd949921d170c5ae1` 对应 PR CI run `39223691429` completed/success，Netlify deploy-preview success。
+- CI 已实际通过 Vue build、前端测试、数学项目全部 Python 测试（含进度一致性检查）及现有其他检查。
+- 该结果只对应该 SHA；后续提交必须重新查询。任务验收保持 0/32、0%，MATH-002 未验收。
+
+
+## 2026-10-19 — MATH-002 前端证据与下一步状态更正
+- 在任务登记表和 STACK_BASELINE.md 记录：Vue/Vite build 与前端 helper tests 已由 PR CI run `39223691429`（SHA `dfc152a725dabb13b531ab4dd949921d170c5ae1`）成功验证。
+- 修正接手文件中仍将前端 build/test 写为未运行的旧描述。
+- MATH-002 保持 IN_PROGRESS；真实手机端/E2E 与完整前后端集成仍未验收。
+
+
+## 2026-10-19 — 自动进度计算与手机视口 E2E
+- 新增 `scripts/update_progress.py`，支持 `--write` 自动计算任务验收数、加权完成率、状态分布并同步 JSON 快照/看板；`--check` 供 CI 阻止进度数字漂移。
+- 新增进度计算器测试，覆盖动态重算、固定 32 项/100% 权重和验收证据门槛。
+- 加入 Playwright mobile Chromium E2E：首页渲染、390px 视口无水平溢出、键盘交互和不伪造学习记录。
+- CI 新增 Chromium 安装、移动视口 E2E 与进度快照检查步骤。
+- README、看板、STACK_BASELINE 与接手文件更新为真实状态：只有早期首页 UI，后端业务 API/学习流程仍未实现。
+- 最新 SHA 的新增 E2E/进度检查结果尚待 CI；MATH-002 继续 IN_PROGRESS，软件进度保持 0/32、0%。
+
+
+## 2026-10-19 — 本轮收尾与证据边界
+- 已验证 SHA `79560df651e35d7148eecc30ff5109a6a2dcc75d` 的 PR CI run `39224952190` completed/success，包含 Playwright 手机 Chromium E2E 和进度一致性检查。
+- 后续登记/看板/交接文档提交改变了 HEAD，必须重新查询最新 SHA 的 CI；旧成功状态只作为历史证据。
+- MATH-002 保持 IN_PROGRESS；进度 0/32、0%。下一步转向未完成的前后端 API/SQLite 集成验证，不重复已通过的 build/helper/mobile smoke tests。
+
+
+## 2026-10-19 — MATH-002 FastAPI/SQLite 文件持久化基线
+- 新增 FastAPI `/health` 入口与 `create_app(database_path)` 工厂，支持测试环境指定临时数据库。
+- 新增 SQLite schema 元数据初始化、读写和文件持久化验证。
+- 新增集成测试覆盖 HTTP 200/服务元数据及数据库重初始化后数据仍存在。
+- SHA `c622e4c67097bcecd5557e8dd3bd068bd788bf14` 的 PR CI run `39225650580` 成功，含手机 Chromium E2E、进度检查与现有仓库测试。
+- MATH-002 保持 IN_PROGRESS；前端到业务 API 的集成与真实设备验收仍未完成，软件进度 0/32、0%。
+
+
+## 2026-10-20 — MATH-002 前端到 FastAPI 健康接口链路
+- 新增 `src/api.ts`：前端请求 `GET /api/health`，校验返回结构；HTTP 非成功和响应结构异常会作为错误处理。
+- 更新 `src/App.vue`：页面启动时真实请求 API，并分别显示连接中、已连接或服务不可用；API 不可用时明确提示当前页面不会保存学习记录，不伪造连接成功。
+- 更新 `vite.config.ts`：开发模式下将 `/api/*` 代理到本机 FastAPI（`127.0.0.1:8000`），去掉 `/api` 前缀。
+- 新增 API 客户端单元测试，覆盖成功响应、HTTP 503 和错误数据格式；扩展 Playwright 移动端 E2E，覆盖 API 成功/失败状态显示。
+- 本次属于实际前后端请求链路代码，不是仅更新文档。提交后最新 CI 尚待查询；不得预先宣称测试通过。还未完成真实运行中的前后端联调、学习数据业务 schema/持久化和物理手机验收。
+- MATH-002 继续 IN_PROGRESS；32 项/100% 固定计划、已验收 0/32、加权完成率 0%。
+
+## 2026-10-20 — 真实 FastAPI + Vite 浏览器联调纳入 CI
+- Playwright 配置启动真实 FastAPI/Uvicorn 和 Vite 两个服务进程；API 健康路径使用浏览器真实 fetch 请求，不再依赖 mock 来证明连接成功。
+- 增加固定 Uvicorn 测试依赖，调整 CI 顺序，在运行浏览器 E2E 前先安装 Python 后端依赖。
+- E2E 使用隔离的临时 SQLite 路径；真实联调检查 HTTP 200 与 API 返回契约。API 故障提示测试仍单独 mock 503，以验证前端错误处理。
+- 本次提交后 CI 尚待验证；不得提前标记联调验收通过。
+
+
+## 2026-10-20 — 真实联调 CI 验证结果
+- SHA `178c50a2a23345bf3ae4123fa153bdfe555014f2` 的 Push CI run `39324288870` 和 PR CI run `39324295556` 均 completed/success。
+- 真实 FastAPI/Uvicorn + Vite 两个进程启动成功；Playwright 主成功路径使用浏览器真实 `fetch('/api/health')`，经 Vite proxy 收到 FastAPI HTTP 200 与预期服务/SQLite/schema 元数据。
+- Python 基线测试、进度一致性检查、前端 build/helper tests 和仓库既有检查均通过。
+- 这是技术联调证据，不代表学生学习记录业务 schema/持久化或物理手机验收完成；MATH-002 继续 IN_PROGRESS。后续文档提交已产生新 HEAD，需查询最新 HEAD 的 CI。
+
+
+## 2026-10-20 — SQLite 基础 schema 迁移机制
+- 将 `backend/storage.py` 从仅执行幂等建表升级为版本化迁移基线：`schema_migrations` 记录已应用版本，迁移函数按未应用版本执行。
+- 迁移 v1 负责基础 `app_meta` 表；重复初始化不会重置现有元数据。旧版已存在 `app_meta` 但没有迁移历史的数据库可以被接管并记录 v1，不丢失现有键值。
+- 新增测试覆盖迁移历史、重复初始化、现有元数据保留与旧库接管。
+- SHA `99d5405007dfac6eae86ff90be8b17e36931a3d2` 的 Push CI `39325112034` 与 PR CI `39325121132` 均成功，含 Python 测试、真实 FastAPI/Vite E2E、进度检查及仓库既有检查。
+- 这只是技术基础设施迁移，不是课程/题目/学生学习记录业务 schema；这些分别留在 MATH-007/MATH-023 范围内。
+
+## 2026-10-20 — SQLite migration future-version guard (CI pending)
+- The migration runner now refuses to initialize when `schema_migrations` contains a version not supported by the running code, instead of silently continuing against a newer database schema.
+- Added regression test `test_newer_unknown_migration_version_fails_closed` for unknown version 99.
+- Commits: `1de4ce02bc94b1d3bd25d0445801c69137de00eb`, `b18b5a67e672c7b9ba0862da27dcd84739be07b1`. Current-head CI must be rechecked; no pass is claimed yet.
+- MATH-002 remains IN_PROGRESS; task count/weights unchanged and software acceptance remains 0/32, 0%.
+
+## 2026-10-20 — MATH-001 有边界调研验收与最新 CI 状态更新
+- 将参考项目限制为三个：OpenMath、onemorepereira/math-tutor、AyushDixit-21/MathTalk；刷新其当前上游 SHA，并登记许可证状态、架构匹配差异与静态审查边界。
+- OpenMath README 声明 Apache 2.0 但根 LICENSE 仍为 404，明确排除源码复用；另外两个候选有 MIT 根许可证，但只作为设计参考。本项目没有复制候选源码。
+- MATH-001 标记 ACCEPTED（仅限调研与许可证风险登记范围），权重 4%。候选上游项目未被声称已运行或测试；本项目自身基线 CI 对 SHA `9ceee1024d30177482a1a61b5fa573c782e49ca6` 的 Push run `39326153402` 和 PR run `39326160690` 均成功。
+- MATH-002 继续 IN_PROGRESS。SQLite 未知迁移版本拒绝机制和 version 99 回归测试在上述最新代码 CI 中通过；真实物理手机/人工验收仍未完成。
+- 当前统计：固定 32 项、权重 100%；已验收 1/32、加权完成率 4%；状态 ACCEPTED 1、IN_PROGRESS 1、NOT_STARTED 30。
+
+## 2026-10-20 — 文档同步 CI 复核
+- 文档同步前的 SHA `3eda480f8061b0547c146c96007b9222ff8bd672` 的 Push CI run `39326945702` 和 PR CI run `39326955062` 均 completed/success。
+- 两项均通过 Vue/Vite build、前端 helper tests、真实 FastAPI/Vite 浏览器 E2E、Python 基线测试、进度快照 `--check` 与仓库既有检查；没有失败步骤。
+- MATH-001 已验收，MATH-002 继续 IN_PROGRESS。后续任务登记/看板/日志/交接文档更新会产生新 HEAD，必须再次查询最新 HEAD 的 CI，不将本 SHA 的结果自动套用到新提交。
+
+## 2026-10-20 — 开发测试与正式部署环境分离
+- 用户明确决定开发/测试阶段可使用 GitHub + 免费数据库服务，正式生产由用户部署到自己的服务器；Netlify 不再是必需依赖。
+- 在技术架构与 AI 接手文件中记录：先核查已有 Supabase 免费项目能否安全用于开发/集成测试；本地/CI 保留隔离 SQLite 测试库；正式环境采用用户自己的服务器，核心后端和数据库访问层须可迁移。
+- 明确不允许未经核查复用或覆盖其他业务数据库；不把 Supabase/Netlify 专有托管能力作为生产强制依赖；密钥仅服务端保存。
+- 本次为架构决策记录，不表示已接入 Supabase、已完成服务器部署或任务验收；不改变 32 项分母/权重及当前验收状态。
+
+
+
+## 2026-10-20 — 增加自有服务器 Docker Compose 部署骨架
+- 新增多阶段 Dockerfile、Nginx 静态前端/API 反向代理、FastAPI 运行依赖、Docker Compose 与 SQLite 持久化卷。
+- Web 默认只绑定 127.0.0.1；FastAPI 仅位于内部网络，避免无意中公开后端端口。
+- 新增 SELF_HOSTING.md，记录本机 smoke test 命令和公网发布前的认证、HTTPS、备份恢复与隐私门槛。
+- CI 新增 backend/frontend Docker 镜像构建步骤。需以新提交 SHA 的 CI 结果为准；本轮未在用户的真实服务器部署。
+- 该骨架仍不包含登录鉴权或完整学习业务 API，不能直接公开到互联网；不改变固定 32 项任务分母、权重或当前已验收数。
+
+
+## 2026-10-20 — 审计部署依赖与手机验收地址
+- 检查数学项目的核心规划/验收文档、接手文件、技术配置、Docker 配置与 CI 工作流；未发现必须通过 Netlify 网站开发或将其作为生产依赖的活动指令。
+- 明确旧文档里的 Netlify deploy-preview 状态只是历史 SHA 记录，当前外部 Netlify 集成的 success 不证明用户可以访问。
+- 新增 `docs/DEPLOYMENT_AND_MOBILE_ACCEPTANCE.md`；记录 Netlify 登录墙导致测试 URL 未交付，实体手机验收未完成。MATH-002 不得标记验收通过。

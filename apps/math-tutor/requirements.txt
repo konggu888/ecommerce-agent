@@ -1,0 +1,3 @@
+# Runtime-only dependencies for the self-hosted FastAPI service.
+fastapi==0.128.2
+uvicorn==0.34.0
