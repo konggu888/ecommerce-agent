@@ -81,3 +81,10 @@
 - 补充当前题目内连续追问、讲解上下文保持、空白卷/无提示测验防泄题、家长报告证据样本数与不确定性、正式题目质量门禁、OCR 数据分层留痕和故障恢复幂等性。
 - 将要求映射到现有 MATH-010/014/015/016/019/021/022/024/025/028/030/031，保持 32 项和 100% 权重不变。
 - 本轮只补规格、协议和验收；没有应用功能实现，不计入软件完成率。MATH-002 仍 IN_PROGRESS。
+
+
+## 2026-10-19 — MATH-002 基线测试接入 GitHub CI
+- 新增 `apps/math-tutor/requirements-dev.txt`，固定 FastAPI、httpx、pytest 基线测试依赖。
+- 更新现有 GitHub Actions CI，使用 Python 3.13 安装数学辅导项目测试依赖并运行 `tests/test_environment_baseline.py`。
+- 目的：让 FastAPI TestClient/SQLite 最小 smoke test 在仓库 CI 中可复现；这不代表 Vue/Vite build、手机端 E2E 或产品功能已经通过。
+- MATH-002 继续 IN_PROGRESS，等待新提交 CI 结果，并继续验证前端项目级构建与手机端路径。
