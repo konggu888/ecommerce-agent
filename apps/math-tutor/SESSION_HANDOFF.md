@@ -311,3 +311,21 @@ PR：#33（Draft、未合并；接手时必须重新查询当前状态）
 - MATH-002 继续 IN_PROGRESS。真实健康接口链路已在 CI 验证，但学生学习记录 schema/业务 API/业务持久化未实现，物理手机/人工验收未执行。
 - 下一步优先继续 MATH-002：核查最新 CI 后，进入最小必要的学习数据 schema/持久化技术实现，注意 MATH-004 的应用骨架验收边界，不重复已通过的健康接口联调。不得仅凭 CI 绿灯标记任务 ACCEPTED。
 - PR #33 仍 Open/Draft/未合并，未经用户明确同意不得合并。不得修改 `apps/ad-studio-desktop/`。
+
+
+# 2026-10-20 最终接手记录：SQLite 版本化迁移基线已验证
+## 本轮实际代码
+- `apps/math-tutor/backend/storage.py`：新增迁移注册表 `MIGRATIONS`、基础迁移 v1、`schema_migrations(version, applied_at)` 记录表；`initialize_database` 只执行尚未记录的迁移。
+- 兼容旧数据库：如果已有 `app_meta` 但没有迁移历史，v1 使用幂等建表/插入保留原值，并补上 v1 历史记录。
+- `apps/math-tutor/tests/test_backend_api.py`：新增重复初始化/迁移历史检查、保留自定义元数据、兼容旧库的测试。
+## 本轮 CI 证据
+- 最新代码 SHA：`99d5405007dfac6eae86ff90be8b17e36931a3d2`。
+- Push CI `39325112034`：completed/success。
+- PR CI `39325121132`：completed/success。
+- 已通过步骤包括 Vue/Vite build、前端 helper tests、Python 依赖安装、真实 FastAPI/Vite 浏览器 E2E、完整 Python 基线测试、进度 `--check`、前端语法、桌面 Python 语法/测试、Typecheck、engine tests、risk-controller tests。
+## 验收边界
+- 固定 32 项、总权重 100%；已验收 0/32；加权完成率 0%；状态分布 NOT_STARTED 31、IN_PROGRESS 1。
+- MATH-002 继续 IN_PROGRESS：技术迁移底座和真实前后端健康接口链路已由 CI 验证，但物理手机/人工验收未完成。
+- 不把本轮基础迁移当成学生学习记录业务 schema 或持久化；课程/题目/知识点数据契约由 MATH-007 管理，答题/测验/学习记录持久化由 MATH-023 管理。
+- 下一步先查最新 HEAD/Push CI/PR CI，因为以下文档更新会产生新提交；然后继续既定任务顺序，不扩任务表、不重复已通过检查。
+- PR #33 仍 Open/Draft/未合并，未经用户明确许可不得合并；不得修改 `apps/ad-studio-desktop/`。
