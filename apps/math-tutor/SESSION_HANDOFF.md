@@ -44,13 +44,13 @@ PR：#33（Draft、未合并；接手时必须重新查询当前状态）
 任务 32 项，已验收 0/32，加权完成率 0%。应用代码、DeepSeek 实际调用、手机端和学习效果测量均未运行。文档写完不等于应用功能完成。
 
 ## 5. 最新 GitHub 状态（接手时仍须重新查询）
-- 本轮最后确认 HEAD：6876cad56ac0b1ffd5f7845c71a5c998af2ca1b7。
-- PR #33 仍为 Open/Draft/未合并。
-- 该 SHA 的 combined status 未返回状态项，PR workflow runs 未返回记录；CI 当前未确认，不能宣称通过。
-- 计划仍为 32 项、已验收 0/32、加权完成率 0%；v2.1 文档更新不代表功能实现或进度增长。
+- 本轮文档更新前核实 HEAD：`c8519a557bb4dabefad9ab74118c3fb05d929941`；PR #33 为 Open/Draft/未合并。
+- 该 SHA 的 GitHub Actions CI run `39217632873` 为 completed/success；combined status 有 Netlify deploy-preview success。此结果仅对应文档更新前 SHA。
+- 本轮对许可证门禁记录的文档提交会改变 HEAD；接手时必须查询新 HEAD 的 CI/status，不得继承旧 SHA 的成功状态。
+- 计划仍为 32 项、已验收 0/32、加权完成率 0%；本轮文档证据更新不代表应用功能实现或进度增长。
 
 ## 6. 下一任务（不可跳过）
-MATH-001：核实 OpenMath 正式许可证/作者授权，记录可复查来源、检查日期与对应 commit SHA。然后检查实际目录、运行方式、课程 schema、答题验证、提示、持久化、DeepSeek 兼容性、手机 UI 和测试。若 OpenMath 不合格，最多再评估两个候选，总数不超过三个。不得持续无边界搜索或绕过许可门禁。
+MATH-001 最新核查：状态 BLOCKED。OpenMath README 声明 Apache 2.0，但 GitHub contents lookup 对 `LICENSE`、`LICENSE.md`、`LICENSE.txt`、`COPYING`、`NOTICE` 均返回 NOT_FOUND；尚无足够清晰的许可证全文或作者确认。证据和来源已记录于 `upstream/OPENMATH_REFERENCE.md` 与 `docs/MATH_TASK_REGISTER.json`。下一步在不复制 OpenMath 代码的前提下最多评估两个回退候选，总候选不超过三个。选定候选且许可证门禁通过后，再进行基线运行与应用开发。
 
 ## 7. 任务验收规则
 每项记录 ID、目标、范围内/外、依赖、文件、验证步骤、通过条件、结果证据、状态和提交 SHA。没有证据标未运行/阻塞，不算完成。每轮结束更新看板、变更日志和接手文件。CI 成功不等于应用或学习效果验收成功。
@@ -85,3 +85,7 @@ MATH-001：核实 OpenMath 正式许可证/作者授权，记录可复查来源�
 - MATH_TASK_REGISTER.json 与 IMPLEMENTATION_PLAN.md 不一致时，暂停计进度并先修复一致性。
 - 当前文档连续性补齐提交：执行控制协议 88b339987b7998202fb953d189d3f17b8686c138；任务登记表 dcc7120233c7a4f5110fe6ebbee127c766881665。它们不是当前 HEAD 的保证；接手时仍需查询最新提交。
 
+
+## 2026-10-19 许可证门禁复核补充
+
+本轮检查 OpenMath 当前公开 README 的 Apache 2.0 声明，并对 LICENSE、LICENSE.md、LICENSE.txt、COPYING、NOTICE 进行 GitHub 内容查询，均未找到。README 的声明不能在本项目既定门禁下替代可复查许可证全文/作者确认。MATH-001 标记 BLOCKED，不能开始复制/改编上游代码。上轮 CI `39217632873` 成功及 Netlify deploy-preview 成功仅对应文档更新前 SHA `c8519a557bb4dabefad9ab74118c3fb05d929941`；本轮提交后需重新查询最新 SHA 的 CI。
