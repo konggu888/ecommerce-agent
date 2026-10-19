@@ -56,6 +56,16 @@ def initialize_database(database_path: str | Path) -> None:
                 "SELECT version FROM schema_migrations"
             ).fetchall()
         }
+        supported_versions = {version for version, _ in MIGRATIONS}
+        unknown_versions = sorted(applied - supported_versions)
+        if unknown_versions:
+            versions = ", ".join(str(version) for version in unknown_versions)
+            raise RuntimeError(
+                "Database contains migration version(s) not supported by this "
+                f"application: {versions}. Refusing to continue to avoid "
+                "opening a database with a newer schema."
+            )
+
         for version, migration in MIGRATIONS:
             if version in applied:
                 continue
