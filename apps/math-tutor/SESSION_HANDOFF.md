@@ -366,3 +366,10 @@ PR：#33（Draft、未合并；接手时必须重新查询当前状态）
 1. 重新查询最新 HEAD 与 Push/PR CI；确认文档更新提交的进度守卫和所有现有检查通过。
 2. 继续 MATH-002 实体手机/人工验收：用真实手机浏览器打开可访问的当前页面，检查布局、横向溢出、连接状态和故障提示，记录设备/浏览器/步骤/结果。若无法实际使用实体设备，不得虚报，MATH-002 保持 IN_PROGRESS。
 3. 不重复已通过的模拟视口、真实 FastAPI/Vite 联调或 SQLite 迁移测试；也不提前实现 MATH-007 的课程/题目数据契约或 MATH-023 的学生学习记录业务持久化。
+
+## 2026-10-20 追加状态：文档同步前 SHA 的 CI 已通过
+- SHA `3eda480f8061b0547c146c96007b9222ff8bd672` 的 Push CI run `39326945702` 与 PR CI run `39326955062` 均 completed/success；关键步骤：Vue/Vite build、前端 helper tests、真实 FastAPI/Vite 浏览器 E2E、Python 基线测试、progress `--check`，以及仓库既有检查均成功。
+- MATH-001 的有限参考项目与许可风险登记已验收，权重 4%；OpenMath 因缺少 LICENSE 正文不复用源码，两个 MIT 候选仅作静态参考。没有复制任何候选源码。
+- 进度为固定 32 项/100%，已验收 1/32、加权完成率 4%；状态 ACCEPTED 1、IN_PROGRESS 1、NOT_STARTED 30。
+- 本记录之后又更新了任务快照、看板和变更日志，因此接手必须重新查询最新 PR HEAD 和该 SHA 对应的 Push/PR CI；当前文档更新后的 HEAD 不能沿用上述成功结果，除非 GitHub Actions 显示同 SHA 通过。
+- 下一步仍是 MATH-002 实体手机/人工验收。自动化模拟视口与真实 FastAPI/Vite CI 联调已通过，但不能替代物理手机。若当前无法接入实体设备，保留 IN_PROGRESS，不虚报。
