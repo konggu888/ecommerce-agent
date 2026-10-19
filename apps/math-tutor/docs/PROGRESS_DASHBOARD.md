@@ -80,3 +80,10 @@ MATH-001 已核查到阻塞证据：OpenMath README 声明 Apache 2.0，但检�
 - 该 SHA 的 GitHub Actions CI run `39218680024` 为 queued/running；combined status 尚无状态项。当前提交的 CI 不能标为成功。
 - 该 SHA 的 JSON 任务登记已重新解析通过：32 项、权重总计 100%、已验收 0 项，MATH-001 仍 BLOCKED。候选评估不计入软件完成率。
 - 这是元数据更新前的复查快照；本次记录本身会产生新 HEAD，接手时仍须重新查询最新 SHA 和 CI。
+
+
+## 候选 A 静态代码审查结果
+- 已读取候选 A 的 `GameView.vue`、`router/index.ts`、`createGameSession.ts`、`submitAnswer.ts`、`requestHint.ts` 和两个测试文件。
+- 已确认其采用游戏积分/单次答题、Cognito 登录、AWS Bedrock 与 DynamoDB；与私人 DeepSeek、长期重做队列和首期试卷照片闭环存在实质差距。
+- 发现部分单元测试文件，但未执行；执行环境浅克隆失败，原因是无法解析 github.com。因此基线运行/测试状态是 BLOCKED/NOT_RUN，不是失败也不是成功。
+- 选型未完成，已验收 0/32、加权完成率 0%。下一步只做候选 A 可运行基线验证，未验证前不开始大规模改编。
