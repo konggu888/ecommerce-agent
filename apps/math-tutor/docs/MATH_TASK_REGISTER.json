@@ -82,9 +82,13 @@
         {
           "type": "fastapi_sqlite_file_persistence",
           "detail": "GitHub Actions PR CI run 39225650580 completed/success for SHA c622e4c67097bcecd5557e8dd3bd068bd788bf14 on 2026-10-19. New backend/app.py FastAPI /health endpoint returned expected service/storage/schema metadata using a file-backed SQLite DB; backend/storage.py initialized schema metadata and tests verified a written value survived database reinitialization. This is a technical baseline, not learner-data schema or frontend-to-backend integration."
+        },
+        {
+          "type": "frontend_backend_health_integration",
+          "detail": "2026-10-20 implementation on PR branch: src/api.ts sends GET /api/health, validates the JSON contract and rejects non-2xx/malformed payloads; App.vue displays connected/checking/unavailable states and explicitly says no learning records are saved when the API is unavailable. vite.config.ts proxies /api to local FastAPI on 127.0.0.1:8000. Added api.test.ts for success, HTTP failure and malformed payload cases, and expanded Playwright mobile E2E to cover success/failure UI. This is code-level evidence only until latest CI passes; no physical-device acceptance."
         }
       ],
-      "note": "Partial baseline evidence: Vue/Vite build, frontend helper tests, Playwright mobile Chromium smoke tests, FastAPI /health endpoint, file-backed SQLite persistence, Python tests, and progress calculator checks passed in CI run 39225650580 for SHA c622e4c67097bcecd5557e8dd3bd068bd788bf14. MATH-002 remains IN_PROGRESS because the frontend-to-FastAPI business path, learner-data schema, and physical mobile-device/manual acceptance are not yet verified. Do not repeat passed checks; recheck latest SHA CI after later commits."
+      "note": "Partial baseline evidence: Vue/Vite build, frontend helper tests, Playwright mobile Chromium E2E, FastAPI /health endpoint, file-backed SQLite persistence, Python tests, and progress calculator checks passed in historical CI. On 2026-10-20 the frontend was wired to GET /api/health through the Vite proxy with explicit success/error states and tests for malformed/failed responses. This new change must be validated by CI on its own latest SHA. MATH-002 remains IN_PROGRESS because the frontend-to-API request path has not yet been confirmed by a live backend-backed end-to-end run, learner-data schema/business persistence are not implemented, and physical mobile-device/manual acceptance remains outstanding. Do not repeat previously passed checks; recheck latest SHA CI."
     },
     {
       "id": "MATH-003",
