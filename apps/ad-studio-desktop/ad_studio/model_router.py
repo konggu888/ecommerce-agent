@@ -65,7 +65,7 @@ class ModelRouter:
         self.data = self._load()
         self._ensure_defaults()
         self.ledger = UsageLedger(self.config_path.parent / "usage-ledger.json")
-        self._hardware = None
+        self.current_project_id = ""
 
     def _load(self) -> dict[str, Any]:
         if not self.config_path.exists():
@@ -100,6 +100,10 @@ class ModelRouter:
             routes.setdefault(function, self.data["default_model"])
         self.save()
 
+    def set_project_context(self, project_id: str | None) -> None:
+        """Associate subsequent local usage rows with the active project."""
+        self.current_project_id = str(project_id or "")
+
     def profiles(self) -> list[ModelProfile]:
         fields = {f.name for f in __import__("dataclasses").fields(ModelProfile)}
         return [ModelProfile(**{k: v for k, v in m.items() if k in fields})
@@ -118,39 +122,22 @@ class ModelRouter:
     def _usable(self, profile: ModelProfile) -> bool:
         return profile.enabled and (profile.provider == "local_openai" or bool(profile.api_key))
 
-    def _first_local_model(self) -> ModelProfile | None:
-        for p in self.profiles():
-            if p.enabled and p.provider == "local_openai":
-                return p
-        return None
-
     def resolve_route(self, function: str) -> ModelProfile:
-        """按硬件能力与模型池自动决定该功能实际调用的模型。
-
-        决策优先级：
-        1. 显式路由的模型可调用（本地 OpenAI 兼容服务或已配 API Key）→ 用它；
-        2. 硬件要求云端优先且云端模型有凭据 → 用云端模型；
-        3. 本地模型池有可用的本地模型 → 用本地模型（电脑有能力就用）；
-        4. 否则回退显式路由，调用时给出明确配置错误。
-        """
+        """Resolve only the explicitly selected model; fail closed rather than silently changing destination."""
         profile = self.route(function)
         if self._usable(profile):
             return profile
-        if self._hardware is None:
-            try:
-                from .hardware import detect_hardware
-                self._hardware = detect_hardware()
-            except Exception:
-                self._hardware = None
-        mode = getattr(self._hardware, "execution_mode", "") if self._hardware else ""
-        if mode == "cloud_first":
-            for p in self.profiles():
-                if p.enabled and p.provider != "local_openai" and p.api_key:
-                    return p
-        local = self._first_local_model()
-        if local:
-            return local
-        return profile
+        if not profile.enabled:
+            reason = "该模型已停用"
+        elif profile.provider != "local_openai" and not profile.api_key:
+            reason = "该远程模型没有可用 API Key"
+        else:
+            reason = "该模型当前不可用"
+        raise RuntimeError(
+            f"功能“{function}”指定的模型“{profile.name}”不可用：{reason}。"
+            "为避免未经同意切换模型或数据目的地，系统不会自动回退。"
+            "请修复此模型配置，或在模型设置中手动选择其他模型后重试。"
+        )
 
     def set_route(self, function: str, model_id: str) -> None:
         self.get(model_id)
@@ -322,7 +309,29 @@ class ModelRouter:
         if not profile.api_key and profile.provider != "local_openai":
             raise RuntimeError(f"口播转写模型「{profile.name}」没有可用凭据。")
         endpoint = profile.base_url.rstrip("/") + "/audio/transcriptions"
-        result = transcribe_openai_compatible(audio_path, endpoint, profile.api_key, profile.model)
+        started = time.perf_counter()
+        try:
+            result = transcribe_openai_compatible(
+                audio_path, endpoint, profile.api_key, profile.model,
+                allow_missing_api_key=profile.provider == "local_openai",
+            )
+        except Exception as exc:
+            self.ledger.record(
+                function="口播转写", model_id=profile.id, model_name=profile.name,
+                provider=profile.provider, model=profile.model, status="failed",
+                duration_ms=int((time.perf_counter() - started) * 1000),
+                error=str(exc), category="transcription",
+                project_id=getattr(self, "current_project_id", ""),
+                endpoint=endpoint, cost_status="unknown", usage_status="unavailable",
+            )
+            raise
+        self.ledger.record(
+            function="口播转写", model_id=profile.id, model_name=profile.name,
+            provider=profile.provider, model=profile.model, status="success",
+            duration_ms=int((time.perf_counter() - started) * 1000),
+            category="transcription", project_id=getattr(self, "current_project_id", ""),
+            endpoint=endpoint, cost_status="usage_missing", usage_status="missing",
+        )
         return {"text": result.text, "segments": [
             {"start": x.start, "end": x.end, "text": x.text} for x in result.segments
         ]}
@@ -536,16 +545,32 @@ class ModelRouter:
                 provider=profile.provider, model=profile.model, status="failed",
                 duration_ms=int((time.perf_counter() - started) * 1000), error=str(exc),
                 project_id=self.current_project_id, category="model",
+                endpoint=url, cost_status="unknown", usage_status="unavailable",
             )
             raise RuntimeError(f"模型「{profile.name}」调用失败：{exc}") from exc
 
-        usage = body.get("usage") or {}
+        usage_value = body.get("usage")
+        usage = usage_value if isinstance(usage_value, dict) else {}
+        usage_present = isinstance(usage_value, dict) and bool(usage)
         prompt_tokens = int(usage.get("prompt_tokens", usage.get("input_tokens", 0)) or 0)
         completion_tokens = int(usage.get("completion_tokens", usage.get("output_tokens", 0)) or 0)
         total_tokens = int(usage.get("total_tokens", prompt_tokens + completion_tokens) or 0)
+        configured_prices = next(
+            (item for item in self.data.get("models", []) if item.get("id") == profile.id), {}
+        )
+        prices_present = (
+            "input_price_rmb_per_1k" in configured_prices
+            and "output_price_rmb_per_1k" in configured_prices
+        )
         estimated_cost = (
             prompt_tokens / 1000 * float(profile.input_price_rmb_per_1k)
             + completion_tokens / 1000 * float(profile.output_price_rmb_per_1k)
+        ) if usage_present and prices_present else 0.0
+        usage_status = "reported" if usage_present else "missing"
+        cost_status = "estimated_from_configured_prices" if usage_present and prices_present else (
+            "usage_missing" if not usage_present and prices_present else (
+                "price_missing" if usage_present and not prices_present else "price_and_usage_missing"
+            )
         )
         try:
             content = body["choices"][0]["message"]["content"]
@@ -558,6 +583,7 @@ class ModelRouter:
                 total_tokens=total_tokens, estimated_cost_rmb=estimated_cost,
                 duration_ms=int((time.perf_counter() - started) * 1000), error=str(exc),
                 project_id=self.current_project_id, category="model",
+                endpoint=url, cost_status=cost_status, usage_status=usage_status,
             )
             raise RuntimeError(f"模型「{profile.name}」返回的不是有效 JSON") from exc
 
@@ -568,6 +594,7 @@ class ModelRouter:
             total_tokens=total_tokens, estimated_cost_rmb=estimated_cost,
             duration_ms=int((time.perf_counter() - started) * 1000),
             project_id=self.current_project_id, category="model",
+            endpoint=url, cost_status=cost_status, usage_status=usage_status,
         )
         return result
 

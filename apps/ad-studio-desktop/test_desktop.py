@@ -1,15 +1,55 @@
+# A102 final-render fixtures mock the normalization output file explicitly.
+import ast
+import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 from ad_studio.engine import detect_platform, estimate_cost, new_project, mark_regenerate
 from ad_studio.library import LocalLibrary
 from ad_studio.production import ProductionStore, generation_failure_ui_state, normalize_cost_estimate_rmb
 from ad_studio.product_parser import ProductInfo, save_product_library, load_product_library, merge_product_library
 from ad_studio.model_router import ModelRouter, ModelProfile, build_stage_prompt
+from ad_studio.usage_ledger import UsageLedger
 
 
 class DesktopCoreTests(unittest.TestCase):
+
+    def test_setup_form_grid_rows_do_not_overlap(self):
+        source_path = Path(__file__).with_name("ad_studio") / "app.py"
+        source = source_path.read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        app_class = next(node for node in tree.body if isinstance(node, ast.ClassDef) and node.name == "App")
+        ui = next(node for node in app_class.body if isinstance(node, ast.FunctionDef) and node.name == "ui")
+
+        def grid_position(fragment):
+            for node in ast.walk(ui):
+                if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Attribute) or node.func.attr != "grid":
+                    continue
+                segment = ast.get_source_segment(source, node) or ""
+                if fragment not in segment:
+                    continue
+                keywords = {item.arg: ast.literal_eval(item.value) for item in node.keywords if item.arg in {"row", "column"}}
+                return keywords.get("row"), keywords.get("column")
+            self.fail(f"Could not find grid placement for {fragment!r}")
+
+        expected = {
+            "self.task_type": (2, 1),
+            "self.form": (3, 1),
+            "self.variant_count": (4, 1),
+            "self.footage_mode": (5, 1),
+            "textvariable=self.footage_folder": (5, 2),
+            "text='选择素材文件夹'": (5, 3),
+            "text='留空/自动：交给AI判断；手动选择仅作为约束'": (3, 2),
+        }
+        for fragment, position in expected.items():
+            with self.subTest(control=fragment):
+                self.assertEqual(grid_position(fragment), position)
+
+        self.assertIn("actions=ttk.Frame(setup)", source)
+        self.assertIn("ttk.Button(actions,text=label,command=command).grid(row=index//6,column=index%6", source)
+
 
     def test_ai_stage_prompts_preserve_product_fact_boundary(self):
         product = {"name": "商品X", "selling_points": ["用户确认卖点"], "specs": {"容量": "500ml"}}
@@ -721,6 +761,23 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertTrue(result["valid"])
             self.assertEqual(result["duration_seconds"], 5.2)
 
+    def test_final_output_inspection_rejects_below_1080_class_resolution(self):
+        with tempfile.TemporaryDirectory() as td:
+            from unittest.mock import patch
+            root = Path(td)
+            store = ProductionStore(root)
+            output = root / "low.mp4"
+            output.write_bytes(b"video")
+            fake_probe = '{"streams":[{"codec_type":"video","width":720,"height":1280}],"format":{"duration":"5.2"}}'
+            completed = type("Completed", (), {"stdout": fake_probe})()
+            with patch("ad_studio.production.shutil.which", return_value="/usr/bin/ffprobe"), patch(
+                "ad_studio.production.subprocess.run", return_value=completed
+            ):
+                result = store.inspect_final_output(output, "9:16")
+            self.assertFalse(result["valid"])
+            self.assertIn("1080P", result["reason"])
+            self.assertIn("720×1280", result["reason"])
+
     def test_final_delivery_repair_routes_point_back_to_correct_stage(self):
         try:
             from ad_studio.app import App
@@ -933,9 +990,15 @@ class DesktopCoreTests(unittest.TestCase):
                 video.write_bytes(b"video")
                 shot.video_path = str(video)
             completed = type("Completed", (), {"stdout": '{"streams":[{"codec_type":"video","width":1080,"height":1920}],"format":{"duration":"4.0"}}'})()
+            def fake_normalize(source, target, aspect):
+                Path(target).parent.mkdir(parents=True, exist_ok=True)
+                Path(target).write_bytes(Path(source).read_bytes())
+                return Path(target)
             with patch("ad_studio.production.concat") as concat, patch(
-                "ad_studio.production.shutil.which", return_value="/usr/bin/ffprobe"
-            ), patch("ad_studio.production.subprocess.run", return_value=completed):
+                "ad_studio.production.normalize_output_resolution", side_effect=fake_normalize
+            ), patch("ad_studio.production.shutil.which", return_value="/usr/bin/ffprobe"), patch(
+                "ad_studio.production.subprocess.run", return_value=completed
+            ):
                 def fake_concat(inputs, output):
                     Path(output).parent.mkdir(parents=True, exist_ok=True)
                     Path(output).write_bytes(b"episode-video")
@@ -1032,9 +1095,15 @@ class DesktopCoreTests(unittest.TestCase):
                 path.write_bytes(b"video")
                 shot.video_path = str(path)
             completed = type("Completed", (), {"stdout": '{"streams":[{"codec_type":"video","width":1920,"height":1080}],"format":{"duration":"5.2"}}'})()
+            def fake_normalize(source, target, aspect):
+                Path(target).parent.mkdir(parents=True, exist_ok=True)
+                Path(target).write_bytes(Path(source).read_bytes())
+                return Path(target)
             with patch("ad_studio.production.concat") as concat, patch(
-                "ad_studio.production.shutil.which", return_value="/usr/bin/ffprobe"
-            ), patch("ad_studio.production.subprocess.run", return_value=completed):
+                "ad_studio.production.normalize_output_resolution", side_effect=fake_normalize
+            ), patch("ad_studio.production.shutil.which", return_value="/usr/bin/ffprobe"), patch(
+                "ad_studio.production.subprocess.run", return_value=completed
+            ):
                 def fake_concat(inputs, output):
                     Path(output).parent.mkdir(parents=True, exist_ok=True)
                     Path(output).write_bytes(b"invalid-output")
@@ -1235,6 +1304,85 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertFalse(any(k in plan for k in ("ctr","cvr","cpc_rmb","cpa_rmb","roas")))
         self.assertIn("不产生平台转化指标", plan["data_boundary"])
 
+
+    def test_a34_visual_comparison_cancel_makes_zero_calls_and_keeps_state(self):
+        from types import SimpleNamespace
+        from tkinter import simpledialog
+        from ad_studio.app import App
+        import ad_studio.app as app_module
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            reference = root / "reference.png"
+            generated = root / "generated.png"
+            reference.write_bytes(b"reference-bytes")
+            generated.write_bytes(b"generated-bytes")
+            plan = {"drama_business_mode": "product_short_drama_ad", "storyboard": [{"description": "商品镜头"}]}
+            before = json.dumps(plan, ensure_ascii=False, sort_keys=True)
+            fake_app = SimpleNamespace(
+                _ui_execution_gate=lambda: True,
+                project=SimpleNamespace(creative_plan={"short_drama": plan}, product_info={}),
+                detail=MagicMock(),
+                model_router=MagicMock(),
+                store=MagicMock(),
+            )
+            with patch.object(simpledialog, "askinteger", return_value=1), \
+                 patch.object(app_module.filedialog, "askopenfilenames", return_value=[str(reference)]), \
+                 patch.object(app_module.filedialog, "askopenfilename", return_value=str(generated)), \
+                 patch.object(app_module.messagebox, "askyesno", return_value=False), \
+                 patch.object(app_module, "compare_product_visual_shot") as compare:
+                App.compare_short_drama_product_visual(fake_app, plan)
+
+            compare.assert_not_called()
+            fake_app.model_router.resolve_route.assert_not_called()
+            fake_app.store.save.assert_not_called()
+            self.assertEqual(json.dumps(plan, ensure_ascii=False, sort_keys=True), before)
+            self.assertEqual(fake_app.project.creative_plan["short_drama"], plan)
+
+    def test_a34_visual_comparison_evidence_and_result_survive_project_reload(self):
+        from ad_studio.short_drama import compare_product_visual_shot
+
+        class VisionProfile:
+            id = "vision-persistence-test"
+            name = "视觉核验测试模型"
+            vision_enabled = True
+
+        class FakeRouter:
+            def resolve_route(self, function):
+                self.function = function
+                return VisionProfile()
+            def complete_json(self, profile, prompt, *, function, image_paths):
+                self.image_paths = list(image_paths)
+                return {
+                    "identity_match": True, "appearance_match": None, "structure_match": True,
+                    "function_match": None, "usage_match": True, "mismatch_detected": False,
+                    "confidence": 0.6, "issues": [], "summary": "部分属性无法确认",
+                }
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            reference = root / "reference.png"
+            generated = root / "generated.png"
+            reference.write_bytes(b"reference-bytes")
+            generated.write_bytes(b"generated-bytes")
+            plan = {
+                "drama_business_mode": "product_short_drama_ad",
+                "storyboard": [{"description": "商品镜头", "product_fidelity_constraints": ["不改变结构"]}],
+            }
+            updated = compare_product_visual_shot(FakeRouter(), plan, 1, [str(reference)], str(generated))
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            project.creative_plan["short_drama"] = updated
+            store = ProductionStore(root / "projects")
+            store.save(project)
+            restored = store.load(project.id)
+            shot = restored.creative_plan["short_drama"]["storyboard"][0]
+            self.assertEqual(shot["visual_verification"], "needs_review")
+            self.assertEqual(shot["visual_verification_method"], "ai_vision_assisted")
+            self.assertEqual(shot["visual_verification_evidence"], str(generated))
+            self.assertEqual(shot["visual_verification_reference_images"], [str(reference)])
+            self.assertEqual(shot["visual_comparison_result"]["model_id"], "vision-persistence-test")
+            self.assertTrue(shot["visual_comparison_result"]["requires_human_review"])
+            self.assertEqual(shot["visual_comparison_result"]["result"]["summary"], "部分属性无法确认")
 
     def test_a30_recovery_records_failures_without_losing_project_state(self):
         with tempfile.TemporaryDirectory() as td:
@@ -1476,7 +1624,7 @@ class DesktopCoreTests(unittest.TestCase):
 
     def test_a47_asset_resolution_failure_restores_previous_video(self):
         class FailingAssetStore(ProductionStore):
-            def resolve_assets(self, project, shot):
+            def resolve_assets(self, project, shot, authorize_cloud=None):
                 raise RuntimeError("模拟素材解析失败")
 
         class UnusedProvider:
@@ -1766,6 +1914,9 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertFalse(result["cost_reconciled"])
             self.assertAlmostEqual(project.actual_cost_rmb, 2.5)
             self.assertAlmostEqual(project.shots[0].actual_cost_rmb, 1.2)
+            restored = store.load(project.id)
+            self.assertAlmostEqual(restored.actual_cost_rmb, 2.5)
+            self.assertAlmostEqual(restored.shots[0].actual_cost_rmb, 1.2)
 
     def test_a57_open_existing_project_runs_recovery_before_display(self):
         source = (Path(__file__).resolve().parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
@@ -1798,6 +1949,11 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertAlmostEqual(shot.actual_cost_rmb, 1.2)
             self.assertAlmostEqual(project.cost_estimate["actual_cost_rmb"], 2.5)
             self.assertEqual(project.cost_estimate["actual"]["by_category"], {"video": 2.5})
+            restored = store.load(project.id)
+            self.assertAlmostEqual(restored.actual_cost_rmb, 2.5)
+            self.assertAlmostEqual(restored.shots[0].actual_cost_rmb, 1.2)
+            self.assertAlmostEqual(restored.cost_estimate["actual_cost_rmb"], 2.5)
+            self.assertEqual(restored.cost_estimate["actual"]["by_category"], {"video": 2.5})
 
 
     def test_a61_legacy_costs_migrate_once_before_first_successful_charge(self):
@@ -1886,6 +2042,12 @@ class DesktopCoreTests(unittest.TestCase):
             restored = store.load(project.id)
             self.assertAlmostEqual(restored.actual_cost_rmb, 2.5)
             self.assertAlmostEqual(restored.shots[0].actual_cost_rmb, 1.2)
+            self.assertAlmostEqual(restored.cost_estimate["actual_cost_rmb"], 2.5)
+            migrated_after_reload = [
+                row for row in store.ledger.recent(20)
+                if row.get("project_id") == project.id and row.get("function") == "历史实际成本迁移"
+            ]
+            self.assertEqual(len(migrated_after_reload), 2)
 
 
     def test_a64_asset_cost_record_failure_keeps_generated_asset_and_marks_reconciliation(self):
@@ -1917,6 +2079,94 @@ class DesktopCoreTests(unittest.TestCase):
         self.assertIn("self._record_asset_cost", generate_body)
         self.assertIn("成本待核对", generate_body)
 
+    def test_a64_resolve_assets_keeps_generated_asset_when_cost_record_fails(self):
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        from ad_studio.models import Asset
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            project.creative_plan = {"shots": [{
+                "index": shot.index,
+                "asset_resolution": {
+                    "actor_tags": ["test-actor"], "scene_tags": [], "product_tags": [],
+                    "generation_if_missing": True,
+                },
+            }]}
+            generated_path = root / "generated-actor.png"
+            generated_path.write_bytes(b"fake-generated-actor")
+
+            class FakeGenerator:
+                def __init__(self, *args, **kwargs):
+                    pass
+                def configured(self, kind):
+                    return kind == "演员"
+                def generate(self, kind, name, prompt, tags, request_id, authorize_cloud=None):
+                    asset = Asset("a64-generated-actor", name, kind, "ai_generated", str(generated_path), tags)
+                    return SimpleNamespace(asset=asset, cost_rmb=0.72, provider="测试 Provider")
+
+            store._record_asset_cost = lambda *args, **kwargs: (False, "模拟账本只读")
+
+            with patch("ad_studio.production.AssetGenerator", FakeGenerator):
+                resolution = store.resolve_assets(project, shot)
+
+            actor_result = resolution["演员"]
+            self.assertEqual(actor_result["source"], "已生成并入库（成本待核对）")
+            self.assertEqual(actor_result["cost_status"], "pending")
+            self.assertEqual(actor_result["asset"], "a64-generated-actor")
+            self.assertEqual(shot.actor_id, "a64-generated-actor")
+            self.assertTrue(generated_path.is_file())
+            library_items = LocalLibrary(root / "library").all()
+            self.assertTrue(any(item.id == "a64-generated-actor" for item in library_items))
+            restored = store.load(project.id)
+            self.assertEqual(restored.shots[0].actor_id, "a64-generated-actor")
+            self.assertEqual(restored.creative_plan["asset_resolution"][shot.id]["演员"]["cost_status"], "pending")
+
+    def test_a64_generate_missing_asset_keeps_asset_when_cost_record_fails(self):
+        from types import SimpleNamespace
+        from unittest.mock import patch
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+
+            class FakeCapabilityRouter:
+                def __init__(self, *args, **kwargs):
+                    pass
+                def decide_asset(self, kind):
+                    return SimpleNamespace(target="local", endpoint="http://127.0.0.1/test", reason="test")
+
+            class FakeLocalBackend:
+                def __init__(self, endpoint):
+                    self.endpoint = endpoint
+                def generate_asset(self, prompt, output):
+                    output.parent.mkdir(parents=True, exist_ok=True)
+                    output.write_bytes(b"fake-generated-asset")
+                    return output
+
+            store._record_asset_cost = lambda *args, **kwargs: (False, "模拟账本只读")
+
+            with patch("ad_studio.production.CapabilityRouter", FakeCapabilityRouter), \
+                 patch("ad_studio.production.LocalAssetBackend", FakeLocalBackend):
+                item = store.generate_missing_asset(
+                    project, shot, "演员", "test actor", root / "asset-generation.json"
+                )
+
+            self.assertEqual(shot.actor_id, item.id)
+            self.assertEqual(shot.status, "演员已生成并入库（成本待核对）")
+            self.assertIn("成本待核对：模拟账本只读", shot.generated_from_request)
+            self.assertTrue(Path(item.path).is_file())
+            self.assertTrue(any(asset.id == item.id for asset in LocalLibrary(root / "library").all()))
+            restored = store.load(project.id)
+            self.assertEqual(restored.shots[0].actor_id, item.id)
+            self.assertEqual(restored.shots[0].status, "演员已生成并入库（成本待核对）")
+            self.assertIn("成本待核对：模拟账本只读", restored.shots[0].generated_from_request)
+
 
     def test_a65_single_ledger_record_uses_atomic_replace_and_preserves_old_file_on_failure(self):
         from unittest.mock import patch
@@ -1933,6 +2183,8 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(ledger.path.read_text(encoding="utf-8"), original)
             self.assertEqual(len(ledger.recent(10)), 1)
             self.assertEqual(ledger.recent(10)[0]["function"], "既有记录")
+            # The failed atomic replacement must not leave an orphaned temp file.
+            self.assertEqual(list(ledger.path.parent.glob(f".{ledger.path.name}.*.tmp")), [])
 
     def test_a65_ledger_retains_more_than_2000_cost_history_rows(self):
         with tempfile.TemporaryDirectory() as td:
@@ -1946,8 +2198,1114 @@ class DesktopCoreTests(unittest.TestCase):
             self.assertEqual(summary["entries"], 2001)
             self.assertAlmostEqual(summary["actual_cost_rmb"], 20.01)
             self.assertEqual(len(ledger._load()), 2001)
+            # recent(limit) is only a display slice; it must not truncate the ledger or totals.
+            self.assertEqual(len(ledger.recent(10)), 10)
+            summary_after_recent = ledger.project_summary("p")
+            self.assertEqual(summary_after_recent["entries"], 2001)
+            self.assertAlmostEqual(summary_after_recent["actual_cost_rmb"], 20.01)
+
+
+
+
+    def test_a91_series_asset_lock_detects_disabled_retyped_and_nonreusable_assets(self):
+        from ad_studio.models import Asset
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 1, "真人口播")
+            project.creative_plan = {"shots": [{"index": 1, "asset_resolution": {
+                "actor_asset_id": "actor-fixed", "scene_asset_id": "scene-fixed"}}]}
+            library = LocalLibrary(root / "library")
+            library._write([
+                Asset("actor-fixed", "固定演员", "演员", "user_upload", None, [], active=False, reusable=True),
+                Asset("scene-fixed", "固定场景", "演员", "user_upload", None, [], active=True, reusable=True),
+            ])
+            issues = store.validate_series_asset_locks(project)
+            self.assertEqual(len(issues), 2)
+            self.assertIn("停用", issues[0]["error"])
+            self.assertIn("类型", issues[1]["error"])
+            library._write([
+                Asset("actor-fixed", "固定演员", "演员", "user_upload", None, [], active=True, reusable=False),
+                Asset("scene-fixed", "固定场景", "场景", "user_upload", None, [], active=True, reusable=True),
+            ])
+            issues = store.validate_series_asset_locks(project)
+            self.assertEqual(len(issues), 1)
+            self.assertIn("不可复用", issues[0]["error"])
+
+    def test_a91_project_reload_records_stale_series_lock_and_preserves_exact_id(self):
+        from ad_studio.models import Asset
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            library = LocalLibrary(root / "library")
+            library._write([Asset("actor-fixed", "固定演员", "演员", "user_upload", None, [], active=True, reusable=True)])
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 1, "真人口播")
+            project.creative_plan = {"shots": [{"index": 1, "asset_resolution": {"actor_asset_id": "actor-fixed"}}]}
+            store.save(project)
+            library._write([])
+            restored = store.load(project.id)
+            self.assertEqual(restored.creative_plan["shots"][0]["asset_resolution"]["actor_asset_id"], "actor-fixed")
+            self.assertEqual(restored.creative_plan["recovery"]["status"], "需处理")
+            self.assertIn("SERIES_LOCKED_ASSET_INVALID", restored.creative_plan["recovery"]["history"][-1]["error_code"])
+
+
+
+
+    def test_a91_invalid_series_lock_blocks_asset_resolution_before_fallback(self):
+        from ad_studio.models import Asset
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            library = LocalLibrary(root / "library")
+            library._write([Asset("actor-fixed", "固定演员", "演员", "user_upload", None, [], active=False, reusable=True)])
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 1, "真人口播")
+            shot = project.shots[0]
+            project.creative_plan = {"shots": [{
+                "index": shot.index,
+                "asset_resolution": {"actor_asset_id": "actor-fixed", "product_tags": ["应有但不生成"]},
+            }]}
+            result = store.resolve_assets(project, shot)
+            self.assertEqual(result["演员"]["error_code"], "SERIES_LOCKED_ASSET_INVALID")
+            self.assertFalse(result["演员"]["generate_if_missing"])
+            self.assertNotIn("商品素材", result)  # no unrelated fallback/generation after lock failure
+
+
+
+
+    def test_a92_locked_series_assets_resolve_to_same_physical_ids_across_episodes(self):
+        from ad_studio.models import Asset, Shot
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            library = LocalLibrary(root / "library")
+            library._write([
+                Asset("actor-series-1", "系列固定演员", "演员", "user_upload", None, ["主角"]),
+                Asset("scene-series-1", "系列固定场景", "场景", "user_upload", None, ["主场景"]),
+                Asset("actor-lookalike", "相似演员", "演员", "user_upload", None, ["主角"]),
+                Asset("scene-lookalike", "相似场景", "场景", "user_upload", None, ["主场景"]),
+            ])
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 1, "真人口播")
+            first = project.shots[0]
+            first.episode_number = 1
+            second = Shot(id="shot-episode-2", index=2, title="第二集", visual="同一主角进入同一场景", script="继续剧情", episode_number=2)
+            project.shots.append(second)
+            rows = []
+            for idx in (1, 2):
+                rows.append({"index": idx, "episode_number": idx, "asset_resolution": {
+                    "actor_tags": ["主角"], "scene_tags": ["主场景"], "product_tags": [],
+                    "actor_asset_id": "actor-series-1", "scene_asset_id": "scene-series-1",
+                    "generation_if_missing": False,
+                }})
+            project.creative_plan = {"shots": rows}
+            first_resolution = store.resolve_assets(project, first)
+            second_resolution = store.resolve_assets(project, second)
+            self.assertEqual(first_resolution["演员"]["asset"], "actor-series-1")
+            self.assertEqual(second_resolution["演员"]["asset"], "actor-series-1")
+            self.assertEqual(first_resolution["场景"]["asset"], "scene-series-1")
+            self.assertEqual(second_resolution["场景"]["asset"], "scene-series-1")
+            self.assertEqual(first.actor_id, second.actor_id)
+            self.assertEqual(first.scene_id, second.scene_id)
+            self.assertNotEqual(first.actor_id, "actor-lookalike")
+            self.assertNotEqual(first.scene_id, "scene-lookalike")
+            # Persist the resolved per-shot actor/scene bindings before testing reload.
+            store.save(project)
+            restored = store.load(project.id)
+            restored_by_id = {shot.id: shot for shot in restored.shots}
+            self.assertEqual(restored_by_id[first.id].actor_id, "actor-series-1")
+            self.assertEqual(restored_by_id[second.id].actor_id, "actor-series-1")
+            self.assertEqual(restored_by_id[first.id].scene_id, "scene-series-1")
+            self.assertEqual(restored_by_id[second.id].scene_id, "scene-series-1")
+
+
+
+    def test_a93_invalid_series_lock_blocks_provider_dispatch_and_preserves_other_shots(self):
+        from ad_studio.models import Asset
+
+        class CountingProvider:
+            provider_name = "测试 Provider"
+            cost_per_shot_rmb = 1.0
+            def __init__(self):
+                self.calls = 0
+            def generate(self, request):
+                self.calls += 1
+                raise AssertionError("锁定素材失效时不得调用 Provider")
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            library = LocalLibrary(root / "library")
+            library._write([
+                Asset("actor-fixed", "固定演员", "演员", "user_upload", None, [], active=False, reusable=True),
+            ])
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 1, "连续短剧")
+            self.assertGreaterEqual(len(project.shots), 2)
+            target, untouched = project.shots[0], project.shots[1]
+            untouched.status = "已生成"
+            untouched.video_path = "existing-other-shot.mp4"
+            project.creative_plan = {"shots": [{
+                "index": target.index,
+                "asset_resolution": {
+                    "actor_asset_id": "actor-fixed",
+                    "product_tags": ["不应在锁定失败后触发补素材"],
+                    "generation_if_missing": True,
+                },
+            }]}
+            provider = CountingProvider()
+
+            with self.assertRaisesRegex(RuntimeError, "SERIES_LOCKED_ASSET_INVALID"):
+                store._render_with_provider(project, target, provider)
+
+            self.assertEqual(provider.calls, 0, "失效锁定必须在 Provider 调用前拦截")
+            self.assertIn("生成失败", target.status)
+            self.assertIsNone(target.actor_id, "不得静默绑定其他演员")
+            self.assertEqual(untouched.status, "已生成")
+            self.assertEqual(untouched.video_path, "existing-other-shot.mp4")
+            self.assertEqual(
+                project.creative_plan["shots"][0]["asset_resolution"]["actor_asset_id"],
+                "actor-fixed",
+                "失败时必须保留原锁定 ID 供恢复处理",
+            )
+
+
+    def test_a94_restoring_original_locked_asset_allows_exact_resolution_retry(self):
+        from ad_studio.models import Asset
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            library = LocalLibrary(root / "library")
+            library._write([
+                Asset("actor-fixed", "系列固定演员", "演员", "user_upload", None, ["主角"], active=False, reusable=True),
+                Asset("actor-lookalike", "相似演员", "演员", "user_upload", None, ["主角"], active=True, reusable=True),
+            ])
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 1, "连续短剧")
+            shot = project.shots[0]
+            project.creative_plan = {"shots": [{
+                "index": shot.index,
+                "asset_resolution": {
+                    "actor_asset_id": "actor-fixed",
+                    "actor_tags": ["主角"],
+                    "generation_if_missing": True,
+                },
+            }]}
+
+            failed = store.resolve_assets(project, shot)
+            self.assertEqual(failed["演员"]["error_code"], "SERIES_LOCKED_ASSET_INVALID")
+            self.assertFalse(failed["演员"]["generate_if_missing"])
+            self.assertIsNone(shot.actor_id)
+
+            # Recovery is explicit: the same physical asset ID becomes valid again.
+            library._write([
+                Asset("actor-fixed", "系列固定演员", "演员", "user_upload", None, ["主角"], active=True, reusable=True),
+                Asset("actor-lookalike", "相似演员", "演员", "user_upload", None, ["主角"], active=True, reusable=True),
+            ])
+            retried = store.resolve_assets(project, shot)
+
+            self.assertEqual(retried["演员"]["asset"], "actor-fixed")
+            self.assertEqual(retried["演员"]["locked_asset_id"], "actor-fixed")
+            self.assertEqual(retried["演员"]["source"], "跨集锁定素材复用")
+            self.assertFalse(retried["演员"]["generate_if_missing"])
+            self.assertEqual(shot.actor_id, "actor-fixed")
+            self.assertNotEqual(shot.actor_id, "actor-lookalike")
+
+
+    def test_a95_corrupt_library_index_fails_closed_before_provider_dispatch(self):
+        from ad_studio.models import Asset
+
+        class CountingProvider:
+            provider_name = "计数测试 Provider"
+            cost_per_shot_rmb = 1.0
+            def __init__(self):
+                self.calls = 0
+            def generate(self, request):
+                self.calls += 1
+                raise AssertionError("素材索引损坏时不应调用 Provider")
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            library_root = root / "library"
+            library = LocalLibrary(library_root)
+            library._write([
+                Asset("actor-fixed", "系列固定演员", "演员", "user_upload", None, ["主角"], active=True, reusable=True),
+            ])
+            store = ProductionStore(root / "projects", library_root=library_root)
+            project = new_project("https://item.jd.com/123.html", 1, "连续短剧")
+            target = project.shots[0]
+            other = project.shots[1]
+            other.status = "已生成"
+            other.video_path = "existing-other-shot.mp4"
+            project.creative_plan = {"shots": [{
+                "index": target.index,
+                "asset_resolution": {
+                    "actor_asset_id": "actor-fixed",
+                    "product_tags": ["不应触发自动补素材"],
+                    "generation_if_missing": True,
+                },
+            }]}
+
+            # Simulate a truncated/corrupt local asset index after the project was created.
+            library.index.write_text('{"assets": [broken', encoding="utf-8")
+            issues = store.validate_series_asset_locks(project, target.index)
+            self.assertTrue(issues)
+            self.assertEqual(issues[0]["error_code"], "SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE")
+
+            resolution = store.resolve_assets(project, target)
+            self.assertEqual(resolution["演员"]["error_code"], "SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE")
+            self.assertFalse(resolution["演员"]["generate_if_missing"])
+            self.assertNotIn("商品素材", resolution, "索引异常时不得继续处理其他素材")
+
+            provider = CountingProvider()
+            with self.assertRaisesRegex(RuntimeError, "SERIES_LOCKED_ASSET_INVALID"):
+                store._render_with_provider(project, target, provider)
+            self.assertEqual(provider.calls, 0)
+            self.assertEqual(other.status, "已生成")
+            self.assertEqual(other.video_path, "existing-other-shot.mp4")
+            self.assertEqual(
+                project.creative_plan["shots"][0]["asset_resolution"]["actor_asset_id"],
+                "actor-fixed",
+                "索引恢复前必须保留原锁定 ID，不能静默解绑",
+            )
+
+
+    def test_a96_repaired_asset_index_allows_retry_of_original_series_lock(self):
+        from ad_studio.models import Asset
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            library_root = root / "library"
+            library = LocalLibrary(library_root)
+            original = Asset("actor-fixed", "系列固定演员", "演员", "user_upload", None, ["主角"], active=True, reusable=True)
+            lookalike = Asset("actor-lookalike", "相似演员", "演员", "user_upload", None, ["主角"], active=True, reusable=True)
+            library._write([original, lookalike])
+            store = ProductionStore(root / "projects", library_root=library_root)
+            project = new_project("https://item.jd.com/123.html", 1, "连续短剧")
+            shot = project.shots[0]
+            project.creative_plan = {"shots": [{
+                "index": shot.index,
+                "asset_resolution": {
+                    "actor_asset_id": "actor-fixed",
+                    "actor_tags": ["主角"],
+                    "generation_if_missing": True,
+                },
+            }]}
+
+            library.index.write_text('{"assets":[', encoding="utf-8")
+            broken = store.resolve_assets(project, shot)
+            self.assertEqual(broken["演员"]["error_code"], "SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE")
+            self.assertFalse(broken["演员"]["generate_if_missing"])
+            self.assertIsNone(shot.actor_id)
+
+            # Restore a valid index containing the exact original ID and a tempting lookalike.
+            library._write([original, lookalike])
+            retried = store.resolve_assets(project, shot)
+            self.assertEqual(retried["演员"]["asset"], "actor-fixed")
+            self.assertEqual(retried["演员"]["locked_asset_id"], "actor-fixed")
+            self.assertEqual(retried["演员"]["source"], "跨集锁定素材复用")
+            self.assertFalse(retried["演员"]["generate_if_missing"])
+            self.assertEqual(shot.actor_id, "actor-fixed")
+            self.assertNotEqual(shot.actor_id, "actor-lookalike")
+
+
+    def test_a97_project_recovery_only_requeues_missing_shot_and_preserves_valid_sibling(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 1, "连续短剧")
+            target, untouched = project.shots[:2]
+
+            valid_output = root / "renders" / "untouched-shot.mp4"
+            valid_output.parent.mkdir(parents=True, exist_ok=True)
+            valid_output.write_bytes(b"valid-video-placeholder")
+            target.video_path = str(root / "renders" / "missing-target-shot.mp4")
+            target.status = "生成中"
+            untouched.video_path = str(valid_output)
+            untouched.status = "已生成"
+            untouched.version = 3
+            untouched.actual_cost_rmb = 1.25
+            store.save(project)
+
+            result = store.recover_project(project)
+
+            self.assertIn(target.id, result["missing_media"])
+            self.assertNotIn(untouched.id, result["missing_media"])
+            self.assertIsNone(target.video_path)
+            self.assertEqual(target.status, "待重新生成/重新选择素材")
+            self.assertEqual(untouched.video_path, str(valid_output))
+            self.assertEqual(untouched.status, "已生成")
+            self.assertEqual(untouched.version, 3)
+            self.assertEqual(untouched.actual_cost_rmb, 1.25)
+
+            restored = store.load(project.id)
+            restored_by_id = {shot.id: shot for shot in restored.shots}
+            self.assertIsNone(restored_by_id[target.id].video_path)
+            self.assertEqual(restored_by_id[untouched.id].video_path, str(valid_output))
+            self.assertEqual(restored_by_id[untouched.id].status, "已生成")
+
+
+    def test_a98_recovery_repeats_missing_shot_until_regenerated(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 1, "连续短剧")
+            target, untouched = project.shots[:2]
+
+            valid_output = root / "renders" / "untouched-shot.mp4"
+            valid_output.parent.mkdir(parents=True, exist_ok=True)
+            valid_output.write_bytes(b"valid-video-placeholder")
+            target.video_path = str(root / "renders" / "missing-target-shot.mp4")
+            target.status = "生成中"
+            untouched.video_path = str(valid_output)
+            untouched.status = "已生成"
+            untouched.version = 2
+            store.save(project)
+
+            first = store.recover_project(project)
+            self.assertIn(target.id, first["missing_media"])
+            self.assertEqual(target.status, "待重新生成/重新选择素材")
+            self.assertEqual(untouched.video_path, str(valid_output))
+            self.assertEqual(untouched.status, "已生成")
+
+            second = store.recover_project(project)
+            self.assertIn(
+                target.id,
+                second["missing_media"],
+                "重复打开/恢复项目时，尚未重生成的缺失镜头仍须出现在恢复摘要中",
+            )
+            self.assertEqual(target.status, "待重新生成/重新选择素材")
+            self.assertEqual(untouched.video_path, str(valid_output))
+            self.assertEqual(untouched.status, "已生成")
+            self.assertEqual(untouched.version, 2)
+
+            restored = store.load(project.id)
+            restored_by_id = {shot.id: shot for shot in restored.shots}
+            self.assertIn(target.id, restored.creative_plan["recovery"]["last_recovery"]["missing_media"])
+            self.assertEqual(restored_by_id[untouched.id].video_path, str(valid_output))
+
+    def test_a99_successful_ledger_clears_stale_cost_on_unbilled_sibling_shot(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 1, "连续短剧")
+            charged, uncharged = project.shots[:2]
+            store._record_actual_cost(
+                project, shot=charged, category="video", amount_rmb=0.72, provider="test"
+            )
+            # Simulate stale persisted snapshots after the successful charge was recorded.
+            charged.actual_cost_rmb = 0.72
+            uncharged.actual_cost_rmb = 8.88
+            project.actual_cost_rmb = 99.0
+            store.save(project)
+
+            result = store.recover_project(project)
+
+            self.assertTrue(result["cost_reconciled"])
+            self.assertAlmostEqual(project.actual_cost_rmb, 0.72)
+            self.assertAlmostEqual(charged.actual_cost_rmb, 0.72)
+            self.assertAlmostEqual(uncharged.actual_cost_rmb, 0.0)
+            restored = store.load(project.id)
+            restored_by_id = {shot.id: shot for shot in restored.shots}
+            self.assertAlmostEqual(restored.actual_cost_rmb, 0.72)
+            self.assertAlmostEqual(restored_by_id[uncharged.id].actual_cost_rmb, 0.0)
+
+
+    def test_asset_generation_config_uses_app_config_root_not_custom_library_root(self):
+        from unittest.mock import patch
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            projects_root = root / "projects"
+            custom_library = root / "custom-library"
+            store = ProductionStore(projects_root, library_root=custom_library)
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            project.creative_plan = {"shots": [{
+                "index": shot.index,
+                "asset_resolution": {
+                    "actor_tags": [], "scene_tags": [], "product_tags": [],
+                    "generation_if_missing": False,
+                },
+            }]}
+            seen = {}
+
+            class CapturingGenerator:
+                def __init__(self, config_path, library_root):
+                    seen["config_path"] = Path(config_path)
+                    seen["library_root"] = Path(library_root)
+                def configured(self, kind):
+                    return False
+
+            with patch("ad_studio.production.AssetGenerator", CapturingGenerator):
+                store.resolve_assets(project, shot)
+
+            self.assertEqual(seen["config_path"], projects_root.parent / "asset-generation.json")
+            self.assertEqual(seen["library_root"], custom_library)
+            self.assertNotEqual(seen["config_path"], custom_library / "asset-generation.json")
+
+
+    def test_creation_preflight_discloses_model_destinations_without_secrets(self):
+        from ad_studio.app import build_creation_preflight_detail
+
+        with tempfile.TemporaryDirectory() as td:
+            router = ModelRouter(Path(td) / "model-config.json")
+            profile = ModelProfile(
+                id="custom-proxy", name="自定义代理",
+                provider="openai_compatible",
+                base_url="https://proxy.example/v1?token=do-not-display",
+                model="custom-model", api_key="do-not-display-key",
+                enabled=True, input_price_rmb_per_1k=0, output_price_rmb_per_1k=0,
+            )
+            router.add_or_update(profile)
+            router.add_or_update(ModelProfile(
+                id="fallback-model", name="潜在回退模型",
+                provider="openai_compatible", base_url="https://fallback.example/v1",
+                model="fallback-model", api_key="fallback-secret", enabled=True,
+            ))
+            router.set_route("商品理解", profile.id)
+            detail = build_creation_preflight_detail(
+                "https://item.example/product/1", 5.0, 2, router
+            )
+            self.assertIn("本确认授权读取商品链接", detail)
+            self.assertIn("https://proxy.example/v1", detail)
+            self.assertIn("商品理解", detail)
+            self.assertIn("不代表服务免费", detail)
+            self.assertNotIn("do-not-display", detail)
+            self.assertIn("其他已启用模型", detail)
+
+    def test_explicit_authorization_gate_runs_no_operation_when_declined(self):
+        from ad_studio.app import run_after_explicit_authorization
+
+        calls = []
+        authorized, result = run_after_explicit_authorization(
+            lambda: False,
+            lambda: calls.append("external") or "unexpected",
+        )
+        self.assertFalse(authorized)
+        self.assertIsNone(result)
+        self.assertEqual(calls, [])
+
+        authorized, result = run_after_explicit_authorization(
+            lambda: True,
+            lambda: calls.append("external") or "allowed",
+        )
+        self.assertTrue(authorized)
+        self.assertEqual(result, "allowed")
+        self.assertEqual(calls, ["external"])
+
+    def test_creation_preflight_is_before_product_parse_and_model_planning(self):
+        source = (Path(__file__).resolve().parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        create_start = source.index("    def create(self):")
+        create_end = source.index("    def refresh_shots(self):", create_start)
+        body = source[create_start:create_end]
+        gate = body.index("run_after_explicit_authorization(")
+        consent = body.index("askyesno('AI创意规划与数据去向授权'")
+        product_parse = body.index("lambda: parse_product_url(url)")
+        model_plan = body.index("self.model_router.create_plans(")
+        self.assertLess(gate, consent)
+        self.assertLess(consent, product_parse)
+        self.assertLess(gate, model_plan)
+        cancel_branch = body[product_parse:model_plan]
+        self.assertIn("if not authorized:", cancel_branch)
+        self.assertIn("return", cancel_branch)
+        self.assertIn("未读取商品页面、未调用 AI 模型/Provider", cancel_branch)
+        # Before any model planning call, the first preflight must make every
+        # production-cost category and all not-yet-knowable quantities explicit.
+        from ad_studio.app import build_creation_preflight_detail
+        class NoopRouter:
+            def route(self, _function):
+                raise RuntimeError("not configured")
+            def profiles(self):
+                return []
+        detail = build_creation_preflight_detail("https://item.jd.com/123.html", 5.0, 2, NoopRouter())
+        for label in ("视频生成", "演员生成", "场景生成", "商品素材生成", "项目总费用"):
+            self.assertIn(label, detail)
+        self.assertIn("镜头数尚未生成", detail)
+        self.assertIn("规划完成后", detail)
+        self.assertIn("取消后不会读取商品页面或调用模型/Provider", detail)
+        self.assertIn("关键帧视觉分析", detail)
+        self.assertIn("口播转写", detail)
+        self.assertIn("可能发生在最终视频/资产报价前并可能产生费用", detail)
+        self.assertIn("后续视频/资产生成不在本确认授权内", detail)
+
+
+    def test_per_shot_provider_consent_discloses_destination_and_redacts_secrets(self):
+        from types import SimpleNamespace
+        from ad_studio.app import build_provider_execution_consent
+
+        decision = SimpleNamespace(
+            target="cloud",
+            endpoint="https://provider.example/v1/generate?api_key=must-not-display",
+            reason="本地视频服务不可用，转云端",
+        )
+        detail = build_provider_execution_consent(
+            decision, "镜头 1 视频生成", 1.25, "商品标题：测试商品"
+        )
+        self.assertIn("实际执行目标：云端服务", detail)
+        self.assertIn("https://provider.example/v1/generate", detail)
+        self.assertIn("本地视频服务不可用，转云端", detail)
+        self.assertIn("本次预估费用：¥1.25", detail)
+        self.assertIn("数据边界", detail)
+        self.assertIn("只有确认后才会调用此端点", detail)
+        self.assertNotIn("must-not-display", detail)
+        self.assertNotIn("api_key=", detail)
+
+    def test_per_shot_provider_consent_distinguishes_local_and_unavailable(self):
+        from types import SimpleNamespace
+        from ad_studio.app import build_provider_execution_consent
+
+        local = build_provider_execution_consent(
+            SimpleNamespace(target="local", endpoint="http://127.0.0.1:8188/generate", reason="本机服务可达"),
+            "镜头 1", 0.0,
+        )
+        self.assertIn("本地服务", local)
+        self.assertIn("不会因本地请求失败而自动改用云端", local)
+
+        unavailable = build_provider_execution_consent(
+            SimpleNamespace(target="unavailable", endpoint="", reason="没有可用 Provider"),
+            "镜头 1", 0.0,
+        )
+        self.assertIn("没有可用的已配置 Provider", unavailable)
+        self.assertIn("不会发起生成请求", unavailable)
+
+    def test_video_generation_uses_the_route_snapshot_that_was_confirmed(self):
+        app_source = (Path(__file__).resolve().parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        production_source = (Path(__file__).resolve().parent / "ad_studio" / "production.py").read_text(encoding="utf-8")
+        start = app_source.index("    def generate_shot(self):")
+        end = app_source.index("    def regen_shot(self):", start)
+        body = app_source[start:end]
+        helper_start = app_source.index("    def _authorize_shot_generation(self, shot, action_label):")
+        helper_end = app_source.index("    def _confirm_asset_cloud_generation(self, decision, kind, shot):", helper_start)
+        helper = app_source[helper_start:helper_end]
+        authorize = body.index("self._authorize_shot_generation(s,")
+        mutate = body.index("s.status='生成中…'")
+        render = body.index("self.store.render_shot(self.project,s,config_root=ROOT,decision=decision,authorize_cloud=")
+        consent = helper.index("askyesno('确认生成端点与费用'")
+        resolve = helper.index("self.store.resolve_assets(")
+        self.assertLess(consent, resolve)
+        self.assertLess(authorize, mutate)
+        self.assertLess(mutate, render)
+        self.assertIn("decision = decision or CapabilityRouter(config_root or self.root.parent).decide_video()", production_source)
+
+
+    def test_asset_generator_requires_explicit_cloud_consent_before_provider_call(self):
+        import json
+        from types import SimpleNamespace
+        from unittest.mock import patch
+        from ad_studio.asset_generation import AssetGenerator
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            config = root / "asset-generation.json"
+            config.write_text(json.dumps({
+                "演员": {
+                    "endpoint": "https://asset.example/generate?secret=do-not-show",
+                    "api_key": "test-secret",
+                    "price_rmb": 0.8,
+                }
+            }, ensure_ascii=False), encoding="utf-8")
+            decision = SimpleNamespace(
+                target="cloud", endpoint="https://asset.example/generate?secret=do-not-show",
+                reason="本地服务不可用，转云端",
+            )
+            generator = AssetGenerator(config, root / "library", capability=SimpleNamespace(decide_asset=lambda kind: decision))
+            with patch.object(generator, "_cloud_generate") as cloud_call:
+                with self.assertRaisesRegex(RuntimeError, "没有获得明确授权"):
+                    generator.generate("演员", "演员A", "测试提示词")
+                cloud_call.assert_not_called()
+                assets_root = root / "library" / "assets"
+                self.assertFalse(assets_root.exists() and any(path.is_file() for path in assets_root.rglob("*")))
+
+                result = object()
+                cloud_call.return_value = result
+                returned = generator.generate(
+                    "演员", "演员A", "测试提示词",
+                    authorize_cloud=lambda route, kind: route.target == "cloud" and kind == "演员",
+                )
+                self.assertIs(returned, result)
+                cloud_call.assert_called_once()
+
+    def test_generate_missing_asset_rejects_cloud_without_consent_before_mutation(self):
+        from types import SimpleNamespace
+        from unittest.mock import patch
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            original_status = shot.status
+
+            class FakeCapabilityRouter:
+                def __init__(self, *args, **kwargs):
+                    pass
+                def decide_asset(self, kind):
+                    return SimpleNamespace(
+                        target="cloud", endpoint="https://asset.example/generate",
+                        reason="本地服务不可用，转云端",
+                    )
+
+            with patch("ad_studio.production.CapabilityRouter", FakeCapabilityRouter), \
+                 patch("ad_studio.production.load_asset_provider") as load_provider:
+                with self.assertRaisesRegex(RuntimeError, "没有获得明确授权"):
+                    store.generate_missing_asset(
+                        project, shot, "演员", "test actor", root / "asset-generation.json"
+                    )
+                load_provider.assert_not_called()
+                self.assertEqual(shot.status, original_status)
+                assets_root = root / "library" / "assets"
+                self.assertFalse(assets_root.exists() and any(item.is_file() for item in assets_root.rglob("*")))
+
+
+
+    def test_declined_asset_consent_blocks_video_provider_before_shot_state_mutation(self):
+        from unittest.mock import Mock
+
+        with tempfile.TemporaryDirectory() as td:
+            store = ProductionStore(Path(td) / "projects", library_root=Path(td) / "library")
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            original_status = shot.status
+            original_version = shot.version
+            provider = Mock()
+            store.resolve_assets = Mock(side_effect=RuntimeError("用户拒绝或未授权云端素材生成；未发送请求。"))
+
+            with self.assertRaisesRegex(RuntimeError, "已阻止后续视频 Provider 调用|未授权云端素材生成"):
+                store._render_with_provider(project, shot, provider, authorize_cloud=lambda decision, kind: False)
+
+            provider.generate.assert_not_called()
+            self.assertEqual(shot.status, original_status)
+            self.assertEqual(shot.version, original_version)
+
+    def test_ui_requests_asset_consent_before_marking_shot_generating(self):
+        source = (Path(__file__).resolve().parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        start = source.index("    def generate_shot(self):")
+        end = source.index("    def regen_shot(self):", start)
+        body = source[start:end]
+        helper_start = source.index("    def _authorize_shot_generation(self, shot, action_label):")
+        helper_end = source.index("    def _confirm_asset_cloud_generation(self, decision, kind, shot):", helper_start)
+        helper = source[helper_start:helper_end]
+        asset_prompt_start = helper_end
+        asset_prompt_end = source.index("    @ui_action", asset_prompt_start)
+        asset_prompt_helper = source[asset_prompt_start:asset_prompt_end]
+        authorize = body.index("self._authorize_shot_generation(s,")
+        status_mutation = body.index("s.status='生成中…'")
+        video_dispatch = body.index("self.store.render_shot(self.project,s,config_root=ROOT,decision=decision,authorize_cloud=")
+        asset_resolve = helper.index("self.store.resolve_assets(")
+        asset_callback = helper.index("self._confirm_asset_cloud_generation(asset_decision, kind, shot)")
+        asset_prompt = asset_prompt_helper.index("askyesno('确认云端素材端点与费用'")
+        self.assertLess(asset_resolve, asset_callback)
+        self.assertGreater(asset_prompt, 0)
+        self.assertLess(authorize, status_mutation)
+        self.assertLess(status_mutation, video_dispatch)
+
+
+    def test_usage_ledger_sanitizes_endpoint_and_retains_cost_certainty_after_reload(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            ledger_path = Path(tmp) / "usage-ledger.json"
+            ledger = UsageLedger(ledger_path)
+            row = ledger.record(
+                function="test", model_id="m1", model_name="模型一",
+                provider="openai_compatible", model="model-1", status="success",
+                estimated_cost_rmb=0.0, cost_status="usage_missing",
+                usage_status="missing",
+                endpoint="https://user:password@provider.example/v1/chat/completions?api_key=do-not-store#frag",
+            )
+            self.assertEqual(row["endpoint"], "https://provider.example/v1/chat/completions")
+            self.assertNotIn("password", ledger_path.read_text(encoding="utf-8"))
+            self.assertNotIn("do-not-store", ledger_path.read_text(encoding="utf-8"))
+            restored = UsageLedger(ledger_path).recent(1)[0]
+            self.assertEqual(restored["cost_status"], "usage_missing")
+            self.assertEqual(restored["usage_status"], "missing")
+            summary = UsageLedger(ledger_path).summary()
+            self.assertTrue(summary["has_unknown_cost"])
+            self.assertEqual(summary["unknown_cost_entries"], 1)
+
+    def test_model_router_distinguishes_missing_usage_from_missing_price(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            config_path = Path(tmp) / "model-config.json"
+            config_path.write_text(json.dumps({
+                "default_model": "priced",
+                "models": [
+                    {"id": "priced", "name": "价格已配置", "provider": "openai_compatible",
+                     "base_url": "https://user:pass@priced.example/v1",
+                     "model": "priced-model", "api_key": "key",
+                     "input_price_rmb_per_1k": 0, "output_price_rmb_per_1k": 0, "enabled": True},
+                    {"id": "unpriced", "name": "价格缺失", "provider": "openai_compatible",
+                     "base_url": "https://unpriced.example/v1", "model": "unpriced-model",
+                     "api_key": "key", "enabled": True}
+                ],
+                "routes": {"商品理解": "priced"}
+            }, ensure_ascii=False), encoding="utf-8")
+            router = ModelRouter(config_path)
+            router.set_project_context("ledger-test-project")
+            profile = router.get("priced")
+            response = MagicMock()
+            response.__enter__.return_value.read.return_value = json.dumps({
+                "choices": [{"message": {"content": "{\"ok\": true}"}}]
+            }).encode("utf-8")
+            with patch("ad_studio.model_router.urllib.request.urlopen", return_value=response):
+                router.complete_json(profile, "test prompt", function="商品理解")
+            first = router.ledger.recent(1)[0]
+            self.assertEqual(first["cost_status"], "usage_missing")
+            self.assertEqual(first["usage_status"], "missing")
+            self.assertEqual(first["endpoint"], "https://priced.example/v1/chat/completions")
+
+            unpriced = router.get("unpriced")
+            response2 = MagicMock()
+            response2.__enter__.return_value.read.return_value = json.dumps({
+                "usage": {"prompt_tokens": 1000, "completion_tokens": 0},
+                "choices": [{"message": {"content": "{\"ok\": true}"}}]
+            }).encode("utf-8")
+            with patch("ad_studio.model_router.urllib.request.urlopen", return_value=response2):
+                router.complete_json(unpriced, "test prompt", function="商品理解")
+            second = router.ledger.recent(1)[0]
+            self.assertEqual(second["cost_status"], "price_missing")
+            self.assertEqual(second["usage_status"], "reported")
+            self.assertEqual(second["estimated_cost_rmb"], 0.0)
+            self.assertTrue(router.ledger.summary()["has_unknown_cost"])
+
+
+
+    def test_missing_video_price_does_not_count_default_rate_as_actual_cost(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+
+            class UnknownPriceProvider:
+                provider_name = "Cloud provider"
+                endpoint = "https://video.example/generate"
+                cost_per_shot_rmb = 0.72
+                cost_price_configured = False
+
+                def generate(self, request):
+                    request.output.parent.mkdir(parents=True, exist_ok=True)
+                    request.output.write_bytes(b"generated-video")
+                    return request.output
+
+            store._render_with_provider(project, shot, UnknownPriceProvider())
+            summary = store.ledger.project_summary(project.id)
+            row = store.ledger.recent(1)[0]
+            self.assertEqual(row["cost_status"], "price_missing")
+            self.assertEqual(row["estimated_cost_rmb"], 0.0)
+            self.assertEqual(summary["actual_cost_rmb"], 0.0)
+            self.assertEqual(summary["unknown_cost_entries"], 1)
+            self.assertTrue(summary["has_unknown_cost"])
+            self.assertEqual(store.ledger.shot_actual_cost(project.id, shot.id), 0.0)
+
+    def test_cloud_video_entrypoints_fail_closed_without_explicit_authorization(self):
+        from types import SimpleNamespace
+        from unittest.mock import Mock, patch
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            original_status = shot.status
+            original_version = shot.version
+            dispatch = Mock(return_value="must-not-run")
+            store._render_with_provider = dispatch
+            decision = SimpleNamespace(
+                target="cloud", endpoint="https://video.example/generate",
+                reason="本地服务不可用，转云端",
+            )
+            with patch("ad_studio.production.load_video_provider") as load_provider:
+                with self.assertRaisesRegex(RuntimeError, "端点与费用授权"):
+                    store.render_shot(project, shot, config_root=root, decision=decision)
+                with self.assertRaisesRegex(RuntimeError, "端点与费用授权"):
+                    store.render_cloud_shot(project, shot, root / "video-provider.json")
+                load_provider.assert_not_called()
+
+            dispatch.assert_not_called()
+            self.assertEqual(shot.status, original_status)
+            self.assertEqual(shot.version, original_version)
+
+    def test_cloud_video_entrypoints_reject_endpoint_changed_after_consent(self):
+        from types import SimpleNamespace
+        from unittest.mock import Mock, patch
+        from ad_studio.providers import GenericVideoProvider, UnconfiguredProvider
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            dispatch = Mock(return_value="must-not-run")
+            store._render_with_provider = dispatch
+            decision = SimpleNamespace(
+                target="cloud", endpoint="https://confirmed.example/generate",
+                reason="用户已确认的端点",
+            )
+            changed_provider = GenericVideoProvider(
+                endpoint="https://changed.example/generate", api_key="test-key"
+            )
+            with patch("ad_studio.production.load_video_provider", side_effect=[changed_provider, UnconfiguredProvider(), changed_provider]):
+                with self.assertRaisesRegex(RuntimeError, "端点与用户确认时不一致"):
+                    store.render_shot(
+                        project, shot, config_root=root, decision=decision,
+                        authorized_endpoint=decision.endpoint,
+                    )
+                with self.assertRaisesRegex(RuntimeError, "端点与用户确认时不一致"):
+                    store.render_cloud_shot(
+                        project, shot, root / "video-provider.json",
+                        authorized_endpoint=decision.endpoint,
+                    )
+            dispatch.assert_not_called()
+
+    def test_cloud_render_routes_forward_asset_consent_callback(self):
+        from types import SimpleNamespace
+        from unittest.mock import Mock, patch
+        from ad_studio.providers import GenericVideoProvider, UnconfiguredProvider
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            store = ProductionStore(root / "projects", library_root=root / "library")
+            project = new_project("https://item.jd.com/123.html", 2, "广告投放视频")
+            shot = project.shots[0]
+            provider = GenericVideoProvider(
+                endpoint="https://video.example/generate", api_key="test-key"
+            )
+            callback = lambda decision, kind: False
+            dispatch = Mock(return_value="mock-render")
+            store._render_with_provider = dispatch
+            decision = SimpleNamespace(
+                target="cloud", endpoint="https://video.example/generate",
+                reason="本地服务不可用，转云端",
+            )
+            with patch("ad_studio.production.load_video_provider",
+                       side_effect=[provider, UnconfiguredProvider()]):
+                result = store.render_shot(
+                    project, shot, config_root=root, decision=decision,
+                    authorize_cloud=callback, authorized_endpoint=decision.endpoint,
+                )
+            self.assertEqual(result, "mock-render")
+            dispatch.assert_called_once_with(
+                project, shot, provider, authorize_cloud=callback
+            )
+
+            dispatch.reset_mock()
+            with patch("ad_studio.production.load_video_provider", return_value=provider):
+                result = store.render_cloud_shot(
+                    project, shot, root / "video-provider.json",
+                    authorize_cloud=callback, authorized_endpoint=decision.endpoint,
+                )
+            self.assertEqual(result, "mock-render")
+            dispatch.assert_called_once_with(
+                project, shot, provider, authorize_cloud=callback
+            )
+
+
+    def test_footage_reanalysis_consent_discloses_routes_and_data_without_secrets(self):
+        from types import SimpleNamespace
+        from ad_studio.app import build_footage_reanalysis_consent_detail
+
+        director = SimpleNamespace(
+            name="视觉导演", provider="openai_compatible",
+            base_url="https://vision.example/v1?api_key=hidden-vision",
+            input_price_rmb_per_1k=0.0, output_price_rmb_per_1k=0.0,
+        )
+        speech = SimpleNamespace(
+            name="本地转写", provider="local_openai",
+            base_url="http://127.0.0.1:1234/v1", enabled=True,
+            transcription_enabled=True,
+        )
+        class FakeRouter:
+            def resolve_route(self, function):
+                self.asserted_function = function
+                return director
+            def route(self, function):
+                return speech
+
+        detail = build_footage_reanalysis_consent_detail(FakeRouter(), Path("/private/customer-footage"))
+        self.assertIn("https://vision.example/v1", detail)
+        self.assertIn("关键帧图片", detail)
+        self.assertIn("音频文件", detail)
+        self.assertIn("本机/回环端点", detail)
+        self.assertIn("实际费用可能未知", detail)
+        self.assertIn("取消后不会扫描", detail)
+        self.assertNotIn("hidden-vision", detail)
+        self.assertNotIn("api_key=", detail)
+        self.assertNotIn("/private/customer-footage", detail)
+
+    def test_footage_reanalysis_consent_precedes_scan_manifest_and_external_analysis(self):
+        source = (Path(__file__).resolve().parent / "ad_studio" / "app.py").read_text(encoding="utf-8")
+        start = source.index("    def reanalyze_footage(self):")
+        end = source.index("    @ui_action", start + 10)
+        body = source[start:end]
+        consent = body.index("askyesno('重新分析实拍素材与数据去向授权'")
+        scan = body.index("clips=scan_footage(folder)")
+        manifest = body.index("build_visual_manifest(")
+        analysis = body.index("self.model_router.analyze_footage(")
+        self.assertLess(consent, scan)
+        self.assertLess(consent, manifest)
+        self.assertLess(consent, analysis)
+
+    def test_creation_preflight_denial_keeps_external_pipeline_call_counts_at_zero(self):
+        from unittest.mock import Mock
+        from ad_studio.app import run_after_explicit_authorization
+
+        parse = Mock()
+        scan = Mock()
+        vision = Mock()
+        transcription = Mock()
+        planning = Mock()
+
+        def external_pipeline():
+            parse()
+            scan()
+            vision()
+            transcription()
+            planning()
+
+        authorized, result = run_after_explicit_authorization(lambda: False, external_pipeline)
+        self.assertFalse(authorized)
+        self.assertIsNone(result)
+        for operation in (parse, scan, vision, transcription, planning):
+            operation.assert_not_called()
+
+    def test_budget_denial_skips_all_project_persistence_operations(self):
+        from unittest.mock import Mock
+        from ad_studio.app import run_after_explicit_authorization
+
+        save_project = Mock()
+        save_product = Mock()
+        save_library = Mock()
+        refresh_ui = Mock()
+
+        def persist_project():
+            save_project()
+            save_product()
+            save_library()
+            refresh_ui()
+
+        authorized, result = run_after_explicit_authorization(lambda: False, persist_project)
+        self.assertFalse(authorized)
+        self.assertIsNone(result)
+        for operation in (save_project, save_product, save_library, refresh_ui):
+            operation.assert_not_called()
+
+    def test_create_uses_explicit_gate_before_planning_and_budget_gate_before_persistence(self):
+        import inspect
+        from ad_studio.app import App
+
+        source = inspect.getsource(App.create)
+        first_gate = source.index("run_after_explicit_authorization(")
+        parse = source.index("lambda: parse_product_url(url)")
+        planning = source.index("self.model_router.create_plans(")
+        budget_gate = source.rindex("run_after_explicit_authorization(")
+        persist = source.index("self.store.save(self.project)")
+        denial = source.index("if not authorized:", budget_gate)
+        self.assertLess(first_gate, parse)
+        self.assertLess(parse, planning)
+        self.assertLess(planning, budget_gate)
+        self.assertLess(budget_gate, persist)
+        self.assertLess(persist, denial)
+
+# A30 recovery regression: re-run CI after persisted-manifest recovery fix.
+
+
+class UnknownVideoPriceEstimateTests(unittest.TestCase):
+    def test_provider_placeholder_rate_is_unknown_until_explicitly_configured(self):
+        from ad_studio.app import configured_video_price
+        from ad_studio.providers import GenericVideoProvider
+
+        placeholder = GenericVideoProvider(endpoint="https://video.example/generate", api_key="test")
+        self.assertIsNone(configured_video_price(placeholder))
+        explicit_zero = GenericVideoProvider(
+            endpoint="https://video.example/generate",
+            api_key="test",
+            cost_per_shot_rmb=0.0,
+            cost_price_configured=True,
+        )
+        self.assertEqual(configured_video_price(explicit_zero), 0.0)
+
+    def test_unknown_video_price_is_not_rendered_as_zero_or_placeholder_total(self):
+        estimate = estimate_cost(3, {"cloud_video_per_shot": None})
+        self.assertTrue(estimate["费用未知"])
+        self.assertIsNone(estimate["总计"])
+        self.assertIsNone(estimate["超预算"])
+        video = next(x for x in estimate["明细"] if x["项目"] == "云端视频生成")
+        self.assertIsNone(video["单价"])
+        self.assertIsNone(video["小计"])
+        self.assertIn("无法可靠估算", estimate["计价说明"])
+
+    def test_explicit_zero_video_price_remains_a_known_value(self):
+        estimate = estimate_cost(3, {"cloud_video_per_shot": 0.0})
+        self.assertFalse(estimate["费用未知"])
+        self.assertEqual(estimate["总计"], 0.0)
+        video = next(x for x in estimate["明细"] if x["项目"] == "云端视频生成")
+        self.assertEqual(video["单价"], 0.0)
+        self.assertEqual(video["小计"], 0.0)
+
+    def test_unknown_price_ui_entrypoints_have_explicit_confirmation_language(self):
+        source = Path(__file__).with_name("ad_studio").joinpath("app.py").read_text(encoding="utf-8")
+        self.assertIn("def configured_video_price(provider):", source)
+        self.assertIn("无法可靠估算（视频单价未知）", source)
+        self.assertIn("if rate is None and pending:", source)
+        self.assertIn("if unknown_price:", source)
+        self.assertIn("def create_short_drama_production_project", source)
+        self.assertIn("是否仍继续？", source)
+
+
+class PlanningCostPreflightEstimateTests(unittest.TestCase):
+    def test_preflight_cost_is_unknown_when_no_comparable_usage_exists(self):
+        from types import SimpleNamespace
+        from ad_studio.app import estimate_creation_planning_cost
+
+        class FakeRouter:
+            def route(self, function):
+                return SimpleNamespace(
+                    id=function, name=function, provider="openai_compatible",
+                    base_url="https://api.example/v1",
+                    input_price_rmb_per_1k=0.01, output_price_rmb_per_1k=0.02,
+                )
+            def recent_usage(self, limit=100):
+                return []
+
+        estimate = estimate_creation_planning_cost(FakeRouter(), 2)
+        self.assertEqual(estimate["planned_calls"], 18)
+        self.assertIsNone(estimate["total_rmb"])
+        self.assertGreater(len(estimate["unknown_functions"]), 0)
+        self.assertIn("商品理解", estimate["unknown_functions"])
+
+    def test_preflight_cost_uses_same_function_model_usage_and_variant_count(self):
+        from types import SimpleNamespace
+        from ad_studio.app import estimate_creation_planning_cost
+
+        class FakeRouter:
+            def route(self, function):
+                return SimpleNamespace(
+                    id=function, name=function, provider="openai_compatible",
+                    base_url="https://api.example/v1",
+                    input_price_rmb_per_1k=0.01, output_price_rmb_per_1k=0.02,
+                )
+            def recent_usage(self, limit=100):
+                return [
+                    {"function": function, "model_id": function, "status": "success",
+                     "usage_status": "reported", "cost_status": "estimated_from_configured_prices",
+                     "prompt_tokens": 1000, "completion_tokens": 500, "estimated_cost_rmb": 0.02}
+                    for function in ("商品理解", "卖点提炼", "人群与痛点", "广告策略",
+                                     "广告强度判断", "视频形式判断", "剧本", "分镜", "素材选择")
+                ]
+
+        estimate = estimate_creation_planning_cost(FakeRouter(), 2)
+        self.assertEqual(estimate["planned_calls"], 18)
+        self.assertEqual(estimate["unknown_functions"], [])
+        self.assertAlmostEqual(estimate["total_rmb"], 0.36, places=6)
+        self.assertEqual(estimate["known_subtotal_rmb"], 0.36)
+
+    def test_creation_preflight_discloses_planning_estimate_before_model_calls(self):
+        from ad_studio.app import build_creation_preflight_detail
+        from ad_studio.model_router import ModelRouter
+
+        with tempfile.TemporaryDirectory() as td:
+            router = ModelRouter(Path(td) / "model-config.json")
+            detail = build_creation_preflight_detail("https://item.example/1", 5.0, 2, router)
+        self.assertIn("规划阶段费用估算", detail)
+        self.assertIn("规划阶段计划调用：18 次", detail)
+        self.assertIn("无法可靠估算", detail)
 
 
 if __name__ == "__main__":
     unittest.main()
-# A30 recovery regression: re-run CI after persisted-manifest recovery fix.

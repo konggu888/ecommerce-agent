@@ -6,9 +6,12 @@ import subprocess
 import datetime
 import math
 from .models import Project, Shot, accept_hybrid_generated_shot
-from .ffmpeg import make_clip, concat
+from .ffmpeg import make_clip, concat, concat_with_transitions
 from .providers import GenerationRequest, load_video_provider, load_asset_provider
-from .postprocess import process_shot
+from .postprocess import process_shot, normalize_output_resolution
+from .postprocess import probe_duration
+from .music_sync import analyze_music_file, derive_content_minimum_durations, derive_subtitle_minimum_duration, plan_beat_aligned_durations, retime_clip, mix_global_bgm
+from .subtitles import parse_srt_cues
 from .library import LocalLibrary
 from .asset_generation import AssetGenerator, LocalAssetBackend
 from .hardware import detect_hardware
@@ -30,7 +33,72 @@ class ProductionStore:
         if not p.exists(): return None
         data=json.loads(p.read_text(encoding='utf-8'))
         data['shots']=[Shot(**s) for s in data.get('shots',[])]
-        return Project(**data)
+        project = Project(**data)
+        # Re-open is a trust boundary: re-check physical locks against the current library.
+        issues = self.validate_series_asset_locks(project)
+        if issues:
+            self._record_series_lock_issues(project, issues, stage="项目重新打开时发现跨集锁定素材失效")
+            self.save(project)
+        return project
+
+    def validate_series_asset_locks(self, project: Project, shot_index: int | None = None):
+        """Re-check persisted physical actor/scene locks; fail closed on stale library state."""
+        locked_rows = []
+        for row in (project.creative_plan or {}).get("shots", []):
+            try:
+                row_index = int(row.get("index", -1))
+            except (TypeError, ValueError):
+                row_index = -1
+            if shot_index is not None and row_index != int(shot_index):
+                continue
+            req = row.get("asset_resolution", {}) or {}
+            for kind, key in (("演员", "actor_asset_id"), ("场景", "scene_asset_id")):
+                asset_id = str(req.get(key) or "").strip()
+                if asset_id:
+                    locked_rows.append((row_index, kind, asset_id))
+        if not locked_rows:
+            return []
+        try:
+            by_id = {asset.id: asset for asset in LocalLibrary(self.library_root).all()}
+        except Exception as exc:
+            return [{"shot_index": idx, "kind": kind, "asset_id": aid,
+                     "error_code": "SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE",
+                     "error": f"跨集锁定素材库无法读取，已阻止继续制作：{exc}"}
+                    for idx, kind, aid in locked_rows]
+        issues = []
+        for idx, kind, aid in locked_rows:
+            asset = by_id.get(aid)
+            if asset is None:
+                reason = "素材记录不存在（可能已删除或索引已变化）"
+            elif not asset.active:
+                reason = "素材已停用"
+            elif not asset.reusable:
+                reason = "素材已设置为不可复用"
+            elif asset.kind != kind:
+                reason = f"素材类型已改变/不匹配（实际：{asset.kind}，要求：{kind}）"
+            else:
+                continue
+            issues.append({"shot_index": idx, "kind": kind, "asset_id": aid,
+                           "error_code": "SERIES_LOCKED_ASSET_INVALID",
+                           "error": f"镜头 {idx} 的跨集锁定{kind}素材 {aid} 无效：{reason}；禁止替换或自动生成。"})
+        return issues
+
+    def _record_series_lock_issues(self, project: Project, issues: list[dict[str, Any]], *, stage: str):
+        recovery = project.creative_plan.setdefault("recovery", {})
+        history = recovery.setdefault("history", [])
+        for issue in issues:
+            signature = (issue.get("error_code"), issue.get("shot_index"), issue.get("asset_id"), issue.get("error"))
+            if any((item.get("error_code"), item.get("shot_index"), item.get("asset_id"), item.get("error")) == signature
+                   and item.get("status") in ("需处理", "待恢复") for item in history):
+                continue
+            history.append({**issue, "stage": stage, "retryable": False, "status": "需处理",
+                            "next_action": "恢复/重新启用原锁定素材，或由用户明确修改锁定 ID；系统不会自动替换或生成。",
+                            "created_at": datetime.datetime.now().isoformat(timespec="seconds")})
+        if issues:
+            recovery.update({"status": "需处理", "stage": stage,
+                             "error": "；".join(issue["error"] for issue in issues),
+                             "next_action": "检查本地素材库及原锁定素材，修复后只重试受影响镜头。",
+                             "updated_at": datetime.datetime.now().isoformat(timespec="seconds")})
 
     def record_recovery_failure(self, project: Project, *, stage: str, error: str, next_action: str, retryable: bool = True):
         """统一记录可恢复失败；不清除已有有效资产，保存下一步动作。"""
@@ -54,6 +122,9 @@ class ProductionStore:
         """恢复中断项目：清理未完成临时输出、校正失效媒体状态，并保留有效资产与历史。"""
         creative_plan = project.creative_plan
         recovery = creative_plan.setdefault("recovery", {})
+        lock_issues = self.validate_series_asset_locks(project)
+        if lock_issues:
+            self._record_series_lock_issues(project, lock_issues, stage="中断项目恢复时发现跨集锁定素材失效")
         removed_parts = 0
         render_root = self.root / "renders" / project.id
         if render_root.exists():
@@ -93,6 +164,14 @@ class ProductionStore:
                 missing_media.append(shot.id)
                 shot.video_path = None
                 shot.status = "待重新生成/重新选择素材"
+            elif (
+                not shot.video_path
+                and shot.status == "待重新生成/重新选择素材"
+            ):
+                # Keep recovery reporting idempotent: a second restart must not
+                # make a previously detected missing output disappear from the
+                # recovery summary before the user has regenerated that shot.
+                missing_media.append(shot.id)
         invalid_outputs = []
         records = list(creative_plan.get("final_output_history_records", []) or [])
         manifests = creative_plan.get("final_output_manifests", {}) or {}
@@ -170,8 +249,10 @@ class ProductionStore:
             project.actual_cost_summary = summary
             for shot in project.shots:
                 shot_cost = self.ledger.shot_actual_cost(project.id, shot.id)
-                if shot_cost is not None:
-                    shot.actual_cost_rmb = shot_cost
+                # Once any successful ledger entry exists, the ledger is authoritative
+                # for every shot: absence of a shot-level entry means zero recorded
+                # spend, not permission to retain a stale snapshot amount.
+                shot.actual_cost_rmb = float(shot_cost or 0.0)
         else:
             summary = dict(summary)
             summary["actual_cost_rmb"] = round(float(project.actual_cost_rmb or 0.0), 6)
@@ -263,7 +344,7 @@ class ProductionStore:
                 shot.actual_cost_rmb = shot_cost
         return True
 
-    def _record_actual_cost(self, project: Project, *, shot: Shot | None, category: str, amount_rmb: float, provider: str, quantity: float = 1.0, unit_cost_rmb: float = 0.0, function: str = "生成任务"):
+    def _record_actual_cost(self, project: Project, *, shot: Shot | None, category: str, amount_rmb: float, provider: str, quantity: float = 1.0, unit_cost_rmb: float = 0.0, function: str = "生成任务", endpoint: str = "", cost_status: str = "unknown", usage_status: str = "not_applicable"):
         amount = round(float(amount_rmb or 0), 6)
         self._ensure_legacy_cost_migrated(project)
         self.ledger.record(
@@ -271,6 +352,7 @@ class ProductionStore:
             status="success", estimated_cost_rmb=amount,
             project_id=project.id, shot_id=shot.id if shot else "",
             category=category, quantity=quantity, unit_cost_rmb=unit_cost_rmb,
+            endpoint=endpoint, cost_status=cost_status, usage_status=usage_status,
         )
         summary = self.ledger.project_summary(project.id)
         # The usage ledger is authoritative; never increment a possibly stale project total.
@@ -288,7 +370,8 @@ class ProductionStore:
     def _record_failed_video_attempt(self, project: Project, shot: Shot, provider: Any, error: str):
         """Log a failed provider attempt without treating its quote as actual spend."""
         try:
-            quoted_rate = float(getattr(provider, "cost_per_shot_rmb", 0.0) or 0.0)
+            price_configured = bool(getattr(provider, "cost_price_configured", True))
+            quoted_rate = float(getattr(provider, "cost_per_shot_rmb", 0.0) or 0.0) if price_configured else 0.0
         except (TypeError, ValueError, OverflowError):
             quoted_rate = 0.0
         if not math.isfinite(quoted_rate) or quoted_rate < 0:
@@ -307,6 +390,7 @@ class ProductionStore:
             category="video",
             quantity=1,
             unit_cost_rmb=round(quoted_rate, 6),
+            endpoint=getattr(provider, "endpoint", ""), cost_status="unknown", usage_status="unavailable",
             error=error,
         )
         # Failed rows remain auditable without counting an unconfirmed charge
@@ -331,7 +415,7 @@ class ProductionStore:
         self.save(project)
         return next((shot for shot in shots if str(shot.id) == str(task.get("accepted_shot_id"))), None)
 
-    def _record_asset_cost(self, project: Project, shot: Shot, kind: str, amount_rmb: float, provider: str):
+    def _record_asset_cost(self, project: Project, shot: Shot, kind: str, amount_rmb: float, provider: str, endpoint: str = "", cost_status: str = "unknown"):
         """Keep successfully generated assets available when their cost write needs reconciliation."""
         try:
             self._record_actual_cost(
@@ -342,7 +426,7 @@ class ProductionStore:
                 provider=provider,
                 quantity=1,
                 unit_cost_rmb=amount_rmb,
-                function=f"{kind}素材生成",
+                function=f"{kind}素材生成", endpoint=endpoint, cost_status=cost_status, usage_status="not_applicable",
             )
             return True, ""
         except Exception as exc:
@@ -366,25 +450,52 @@ class ProductionStore:
                 })
             return False, str(exc)
 
-    def resolve_assets(self, project: Project, shot: Shot):
+    def resolve_assets(self, project: Project, shot: Shot, authorize_cloud=None):
         """本地优先；缺失时返回明确的生成需求。真正生成由对应生成器执行。"""
         library=LocalLibrary(self.library_root)
         resolution={}
         plan_shots=project.creative_plan.get("shots", []) if project.creative_plan else []
         ai=next((x for x in plan_shots if int(x.get("index", -1)) == shot.index), {})
         req=ai.get("asset_resolution", {}) or {}
-        generator=AssetGenerator(self.library_root/'asset-generation.json',self.library_root)
-        for kind, tags in (("演员", req.get("actor_tags", [])), ("场景", req.get("scene_tags", [])), ("商品素材", req.get("product_tags", []))):
-            found=library.best_match(kind,tags)
-            item={'asset':found.id if found else None,'source':'本地复用' if found else '待自动生成','generate_if_missing':bool(req.get('generation_if_missing', True))}
-            if not found and item['generate_if_missing']:
+        generator=AssetGenerator(self.root.parent/'asset-generation.json',self.library_root)
+        # Preflight all locks before resolving anything else. A stale series lock must
+        # not cause unrelated missing assets to be generated as a side effect.
+        preflight_issues = self.validate_series_asset_locks(project, shot.index)
+        if preflight_issues:
+            for issue in preflight_issues:
+                kind = issue["kind"]
+                resolution[kind] = {
+                    "asset": None, "source": "跨集锁定素材无效", "generate_if_missing": False,
+                    "locked_asset_id": issue.get("asset_id"), "error_code": issue["error_code"],
+                    "error": issue["error"],
+                }
+            project.creative_plan.setdefault("asset_resolution", {})[shot.id] = resolution
+            self._record_series_lock_issues(project, preflight_issues, stage="素材解析前发现跨集锁定素材失效")
+            self.save(project)
+            return resolution
+        for kind, tags, lock_key in (("演员", req.get("actor_tags", []), "actor_asset_id"), ("场景", req.get("scene_tags", []), "scene_asset_id"), ("商品素材", req.get("product_tags", []), None)):
+            locked_id = str(req.get(lock_key) or "").strip() if lock_key else ""
+            if locked_id:
+                # Explicit series identity locks are fail-closed: never substitute a lookalike
+                # or trigger generation when the exact library record is unavailable.
+                exact = next((asset for asset in library.all() if asset.id == locked_id), None)
+                valid = bool(exact and exact.active and exact.reusable and exact.kind == kind)
+                found = exact if valid else None
+                item = {"asset": found.id if found else None, "source": "跨集锁定素材复用" if found else "跨集锁定素材无效", "generate_if_missing": False, "locked_asset_id": locked_id}
+                if not found:
+                    reason = "不存在" if exact is None else ("已停用" if not exact.active else ("不可复用" if not exact.reusable else f"类型不匹配（实际：{exact.kind}，要求：{kind}）"))
+                    item.update({"error_code": "SERIES_LOCKED_ASSET_INVALID", "error": f"跨集锁定素材 {locked_id} {reason}；禁止自动替换或生成。"})
+            else:
+                found=library.best_match(kind,tags)
+                item={'asset':found.id if found else None,'source':'本地复用' if found else '待自动生成','generate_if_missing':bool(req.get('generation_if_missing', True))}
+            if not locked_id and not found and item['generate_if_missing']:
                 if generator.configured(kind):
                     item['source']='自动生成中'
                     try:
-                        result=generator.generate(kind,project.product_name+'-'+kind,shot.visual+'；需求：'+'、'.join(tags),tags,shot.id)
+                        result=generator.generate(kind,project.product_name+'-'+kind,shot.visual+'；需求：'+'、'.join(tags),tags,shot.id,authorize_cloud=authorize_cloud)
                         library._write(library.all()+[result.asset])
                         item.update({'asset':result.asset.id,'source':'已生成并入库','cost_rmb':result.cost_rmb})
-                        cost_recorded, cost_error = self._record_asset_cost(project, shot, kind, result.cost_rmb, result.provider)
+                        cost_recorded, cost_error = self._record_asset_cost(project, shot, kind, result.cost_rmb, result.provider, getattr(result, "endpoint", ""), getattr(result, "cost_status", "unknown"))
                         if not cost_recorded:
                             item.update({
                                 'source': '已生成并入库（成本待核对）',
@@ -392,6 +503,10 @@ class ProductionStore:
                                 'cost_error': cost_error,
                             })
                     except Exception as exc:
+                        if "没有获得明确授权" in str(exc):
+                            # A declined consent is control flow, not an ordinary generation failure.
+                            # Stop before trying other assets or dispatching a video Provider.
+                            raise
                         item.update({'source':'自动生成失败','error':str(exc)})
                 else:
                     item['source']='未配置生成服务'
@@ -405,10 +520,16 @@ class ProductionStore:
         self.save(project)
         return resolution
 
-    def generate_missing_asset(self, project: Project, shot: Shot, kind: str, request_text: str, asset_provider_path: Path):
+    def generate_missing_asset(self, project: Project, shot: Shot, kind: str, request_text: str, asset_provider_path: Path, authorize_cloud=None):
         """缺少本地素材时自动生成，并永久登记到本地库。"""
         library=LocalLibrary(self.library_root)
         decision = CapabilityRouter(self.root.parent).decide_asset(kind)
+        if decision.target == 'cloud' and (
+            not callable(authorize_cloud) or not bool(authorize_cloud(decision, kind))
+        ):
+            raise RuntimeError(
+                f'{kind}生成需要调用云端 Provider，但本次没有获得明确授权；未发送请求、未创建素材文件、未修改镜头状态。'
+            )
         aid=shot.id + '-' + kind
         ext='.png'
         out=self.library_root/'assets'/kind/(aid+ext)
@@ -432,7 +553,19 @@ class ProductionStore:
         elif kind=='场景': shot.scene_id=item.id
         elif kind=='商品素材': shot.product_asset_ids.append(item.id)
         shot.asset_source='ai_generated'
-        cost_recorded, cost_error = self._record_asset_cost(project, shot, kind, cost, provider_name)
+        endpoint = getattr(decision, "endpoint", "") if decision.target == "local" else getattr(provider, "endpoint", "")
+        if decision.target == "local":
+            cost_status = "local_no_provider_charge"
+        else:
+            try:
+                provider_config = json.loads(asset_provider_path.read_text(encoding="utf-8")) if asset_provider_path.exists() else {}
+                kind_config = provider_config.get(kind) or provider_config.get("asset_generation") or {}
+                cost_status = "estimated_from_configured_price" if "price_rmb" in kind_config else "price_missing"
+            except Exception:
+                cost_status = "price_missing"
+        cost_recorded, cost_error = self._record_asset_cost(
+            project, shot, kind, cost, provider_name, endpoint, cost_status
+        )
         shot.provider = provider_name
         shot.status = f'{kind}已生成并入库' if cost_recorded else f'{kind}已生成并入库（成本待核对）'
         if not cost_recorded:
@@ -440,7 +573,7 @@ class ProductionStore:
         self.save(project)
         return item
 
-    def render_shot(self, project: Project, shot: Shot, provider_path: Path | None = None, config_root: Path | None = None):
+    def render_shot(self, project: Project, shot: Shot, provider_path: Path | None = None, config_root: Path | None = None, decision=None, authorize_cloud=None, authorized_endpoint: str | None = None):
         """本地/云端视频生成统一入口。
 
         clip_source == 'filmed' 时走用户拍摄素材剪辑（本地 FFmpeg 裁剪），
@@ -451,7 +584,9 @@ class ProductionStore:
         """
         if shot.clip_source == 'filmed':
             return self.render_footage_shot(project, shot)
-        decision = CapabilityRouter(config_root or self.root.parent).decide_video()
+        # UI may pass the exact route snapshot the user approved; do not silently re-resolve to a different endpoint after consent.\n        decision = decision or CapabilityRouter(config_root or self.root.parent).decide_video()
+        if decision.target == 'cloud' and not authorized_endpoint:
+            raise RuntimeError('云端视频 Provider 调用需要先完成本次端点与费用授权；未发送请求。')
         if decision.target == 'local':
             from .providers import GenericVideoProvider
             provider = GenericVideoProvider(
@@ -461,32 +596,52 @@ class ProductionStore:
                 provider_name='本地视频服务',
                 require_key=False,
             )
-            return self._render_with_provider(project, shot, provider)
+            return self._render_with_provider(project, shot, provider, authorize_cloud=authorize_cloud)
         if decision.target == 'cloud':
             provider = load_video_provider(provider_path or (config_root or self.root.parent)/'video-provider.json')
             if isinstance(provider, type(load_video_provider(Path('__missing__')))):
                 raise RuntimeError('尚未配置云端视频 Provider，且本地视频服务不可用。')
-            return self._render_with_provider(project, shot, provider)
+            if str(getattr(provider, 'endpoint', '') or '').strip() != str(authorized_endpoint or '').strip():
+                raise RuntimeError('云端视频 Provider 端点与用户确认时不一致；未发送请求，请重新确认当前端点与费用。')
+            return self._render_with_provider(project, shot, provider, authorize_cloud=authorize_cloud)
         raise RuntimeError(f'镜头生成不可用：{decision.reason}')
 
-    def render_cloud_shot(self, project: Project, shot: Shot, provider_path: Path):
+    def render_cloud_shot(self, project: Project, shot: Shot, provider_path: Path, authorize_cloud=None, authorized_endpoint: str | None = None):
+        if not authorized_endpoint:
+            raise RuntimeError('云端视频 Provider 调用需要先完成本次端点与费用授权；未发送请求。')
         provider=load_video_provider(provider_path)
-        return self._render_with_provider(project, shot, provider)
+        if str(getattr(provider, 'endpoint', '') or '').strip() != str(authorized_endpoint).strip():
+            raise RuntimeError('云端视频 Provider 端点与用户确认时不一致；未发送请求，请重新确认当前端点与费用。')
+        return self._render_with_provider(project, shot, provider, authorize_cloud=authorize_cloud)
 
-    def _render_with_provider(self, project: Project, shot: Shot, provider):
+    def _render_with_provider(self, project: Project, shot: Shot, provider, authorize_cloud=None):
         out = self.render_path(project, shot)
         temp = out.with_suffix(".part.mp4")
-        if temp.exists():
-            temp.unlink()
         previous_path = shot.video_path or getattr(shot, "previous_video_path", None)
         prompt = '\n'.join([f"标题：{shot.title}", f"画面：{shot.visual}", f"文案：{shot.script}"])
-        shot.status = "生成中…"
-        shot.provider = getattr(provider, "provider_name", "Generic REST")
-        shot.generated_from_request = prompt
         provider_call_started = False
         try:
+            # Resolve/reuse assets before changing shot state; cloud asset generation requires its own consent.
+            # A rejected asset-consent prompt must stop the video request too, not silently continue without assets.
+            resolution = self.resolve_assets(project, shot, authorize_cloud=authorize_cloud)
+            denied = [item for item in resolution.values() if "没有获得明确授权" in str(item.get("error", ""))]
+            if denied:
+                raise RuntimeError("用户拒绝或未授权云端素材生成；已阻止后续视频 Provider 调用。")
+            if temp.exists():
+                temp.unlink()
+            shot.status = "生成中…"
+            shot.provider = getattr(provider, "provider_name", "Generic REST")
+            shot.generated_from_request = prompt
             self.save(project)
-            self.resolve_assets(project, shot)
+            # Re-check immediately before Provider dispatch; asset state may have changed since load.
+            lock_issues = self.validate_series_asset_locks(project, shot.index)
+            resolution_issues = [item for item in resolution.values()
+                                 if item.get("error_code") in ("SERIES_LOCKED_ASSET_INVALID", "SERIES_LOCKED_ASSET_LIBRARY_UNAVAILABLE")]
+            if lock_issues or resolution_issues:
+                issues = lock_issues + resolution_issues
+                self._record_series_lock_issues(project, issues, stage="单镜头生成/重生成前拦截")
+                self.save(project)
+                raise RuntimeError("SERIES_LOCKED_ASSET_INVALID：跨集锁定素材已失效，已阻止当前镜头生成；未替换素材、未自动生成替代项。")
             library = LocalLibrary(self.library_root)
             asset_ids = [x for x in [shot.actor_id, shot.scene_id, *shot.product_asset_ids] if x]
             asset_map = {asset.id: asset for asset in library.all()}
@@ -507,6 +662,10 @@ class ProductionStore:
                 raise RuntimeError("视频 Provider 返回成功，但生成文件不存在或为空。")
             result.replace(out)
         except Exception as exc:
+            if "没有获得明确授权" in str(exc) or "用户拒绝或未授权云端素材生成" in str(exc):
+                # Consent cancellation is not a provider failure and must not mutate shot state/version.
+                temp.unlink(missing_ok=True)
+                raise
             temp.unlink(missing_ok=True)
             previous_is_valid = bool(
                 previous_path and Path(previous_path).is_file() and Path(previous_path).stat().st_size > 0
@@ -536,7 +695,9 @@ class ProductionStore:
         shot.previous_video_path = None
         shot.status = "已生成"
         try:
-            video_cost = normalize_cost_estimate_rmb(getattr(provider, "cost_per_shot_rmb", 0.0))
+            local_provider = getattr(provider, "provider_name", "") == "本地视频服务"
+            price_configured = local_provider or bool(getattr(provider, "cost_price_configured", True))
+            video_cost = normalize_cost_estimate_rmb(getattr(provider, "cost_per_shot_rmb", 0.0)) if price_configured else 0.0
             self._record_actual_cost(
                 project,
                 shot=shot,
@@ -546,6 +707,9 @@ class ProductionStore:
                 quantity=1,
                 unit_cost_rmb=video_cost,
                 function="视频镜头生成",
+                endpoint=getattr(provider, "endpoint", ""),
+                cost_status=("local_no_provider_charge" if local_provider else ("estimated_from_configured_price" if price_configured else "price_missing")),
+                usage_status="not_applicable",
             )
             self.mark_ready(project, shot, out)
         except Exception as ledger_exc:
@@ -556,7 +720,7 @@ class ProductionStore:
                 "provider": str(getattr(provider, "provider_name", "Generic REST")),
                 "shot_id": shot.id,
                 "output_path": str(out),
-                "quoted_cost_rmb": getattr(provider, "cost_per_shot_rmb", None),
+                "quoted_cost_rmb": (getattr(provider, "cost_per_shot_rmb", None) if (getattr(provider, "provider_name", "") == "本地视频服务" or getattr(provider, "cost_price_configured", True)) else None),
                 "retryable": False,
                 "status": "需处理",
                 "next_action": "先核对 usage-ledger.json 是否已写入成功记录，再人工修复项目成本汇总；禁止直接重试记账以免重复计费。",
@@ -701,6 +865,13 @@ class ProductionStore:
             if expected_w and abs((result["width"] / result["height"]) - (expected_w / expected_h)) > 0.03:
                 result["reason"] = f"输出画幅与要求 {aspect} 不一致"
                 return result
+            minimum_width, minimum_height = {"9:16": (1080, 1920), "16:9": (1920, 1080), "1:1": (1080, 1080)}.get(aspect, (1080, 1920))
+            if result["width"] < minimum_width or result["height"] < minimum_height:
+                result["reason"] = (
+                    f"输出分辨率低于最低 1080P 要求（当前 {result['width']}×{result['height']}，"
+                    f"至少需要 {minimum_width}×{minimum_height}）"
+                )
+                return result
             result["valid"] = True
             result["reason"] = "最终视频机器质检通过"
             return result
@@ -781,7 +952,117 @@ class ProductionStore:
         suffix=f'-v{int(variant_index)}' if variant_index else ''
         episode_suffix=f'-ep{int(episode_number)}' if episode_number is not None else ''
         out=self.root/'final'/project.id/f'final-{aspect.replace(":", "x")}{episode_suffix}{suffix}.mp4'
-        concat([Path(s.video_path) for s in shots],out)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        concat_path = out.with_name(out.stem + ".concat.tmp.mp4")
+        bgm_path = out.with_name(out.stem + ".bgm.tmp.mp4")
+        normalized_path = out.with_name(out.stem + ".1080p.tmp.mp4")
+        retimed_paths = []
+        shot_transitions = [str(getattr(s, 'transition', '硬切') or '硬切') for s in shots]
+        transition_safe = not any(value == '交叉溶解' for value in shot_transitions[1:])
+        try:
+            shot_paths = [Path(s.video_path) for s in shots]
+            bgm_value = (project.creative_plan or {}).get("final_bgm_path")
+            if bgm_value:
+                bgm = Path(str(bgm_value)).expanduser()
+                if not bgm.is_file() or bgm.stat().st_size <= 0:
+                    raise RuntimeError(f"项目设置的全局BGM不存在或为空：{bgm}")
+                analysis = analyze_music_file(bgm)
+                original_durations = [probe_duration(path) for path in shot_paths]
+                creative_rows = (project.creative_plan or {}).get("shots", [])
+                rows_by_index = {}
+                for row in creative_rows if isinstance(creative_rows, list) else []:
+                    if isinstance(row, dict):
+                        try:
+                            rows_by_index[int(row.get("index", -1))] = row
+                        except (TypeError, ValueError):
+                            continue
+                content_rows = []
+                for shot in shots:
+                    row = dict(rows_by_index.get(int(getattr(shot, "index", -1)), {}))
+                    row["dialogue"] = row.get("dialogue") or getattr(shot, "script", "")
+                    row["script"] = getattr(shot, "script", "")
+                    row["visual"] = row.get("visual") or getattr(shot, "visual", "")
+                    row["objective"] = row.get("objective") or getattr(shot, "title", "")
+                    row["on_screen_text"] = row.get("on_screen_text") or []
+                    row["product_asset_requirements"] = row.get("product_asset_requirements") or getattr(shot, "product_asset_ids", [])
+                    row["cta_role"] = row.get("cta_role") or ""
+                    row["editing_intent"] = row.get("editing_intent") or {}
+                    content_rows.append(row)
+                content_protection = derive_content_minimum_durations(content_rows, original_durations)
+                subtitle_audit = []
+                subtitle_map = (project.creative_plan or {}).get("subtitle_timing_by_shot", {})
+                if not isinstance(subtitle_map, dict):
+                    subtitle_map = {}
+                combined_minimums = list(content_protection["minimum_durations"])
+                for shot_index, (shot, clip_path, clip_duration) in enumerate(zip(shots, shot_paths, original_durations)):
+                    record = subtitle_map.get(str(getattr(shot, "id", "")), {})
+                    reason = "未找到与当前镜头版本绑定的 SRT 记录，沿用常规内容保护"
+                    if isinstance(record, dict) and str(record.get("source_video_path", "")) == str(clip_path):
+                        try:
+                            recorded_duration = float(record.get("source_duration_seconds"))
+                            if abs(recorded_duration - clip_duration) > 0.15:
+                                raise ValueError("记录的字幕源时长与当前镜头不匹配")
+                            srt_path = Path(str(record.get("srt_path", ""))).expanduser()
+                            parsed = parse_srt_cues(srt_path, duration=clip_duration)
+                            protection = derive_subtitle_minimum_duration(parsed["cues"], clip_duration)
+                            if not protection["valid"]:
+                                raise ValueError(protection["reason"])
+                            combined_minimums[shot_index] = max(combined_minimums[shot_index], protection["minimum_duration"])
+                            reason = protection["reason"]
+                            subtitle_audit.append({
+                                "shot_index": shot_index + 1, "status": "applied",
+                                "srt_path": str(srt_path), "cue_count": parsed["cue_count"],
+                                "shortest_cue_seconds": protection.get("shortest_cue_seconds"),
+                                "minimum_duration": protection["minimum_duration"], "reason": reason,
+                            })
+                        except (OSError, ValueError, TypeError, KeyError) as exc:
+                            reason = f"SRT 时间窗不可用，保守回退：{exc}"
+                            subtitle_audit.append({"shot_index": shot_index + 1, "status": "fallback", "reason": reason})
+                    else:
+                        subtitle_audit.append({"shot_index": shot_index + 1, "status": "fallback", "reason": reason})
+                plan = plan_beat_aligned_durations(original_durations, analysis.get("beats", []),
+                                                   analysis.get("confidence", 0.0), allow_retime=transition_safe,
+                                                   minimum_durations=combined_minimums)
+                music_audit = {
+                    "enabled": True, "path": str(bgm), "bpm": analysis.get("bpm"),
+                    "confidence": analysis.get("confidence", 0.0), "changed": bool(plan.get("changed")),
+                    "reason": plan.get("reason"), "beat_reason": analysis.get("reason"),
+                    "original_durations": original_durations,
+                    "planned_durations": plan.get("durations", original_durations),
+                    "content_protection": content_protection["shots"],
+                    "subtitle_timing_protection": subtitle_audit,
+                }
+                if plan.get("changed"):
+                    adjusted_paths = []
+                    for idx, (shot_path, original_duration, target_duration) in enumerate(
+                            zip(shot_paths, original_durations, plan["durations"])):
+                        speed = original_duration / target_duration
+                        if abs(speed - 1.0) < 0.0075:
+                            adjusted_paths.append(shot_path)
+                            continue
+                        retimed = out.with_name(f"{out.stem}.beat-shot-{idx + 1}.tmp.mp4")
+                        retime_clip(shot_path, retimed, speed)
+                        retimed_paths.append(retimed)
+                        adjusted_paths.append(retimed)
+                    shot_paths = adjusted_paths
+                project.creative_plan["last_music_sync_audit"] = music_audit
+            if any(value == '交叉溶解' for value in shot_transitions[1:]):
+                concat_with_transitions(shot_paths, concat_path, shot_transitions, aspect=aspect)
+            else:
+                concat(shot_paths, concat_path)
+            if bgm_value:
+                mix_global_bgm(concat_path, Path(str(bgm_value)),
+                               bgm_path, float((project.creative_plan or {}).get("final_bgm_volume", 0.16) or 0.16))
+                normalize_output_resolution(bgm_path, normalized_path, aspect)
+            else:
+                normalize_output_resolution(concat_path, normalized_path, aspect)
+            normalized_path.replace(out)
+        finally:
+            concat_path.unlink(missing_ok=True)
+            bgm_path.unlink(missing_ok=True)
+            normalized_path.unlink(missing_ok=True)
+            for path in retimed_paths:
+                path.unlink(missing_ok=True)
         media_check=self.inspect_final_output(out, aspect)
         if not media_check["valid"]:
             if out.exists():

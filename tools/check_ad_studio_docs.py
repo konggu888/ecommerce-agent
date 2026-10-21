@@ -5,9 +5,17 @@ from __future__ import annotations
 import argparse
 import subprocess
 
+# Keep this list aligned with the cross-session maintenance contract documented in
+# AGENTS.md and the desktop project's handoff/acceptance documents.
 REQUIRED = {
+    "agent rules": "AGENTS.md",
     "help": "apps/ad-studio-desktop/HELP.md",
     "logic": "apps/ad-studio-desktop/PROJECT_LOGIC.md",
+    "acceptance plan": "docs/AD_STUDIO_ACCEPTANCE_PLAN.md",
+    "acceptance SOP": "docs/AD_STUDIO_ACCEPTANCE_SOP.md",
+    "session handoff": "apps/ad-studio-desktop/SESSION_HANDOFF.md",
+    "AI handoff": "docs/AD_STUDIO_AI_HANDOFF.md",
+    "future feature memo": "docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md",
 }
 CODE_PREFIX = "apps/ad-studio-desktop/"
 DOC_EXTENSIONS = (".md", ".txt")
@@ -37,10 +45,10 @@ def main() -> int:
     missing = [path for path in REQUIRED.values() if path not in files]
     if missing:
         print("DOC-SYNC: FAILED")
-        print("Desktop code changed, but required documentation was not changed:")
+        print("Desktop code changed, but required project documentation/rules were not changed:")
         for path in missing:
             print(f"  - {path}")
-        print("Every AI/code change must update HELP.md and PROJECT_LOGIC.md in the same change.")
+        print("Desktop code changes must update all files listed in REQUIRED in the same change.")
         return 1
 
     print("DOC-SYNC: OK")

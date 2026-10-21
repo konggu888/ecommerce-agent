@@ -2,6 +2,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 from ad_studio.model_router import FUNCTIONS, ModelProfile, ModelRouter, audit_ad_variant_set, build_creative_test_plan, audit_creative_factual_consistency, audit_storyboard_fact_consistency, audit_visual_fact_consistency
 
@@ -68,6 +69,85 @@ class ModelRouterRoutingTest(unittest.TestCase):
             self.assertEqual(plan["video_form"], "真人+产品")
             self.assertEqual(len(plan["shots"]), 1)
             self.assertIn("creative_stages", plan)
+
+
+    def test_local_transcription_allows_missing_api_key_without_authorization_header(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            router = ModelRouter(Path(tmp) / "model-config.json")
+            audio = Path(tmp) / "sample.wav"
+            audio.write_bytes(b"fake wav bytes")
+            profile = ModelProfile(
+                id="local-transcribe", name="本地转写",
+                provider="local_openai", base_url="http://127.0.0.1:11434/v1",
+                model="whisper-local", api_key="", enabled=True,
+                transcription_enabled=True,
+            )
+            response = MagicMock()
+            response.__enter__.return_value.read.return_value = b'{"text":"local transcript","segments":[]}'
+            with patch("ad_studio.transcription.urllib.request.urlopen", return_value=response) as urlopen:
+                result = router.transcribe_footage_audio(audio, profile)
+            self.assertEqual(result["text"], "local transcript")
+            request = urlopen.call_args.args[0]
+            self.assertIsNone(request.get_header("Authorization"))
+            self.assertTrue(request.full_url.endswith("/audio/transcriptions"))
+            row = router.ledger.recent(1)[0]
+            self.assertEqual(row["function"], "口播转写")
+            self.assertEqual(row["endpoint"], "http://127.0.0.1:11434/v1/audio/transcriptions")
+            self.assertEqual(row["cost_status"], "usage_missing")
+            self.assertEqual(row["usage_status"], "missing")
+
+    def test_remote_transcription_without_api_key_is_rejected_before_request(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            router = ModelRouter(Path(tmp) / "model-config.json")
+            audio = Path(tmp) / "sample.wav"
+            audio.write_bytes(b"fake wav bytes")
+            profile = ModelProfile(
+                id="remote-transcribe", name="远程转写",
+                provider="openai_compatible", base_url="https://provider.invalid/v1",
+                model="whisper-remote", api_key="", enabled=True,
+                transcription_enabled=True,
+            )
+            with patch("ad_studio.transcription.urllib.request.urlopen") as urlopen:
+                with self.assertRaisesRegex(RuntimeError, "没有可用凭据"):
+                    router.transcribe_footage_audio(audio, profile)
+            urlopen.assert_not_called()
+
+
+    def _assert_unavailable_route_fails_closed(self, selected, alternatives):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "model-config.json"
+            models = [selected, *alternatives]
+            path.write_text(json.dumps({
+                "default_model": selected["id"],
+                "models": models,
+                "routes": {"商品理解": selected["id"]},
+            }, ensure_ascii=False), encoding="utf-8")
+            router = ModelRouter(path)
+            with self.assertRaisesRegex(RuntimeError, "不会自动回退"):
+                router.resolve_route("商品理解")
+
+    def test_unavailable_cloud_route_does_not_fallback_to_another_cloud_model(self):
+        self._assert_unavailable_route_fails_closed(
+            {"id": "selected-cloud", "name": "用户所选云模型", "provider": "openai_compatible",
+             "base_url": "https://selected.example/v1", "model": "selected", "api_key": "", "enabled": True},
+            [{"id": "other-cloud", "name": "其他云模型", "provider": "openai_compatible",
+              "base_url": "https://other.example/v1", "model": "other", "api_key": "other-key", "enabled": True}],
+        )
+
+    def test_unavailable_cloud_route_does_not_fallback_to_local_model(self):
+        self._assert_unavailable_route_fails_closed(
+            {"id": "selected-cloud", "name": "用户所选云模型", "provider": "openai_compatible",
+             "base_url": "https://selected.example/v1", "model": "selected", "api_key": "", "enabled": True},
+            [{"id": "local-model", "name": "本地模型", "provider": "local_openai",
+              "base_url": "http://127.0.0.1:11434/v1", "model": "local", "api_key": "", "enabled": True}],
+        )
+
+    def test_unavailable_selected_route_fails_when_no_alternative_is_usable(self):
+        self._assert_unavailable_route_fails_closed(
+            {"id": "disabled-cloud", "name": "已停用模型", "provider": "openai_compatible",
+             "base_url": "https://disabled.example/v1", "model": "disabled", "api_key": "configured-key", "enabled": False},
+            [],
+        )
 
 
 class CreativeVariantAuditTest(unittest.TestCase):

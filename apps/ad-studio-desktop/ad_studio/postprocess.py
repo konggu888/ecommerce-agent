@@ -1,4 +1,5 @@
 from pathlib import Path
+import math
 import shutil
 import subprocess
 
@@ -31,25 +32,95 @@ def adapt_aspect(input_path: Path, output_path: Path, aspect: str = "9:16"):
         raise ValueError(f"不支持的画幅：{aspect}")
     width, height = ASPECTS[aspect]
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    # 适配画幅；固定中心裁切由 process_shot 的 AI 焦点参数负责。
-    focus_x, focus_y = 0.5, 0.5
-    vf = f"scale={width}:{height}:force_original_aspect_ratio=increase,crop={width}:{height}:x=(iw-{width})*{focus_x}:y=(ih-{height})*{focus_y}"
+    # 独立画幅适配采用中心裁切；需要执行 AI 焦点构图时使用 process_shot。
+    vf = f"scale={width}:{height}:force_original_aspect_ratio=increase,crop={width}:{height}:x=(iw-{width})*0.5:y=(ih-{height})*0.5"
     codec = best_h264_encoder()
     _run([ffmpeg_path(), "-y", "-i", str(input_path), "-vf", vf, "-c:v", codec, "-preset", "p4" if codec == "h264_nvenc" else "medium", "-pix_fmt", "yuv420p", "-an", str(output_path)])
     return output_path
+
+def normalize_output_resolution(input_path: Path, output_path: Path, aspect: str = "9:16"):
+    """Normalize final exports to at least the project's 1080-class profile.
+
+    This guarantees output dimensions; upscaling alone cannot restore source detail.
+    """
+    if aspect not in ASPECTS:
+        raise ValueError(f"不支持的画幅：{aspect}")
+    width, height = ASPECTS[aspect]
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    vf = (
+        f"scale={width}:{height}:force_original_aspect_ratio=increase,"
+        f"crop={width}:{height}:x=(iw-{width})*0.5:y=(ih-{height})*0.5"
+    )
+    codec = best_h264_encoder()
+    _run([
+        ffmpeg_path(), "-y", "-i", str(input_path), "-vf", vf,
+        "-c:v", codec, "-preset", "p4" if codec == "h264_nvenc" else "medium",
+        "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k",
+        "-movflags", "+faststart", str(output_path),
+    ])
+    return output_path
+
+
+def _normalized_focus(value: float) -> float:
+    """Return a safe normalized focal coordinate; invalid values use center."""
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return 0.5
+    if not math.isfinite(number):
+        return 0.5
+    return min(1.0, max(0.0, number))
+
+
+def _focus_crop_filter(width: int, height: int, focus_x: float, focus_y: float) -> str:
+    """Keep the normalized focal point near the crop center, clamped to image bounds.
+
+    Coordinates describe the subject/focal point in the scaled source frame, not the
+    crop-window offset. When there is insufficient overflow in an axis, the crop
+    necessarily stays at zero on that axis.
+    """
+    x = _normalized_focus(focus_x)
+    y = _normalized_focus(focus_y)
+    crop_x = f"max(0,min(iw-{width},iw*{x:.6f}-{width}/2))"
+    crop_y = f"max(0,min(ih-{height},ih*{y:.6f}-{height}/2))"
+    return (
+        f"scale={width}:{height}:force_original_aspect_ratio=increase,"
+        f"crop={width}:{height}:x='{crop_x}':y='{crop_y}'"
+    )
+
 
 def process_shot(input_path: Path, output_path: Path, aspect: str = "9:16", speed: float = 1.0, focus_x: float = 0.5, focus_y: float = 0.5, transition: str = "硬切"):
     if speed <= 0:
         raise ValueError("速度必须大于 0")
     output_path.parent.mkdir(parents=True, exist_ok=True)
     width, height = ASPECTS.get(aspect, ASPECTS["9:16"])
-    vf = f"scale={width}:{height}:force_original_aspect_ratio=increase,crop={width}:{height}"
+    vf = _focus_crop_filter(width, height, focus_x, focus_y)
     if speed != 1.0:
         vf += f",setpts={1.0/speed}*PTS"
-    if transition == "淡入": vf += ",fade=t=in:st=0:d=0.25"
-    elif transition == "淡出": vf += ",fade=t=out:st=0:d=0.25"
+    audio_filters = []
+    if transition in {"淡入", "淡出"}:
+        # Compute both video and audio fade windows in output time after speed changes.
+        output_duration = probe_duration(input_path) / speed
+        if not math.isfinite(output_duration) or output_duration <= 0:
+            raise RuntimeError("无法确定有效镜头时长，不能执行淡入/淡出")
+        fade_duration = min(0.25, output_duration)
+        if transition == "淡入":
+            vf += f",fade=t=in:st=0:d={fade_duration:.3f}"
+            audio_filters.append(f"afade=t=in:st=0:d={fade_duration:.3f}")
+        else:
+            fade_start = max(0.0, output_duration - fade_duration)
+            vf += f",fade=t=out:st={fade_start:.3f}:d={fade_duration:.3f}"
+            audio_filters.append(f"afade=t=out:st={fade_start:.3f}:d={fade_duration:.3f}")
     codec = best_h264_encoder()
-    _run([ffmpeg_path(), "-y", "-i", str(input_path), "-vf", vf, "-c:v", codec, "-preset", "p4" if codec == "h264_nvenc" else "medium", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", str(output_path)])
+    cmd = [ffmpeg_path(), "-y", "-i", str(input_path), "-vf", vf]
+    if speed != 1.0:
+        # Keep original audio aligned with setpts-adjusted video duration.
+        audio_filters.insert(0, f"atempo={speed:.6f}")
+    if audio_filters:
+        cmd.extend(["-af", ",".join(audio_filters)])
+    cmd.extend(["-c:v", codec, "-preset", "p4" if codec == "h264_nvenc" else "medium",
+                "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", str(output_path)])
+    _run(cmd)
     return output_path
 
 def mix_audio(input_path: Path, output_path: Path, bgm_path: Path | None = None, bgm_volume: float = 0.16):

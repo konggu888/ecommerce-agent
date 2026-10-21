@@ -1,8 +1,28 @@
+# 【最高优先级：任务范围与计划控制｜2026-10-14】
+
+- 每次推进先读 SESSION_HANDOFF、AI handoff、`docs/AD_STUDIO_EXECUTION_CONTROL.md`、`docs/AD_STUDIO_PROGRESS_DASHBOARD.md` 与唯一路线图。
+- 当前先完成 PLAN-003 全量任务盘点与去重，不先增加产品功能；A112 已完成自动化阶段。全量盘点/权重审计前禁止发布总体完成百分比。
+- 每轮只做一个明确任务，开始前写明目标、范围、排除项、依赖、测试、文档、验收标准和停止条件。非阻断新想法只登记，不顺手实现。
+- 达到预定验收条件即停止；未验证项不得标记完成。PR #32 保持 Open / unmerged。
+- Windows 真机、真实素材、Provider/扣费、剪映现场与真实投放验证继续暂缓。
+- 当前状态与下一项以总进度台账为准，详细协议见执行控制文件。
+
+---
+
 # AI 商品广告工厂：AI 修改强制规则
 
 这是给任何 AI 编程代理、Codex、Claude、Gemini、Cursor、Copilot 或人工开发者的强制工作协议。
 
+## 产品路线图强制规则（2026-10-14）
+- 开发方向唯一依据：`docs/AD_STUDIO_PRODUCT_ROADMAP.md`。接手时必须先读路线图和 `apps/ad-studio-desktop/SESSION_HANDOFF.md`，再根据当前代码/CI证据执行。
+- 当前唯一执行主线是 PLAN-003“全量任务盘点与去重”：先完成跨来源重复/状态材料审计，再逐项核验代码、专项测试与当前 SHA 证据；完成前不新增产品功能、不计算总体完成率。阶段 2 的 A109–A112 记录属于既有自动化实现/历史路线状态，不覆盖当前 PLAN-003 优先级。
+- 每项任务必须对应阶段目标、实际执行链、专项测试、退出条件和未验证边界；不能仅以字段存在、文档完成或 CI 通过宣布商业质量完成。
+- 每个独立工作单元结束后更新接手文件中的 HEAD、CI/doc-sync 四项状态、证据、未完成项和下一步。路线调整必须同步更新路线图、AI handoff、SESSION_HANDOFF 与未来功能备忘。
+- PR #32 保持 open/unmerged；Windows 真机、真实素材、真实 Provider/扣费、剪映现场和真实投放数据验证按用户要求继续暂缓。
+
 ## 0. 最高优先级规则
+
+- 最终导出最低分辨率要求为 1080P 级：竖屏 1080×1920、横屏 1920×1080、方形 1080×1080。最终输出必须经过归一化转码并由 ffprobe 复核；分辨率放大不等于恢复真实细节，不得宣传为 AI 画质修复。
 
 只要修改 apps/ad-studio-desktop/ 的程序代码，就必须在同一次修改中同时完成：
 1. 更新 apps/ad-studio-desktop/HELP.md
@@ -16,14 +36,16 @@
 ## 1. AI 接手项目时必须先读
 
 按以下顺序理解项目：
-1. docs/AD_STUDIO_AI_HANDOFF.md（无聊天历史的最短入口）
-2. 本文件 AGENTS.md
-3. apps/ad-studio-desktop/PROJECT_LOGIC.md
-4. apps/ad-studio-desktop/HELP.md
-5. 目标代码文件及其依赖
-6. 测试文件
-7. 如进行验收：docs/AD_STUDIO_ACCEPTANCE_PLAN.md
-8. 如进行验收：docs/AD_STUDIO_ACCEPTANCE_SOP.md
+1. apps/ad-studio-desktop/SESSION_HANDOFF.md（当前状态、HEAD、CI 与下一步）
+2. docs/AD_STUDIO_AI_HANDOFF.md（无聊天历史的最短入口）
+3. docs/AD_STUDIO_PRODUCT_ROADMAP.md（产品阶段与唯一战略优先级）
+4. 本文件 AGENTS.md
+5. apps/ad-studio-desktop/PROJECT_LOGIC.md
+6. apps/ad-studio-desktop/HELP.md
+7. 目标代码文件及其依赖
+8. 测试文件
+9. 如进行验收：docs/AD_STUDIO_ACCEPTANCE_PLAN.md
+10. 如进行验收：docs/AD_STUDIO_ACCEPTANCE_SOP.md
 
 没有读完以上文档，不得直接重构核心流程。
 
@@ -119,3 +141,162 @@ GitHub Actions 也会执行相同检查；代码改了而两个文档没有同�
 - 每个创意方案必须独立保存完整 shots 快照。
 - 恢复方案不能只按 index 匹配；原始镜头按稳定 id 恢复，人工纳入的额外镜头必须完整保留。
 - 修改桌面端代码时同步更新 HELP.md 与 PROJECT_LOGIC.md，并重新检查 CI/doc-sync。
+
+## Desktop 项目文档同步硬性规则（2026-10-14）
+当 `apps/ad-studio-desktop/` 下有代码或测试文件变更时，同一变更必须同时更新以下全部项目文档/规则文件：`AGENTS.md`、`apps/ad-studio-desktop/HELP.md`、`apps/ad-studio-desktop/PROJECT_LOGIC.md`、`docs/AD_STUDIO_ACCEPTANCE_PLAN.md`、`docs/AD_STUDIO_ACCEPTANCE_SOP.md`、`apps/ad-studio-desktop/SESSION_HANDOFF.md`、`docs/AD_STUDIO_AI_HANDOFF.md`、`docs/AI_AD_STUDIO_FUTURE_FEATURE_MEMO.md`。由 `tools/check_ad_studio_docs.py` 在 CI 中强制检查；单独的 docs-sync 通过不等于完整 CI 通过。
+
+
+## 商业剪辑变更要求（A100）
+- `process_shot()` 的“淡出”必须落在变速后的镜头末尾，而不是从镜头开头开始。
+- 涉及剪辑滤镜的代码变更，必须新增 FFmpeg 命令层回归，并同步更新 HELP、PROJECT_LOGIC、验收计划、验收 SOP、SESSION_HANDOFF、AI handoff 与未来功能备忘。
+- 自动化命令断言不等于真实画面验收；Windows 真机/剪映验证仍按用户要求暂缓。
+
+
+## 商业剪辑变更要求（A101）
+- 单镜头变速同时调整视频时间戳与原音轨速度，避免画面缩短/拉长而音频仍保持原时长。
+- 变速逻辑变更必须有 FFmpeg 参数层回归，覆盖非 1.0 倍速与正常速度；同步更新帮助、逻辑、验收与接手文档。
+- 自动化命令检查不替代真实音画同步验收；Windows 真机测试按用户要求暂缓。
+
+- A102 回归测试夹具修正也必须与上述八份文档同步提交；测试模拟应显式模拟最终归一化输出文件，不得绕过实际生产链。
+
+- 商业剪辑的淡入/淡出必须同步处理画面和原音轨；变速后的淡出时间点按输出时长计算，短镜头淡化时长不得超过镜头时长。新增代码与测试必须同步更新所有项目交接/验收文档。
+
+
+## 商业剪辑变更要求（A104）
+- 相邻镜头“交叉溶解”必须在最终成片拼接阶段实际执行 xfade 与 acrossfade，不能只保存字段；其他转场不应意外改走新路径。
+- FFmpeg filter graph 的代码变更必须同步测试并更新全部八份项目文档；CI 与 docs-sync push/PR 均需在最新 SHA 上核验。真实素材/Windows 视觉与听感检查仍按用户要求暂缓。
+
+
+## 商业剪辑变更要求（A105）
+- 分镜 pacing 不能只做说明字段：当模型未显式给出 speed 时，必须把慢/标准/快/极快映射为可执行速度默认值；schema 中 speed 应允许省略；显式 speed 优先。未知 pacing 回退标准。必须用测试覆盖映射与覆盖优先级，并同步全部八份项目文档。
+
+
+## 商业剪辑变更要求（A106）
+- 当分镜未提供明确时长、速度或转场时，可以根据镜头商业角色提供可追溯的保守默认值；显式字段必须优先。
+- 默认决策必须保存角色、理由、依据边界、最终生效参数与参数来源，并由现有生成/后处理/最终拼接链实际消费；未知 pacing 标签回退“标准”，不得只生成报告冒充执行。
+- 文本关键词归类必须明确标记为规则回退，不得描述为真实画面语义理解。新增代码/测试时同步八份文档，并核查最新 SHA 的 CI 与 docs-sync Push/PR 四项状态。
+
+## 商业剪辑变更要求（A107）
+- 商业镜头角色推断出的 duration_seconds 必须从 CreativeShot 复制到运行时 Shot，确保 ProductionStore 的真实 GenerationRequest.duration 消费该值；不得只写入创意计划或审计报告。
+- 统一映射 helper 必须同步 pacing、speed、transition；显式字段优先规则不得回退。新增测试与代码同一提交更新八份项目文档，并检查最新 SHA 的 CI 与 docs-sync Push/PR 四项结果。
+- 自动化只能证明本地请求参数闭环，不能证明第三方 Provider 一定按请求时长输出；真实 Provider 与 Windows 验收仍按用户要求暂缓。
+
+## 商业剪辑变更要求（A108，包含后续修复提交）
+- 字幕 SRT 必须按实际镜头时长分配时间轴，不得固定写死 3 秒；长文案应尽量在标点处拆分并控制字幕切换频率。
+- 对短镜头容纳不下的字幕，应减少快速闪烁的字幕段并明确提示信息密度风险；不得静默改写或删减用户文案。
+- 桌面字幕加工必须读取实际媒体时长、调用密度分析并将自适应 SRT 接入真实烧录路径。新增测试与代码同一提交更新全部八份项目文档；当前 SHA 的 CI Push/PR 与 docs-sync Push/PR 四项必须核验。真实可读性仍需素材/Windows 验收。
+
+### A109 开发约束
+音乐卡点必须贯穿 BGM 选择、节拍分析、切点规划、真实临时镜头变速、原音轨同步、最终统一混音与 1080P 交付。不能只实现检测或报告；低置信度必须保守回退。每次改代码需同一 PR 同步 HELP、PROJECT_LOGIC、验收计划/SOP、SESSION_HANDOFF、AI handoff、未来功能备忘；路线变化时同步产品路线图。
+
+### A109 旧项目音轨兼容边界
+A109 兼容边界：旧项目中已把 BGM 烧录进镜头音轨的成片，无法仅凭现有文件可靠分离旧音乐。重新使用全局 BGM 前，应从未混入 BGM 的镜头源重新执行字幕处理；否则可能叠加旧音乐。
+
+### A109 转场安全补充
+A109 转场安全补充：当前切点变速遇到显式“交叉溶解”时保守回退原镜头时长，仍保留既有交叉溶解与全局连续 BGM；待单独建模转场重叠时长后再开放这类边界的卡点调整。
+
+
+### A110｜音乐卡点的口播、字幕与商品展示保护
+音乐卡点规划根据每个镜头的分镜台词/脚本、屏幕文字、商品资产需求、商品细节/演示/证据角色及 CTA 角色估算保守的最低停留时长。只有在节拍调整不会把镜头压缩到保护下限以下、原镜头本身也满足该下限时，才允许卡点变速；否则整组切点保留原样。最终 last_music_sync_audit 记录逐镜头保护依据与下限，供排查。
+
+边界：该估算只使用分镜文本和结构化字段，不是实际画面理解、自动语音识别或字幕可读性视觉检测。原镜头已经短于估算下限时，本轮不自动延长镜头，只阻止音乐卡点进一步改动；真实口播、动作和商品可见性仍待真实素材/Windows 验收。
+
+### A111｜逐边界局部音乐卡点规划
+音乐卡点现在为每个候选边界单独生成节拍位移，并根据相邻镜头的最低时长、内容保护下限、单镜头最大变化量和变速范围检查约束。边界共享镜头时会迭代撤销造成冲突的局部位移，而不是因一个镜头的保护冲突冻结整组切点；已经低于内容保护估算下限的镜头不会被进一步压短，但本功能不自动修复其原有不足。审计结果包含调整/回退的边界序号。规则仍仅使用文本/结构化元数据，交叉溶解仍全组保守回退。
+
+
+### A111 测试夹具修正
+专项测试使用非等幅的相邻边界候选位移，明确制造局部镜头时长冲突；断言安全的远端边界仍能调整、冲突边界回退且总时长不漂移。此修正仅校准测试场景，不改变生产规划逻辑。
+
+
+### A111 CI 修复记录
+首轮 CI 暴露三处旧断言仍要求“任一内容保护冲突即整组不变”，与 A111 的局部回退目标冲突。现已把相关断言改为验证：受保护镜头不被进一步压短、冲突边界被记录回退、其他安全边界仍可调整；同时让审计原因明确包含“局部卡点”。需以本修复提交的四项 CI/doc-sync 结果作为最终依据。
+
+
+### A112 后续执行要求
+A111 最新 SHA `fc445e75e40fd34e5b16868369700e685e2db276` 的 CI Push/PR 与 docs-sync Push/PR 全部成功。下一项只按路线图 A112 审计并接通已有 SRT cue 的真实时间窗；若实际数据不可用，先说明架构证据并保守回退，不得用字符数伪装精确字幕时间。
+\n\n## A112 字幕时间窗接入规则\n在最终音乐卡点规划中使用 SRT 前，必须验证 SRT 文件有效、cue 起止时间格式与顺序有效、时间轴与当前镜头时长匹配，并验证 SRT 记录仍绑定当前字幕成片版本。证据不完整时保守回退并写明原因；不得用字幕字符数冒充真实时间戳，也不得把自动化结果表述为真实视觉可读性/口播同步验收。\n\nA112 验收跟进：SRT parser 转义问题已修正；每个包含桌面代码的提交都必须在同一个提交内更新所有强制文档，并核验当前 SHA 的四项 CI/doc-sync。
+
+## A112 自动化验收结果｜2026-10-14
+代码基线 e8deb1ec4ef9edf7d999c79539762ea2627affab 的 CI Push 38570453607、CI PR 38570460103、docs-sync Push 38570453565、docs-sync PR 38570460195 均 success。此后每次提交仍需重新查询最新 SHA 的四项工作流，且 PR #32 保持 open/unmerged。
+
+## A3 设置区布局回归要求（2026-10-15）
+A3 设置区布局修复（2026-10-15）：把商品/预算/任务/视频形式/方案数/素材来源控件放入独立 fields 容器，统一使用 row 0–6；把全部操作按钮移入独立 actions 容器的 6 列网格，避免操作按钮与输入控件共享同一 grid 单元格。新增 AST 回归测试检查 task_type=(2,1)、form=(3,1)、variant_count=(4,1)、footage_mode=(5,1)、footage_folder=(5,2)、文件夹按钮=(5,3) 与自动形式提示=(3,2)。该提交只证明源代码布局合同和静态 AST 断言；尚待最新 SHA 的完整 CI/doc-sync，且不替代 Windows 真机可用性验收。
+- 后续调整创建项目表单时，字段控件与操作按钮必须分属独立容器；修改后运行 `test_setup_form_grid_rows_do_not_overlap`，并核验完整 CI 与 docs-sync。
+
+
+## PLAN-003 DEDUP-011｜成本账本回归测试补强（2026-10-16）
+- A63 证据纠正：既有测试已覆盖模拟记账失败后的 save/load，并断言项目与镜头成本保留；不能继续把“缺保存重载断言”列为缺口。真实 Provider 账单仍未验证。
+- A65 测试补强：原子替换失败后直接断言没有遗留临时文件；2001 条历史测试调用 recent(10) 后再次断言完整账本与项目汇总不变。以最新 SHA 的 CI 为准，提交前不预判通过。
+- 本轮不改变生产代码，不标记 A63/A65 正式验收通过，不改变 A0–A112 编号，不计算整体完成率。
+
+
+## PLAN-003 DEDUP-012｜A64 素材成本故障行为测试（2026-10-16）
+- 在 `resolve_assets` 与 `generate_missing_asset` 两入口加入行为级故障注入测试，验证生成资产文件、库记录、asset ID、镜头引用和重载后的成本待核对状态。
+- 仅模拟本地成本记账失败，不代表真实 Provider 账单验证；新测试需以最新 SHA 的 CI 结果为准。
+- 不新增正式任务编号、不改变 A0–A112、不标记 A64 正式验收通过、不计算总体完成率。
+
+
+## PLAN-003 evidence updates (2026-10-16)
+When touching desktop tests, update this file, `apps/ad-studio-desktop/HELP.md`, and `apps/ad-studio-desktop/PROJECT_LOGIC.md` in the same change, along with the canonical acceptance plan/SOP, task register, progress dashboard, and handoff files as applicable. DEDUP-013 adds post-recovery reload assertions for A57 (legacy project with no ledger rows) and A60 (failed-only ledger); do not mark A57/A60/A99 accepted until current-HEAD CI and the full evidence contract are reviewed. Keep A99's successful-ledger stale sibling reset distinct from A57/A60's no-success branches.
+
+## UXS-2 Provider 授权规则增量｜2026-10-16
+
+- 单镜头视频生成：在镜头状态变更前展示实际路由目标、脱敏 endpoint、路由原因、费用和数据边界；用户取消时不调用 Provider；确认后必须把同一决策快照传入生产层，禁止确认后静默重路由。
+- 资产云端生成：AssetGenerator.generate() 和 ProductionStore.generate_missing_asset() 只有收到明确 authorize_cloud 回调且回调同意时才能走云端。无回调/拒绝时必须在外部请求前失败，不创建生成文件、不绑定资产、不改镜头状态。
+- 调用方不得用默认 True 绕过授权；任何 UI 接入都必须展示 endpoint（隐藏 URL userinfo/query/fragment）、数据类型与费用，并对取消后 Provider 调用计数为 0 做 mock 验证。
+- 仍需覆盖最终成片批量视频、短剧商品镜头重生成等入口。不得将单镜头授权或资产 helper 测试等同于所有 Provider 授权闭环通过；不新增 A113+，A0–A112 正式状态不因代码/文档存在而自动改变。
+
+## UXS-2 资产 Provider 授权实现状态｜2026-10-16
+
+AssetGenerator.generate、ProductionStore.resolve_assets、ProductionStore.generate_missing_asset 已使用 authorize_cloud 回调闸门。未授权云端请求必须 fail-closed，且拒绝时不得创建生成文件、绑定资产或改变镜头状态。正式 UI 尚未接入回调；下一步补 UI 的端点/数据/费用披露和拒绝后零调用测试，再覆盖批量视频/短剧重生成。任何实现必须同步 HELP、PROJECT_LOGIC、验收计划/SOP、任务台账、dashboard 与 handoff；不新增 A113+，不更改 A0–A112 正式状态。
+
+## UXS-2 单镜头资产授权接线完成范围｜2026-10-16
+
+单镜头生成按钮已逐次确认视频端点/费用，并为每个需要云端生成的资产显示端点（脱敏）、数据类别与价格。拒绝资产授权须在镜头状态变更前返回且阻止视频 Provider 调用。下一步审计 AI补镜头、批量创意方案生成、短剧商品镜头重生成，逐入口补拒绝后零调用和状态不变测试。不得将单镜头路径通过视为全部 Provider 授权通过；所有代码改动仍须同步帮助、逻辑、验收计划/SOP、handoff、未来备忘录与 dashboard。
+
+## UXS-2 多入口授权接线状态｜2026-10-16
+
+统一授权流程现覆盖单镜头生成、AI补镜头、批量创意方案生成及其中需要的云端资产生成；确认时路由快照传入生产层，拒绝时不先修改镜头状态、不发起该次视频请求。短剧商品镜头重生成的准备阶段不调用 Provider，真正生成走单镜头入口。下一步处理未知费用语义与 endpoint provenance，确保缺失价格/usage 不等于免费，历史可追溯实际目标但不包含密钥。继续同步 HELP、PROJECT_LOGIC、验收计划/SOP、handoff、未来备忘录与 dashboard；不新增 A113+。
+
+## UXS-2 成本可信度与 Provider 溯源规则｜2026-10-16
+
+- 新的调用账本必须区分按显式配置单价估算、usage 缺失、单价缺失、两者都缺失、请求失败后费用未知；不得把缺失值展示成“免费”或确定的 ¥0。
+- 账本可记录实际 provider/model/endpoint，但 endpoint 必须先脱敏：删除 URL userinfo、query、fragment；禁止记录 API Key、Authorization 头或原始凭据。
+- 项目重载后必须能读取费用状态与脱敏 endpoint；旧记录没有这些字段时明确显示“旧记录/未知”，不伪造历史端点。
+- 修改桌面代码时必须在同一个提交同步 HELP、PROJECT_LOGIC、验收计划、验收 SOP、SESSION_HANDOFF、AI_HANDOFF、路线图和本规则；不新增 A113+，不更改 A0–A112 正式状态。
+
+## UXS-2 未配置价格的授权弹窗规则｜2026-10-16
+
+- 若 Provider 没有显式配置单价，授权弹窗必须显示“暂无法可靠估算（未知）”，不能用默认单价或 ¥0 冒充精确报价。
+- 若资产配置没有 price_rmb，必须显示未知费用；显式配置为 0 与未配置价格是不同状态。
+- 修改后仍需 mock 验证提示文本；账本和 UI 里的 0 数值字段不能覆盖 cost_status 的未知语义。
+
+## UXS-2 转写账本与项目上下文｜2026-10-16
+
+- ModelRouter 必须初始化 current_project_id，并提供 set_project_context()；新建/打开项目时更新上下文，不能因账本字段缺失而在真实模型调用后抛出 AttributeError。
+- 口播转写必须写入本地调用账本，记录模型、Provider、脱敏 endpoint、耗时与未知费用状态；不得因接口未返回 usage 而把费用当作免费。
+- 以上仅为本地账本与 mock 证据，不代表转写 Provider 账单已核实。
+
+## UXS-2 云端渲染授权回调传递修复｜2026-10-17
+
+- 最新 CI 已验证的前一基线：91de09e10fbac7ccf5d82c791cb2ab60ab6ac0a6（CI 与 docs-sync Push/PR 检查均 success）。
+- ProductionStore.render_shot 的云端分支和 render_cloud_shot 现在将 authorize_cloud 回调继续传给 _render_with_provider，避免云端分支丢失资产授权回调。
+- 新增 mock 测试覆盖两条云端渲染入口的回调传递，不发真实 Provider 请求。
+- 修复提交 7bdcb6cc043e20d3374b344a3b384d7fc115c81d、测试提交 84e92d191d85e06bef50f3913a8b589bc3a23131 与后续文档提交的 CI/docs-sync 必须单独核验。
+- A0–A112 状态不变，PR #32 不合并。
+
+## UXS-2 短剧重生成费用规则｜2026-10-17
+
+- 短剧商品镜头重生成准备步骤必须按 CapabilityRouter 当前目标显示目的地；本地费用只标记 local_no_provider_charge，云端缺价时必须保存金额 null + price_missing，不可默认成 ¥0。
+- prepare_product_drama_shot_regeneration 必须拒绝 unknown/price_missing 与数字金额互相伪装。
+- 该按钮只准备新版本，不调用 Provider；真正生成由单镜头生成入口再次确认实际目的地和费用。
+- 继续同步 HELP、PROJECT_LOGIC、验收计划/SOP、审计、dashboard、handoff 和 roadmap；不新增 A113+，不更改 A0–A112 正式状态。
+
+## UXS-2 实拍素材重新分析授权规则｜2026-10-17
+
+- reanalyze_footage() 必须在扫描素材、抽取关键帧、视觉模型请求、音频转写和废片归档之前展示实际路由、脱敏 endpoint、关键帧/音频数据类别及费用未知说明。
+- 用户取消时不得扫描/移动/归档素材，也不得调用模型/Provider；必须有 mock 调用计数和状态副作用测试。
+- UI 与 AssetGenerator 的 asset-generation.json 配置必须同源于 app config root；自定义 library_root 只影响素材文件位置。
+- 继续同步 HELP、PROJECT_LOGIC、验收计划/SOP、审计、dashboard、handoff 和 roadmap；不新增 A113+，不更改 A0–A112 正式状态。
+

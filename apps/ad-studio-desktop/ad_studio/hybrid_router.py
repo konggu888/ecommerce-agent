@@ -44,7 +44,7 @@ def route_footage_gap_tasks(
     *,
     generation_connected: bool,
     budget_remaining_rmb: float = 0.0,
-    cost_per_ai_shot_rmb: float = 0.0,
+    cost_per_ai_shot_rmb: float | None = None,
 ) -> dict:
     """为每个缺口给出下一步：继续补拍、AI补镜头、AI补辅助画面或人工确认。
 
@@ -54,7 +54,8 @@ def route_footage_gap_tasks(
     3. Provider 未配置或预算不足时，不假装能生成，转为需要人工补素材。
     """
     remaining = max(0.0, float(budget_remaining_rmb or 0.0))
-    rate = max(0.0, float(cost_per_ai_shot_rmb or 0.0))
+    price_known = cost_per_ai_shot_rmb is not None
+    rate = max(0.0, float(cost_per_ai_shot_rmb)) if price_known else None
     output = []
     counts = {"继续补拍": 0, "AI补镜头": 0, "AI补辅助画面": 0, "需要人工确认": 0}
     for raw in tasks or []:
@@ -69,7 +70,16 @@ def route_footage_gap_tasks(
             task["estimated_cost_rmb"] = 0.0
             task["resolution_reason"] = "商品事实、真实外观、功能或操作等证据必须保留真实素材，不能用 AI 冒充。"
             counts["继续补拍"] += 1
-        elif human and generation_connected and (rate <= 0.0 or remaining >= rate):
+        elif human and generation_connected and not price_known:
+            task["recommended_resolution"] = "AI补辅助画面"
+            task["generation_allowed"] = False
+            task["needs_cost_confirmation"] = True
+            task["cost_status"] = "price_missing"
+            task["estimated_cost_rmb"] = None
+            task["generation_mode"] = "仅辅助画面，不生成真人/真人声音"
+            task["resolution_reason"] = "视频 Provider 单镜头价格未知；无法可靠估算总费用，须由用户明确确认后才能继续。"
+            counts["需要人工确认"] += 1
+        elif human and generation_connected and (rate == 0.0 or remaining >= rate):
             task["recommended_resolution"] = "AI补辅助画面"
             task["generation_allowed"] = True
             task["generation_mode"] = "仅辅助画面，不生成真人/真人声音"
@@ -83,7 +93,15 @@ def route_footage_gap_tasks(
             task["estimated_cost_rmb"] = 0.0
             task["resolution_reason"] = "真人口播本身不能由 AI 冒充；当前无法自动生成辅助画面时，需要人工确认补拍或其他素材。"
             counts["需要人工确认"] += 1
-        elif generation_connected and (rate <= 0.0 or remaining >= rate):
+        elif generation_connected and not price_known:
+            task["recommended_resolution"] = "AI补镜头"
+            task["generation_allowed"] = False
+            task["needs_cost_confirmation"] = True
+            task["cost_status"] = "price_missing"
+            task["estimated_cost_rmb"] = None
+            task["resolution_reason"] = "视频 Provider 单镜头价格未知；无法可靠估算总费用，须由用户明确确认后才能继续。"
+            counts["需要人工确认"] += 1
+        elif generation_connected and (rate == 0.0 or remaining >= rate):
             task["recommended_resolution"] = "AI补镜头"
             task["generation_allowed"] = True
             task["estimated_cost_rmb"] = round(rate, 4)
@@ -103,7 +121,8 @@ def route_footage_gap_tasks(
                 )
             counts["需要人工确认"] += 1
         output.append(task)
-    estimated = round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in output), 4)
+    unknown_count = sum(1 for x in output if x.get("cost_status") == "price_missing")
+    estimated = None if unknown_count else round(sum(float(x.get("estimated_cost_rmb", 0) or 0) for x in output), 4)
     return {
         "task_count": len(output),
         "tasks": output,
@@ -111,6 +130,7 @@ def route_footage_gap_tasks(
         "generation_connected": bool(generation_connected),
         "budget_remaining_rmb": round(remaining, 4),
         "estimated_additional_cost_rmb": estimated,
+        "unknown_price_task_count": unknown_count,
         "method": "实拍缺口混合路由：真实证据优先补拍，口播辅助画面和通用画面按 Provider + 预算进入 AI 生成",
     }
 
@@ -120,7 +140,7 @@ def execute_ai_gap_generation(
     *,
     generator,
     budget_remaining_rmb: float = 0.0,
-    cost_per_ai_shot_rmb: float = 0.0,
+    cost_per_ai_shot_rmb: float | None = None,
 ) -> dict:
     """在混合路由结果之后执行获准的 AI 补镜头，并再次做预算闸门。
 
@@ -128,7 +148,8 @@ def execute_ai_gap_generation(
     商品/真人证据任务即使被误传进来也会被强制拦截。
     """
     remaining = max(0.0, float(budget_remaining_rmb or 0.0))
-    rate = max(0.0, float(cost_per_ai_shot_rmb or 0.0))
+    price_known = cost_per_ai_shot_rmb is not None
+    rate = max(0.0, float(cost_per_ai_shot_rmb)) if price_known else None
     output = []
     generated = 0
     failed = 0
@@ -148,7 +169,16 @@ def execute_ai_gap_generation(
             task["status"] = task.get("status") or "未进入AI生成"
             output.append(task)
             continue
-        if rate > 0 and remaining < rate:
+        if not price_known and not task.get("cost_price_confirmed"):
+            task["generation_allowed"] = False
+            task["cost_status"] = "price_missing"
+            task["estimated_cost_rmb"] = None
+            task["status"] = "已拦截：视频单价未知，需要用户明确确认"
+            task["resolution_reason"] = "无法可靠估算总费用；必须先显示未知费用警告并取得用户确认。"
+            blocked += 1
+            output.append(task)
+            continue
+        if price_known and rate > 0 and remaining < rate:
             task["generation_allowed"] = False
             task["status"] = "已拦截：预算不足"
             task["resolution_reason"] = (
@@ -166,8 +196,9 @@ def execute_ai_gap_generation(
             task["status"] = ("AI辅助画面已生成，待人工复核" if task.get("generation_mode") else "AI补镜头已生成，待人工复核")
             task["review_status"] = "待复核"
             task["accepted_into_storyboard"] = False
-            task["estimated_cost_rmb"] = rate
-            if rate > 0:
+            task["estimated_cost_rmb"] = rate if price_known else None
+            task["cost_status"] = "configured_estimate" if price_known else "price_missing_confirmed"
+            if price_known and rate > 0:
                 remaining = max(0.0, remaining - rate)
             generated += 1
         except Exception as exc:
@@ -184,8 +215,7 @@ def execute_ai_gap_generation(
         "failed": failed,
         "blocked": blocked,
         "budget_remaining_rmb": round(remaining, 4),
-        "estimated_additional_cost_rmb": round(
-            generated * rate, 4
-        ),
+        "estimated_additional_cost_rmb": round(generated * rate, 4) if price_known else None,
+        "unknown_price_task_count": sum(1 for x in output if x.get("cost_status") in {"price_missing", "price_missing_confirmed"}),
         "method": "执行前二次预算闸门 + 真实证据拦截 + 生成后人工复核",
     }

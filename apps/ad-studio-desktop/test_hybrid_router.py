@@ -241,3 +241,4 @@ class HybridAcceptanceGateTests(unittest.TestCase):
         self.assertTrue(task["accepted_into_storyboard"])
         accept_hybrid_generated_shot(task, shots)
         self.assertEqual([s.id for s in shots], ["shot-01", "hybrid-GAP-ACCEPT-2-v1", "shot-02"])
+

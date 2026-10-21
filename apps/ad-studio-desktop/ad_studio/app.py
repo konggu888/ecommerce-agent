@@ -1,9 +1,11 @@
 from pathlib import Path
+from urllib.parse import urlsplit, urlunsplit
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import shutil
 import subprocess
 import json
+import math
 from .library import LocalLibrary
 from .engine import FORMS, new_project, mark_regenerate, estimate_cost, estimate_asset_generation
 from .gpu import detect_gpu
@@ -11,7 +13,7 @@ from .hardware import detect_hardware, format_hardware
 from .capability import CapabilityRouter
 from .production import ProductionStore, generation_failure_ui_state, normalize_cost_estimate_rmb
 from .product_parser import parse_product_url, save_product, save_product_library, load_product_library, merge_product_library, ProductInfo
-from .creative_engine import CreativeEngine, validate_plan, validate_task_type_plan, TASK_TYPE_POLICIES
+from .creative_engine import CreativeEngine, validate_plan, validate_task_type_plan, runtime_shot_editing_fields, TASK_TYPE_POLICIES
 from .short_drama import audit_short_drama, build_episode_continuity_ledger, generate_short_drama, generate_next_short_drama_episode, analyze_episode_continuity_impact, short_drama_production_rows, record_product_visual_verification, compare_product_visual_shot, prepare_product_drama_shot_regeneration, product_visual_correction_suggestion, resolve_product_drama_shot_number
 from .model_router import ModelRouter, ModelProfile, FUNCTIONS, audit_ad_variant_set, build_creative_test_plan, audit_creative_factual_consistency, audit_storyboard_fact_consistency, audit_visual_fact_consistency
 from .browser_skill import _find_agent_browser
@@ -22,6 +24,23 @@ from .hybrid_router import route_footage_gap_tasks
 from .transcription import extract_audio
 from .ui_contract import verify_ui_action_contract, UIContractError, ui_action
 from .models import Shot, uid
+
+
+def configured_video_price(provider):
+    """Return an explicitly configured finite non-negative video unit price, else None."""
+    raw = getattr(provider, 'cost_per_shot_rmb', None)
+    if not bool(getattr(provider, 'cost_price_configured', False)) or raw is None:
+        return None
+    try:
+        return normalize_cost_estimate_rmb(raw)
+    except (TypeError, ValueError):
+        return None
+
+
+def _format_cost_item(item):
+    if item.get('单价') is None or item.get('小计') is None:
+        return f"{item.get('项目', '云端任务')}：{item.get('数量', 0)} × 单价未知 = 小计未知"
+    return f"{item['项目']}：{item['数量']} × ¥{item['单价']:.2f} = ¥{item['小计']:.2f}"
 
 
 def _restore_variant_shot_cache(base_shots, saved_shots):
@@ -61,6 +80,249 @@ class UnconfiguredCreativeLLM:
 ROOT=Path(__file__).resolve().parents[1]/'data'/'ad-studio'
 PROJECTS=ROOT/'projects'
 LIBRARY_CONFIG=ROOT/'library-location.json'
+
+
+def _safe_endpoint_display(value):
+    """Display endpoint host/path without URL userinfo, query strings, or fragments."""
+    raw = str(value or "").strip()
+    if not raw:
+        return "未配置 endpoint"
+    try:
+        parsed = urlsplit(raw)
+        if not parsed.scheme or not parsed.netloc:
+            return raw.split("?", 1)[0].split("#", 1)[0]
+        host = parsed.hostname or parsed.netloc
+        if ":" in host and not host.startswith("["):
+            host = f"[{host}]"
+        try:
+            if parsed.port:
+                host = f"{host}:{parsed.port}"
+        except ValueError:
+            pass
+        return urlunsplit((parsed.scheme, host, parsed.path, "", ""))
+    except Exception:
+        return "自定义 endpoint（无法安全展示完整地址）"
+
+
+def run_after_explicit_authorization(confirm, operation):
+    """Run an external operation only after explicit user authorization."""
+    if not confirm():
+        return False, None
+    return True, operation()
+
+
+def build_provider_execution_consent(decision, task_label, estimated_cost_rmb, details=""):
+    """Build a per-action destination disclosure before any asset/video provider call."""
+    target = str(getattr(decision, "target", "unavailable") or "unavailable")
+    endpoint = _safe_endpoint_display(getattr(decision, "endpoint", ""))
+    reason = str(getattr(decision, "reason", "") or "")
+    mode = {"local": "本地服务", "cloud": "云端服务", "unavailable": "不可用"}.get(target, target)
+    cost_text = "暂无法可靠估算（未知）" if estimated_cost_rmb is None else f"¥{float(estimated_cost_rmb):.2f}"
+    lines = [
+        f"任务：{task_label}",
+        f"实际执行目标：{mode}",
+        f"请求端点：{endpoint}",
+        f"路由原因：{reason}",
+        f"本次预估费用：{cost_text}",
+    ]
+    if target == "cloud":
+        lines.extend([
+            "数据边界：确认后将把当前镜头的标题、画面描述、文案及生成所需素材引用发送到上方云端 Provider。",
+            "费用提示：配置价为 ¥0 或 usage 缺失不代表服务免费，实际费用可能未知。",
+        ])
+    elif target == "local":
+        lines.append("数据边界：按当前路由向本机服务发送生成请求；不会因本地请求失败而自动改用云端。")
+    else:
+        lines.append("没有可用的已配置 Provider；本次不会发起生成请求。")
+    if details:
+        lines.append(str(details))
+    lines.extend(["", "只有确认后才会调用此端点；取消不会发起本次生成请求。", "是否继续？"])
+    return "\n".join(lines)
+
+
+_CREATIVE_PLAN_FUNCTIONS = (
+    "商品理解", "卖点提炼", "人群与痛点", "广告策略", "广告强度判断",
+    "视频形式判断", "剧本", "分镜", "素材选择",
+)
+
+
+def estimate_creation_planning_cost(model_router, variant_count):
+    """Estimate only planning calls from same-function/model successful usage history."""
+    variants = max(1, min(3, int(variant_count)))
+    try:
+        history = model_router.recent_usage(500)
+    except Exception:
+        history = []
+    known_subtotal = 0.0
+    unknown_functions = []
+    details = []
+    for function in _CREATIVE_PLAN_FUNCTIONS:
+        try:
+            profile = model_router.route(function)
+        except Exception:
+            unknown_functions.append(function)
+            details.append({"function": function, "status": "route_unknown", "estimate_rmb": None})
+            continue
+        host = (urlsplit(str(getattr(profile, "base_url", "") or "")).hostname or "").lower()
+        if host in {"localhost", "127.0.0.1", "::1"}:
+            details.append({"function": function, "status": "local_no_provider_charge", "estimate_rmb": 0.0})
+            continue
+        try:
+            input_price = float(profile.input_price_rmb_per_1k)
+            output_price = float(profile.output_price_rmb_per_1k)
+            valid_prices = math.isfinite(input_price) and math.isfinite(output_price) and input_price > 0 and output_price > 0
+        except (TypeError, ValueError, AttributeError):
+            valid_prices = False
+        if not valid_prices:
+            unknown_functions.append(function)
+            details.append({"function": function, "status": "price_missing_or_ambiguous", "estimate_rmb": None})
+            continue
+        samples = [
+            row for row in history
+            if isinstance(row, dict)
+            and row.get("function") == function
+            and row.get("model_id") == profile.id
+            and row.get("status") == "success"
+            and row.get("usage_status") == "reported"
+            and row.get("cost_status") == "estimated_from_configured_prices"
+            and int(row.get("prompt_tokens", 0) or 0) + int(row.get("completion_tokens", 0) or 0) > 0
+        ][:20]
+        if not samples:
+            unknown_functions.append(function)
+            details.append({"function": function, "status": "no_comparable_usage_history", "estimate_rmb": None})
+            continue
+        average = sum(float(row.get("estimated_cost_rmb", 0) or 0) for row in samples) / len(samples)
+        estimate = round(average * variants, 6)
+        known_subtotal += estimate
+        details.append({"function": function, "status": "historical_average", "samples": len(samples), "estimate_rmb": estimate})
+    known_subtotal = round(known_subtotal, 6)
+    return {
+        "planned_calls": len(_CREATIVE_PLAN_FUNCTIONS) * variants,
+        "variant_count": variants,
+        "known_subtotal_rmb": known_subtotal,
+        "total_rmb": None if unknown_functions else known_subtotal,
+        "unknown_functions": sorted(set(unknown_functions)),
+        "details": details,
+        "method": "same-function/model recent successful usage average × requested variants; reference estimate only, not a quote or cost ceiling",
+    }
+
+
+def build_creation_preflight_detail(url, budget, variant_count, model_router):
+    """Disclose external destinations and configured prices before link fetch or model calls."""
+    planning_estimate = estimate_creation_planning_cost(model_router, variant_count)
+    # Planning must be authorized before any product fetch/model request. At this point
+    # the AI storyboard and asset gaps do not exist yet, so never fabricate a project
+    # total; disclose each production-cost component as known-per-unit or explicitly unknown.
+    try:
+        video_provider = load_video_provider(ROOT / 'video-provider.json')
+        video_rate = configured_video_price(video_provider)
+    except Exception:
+        video_rate = None
+    video_unit_label = f"已配置 ¥{video_rate:.2f}/镜头" if video_rate is not None else "未知（尚未配置有效单镜头价格）"
+    lines = [
+        "本确认授权读取商品链接，并执行形成分镜与费用预估所需的商品理解/创意规划；若选择“用户拍摄素材”模式，也授权关键帧视觉分析、已启用的口播转写和实拍剪辑规划。这些模型调用可能发生在最终视频/资产报价前并可能产生费用；后续视频/资产生成不在本确认授权内。",
+        f"商品链接：{url}",
+        f"本次预算上限：¥{float(budget):.2f}；创意方案数：{int(variant_count)}。",
+        "",
+        "【规划阶段费用估算｜只覆盖每个方案的 9 个创意阶段，不猜测最终镜头数或生产费用】",
+        f"- 规划阶段计划调用：{planning_estimate['planned_calls']} 次；" + (f"基于同功能/同模型历史 usage 估算约 ¥{planning_estimate['total_rmb']:.4f}（不是报价或费用上限）。" if planning_estimate['total_rmb'] is not None else f"总额无法可靠估算；历史可估算小计 ¥{planning_estimate['known_subtotal_rmb']:.4f}，未知功能：{'、'.join(planning_estimate['unknown_functions']) or '无'}。"),
+        "历史估算只使用最近最多 20 条同功能/同模型、成功且 usage 完整的记录；单价/usage 缺失时必须按未知处理，不得视为免费。",
+        "",
+        "【规划前费用预告｜此时尚无 AI 分镜，以下不是最终项目报价】",
+        f"- 视频生成：{video_unit_label}；镜头数尚未生成，视频总额暂未知。",
+        "- 演员生成：需先得到分镜并检查本地演员库；当前数量/费用未知。",
+        "- 场景生成：需先得到分镜并检查本地场景库；当前数量/费用未知。",
+        "- 商品素材生成：需先得到分镜并检查本地商品素材库；当前数量/费用未知。",
+        "- 本阶段费用结论：规划阶段历史参考估算见上；若模型价格或可比 usage 缺失，规划费用仍为未知。项目总费用还取决于最终分镜和本地资产库缺口，当前不能伪造最终总价。",
+        "如果不接受以上未知项，请取消；取消后不会读取商品页面或调用模型/Provider。",
+        "规划完成后，系统会再次展示视频、演员、场景、商品素材的分项费用、已知小计、总费用/未知项和预算判断；你拒绝第二次确认时，不保存项目，也不启动视频/素材生成。",
+        "",
+        "各功能当前选择的模型与请求目标：",
+    ]
+    selected_ids = set()
+    for function in FUNCTIONS:
+        try:
+            profile = model_router.route(function)
+            selected_ids.add(profile.id)
+            endpoint = _safe_endpoint_display(profile.base_url)
+            host = (urlsplit(str(profile.base_url or "")).hostname or "").lower()
+            location = "本机/回环端点" if host in {"localhost", "127.0.0.1", "::1"} else "自定义网络端点（请核实其实际部署位置）"
+            if profile.provider == "local_openai" and location != "本机/回环端点":
+                location = "local_openai 配置但非本机回环地址；请核实实际部署位置"
+            lines.append(f"- {function}：{profile.name}（{profile.provider}）→ {endpoint}；{location}")
+            if profile.input_price_rmb_per_1k or profile.output_price_rmb_per_1k:
+                lines.append(f"  配置单价：输入 ¥{profile.input_price_rmb_per_1k:.6f}/1K，输出 ¥{profile.output_price_rmb_per_1k:.6f}/1K")
+            else:
+                lines.append("  配置单价为 0/未配置；不代表服务免费，实际费用可能未知。")
+        except Exception as exc:
+            lines.append(f"- {function}：路由配置不可用（{exc}）；请先检查模型设置。")
+    alternatives = [
+        p for p in model_router.profiles()
+        if p.enabled and p.id not in selected_ids
+    ]
+    if alternatives:
+        lines.extend(["", "其他已启用模型（文本/视觉模型路由不会因所选模型不可用而自动切换到这些端点；如需切换，请在模型设置中手动选择。资产/视频 Provider 的本地/云端回退属于独立流程，后续执行前还需单独确认）："])
+        for profile in alternatives:
+            lines.append(
+                f"- {profile.name}（{profile.provider}）→ {_safe_endpoint_display(profile.base_url)}"
+            )
+    lines.extend([
+        "",
+        "本阶段可能向商品页面发出网络请求，并向上述模型端点发送商品资料、提示词；用户拍摄素材模式还可能发送关键帧图片和音频。",
+        "规划模型费用无法在生成计划前准确确定；配置单价为 0 或服务未返回 usage 时，不应理解为免费。",
+        "同意后才会读取商品页面并执行上述规划/分析调用；本确认不授权视频或演员、场景、商品素材生成。规划完成后还会单独展示视频、演员、场景、商品素材费用并请求确认；拒绝第二次确认会阻止后续项目保存/素材视频生成，但不会撤销本阶段已发生的模型调用。",
+        "如果不同意，请取消；取消后不读取商品页面、不调用模型或 Provider，也不创建项目。",
+        "",
+        "是否授权本阶段的商品链接读取与 AI 创意规划？",
+    ])
+    return "\n".join(lines)
+
+
+def build_footage_reanalysis_consent_detail(model_router, folder):
+    """Disclose analysis/transcription destinations before rescanning footage."""
+    lines = [
+        "本操作会重新分析用户拍摄素材。确认前不会扫描文件、移动/归档素材或调用模型/Provider。",
+        f"素材文件夹：{Path(folder).name or '所选文件夹'}（不显示完整本地路径）",
+        "",
+        "当前素材剪辑导演路由：",
+    ]
+    try:
+        profile = model_router.resolve_route("素材剪辑导演")
+        endpoint = _safe_endpoint_display(profile.base_url)
+        host = (urlsplit(str(profile.base_url or "")).hostname or "").lower()
+        local = host in {"localhost", "127.0.0.1", "::1"}
+        destination = "本机/回环端点" if local else "网络端点（请确认其实际部署位置）"
+        if profile.provider == "local_openai" and not local:
+            destination = "local_openai 配置但非本机回环地址；请核实实际部署位置"
+        lines.append(f"- {profile.name}（{profile.provider}）→ {endpoint}；{destination}")
+        lines.append("- 将发送：商品资料、创意方案、素材文件名/时长/尺寸等元数据，以及从视频抽取的关键帧图片。")
+        if profile.input_price_rmb_per_1k or profile.output_price_rmb_per_1k:
+            lines.append(f"- 配置单价：输入 ¥{profile.input_price_rmb_per_1k:.6f}/1K，输出 ¥{profile.output_price_rmb_per_1k:.6f}/1K；实际视觉 token/usage 可能无法准确预估。")
+        else:
+            lines.append("- 模型价格为 0/未配置；不代表免费，实际费用可能未知。")
+    except Exception as exc:
+        lines.append(f"- 素材剪辑导演路由不可用：{exc}；请先检查模型设置。")
+    lines.extend(["", "当前口播转写路由："])
+    try:
+        profile = model_router.route("口播转写")
+        endpoint = _safe_endpoint_display(str(profile.base_url).rstrip("/") + "/audio/transcriptions")
+        if not profile.enabled or not profile.transcription_enabled:
+            lines.append(f"- {profile.name}：口播转写未启用，本次不会调用转写服务。")
+        else:
+            host = (urlsplit(str(profile.base_url or "")).hostname or "").lower()
+            local = host in {"localhost", "127.0.0.1", "::1"}
+            destination = "本机/回环端点" if local else "网络端点（请确认其实际部署位置）"
+            lines.append(f"- {profile.name}（{profile.provider}）→ {endpoint}；{destination}")
+            lines.append("- 将发送：从可用视频中提取的音频文件，用于口播转写。")
+            lines.append("- 转写 usage/费用按未知处理；本地 Provider 不收取 Provider 费用，但不含本机电费/硬件成本。")
+    except Exception as exc:
+        lines.append(f"- 口播转写路由不可用或未配置：{exc}。")
+    lines.extend([
+        "",
+        "确认后才会扫描素材并执行上述分析。取消后不会扫描、归档或移动素材，也不会调用模型/Provider。",
+        "是否继续并授权本次实拍素材分析及列出的数据去向？",
+    ])
+    return "\n".join(lines)
 
 
 class App(tk.Tk):
@@ -129,17 +391,30 @@ class App(tk.Tk):
         ttk.Label(top,text='AI 商品广告工厂',font=('Microsoft YaHei UI',22,'bold')).pack(side='left')
         self.gpu_text=tk.StringVar(value='检测本地 GPU…'); ttk.Label(top,textvariable=self.gpu_text).pack(side='right')
         setup=ttk.LabelFrame(self,text='① 商品与广告策略',padding=12); setup.pack(fill='x',padx=16,pady=8)
-        ttk.Label(setup,text='商品链接').grid(row=0,column=0,sticky='w'); self.url=tk.StringVar(); ttk.Entry(setup,textvariable=self.url,width=72).grid(row=0,column=1,columnspan=3,sticky='ew',padx=8)
-        ttk.Label(setup,text='广告强度').grid(row=1,column=0,sticky='w'); self.level=tk.IntVar(value=2); ttk.Combobox(setup,textvariable=self.level,values=[1,2,3,4,5],state='readonly',width=8).grid(row=1,column=1,sticky='w')
-        ttk.Label(setup,text='本次预算（¥）').grid(row=1,column=2,sticky='e'); self.budget=tk.StringVar(value='3'); ttk.Entry(setup,textvariable=self.budget,width=10).grid(row=1,column=3,sticky='w',padx=8)
-        ttk.Label(setup,text='留空/自动：交给AI判断；手动选择仅作为约束').grid(row=1,column=2,columnspan=2,sticky='w')
-        ttk.Label(setup,text='本次任务').grid(row=2,column=0,sticky='w'); self.task_type=tk.StringVar(value='电商短视频'); ttk.Combobox(setup,textvariable=self.task_type,values=['电商短视频','商品主图视频','广告投放视频'],state='readonly',width=18).grid(row=2,column=1,sticky='w'); ttk.Label(setup,text='每次只能选择一种任务').grid(row=2,column=2,columnspan=2,sticky='w')
-        ttk.Label(setup,text='视频形式').grid(row=3,column=0,sticky='w'); self.form=tk.StringVar(value='AI自动选择'); ttk.Combobox(setup,textvariable=self.form,values=['AI自动选择']+FORMS,state='readonly',width=22).grid(row=2,column=1,sticky='w')
-        ttk.Label(setup,text='创意方案数').grid(row=4,column=0,sticky='w'); self.variant_count=tk.StringVar(value='3'); ttk.Combobox(setup,textvariable=self.variant_count,values=['1','3'],state='readonly',width=8).grid(row=3,column=1,sticky='w'); ttk.Label(setup,text='3 = 同一商品自动生成三种明显不同的广告打法').grid(row=3,column=2,columnspan=3,sticky='w')
-        ttk.Label(setup,text='素材来源').grid(row=5,column=0,sticky='w'); self.footage_mode=tk.StringVar(value='AI生成视频'); ttk.Combobox(setup,textvariable=self.footage_mode,values=['AI生成视频','用户拍摄素材'],state='readonly',width=16).grid(row=4,column=1,sticky='w',pady=(4,2))
-        self.footage_folder=tk.StringVar(value=''); ttk.Entry(setup,textvariable=self.footage_folder,width=36).grid(row=5,column=2,sticky='w',padx=4); ttk.Button(setup,text='选择素材文件夹',command=self.choose_footage_folder).grid(row=4,column=3,sticky='e')
-        ttk.Label(setup,text='用户拍摄素材：输入链接后 AI 分析产品 → 指定文件夹放入你拍好的视频 → AI 思考剪辑方案 → 本地 FFmpeg 出片（不调用视频生成服务）',foreground='#666').grid(row=6,column=0,columnspan=5,sticky='w',pady=(2,0))
-        ttk.Button(setup,text='创建广告项目',command=self.create).grid(row=2,column=3,sticky='e'); ttk.Button(setup,text='🎭 AI短剧编导',command=self.short_drama_director).grid(row=0,column=6,sticky='e',padx=8); ttk.Button(setup,text='📹 实拍分析报告',command=self.footage_analysis_report).grid(row=2,column=5,sticky='e',padx=8); ttk.Button(setup,text='📋 补素材任务',command=self.footage_gap_tasks_report).grid(row=2,column=6,sticky='e',padx=8); ttk.Button(setup,text='🤖 执行AI补镜头',command=self.generate_hybrid_gap_shots).grid(row=2,column=10,sticky='e',padx=8); ttk.Button(setup,text='🔍 AI补镜头复核',command=self.review_hybrid_gap_shots).grid(row=2,column=11,sticky='e',padx=8); ttk.Button(setup,text='🔄 重新分析实拍素材',command=self.reanalyze_footage).grid(row=2,column=7,sticky='e',padx=8); ttk.Button(setup,text='🕘 分析历史',command=self.footage_reanalysis_history_report).grid(row=2,column=8,sticky='e',padx=8); ttk.Button(setup,text='打开已有项目',command=self.load_project).grid(row=2,column=2,sticky='e',padx=8); ttk.Button(setup,text='📚 商品资料库',command=self.product_library_settings).grid(row=0,column=5,sticky='e',padx=8); ttk.Button(setup,text='⚙ 模型设置',command=self.model_settings).grid(row=0,column=3,sticky='e'); ttk.Button(setup,text='🔎 系统状态',command=self.system_status).grid(row=1,column=3,sticky='e'); ttk.Button(setup,text='🧪 创意版本矩阵',command=self.variant_matrix_report).grid(row=2,column=9,sticky='e',padx=8); ttk.Button(setup,text='🧠 创意方案分析',command=self.creative_variant_analysis_report).grid(row=2,column=12,sticky='e',padx=8); ttk.Button(setup,text='🧪 创意测试方案',command=self.creative_test_plan_report).grid(row=2,column=14,sticky='e',padx=8); ttk.Button(setup,text='🛡 创意事实检查',command=self.creative_fact_check_report).grid(row=2,column=15,sticky='e',padx=8); ttk.Button(setup,text='🎬 分镜事实复核',command=self.storyboard_fact_check_report).grid(row=2,column=16,sticky='e',padx=8); ttk.Button(setup,text='🎥 成片视觉复核',command=self.visual_fact_check_report).grid(row=2,column=17,sticky='e',padx=8); ttk.Button(setup,text='📥 真实投放数据（可选）',command=self.variant_performance_entry).grid(row=2,column=13,sticky='e',padx=8); ttk.Button(setup,text='📊 AI调用记录',command=self.usage_view).grid(row=2,column=4,sticky='e',padx=8); ttk.Button(setup,text='🎬 视频生成设置',command=self.video_provider_settings).grid(row=0,column=4,sticky='e',padx=8); ttk.Button(setup,text='🧩 素材生成设置',command=self.asset_generation_settings).grid(row=1,column=4,sticky='e',padx=8)
+        fields=ttk.Frame(setup); fields.pack(fill='x')
+        fields.columnconfigure(1,weight=1)
+        ttk.Label(fields,text='商品链接').grid(row=0,column=0,sticky='w'); self.url=tk.StringVar(); ttk.Entry(fields,textvariable=self.url,width=72).grid(row=0,column=1,columnspan=3,sticky='ew',padx=8)
+        ttk.Label(fields,text='广告强度').grid(row=1,column=0,sticky='w'); self.level=tk.IntVar(value=2); ttk.Combobox(fields,textvariable=self.level,values=[1,2,3,4,5],state='readonly',width=8).grid(row=1,column=1,sticky='w')
+        ttk.Label(fields,text='本次预算（¥）').grid(row=1,column=2,sticky='e'); self.budget=tk.StringVar(value='3'); ttk.Entry(fields,textvariable=self.budget,width=10).grid(row=1,column=3,sticky='w',padx=8)
+        ttk.Label(fields,text='本次任务').grid(row=2,column=0,sticky='w'); self.task_type=tk.StringVar(value='电商短视频'); ttk.Combobox(fields,textvariable=self.task_type,values=['电商短视频','商品主图视频','广告投放视频'],state='readonly',width=18).grid(row=2,column=1,sticky='w'); ttk.Label(fields,text='每次只能选择一种任务').grid(row=2,column=2,columnspan=2,sticky='w')
+        ttk.Label(fields,text='视频形式').grid(row=3,column=0,sticky='w'); self.form=tk.StringVar(value='AI自动选择'); ttk.Combobox(fields,textvariable=self.form,values=['AI自动选择']+FORMS,state='readonly',width=22).grid(row=3,column=1,sticky='w'); ttk.Label(fields,text='留空/自动：交给AI判断；手动选择仅作为约束').grid(row=3,column=2,columnspan=2,sticky='w')
+        ttk.Label(fields,text='创意方案数').grid(row=4,column=0,sticky='w'); self.variant_count=tk.StringVar(value='3'); ttk.Combobox(fields,textvariable=self.variant_count,values=['1','3'],state='readonly',width=8).grid(row=4,column=1,sticky='w'); ttk.Label(fields,text='3 = 同一商品自动生成三种明显不同的广告打法').grid(row=4,column=2,columnspan=2,sticky='w')
+        ttk.Label(fields,text='素材来源').grid(row=5,column=0,sticky='w'); self.footage_mode=tk.StringVar(value='AI生成视频'); ttk.Combobox(fields,textvariable=self.footage_mode,values=['AI生成视频','用户拍摄素材'],state='readonly',width=16).grid(row=5,column=1,sticky='w',pady=(4,2))
+        self.footage_folder=tk.StringVar(value=''); ttk.Entry(fields,textvariable=self.footage_folder,width=36).grid(row=5,column=2,sticky='w',padx=4); ttk.Button(fields,text='选择素材文件夹',command=self.choose_footage_folder).grid(row=5,column=3,sticky='e')
+        ttk.Label(fields,text='用户拍摄素材：输入链接后 AI 分析产品 → 指定文件夹放入你拍好的视频 → AI 思考剪辑方案 → 本地 FFmpeg 出片（不调用视频生成服务）',foreground='#666').grid(row=6,column=0,columnspan=4,sticky='w',pady=(2,0))
+        actions=ttk.Frame(setup); actions.pack(fill='x',pady=(8,0))
+        action_specs=[
+            ('创建广告项目',self.create),('🎭 AI短剧编导',self.short_drama_director),('📹 实拍分析报告',self.footage_analysis_report),('📋 补素材任务',self.footage_gap_tasks_report),
+            ('🤖 执行AI补镜头',self.generate_hybrid_gap_shots),('🔍 AI补镜头复核',self.review_hybrid_gap_shots),('🔄 重新分析实拍素材',self.reanalyze_footage),('🕘 分析历史',self.footage_reanalysis_history_report),
+            ('打开已有项目',self.load_project),('📚 商品资料库',self.product_library_settings),('⚙ 模型设置',self.model_settings),('🔎 系统状态',self.system_status),
+            ('🧪 创意版本矩阵',self.variant_matrix_report),('🧠 创意方案分析',self.creative_variant_analysis_report),('🧪 创意测试方案',self.creative_test_plan_report),('🛡 创意事实检查',self.creative_fact_check_report),
+            ('🎬 分镜事实复核',self.storyboard_fact_check_report),('🎥 成片视觉复核',self.visual_fact_check_report),('📥 真实投放数据（可选）',self.variant_performance_entry),('📊 AI调用记录',self.usage_view),
+            ('🎬 视频生成设置',self.video_provider_settings),('🧩 素材生成设置',self.asset_generation_settings),
+        ]
+        for index,(label,command) in enumerate(action_specs):
+            ttk.Button(actions,text=label,command=command).grid(row=index//6,column=index%6,sticky='ew',padx=3,pady=2)
+        for column in range(6):
+            actions.columnconfigure(column,weight=1)
         main=ttk.Panedwindow(self,orient='horizontal'); main.pack(fill='both',expand=True,padx=16,pady=8)
         left=ttk.Frame(main,padding=8); right=ttk.Frame(main,padding=8); main.add(left,weight=3); main.add(right,weight=2)
         ttk.Label(left,text='② 分镜生产链',font=('Microsoft YaHei UI',14,'bold')).pack(anchor='w')
@@ -733,8 +1008,9 @@ class App(tk.Tk):
         folder=Path(self.project.footage_folder or self.footage_folder.get().strip()).expanduser()
         if not folder.exists() or not folder.is_dir():
             return messagebox.showerror('素材文件夹无效','当前项目的实拍素材文件夹不存在，请重新选择。')
-        if not messagebox.askyesno('重新分析实拍素材',
-            '将重新扫描当前文件夹中的视频，并重新执行视觉分析、废片归档、口播转写（如已配置）、素材排名、卖点覆盖审计和剪辑方案复核。是否继续？'):
+        consent_detail = build_footage_reanalysis_consent_detail(self.model_router, folder)
+        if not messagebox.askyesno('重新分析实拍素材与数据去向授权', consent_detail, parent=self):
+            self.detail.set('已取消实拍素材重新分析；未扫描/归档素材，也未调用模型或 Provider。')
             return
         try:
             from .footage import scan_footage, FootageError, validate_footage_plan, audit_footage_coverage, audit_final_footage_plan, audit_footage_gap_completion, merge_gap_task_acceptance, audit_footage_plan_change
@@ -797,10 +1073,10 @@ class App(tk.Tk):
             try:
                 video_provider=load_video_provider(ROOT/'video-provider.json')
                 generation_connected=bool(video_provider.configured())
-                generation_rate=float(getattr(video_provider,'cost_per_shot_rmb',0.0) or 0.0)
+                generation_rate=configured_video_price(video_provider)
             except Exception:
                 generation_connected=False
-                generation_rate=0.0
+                generation_rate=None
             budget_total=float((self.project.cost_estimate or {}).get('预算',0) or 0)
             actual_cost=float(getattr(self.project,'actual_cost_rmb',0.0) or 0.0)
             budget_remaining=max(0.0,budget_total-actual_cost) if budget_total > 0 else 0.0
@@ -858,23 +1134,32 @@ class App(tk.Tk):
         if not self.project:
             return messagebox.showinfo('提示','请先创建或打开一个项目。')
         tasks=(self.project.creative_plan.get('footage_gap_tasks') or {}).get('tasks') or []
-        approved=[x for x in tasks if isinstance(x,dict) and x.get('recommended_resolution')=='AI补镜头' and x.get('generation_allowed')]
+        approved=[x for x in tasks if isinstance(x,dict) and x.get('recommended_resolution') in {'AI补镜头','AI补辅助画面'} and (x.get('generation_allowed') or x.get('needs_cost_confirmation'))]
         if not approved:
             return messagebox.showinfo('没有可执行任务','当前没有经过路由器批准的“AI补镜头”任务。商品/真人证据缺口仍需补拍。')
         try:
             provider=load_video_provider(ROOT/'video-provider.json')
             if not provider.configured():
                 raise RuntimeError('视频生成 Provider 尚未真实配置，不能执行 AI 补镜头。')
-            rate=float(getattr(provider,'cost_per_shot_rmb',0.0) or 0.0)
+            rate=configured_video_price(provider)
         except Exception as exc:
             return messagebox.showerror('AI补镜头不可用',str(exc))
         budget=float((self.project.cost_estimate or {}).get('预算',0) or 0)
         actual=float(getattr(self.project,'actual_cost_rmb',0.0) or 0.0)
         remaining=max(0.0,budget-actual) if budget>0 else 0.0
         pending=[x for x in approved if not x.get('generated_path') or not Path(str(x.get('generated_path'))).exists()]
-        estimate=round(len(pending)*rate,4)
-        if budget>0 and estimate>remaining:
-            return messagebox.showwarning('预算闸门',f'本次 AI 补镜头预计还需 ¥{estimate:.2f}，当前剩余预算 ¥{remaining:.2f}。系统不会自动突破预算。')
+        if rate is None and pending:
+            if not messagebox.askyesno('视频单价未知',f'本次有 {len(pending)} 个 AI 补镜头待生成，但 Provider 单镜头价格未配置，无法可靠估算总费用，实际费用可能超过当前预算 ¥{budget:.2f}。是否仍继续？'):
+                return
+            for task in pending:
+                task['generation_allowed'] = True
+                task['cost_price_confirmed'] = True
+                task['cost_status'] = 'price_missing_confirmed'
+                task['estimated_cost_rmb'] = None
+        estimate=None if rate is None else round(len(pending)*rate,4)
+        if rate is not None and budget>0 and estimate>remaining:
+            if not messagebox.askyesno('预算超出确认',f'本次 AI 补镜头预计还需 ¥{estimate:.2f}，当前剩余预算 ¥{remaining:.2f}。继续可能超过预算；系统不会自动降质或切换模型。是否仍继续？'):
+                return
         Shot=__import__('ad_studio.models',fromlist=['Shot']).Shot
         results=[]; failures=[]
         for n,task in enumerate(pending,1):
@@ -890,7 +1175,17 @@ class App(tk.Tk):
                 generated_from_request=f'实拍缺口任务 {task_id}：{task.get("reason","")}',
             )
             try:
-                out=self.store.render_shot(self.project,shot,config_root=ROOT)
+                decision = self._authorize_shot_generation(shot, f'AI补镜头 {task_id}')
+                if decision is None:
+                    task['status'] = '用户取消'
+                    task['generation_error'] = '用户取消视频/素材 Provider 授权；未发起本次视频请求。'
+                    failures.append(f'{task_id}：用户取消授权')
+                    continue
+                out=self.store.render_shot(
+                    self.project, shot, config_root=ROOT, decision=decision,
+                    authorize_cloud=lambda asset_decision, kind: self._confirm_asset_cloud_generation(asset_decision, kind, shot),
+                    authorized_endpoint=(decision.endpoint if decision.target == 'cloud' else None),
+                )
                 task['generated_path']=str(out)
                 task['status']='AI补镜头已生成'
                 task['generation_cost_rmb']=round(float(getattr(shot,'actual_cost_rmb',rate) or 0),4)
@@ -1210,27 +1505,30 @@ class App(tk.Tk):
         frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
         summary=self.model_router.usage_summary()
         ttk.Label(frm,text='AI调用记录',font=('Microsoft YaHei UI',18,'bold')).pack(anchor='w')
-        ttk.Label(frm,text=f"累计调用：{summary['calls']}  成功：{summary['success']}  失败：{summary['failed']}  Token：{summary['tokens']:,}  已记录模型成本：¥{summary['estimated_cost_rmb']:.4f}").pack(anchor='w',pady=(2,10))
-        ttk.Label(frm,text='成本为模型返回 Token × 本机配置单价；未配置单价的模型显示 ¥0，不代表供应商永久免费。').pack(anchor='w',pady=(0,8))
-        tree=ttk.Treeview(frm,columns=('time','function','model','provider','status','tokens','cost','duration'),show='headings')
-        for col,title,w in [('time','时间',135),('function','功能',120),('model','实际模型',180),('provider','提供方式',100),('status','状态',70),('tokens','Token',90),('cost','估算成本',90),('duration','耗时',80)]:
+        ttk.Label(frm,text=f"累计调用：{summary['calls']}  成功：{summary['success']}  失败：{summary['failed']}  Token：{summary['tokens']:,}  已知估算成本：¥{summary['estimated_cost_rmb']:.4f}  未知费用记录：{summary.get('unknown_cost_entries', 0)}（不能视为免费）").pack(anchor='w',pady=(2,10))
+        ttk.Label(frm,text='金额为本机估算，不是供应商账单；缺少 usage/单价会标记为未知费用，¥0 不代表供应商永久免费。').pack(anchor='w',pady=(0,8))
+        tree=ttk.Treeview(frm,columns=('time','function','model','provider','endpoint','status','tokens','cost','cost_status','duration'),show='headings')
+        for col,title,w in [('time','时间',135),('function','功能',120),('model','实际模型',150),('provider','提供方式',100),('endpoint','实际端点（脱敏）',220),('status','状态',70),('tokens','Token',80),('cost','估算成本',90),('cost_status','费用可信状态',150),('duration','耗时',80)]:
             tree.heading(col,text=title); tree.column(col,width=w)
         tree.pack(fill='both',expand=True)
         for x in self.model_router.recent_usage(150):
-            tree.insert('', 'end', values=(x.get('time',''),x.get('function',''),x.get('model_name',''),x.get('provider',''),x.get('status',''),x.get('total_tokens',0),f"¥{float(x.get('estimated_cost_rmb',0)):.4f}",f"{int(x.get('duration_ms',0))}ms"))
+            tree.insert('', 'end', values=(x.get('time',''),x.get('function',''),x.get('model_name',''),x.get('provider',''),x.get('endpoint','未记录'),x.get('status',''),x.get('total_tokens',0),f"¥{float(x.get('estimated_cost_rmb',0)):.4f}",x.get('cost_status','旧记录/未知'),f"{int(x.get('duration_ms',0))}ms"))
         ttk.Button(frm,text='刷新',command=lambda:(win.destroy(),self.usage_view())).pack(anchor='e',pady=8)
 
     def refresh_gpu(self):
         g=detect_gpu(); self.gpu_text.set(('🟢 '+g.get('name','NVIDIA')+' · '+g.get('mode','CPU')) if g.get('available') else '⚪ 未检测到 NVIDIA GPU · CPU模式')
 
     def _show_cost_breakdown(self,c):
-        lines=[f"项目预估：¥{c['总计']:.2f}",f"本地处理/FFmpeg：¥{c['本地']:.2f}",f"云端任务：¥{c['云端']:.2f}"]
+        unknown = bool(c.get('费用未知')) or c.get('总计') is None
+        total_text = '无法可靠估算（视频单价未知）' if unknown else f"¥{float(c['总计']):.2f}"
+        cloud_label = '已知云端费用小计' if unknown else '云端任务'
+        lines=[f"项目预估：{total_text}",f"本地处理/FFmpeg：¥{float(c.get('本地',0) or 0):.2f}",f"{cloud_label}：¥{float(c.get('云端',0) or 0):.2f}"]
         for item in c.get('明细',[]):
-            if item['数量']: lines.append(f"  {item['项目']}：{item['数量']} × ¥{item['单价']:.2f} = ¥{item['小计']:.2f}")
+            if item.get('数量'):
+                lines.append('  '+_format_cost_item(item))
         actual=round(sum(float(getattr(s,'actual_cost_rmb',0) or 0) for s in (self.project.shots if self.project else [])),4)
-        estimate=float(c.get('总计',0) or 0)
-        pending=max(0.0,estimate-actual)
-        lines += [f'已实际发生：¥{actual:.2f}',f'按当前计划尚未发生：¥{pending:.2f}']
+        lines.append(f'已实际发生：¥{actual:.2f}')
+        lines.append('按当前计划尚未发生：无法可靠估算（视频单价未知）' if unknown else f"按当前计划尚未发生：¥{max(0.0,float(c['总计'])-actual):.2f}")
         self.cost.set(' | '.join(lines))
 
     def _creative_constraints(self):
@@ -1287,8 +1585,8 @@ class App(tk.Tk):
                 title=x.objective or f'镜头{x.index}', visual=x.visual, script=x.dialogue,
                 composition=x.composition, focus_x=x.focus_x, focus_y=x.focus_y,
                 subtitle_position=x.subtitle_position, subtitle_style=x.subtitle_style,
-                pacing=x.pacing, speed=x.speed, bgm_intensity=x.bgm_intensity,
-                bgm_volume=x.bgm_volume, transition=x.transition,
+                **runtime_shot_editing_fields(x), bgm_intensity=x.bgm_intensity,
+                bgm_volume=x.bgm_volume,
             ) for x in plan.shots
         ]
         self.active_variant_index=int(raw.get('_variant_index',1))
@@ -1385,7 +1683,14 @@ class App(tk.Tk):
             variant_count=max(1,min(3,int(self.variant_count.get())))
         except ValueError:
             return messagebox.showerror('参数格式错误','请输入有效的预算和创意方案数。')
-        info=parse_product_url(url)
+        preflight_detail = build_creation_preflight_detail(url, budget, variant_count, self.model_router)
+        authorized, info = run_after_explicit_authorization(
+            lambda: messagebox.askyesno('AI创意规划与数据去向授权', preflight_detail),
+            lambda: parse_product_url(url),
+        )
+        if not authorized:
+            self.detail.set('已取消：未读取商品页面、未调用 AI 模型/Provider，也未创建项目。')
+            return
         saved_product=load_product_library(url, ROOT)
         info=merge_product_library(info, saved_product)
         footage_mode=self.footage_mode.get().strip()
@@ -1407,6 +1712,7 @@ class App(tk.Tk):
                 return
         self.detail.set(f'商品资料采集：{info.name} · {info.platform}\n来源：{info.source or "未完成"}\n{info.description[:180] or "未读取到商品描述"}')
         self.project=new_project(url,level,form if form!='AI自动选择' else 'AI自动选择')
+        self.model_router.set_project_context(self.project.id)
         self.model_router.set_project_context(self.project.id)
         self.project.product_info=info.to_dict()
         self.project.creative_plan['task_type']=task_type
@@ -1533,28 +1839,43 @@ class App(tk.Tk):
             ])
         else:
             vp=load_video_provider(ROOT/'video-provider.json')
-            rate=float(getattr(vp,'cost_per_shot_rmb',0.72)) if hasattr(vp,'cost_per_shot_rmb') else 0.72
+            rate=configured_video_price(vp)
             c=estimate_cost(len(plan.shots), {'cloud_video_per_shot': rate})
             asset_est=estimate_asset_generation(self.lib,ROOT,[x.__dict__ for x in plan.shots])
             c['资产生成']=asset_est
             asset_total=float(asset_est.get('总计',0.0))
             if asset_total:
                 c['云端']=round(float(c.get('云端',0.0))+asset_total,2)
-                c['总计']=round(float(c.get('本地',0.0))+float(c['云端']),2)
+                c['已知小计']=round(float(c.get('已知小计',c.get('总计') or 0.0))+asset_total,2)
+                if c.get('总计') is not None:
+                    c['总计']=round(float(c.get('本地',0.0))+float(c['云端']),2)
                 c['明细'].append({'项目':'演员/场景/商品素材自动生成','数量':asset_est.get('数量',0),'单价':0.0,'小计':asset_total,'计费方式':'按缺失资产配置价格'})
-            c['预算']=budget; c['超预算']=c['总计']>budget; c['创意方案数']=variant_count; self.project.cost_estimate=c; self._show_cost_breakdown(c)
+            c['预算']=budget; c['超预算']=None if c.get('总计') is None else c['总计']>budget; c['创意方案数']=variant_count; self.project.cost_estimate=c; self._show_cost_breakdown(c)
+            cost_total_label = '无法可靠估算（视频单价未知）' if c.get('总计') is None else f"¥{float(c['总计']):.2f}"
+            video_cost_label = '未知（单镜头价格未配置）' if rate is None else f"¥{rate*len(plan.shots):.2f}"
+            budget_status_label = ('⚠ 视频单价未知，无法可靠估算总费用；确认后仍可能超过预算。' if c.get('总计') is None else ('⚠ 预计超过本次预算。' if c['超预算'] else '✓ 预计不超过本次预算。'))
             detail='\n'.join([
                 f"任务类型：{task_type}",f"商品：{info.name}",f"本次生成创意方案：{variant_count} 个（当前先展示方案1）",f"AI判断广告强度：{plan.ad_level}",
                 f"AI选择视频形式：{plan.video_form}",f"预计时长：{plan.duration_seconds}秒",f"AI策略：{plan.strategy}",f"AI钩子：{plan.hook}",'',
-                f"当前方案开始前预计成本：¥{c['总计']:.2f}",f"本地处理/FFmpeg：¥{c['本地']:.2f}",f"视频生成费用：¥{rate*len(plan.shots):.2f}",f"演员生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='演员'):.2f}",f"场景生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='场景'):.2f}",f"商品素材生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='商品素材'):.2f}",f"云端任务：¥{c['云端']:.2f}",
-                *[f"{x['项目']}：{x['数量']} × ¥{x['单价']:.2f} = ¥{x['小计']:.2f}" for x in c['明细'] if x['数量']],
-                '',f"本次预算：¥{c['预算']:.2f}",('⚠ 预计超过本次预算。' if c['超预算'] else '✓ 预计不超过本次预算。'),c['计价说明'],
+                f"当前方案开始前预计成本：{cost_total_label}",f"本地处理/FFmpeg：¥{c['本地']:.2f}",f"视频生成费用：{video_cost_label}",f"演员生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='演员'):.2f}",f"场景生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='场景'):.2f}",f"商品素材生成费用：¥{sum(x['小计'] for x in asset_est['明细'] if x['类型']=='商品素材'):.2f}",f"云端已知费用小计：¥{c['云端']:.2f}",
+                *[_format_cost_item(x) for x in c['明细'] if x['数量']],
+                '',f"本次预算：¥{c['预算']:.2f}",budget_status_label,c['计价说明'],
                 '说明：多个创意方案是同一商品的不同广告打法；云端视频/素材费用按当前选中的方案单独计算。','',
-                '超过预算不会自动降质、换模型或减少镜头。是否现在开始？'
+                '本次确认仅授权后续项目保存/素材视频生成；此前创意规划模型调用已在单独授权后执行，可能产生模型费用。\n' '超过预算不会自动降质、换模型或减少镜头。是否现在开始？'
             ])
-        if not messagebox.askyesno('AI创意与项目预算确认',detail):
-            self.project=None; self.detail.set('已取消项目创建，尚未产生生成费用。'); return
-        self.store.save(self.project); save_product(info,ROOT,self.project.id); save_product_library(info,ROOT); self.refresh_shots()
+        authorized, _ = run_after_explicit_authorization(
+            lambda: messagebox.askyesno('AI创意与项目预算确认', detail),
+            lambda: (
+                self.store.save(self.project),
+                save_product(info, ROOT, self.project.id),
+                save_product_library(info, ROOT),
+                self.refresh_shots(),
+            ),
+        )
+        if not authorized:
+            self.project = None
+            self.detail.set('已取消后续项目保存/素材视频生成；此前已授权的创意规划模型调用可能产生费用。')
+            return
         if footage_mode=='用户拍摄素材':
             self.detail.set(f"素材剪辑方案已确认：{info.name} → {len(plan.shots)}镜头。素材文件夹：{folder}。可逐个「生成本镜头」裁剪，或直接「生成最终成片」。")
         else:
@@ -1586,12 +1907,65 @@ class App(tk.Tk):
                 f'BGM：{getattr(s, "bgm_intensity", "低")} · 音量 {getattr(s, "bgm_volume", 0.16):.2f}'
             )
 
+    def _authorize_shot_generation(self, shot, action_label):
+        """Authorize the actual video route and any cloud asset requests before mutating shot state."""
+        decision = CapabilityRouter(ROOT).decide_video()
+        if decision.target == 'unavailable':
+            raise RuntimeError(f'镜头生成不可用：{decision.reason}')
+        provider = load_video_provider(ROOT/'video-provider.json') if decision.target == 'cloud' else None
+        rate = configured_video_price(provider) if provider else 0.0
+        detail = build_provider_execution_consent(
+            decision, action_label, rate,
+            f'镜头标题：{shot.title}\\n当前版本：v{shot.version}。旧版本会保留。',
+        )
+        if not messagebox.askyesno('确认生成端点与费用', detail, parent=self):
+            return None
+        try:
+            self.store.resolve_assets(
+                self.project, shot,
+                authorize_cloud=lambda asset_decision, kind: self._confirm_asset_cloud_generation(asset_decision, kind, shot),
+            )
+        except Exception as asset_exc:
+            if "没有获得明确授权" in str(asset_exc) or "用户拒绝或未授权云端素材生成" in str(asset_exc):
+                return None
+            raise
+        return decision
+
+    def _confirm_asset_cloud_generation(self, decision, kind, shot):
+        """Ask per-asset consent before sending an asset prompt to a cloud Provider."""
+        config_path = ROOT / 'asset-generation.json'
+        data = {}
+        try:
+            data = json.loads(config_path.read_text(encoding='utf-8')) if config_path.exists() else {}
+        except Exception:
+            data = {}
+        cfg = (data.get(kind) or data.get('asset_generation') or {}) if isinstance(data, dict) else {}
+        try:
+            rate = float((cfg or {}).get('price_rmb')) if 'price_rmb' in (cfg or {}) and (cfg or {}).get('price_rmb') is not None else None
+        except (TypeError, ValueError):
+            rate = None
+        detail = build_provider_execution_consent(
+            decision,
+            f'{kind}素材生成（镜头 {shot.index}）',
+            rate,
+            f'商品：{self.project.product_name if self.project else ""}\\n'
+            f'镜头标题：{shot.title}\\n画面需求：{shot.visual}\\n'
+            '云端请求将包含素材生成提示词；不会把 API Key 显示在此窗口。',
+        )
+        return bool(messagebox.askyesno('确认云端素材端点与费用', detail, parent=self))
+
     @ui_action
     def generate_shot(self):
         if not self._ui_execution_gate(): return
         s=self.selected()
         if not s:return messagebox.showinfo('提示','先选择一个镜头。')
         try:
+            decision = None
+            if getattr(s,'clip_source','ai_generated') != 'filmed':
+                decision = self._authorize_shot_generation(s, f'镜头 {s.index} 视频生成')
+                if decision is None:
+                    self.detail.set('已取消本次生成；未继续调用视频 Provider，镜头状态和版本未改变。此前明确授权完成的素材可能已入库。')
+                    return
             s.status='生成中…'; self.store.save(self.project); self.refresh_shots()
             self.update_idletasks()
             if getattr(s,'clip_source','ai_generated')=='filmed':
@@ -1600,10 +1974,9 @@ class App(tk.Tk):
                 out=self.store.render_footage_shot(self.project,s)
                 self.refresh_shots(); self.detail.set(f'镜头 {s.index} 已从拍摄素材裁剪 v{s.version}：{out}')
             else:
-                decision=CapabilityRouter(ROOT).decide_video()
                 mode={'local':'本地','cloud':'云端','unavailable':'不可用'}.get(decision.target,decision.target)
                 self.detail.set(f'镜头 {s.index} 正在{mode}生成…')
-                out=self.store.render_shot(self.project,s,config_root=ROOT)
+                out=self.store.render_shot(self.project,s,config_root=ROOT,decision=decision,authorize_cloud=lambda asset_decision, kind: self._confirm_asset_cloud_generation(asset_decision, kind, s),authorized_endpoint=(decision.endpoint if decision.target == 'cloud' else None))
                 self.refresh_shots()
                 if s.status == "已生成（成本待核对）":
                     self.cost.set(f'项目实际成本待核对 · 预估 ¥{self.project.cost_estimate.get("总计",0):.2f}')
@@ -1643,12 +2016,32 @@ class App(tk.Tk):
                 if not str(correction or '').strip():
                     self.detail.set('已取消单镜头修复；没有修改镜头版本或调用生成服务。')
                     return
-                provider = load_video_provider(ROOT / 'video-provider.json')
-                rate = normalize_cost_estimate_rmb(getattr(provider, 'cost_per_shot_rmb', 0.72))
-                if not messagebox.askyesno('确认单镜头重新生成', f'仅重新生成第 {shot_number} 镜（当前 v{s.version} → 新版本）。\n' f'预计视频生成费用：¥{rate:.2f}。\n' '旧版本、核验记录和其他镜头会保留；新版本必须重新核验。\n' '是否继续？', parent=self):
-                    self.detail.set('已取消单镜头重新生成；没有调用云端服务。')
+                route = CapabilityRouter(ROOT).decide_video()
+                if route.target == 'unavailable':
+                    raise RuntimeError(f'当前没有可用的视频生成服务：{route.reason}')
+                if route.target == 'local':
+                    rate = 0.0
+                    cost_status = 'local_no_provider_charge'
+                    route_label = f'本地服务（{_safe_endpoint_display(route.endpoint)}）'
+                    rate_label = '预计 Provider 费用：¥0.00（不含本机电费/硬件成本）'
+                else:
+                    provider = load_video_provider(ROOT / 'video-provider.json')
+                    raw_rate = getattr(provider, 'cost_per_shot_rmb', None)
+                    price_configured = bool(getattr(provider, 'cost_price_configured', False)) and raw_rate is not None
+                    rate = normalize_cost_estimate_rmb(raw_rate) if price_configured else None
+                    cost_status = 'configured_estimate' if rate is not None else 'price_missing'
+                    route_label = f'云端服务（{_safe_endpoint_display(getattr(provider, "endpoint", route.endpoint))}）'
+                    rate_label = f'预计 Provider 费用：¥{rate:.2f}' if rate is not None else '预计 Provider 费用：未知（尚未配置单镜头价格）'
+                if not messagebox.askyesno('确认准备单镜头重新生成', f'仅准备重新生成第 {shot_number} 镜（当前 v{s.version} → 新版本）。\n' f'当前检测目的地：{route_label}。\n' f'{rate_label}。\n' '此步骤只准备新版本，不会调用 Provider；真正生成时还会再次确认实际端点与费用。\n' '旧版本、核验记录和其他镜头会保留；新版本必须重新核验。是否继续？', parent=self):
+                    self.detail.set('已取消单镜头重新生成准备；没有调用生成服务，也未修改镜头版本。')
                     return
-                updated = prepare_product_drama_shot_regeneration(drama, shot_number, correction, previous_version=s.version, previous_video_path=getattr(s, 'video_path', None), estimated_cost_rmb=rate)
+                updated = prepare_product_drama_shot_regeneration(
+                    drama, shot_number, correction,
+                    previous_version=s.version,
+                    previous_video_path=getattr(s, 'video_path', None),
+                    estimated_cost_rmb=rate,
+                    estimated_cost_status=cost_status,
+                )
                 creative['short_drama'] = updated
                 creative.pop('short_drama_audit', None)
                 self.project.creative_plan = creative
@@ -1821,22 +2214,51 @@ class App(tk.Tk):
         frm=ttk.Frame(win,padding=14); frm.pack(fill='both',expand=True)
         ttk.Label(frm,text='字幕',font=('Microsoft YaHei UI',13,'bold')).pack(anchor='w')
         script=tk.Text(frm,height=7); script.pack(fill='both',expand=True,pady=6); script.insert('1.0',s.script)
-        bgms=self.lib.reusable('BGM'); names=['不添加BGM']+[a.name for a in bgms]; bm=tk.StringVar(value=names[0])
-        ttk.Label(frm,text='BGM').pack(anchor='w'); ttk.Combobox(frm,textvariable=bm,values=names,state='readonly').pack(fill='x',pady=5)
+        bgms=self.lib.reusable('BGM'); names=['不添加BGM']+[a.name for a in bgms]; saved_bgm=(self.project.creative_plan or {}).get('final_bgm_name'); bm=tk.StringVar(value=saved_bgm if saved_bgm in names else names[0])
+        ttk.Label(frm,text='成片统一BGM（最终拼接时连续播放，不在每个镜头重启）').pack(anchor='w'); ttk.Combobox(frm,textvariable=bm,values=names,state='readonly').pack(fill='x',pady=5)
         def run():
             try:
-                from .subtitles import write_srt
-                from .postprocess import burn_subtitles, mix_audio
+                from .subtitles import write_srt, analyze_subtitle_density
+                from .postprocess import burn_subtitles, probe_duration
                 base=Path(s.video_path); folder=self.store.root/'postprocessed'/self.project.id/s.id
                 folder.mkdir(parents=True,exist_ok=True)
-                srt=write_srt(script.get('1.0','end').strip(),folder/f'v{s.version}.srt',duration=3)
+                subtitle_text=script.get('1.0','end').strip()
+                clip_duration=probe_duration(base)
+                density=analyze_subtitle_density(subtitle_text, duration=clip_duration)
+                if density['warnings']:
+                    messagebox.showwarning(
+                        '字幕密度提醒',
+                        f"镜头时长：{density['duration']:.2f} 秒\n"
+                        f"字幕密度：{density['chars_per_second']:.1f} 字/秒\n"
+                        f"预计字幕段数：{density['segment_count']}\n\n"
+                        + "\n".join(density['warnings'])
+                        + "\n\n系统仍会继续处理；建议优先缩短文案，避免字幕过密。"
+                    )
+                srt=write_srt(subtitle_text,folder/f'v{s.version}.srt',duration=clip_duration,
+                              max_chars=density['effective_max_chars'])
                 subout=folder/f'v{s.version}-sub.mp4'
                 burn_subtitles(base,subout,srt,getattr(s,'subtitle_position','底部安全区'),getattr(s,'subtitle_style','白字黑边'))
                 chosen=next((a for a in bgms if a.name==bm.get()),None); final=subout
+                # Save BGM at project level; final render starts it once after picture assembly.
                 if chosen and chosen.path and getattr(s,'bgm_intensity','低') != '无':
-                    audioout=folder/f'v{s.version}-audio.mp4'; mix_audio(subout,audioout,Path(chosen.path),getattr(s,'bgm_volume',0.16)); final=audioout
+                    self.project.creative_plan['final_bgm_path']=str(Path(chosen.path).expanduser())
+                    self.project.creative_plan['final_bgm_name']=chosen.name
+                    self.project.creative_plan['final_bgm_volume']=float(getattr(s,'bgm_volume',0.16))
+                else:
+                    self.project.creative_plan.pop('final_bgm_path',None)
+                    self.project.creative_plan.pop('final_bgm_name',None)
+                    self.project.creative_plan.pop('final_bgm_volume',None)
+                # Bind this exact subtitle-burned video version to the SRT timeline used to create it.
+                timing_map=self.project.creative_plan.setdefault('subtitle_timing_by_shot', {})
+                timing_map[s.id]={
+                    'srt_path':str(srt),
+                    'source_video_path':str(final),
+                    'source_version':int(getattr(s,'version',0) or 0),
+                    'source_duration_seconds':float(clip_duration),
+                    'cue_timeline_source':'A108 SRT generated for the actual source clip duration',
+                }
                 s.video_path=str(final); s.status='本地成片加工完成'; self.store.save(self.project); self.refresh_shots(); self.show_shot()
-                self.detail.set(f'镜头 {s.index} 已完成字幕/音频加工：{final}'); win.destroy()
+                self.detail.set(f'镜头 {s.index} 字幕处理完成；成片统一BGM：{self.project.creative_plan.get("final_bgm_name","未选择")}'); win.destroy()
             except Exception as e: messagebox.showerror('本地成片加工失败',str(e))
         ttk.Button(frm,text='执行：字幕 + BGM/人声处理',command=run).pack(anchor='e',pady=8)
 
@@ -1855,10 +2277,10 @@ class App(tk.Tk):
         try:
             from .providers import load_video_provider
             vp=load_video_provider(ROOT/'video-provider.json')
-            rate=float(getattr(vp,'cost_per_shot_rmb',0.72))
+            rate=configured_video_price(vp)
         except Exception:
-            rate=0.72
-        missing_counts=[]; estimated=0.0
+            rate=None
+        missing_counts=[]; estimated=0.0; unknown_price=False
         for pos,raw0 in enumerate(variants,1):
             raw=dict(raw0); raw['_variant_index']=int(raw.get('_variant_index',pos)); raw['_variant_label']=raw.get('_variant_label',f'方案{raw["_variant_index"]}')
             # 用当前项目规则恢复方案，仅用于确定镜头数量；不调用 AI。
@@ -1866,10 +2288,16 @@ class App(tk.Tk):
             self._activate_plan(raw,info)
             missing=sum(1 for s in self.project.shots if not s.video_path or not Path(s.video_path).exists())
             missing_counts.append(missing)
-            if footage_mode!='用户拍摄素材': estimated += missing*rate
+            if footage_mode!='用户拍摄素材' and missing:
+                if rate is None: unknown_price=True
+                else: estimated += missing*rate
             self._cache_active_variant()
-        if budget>0 and estimated>budget:
-            return messagebox.showwarning('预算闸门',f'本次一键生成预计还需约 ¥{estimated:.2f}，已超过项目预算 ¥{budget:.2f}。\n\n系统不会自动突破预算；请提高预算或减少待生成镜头后再执行。')
+        if unknown_price:
+            if not messagebox.askyesno('视频单价未知',f'本次一键生成包含待生成镜头，但 Provider 单镜头价格未配置，无法可靠估算总费用，实际费用可能超过预算 ¥{budget:.2f}。是否仍继续？'):
+                return
+        elif budget>0 and estimated>budget:
+            if not messagebox.askyesno('预算超出确认',f'本次一键生成预计还需约 ¥{estimated:.2f}，已超过项目预算 ¥{budget:.2f}。继续可能超过预算。是否仍继续？'):
+                return
         original=original_index; info=__import__('ad_studio.product_parser',fromlist=['ProductInfo']).ProductInfo(**self.project.product_info)
         done=[]; failed=[]; outputs=[]
         try:
@@ -1880,11 +2308,20 @@ class App(tk.Tk):
                     if shot.video_path and Path(shot.video_path).exists():
                         continue
                     try:
-                        shot.status='生成中…'; self.store.save(self.project); self.refresh_shots(); self.update_idletasks()
                         if shot.clip_source=='filmed':
+                            shot.status='生成中…'; self.store.save(self.project); self.refresh_shots(); self.update_idletasks()
                             self.store.render_footage_shot(self.project,shot)
                         else:
-                            self.store.render_shot(self.project,shot,config_root=ROOT)
+                            decision = self._authorize_shot_generation(shot, f'方案{self.active_variant_index} 镜头 {shot.index} 视频生成')
+                            if decision is None:
+                                failed.append(f'方案{self.active_variant_index}-镜头{shot.index}：用户取消授权（未调用视频 Provider）')
+                                continue
+                            shot.status='生成中…'; self.store.save(self.project); self.refresh_shots(); self.update_idletasks()
+                            self.store.render_shot(
+                                self.project, shot, config_root=ROOT, decision=decision,
+                                authorize_cloud=lambda asset_decision, kind: self._confirm_asset_cloud_generation(asset_decision, kind, shot),
+                                authorized_endpoint=(decision.endpoint if decision.target == 'cloud' else None),
+                            )
                         done.append(f'方案{self.active_variant_index}-镜头{shot.index}')
                     except Exception as exc:
                         failed.append(f'方案{self.active_variant_index}-镜头{shot.index}：{exc}')
@@ -2445,37 +2882,42 @@ class App(tk.Tk):
             if not rows:
                 return messagebox.showerror('短剧分镜为空', '短剧方案没有可用于生产的分镜。')
             provider = load_video_provider(ROOT / 'video-provider.json')
-            rate = float(getattr(provider, 'cost_per_shot_rmb', 0.72))
+            rate = configured_video_price(provider)
             estimate = estimate_cost(len(rows), {'cloud_video_per_shot': rate})
             asset_est = estimate_asset_generation(self.lib, ROOT, rows)
             estimate['资产生成'] = asset_est
             asset_total = float(asset_est.get('总计', 0.0))
             if asset_total:
                 estimate['云端'] = round(float(estimate.get('云端', 0.0)) + asset_total, 2)
-                estimate['总计'] = round(float(estimate.get('本地', 0.0)) + float(estimate['云端']), 2)
+                estimate['已知小计'] = round(float(estimate.get('已知小计', estimate.get('总计') or 0.0)) + asset_total, 2)
+                if estimate.get('总计') is not None:
+                    estimate['总计'] = round(float(estimate.get('本地', 0.0)) + float(estimate['云端']), 2)
                 estimate['明细'].append({
                     '项目': '短剧演员/场景/商品素材自动生成',
                     '数量': asset_est.get('数量', 0), '单价': 0.0,
                     '小计': asset_total, '计费方式': '按缺失资产配置价格'
                 })
             estimate['预算'] = budget
-            estimate['超预算'] = float(estimate['总计']) > budget
+            estimate['超预算'] = None if estimate.get('总计') is None else float(estimate['总计']) > budget
             audit = audit_short_drama(plan, dict(self.project.product_info or {}))
             estimate['短剧质量复核'] = audit
             audit_lines = [f"质量/事实复核：{audit['status']}（{audit['issue_count']}项提示）"]
             audit_lines.extend(f"- {item['message']}" for item in audit['issues'][:8])
             if len(audit['issues']) > 8:
                 audit_lines.append(f"- 其余 {len(audit['issues']) - 8} 项请在“短剧质量/事实复核”窗口查看。")
+            video_cost_label = '未知（单镜头价格未配置）' if rate is None else f"¥{rate * len(rows):.2f}"
+            total_cost_label = '无法可靠估算（视频单价未知）' if estimate.get('总计') is None else f"¥{float(estimate['总计']):.2f}"
+            budget_status_label = ('⚠ 视频单价未知，无法可靠估算总费用；确认后仍可能超过预算。' if estimate.get('总计') is None else ('⚠ 预计超过本次预算。' if estimate['超预算'] else '✓ 预计不超过本次预算。'))
             detail = '\n'.join([
                 f"商品：{self.project.product_name}",
                 f"短剧题材：{plan.get('genre', '待确认')}",
                 f"计划镜头：{len(rows)}",
-                f"视频生成费用：¥{rate * len(rows):.2f}",
+                f"视频生成费用：{video_cost_label}",
                 f"演员/场景/商品素材生成费用：¥{asset_total:.2f}",
                 f"本地处理/FFmpeg：¥{estimate.get('本地', 0.0):.2f}",
-                f"预计总费用：¥{estimate.get('总计', 0.0):.2f}",
+                f"预计总费用：{total_cost_label}",
                 f"本次预算：¥{budget:.2f}",
-                ('⚠ 预计超过本次预算。' if estimate['超预算'] else '✓ 预计不超过本次预算。'),
+                budget_status_label,
                 estimate.get('计价说明', ''),
                 '',
                 *audit_lines,
